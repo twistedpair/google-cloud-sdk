@@ -13,7 +13,7 @@ package = 'dataproc'
 
 
 class AcceleratorConfig(_messages.Message):
-  """Specifies the type and number of accelerator cards attached to the
+  r"""Specifies the type and number of accelerator cards attached to the
   instances of an instance. See GPUs on Compute Engine.
 
   Fields:
@@ -35,12 +35,12 @@ class AcceleratorConfig(_messages.Message):
 
 
 class CancelJobRequest(_messages.Message):
-  """A request to cancel a job."""
+  r"""A request to cancel a job."""
 
 
 class Cluster(_messages.Message):
-  """Describes the identifying information, config, and status of a cluster of
-  Compute Engine instances.
+  r"""Describes the identifying information, config, and status of a cluster
+  of Compute Engine instances.
 
   Messages:
     LabelsValue: Optional. The labels to associate with this cluster. Label
@@ -74,7 +74,7 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. The labels to associate with this cluster. Label keys must
+    r"""Optional. The labels to associate with this cluster. Label keys must
     contain 1 to 63 characters, and must conform to RFC 1035
     (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
     present, must contain 1 to 63 characters, and must conform to RFC 1035
@@ -89,7 +89,7 @@ class Cluster(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -112,7 +112,7 @@ class Cluster(_messages.Message):
 
 
 class ClusterConfig(_messages.Message):
-  """The cluster config.
+  r"""The cluster config.
 
   Fields:
     configBucket: Optional. A Cloud Storage staging bucket used for sharing
@@ -151,7 +151,7 @@ class ClusterConfig(_messages.Message):
 
 
 class ClusterMetrics(_messages.Message):
-  """Contains cluster daemon metrics, such as HDFS and YARN stats.Beta
+  r"""Contains cluster daemon metrics, such as HDFS and YARN stats.Beta
   Feature: This report is available for testing purposes only. It may be
   changed before final release.
 
@@ -166,7 +166,7 @@ class ClusterMetrics(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HdfsMetricsValue(_messages.Message):
-    """The HDFS metrics.
+    r"""The HDFS metrics.
 
     Messages:
       AdditionalProperty: An additional property for a HdfsMetricsValue
@@ -177,7 +177,7 @@ class ClusterMetrics(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a HdfsMetricsValue object.
+      r"""An additional property for a HdfsMetricsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -191,7 +191,7 @@ class ClusterMetrics(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class YarnMetricsValue(_messages.Message):
-    """The YARN metrics.
+    r"""The YARN metrics.
 
     Messages:
       AdditionalProperty: An additional property for a YarnMetricsValue
@@ -202,7 +202,7 @@ class ClusterMetrics(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a YarnMetricsValue object.
+      r"""An additional property for a YarnMetricsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -219,7 +219,7 @@ class ClusterMetrics(_messages.Message):
 
 
 class ClusterOperationMetadata(_messages.Message):
-  """Metadata describing the operation.
+  r"""Metadata describing the operation.
 
   Messages:
     LabelsValue: Output only. Labels associated with the operation
@@ -237,7 +237,7 @@ class ClusterOperationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Output only. Labels associated with the operation
+    r"""Output only. Labels associated with the operation
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -247,7 +247,7 @@ class ClusterOperationMetadata(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -270,7 +270,7 @@ class ClusterOperationMetadata(_messages.Message):
 
 
 class ClusterOperationStatus(_messages.Message):
-  """The status of the operation.
+  r"""The status of the operation.
 
   Enums:
     StateValueValuesEnum: Output only. A message containing the operation
@@ -285,7 +285,7 @@ class ClusterOperationStatus(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. A message containing the operation state.
+    r"""Output only. A message containing the operation state.
 
     Values:
       UNKNOWN: Unused.
@@ -305,7 +305,7 @@ class ClusterOperationStatus(_messages.Message):
 
 
 class ClusterStatus(_messages.Message):
-  """The status of a cluster and its instances.
+  r"""The status of a cluster and its instances.
 
   Enums:
     StateValueValuesEnum: Output only. The cluster's state.
@@ -321,7 +321,7 @@ class ClusterStatus(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. The cluster's state.
+    r"""Output only. The cluster's state.
 
     Values:
       UNKNOWN: The cluster state is unknown.
@@ -342,8 +342,8 @@ class ClusterStatus(_messages.Message):
     UPDATING = 5
 
   class SubstateValueValuesEnum(_messages.Enum):
-    """Output only. Additional state information that includes status reported
-    by the agent.
+    r"""Output only. Additional state information that includes status
+    reported by the agent.
 
     Values:
       UNSPECIFIED: The cluster substate is unknown.
@@ -365,7 +365,7 @@ class ClusterStatus(_messages.Message):
 
 
 class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
-  """A DataprocProjectsRegionsClustersCreateRequest object.
+  r"""A DataprocProjectsRegionsClustersCreateRequest object.
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
@@ -390,7 +390,7 @@ class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
-  """A DataprocProjectsRegionsClustersDeleteRequest object.
+  r"""A DataprocProjectsRegionsClustersDeleteRequest object.
 
   Fields:
     clusterName: Required. The cluster name.
@@ -419,7 +419,7 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
-  """A DataprocProjectsRegionsClustersDiagnoseRequest object.
+  r"""A DataprocProjectsRegionsClustersDiagnoseRequest object.
 
   Fields:
     clusterName: Required. The cluster name.
@@ -438,7 +438,7 @@ class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
-  """A DataprocProjectsRegionsClustersGetRequest object.
+  r"""A DataprocProjectsRegionsClustersGetRequest object.
 
   Fields:
     clusterName: Required. The cluster name.
@@ -454,7 +454,7 @@ class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsClustersListRequest(_messages.Message):
-  """A DataprocProjectsRegionsClustersListRequest object.
+  r"""A DataprocProjectsRegionsClustersListRequest object.
 
   Fields:
     filter: Optional. A filter constraining the clusters to list. Filters are
@@ -485,7 +485,7 @@ class DataprocProjectsRegionsClustersListRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
-  """A DataprocProjectsRegionsClustersPatchRequest object.
+  r"""A DataprocProjectsRegionsClustersPatchRequest object.
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
@@ -540,7 +540,7 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsJobsCancelRequest(_messages.Message):
-  """A DataprocProjectsRegionsJobsCancelRequest object.
+  r"""A DataprocProjectsRegionsJobsCancelRequest object.
 
   Fields:
     cancelJobRequest: A CancelJobRequest resource to be passed as the request
@@ -559,7 +559,7 @@ class DataprocProjectsRegionsJobsCancelRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsJobsDeleteRequest(_messages.Message):
-  """A DataprocProjectsRegionsJobsDeleteRequest object.
+  r"""A DataprocProjectsRegionsJobsDeleteRequest object.
 
   Fields:
     jobId: Required. The job ID.
@@ -575,7 +575,7 @@ class DataprocProjectsRegionsJobsDeleteRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsJobsGetRequest(_messages.Message):
-  """A DataprocProjectsRegionsJobsGetRequest object.
+  r"""A DataprocProjectsRegionsJobsGetRequest object.
 
   Fields:
     jobId: Required. The job ID.
@@ -591,7 +591,7 @@ class DataprocProjectsRegionsJobsGetRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsJobsListRequest(_messages.Message):
-  """A DataprocProjectsRegionsJobsListRequest object.
+  r"""A DataprocProjectsRegionsJobsListRequest object.
 
   Enums:
     JobStateMatcherValueValuesEnum: Optional. Specifies enumerated categories
@@ -622,7 +622,7 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
   """
 
   class JobStateMatcherValueValuesEnum(_messages.Enum):
-    """Optional. Specifies enumerated categories of jobs to list. (default =
+    r"""Optional. Specifies enumerated categories of jobs to list. (default =
     match ALL jobs).If filter is provided, jobStateMatcher will be ignored.
 
     Values:
@@ -644,7 +644,7 @@ class DataprocProjectsRegionsJobsListRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsJobsPatchRequest(_messages.Message):
-  """A DataprocProjectsRegionsJobsPatchRequest object.
+  r"""A DataprocProjectsRegionsJobsPatchRequest object.
 
   Fields:
     job: A Job resource to be passed as the request body.
@@ -669,7 +669,7 @@ class DataprocProjectsRegionsJobsPatchRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsJobsSubmitRequest(_messages.Message):
-  """A DataprocProjectsRegionsJobsSubmitRequest object.
+  r"""A DataprocProjectsRegionsJobsSubmitRequest object.
 
   Fields:
     projectId: Required. The ID of the Google Cloud Platform project that the
@@ -686,7 +686,7 @@ class DataprocProjectsRegionsJobsSubmitRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsOperationsCancelRequest(_messages.Message):
-  """A DataprocProjectsRegionsOperationsCancelRequest object.
+  r"""A DataprocProjectsRegionsOperationsCancelRequest object.
 
   Fields:
     name: The name of the operation resource to be cancelled.
@@ -696,7 +696,7 @@ class DataprocProjectsRegionsOperationsCancelRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsOperationsDeleteRequest(_messages.Message):
-  """A DataprocProjectsRegionsOperationsDeleteRequest object.
+  r"""A DataprocProjectsRegionsOperationsDeleteRequest object.
 
   Fields:
     name: The name of the operation resource to be deleted.
@@ -706,7 +706,7 @@ class DataprocProjectsRegionsOperationsDeleteRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsOperationsGetRequest(_messages.Message):
-  """A DataprocProjectsRegionsOperationsGetRequest object.
+  r"""A DataprocProjectsRegionsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -716,7 +716,7 @@ class DataprocProjectsRegionsOperationsGetRequest(_messages.Message):
 
 
 class DataprocProjectsRegionsOperationsListRequest(_messages.Message):
-  """A DataprocProjectsRegionsOperationsListRequest object.
+  r"""A DataprocProjectsRegionsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -732,11 +732,11 @@ class DataprocProjectsRegionsOperationsListRequest(_messages.Message):
 
 
 class DiagnoseClusterRequest(_messages.Message):
-  """A request to collect cluster diagnostic information."""
+  r"""A request to collect cluster diagnostic information."""
 
 
 class DiagnoseClusterResults(_messages.Message):
-  """The location of diagnostic output.
+  r"""The location of diagnostic output.
 
   Fields:
     outputUri: Output only. The Cloud Storage URI of the diagnostic output.
@@ -748,7 +748,7 @@ class DiagnoseClusterResults(_messages.Message):
 
 
 class DiskConfig(_messages.Message):
-  """Specifies the config of disk options for a group of VM instances.
+  r"""Specifies the config of disk options for a group of VM instances.
 
   Fields:
     bootDiskSizeGb: Optional. Size in GB of the boot disk (default is 500GB).
@@ -766,7 +766,7 @@ class DiskConfig(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo {   rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
@@ -776,8 +776,8 @@ class Empty(_messages.Message):
 
 
 class GceClusterConfig(_messages.Message):
-  """Common config settings for resources of Compute Engine cluster instances,
-  applicable to all instances in the cluster.
+  r"""Common config settings for resources of Compute Engine cluster
+  instances, applicable to all instances in the cluster.
 
   Messages:
     MetadataValue: The Compute Engine metadata entries to add to all instances
@@ -841,7 +841,7 @@ class GceClusterConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """The Compute Engine metadata entries to add to all instances (see
+    r"""The Compute Engine metadata entries to add to all instances (see
     Project and instance metadata (https://cloud.google.com/compute/docs
     /storing-retrieving-metadata#project_and_instance_metadata)).
 
@@ -853,7 +853,7 @@ class GceClusterConfig(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -876,7 +876,7 @@ class GceClusterConfig(_messages.Message):
 
 
 class HadoopJob(_messages.Message):
-  """A Cloud Dataproc job for running Apache Hadoop MapReduce
+  r"""A Cloud Dataproc job for running Apache Hadoop MapReduce
   (https://hadoop.apache.org/docs/current/hadoop-mapreduce-client/hadoop-
   mapreduce-client-core/MapReduceTutorial.html) jobs on Apache Hadoop YARN
   (https://hadoop.apache.org/docs/r2.7.1/hadoop-yarn/hadoop-yarn-
@@ -917,7 +917,7 @@ class HadoopJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """Optional. A mapping of property names to values, used to configure
+    r"""Optional. A mapping of property names to values, used to configure
     Hadoop. Properties that conflict with values set by the Cloud Dataproc API
     may be overwritten. Can include properties set in /etc/hadoop/conf/*-site
     and classes in user code.
@@ -930,7 +930,7 @@ class HadoopJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -953,7 +953,7 @@ class HadoopJob(_messages.Message):
 
 
 class HiveJob(_messages.Message):
-  """A Cloud Dataproc job for running Apache Hive (https://hive.apache.org/)
+  r"""A Cloud Dataproc job for running Apache Hive (https://hive.apache.org/)
   queries on YARN.
 
   Messages:
@@ -985,7 +985,7 @@ class HiveJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """Optional. A mapping of property names and values, used to configure
+    r"""Optional. A mapping of property names and values, used to configure
     Hive. Properties that conflict with values set by the Cloud Dataproc API
     may be overwritten. Can include properties set in
     /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes in
@@ -999,7 +999,7 @@ class HiveJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1013,7 +1013,7 @@ class HiveJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ScriptVariablesValue(_messages.Message):
-    """Optional. Mapping of query variable names to values (equivalent to the
+    r"""Optional. Mapping of query variable names to values (equivalent to the
     Hive command: SET name="value";).
 
     Messages:
@@ -1025,7 +1025,7 @@ class HiveJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ScriptVariablesValue object.
+      r"""An additional property for a ScriptVariablesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1046,8 +1046,8 @@ class HiveJob(_messages.Message):
 
 
 class InstanceGroupConfig(_messages.Message):
-  """Optional. The config settings for Compute Engine resources in an instance
-  group, such as a master or worker group.
+  r"""Optional. The config settings for Compute Engine resources in an
+  instance group, such as a master or worker group.
 
   Fields:
     accelerators: Optional. The Compute Engine accelerator configuration for
@@ -1088,7 +1088,7 @@ class InstanceGroupConfig(_messages.Message):
 
 
 class Job(_messages.Message):
-  """A Cloud Dataproc job resource.
+  r"""A Cloud Dataproc job resource.
 
   Messages:
     LabelsValue: Optional. The labels to associate with this job. Label keys
@@ -1135,7 +1135,7 @@ class Job(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. The labels to associate with this job. Label keys must
+    r"""Optional. The labels to associate with this job. Label keys must
     contain 1 to 63 characters, and must conform to RFC 1035
     (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
     present, must contain 1 to 63 characters, and must conform to RFC 1035
@@ -1150,7 +1150,7 @@ class Job(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1180,7 +1180,7 @@ class Job(_messages.Message):
 
 
 class JobPlacement(_messages.Message):
-  """Cloud Dataproc job config.
+  r"""Cloud Dataproc job config.
 
   Fields:
     clusterName: Required. The name of the cluster where the job will be
@@ -1194,7 +1194,7 @@ class JobPlacement(_messages.Message):
 
 
 class JobReference(_messages.Message):
-  """Encapsulates the full scoping used to reference a job.
+  r"""Encapsulates the full scoping used to reference a job.
 
   Fields:
     jobId: Optional. The job ID, which must be unique within the project. The
@@ -1211,7 +1211,7 @@ class JobReference(_messages.Message):
 
 
 class JobScheduling(_messages.Message):
-  """Job scheduling options.
+  r"""Job scheduling options.
 
   Fields:
     maxFailuresPerHour: Optional. Maximum number of times per hour a driver
@@ -1225,7 +1225,7 @@ class JobScheduling(_messages.Message):
 
 
 class JobStatus(_messages.Message):
-  """Cloud Dataproc job status.
+  r"""Cloud Dataproc job status.
 
   Enums:
     StateValueValuesEnum: Output only. A state message specifying the overall
@@ -1243,7 +1243,7 @@ class JobStatus(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. A state message specifying the overall job state.
+    r"""Output only. A state message specifying the overall job state.
 
     Values:
       STATE_UNSPECIFIED: The job state is unknown.
@@ -1273,7 +1273,7 @@ class JobStatus(_messages.Message):
     ATTEMPT_FAILURE = 9
 
   class SubstateValueValuesEnum(_messages.Enum):
-    """Output only. Additional state information, which includes status
+    r"""Output only. Additional state information, which includes status
     reported by the agent.
 
     Values:
@@ -1299,7 +1299,7 @@ class JobStatus(_messages.Message):
 
 
 class ListClustersResponse(_messages.Message):
-  """The list of all clusters in a project.
+  r"""The list of all clusters in a project.
 
   Fields:
     clusters: Output only. The clusters in the project.
@@ -1313,7 +1313,7 @@ class ListClustersResponse(_messages.Message):
 
 
 class ListJobsResponse(_messages.Message):
-  """A list of jobs in a project.
+  r"""A list of jobs in a project.
 
   Fields:
     jobs: Output only. Jobs list.
@@ -1327,7 +1327,7 @@ class ListJobsResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -1340,7 +1340,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class LoggingConfig(_messages.Message):
-  """The runtime logging config of the job.
+  r"""The runtime logging config of the job.
 
   Messages:
     DriverLogLevelsValue: The per-package log levels for the driver. This may
@@ -1355,7 +1355,7 @@ class LoggingConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DriverLogLevelsValue(_messages.Message):
-    """The per-package log levels for the driver. This may include "root"
+    r"""The per-package log levels for the driver. This may include "root"
     package name to configure rootLogger. Examples:  'com.google = FATAL',
     'root = INFO', 'org.apache = DEBUG'
 
@@ -1368,7 +1368,7 @@ class LoggingConfig(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DriverLogLevelsValue object.
+      r"""An additional property for a DriverLogLevelsValue object.
 
       Enums:
         ValueValueValuesEnum:
@@ -1379,7 +1379,7 @@ class LoggingConfig(_messages.Message):
       """
 
       class ValueValueValuesEnum(_messages.Enum):
-        """ValueValueValuesEnum enum type.
+        r"""ValueValueValuesEnum enum type.
 
         Values:
           LEVEL_UNSPECIFIED: <no description>
@@ -1411,7 +1411,7 @@ class LoggingConfig(_messages.Message):
 
 
 class ManagedGroupConfig(_messages.Message):
-  """Specifies the resources used to actively manage an instance group.
+  r"""Specifies the resources used to actively manage an instance group.
 
   Fields:
     instanceGroupManagerName: Output only. The name of the Instance Group
@@ -1425,7 +1425,7 @@ class ManagedGroupConfig(_messages.Message):
 
 
 class NodeInitializationAction(_messages.Message):
-  """Specifies an executable to run on a fully configured node and a timeout
+  r"""Specifies an executable to run on a fully configured node and a timeout
   period for executable completion.
 
   Fields:
@@ -1442,8 +1442,8 @@ class NodeInitializationAction(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation. It
@@ -1484,7 +1484,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation. It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -1498,7 +1498,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1512,7 +1512,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success. If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as Delete, the response
     is google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
@@ -1529,7 +1529,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1549,7 +1549,7 @@ class Operation(_messages.Message):
 
 
 class PigJob(_messages.Message):
-  """A Cloud Dataproc job for running Apache Pig (https://pig.apache.org/)
+  r"""A Cloud Dataproc job for running Apache Pig (https://pig.apache.org/)
   queries on YARN.
 
   Messages:
@@ -1581,10 +1581,11 @@ class PigJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """Optional. A mapping of property names to values, used to configure Pig.
-    Properties that conflict with values set by the Cloud Dataproc API may be
-    overwritten. Can include properties set in /etc/hadoop/conf/*-site.xml,
-    /etc/pig/conf/pig.properties, and classes in user code.
+    r"""Optional. A mapping of property names to values, used to configure
+    Pig. Properties that conflict with values set by the Cloud Dataproc API
+    may be overwritten. Can include properties set in
+    /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes in
+    user code.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.
@@ -1594,7 +1595,7 @@ class PigJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1608,7 +1609,7 @@ class PigJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ScriptVariablesValue(_messages.Message):
-    """Optional. Mapping of query variable names to values (equivalent to the
+    r"""Optional. Mapping of query variable names to values (equivalent to the
     Pig command: name=[value]).
 
     Messages:
@@ -1620,7 +1621,7 @@ class PigJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ScriptVariablesValue object.
+      r"""An additional property for a ScriptVariablesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1642,7 +1643,7 @@ class PigJob(_messages.Message):
 
 
 class PySparkJob(_messages.Message):
-  """A Cloud Dataproc job for running Apache PySpark
+  r"""A Cloud Dataproc job for running Apache PySpark
   (https://spark.apache.org/docs/0.9.0/python-programming-guide.html)
   applications on YARN.
 
@@ -1676,7 +1677,7 @@ class PySparkJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """Optional. A mapping of property names to values, used to configure
+    r"""Optional. A mapping of property names to values, used to configure
     PySpark. Properties that conflict with values set by the Cloud Dataproc
     API may be overwritten. Can include properties set in /etc/spark/conf
     /spark-defaults.conf and classes in user code.
@@ -1689,7 +1690,7 @@ class PySparkJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1712,7 +1713,7 @@ class PySparkJob(_messages.Message):
 
 
 class QueryList(_messages.Message):
-  """A list of queries to run on a cluster.
+  r"""A list of queries to run on a cluster.
 
   Fields:
     queries: Required. The queries to execute. You do not need to terminate a
@@ -1727,7 +1728,7 @@ class QueryList(_messages.Message):
 
 
 class SoftwareConfig(_messages.Message):
-  """Specifies the selection and config of software inside the cluster.
+  r"""Specifies the selection and config of software inside the cluster.
 
   Messages:
     PropertiesValue: Optional. The properties to set on daemon config
@@ -1754,7 +1755,7 @@ class SoftwareConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """Optional. The properties to set on daemon config files.Property keys
+    r"""Optional. The properties to set on daemon config files.Property keys
     are specified in prefix:property format, such as core:fs.defaultFS. The
     following are supported prefixes and their mappings: capacity-scheduler:
     capacity-scheduler.xml core: core-site.xml distcp: distcp-default.xml
@@ -1770,7 +1771,7 @@ class SoftwareConfig(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1787,7 +1788,7 @@ class SoftwareConfig(_messages.Message):
 
 
 class SparkJob(_messages.Message):
-  """A Cloud Dataproc job for running Apache Spark (http://spark.apache.org/)
+  r"""A Cloud Dataproc job for running Apache Spark (http://spark.apache.org/)
   applications on YARN.
 
   Messages:
@@ -1821,7 +1822,7 @@ class SparkJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """Optional. A mapping of property names to values, used to configure
+    r"""Optional. A mapping of property names to values, used to configure
     Spark. Properties that conflict with values set by the Cloud Dataproc API
     may be overwritten. Can include properties set in /etc/spark/conf/spark-
     defaults.conf and classes in user code.
@@ -1834,7 +1835,7 @@ class SparkJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1857,7 +1858,7 @@ class SparkJob(_messages.Message):
 
 
 class SparkSqlJob(_messages.Message):
-  """A Cloud Dataproc job for running Apache Spark SQL
+  r"""A Cloud Dataproc job for running Apache Spark SQL
   (http://spark.apache.org/sql/) queries.
 
   Messages:
@@ -1882,7 +1883,7 @@ class SparkSqlJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
-    """Optional. A mapping of property names to values, used to configure
+    r"""Optional. A mapping of property names to values, used to configure
     Spark SQL's SparkConf. Properties that conflict with values set by the
     Cloud Dataproc API may be overwritten.
 
@@ -1894,7 +1895,7 @@ class SparkSqlJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PropertiesValue object.
+      r"""An additional property for a PropertiesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1908,7 +1909,7 @@ class SparkSqlJob(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ScriptVariablesValue(_messages.Message):
-    """Optional. Mapping of query variable names to values (equivalent to the
+    r"""Optional. Mapping of query variable names to values (equivalent to the
     Spark SQL command: SET name="value";).
 
     Messages:
@@ -1920,7 +1921,7 @@ class SparkSqlJob(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ScriptVariablesValue object.
+      r"""An additional property for a ScriptVariablesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1941,7 +1942,7 @@ class SparkSqlJob(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1970,7 +1971,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1982,7 +1983,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -2008,7 +2009,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The Status type defines a logical error model that is suitable for
+  r"""The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by gRPC (https://github.com/grpc). The error model is designed to be:
   Simple to use and understand for most users Flexible enough to meet
@@ -2055,7 +2056,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -2067,7 +2068,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -2085,7 +2086,7 @@ class Status(_messages.Message):
 
 
 class SubmitJobRequest(_messages.Message):
-  """A request to submit a job.
+  r"""A request to submit a job.
 
   Fields:
     job: Required. The job resource.
@@ -2103,7 +2104,7 @@ class SubmitJobRequest(_messages.Message):
 
 
 class YarnApplication(_messages.Message):
-  """A YARN application created by a job. Application information is a subset
+  r"""A YARN application created by a job. Application information is a subset
   of <code>org.apache.hadoop.yarn.proto.YarnProtos.ApplicationReportProto</cod
   e>.Beta Feature: This report is available for testing purposes only. It may
   be changed before final release.
@@ -2123,7 +2124,7 @@ class YarnApplication(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Required. The application state.
+    r"""Required. The application state.
 
     Values:
       STATE_UNSPECIFIED: Status is unspecified.

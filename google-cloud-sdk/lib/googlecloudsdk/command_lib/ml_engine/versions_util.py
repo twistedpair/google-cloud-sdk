@@ -50,28 +50,28 @@ def ParseVersion(model, version):
       collection='ml.projects.models.versions')
 
 
-def WaitForOpMaybe(operations_client, op, async_=False, message=None):
-  """Waits for an operation if async_ flag is on.
+def WaitForOpMaybe(operations_client, op, asyncronous=False, message=None):
+  """Waits for an operation if asyncronous flag is on.
 
   Args:
     operations_client: api_lib.ml_engine.operations.OperationsClient, the client
       via which to poll
     op: Cloud ML Engine operation, the operation to poll
-    async_: bool, whether to wait for the operation or return immediately
+    asyncronous: bool, whether to wait for the operation or return immediately
     message: str, the message to display while waiting for the operation
 
   Returns:
-    The result of the operation if async_ is true, or the Operation message
+    The result of the operation if asyncronous is true, or the Operation message
         otherwise
   """
-  if async_:
+  if asyncronous:
     return op
   return operations_client.WaitForOperation(op, message=message).response
 
 
 def Create(versions_client, operations_client, version_id,
            model=None, origin=None, staging_bucket=None, runtime_version=None,
-           config_file=None, async_=None, labels=None, machine_type=None,
+           config_file=None, asyncronous=None, labels=None, machine_type=None,
            description=None, framework=None, python_version=None):
   """Create a version, optionally waiting for creation to finish."""
   if origin:
@@ -98,7 +98,7 @@ def Create(versions_client, operations_client, version_id,
         'provided in the file given by `--config`.')
   op = versions_client.Create(model_ref, version)
   return WaitForOpMaybe(
-      operations_client, op, async_=async_,
+      operations_client, op, asyncronous=asyncronous,
       message='Creating version (this might take a few minutes)...')
 
 
@@ -109,7 +109,7 @@ def Delete(versions_client, operations_client, version, model=None):
       cancel_on_no=True)
   op = versions_client.Delete(version_ref)
   return WaitForOpMaybe(
-      operations_client, op, async_=False,
+      operations_client, op, asyncronous=False,
       message='Deleting version [{}]...'.format(version_ref.versionsId))
 
 

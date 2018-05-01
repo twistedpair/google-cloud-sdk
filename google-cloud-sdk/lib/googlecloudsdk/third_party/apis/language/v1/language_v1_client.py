@@ -48,7 +48,7 @@ class LanguageV1(base_api.BaseApiClient):
           }
 
     def AnalyzeEntities(self, request, global_params=None):
-      """Finds named entities (currently proper names and common nouns) in the text.
+      r"""Finds named entities (currently proper names and common nouns) in the text.
 along with entity types, salience, mentions for each entity, and
 other properties.
 
@@ -76,7 +76,7 @@ other properties.
     )
 
     def AnalyzeEntitySentiment(self, request, global_params=None):
-      """Finds entities, similar to AnalyzeEntities in the text and analyzes.
+      r"""Finds entities, similar to AnalyzeEntities in the text and analyzes.
 sentiment associated with each entity and its mentions.
 
       Args:
@@ -103,7 +103,7 @@ sentiment associated with each entity and its mentions.
     )
 
     def AnalyzeSentiment(self, request, global_params=None):
-      """Analyzes the sentiment of the provided text.
+      r"""Analyzes the sentiment of the provided text.
 
       Args:
         request: (AnalyzeSentimentRequest) input message
@@ -129,7 +129,7 @@ sentiment associated with each entity and its mentions.
     )
 
     def AnalyzeSyntax(self, request, global_params=None):
-      """Analyzes the syntax of the text and provides sentence boundaries and.
+      r"""Analyzes the syntax of the text and provides sentence boundaries and.
 tokenization along with part of speech tags, dependency trees, and other
 properties.
 
@@ -157,7 +157,7 @@ properties.
     )
 
     def AnnotateText(self, request, global_params=None):
-      """A convenience method that provides all the features that analyzeSentiment,.
+      r"""A convenience method that provides all the features that analyzeSentiment,.
 analyzeEntities, and analyzeSyntax provide in one call.
 
       Args:
@@ -184,7 +184,7 @@ analyzeEntities, and analyzeSyntax provide in one call.
     )
 
     def ClassifyText(self, request, global_params=None):
-      """Classifies a document into categories.
+      r"""Classifies a document into categories.
 
       Args:
         request: (ClassifyTextRequest) input message

@@ -50,7 +50,7 @@ class ServiceuserV1(base_api.BaseApiClient):
           }
 
     def Disable(self, request, global_params=None):
-      """Disable a service so it can no longer be used with a.
+      r"""Disable a service so it can no longer be used with a.
 project. This prevents unintended usage that may cause unexpected billing
 charges or security leaks.
 
@@ -80,7 +80,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def Enable(self, request, global_params=None):
-      """Enable a service so it can be used with a project.
+      r"""Enable a service so it can be used with a project.
 See [Cloud Auth Guide](https://cloud.google.com/docs/authentication) for
 more information.
 
@@ -110,7 +110,7 @@ Operation<response: google.protobuf.Empty>
     )
 
     def List(self, request, global_params=None):
-      """List enabled services for the specified consumer.
+      r"""List enabled services for the specified consumer.
 
       Args:
         request: (ServiceuserProjectsServicesListRequest) input message
@@ -156,7 +156,7 @@ Operation<response: google.protobuf.Empty>
           }
 
     def Search(self, request, global_params=None):
-      """Search available services.
+      r"""Search available services.
 
 When no filter is specified, returns all accessible services. For
 authenticated users, also returns all services the calling user has

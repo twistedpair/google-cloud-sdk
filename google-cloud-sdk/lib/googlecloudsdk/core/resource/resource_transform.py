@@ -1337,6 +1337,7 @@ _API_TO_TRANSFORMS = {
                   'GetTransforms'),
     'runtimeconfig': ('googlecloudsdk.api_lib.runtime_config.transforms',
                       'GetTransforms'),
+    'dns': ('googlecloudsdk.command_lib.dns.dns_keys', 'GetTransforms'),
 }
 
 

@@ -14,7 +14,7 @@ package = 'iam'
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -47,7 +47,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuditData(_messages.Message):
-  """Audit log information specific to Cloud IAM. This message is serialized
+  r"""Audit log information specific to Cloud IAM. This message is serialized
   as an `Any` type in the `ServiceData` message of an `AuditLog` message.
 
   Fields:
@@ -59,7 +59,7 @@ class AuditData(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -76,7 +76,7 @@ class AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -94,7 +94,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class AuditableService(_messages.Message):
-  """Contains information about an auditable service.
+  r"""Contains information about an auditable service.
 
   Fields:
     name: Public name of the service. For example, the service name for Cloud
@@ -105,7 +105,7 @@ class AuditableService(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -115,8 +115,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -130,7 +130,7 @@ class Binding(_messages.Message):
 
 
 class BindingDelta(_messages.Message):
-  """One delta entry for Binding. Each individual change (only one member in
+  r"""One delta entry for Binding. Each individual change (only one member in
   each entry) to a binding will be a separate entry.
 
   Enums:
@@ -146,7 +146,7 @@ class BindingDelta(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    """The action that was performed on a Binding. Required
+    r"""The action that was performed on a Binding. Required
 
     Values:
       ACTION_UNSPECIFIED: Unspecified.
@@ -163,7 +163,7 @@ class BindingDelta(_messages.Message):
 
 
 class CreateRoleRequest(_messages.Message):
-  """The request to create a new role.
+  r"""The request to create a new role.
 
   Fields:
     role: The Role resource to create.
@@ -175,7 +175,7 @@ class CreateRoleRequest(_messages.Message):
 
 
 class CreateServiceAccountKeyRequest(_messages.Message):
-  """The service account key create request.
+  r"""The service account key create request.
 
   Enums:
     KeyAlgorithmValueValuesEnum: Which type of key and algorithm to use for
@@ -195,7 +195,7 @@ class CreateServiceAccountKeyRequest(_messages.Message):
   """
 
   class KeyAlgorithmValueValuesEnum(_messages.Enum):
-    """Which type of key and algorithm to use for the key. The default is
+    r"""Which type of key and algorithm to use for the key. The default is
     currently a 2K RSA key.  However this may change in the future.
 
     Values:
@@ -208,7 +208,7 @@ class CreateServiceAccountKeyRequest(_messages.Message):
     KEY_ALG_RSA_2048 = 2
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
-    """The output format of the private key. The default value is
+    r"""The output format of the private key. The default value is
     `TYPE_GOOGLE_CREDENTIALS_FILE`, which is the Google Credentials File
     format.
 
@@ -229,7 +229,7 @@ class CreateServiceAccountKeyRequest(_messages.Message):
 
 
 class CreateServiceAccountRequest(_messages.Message):
-  """The service account create request.
+  r"""The service account create request.
 
   Fields:
     accountId: Required. The account id that is used to generate the service
@@ -245,7 +245,7 @@ class CreateServiceAccountRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -255,7 +255,7 @@ class Empty(_messages.Message):
 
 
 class IamOrganizationsRolesCreateRequest(_messages.Message):
-  """A IamOrganizationsRolesCreateRequest object.
+  r"""A IamOrganizationsRolesCreateRequest object.
 
   Fields:
     createRoleRequest: A CreateRoleRequest resource to be passed as the
@@ -269,7 +269,7 @@ class IamOrganizationsRolesCreateRequest(_messages.Message):
 
 
 class IamOrganizationsRolesDeleteRequest(_messages.Message):
-  """A IamOrganizationsRolesDeleteRequest object.
+  r"""A IamOrganizationsRolesDeleteRequest object.
 
   Fields:
     etag: Used to perform a consistent read-modify-write.
@@ -283,7 +283,7 @@ class IamOrganizationsRolesDeleteRequest(_messages.Message):
 
 
 class IamOrganizationsRolesGetRequest(_messages.Message):
-  """A IamOrganizationsRolesGetRequest object.
+  r"""A IamOrganizationsRolesGetRequest object.
 
   Fields:
     name: The resource name of the role in one of the following formats:
@@ -295,7 +295,7 @@ class IamOrganizationsRolesGetRequest(_messages.Message):
 
 
 class IamOrganizationsRolesListRequest(_messages.Message):
-  """A IamOrganizationsRolesListRequest object.
+  r"""A IamOrganizationsRolesListRequest object.
 
   Enums:
     ViewValueValuesEnum: Optional view for the returned Role objects.
@@ -313,7 +313,7 @@ class IamOrganizationsRolesListRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Optional view for the returned Role objects.
+    r"""Optional view for the returned Role objects.
 
     Values:
       BASIC: <no description>
@@ -330,7 +330,7 @@ class IamOrganizationsRolesListRequest(_messages.Message):
 
 
 class IamOrganizationsRolesPatchRequest(_messages.Message):
-  """A IamOrganizationsRolesPatchRequest object.
+  r"""A IamOrganizationsRolesPatchRequest object.
 
   Fields:
     name: The resource name of the role in one of the following formats:
@@ -346,7 +346,7 @@ class IamOrganizationsRolesPatchRequest(_messages.Message):
 
 
 class IamOrganizationsRolesUndeleteRequest(_messages.Message):
-  """A IamOrganizationsRolesUndeleteRequest object.
+  r"""A IamOrganizationsRolesUndeleteRequest object.
 
   Fields:
     name: The resource name of the role in one of the following formats:
@@ -361,7 +361,7 @@ class IamOrganizationsRolesUndeleteRequest(_messages.Message):
 
 
 class IamProjectsRolesCreateRequest(_messages.Message):
-  """A IamProjectsRolesCreateRequest object.
+  r"""A IamProjectsRolesCreateRequest object.
 
   Fields:
     createRoleRequest: A CreateRoleRequest resource to be passed as the
@@ -375,7 +375,7 @@ class IamProjectsRolesCreateRequest(_messages.Message):
 
 
 class IamProjectsRolesDeleteRequest(_messages.Message):
-  """A IamProjectsRolesDeleteRequest object.
+  r"""A IamProjectsRolesDeleteRequest object.
 
   Fields:
     etag: Used to perform a consistent read-modify-write.
@@ -389,7 +389,7 @@ class IamProjectsRolesDeleteRequest(_messages.Message):
 
 
 class IamProjectsRolesGetRequest(_messages.Message):
-  """A IamProjectsRolesGetRequest object.
+  r"""A IamProjectsRolesGetRequest object.
 
   Fields:
     name: The resource name of the role in one of the following formats:
@@ -401,7 +401,7 @@ class IamProjectsRolesGetRequest(_messages.Message):
 
 
 class IamProjectsRolesListRequest(_messages.Message):
-  """A IamProjectsRolesListRequest object.
+  r"""A IamProjectsRolesListRequest object.
 
   Enums:
     ViewValueValuesEnum: Optional view for the returned Role objects.
@@ -419,7 +419,7 @@ class IamProjectsRolesListRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Optional view for the returned Role objects.
+    r"""Optional view for the returned Role objects.
 
     Values:
       BASIC: <no description>
@@ -436,7 +436,7 @@ class IamProjectsRolesListRequest(_messages.Message):
 
 
 class IamProjectsRolesPatchRequest(_messages.Message):
-  """A IamProjectsRolesPatchRequest object.
+  r"""A IamProjectsRolesPatchRequest object.
 
   Fields:
     name: The resource name of the role in one of the following formats:
@@ -452,7 +452,7 @@ class IamProjectsRolesPatchRequest(_messages.Message):
 
 
 class IamProjectsRolesUndeleteRequest(_messages.Message):
-  """A IamProjectsRolesUndeleteRequest object.
+  r"""A IamProjectsRolesUndeleteRequest object.
 
   Fields:
     name: The resource name of the role in one of the following formats:
@@ -467,7 +467,7 @@ class IamProjectsRolesUndeleteRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsCreateRequest(_messages.Message):
-  """A IamProjectsServiceAccountsCreateRequest object.
+  r"""A IamProjectsServiceAccountsCreateRequest object.
 
   Fields:
     createServiceAccountRequest: A CreateServiceAccountRequest resource to be
@@ -481,7 +481,7 @@ class IamProjectsServiceAccountsCreateRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsDeleteRequest(_messages.Message):
-  """A IamProjectsServiceAccountsDeleteRequest object.
+  r"""A IamProjectsServiceAccountsDeleteRequest object.
 
   Fields:
     name: The resource name of the service account in the following format:
@@ -495,7 +495,7 @@ class IamProjectsServiceAccountsDeleteRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsGetIamPolicyRequest(_messages.Message):
-  """A IamProjectsServiceAccountsGetIamPolicyRequest object.
+  r"""A IamProjectsServiceAccountsGetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -507,7 +507,7 @@ class IamProjectsServiceAccountsGetIamPolicyRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsGetRequest(_messages.Message):
-  """A IamProjectsServiceAccountsGetRequest object.
+  r"""A IamProjectsServiceAccountsGetRequest object.
 
   Fields:
     name: The resource name of the service account in the following format:
@@ -521,7 +521,7 @@ class IamProjectsServiceAccountsGetRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsKeysCreateRequest(_messages.Message):
-  """A IamProjectsServiceAccountsKeysCreateRequest object.
+  r"""A IamProjectsServiceAccountsKeysCreateRequest object.
 
   Fields:
     createServiceAccountKeyRequest: A CreateServiceAccountKeyRequest resource
@@ -538,7 +538,7 @@ class IamProjectsServiceAccountsKeysCreateRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
-  """A IamProjectsServiceAccountsKeysDeleteRequest object.
+  r"""A IamProjectsServiceAccountsKeysDeleteRequest object.
 
   Fields:
     name: The resource name of the service account key in the following
@@ -552,7 +552,7 @@ class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
-  """A IamProjectsServiceAccountsKeysGetRequest object.
+  r"""A IamProjectsServiceAccountsKeysGetRequest object.
 
   Enums:
     PublicKeyTypeValueValuesEnum: The output format of the public key
@@ -569,7 +569,7 @@ class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
   """
 
   class PublicKeyTypeValueValuesEnum(_messages.Enum):
-    """The output format of the public key requested. X509_PEM is the default
+    r"""The output format of the public key requested. X509_PEM is the default
     output format.
 
     Values:
@@ -586,7 +586,7 @@ class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
-  """A IamProjectsServiceAccountsKeysListRequest object.
+  r"""A IamProjectsServiceAccountsKeysListRequest object.
 
   Enums:
     KeyTypesValueValuesEnum: Filters the types of keys the user wants to
@@ -605,7 +605,7 @@ class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
   """
 
   class KeyTypesValueValuesEnum(_messages.Enum):
-    """Filters the types of keys the user wants to include in the list
+    r"""Filters the types of keys the user wants to include in the list
     response. Duplicate key types are not allowed. If no key type is provided,
     all keys are returned.
 
@@ -623,7 +623,7 @@ class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsListRequest(_messages.Message):
-  """A IamProjectsServiceAccountsListRequest object.
+  r"""A IamProjectsServiceAccountsListRequest object.
 
   Fields:
     name: Required. The resource name of the project associated with the
@@ -641,7 +641,7 @@ class IamProjectsServiceAccountsListRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsSetIamPolicyRequest(_messages.Message):
-  """A IamProjectsServiceAccountsSetIamPolicyRequest object.
+  r"""A IamProjectsServiceAccountsSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -656,7 +656,7 @@ class IamProjectsServiceAccountsSetIamPolicyRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
-  """A IamProjectsServiceAccountsSignBlobRequest object.
+  r"""A IamProjectsServiceAccountsSignBlobRequest object.
 
   Fields:
     name: The resource name of the service account in the following format:
@@ -673,7 +673,7 @@ class IamProjectsServiceAccountsSignBlobRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsSignJwtRequest(_messages.Message):
-  """A IamProjectsServiceAccountsSignJwtRequest object.
+  r"""A IamProjectsServiceAccountsSignJwtRequest object.
 
   Fields:
     name: The resource name of the service account in the following format:
@@ -690,7 +690,7 @@ class IamProjectsServiceAccountsSignJwtRequest(_messages.Message):
 
 
 class IamProjectsServiceAccountsTestIamPermissionsRequest(_messages.Message):
-  """A IamProjectsServiceAccountsTestIamPermissionsRequest object.
+  r"""A IamProjectsServiceAccountsTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -705,7 +705,7 @@ class IamProjectsServiceAccountsTestIamPermissionsRequest(_messages.Message):
 
 
 class IamRolesGetRequest(_messages.Message):
-  """A IamRolesGetRequest object.
+  r"""A IamRolesGetRequest object.
 
   Fields:
     name: The resource name of the role in one of the following formats:
@@ -717,7 +717,7 @@ class IamRolesGetRequest(_messages.Message):
 
 
 class IamRolesListRequest(_messages.Message):
-  """A IamRolesListRequest object.
+  r"""A IamRolesListRequest object.
 
   Enums:
     ViewValueValuesEnum: Optional view for the returned Role objects.
@@ -735,7 +735,7 @@ class IamRolesListRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Optional view for the returned Role objects.
+    r"""Optional view for the returned Role objects.
 
     Values:
       BASIC: <no description>
@@ -752,7 +752,7 @@ class IamRolesListRequest(_messages.Message):
 
 
 class ListRolesResponse(_messages.Message):
-  """The response containing the roles defined under a resource.
+  r"""The response containing the roles defined under a resource.
 
   Fields:
     nextPageToken: To retrieve the next page of results, set
@@ -765,7 +765,7 @@ class ListRolesResponse(_messages.Message):
 
 
 class ListServiceAccountKeysResponse(_messages.Message):
-  """The service account keys list response.
+  r"""The service account keys list response.
 
   Fields:
     keys: The public keys for the service account.
@@ -775,7 +775,7 @@ class ListServiceAccountKeysResponse(_messages.Message):
 
 
 class ListServiceAccountsResponse(_messages.Message):
-  """The service account list response.
+  r"""The service account list response.
 
   Fields:
     accounts: The list of matching service accounts.
@@ -788,7 +788,7 @@ class ListServiceAccountsResponse(_messages.Message):
 
 
 class Permission(_messages.Message):
-  """A permission which can be included by a role.
+  r"""A permission which can be included by a role.
 
   Enums:
     CustomRolesSupportLevelValueValuesEnum: The current custom role support
@@ -808,7 +808,7 @@ class Permission(_messages.Message):
   """
 
   class CustomRolesSupportLevelValueValuesEnum(_messages.Enum):
-    """The current custom role support level.
+    r"""The current custom role support level.
 
     Values:
       SUPPORTED: Permission is fully supported for custom role use.
@@ -820,7 +820,7 @@ class Permission(_messages.Message):
     NOT_SUPPORTED = 2
 
   class StageValueValuesEnum(_messages.Enum):
-    """The current launch stage of the permission.
+    r"""The current launch stage of the permission.
 
     Values:
       ALPHA: The permission is currently in an alpha phase.
@@ -843,19 +843,24 @@ class Permission(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -880,7 +885,7 @@ class Policy(_messages.Message):
 
 
 class PolicyDelta(_messages.Message):
-  """The difference delta between two policies.
+  r"""The difference delta between two policies.
 
   Fields:
     bindingDeltas: The delta for Bindings between two policies.
@@ -890,7 +895,7 @@ class PolicyDelta(_messages.Message):
 
 
 class QueryAuditableServicesRequest(_messages.Message):
-  """A request to get the list of auditable services for a resource.
+  r"""A request to get the list of auditable services for a resource.
 
   Fields:
     fullResourceName: Required. The full resource name to query from the list
@@ -904,7 +909,7 @@ class QueryAuditableServicesRequest(_messages.Message):
 
 
 class QueryAuditableServicesResponse(_messages.Message):
-  """A response containing a list of auditable services for a resource.
+  r"""A response containing a list of auditable services for a resource.
 
   Fields:
     services: The auditable services for a resource.
@@ -914,7 +919,7 @@ class QueryAuditableServicesResponse(_messages.Message):
 
 
 class QueryGrantableRolesRequest(_messages.Message):
-  """The grantable role query request.
+  r"""The grantable role query request.
 
   Enums:
     ViewValueValuesEnum:
@@ -932,7 +937,7 @@ class QueryGrantableRolesRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """ViewValueValuesEnum enum type.
+    r"""ViewValueValuesEnum enum type.
 
     Values:
       BASIC: Omits the `included_permissions` field. This is the default
@@ -949,7 +954,7 @@ class QueryGrantableRolesRequest(_messages.Message):
 
 
 class QueryGrantableRolesResponse(_messages.Message):
-  """The grantable role query response.
+  r"""The grantable role query response.
 
   Fields:
     nextPageToken: To retrieve the next page of results, set
@@ -962,7 +967,7 @@ class QueryGrantableRolesResponse(_messages.Message):
 
 
 class QueryTestablePermissionsRequest(_messages.Message):
-  """A request to get permissions which can be tested on a resource.
+  r"""A request to get permissions which can be tested on a resource.
 
   Fields:
     fullResourceName: Required. The full resource name to query from the list
@@ -982,7 +987,7 @@ class QueryTestablePermissionsRequest(_messages.Message):
 
 
 class QueryTestablePermissionsResponse(_messages.Message):
-  """The response containing permissions which can be tested on a resource.
+  r"""The response containing permissions which can be tested on a resource.
 
   Fields:
     nextPageToken: To retrieve the next page of results, set
@@ -995,7 +1000,7 @@ class QueryTestablePermissionsResponse(_messages.Message):
 
 
 class Role(_messages.Message):
-  """A role in the Identity and Access Management API.
+  r"""A role in the Identity and Access Management API.
 
   Enums:
     StageValueValuesEnum: The current launch stage of the role.
@@ -1018,7 +1023,7 @@ class Role(_messages.Message):
   """
 
   class StageValueValuesEnum(_messages.Enum):
-    """The current launch stage of the role.
+    r"""The current launch stage of the role.
 
     Values:
       ALPHA: The user has indicated this role is currently in an alpha phase.
@@ -1046,8 +1051,8 @@ class Role(_messages.Message):
 
 
 class ServiceAccount(_messages.Message):
-  """A service account in the Identity and Access Management API.  To create a
-  service account, specify the `project_id` and the `account_id` for the
+  r"""A service account in the Identity and Access Management API.  To create
+  a service account, specify the `project_id` and the `account_id` for the
   account.  The `account_id` is unique within the project, and is used to
   generate the service account email address and a stable `unique_id`.  If the
   account already exists, the account's resource name is returned in the
@@ -1088,8 +1093,8 @@ class ServiceAccount(_messages.Message):
 
 
 class ServiceAccountKey(_messages.Message):
-  """Represents a service account key.  A service account has two sets of key-
-  pairs: user-managed, and system-managed.  User-managed key-pairs can be
+  r"""Represents a service account key.  A service account has two sets of
+  key-pairs: user-managed, and system-managed.  User-managed key-pairs can be
   created and deleted by users.  Users are responsible for rotating these keys
   periodically to ensure security of their service accounts.  Users retain the
   private key of these key-pairs, and Google retains ONLY the public key.
@@ -1129,7 +1134,7 @@ class ServiceAccountKey(_messages.Message):
   """
 
   class KeyAlgorithmValueValuesEnum(_messages.Enum):
-    """Specifies the algorithm (and possibly key size) for the key.
+    r"""Specifies the algorithm (and possibly key size) for the key.
 
     Values:
       KEY_ALG_UNSPECIFIED: An unspecified key algorithm.
@@ -1141,7 +1146,7 @@ class ServiceAccountKey(_messages.Message):
     KEY_ALG_RSA_2048 = 2
 
   class PrivateKeyTypeValueValuesEnum(_messages.Enum):
-    """The output format for the private key. Only provided in
+    r"""The output format for the private key. Only provided in
     `CreateServiceAccountKey` responses, not in `GetServiceAccountKey` or
     `ListServiceAccountKey` responses.  Google never exposes system-managed
     private keys, and never retains user-managed private keys.
@@ -1168,7 +1173,7 @@ class ServiceAccountKey(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -1186,7 +1191,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class SignBlobRequest(_messages.Message):
-  """The service account sign blob request.
+  r"""The service account sign blob request.
 
   Fields:
     bytesToSign: The bytes to sign.
@@ -1196,7 +1201,7 @@ class SignBlobRequest(_messages.Message):
 
 
 class SignBlobResponse(_messages.Message):
-  """The service account sign blob response.
+  r"""The service account sign blob response.
 
   Fields:
     keyId: The id of the key used to sign the blob.
@@ -1208,7 +1213,7 @@ class SignBlobResponse(_messages.Message):
 
 
 class SignJwtRequest(_messages.Message):
-  """The service account sign JWT request.
+  r"""The service account sign JWT request.
 
   Fields:
     payload: The JWT payload to sign, a JSON JWT Claim set.
@@ -1218,7 +1223,7 @@ class SignJwtRequest(_messages.Message):
 
 
 class SignJwtResponse(_messages.Message):
-  """The service account sign JWT response.
+  r"""The service account sign JWT response.
 
   Fields:
     keyId: The id of the key used to sign the JWT.
@@ -1230,7 +1235,7 @@ class SignJwtResponse(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1259,7 +1264,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1271,7 +1276,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1297,7 +1302,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1310,7 +1315,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -1321,7 +1326,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UndeleteRoleRequest(_messages.Message):
-  """The request to undelete an existing role.
+  r"""The request to undelete an existing role.
 
   Fields:
     etag: Used to perform a consistent read-modify-write.

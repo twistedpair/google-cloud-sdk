@@ -51,7 +51,7 @@ class CloudfunctionsV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -80,7 +80,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding
@@ -125,7 +125,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Call(self, request, global_params=None):
-      """Invokes synchronously deployed function. To be used for testing, very.
+      r"""Invokes synchronously deployed function. To be used for testing, very.
 limited traffic allowed.
 
       Args:
@@ -153,7 +153,7 @@ limited traffic allowed.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a new function. If a function with the given name already exists in.
+      r"""Creates a new function. If a function with the given name already exists in.
 the specified project, the long running operation will return
 `ALREADY_EXISTS` error.
 
@@ -182,7 +182,7 @@ the specified project, the long running operation will return
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a function with the given name from the specified project. If the.
+      r"""Deletes a function with the given name from the specified project. If the.
 given function is used by some trigger, the trigger will be updated to
 remove this function.
 
@@ -211,7 +211,7 @@ remove this function.
     )
 
     def GenerateDownloadUrl(self, request, global_params=None):
-      """Returns a signed URL for downloading deployed function source code.
+      r"""Returns a signed URL for downloading deployed function source code.
 The URL is only valid for a limited period and should be used within
 minutes after generation.
 For more information about the signed URL usage see:
@@ -242,7 +242,7 @@ https://cloud.google.com/storage/docs/access-control/signed-urls
     )
 
     def GenerateUploadUrl(self, request, global_params=None):
-      """Returns a signed URL for uploading a function source code.
+      r"""Returns a signed URL for uploading a function source code.
 For more information about the signed URL usage see:
 https://cloud.google.com/storage/docs/access-control/signed-urls.
 Once the function source code upload is complete, the used signed
@@ -285,7 +285,7 @@ When making a HTTP PUT request, these two headers need to be specified:
     )
 
     def Get(self, request, global_params=None):
-      """Returns a function with the given name from the requested project.
+      r"""Returns a function with the given name from the requested project.
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsGetRequest) input message
@@ -312,7 +312,7 @@ When making a HTTP PUT request, these two headers need to be specified:
     )
 
     def List(self, request, global_params=None):
-      """Returns a list of functions that belong to the requested project.
+      r"""Returns a list of functions that belong to the requested project.
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsListRequest) input message
@@ -339,7 +339,7 @@ When making a HTTP PUT request, these two headers need to be specified:
     )
 
     def Patch(self, request, global_params=None):
-      """Updates existing function.
+      r"""Updates existing function.
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsPatchRequest) input message
@@ -376,7 +376,7 @@ When making a HTTP PUT request, these two headers need to be specified:
           }
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (CloudfunctionsProjectsLocationsListRequest) input message

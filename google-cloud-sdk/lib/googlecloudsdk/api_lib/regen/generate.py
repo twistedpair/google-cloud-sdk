@@ -193,7 +193,7 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
     for collection in resource_collections:
       if collection.name in custom_resources:
         matched_resources.add(collection.name)
-        custom_path = custom_resources[collection.name]
+        custom_path = custom_resources[collection.name]['path']
         if isinstance(custom_path, dict):
           collection.flat_paths.update(custom_path)
         elif isinstance(custom_path, basestring):
@@ -201,9 +201,11 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
               resource_generator.DEFAULT_PATH_NAME] = custom_path
     # Remaining must be new custom resources.
     for collection_name in set(custom_resources.keys()) - matched_resources:
-      collection_path = custom_resources[collection_name]
+      collection_def = custom_resources[collection_name]
+      collection_path = collection_def['path']
+      enable_uri_parsing = collection_def.get('enable_uri_parsing', True)
       collection_info = discovery_doc.MakeResourceCollection(
-          collection_name, collection_path, api_version)
+          collection_name, collection_path, enable_uri_parsing, api_version)
       resource_collections.append(collection_info)
 
   api_dir = os.path.join(base_dir, root_dir, api_name, api_version)

@@ -30,7 +30,8 @@ class Collections(enum.Enum):
           '':
               'locations/{locationsId}/operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   OPERATIONS = (
       'operations',
@@ -39,7 +40,8 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_LOCATIONS_PRODUCTSETS = (
       'projects.locations.productSets',
@@ -49,7 +51,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/productSets/'
               '{productSetsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_LOCATIONS_PRODUCTS = (
       'projects.locations.products',
@@ -59,7 +62,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/products/'
               '{productsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_LOCATIONS_PRODUCTS_REFERENCEIMAGES = (
       'projects.locations.products.referenceImages',
@@ -69,35 +73,42 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/products/'
               '{productsId}/referenceImages/{referenceImagesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   IMAGES = (
       'images',
       'images',
       {},
-      []
+      [],
+      True
   )
   LOCATIONS = (
       'locations',
       'locations/{locationsId}',
       {},
-      [u'locationsId']
+      [u'locationsId'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectsId}/locations/{locationsId}',
       {},
-      [u'projectsId', u'locationsId']
+      [u'projectsId', u'locationsId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

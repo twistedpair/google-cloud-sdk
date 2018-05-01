@@ -13,7 +13,7 @@ package = 'videointelligence'
 
 
 class GoogleCloudVideointelligenceV1AnnotateVideoProgress(_messages.Message):
-  """Video annotation progress. Included in the `metadata` field of the
+  r"""Video annotation progress. Included in the `metadata` field of the
   `Operation` returned by the `GetOperation` call of the
   `google::longrunning::Operations` service.
 
@@ -26,7 +26,7 @@ class GoogleCloudVideointelligenceV1AnnotateVideoProgress(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
-  """Video annotation request.
+  r"""Video annotation request.
 
   Enums:
     FeaturesValueListEntryValuesEnum:
@@ -58,7 +58,7 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
   """
 
   class FeaturesValueListEntryValuesEnum(_messages.Enum):
-    """FeaturesValueListEntryValuesEnum enum type.
+    r"""FeaturesValueListEntryValuesEnum enum type.
 
     Values:
       FEATURE_UNSPECIFIED: <no description>
@@ -80,7 +80,7 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1AnnotateVideoResponse(_messages.Message):
-  """Video annotation response. Included in the `response` field of the
+  r"""Video annotation response. Included in the `response` field of the
   `Operation` returned by the `GetOperation` call of the
   `google::longrunning::Operations` service.
 
@@ -93,7 +93,7 @@ class GoogleCloudVideointelligenceV1AnnotateVideoResponse(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1Entity(_messages.Message):
-  """Detected entity from video analysis.
+  r"""Detected entity from video analysis.
 
   Fields:
     description: Textual description, e.g. `Fixed-gear bicycle`.
@@ -108,7 +108,7 @@ class GoogleCloudVideointelligenceV1Entity(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1ExplicitContentAnnotation(_messages.Message):
-  """Explicit content annotation (based on per-frame visual signals only). If
+  r"""Explicit content annotation (based on per-frame visual signals only). If
   no explicit content has been detected in a frame, no annotations are present
   for that frame.
 
@@ -120,7 +120,7 @@ class GoogleCloudVideointelligenceV1ExplicitContentAnnotation(_messages.Message)
 
 
 class GoogleCloudVideointelligenceV1ExplicitContentDetectionConfig(_messages.Message):
-  """Config for EXPLICIT_CONTENT_DETECTION.
+  r"""Config for EXPLICIT_CONTENT_DETECTION.
 
   Fields:
     model: Model to use for explicit content detection. Supported values:
@@ -131,7 +131,7 @@ class GoogleCloudVideointelligenceV1ExplicitContentDetectionConfig(_messages.Mes
 
 
 class GoogleCloudVideointelligenceV1ExplicitContentFrame(_messages.Message):
-  """Video frame level annotation results for explicit content.
+  r"""Video frame level annotation results for explicit content.
 
   Enums:
     PornographyLikelihoodValueValuesEnum: Likelihood of the pornography
@@ -144,7 +144,7 @@ class GoogleCloudVideointelligenceV1ExplicitContentFrame(_messages.Message):
   """
 
   class PornographyLikelihoodValueValuesEnum(_messages.Enum):
-    """Likelihood of the pornography content..
+    r"""Likelihood of the pornography content..
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Unspecified likelihood.
@@ -166,7 +166,7 @@ class GoogleCloudVideointelligenceV1ExplicitContentFrame(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1LabelAnnotation(_messages.Message):
-  """Label annotation.
+  r"""Label annotation.
 
   Fields:
     categoryEntities: Common categories for the detected entity. E.g. when the
@@ -184,7 +184,7 @@ class GoogleCloudVideointelligenceV1LabelAnnotation(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1LabelDetectionConfig(_messages.Message):
-  """Config for LABEL_DETECTION.
+  r"""Config for LABEL_DETECTION.
 
   Enums:
     LabelDetectionModeValueValuesEnum: What labels should be detected with
@@ -203,7 +203,7 @@ class GoogleCloudVideointelligenceV1LabelDetectionConfig(_messages.Message):
   """
 
   class LabelDetectionModeValueValuesEnum(_messages.Enum):
-    """What labels should be detected with LABEL_DETECTION, in addition to
+    r"""What labels should be detected with LABEL_DETECTION, in addition to
     video-level labels or segment-level labels. If unspecified, defaults to
     `SHOT_MODE`.
 
@@ -224,7 +224,7 @@ class GoogleCloudVideointelligenceV1LabelDetectionConfig(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1LabelFrame(_messages.Message):
-  """Video frame level annotation results for label detection.
+  r"""Video frame level annotation results for label detection.
 
   Fields:
     confidence: Confidence that the label is accurate. Range: [0, 1].
@@ -237,7 +237,7 @@ class GoogleCloudVideointelligenceV1LabelFrame(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1LabelSegment(_messages.Message):
-  """Video segment level annotation results for label detection.
+  r"""Video segment level annotation results for label detection.
 
   Fields:
     confidence: Confidence that the label is accurate. Range: [0, 1].
@@ -249,7 +249,7 @@ class GoogleCloudVideointelligenceV1LabelSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1ShotChangeDetectionConfig(_messages.Message):
-  """Config for SHOT_CHANGE_DETECTION.
+  r"""Config for SHOT_CHANGE_DETECTION.
 
   Fields:
     model: Model to use for shot change detection. Supported values:
@@ -260,15 +260,15 @@ class GoogleCloudVideointelligenceV1ShotChangeDetectionConfig(_messages.Message)
 
 
 class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
-  """Annotation progress for a single video.
+  r"""Annotation progress for a single video.
 
   Fields:
-    inputUri: Video file location in [Google Cloud
+    inputUri: Output only. Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
-    progressPercent: Approximate percentage processed thus far. Guaranteed to
-      be 100 when fully processed.
-    startTime: Time when the request was received.
-    updateTime: Time of the most recent update.
+    progressPercent: Output only. Approximate percentage processed thus far.
+      Guaranteed to be 100 when fully processed.
+    startTime: Output only. Time when the request was received.
+    updateTime: Output only. Time of the most recent update.
   """
 
   inputUri = _messages.StringField(1)
@@ -278,15 +278,16 @@ class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
-  """Annotation results for a single video.
+  r"""Annotation results for a single video.
 
   Fields:
-    error: If set, indicates an error. Note that for a single
-      `AnnotateVideoRequest` some videos may succeed and some may fail.
+    error: Output only. Non-streaming error only. If set, indicates an error.
+      Note that for a single `AnnotateVideoRequest` some videos may succeed
+      and some may fail.
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Output only. Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
     segmentLabelAnnotations: Label annotations on video level or user
       specified segment level. There is exactly one element for each unique
@@ -307,14 +308,14 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
-  """Video context and/or feature-specific parameters.
+  r"""Video context and/or feature-specific parameters.
 
   Fields:
     explicitContentDetectionConfig: Config for EXPLICIT_CONTENT_DETECTION.
     labelDetectionConfig: Config for LABEL_DETECTION.
-    segments: Video segments to annotate. The segments may overlap and are not
-      required to be contiguous or span the whole video. If unspecified, each
-      video is treated as a single segment.
+    segments: Non-streaming request only. Video segments to annotate. The
+      segments may overlap and are not required to be contiguous or span the
+      whole video. If unspecified, each video is treated as a single segment.
     shotChangeDetectionConfig: Config for SHOT_CHANGE_DETECTION.
   """
 
@@ -325,7 +326,7 @@ class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1VideoSegment(_messages.Message):
-  """Video segment.
+  r"""Video segment.
 
   Fields:
     endTimeOffset: Time-offset, relative to the beginning of the video,
@@ -339,7 +340,7 @@ class GoogleCloudVideointelligenceV1VideoSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1beta1AnnotateVideoProgress(_messages.Message):
-  """Video annotation progress. Included in the `metadata` field of the
+  r"""Video annotation progress. Included in the `metadata` field of the
   `Operation` returned by the `GetOperation` call of the
   `google::longrunning::Operations` service.
 
@@ -352,7 +353,7 @@ class GoogleCloudVideointelligenceV1beta1AnnotateVideoProgress(_messages.Message
 
 
 class GoogleCloudVideointelligenceV1beta1AnnotateVideoResponse(_messages.Message):
-  """Video annotation response. Included in the `response` field of the
+  r"""Video annotation response. Included in the `response` field of the
   `Operation` returned by the `GetOperation` call of the
   `google::longrunning::Operations` service.
 
@@ -365,7 +366,7 @@ class GoogleCloudVideointelligenceV1beta1AnnotateVideoResponse(_messages.Message
 
 
 class GoogleCloudVideointelligenceV1beta1LabelAnnotation(_messages.Message):
-  """Label annotation.
+  r"""Label annotation.
 
   Fields:
     description: Textual description, e.g. `Fixed-gear bicycle`.
@@ -379,7 +380,7 @@ class GoogleCloudVideointelligenceV1beta1LabelAnnotation(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1beta1LabelLocation(_messages.Message):
-  """Label location.
+  r"""Label location.
 
   Enums:
     LevelValueValuesEnum: Label level.
@@ -394,7 +395,7 @@ class GoogleCloudVideointelligenceV1beta1LabelLocation(_messages.Message):
   """
 
   class LevelValueValuesEnum(_messages.Enum):
-    """Label level.
+    r"""Label level.
 
     Values:
       LABEL_LEVEL_UNSPECIFIED: Unspecified.
@@ -417,7 +418,7 @@ class GoogleCloudVideointelligenceV1beta1LabelLocation(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation(_messages.Message):
-  """Safe search annotation (based on per-frame visual signals only). If no
+  r"""Safe search annotation (based on per-frame visual signals only). If no
   unsafe content has been detected in a frame, no annotations are present for
   that frame. If only some types of unsafe content have been detected in a
   frame, the likelihood is set to `UNKNOWN` for all other types of unsafe
@@ -442,7 +443,7 @@ class GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation(_messages.Message)
   """
 
   class AdultValueValuesEnum(_messages.Enum):
-    """Likelihood of adult content.
+    r"""Likelihood of adult content.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -460,7 +461,7 @@ class GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation(_messages.Message)
     VERY_LIKELY = 5
 
   class MedicalValueValuesEnum(_messages.Enum):
-    """Likelihood of medical content.
+    r"""Likelihood of medical content.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -478,7 +479,7 @@ class GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation(_messages.Message)
     VERY_LIKELY = 5
 
   class RacyValueValuesEnum(_messages.Enum):
-    """Likelihood of racy content.
+    r"""Likelihood of racy content.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -496,7 +497,7 @@ class GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation(_messages.Message)
     VERY_LIKELY = 5
 
   class SpoofValueValuesEnum(_messages.Enum):
-    """Likelihood that an obvious modification was made to the original
+    r"""Likelihood that an obvious modification was made to the original
     version to make it appear funny or offensive.
 
     Values:
@@ -515,7 +516,7 @@ class GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation(_messages.Message)
     VERY_LIKELY = 5
 
   class ViolentValueValuesEnum(_messages.Enum):
-    """Likelihood of violent content.
+    r"""Likelihood of violent content.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -541,7 +542,7 @@ class GoogleCloudVideointelligenceV1beta1SafeSearchAnnotation(_messages.Message)
 
 
 class GoogleCloudVideointelligenceV1beta1VideoAnnotationProgress(_messages.Message):
-  """Annotation progress for a single video.
+  r"""Annotation progress for a single video.
 
   Fields:
     inputUri: Video file location in [Google Cloud
@@ -559,7 +560,7 @@ class GoogleCloudVideointelligenceV1beta1VideoAnnotationProgress(_messages.Messa
 
 
 class GoogleCloudVideointelligenceV1beta1VideoAnnotationResults(_messages.Message):
-  """Annotation results for a single video.
+  r"""Annotation results for a single video.
 
   Fields:
     error: If set, indicates an error. Note that for a single
@@ -581,7 +582,7 @@ class GoogleCloudVideointelligenceV1beta1VideoAnnotationResults(_messages.Messag
 
 
 class GoogleCloudVideointelligenceV1beta1VideoSegment(_messages.Message):
-  """Video segment.
+  r"""Video segment.
 
   Fields:
     endTimeOffset: End offset in microseconds (inclusive). Unset means 0.
@@ -593,7 +594,7 @@ class GoogleCloudVideointelligenceV1beta1VideoSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1beta2AnnotateVideoProgress(_messages.Message):
-  """Video annotation progress. Included in the `metadata` field of the
+  r"""Video annotation progress. Included in the `metadata` field of the
   `Operation` returned by the `GetOperation` call of the
   `google::longrunning::Operations` service.
 
@@ -606,7 +607,7 @@ class GoogleCloudVideointelligenceV1beta2AnnotateVideoProgress(_messages.Message
 
 
 class GoogleCloudVideointelligenceV1beta2AnnotateVideoResponse(_messages.Message):
-  """Video annotation response. Included in the `response` field of the
+  r"""Video annotation response. Included in the `response` field of the
   `Operation` returned by the `GetOperation` call of the
   `google::longrunning::Operations` service.
 
@@ -619,7 +620,7 @@ class GoogleCloudVideointelligenceV1beta2AnnotateVideoResponse(_messages.Message
 
 
 class GoogleCloudVideointelligenceV1beta2Entity(_messages.Message):
-  """Detected entity from video analysis.
+  r"""Detected entity from video analysis.
 
   Fields:
     description: Textual description, e.g. `Fixed-gear bicycle`.
@@ -634,7 +635,7 @@ class GoogleCloudVideointelligenceV1beta2Entity(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1beta2ExplicitContentAnnotation(_messages.Message):
-  """Explicit content annotation (based on per-frame visual signals only). If
+  r"""Explicit content annotation (based on per-frame visual signals only). If
   no explicit content has been detected in a frame, no annotations are present
   for that frame.
 
@@ -646,7 +647,7 @@ class GoogleCloudVideointelligenceV1beta2ExplicitContentAnnotation(_messages.Mes
 
 
 class GoogleCloudVideointelligenceV1beta2ExplicitContentFrame(_messages.Message):
-  """Video frame level annotation results for explicit content.
+  r"""Video frame level annotation results for explicit content.
 
   Enums:
     PornographyLikelihoodValueValuesEnum: Likelihood of the pornography
@@ -659,7 +660,7 @@ class GoogleCloudVideointelligenceV1beta2ExplicitContentFrame(_messages.Message)
   """
 
   class PornographyLikelihoodValueValuesEnum(_messages.Enum):
-    """Likelihood of the pornography content..
+    r"""Likelihood of the pornography content..
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Unspecified likelihood.
@@ -681,7 +682,7 @@ class GoogleCloudVideointelligenceV1beta2ExplicitContentFrame(_messages.Message)
 
 
 class GoogleCloudVideointelligenceV1beta2LabelAnnotation(_messages.Message):
-  """Label annotation.
+  r"""Label annotation.
 
   Fields:
     categoryEntities: Common categories for the detected entity. E.g. when the
@@ -699,7 +700,7 @@ class GoogleCloudVideointelligenceV1beta2LabelAnnotation(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1beta2LabelFrame(_messages.Message):
-  """Video frame level annotation results for label detection.
+  r"""Video frame level annotation results for label detection.
 
   Fields:
     confidence: Confidence that the label is accurate. Range: [0, 1].
@@ -712,7 +713,7 @@ class GoogleCloudVideointelligenceV1beta2LabelFrame(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1beta2LabelSegment(_messages.Message):
-  """Video segment level annotation results for label detection.
+  r"""Video segment level annotation results for label detection.
 
   Fields:
     confidence: Confidence that the label is accurate. Range: [0, 1].
@@ -724,15 +725,15 @@ class GoogleCloudVideointelligenceV1beta2LabelSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Message):
-  """Annotation progress for a single video.
+  r"""Annotation progress for a single video.
 
   Fields:
-    inputUri: Video file location in [Google Cloud
+    inputUri: Output only. Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
-    progressPercent: Approximate percentage processed thus far. Guaranteed to
-      be 100 when fully processed.
-    startTime: Time when the request was received.
-    updateTime: Time of the most recent update.
+    progressPercent: Output only. Approximate percentage processed thus far.
+      Guaranteed to be 100 when fully processed.
+    startTime: Output only. Time when the request was received.
+    updateTime: Output only. Time of the most recent update.
   """
 
   inputUri = _messages.StringField(1)
@@ -742,15 +743,16 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Messa
 
 
 class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Message):
-  """Annotation results for a single video.
+  r"""Annotation results for a single video.
 
   Fields:
-    error: If set, indicates an error. Note that for a single
-      `AnnotateVideoRequest` some videos may succeed and some may fail.
+    error: Output only. Non-streaming error only. If set, indicates an error.
+      Note that for a single `AnnotateVideoRequest` some videos may succeed
+      and some may fail.
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Output only. Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
     segmentLabelAnnotations: Label annotations on video level or user
       specified segment level. There is exactly one element for each unique
@@ -771,7 +773,7 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
 
 
 class GoogleCloudVideointelligenceV1beta2VideoSegment(_messages.Message):
-  """Video segment.
+  r"""Video segment.
 
   Fields:
     endTimeOffset: Time-offset, relative to the beginning of the video,
@@ -785,7 +787,7 @@ class GoogleCloudVideointelligenceV1beta2VideoSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p1beta1AnnotateVideoProgress(_messages.Message):
-  """Video annotation progress. Included in the `metadata` field of the
+  r"""Video annotation progress. Included in the `metadata` field of the
   `Operation` returned by the `GetOperation` call of the
   `google::longrunning::Operations` service.
 
@@ -798,7 +800,7 @@ class GoogleCloudVideointelligenceV1p1beta1AnnotateVideoProgress(_messages.Messa
 
 
 class GoogleCloudVideointelligenceV1p1beta1AnnotateVideoResponse(_messages.Message):
-  """Video annotation response. Included in the `response` field of the
+  r"""Video annotation response. Included in the `response` field of the
   `Operation` returned by the `GetOperation` call of the
   `google::longrunning::Operations` service.
 
@@ -811,7 +813,7 @@ class GoogleCloudVideointelligenceV1p1beta1AnnotateVideoResponse(_messages.Messa
 
 
 class GoogleCloudVideointelligenceV1p1beta1EmotionAttribute(_messages.Message):
-  """Emotion attribute.
+  r"""Emotion attribute.
 
   Enums:
     EmotionValueValuesEnum: Emotion entry.
@@ -822,7 +824,7 @@ class GoogleCloudVideointelligenceV1p1beta1EmotionAttribute(_messages.Message):
   """
 
   class EmotionValueValuesEnum(_messages.Enum):
-    """Emotion entry.
+    r"""Emotion entry.
 
     Values:
       EMOTION_UNSPECIFIED: Unspecified emotion.
@@ -860,7 +862,7 @@ class GoogleCloudVideointelligenceV1p1beta1EmotionAttribute(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p1beta1Entity(_messages.Message):
-  """Detected entity from video analysis.
+  r"""Detected entity from video analysis.
 
   Fields:
     description: Textual description, e.g. `Fixed-gear bicycle`.
@@ -875,7 +877,7 @@ class GoogleCloudVideointelligenceV1p1beta1Entity(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p1beta1ExplicitContentAnnotation(_messages.Message):
-  """Explicit content annotation (based on per-frame visual signals only). If
+  r"""Explicit content annotation (based on per-frame visual signals only). If
   no explicit content has been detected in a frame, no annotations are present
   for that frame.
 
@@ -887,7 +889,7 @@ class GoogleCloudVideointelligenceV1p1beta1ExplicitContentAnnotation(_messages.M
 
 
 class GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame(_messages.Message):
-  """Video frame level annotation results for explicit content.
+  r"""Video frame level annotation results for explicit content.
 
   Enums:
     PornographyLikelihoodValueValuesEnum: Likelihood of the pornography
@@ -900,7 +902,7 @@ class GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame(_messages.Messag
   """
 
   class PornographyLikelihoodValueValuesEnum(_messages.Enum):
-    """Likelihood of the pornography content..
+    r"""Likelihood of the pornography content..
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Unspecified likelihood.
@@ -922,7 +924,7 @@ class GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame(_messages.Messag
 
 
 class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation(_messages.Message):
-  """Face detection annotation.
+  r"""Face detection annotation.
 
   Fields:
     frames: All video frames where a face was detected.
@@ -934,7 +936,7 @@ class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation(_messages.Mes
 
 
 class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAttribute(_messages.Message):
-  """Face detection attribute.
+  r"""Face detection attribute.
 
   Fields:
     emotions: Emotion attributes.
@@ -946,7 +948,7 @@ class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAttribute(_messages.Mess
 
 
 class GoogleCloudVideointelligenceV1p1beta1FaceDetectionFrame(_messages.Message):
-  """Video frame level annotation results for face detection.
+  r"""Video frame level annotation results for face detection.
 
   Fields:
     attributes: Face attributes in a frame. There can be more than one
@@ -961,7 +963,7 @@ class GoogleCloudVideointelligenceV1p1beta1FaceDetectionFrame(_messages.Message)
 
 
 class GoogleCloudVideointelligenceV1p1beta1FaceSegment(_messages.Message):
-  """Video segment level annotation results for face detection.
+  r"""Video segment level annotation results for face detection.
 
   Fields:
     segment: Video segment where a face was detected.
@@ -971,7 +973,7 @@ class GoogleCloudVideointelligenceV1p1beta1FaceSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p1beta1LabelAnnotation(_messages.Message):
-  """Label annotation.
+  r"""Label annotation.
 
   Fields:
     categoryEntities: Common categories for the detected entity. E.g. when the
@@ -989,7 +991,7 @@ class GoogleCloudVideointelligenceV1p1beta1LabelAnnotation(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p1beta1LabelFrame(_messages.Message):
-  """Video frame level annotation results for label detection.
+  r"""Video frame level annotation results for label detection.
 
   Fields:
     confidence: Confidence that the label is accurate. Range: [0, 1].
@@ -1002,7 +1004,7 @@ class GoogleCloudVideointelligenceV1p1beta1LabelFrame(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p1beta1LabelSegment(_messages.Message):
-  """Video segment level annotation results for label detection.
+  r"""Video segment level annotation results for label detection.
 
   Fields:
     confidence: Confidence that the label is accurate. Range: [0, 1].
@@ -1014,7 +1016,7 @@ class GoogleCloudVideointelligenceV1p1beta1LabelSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingBox(_messages.Message):
-  """Normalized bounding box. The normalized vertex coordinates are relative
+  r"""Normalized bounding box. The normalized vertex coordinates are relative
   to the original image. Range: [0, 1].
 
   Fields:
@@ -1031,7 +1033,7 @@ class GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingBox(_messages.Messa
 
 
 class GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative(_messages.Message):
-  """Alternative hypotheses (a.k.a. n-best list).
+  r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
     confidence: Output only. The confidence estimate between 0.0 and 1.0. A
@@ -1053,7 +1055,7 @@ class GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative(_message
 
 
 class GoogleCloudVideointelligenceV1p1beta1SpeechTranscription(_messages.Message):
-  """A speech recognition result corresponding to a portion of the audio.
+  r"""A speech recognition result corresponding to a portion of the audio.
 
   Fields:
     alternatives: Output only. May contain one or more recognition hypotheses
@@ -1066,15 +1068,15 @@ class GoogleCloudVideointelligenceV1p1beta1SpeechTranscription(_messages.Message
 
 
 class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Message):
-  """Annotation progress for a single video.
+  r"""Annotation progress for a single video.
 
   Fields:
-    inputUri: Video file location in [Google Cloud
+    inputUri: Output only. Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
-    progressPercent: Approximate percentage processed thus far. Guaranteed to
-      be 100 when fully processed.
-    startTime: Time when the request was received.
-    updateTime: Time of the most recent update.
+    progressPercent: Output only. Approximate percentage processed thus far.
+      Guaranteed to be 100 when fully processed.
+    startTime: Output only. Time when the request was received.
+    updateTime: Output only. Time of the most recent update.
   """
 
   inputUri = _messages.StringField(1)
@@ -1084,16 +1086,17 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Mes
 
 
 class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Message):
-  """Annotation results for a single video.
+  r"""Annotation results for a single video.
 
   Fields:
-    error: If set, indicates an error. Note that for a single
-      `AnnotateVideoRequest` some videos may succeed and some may fail.
+    error: Output only. Non-streaming error only. If set, indicates an error.
+      Note that for a single `AnnotateVideoRequest` some videos may succeed
+      and some may fail.
     explicitAnnotation: Explicit content annotation.
     faceDetectionAnnotations: Face detection annotations.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Video file location in [Google Cloud
+    inputUri: Output only. Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
     segmentLabelAnnotations: Label annotations on video level or user
       specified segment level. There is exactly one element for each unique
@@ -1117,7 +1120,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
 
 
 class GoogleCloudVideointelligenceV1p1beta1VideoSegment(_messages.Message):
-  """Video segment.
+  r"""Video segment.
 
   Fields:
     endTimeOffset: Time-offset, relative to the beginning of the video,
@@ -1131,7 +1134,7 @@ class GoogleCloudVideointelligenceV1p1beta1VideoSegment(_messages.Message):
 
 
 class GoogleCloudVideointelligenceV1p1beta1WordInfo(_messages.Message):
-  """Word-specific information for recognized words. Word information is only
+  r"""Word-specific information for recognized words. Word information is only
   included in the response when certain request parameters are set, such as
   `enable_word_time_offsets`.
 
@@ -1154,11 +1157,11 @@ class GoogleCloudVideointelligenceV1p1beta1WordInfo(_messages.Message):
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
-  """The request message for Operations.CancelOperation."""
+  r"""The request message for Operations.CancelOperation."""
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -1171,8 +1174,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
 
 
 class GoogleLongrunningOperation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -1213,7 +1216,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -1227,7 +1230,7 @@ class GoogleLongrunningOperation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1241,7 +1244,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -1258,7 +1261,7 @@ class GoogleLongrunningOperation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1278,7 +1281,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
 
 class GoogleProtobufEmpty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -1288,7 +1291,7 @@ class GoogleProtobufEmpty(_messages.Message):
 
 
 class GoogleRpcStatus(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -1336,7 +1339,7 @@ class GoogleRpcStatus(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1348,7 +1351,7 @@ class GoogleRpcStatus(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1366,7 +1369,7 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1395,7 +1398,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1407,7 +1410,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1433,7 +1436,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class VideointelligenceOperationsCancelRequest(_messages.Message):
-  """A VideointelligenceOperationsCancelRequest object.
+  r"""A VideointelligenceOperationsCancelRequest object.
 
   Fields:
     googleLongrunningCancelOperationRequest: A
@@ -1447,7 +1450,7 @@ class VideointelligenceOperationsCancelRequest(_messages.Message):
 
 
 class VideointelligenceOperationsDeleteRequest(_messages.Message):
-  """A VideointelligenceOperationsDeleteRequest object.
+  r"""A VideointelligenceOperationsDeleteRequest object.
 
   Fields:
     name: The name of the operation resource to be deleted.
@@ -1457,7 +1460,7 @@ class VideointelligenceOperationsDeleteRequest(_messages.Message):
 
 
 class VideointelligenceOperationsGetRequest(_messages.Message):
-  """A VideointelligenceOperationsGetRequest object.
+  r"""A VideointelligenceOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -1467,7 +1470,7 @@ class VideointelligenceOperationsGetRequest(_messages.Message):
 
 
 class VideointelligenceOperationsListRequest(_messages.Message):
-  """A VideointelligenceOperationsListRequest object.
+  r"""A VideointelligenceOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.

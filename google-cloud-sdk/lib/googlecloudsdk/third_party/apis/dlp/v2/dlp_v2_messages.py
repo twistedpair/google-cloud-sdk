@@ -15,7 +15,7 @@ package = 'dlp'
 
 
 class DlpInfoTypesListRequest(_messages.Message):
-  """A DlpInfoTypesListRequest object.
+  r"""A DlpInfoTypesListRequest object.
 
   Fields:
     filter: Optional filter to only return infoTypes supported by certain
@@ -30,7 +30,7 @@ class DlpInfoTypesListRequest(_messages.Message):
 
 
 class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
-  """A DlpOrganizationsDeidentifyTemplatesCreateRequest object.
+  r"""A DlpOrganizationsDeidentifyTemplatesCreateRequest object.
 
   Fields:
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
@@ -45,7 +45,7 @@ class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
 
 
 class DlpOrganizationsDeidentifyTemplatesDeleteRequest(_messages.Message):
-  """A DlpOrganizationsDeidentifyTemplatesDeleteRequest object.
+  r"""A DlpOrganizationsDeidentifyTemplatesDeleteRequest object.
 
   Fields:
     name: Resource name of the organization and deidentify template to be
@@ -58,7 +58,7 @@ class DlpOrganizationsDeidentifyTemplatesDeleteRequest(_messages.Message):
 
 
 class DlpOrganizationsDeidentifyTemplatesGetRequest(_messages.Message):
-  """A DlpOrganizationsDeidentifyTemplatesGetRequest object.
+  r"""A DlpOrganizationsDeidentifyTemplatesGetRequest object.
 
   Fields:
     name: Resource name of the organization and deidentify template to be
@@ -71,7 +71,7 @@ class DlpOrganizationsDeidentifyTemplatesGetRequest(_messages.Message):
 
 
 class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
-  """A DlpOrganizationsDeidentifyTemplatesListRequest object.
+  r"""A DlpOrganizationsDeidentifyTemplatesListRequest object.
 
   Fields:
     pageSize: Optional size of the page, can be limited by server. If zero
@@ -88,7 +88,7 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
 
 
 class DlpOrganizationsDeidentifyTemplatesPatchRequest(_messages.Message):
-  """A DlpOrganizationsDeidentifyTemplatesPatchRequest object.
+  r"""A DlpOrganizationsDeidentifyTemplatesPatchRequest object.
 
   Fields:
     googlePrivacyDlpV2UpdateDeidentifyTemplateRequest: A
@@ -104,7 +104,7 @@ class DlpOrganizationsDeidentifyTemplatesPatchRequest(_messages.Message):
 
 
 class DlpOrganizationsInspectTemplatesCreateRequest(_messages.Message):
-  """A DlpOrganizationsInspectTemplatesCreateRequest object.
+  r"""A DlpOrganizationsInspectTemplatesCreateRequest object.
 
   Fields:
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
@@ -119,7 +119,7 @@ class DlpOrganizationsInspectTemplatesCreateRequest(_messages.Message):
 
 
 class DlpOrganizationsInspectTemplatesDeleteRequest(_messages.Message):
-  """A DlpOrganizationsInspectTemplatesDeleteRequest object.
+  r"""A DlpOrganizationsInspectTemplatesDeleteRequest object.
 
   Fields:
     name: Resource name of the organization and inspectTemplate to be deleted,
@@ -131,7 +131,7 @@ class DlpOrganizationsInspectTemplatesDeleteRequest(_messages.Message):
 
 
 class DlpOrganizationsInspectTemplatesGetRequest(_messages.Message):
-  """A DlpOrganizationsInspectTemplatesGetRequest object.
+  r"""A DlpOrganizationsInspectTemplatesGetRequest object.
 
   Fields:
     name: Resource name of the organization and inspectTemplate to be read,
@@ -143,7 +143,7 @@ class DlpOrganizationsInspectTemplatesGetRequest(_messages.Message):
 
 
 class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
-  """A DlpOrganizationsInspectTemplatesListRequest object.
+  r"""A DlpOrganizationsInspectTemplatesListRequest object.
 
   Fields:
     pageSize: Optional size of the page, can be limited by server. If zero
@@ -160,7 +160,7 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
 
 
 class DlpOrganizationsInspectTemplatesPatchRequest(_messages.Message):
-  """A DlpOrganizationsInspectTemplatesPatchRequest object.
+  r"""A DlpOrganizationsInspectTemplatesPatchRequest object.
 
   Fields:
     googlePrivacyDlpV2UpdateInspectTemplateRequest: A
@@ -176,7 +176,7 @@ class DlpOrganizationsInspectTemplatesPatchRequest(_messages.Message):
 
 
 class DlpProjectsContentDeidentifyRequest(_messages.Message):
-  """A DlpProjectsContentDeidentifyRequest object.
+  r"""A DlpProjectsContentDeidentifyRequest object.
 
   Fields:
     googlePrivacyDlpV2DeidentifyContentRequest: A
@@ -190,7 +190,7 @@ class DlpProjectsContentDeidentifyRequest(_messages.Message):
 
 
 class DlpProjectsContentInspectRequest(_messages.Message):
-  """A DlpProjectsContentInspectRequest object.
+  r"""A DlpProjectsContentInspectRequest object.
 
   Fields:
     googlePrivacyDlpV2InspectContentRequest: A
@@ -204,7 +204,7 @@ class DlpProjectsContentInspectRequest(_messages.Message):
 
 
 class DlpProjectsContentReidentifyRequest(_messages.Message):
-  """A DlpProjectsContentReidentifyRequest object.
+  r"""A DlpProjectsContentReidentifyRequest object.
 
   Fields:
     googlePrivacyDlpV2ReidentifyContentRequest: A
@@ -218,7 +218,7 @@ class DlpProjectsContentReidentifyRequest(_messages.Message):
 
 
 class DlpProjectsDeidentifyTemplatesCreateRequest(_messages.Message):
-  """A DlpProjectsDeidentifyTemplatesCreateRequest object.
+  r"""A DlpProjectsDeidentifyTemplatesCreateRequest object.
 
   Fields:
     googlePrivacyDlpV2CreateDeidentifyTemplateRequest: A
@@ -233,7 +233,7 @@ class DlpProjectsDeidentifyTemplatesCreateRequest(_messages.Message):
 
 
 class DlpProjectsDeidentifyTemplatesDeleteRequest(_messages.Message):
-  """A DlpProjectsDeidentifyTemplatesDeleteRequest object.
+  r"""A DlpProjectsDeidentifyTemplatesDeleteRequest object.
 
   Fields:
     name: Resource name of the organization and deidentify template to be
@@ -246,7 +246,7 @@ class DlpProjectsDeidentifyTemplatesDeleteRequest(_messages.Message):
 
 
 class DlpProjectsDeidentifyTemplatesGetRequest(_messages.Message):
-  """A DlpProjectsDeidentifyTemplatesGetRequest object.
+  r"""A DlpProjectsDeidentifyTemplatesGetRequest object.
 
   Fields:
     name: Resource name of the organization and deidentify template to be
@@ -259,7 +259,7 @@ class DlpProjectsDeidentifyTemplatesGetRequest(_messages.Message):
 
 
 class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
-  """A DlpProjectsDeidentifyTemplatesListRequest object.
+  r"""A DlpProjectsDeidentifyTemplatesListRequest object.
 
   Fields:
     pageSize: Optional size of the page, can be limited by server. If zero
@@ -276,7 +276,7 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
 
 
 class DlpProjectsDeidentifyTemplatesPatchRequest(_messages.Message):
-  """A DlpProjectsDeidentifyTemplatesPatchRequest object.
+  r"""A DlpProjectsDeidentifyTemplatesPatchRequest object.
 
   Fields:
     googlePrivacyDlpV2UpdateDeidentifyTemplateRequest: A
@@ -292,7 +292,7 @@ class DlpProjectsDeidentifyTemplatesPatchRequest(_messages.Message):
 
 
 class DlpProjectsDlpJobsCancelRequest(_messages.Message):
-  """A DlpProjectsDlpJobsCancelRequest object.
+  r"""A DlpProjectsDlpJobsCancelRequest object.
 
   Fields:
     googlePrivacyDlpV2CancelDlpJobRequest: A
@@ -306,7 +306,7 @@ class DlpProjectsDlpJobsCancelRequest(_messages.Message):
 
 
 class DlpProjectsDlpJobsCreateRequest(_messages.Message):
-  """A DlpProjectsDlpJobsCreateRequest object.
+  r"""A DlpProjectsDlpJobsCreateRequest object.
 
   Fields:
     googlePrivacyDlpV2CreateDlpJobRequest: A
@@ -320,7 +320,7 @@ class DlpProjectsDlpJobsCreateRequest(_messages.Message):
 
 
 class DlpProjectsDlpJobsDeleteRequest(_messages.Message):
-  """A DlpProjectsDlpJobsDeleteRequest object.
+  r"""A DlpProjectsDlpJobsDeleteRequest object.
 
   Fields:
     name: The name of the DlpJob resource to be deleted.
@@ -330,7 +330,7 @@ class DlpProjectsDlpJobsDeleteRequest(_messages.Message):
 
 
 class DlpProjectsDlpJobsGetRequest(_messages.Message):
-  """A DlpProjectsDlpJobsGetRequest object.
+  r"""A DlpProjectsDlpJobsGetRequest object.
 
   Fields:
     name: The name of the DlpJob resource.
@@ -340,7 +340,7 @@ class DlpProjectsDlpJobsGetRequest(_messages.Message):
 
 
 class DlpProjectsDlpJobsListRequest(_messages.Message):
-  """A DlpProjectsDlpJobsListRequest object.
+  r"""A DlpProjectsDlpJobsListRequest object.
 
   Enums:
     TypeValueValuesEnum: The type of job. Defaults to `DlpJobType.INSPECT`
@@ -367,7 +367,7 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of job. Defaults to `DlpJobType.INSPECT`
+    r"""The type of job. Defaults to `DlpJobType.INSPECT`
 
     Values:
       DLP_JOB_TYPE_UNSPECIFIED: <no description>
@@ -386,7 +386,7 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
 
 
 class DlpProjectsImageRedactRequest(_messages.Message):
-  """A DlpProjectsImageRedactRequest object.
+  r"""A DlpProjectsImageRedactRequest object.
 
   Fields:
     googlePrivacyDlpV2RedactImageRequest: A
@@ -400,7 +400,7 @@ class DlpProjectsImageRedactRequest(_messages.Message):
 
 
 class DlpProjectsInspectTemplatesCreateRequest(_messages.Message):
-  """A DlpProjectsInspectTemplatesCreateRequest object.
+  r"""A DlpProjectsInspectTemplatesCreateRequest object.
 
   Fields:
     googlePrivacyDlpV2CreateInspectTemplateRequest: A
@@ -415,7 +415,7 @@ class DlpProjectsInspectTemplatesCreateRequest(_messages.Message):
 
 
 class DlpProjectsInspectTemplatesDeleteRequest(_messages.Message):
-  """A DlpProjectsInspectTemplatesDeleteRequest object.
+  r"""A DlpProjectsInspectTemplatesDeleteRequest object.
 
   Fields:
     name: Resource name of the organization and inspectTemplate to be deleted,
@@ -427,7 +427,7 @@ class DlpProjectsInspectTemplatesDeleteRequest(_messages.Message):
 
 
 class DlpProjectsInspectTemplatesGetRequest(_messages.Message):
-  """A DlpProjectsInspectTemplatesGetRequest object.
+  r"""A DlpProjectsInspectTemplatesGetRequest object.
 
   Fields:
     name: Resource name of the organization and inspectTemplate to be read,
@@ -439,7 +439,7 @@ class DlpProjectsInspectTemplatesGetRequest(_messages.Message):
 
 
 class DlpProjectsInspectTemplatesListRequest(_messages.Message):
-  """A DlpProjectsInspectTemplatesListRequest object.
+  r"""A DlpProjectsInspectTemplatesListRequest object.
 
   Fields:
     pageSize: Optional size of the page, can be limited by server. If zero
@@ -456,7 +456,7 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
 
 
 class DlpProjectsInspectTemplatesPatchRequest(_messages.Message):
-  """A DlpProjectsInspectTemplatesPatchRequest object.
+  r"""A DlpProjectsInspectTemplatesPatchRequest object.
 
   Fields:
     googlePrivacyDlpV2UpdateInspectTemplateRequest: A
@@ -472,7 +472,7 @@ class DlpProjectsInspectTemplatesPatchRequest(_messages.Message):
 
 
 class DlpProjectsJobTriggersCreateRequest(_messages.Message):
-  """A DlpProjectsJobTriggersCreateRequest object.
+  r"""A DlpProjectsJobTriggersCreateRequest object.
 
   Fields:
     googlePrivacyDlpV2CreateJobTriggerRequest: A
@@ -486,7 +486,7 @@ class DlpProjectsJobTriggersCreateRequest(_messages.Message):
 
 
 class DlpProjectsJobTriggersDeleteRequest(_messages.Message):
-  """A DlpProjectsJobTriggersDeleteRequest object.
+  r"""A DlpProjectsJobTriggersDeleteRequest object.
 
   Fields:
     name: Resource name of the project and the triggeredJob, for example
@@ -497,7 +497,7 @@ class DlpProjectsJobTriggersDeleteRequest(_messages.Message):
 
 
 class DlpProjectsJobTriggersGetRequest(_messages.Message):
-  """A DlpProjectsJobTriggersGetRequest object.
+  r"""A DlpProjectsJobTriggersGetRequest object.
 
   Fields:
     name: Resource name of the project and the triggeredJob, for example
@@ -508,7 +508,7 @@ class DlpProjectsJobTriggersGetRequest(_messages.Message):
 
 
 class DlpProjectsJobTriggersListRequest(_messages.Message):
-  """A DlpProjectsJobTriggersListRequest object.
+  r"""A DlpProjectsJobTriggersListRequest object.
 
   Fields:
     orderBy: Optional comma separated list of triggeredJob fields to order by,
@@ -533,7 +533,7 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
 
 
 class DlpProjectsJobTriggersPatchRequest(_messages.Message):
-  """A DlpProjectsJobTriggersPatchRequest object.
+  r"""A DlpProjectsJobTriggersPatchRequest object.
 
   Fields:
     googlePrivacyDlpV2UpdateJobTriggerRequest: A
@@ -548,19 +548,22 @@ class DlpProjectsJobTriggersPatchRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2Action(_messages.Message):
-  """A task to execute on the completion of a job.
+  r"""A task to execute on the completion of a job.
 
   Fields:
     pubSub: Publish a notification to a pubsub topic.
+    publishSummaryToCscc: Publish summary to Cloud Security Command Center
+      (Alpha).
     saveFindings: Save resulting findings in a provided location.
   """
 
   pubSub = _messages.MessageField('GooglePrivacyDlpV2PublishToPubSub', 1)
-  saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 2)
+  publishSummaryToCscc = _messages.MessageField('GooglePrivacyDlpV2PublishSummaryToCscc', 2)
+  saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 3)
 
 
 class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
-  """Result of a risk analysis operation request.
+  r"""Result of a risk analysis operation request.
 
   Fields:
     categoricalStatsResult: A GooglePrivacyDlpV2CategoricalStatsResult
@@ -583,7 +586,7 @@ class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
 
 
 class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
-  """An auxiliary table contains statistical information on the relative
+  r"""An auxiliary table contains statistical information on the relative
   frequency of different quasi-identifiers values. It has one or several
   quasi-identifiers columns, and one column that indicates the relative
   frequency of each quasi-identifier tuple. If a tuple is present in the data
@@ -604,7 +607,7 @@ class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
 
 
 class GooglePrivacyDlpV2BigQueryKey(_messages.Message):
-  """Row key for identifying a record in BigQuery table.
+  r"""Row key for identifying a record in BigQuery table.
 
   Fields:
     rowNumber: Absolute number of the row from the beginning of the table at
@@ -617,7 +620,7 @@ class GooglePrivacyDlpV2BigQueryKey(_messages.Message):
 
 
 class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
-  """Options defining BigQuery table and row identifiers.
+  r"""Options defining BigQuery table and row identifiers.
 
   Fields:
     identifyingFields: References to fields uniquely identifying rows within
@@ -636,7 +639,7 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
-  """Message defining the location of a BigQuery table. A table is uniquely
+  r"""Message defining the location of a BigQuery table. A table is uniquely
   identified  by its project_id, dataset_id, and table_name. Within a query a
   table is often referenced with a string in the format of:
   `<project_id>:<dataset_id>.<table_id>` or
@@ -655,7 +658,7 @@ class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
 
 
 class GooglePrivacyDlpV2BoundingBox(_messages.Message):
-  """Bounding box encompassing detected text within an image.
+  r"""Bounding box encompassing detected text within an image.
 
   Fields:
     height: Height of the bounding box in pixels.
@@ -671,7 +674,7 @@ class GooglePrivacyDlpV2BoundingBox(_messages.Message):
 
 
 class GooglePrivacyDlpV2Bucket(_messages.Message):
-  """Bucket is represented as a range, along with replacement values.
+  r"""Bucket is represented as a range, along with replacement values.
 
   Fields:
     max: Upper bound of the range, exclusive; type must match min.
@@ -687,7 +690,7 @@ class GooglePrivacyDlpV2Bucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2BucketingConfig(_messages.Message):
-  """Generalization function that buckets values based on ranges. The ranges
+  r"""Generalization function that buckets values based on ranges. The ranges
   and replacement values are dynamically provided by the user for custom
   behavior, such as 1-30 -> LOW 31-65 -> MEDIUM 66-100 -> HIGH This can be
   used on data of type: number, long, string, timestamp. If the bound `Value`
@@ -703,7 +706,7 @@ class GooglePrivacyDlpV2BucketingConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
-  """Container for bytes to inspect or redact.
+  r"""Container for bytes to inspect or redact.
 
   Enums:
     TypeValueValuesEnum: The type of data stored in the bytes string. Default
@@ -716,7 +719,8 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of data stored in the bytes string. Default will be TEXT_UTF8.
+    r"""The type of data stored in the bytes string. Default will be
+    TEXT_UTF8.
 
     Values:
       BYTES_TYPE_UNSPECIFIED: <no description>
@@ -740,11 +744,11 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
 
 
 class GooglePrivacyDlpV2CancelDlpJobRequest(_messages.Message):
-  """The request message for canceling a DLP job."""
+  r"""The request message for canceling a DLP job."""
 
 
 class GooglePrivacyDlpV2CategoricalStatsConfig(_messages.Message):
-  """Compute numerical stats over an individual column, including number of
+  r"""Compute numerical stats over an individual column, including number of
   distinct values and value count distribution.
 
   Fields:
@@ -758,7 +762,7 @@ class GooglePrivacyDlpV2CategoricalStatsConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2CategoricalStatsHistogramBucket(_messages.Message):
-  """A GooglePrivacyDlpV2CategoricalStatsHistogramBucket object.
+  r"""A GooglePrivacyDlpV2CategoricalStatsHistogramBucket object.
 
   Fields:
     bucketSize: Total number of values in this bucket.
@@ -779,7 +783,7 @@ class GooglePrivacyDlpV2CategoricalStatsHistogramBucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2CategoricalStatsResult(_messages.Message):
-  """Result of the categorical stats computation.
+  r"""Result of the categorical stats computation.
 
   Fields:
     valueFrequencyHistogramBuckets: Histogram of value frequencies in the
@@ -790,7 +794,7 @@ class GooglePrivacyDlpV2CategoricalStatsResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2CharacterMaskConfig(_messages.Message):
-  """Partially mask a string by replacing a given number of characters with a
+  r"""Partially mask a string by replacing a given number of characters with a
   fixed character. Masking can start from the beginning or end of the string.
   This can be used on data of any type (numbers, longs, and so on) and when
   de-identifying structured data we'll attempt to preserve the original data's
@@ -822,7 +826,7 @@ class GooglePrivacyDlpV2CharacterMaskConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2CharsToIgnore(_messages.Message):
-  """Characters to skip when doing deidentification of a value. These will be
+  r"""Characters to skip when doing deidentification of a value. These will be
   left alone and skipped.
 
   Enums:
@@ -835,7 +839,7 @@ class GooglePrivacyDlpV2CharsToIgnore(_messages.Message):
   """
 
   class CommonCharactersToIgnoreValueValuesEnum(_messages.Enum):
-    """CommonCharactersToIgnoreValueValuesEnum enum type.
+    r"""CommonCharactersToIgnoreValueValuesEnum enum type.
 
     Values:
       COMMON_CHARS_TO_IGNORE_UNSPECIFIED: <no description>
@@ -857,7 +861,7 @@ class GooglePrivacyDlpV2CharsToIgnore(_messages.Message):
 
 
 class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
-  """Options defining a file or a set of files (path ending with *) within a
+  r"""Options defining a file or a set of files (path ending with *) within a
   Google Cloud Storage bucket.
 
   Enums:
@@ -873,7 +877,7 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
   """
 
   class FileTypesValueListEntryValuesEnum(_messages.Enum):
-    """FileTypesValueListEntryValuesEnum enum type.
+    r"""FileTypesValueListEntryValuesEnum enum type.
 
     Values:
       FILE_TYPE_UNSPECIFIED: <no description>
@@ -889,8 +893,19 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
   fileTypes = _messages.EnumField('FileTypesValueListEntryValuesEnum', 3, repeated=True)
 
 
+class GooglePrivacyDlpV2CloudStoragePath(_messages.Message):
+  r"""Message representing a path in Cloud Storage.
+
+  Fields:
+    path: A url representing a file or path (no wildcards) in Cloud Storage.
+      Example: gs://[BUCKET_NAME]/dictionary.txt
+  """
+
+  path = _messages.StringField(1)
+
+
 class GooglePrivacyDlpV2Color(_messages.Message):
-  """Represents a color in the RGB color space.
+  r"""Represents a color in the RGB color space.
 
   Fields:
     blue: The amount of blue in the color as a value in the interval [0, 1].
@@ -904,7 +919,7 @@ class GooglePrivacyDlpV2Color(_messages.Message):
 
 
 class GooglePrivacyDlpV2Condition(_messages.Message):
-  """The field type of `value` and `field` do not need to match to be
+  r"""The field type of `value` and `field` do not need to match to be
   considered equal, but not all comparisons are possible.  A `value` of type:
   - `string` can be compared against all other types - `boolean` can only be
   compared against other booleans - `integer` can be compared against doubles
@@ -928,7 +943,8 @@ class GooglePrivacyDlpV2Condition(_messages.Message):
   """
 
   class OperatorValueValuesEnum(_messages.Enum):
-    """Operator used to compare the field or infoType to the value. [required]
+    r"""Operator used to compare the field or infoType to the value.
+    [required]
 
     Values:
       RELATIONAL_OPERATOR_UNSPECIFIED: <no description>
@@ -955,7 +971,7 @@ class GooglePrivacyDlpV2Condition(_messages.Message):
 
 
 class GooglePrivacyDlpV2Conditions(_messages.Message):
-  """A collection of conditions.
+  r"""A collection of conditions.
 
   Fields:
     conditions: A GooglePrivacyDlpV2Condition attribute.
@@ -965,7 +981,7 @@ class GooglePrivacyDlpV2Conditions(_messages.Message):
 
 
 class GooglePrivacyDlpV2ContentItem(_messages.Message):
-  """Container structure for the content to inspect.
+  r"""Container structure for the content to inspect.
 
   Fields:
     byteItem: Content data to inspect or redact. Replaces `type` and `data`.
@@ -979,7 +995,7 @@ class GooglePrivacyDlpV2ContentItem(_messages.Message):
 
 
 class GooglePrivacyDlpV2ContentLocation(_messages.Message):
-  """Findings container location data.
+  r"""Findings container location data.
 
   Fields:
     containerName: Name of the container where the finding is located. The top
@@ -1006,7 +1022,7 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
 
 
 class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
-  """Request message for CreateDeidentifyTemplate.
+  r"""Request message for CreateDeidentifyTemplate.
 
   Fields:
     deidentifyTemplate: The DeidentifyTemplate to create.
@@ -1021,7 +1037,7 @@ class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2CreateDlpJobRequest(_messages.Message):
-  """Request message for CreateDlpJobRequest. Used to initiate long running
+  r"""Request message for CreateDlpJobRequest. Used to initiate long running
   jobs such as calculating risk metrics or inspecting Google Cloud Storage.
 
   Fields:
@@ -1039,7 +1055,7 @@ class GooglePrivacyDlpV2CreateDlpJobRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2CreateInspectTemplateRequest(_messages.Message):
-  """Request message for CreateInspectTemplate.
+  r"""Request message for CreateInspectTemplate.
 
   Fields:
     inspectTemplate: The InspectTemplate to create.
@@ -1054,7 +1070,7 @@ class GooglePrivacyDlpV2CreateInspectTemplateRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2CreateJobTriggerRequest(_messages.Message):
-  """Request message for CreateJobTrigger.
+  r"""Request message for CreateJobTrigger.
 
   Fields:
     jobTrigger: The JobTrigger to create.
@@ -1069,7 +1085,7 @@ class GooglePrivacyDlpV2CreateJobTriggerRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2CryptoHashConfig(_messages.Message):
-  """Pseudonymization method that generates surrogates via cryptographic
+  r"""Pseudonymization method that generates surrogates via cryptographic
   hashing. Uses SHA-256. The key size must be either 32 or 64 bytes. Outputs a
   32 byte digest as an uppercase hex string (for example,
   41D1567F7F99F1DC2A5FAB886DEE5BEE). Currently, only string and integer values
@@ -1083,7 +1099,7 @@ class GooglePrivacyDlpV2CryptoHashConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2CryptoKey(_messages.Message):
-  """This is a data encryption key (DEK) (as opposed to a key encryption key
+  r"""This is a data encryption key (DEK) (as opposed to a key encryption key
   (KEK) stored by KMS). When using KMS to wrap/unwrap DEKs, be sure to set an
   appropriate IAM policy on the KMS CryptoKey (KEK) to ensure an attacker
   cannot unwrap the data crypto key.
@@ -1100,7 +1116,7 @@ class GooglePrivacyDlpV2CryptoKey(_messages.Message):
 
 
 class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
-  """Replaces an identifier with a surrogate using FPE with the FFX mode of
+  r"""Replaces an identifier with a surrogate using FPE with the FFX mode of
   operation; however when used in the `ReidentifyContent` API method, it
   serves the opposite function by reversing the surrogate back into the
   original identifier. The identifier must be encoded as ASCII. For a given
@@ -1157,7 +1173,7 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
   """
 
   class CommonAlphabetValueValuesEnum(_messages.Enum):
-    """CommonAlphabetValueValuesEnum enum type.
+    r"""CommonAlphabetValueValuesEnum enum type.
 
     Values:
       FFX_COMMON_NATIVE_ALPHABET_UNSPECIFIED: <no description>
@@ -1181,7 +1197,7 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
-  """Custom information type provided by the user. Used to find domain-
+  r"""Custom information type provided by the user. Used to find domain-
   specific sensitive information configurable to the data in question.
 
   Enums:
@@ -1207,7 +1223,7 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   """
 
   class LikelihoodValueValuesEnum(_messages.Enum):
-    """Likelihood to return for this custom info type. This base value can be
+    r"""Likelihood to return for this custom info type. This base value can be
     altered by a detection rule if the finding meets the criteria specified by
     the rule. Defaults to `VERY_LIKELY` if not specified.
 
@@ -1236,7 +1252,7 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
 
 
 class GooglePrivacyDlpV2DatastoreKey(_messages.Message):
-  """Record key for a finding in Cloud Datastore.
+  r"""Record key for a finding in Cloud Datastore.
 
   Fields:
     entityKey: Datastore entity key.
@@ -1246,7 +1262,7 @@ class GooglePrivacyDlpV2DatastoreKey(_messages.Message):
 
 
 class GooglePrivacyDlpV2DatastoreOptions(_messages.Message):
-  """Options defining a data set within Google Cloud Datastore.
+  r"""Options defining a data set within Google Cloud Datastore.
 
   Fields:
     kind: The kind to process.
@@ -1260,7 +1276,7 @@ class GooglePrivacyDlpV2DatastoreOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2DateShiftConfig(_messages.Message):
-  """Shifts dates by random number of days, with option to be consistent for
+  r"""Shifts dates by random number of days, with option to be consistent for
   the same context.
 
   Fields:
@@ -1286,7 +1302,7 @@ class GooglePrivacyDlpV2DateShiftConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2DateTime(_messages.Message):
-  """Message for a date time object.
+  r"""Message for a date time object.
 
   Enums:
     DayOfWeekValueValuesEnum:
@@ -1300,7 +1316,7 @@ class GooglePrivacyDlpV2DateTime(_messages.Message):
   """
 
   class DayOfWeekValueValuesEnum(_messages.Enum):
-    """DayOfWeekValueValuesEnum enum type.
+    r"""DayOfWeekValueValuesEnum enum type.
 
     Values:
       DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
@@ -1328,7 +1344,7 @@ class GooglePrivacyDlpV2DateTime(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeidentifyConfig(_messages.Message):
-  """The configuration that controls how the data will change.
+  r"""The configuration that controls how the data will change.
 
   Fields:
     infoTypeTransformations: Treat the dataset as free-form text and apply the
@@ -1343,7 +1359,7 @@ class GooglePrivacyDlpV2DeidentifyConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
-  """Request to de-identify a list of items.
+  r"""Request to de-identify a list of items.
 
   Fields:
     deidentifyConfig: Configuration for the de-identification of the content
@@ -1372,7 +1388,7 @@ class GooglePrivacyDlpV2DeidentifyContentRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeidentifyContentResponse(_messages.Message):
-  """Results of de-identifying a ContentItem.
+  r"""Results of de-identifying a ContentItem.
 
   Fields:
     item: The de-identified item.
@@ -1384,7 +1400,7 @@ class GooglePrivacyDlpV2DeidentifyContentResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
-  """The DeidentifyTemplates contains instructions on how to deidentify
+  r"""The DeidentifyTemplates contains instructions on how to deidentify
   content.
 
   Fields:
@@ -1410,7 +1426,7 @@ class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
 
 
 class GooglePrivacyDlpV2DetectionRule(_messages.Message):
-  """Rule for modifying a custom info type to alter behavior under certain
+  r"""Rule for modifying a custom info type to alter behavior under certain
   circumstances, depending on the specific details of the rule. Not supported
   for the `surrogate_type` custom info type.
 
@@ -1422,7 +1438,7 @@ class GooglePrivacyDlpV2DetectionRule(_messages.Message):
 
 
 class GooglePrivacyDlpV2Dictionary(_messages.Message):
-  """Custom information type based on a dictionary of words or phrases. This
+  r"""Custom information type based on a dictionary of words or phrases. This
   can be used to match sensitive information specific to the data, such as a
   list of employee IDs or job titles.  Dictionary words are case-insensitive
   and all characters other than letters and digits in the unicode [Basic
@@ -1439,14 +1455,17 @@ class GooglePrivacyDlpV2Dictionary(_messages.Message):
   because such characters are treated as whitespace.
 
   Fields:
+    cloudStoragePath: Newline-delimited file of words in Cloud Storage. Only a
+      single file is accepted.
     wordList: List of words or phrases to search for.
   """
 
-  wordList = _messages.MessageField('GooglePrivacyDlpV2WordList', 1)
+  cloudStoragePath = _messages.MessageField('GooglePrivacyDlpV2CloudStoragePath', 1)
+  wordList = _messages.MessageField('GooglePrivacyDlpV2WordList', 2)
 
 
 class GooglePrivacyDlpV2DlpJob(_messages.Message):
-  """Combines all of the information about a DLP job.
+  r"""Combines all of the information about a DLP job.
 
   Enums:
     StateValueValuesEnum: State of a job.
@@ -1467,7 +1486,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """State of a job.
+    r"""State of a job.
 
     Values:
       JOB_STATE_UNSPECIFIED: <no description>
@@ -1485,7 +1504,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     FAILED = 5
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of job.
+    r"""The type of job.
 
     Values:
       DLP_JOB_TYPE_UNSPECIFIED: <no description>
@@ -1509,7 +1528,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
 
 
 class GooglePrivacyDlpV2DocumentLocation(_messages.Message):
-  """Location of a finding within a document.
+  r"""Location of a finding within a document.
 
   Fields:
     fileOffset: Offset of the line, from the beginning of the file, where the
@@ -1519,8 +1538,23 @@ class GooglePrivacyDlpV2DocumentLocation(_messages.Message):
   fileOffset = _messages.IntegerField(1)
 
 
+class GooglePrivacyDlpV2EntityId(_messages.Message):
+  r"""An entity in a dataset is a field or set of fields that correspond to a
+  single person. For example, in medical records the `EntityId` might be a
+  patient identifier, or for financial records it might be an account
+  identifier. This message is used when generalizations or analysis must take
+  into account that multiple rows correspond to the same entity.
+
+  Fields:
+    field: Composite key indicating which field contains the entity
+      identifier.
+  """
+
+  field = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1)
+
+
 class GooglePrivacyDlpV2Error(_messages.Message):
-  """Details information about an error encountered during job execution or
+  r"""Details information about an error encountered during job execution or
   the results of an unsuccessful activation of the JobTrigger. Output only
   field.
 
@@ -1534,7 +1568,7 @@ class GooglePrivacyDlpV2Error(_messages.Message):
 
 
 class GooglePrivacyDlpV2Expressions(_messages.Message):
-  """An expression, consisting or an operator and conditions.
+  r"""An expression, consisting or an operator and conditions.
 
   Enums:
     LogicalOperatorValueValuesEnum: The operator to apply to the result of
@@ -1547,7 +1581,7 @@ class GooglePrivacyDlpV2Expressions(_messages.Message):
   """
 
   class LogicalOperatorValueValuesEnum(_messages.Enum):
-    """The operator to apply to the result of conditions. Default and
+    r"""The operator to apply to the result of conditions. Default and
     currently only supported value is `AND`.
 
     Values:
@@ -1562,7 +1596,7 @@ class GooglePrivacyDlpV2Expressions(_messages.Message):
 
 
 class GooglePrivacyDlpV2FieldId(_messages.Message):
-  """General identifier of a data field in a storage service.
+  r"""General identifier of a data field in a storage service.
 
   Fields:
     name: Name describing the field.
@@ -1572,7 +1606,7 @@ class GooglePrivacyDlpV2FieldId(_messages.Message):
 
 
 class GooglePrivacyDlpV2FieldTransformation(_messages.Message):
-  """The transformation to apply to the field.
+  r"""The transformation to apply to the field.
 
   Fields:
     condition: Only apply the transformation if the condition evaluates to
@@ -1595,7 +1629,7 @@ class GooglePrivacyDlpV2FieldTransformation(_messages.Message):
 
 
 class GooglePrivacyDlpV2FileSet(_messages.Message):
-  """Set of files to scan.
+  r"""Set of files to scan.
 
   Fields:
     url: The url, in the format `gs://<bucket>/<path>`. Trailing wildcard in
@@ -1606,7 +1640,7 @@ class GooglePrivacyDlpV2FileSet(_messages.Message):
 
 
 class GooglePrivacyDlpV2Finding(_messages.Message):
-  """Represents a piece of potentially sensitive content.
+  r"""Represents a piece of potentially sensitive content.
 
   Enums:
     LikelihoodValueValuesEnum: Estimate of how likely it is that the
@@ -1629,7 +1663,7 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
   """
 
   class LikelihoodValueValuesEnum(_messages.Enum):
-    """Estimate of how likely it is that the `info_type` is correct.
+    r"""Estimate of how likely it is that the `info_type` is correct.
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; information with all likelihoods
@@ -1656,7 +1690,7 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
 
 
 class GooglePrivacyDlpV2FindingLimits(_messages.Message):
-  """A GooglePrivacyDlpV2FindingLimits object.
+  r"""A GooglePrivacyDlpV2FindingLimits object.
 
   Fields:
     maxFindingsPerInfoType: Configuration of findings limit given for
@@ -1676,7 +1710,7 @@ class GooglePrivacyDlpV2FindingLimits(_messages.Message):
 
 
 class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
-  """Buckets values based on fixed size ranges. The Bucketing transformation
+  r"""Buckets values based on fixed size ranges. The Bucketing transformation
   can provide all of this functionality, but requires more configuration. This
   message is provided as a convenience to the user for simple bucketing
   strategies.  The transformed value will be a hyphenated string of
@@ -1709,7 +1743,7 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2HotwordRule(_messages.Message):
-  """Detection rule that adjusts the likelihood of findings within a certain
+  r"""Detection rule that adjusts the likelihood of findings within a certain
   proximity of hotwords.
 
   Fields:
@@ -1732,7 +1766,7 @@ class GooglePrivacyDlpV2HotwordRule(_messages.Message):
 
 
 class GooglePrivacyDlpV2ImageLocation(_messages.Message):
-  """Location of the finding within an image.
+  r"""Location of the finding within an image.
 
   Fields:
     boundingBoxes: Bounding boxes locating the pixels within the image
@@ -1743,7 +1777,7 @@ class GooglePrivacyDlpV2ImageLocation(_messages.Message):
 
 
 class GooglePrivacyDlpV2ImageRedactionConfig(_messages.Message):
-  """Configuration for determining how redaction of images should occur.
+  r"""Configuration for determining how redaction of images should occur.
 
   Fields:
     infoType: Only one per info_type should be provided per request. If not
@@ -1762,7 +1796,7 @@ class GooglePrivacyDlpV2ImageRedactionConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2InfoType(_messages.Message):
-  """Type of information detected by the API.
+  r"""Type of information detected by the API.
 
   Fields:
     name: Name of the information type.
@@ -1772,7 +1806,7 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
 
 
 class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
-  """InfoType description.
+  r"""InfoType description.
 
   Enums:
     SupportedByValueListEntryValuesEnum:
@@ -1784,7 +1818,7 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
   """
 
   class SupportedByValueListEntryValuesEnum(_messages.Enum):
-    """SupportedByValueListEntryValuesEnum enum type.
+    r"""SupportedByValueListEntryValuesEnum enum type.
 
     Values:
       ENUM_TYPE_UNSPECIFIED: <no description>
@@ -1801,8 +1835,8 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
 
 
 class GooglePrivacyDlpV2InfoTypeLimit(_messages.Message):
-  """Max findings configuration per infoType, per content item or long running
-  DlpJob.
+  r"""Max findings configuration per infoType, per content item or long
+  running DlpJob.
 
   Fields:
     infoType: Type of information the findings limit applies to. Only one
@@ -1817,7 +1851,7 @@ class GooglePrivacyDlpV2InfoTypeLimit(_messages.Message):
 
 
 class GooglePrivacyDlpV2InfoTypeStats(_messages.Message):
-  """Statistics regarding a specific InfoType.
+  r"""Statistics regarding a specific InfoType.
 
   Fields:
     count: Number of findings for this infoType.
@@ -1829,7 +1863,7 @@ class GooglePrivacyDlpV2InfoTypeStats(_messages.Message):
 
 
 class GooglePrivacyDlpV2InfoTypeTransformation(_messages.Message):
-  """A transformation to apply to text that is identified as a specific
+  r"""A transformation to apply to text that is identified as a specific
   info_type.
 
   Fields:
@@ -1844,7 +1878,7 @@ class GooglePrivacyDlpV2InfoTypeTransformation(_messages.Message):
 
 
 class GooglePrivacyDlpV2InfoTypeTransformations(_messages.Message):
-  """A type of transformation that will scan unstructured text and apply
+  r"""A type of transformation that will scan unstructured text and apply
   various `PrimitiveTransformation`s to each finding, where the transformation
   is applied to only values that were identified as a specific info_type.
 
@@ -1857,7 +1891,7 @@ class GooglePrivacyDlpV2InfoTypeTransformations(_messages.Message):
 
 
 class GooglePrivacyDlpV2InspectConfig(_messages.Message):
-  """Configuration description of the scanning process. When used with
+  r"""Configuration description of the scanning process. When used with
   redactContent only info_types and min_likelihood are currently used.
 
   Enums:
@@ -1881,7 +1915,7 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
   """
 
   class ContentOptionsValueListEntryValuesEnum(_messages.Enum):
-    """ContentOptionsValueListEntryValuesEnum enum type.
+    r"""ContentOptionsValueListEntryValuesEnum enum type.
 
     Values:
       CONTENT_UNSPECIFIED: <no description>
@@ -1893,7 +1927,7 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
     CONTENT_IMAGE = 2
 
   class MinLikelihoodValueValuesEnum(_messages.Enum):
-    """Only returns findings equal or above this threshold. The default is
+    r"""Only returns findings equal or above this threshold. The default is
     POSSIBLE.
 
     Values:
@@ -1922,7 +1956,7 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2InspectContentRequest(_messages.Message):
-  """Request to search for potentially sensitive info in a ContentItem.
+  r"""Request to search for potentially sensitive info in a ContentItem.
 
   Fields:
     inspectConfig: Configuration for the inspector. What specified here will
@@ -1941,7 +1975,7 @@ class GooglePrivacyDlpV2InspectContentRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2InspectContentResponse(_messages.Message):
-  """Results of inspecting an item.
+  r"""Results of inspecting an item.
 
   Fields:
     result: The findings.
@@ -1951,7 +1985,7 @@ class GooglePrivacyDlpV2InspectContentResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2InspectDataSourceDetails(_messages.Message):
-  """The results of an inspect DataSource job.
+  r"""The results of an inspect DataSource job.
 
   Fields:
     requestedOptions: The configuration used for this job.
@@ -1963,7 +1997,7 @@ class GooglePrivacyDlpV2InspectDataSourceDetails(_messages.Message):
 
 
 class GooglePrivacyDlpV2InspectJobConfig(_messages.Message):
-  """A GooglePrivacyDlpV2InspectJobConfig object.
+  r"""A GooglePrivacyDlpV2InspectJobConfig object.
 
   Fields:
     actions: Actions to execute at the completion of the job. Are executed in
@@ -1982,7 +2016,7 @@ class GooglePrivacyDlpV2InspectJobConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2InspectResult(_messages.Message):
-  """All the findings for a single scanned item.
+  r"""All the findings for a single scanned item.
 
   Fields:
     findings: List of findings for an item.
@@ -1999,7 +2033,7 @@ class GooglePrivacyDlpV2InspectResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
-  """The inspectTemplate contains a configuration (set of types of sensitive
+  r"""The inspectTemplate contains a configuration (set of types of sensitive
   data to be detected) to be used anywhere you otherwise would normally
   specify InspectConfig.
 
@@ -2026,7 +2060,7 @@ class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
 
 
 class GooglePrivacyDlpV2JobTrigger(_messages.Message):
-  """Contains a configuration to make dlp api calls on a repeating basis.
+  r"""Contains a configuration to make dlp api calls on a repeating basis.
 
   Enums:
     StatusValueValuesEnum: A status for this trigger. [required]
@@ -2054,7 +2088,7 @@ class GooglePrivacyDlpV2JobTrigger(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """A status for this trigger. [required]
+    r"""A status for this trigger. [required]
 
     Values:
       STATUS_UNSPECIFIED: <no description>
@@ -2080,9 +2114,18 @@ class GooglePrivacyDlpV2JobTrigger(_messages.Message):
 
 
 class GooglePrivacyDlpV2KAnonymityConfig(_messages.Message):
-  """k-anonymity metric, used for analysis of reidentification risk.
+  r"""k-anonymity metric, used for analysis of reidentification risk.
 
   Fields:
+    entityId: Optional message indicating that multiple rows might be
+      associated to a single individual. If the same entity_id is associated
+      to multiple quasi-identifier tuples over distict rows, we consider the
+      entire collection of tuples as the composite quasi-identifier. This
+      collection is a multiset: the order in which the different tuples appear
+      in the dataset is ignored, but their frequency is taken into account.
+      Important note: a maximum of 1000 rows can be associated to a single
+      entity ID. If more rows are associated with the same entity ID, some
+      might be ignored.
     quasiIds: Set of fields to compute k-anonymity over. When multiple fields
       are specified, they are considered a single composite key. Structs and
       repeated data types are not supported; however, nested fields are
@@ -2090,11 +2133,12 @@ class GooglePrivacyDlpV2KAnonymityConfig(_messages.Message):
       repeated field.
   """
 
-  quasiIds = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
+  entityId = _messages.MessageField('GooglePrivacyDlpV2EntityId', 1)
+  quasiIds = _messages.MessageField('GooglePrivacyDlpV2FieldId', 2, repeated=True)
 
 
 class GooglePrivacyDlpV2KAnonymityEquivalenceClass(_messages.Message):
-  """The set of columns' values that share the same ldiversity value
+  r"""The set of columns' values that share the same ldiversity value
 
   Fields:
     equivalenceClassSize: Size of the equivalence class, for example number of
@@ -2109,7 +2153,7 @@ class GooglePrivacyDlpV2KAnonymityEquivalenceClass(_messages.Message):
 
 
 class GooglePrivacyDlpV2KAnonymityHistogramBucket(_messages.Message):
-  """A GooglePrivacyDlpV2KAnonymityHistogramBucket object.
+  r"""A GooglePrivacyDlpV2KAnonymityHistogramBucket object.
 
   Fields:
     bucketSize: Total number of equivalence classes in this bucket.
@@ -2131,7 +2175,7 @@ class GooglePrivacyDlpV2KAnonymityHistogramBucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2KAnonymityResult(_messages.Message):
-  """Result of the k-anonymity computation.
+  r"""Result of the k-anonymity computation.
 
   Fields:
     equivalenceClassHistogramBuckets: Histogram of k-anonymity equivalence
@@ -2142,7 +2186,7 @@ class GooglePrivacyDlpV2KAnonymityResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2KMapEstimationConfig(_messages.Message):
-  """Reidentifiability metric. This corresponds to a risk model similar to
+  r"""Reidentifiability metric. This corresponds to a risk model similar to
   what is called "journalist risk" in the literature, except the attack
   dataset is statistically modeled instead of being perfectly known. This can
   be done using publicly available data (like the US Census), or using a
@@ -2166,7 +2210,7 @@ class GooglePrivacyDlpV2KMapEstimationConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2KMapEstimationHistogramBucket(_messages.Message):
-  """A KMapEstimationHistogramBucket message with the following values:
+  r"""A KMapEstimationHistogramBucket message with the following values:
   min_anonymity: 3   max_anonymity: 5   frequency: 42 means that there are 42
   records whose quasi-identifier values correspond to 3, 4 or 5 people in the
   overlying population. An important particular case is when min_anonymity =
@@ -2191,7 +2235,7 @@ class GooglePrivacyDlpV2KMapEstimationHistogramBucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2KMapEstimationQuasiIdValues(_messages.Message):
-  """A tuple of values for the quasi-identifier columns.
+  r"""A tuple of values for the quasi-identifier columns.
 
   Fields:
     estimatedAnonymity: The estimated anonymity for these quasi-identifier
@@ -2204,7 +2248,7 @@ class GooglePrivacyDlpV2KMapEstimationQuasiIdValues(_messages.Message):
 
 
 class GooglePrivacyDlpV2KMapEstimationResult(_messages.Message):
-  """Result of the reidentifiability analysis. Note that these results are an
+  r"""Result of the reidentifiability analysis. Note that these results are an
   estimation, not exact values.
 
   Fields:
@@ -2221,7 +2265,7 @@ class GooglePrivacyDlpV2KMapEstimationResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2Key(_messages.Message):
-  """A unique identifier for a Datastore entity. If a key's partition ID or
+  r"""A unique identifier for a Datastore entity. If a key's partition ID or
   any of its path kinds or names are reserved/read-only, the key is reserved
   /read-only. A reserved/read-only key is forbidden in certain documented
   contexts.
@@ -2245,7 +2289,7 @@ class GooglePrivacyDlpV2Key(_messages.Message):
 
 
 class GooglePrivacyDlpV2KindExpression(_messages.Message):
-  """A representation of a Datastore kind.
+  r"""A representation of a Datastore kind.
 
   Fields:
     name: The name of the kind.
@@ -2255,7 +2299,7 @@ class GooglePrivacyDlpV2KindExpression(_messages.Message):
 
 
 class GooglePrivacyDlpV2KmsWrappedCryptoKey(_messages.Message):
-  """Include to use an existing data crypto key wrapped by KMS. Authorization
+  r"""Include to use an existing data crypto key wrapped by KMS. Authorization
   requires the following IAM permissions when sending a request to perform a
   crypto transformation using a kms-wrapped crypto key: dlp.kms.encrypt
 
@@ -2270,7 +2314,7 @@ class GooglePrivacyDlpV2KmsWrappedCryptoKey(_messages.Message):
 
 
 class GooglePrivacyDlpV2LDiversityConfig(_messages.Message):
-  """l-diversity metric, used for analysis of reidentification risk.
+  r"""l-diversity metric, used for analysis of reidentification risk.
 
   Fields:
     quasiIds: Set of quasi-identifiers indicating how equivalence classes are
@@ -2284,7 +2328,7 @@ class GooglePrivacyDlpV2LDiversityConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2LDiversityEquivalenceClass(_messages.Message):
-  """The set of columns' values that share the same ldiversity value.
+  r"""The set of columns' values that share the same ldiversity value.
 
   Fields:
     equivalenceClassSize: Size of the k-anonymity equivalence class.
@@ -2302,7 +2346,7 @@ class GooglePrivacyDlpV2LDiversityEquivalenceClass(_messages.Message):
 
 
 class GooglePrivacyDlpV2LDiversityHistogramBucket(_messages.Message):
-  """A GooglePrivacyDlpV2LDiversityHistogramBucket object.
+  r"""A GooglePrivacyDlpV2LDiversityHistogramBucket object.
 
   Fields:
     bucketSize: Total number of equivalence classes in this bucket.
@@ -2324,7 +2368,7 @@ class GooglePrivacyDlpV2LDiversityHistogramBucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2LDiversityResult(_messages.Message):
-  """Result of the l-diversity computation.
+  r"""Result of the l-diversity computation.
 
   Fields:
     sensitiveValueFrequencyHistogramBuckets: Histogram of l-diversity
@@ -2335,7 +2379,7 @@ class GooglePrivacyDlpV2LDiversityResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
-  """Message for specifying an adjustment to the likelihood of a finding as
+  r"""Message for specifying an adjustment to the likelihood of a finding as
   part of a detection rule.
 
   Enums:
@@ -2355,7 +2399,7 @@ class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
   """
 
   class FixedLikelihoodValueValuesEnum(_messages.Enum):
-    """Set the likelihood of a finding to a fixed value.
+    r"""Set the likelihood of a finding to a fixed value.
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; information with all likelihoods
@@ -2378,7 +2422,7 @@ class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
 
 
 class GooglePrivacyDlpV2ListDeidentifyTemplatesResponse(_messages.Message):
-  """Response message for ListDeidentifyTemplates.
+  r"""Response message for ListDeidentifyTemplates.
 
   Fields:
     deidentifyTemplates: List of deidentify templates, up to page_size in
@@ -2392,7 +2436,7 @@ class GooglePrivacyDlpV2ListDeidentifyTemplatesResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2ListDlpJobsResponse(_messages.Message):
-  """The response message for listing DLP jobs.
+  r"""The response message for listing DLP jobs.
 
   Fields:
     jobs: A list of DlpJobs that matches the specified filter in the request.
@@ -2404,7 +2448,7 @@ class GooglePrivacyDlpV2ListDlpJobsResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2ListInfoTypesResponse(_messages.Message):
-  """Response to the ListInfoTypes request.
+  r"""Response to the ListInfoTypes request.
 
   Fields:
     infoTypes: Set of sensitive infoTypes.
@@ -2414,7 +2458,7 @@ class GooglePrivacyDlpV2ListInfoTypesResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2ListInspectTemplatesResponse(_messages.Message):
-  """Response message for ListInspectTemplates.
+  r"""Response message for ListInspectTemplates.
 
   Fields:
     inspectTemplates: List of inspectTemplates, up to page_size in
@@ -2428,7 +2472,7 @@ class GooglePrivacyDlpV2ListInspectTemplatesResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2ListJobTriggersResponse(_messages.Message):
-  """Response message for ListJobTriggers.
+  r"""Response message for ListJobTriggers.
 
   Fields:
     jobTriggers: List of triggeredJobs, up to page_size in
@@ -2442,7 +2486,7 @@ class GooglePrivacyDlpV2ListJobTriggersResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2Location(_messages.Message):
-  """Specifies the location of the finding.
+  r"""Specifies the location of the finding.
 
   Fields:
     byteRange: Zero-based byte offsets delimiting the finding. These are
@@ -2462,7 +2506,7 @@ class GooglePrivacyDlpV2Location(_messages.Message):
 
 
 class GooglePrivacyDlpV2NumericalStatsConfig(_messages.Message):
-  """Compute numerical stats over an individual column, including min, max,
+  r"""Compute numerical stats over an individual column, including min, max,
   and quantiles.
 
   Fields:
@@ -2474,7 +2518,7 @@ class GooglePrivacyDlpV2NumericalStatsConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2NumericalStatsResult(_messages.Message):
-  """Result of the numerical stats computation.
+  r"""Result of the numerical stats computation.
 
   Fields:
     maxValue: Maximum value appearing in the column.
@@ -2489,7 +2533,7 @@ class GooglePrivacyDlpV2NumericalStatsResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
-  """Cloud repository for storing output.
+  r"""Cloud repository for storing output.
 
   Enums:
     OutputSchemaValueValuesEnum: Schema used for writing the findings. Columns
@@ -2515,7 +2559,7 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
   """
 
   class OutputSchemaValueValuesEnum(_messages.Enum):
-    """Schema used for writing the findings. Columns are derived from the
+    r"""Schema used for writing the findings. Columns are derived from the
     `Finding` object. If appending to an existing table, any columns from the
     predefined schema that are missing will be added. No columns in the
     existing table will be deleted.  If unspecified, then all available
@@ -2546,10 +2590,10 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2PartitionId(_messages.Message):
-  """Datastore partition ID. A partition ID identifies a grouping of entities.
-  The grouping is always by project and namespace, however the namespace ID
-  may be empty.  A partition ID contains several dimensions: project ID and
-  namespace ID.
+  r"""Datastore partition ID. A partition ID identifies a grouping of
+  entities. The grouping is always by project and namespace, however the
+  namespace ID may be empty.  A partition ID contains several dimensions:
+  project ID and namespace ID.
 
   Fields:
     namespaceId: If not empty, the ID of the namespace to which the entities
@@ -2562,7 +2606,7 @@ class GooglePrivacyDlpV2PartitionId(_messages.Message):
 
 
 class GooglePrivacyDlpV2PathElement(_messages.Message):
-  """A (kind, ID/name) pair used to construct a key path.  If either name or
+  r"""A (kind, ID/name) pair used to construct a key path.  If either name or
   ID is set, the element is complete. If neither is set, the element is
   incomplete.
 
@@ -2583,7 +2627,7 @@ class GooglePrivacyDlpV2PathElement(_messages.Message):
 
 
 class GooglePrivacyDlpV2PrimitiveTransformation(_messages.Message):
-  """A rule for transforming a value.
+  r"""A rule for transforming a value.
 
   Fields:
     bucketingConfig: A GooglePrivacyDlpV2BucketingConfig attribute.
@@ -2614,7 +2658,7 @@ class GooglePrivacyDlpV2PrimitiveTransformation(_messages.Message):
 
 
 class GooglePrivacyDlpV2PrivacyMetric(_messages.Message):
-  """Privacy metric to compute for reidentification risk analysis.
+  r"""Privacy metric to compute for reidentification risk analysis.
 
   Fields:
     categoricalStatsConfig: A GooglePrivacyDlpV2CategoricalStatsConfig
@@ -2633,7 +2677,7 @@ class GooglePrivacyDlpV2PrivacyMetric(_messages.Message):
 
 
 class GooglePrivacyDlpV2Proximity(_messages.Message):
-  """Message for specifying a window around a finding to apply a detection
+  r"""Message for specifying a window around a finding to apply a detection
   rule.
 
   Fields:
@@ -2645,8 +2689,21 @@ class GooglePrivacyDlpV2Proximity(_messages.Message):
   windowBefore = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
+  r"""Publish the result summary of a DlpJob to the Cloud Security Command
+  Center (CSCC Alpha). This action is only available for projects which are
+  parts of an organization and whitelisted for the alpha Cloud Security
+  Command Center. The action will publish count of finding instances and their
+  info types. The summary of findings will be persisted in CSCC and are
+  governed by CSCC service-specific policy, see https://cloud.google.com/terms
+  /service-terms Only a single instance of this action can be specified.
+  Compatible with: Inspect
+  """
+
+
+
 class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
-  """Publish the results of a DlpJob to a pub sub channel. Compatible with:
+  r"""Publish the results of a DlpJob to a pub sub channel. Compatible with:
   Inspect, Risk
 
   Fields:
@@ -2660,7 +2717,7 @@ class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
 
 
 class GooglePrivacyDlpV2QuasiIdField(_messages.Message):
-  """A quasi-identifier column has a custom_tag, used to know which column in
+  r"""A quasi-identifier column has a custom_tag, used to know which column in
   the data corresponds to which column in the statistical model.
 
   Fields:
@@ -2673,7 +2730,7 @@ class GooglePrivacyDlpV2QuasiIdField(_messages.Message):
 
 
 class GooglePrivacyDlpV2QuoteInfo(_messages.Message):
-  """Message for infoType-dependent details parsed from quote.
+  r"""Message for infoType-dependent details parsed from quote.
 
   Fields:
     dateTime: A GooglePrivacyDlpV2DateTime attribute.
@@ -2683,7 +2740,7 @@ class GooglePrivacyDlpV2QuoteInfo(_messages.Message):
 
 
 class GooglePrivacyDlpV2Range(_messages.Message):
-  """Generic half-open interval [start, end)
+  r"""Generic half-open interval [start, end)
 
   Fields:
     end: Index of the last character of the range (exclusive).
@@ -2695,8 +2752,8 @@ class GooglePrivacyDlpV2Range(_messages.Message):
 
 
 class GooglePrivacyDlpV2RecordCondition(_messages.Message):
-  """A condition for determining whether a transformation should be applied to
-  a field.
+  r"""A condition for determining whether a transformation should be applied
+  to a field.
 
   Fields:
     expressions: An expression.
@@ -2706,7 +2763,7 @@ class GooglePrivacyDlpV2RecordCondition(_messages.Message):
 
 
 class GooglePrivacyDlpV2RecordKey(_messages.Message):
-  """Message for a unique key indicating a record that contains a finding.
+  r"""Message for a unique key indicating a record that contains a finding.
 
   Fields:
     bigQueryKey: A GooglePrivacyDlpV2BigQueryKey attribute.
@@ -2718,7 +2775,7 @@ class GooglePrivacyDlpV2RecordKey(_messages.Message):
 
 
 class GooglePrivacyDlpV2RecordLocation(_messages.Message):
-  """Location of a finding within a row or record.
+  r"""Location of a finding within a row or record.
 
   Fields:
     fieldId: Field id of the field containing the finding.
@@ -2732,7 +2789,7 @@ class GooglePrivacyDlpV2RecordLocation(_messages.Message):
 
 
 class GooglePrivacyDlpV2RecordSuppression(_messages.Message):
-  """Configuration to suppress records whose suppression conditions evaluate
+  r"""Configuration to suppress records whose suppression conditions evaluate
   to true.
 
   Fields:
@@ -2744,7 +2801,7 @@ class GooglePrivacyDlpV2RecordSuppression(_messages.Message):
 
 
 class GooglePrivacyDlpV2RecordTransformations(_messages.Message):
-  """A type of transformation that is applied over structured data such as a
+  r"""A type of transformation that is applied over structured data such as a
   table.
 
   Fields:
@@ -2760,7 +2817,7 @@ class GooglePrivacyDlpV2RecordTransformations(_messages.Message):
 
 
 class GooglePrivacyDlpV2RedactConfig(_messages.Message):
-  """Redact a given value. For example, if used with an
+  r"""Redact a given value. For example, if used with an
   `InfoTypeTransformation` transforming PHONE_NUMBER, and input 'My phone
   number is 206-555-0123', the output would be 'My phone number is '.
   """
@@ -2768,7 +2825,7 @@ class GooglePrivacyDlpV2RedactConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2RedactImageRequest(_messages.Message):
-  """Request to search for potentially sensitive info in a list of items and
+  r"""Request to search for potentially sensitive info in a list of items and
   replace it with a default or provided content.
 
   Fields:
@@ -2784,7 +2841,7 @@ class GooglePrivacyDlpV2RedactImageRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2RedactImageResponse(_messages.Message):
-  """Results of redacting an image.
+  r"""Results of redacting an image.
 
   Fields:
     extractedText: If an image was being inspected and the InspectConfig's
@@ -2799,7 +2856,7 @@ class GooglePrivacyDlpV2RedactImageResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2Regex(_messages.Message):
-  """Message defining a custom regular expression.
+  r"""Message defining a custom regular expression.
 
   Fields:
     pattern: Pattern defining the regular expression.
@@ -2809,7 +2866,7 @@ class GooglePrivacyDlpV2Regex(_messages.Message):
 
 
 class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
-  """Request to re-identify an item.
+  r"""Request to re-identify an item.
 
   Fields:
     inspectConfig: Configuration for the inspector.
@@ -2843,7 +2900,7 @@ class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2ReidentifyContentResponse(_messages.Message):
-  """Results of re-identifying a item.
+  r"""Results of re-identifying a item.
 
   Fields:
     item: The re-identified item.
@@ -2855,7 +2912,7 @@ class GooglePrivacyDlpV2ReidentifyContentResponse(_messages.Message):
 
 
 class GooglePrivacyDlpV2ReplaceValueConfig(_messages.Message):
-  """Replace each input value with a given `Value`.
+  r"""Replace each input value with a given `Value`.
 
   Fields:
     newValue: Value to replace it with.
@@ -2865,11 +2922,11 @@ class GooglePrivacyDlpV2ReplaceValueConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2ReplaceWithInfoTypeConfig(_messages.Message):
-  """Replace each matching finding with the name of the info_type."""
+  r"""Replace each matching finding with the name of the info_type."""
 
 
 class GooglePrivacyDlpV2RequestedOptions(_messages.Message):
-  """A GooglePrivacyDlpV2RequestedOptions object.
+  r"""A GooglePrivacyDlpV2RequestedOptions object.
 
   Fields:
     jobConfig: A GooglePrivacyDlpV2InspectJobConfig attribute.
@@ -2882,7 +2939,7 @@ class GooglePrivacyDlpV2RequestedOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2Result(_messages.Message):
-  """A GooglePrivacyDlpV2Result object.
+  r"""A GooglePrivacyDlpV2Result object.
 
   Fields:
     infoTypeStats: Statistics of how many instances of each info type were
@@ -2897,7 +2954,7 @@ class GooglePrivacyDlpV2Result(_messages.Message):
 
 
 class GooglePrivacyDlpV2RiskAnalysisJobConfig(_messages.Message):
-  """Configuration for a risk analysis job.
+  r"""Configuration for a risk analysis job.
 
   Fields:
     actions: Actions to execute at the completion of the job. Are executed in
@@ -2912,7 +2969,7 @@ class GooglePrivacyDlpV2RiskAnalysisJobConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2Row(_messages.Message):
-  """A GooglePrivacyDlpV2Row object.
+  r"""A GooglePrivacyDlpV2Row object.
 
   Fields:
     values: A GooglePrivacyDlpV2Value attribute.
@@ -2922,7 +2979,7 @@ class GooglePrivacyDlpV2Row(_messages.Message):
 
 
 class GooglePrivacyDlpV2SaveFindings(_messages.Message):
-  """If set, the detailed findings will be persisted to the specified
+  r"""If set, the detailed findings will be persisted to the specified
   OutputStorageConfig. Only a single instance of this action can be specified.
   Compatible with: Inspect
 
@@ -2934,7 +2991,7 @@ class GooglePrivacyDlpV2SaveFindings(_messages.Message):
 
 
 class GooglePrivacyDlpV2Schedule(_messages.Message):
-  """Schedule for triggeredJobs.
+  r"""Schedule for triggeredJobs.
 
   Fields:
     recurrencePeriodDuration: With this option a job is started a regular
@@ -2948,7 +3005,7 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
 
 
 class GooglePrivacyDlpV2StorageConfig(_messages.Message):
-  """Shared message indicating Cloud storage type.
+  r"""Shared message indicating Cloud storage type.
 
   Fields:
     bigQueryOptions: BigQuery options specification.
@@ -2964,7 +3021,7 @@ class GooglePrivacyDlpV2StorageConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2SummaryResult(_messages.Message):
-  """A collection that informs the user the number of times a particular
+  r"""A collection that informs the user the number of times a particular
   `TransformationResultCode` and error details occurred.
 
   Enums:
@@ -2978,7 +3035,7 @@ class GooglePrivacyDlpV2SummaryResult(_messages.Message):
   """
 
   class CodeValueValuesEnum(_messages.Enum):
-    """CodeValueValuesEnum enum type.
+    r"""CodeValueValuesEnum enum type.
 
     Values:
       TRANSFORMATION_RESULT_CODE_UNSPECIFIED: <no description>
@@ -2995,7 +3052,7 @@ class GooglePrivacyDlpV2SummaryResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2SurrogateType(_messages.Message):
-  """Message for detecting output from deidentification transformations such
+  r"""Message for detecting output from deidentification transformations such
   as [`CryptoReplaceFfxFpeConfig`](/dlp/docs/reference/rest/v2/organizations.d
   eidentifyTemplates#cryptoreplaceffxfpeconfig). These types of
   transformations are those that perform pseudonymization, thereby producing a
@@ -3007,7 +3064,8 @@ class GooglePrivacyDlpV2SurrogateType(_messages.Message):
 
 
 class GooglePrivacyDlpV2Table(_messages.Message):
-  """Structured content to inspect. Up to 50,000 `Value`s per request allowed.
+  r"""Structured content to inspect. Up to 50,000 `Value`s per request
+  allowed.
 
   Fields:
     headers: A GooglePrivacyDlpV2FieldId attribute.
@@ -3019,7 +3077,7 @@ class GooglePrivacyDlpV2Table(_messages.Message):
 
 
 class GooglePrivacyDlpV2TableLocation(_messages.Message):
-  """Location of a finding within a table.
+  r"""Location of a finding within a table.
 
   Fields:
     rowIndex: The zero-based index of the row where the finding is located.
@@ -3029,7 +3087,7 @@ class GooglePrivacyDlpV2TableLocation(_messages.Message):
 
 
 class GooglePrivacyDlpV2TaggedField(_messages.Message):
-  """A column with a semantic tag attached.
+  r"""A column with a semantic tag attached.
 
   Fields:
     customTag: A column can be tagged with a custom tag. In this case, the
@@ -3052,7 +3110,7 @@ class GooglePrivacyDlpV2TaggedField(_messages.Message):
 
 
 class GooglePrivacyDlpV2TimePartConfig(_messages.Message):
-  """For use with `Date`, `Timestamp`, and `TimeOfDay`, extract or preserve a
+  r"""For use with `Date`, `Timestamp`, and `TimeOfDay`, extract or preserve a
   portion of the value.
 
   Enums:
@@ -3063,7 +3121,7 @@ class GooglePrivacyDlpV2TimePartConfig(_messages.Message):
   """
 
   class PartToExtractValueValuesEnum(_messages.Enum):
-    """PartToExtractValueValuesEnum enum type.
+    r"""PartToExtractValueValuesEnum enum type.
 
     Values:
       TIME_PART_UNSPECIFIED: <no description>
@@ -3086,7 +3144,7 @@ class GooglePrivacyDlpV2TimePartConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2TimeZone(_messages.Message):
-  """A GooglePrivacyDlpV2TimeZone object.
+  r"""A GooglePrivacyDlpV2TimeZone object.
 
   Fields:
     offsetMinutes: Set only if the offset can be determined. Positive for time
@@ -3097,7 +3155,7 @@ class GooglePrivacyDlpV2TimeZone(_messages.Message):
 
 
 class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
-  """Configuration of the timespan of the items to include in scanning.
+  r"""Configuration of the timespan of the items to include in scanning.
   Currently only supported when inspecting Google Cloud Storage and BigQuery.
 
   Fields:
@@ -3124,7 +3182,7 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2TransformationOverview(_messages.Message):
-  """Overview of the modifications that occurred.
+  r"""Overview of the modifications that occurred.
 
   Fields:
     transformationSummaries: Transformations applied to the dataset.
@@ -3136,7 +3194,7 @@ class GooglePrivacyDlpV2TransformationOverview(_messages.Message):
 
 
 class GooglePrivacyDlpV2TransformationSummary(_messages.Message):
-  """Summary of a single tranformation. Only one of 'transformation',
+  r"""Summary of a single tranformation. Only one of 'transformation',
   'field_transformation', or 'record_suppress' will be set.
 
   Fields:
@@ -3161,8 +3219,8 @@ class GooglePrivacyDlpV2TransformationSummary(_messages.Message):
 
 
 class GooglePrivacyDlpV2TransientCryptoKey(_messages.Message):
-  """Use this to have a random data crypto key generated. It will be discarded
-  after the request finishes.
+  r"""Use this to have a random data crypto key generated. It will be
+  discarded after the request finishes.
 
   Fields:
     name: Name of the key. [required] This is an arbitrary string used to
@@ -3177,7 +3235,7 @@ class GooglePrivacyDlpV2TransientCryptoKey(_messages.Message):
 
 
 class GooglePrivacyDlpV2Trigger(_messages.Message):
-  """What event needs to occur for a new job to be started.
+  r"""What event needs to occur for a new job to be started.
 
   Fields:
     schedule: Create a job on a repeating basis based on the elapse of time.
@@ -3187,8 +3245,8 @@ class GooglePrivacyDlpV2Trigger(_messages.Message):
 
 
 class GooglePrivacyDlpV2UnwrappedCryptoKey(_messages.Message):
-  """Using raw keys is prone to security risks due to accidentally leaking the
-  key. Choose another type of key if possible.
+  r"""Using raw keys is prone to security risks due to accidentally leaking
+  the key. Choose another type of key if possible.
 
   Fields:
     key: The AES 128/192/256 bit key. [required]
@@ -3198,7 +3256,7 @@ class GooglePrivacyDlpV2UnwrappedCryptoKey(_messages.Message):
 
 
 class GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest(_messages.Message):
-  """Request message for UpdateDeidentifyTemplate.
+  r"""Request message for UpdateDeidentifyTemplate.
 
   Fields:
     deidentifyTemplate: New DeidentifyTemplate value.
@@ -3210,7 +3268,7 @@ class GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2UpdateInspectTemplateRequest(_messages.Message):
-  """Request message for UpdateInspectTemplate.
+  r"""Request message for UpdateInspectTemplate.
 
   Fields:
     inspectTemplate: New InspectTemplate value.
@@ -3222,7 +3280,7 @@ class GooglePrivacyDlpV2UpdateInspectTemplateRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2UpdateJobTriggerRequest(_messages.Message):
-  """Request message for UpdateJobTrigger.
+  r"""Request message for UpdateJobTrigger.
 
   Fields:
     jobTrigger: New JobTrigger value.
@@ -3234,7 +3292,7 @@ class GooglePrivacyDlpV2UpdateJobTriggerRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2Value(_messages.Message):
-  """Set of primitive values supported by the system. Note that for the
+  r"""Set of primitive values supported by the system. Note that for the
   purposes of inspection or transformation, the number of bytes considered to
   comprise a 'Value' is based on its representation as a UTF-8 encoded string.
   For example, if 'integer_value' is set to 123456789, the number of bytes
@@ -3256,7 +3314,7 @@ class GooglePrivacyDlpV2Value(_messages.Message):
   """
 
   class DayOfWeekValueValueValuesEnum(_messages.Enum):
-    """DayOfWeekValueValueValuesEnum enum type.
+    r"""DayOfWeekValueValueValuesEnum enum type.
 
     Values:
       DAY_OF_WEEK_UNSPECIFIED: The unspecified day-of-week.
@@ -3288,7 +3346,7 @@ class GooglePrivacyDlpV2Value(_messages.Message):
 
 
 class GooglePrivacyDlpV2ValueFrequency(_messages.Message):
-  """A value of a field, including its frequency.
+  r"""A value of a field, including its frequency.
 
   Fields:
     count: How many times the value is contained in the field.
@@ -3300,7 +3358,7 @@ class GooglePrivacyDlpV2ValueFrequency(_messages.Message):
 
 
 class GooglePrivacyDlpV2WordList(_messages.Message):
-  """Message defining a list of words or phrases to search for in the data.
+  r"""Message defining a list of words or phrases to search for in the data.
 
   Fields:
     words: Words or phrases defining the dictionary. The dictionary must
@@ -3312,7 +3370,7 @@ class GooglePrivacyDlpV2WordList(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1AuxiliaryTable(_messages.Message):
-  """An auxiliary table contains statistical information on the relative
+  r"""An auxiliary table contains statistical information on the relative
   frequency of different quasi-identifiers values. It has one or several
   quasi-identifiers columns, and one column that indicates the relative
   frequency of each quasi-identifier tuple. If a tuple is present in the data
@@ -3333,7 +3391,7 @@ class GooglePrivacyDlpV2beta1AuxiliaryTable(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1BigQueryOptions(_messages.Message):
-  """Options defining BigQuery table and row identifiers.
+  r"""Options defining BigQuery table and row identifiers.
 
   Fields:
     identifyingFields: References to fields uniquely identifying rows within
@@ -3347,7 +3405,7 @@ class GooglePrivacyDlpV2beta1BigQueryOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1BigQueryTable(_messages.Message):
-  """Message defining the location of a BigQuery table. A table is uniquely
+  r"""Message defining the location of a BigQuery table. A table is uniquely
   identified  by its project_id, dataset_id, and table_name. Within a query a
   table is often referenced with a string in the format of:
   `<project_id>:<dataset_id>.<table_id>` or
@@ -3366,7 +3424,7 @@ class GooglePrivacyDlpV2beta1BigQueryTable(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1CategoricalStatsConfig(_messages.Message):
-  """Compute numerical stats over an individual column, including number of
+  r"""Compute numerical stats over an individual column, including number of
   distinct values and value count distribution.
 
   Fields:
@@ -3380,7 +3438,7 @@ class GooglePrivacyDlpV2beta1CategoricalStatsConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1CategoricalStatsHistogramBucket(_messages.Message):
-  """Histogram bucket of value frequencies in the column.
+  r"""Histogram bucket of value frequencies in the column.
 
   Fields:
     bucketSize: Total number of records in this bucket.
@@ -3399,7 +3457,7 @@ class GooglePrivacyDlpV2beta1CategoricalStatsHistogramBucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1CategoricalStatsResult(_messages.Message):
-  """Result of the categorical stats computation.
+  r"""Result of the categorical stats computation.
 
   Fields:
     valueFrequencyHistogramBuckets: Histogram of value frequencies in the
@@ -3410,7 +3468,7 @@ class GooglePrivacyDlpV2beta1CategoricalStatsResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1CloudStorageOptions(_messages.Message):
-  """Options defining a file or a set of files (path ending with *) within a
+  r"""Options defining a file or a set of files (path ending with *) within a
   Google Cloud Storage bucket.
 
   Fields:
@@ -3421,7 +3479,7 @@ class GooglePrivacyDlpV2beta1CloudStorageOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1CloudStoragePath(_messages.Message):
-  """A location in Cloud Storage.
+  r"""A location in Cloud Storage.
 
   Fields:
     path: The url, in the format of `gs://bucket/<path>`.
@@ -3431,7 +3489,7 @@ class GooglePrivacyDlpV2beta1CloudStoragePath(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1CustomInfoType(_messages.Message):
-  """Custom information type provided by the user. Used to find domain-
+  r"""Custom information type provided by the user. Used to find domain-
   specific sensitive information configurable to the data in question.
 
   Fields:
@@ -3448,7 +3506,7 @@ class GooglePrivacyDlpV2beta1CustomInfoType(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1DatastoreOptions(_messages.Message):
-  """Options defining a data set within Google Cloud Datastore.
+  r"""Options defining a data set within Google Cloud Datastore.
 
   Fields:
     kind: The kind to process.
@@ -3465,7 +3523,7 @@ class GooglePrivacyDlpV2beta1DatastoreOptions(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1Dictionary(_messages.Message):
-  """Custom information type based on a dictionary of words or phrases. This
+  r"""Custom information type based on a dictionary of words or phrases. This
   can be used to match sensitive information specific to the data, such as a
   list of employee IDs or job titles.  Dictionary words are case-insensitive
   and all characters other than letters and digits in the unicode [Basic
@@ -3489,7 +3547,7 @@ class GooglePrivacyDlpV2beta1Dictionary(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1EntityId(_messages.Message):
-  """An entity in a dataset is a field or set of fields that correspond to a
+  r"""An entity in a dataset is a field or set of fields that correspond to a
   single person. For example, in medical records the `EntityId` might be a
   patient identifier, or for financial records it might be an account
   identifier. This message is used when generalizations or analysis must be
@@ -3504,7 +3562,7 @@ class GooglePrivacyDlpV2beta1EntityId(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1FieldId(_messages.Message):
-  """General identifier of a data field in a storage service.
+  r"""General identifier of a data field in a storage service.
 
   Fields:
     columnName: Name describing the field.
@@ -3514,7 +3572,7 @@ class GooglePrivacyDlpV2beta1FieldId(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1FileSet(_messages.Message):
-  """Set of files to scan.
+  r"""Set of files to scan.
 
   Fields:
     url: The url, in the format `gs://<bucket>/<path>`. Trailing wildcard in
@@ -3525,7 +3583,7 @@ class GooglePrivacyDlpV2beta1FileSet(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1InfoType(_messages.Message):
-  """Type of information detected by the API.
+  r"""Type of information detected by the API.
 
   Fields:
     name: Name of the information type.
@@ -3535,7 +3593,7 @@ class GooglePrivacyDlpV2beta1InfoType(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1InfoTypeLimit(_messages.Message):
-  """Max findings configuration per info type, per content item or long
+  r"""Max findings configuration per info type, per content item or long
   running operation.
 
   Fields:
@@ -3551,7 +3609,7 @@ class GooglePrivacyDlpV2beta1InfoTypeLimit(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1InfoTypeStatistics(_messages.Message):
-  """Statistics regarding a specific InfoType.
+  r"""Statistics regarding a specific InfoType.
 
   Fields:
     count: Number of findings for this info type.
@@ -3563,7 +3621,7 @@ class GooglePrivacyDlpV2beta1InfoTypeStatistics(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1InspectConfig(_messages.Message):
-  """Configuration description of the scanning process. When used with
+  r"""Configuration description of the scanning process. When used with
   redactContent only info_types and min_likelihood are currently used.
 
   Enums:
@@ -3586,7 +3644,7 @@ class GooglePrivacyDlpV2beta1InspectConfig(_messages.Message):
   """
 
   class MinLikelihoodValueValuesEnum(_messages.Enum):
-    """Only returns findings equal or above this threshold.
+    r"""Only returns findings equal or above this threshold.
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; information with all likelihoods
@@ -3614,7 +3672,7 @@ class GooglePrivacyDlpV2beta1InspectConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1InspectOperationMetadata(_messages.Message):
-  """Metadata returned within GetOperation for an inspect request.
+  r"""Metadata returned within GetOperation for an inspect request.
 
   Fields:
     createTime: The time which this request was started.
@@ -3636,7 +3694,7 @@ class GooglePrivacyDlpV2beta1InspectOperationMetadata(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1InspectOperationResult(_messages.Message):
-  """The operational data.
+  r"""The operational data.
 
   Fields:
     name: The server-assigned name, which is only unique within the same
@@ -3648,7 +3706,7 @@ class GooglePrivacyDlpV2beta1InspectOperationResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KAnonymityConfig(_messages.Message):
-  """k-anonymity metric, used for analysis of reidentification risk.
+  r"""k-anonymity metric, used for analysis of reidentification risk.
 
   Fields:
     entityId: Optional message indicating that each distinct entity_id should
@@ -3673,7 +3731,7 @@ class GooglePrivacyDlpV2beta1KAnonymityConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KAnonymityEquivalenceClass(_messages.Message):
-  """The set of columns' values that share the same k-anonymity value.
+  r"""The set of columns' values that share the same k-anonymity value.
 
   Fields:
     equivalenceClassSize: Size of the equivalence class, for example number of
@@ -3688,7 +3746,7 @@ class GooglePrivacyDlpV2beta1KAnonymityEquivalenceClass(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KAnonymityHistogramBucket(_messages.Message):
-  """Histogram bucket of equivalence class sizes in the table.
+  r"""Histogram bucket of equivalence class sizes in the table.
 
   Fields:
     bucketSize: Total number of records in this bucket.
@@ -3707,7 +3765,7 @@ class GooglePrivacyDlpV2beta1KAnonymityHistogramBucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KAnonymityResult(_messages.Message):
-  """Result of the k-anonymity computation.
+  r"""Result of the k-anonymity computation.
 
   Fields:
     equivalenceClassHistogramBuckets: Histogram of k-anonymity equivalence
@@ -3718,7 +3776,7 @@ class GooglePrivacyDlpV2beta1KAnonymityResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KMapEstimationConfig(_messages.Message):
-  """Reidentifiability metric. This corresponds to a risk model similar to
+  r"""Reidentifiability metric. This corresponds to a risk model similar to
   what is called "journalist risk" in the literature, except the attack
   dataset is statistically modeled instead of being perfectly known. This can
   be done using publicly available data (like the US Census), or using a
@@ -3742,7 +3800,7 @@ class GooglePrivacyDlpV2beta1KMapEstimationConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KMapEstimationHistogramBucket(_messages.Message):
-  """A KMapEstimationHistogramBucket message with the following values:
+  r"""A KMapEstimationHistogramBucket message with the following values:
   min_anonymity: 3   max_anonymity: 5   frequency: 42 means that there are 42
   records whose quasi-identifier values correspond to 3, 4 or 5 people in the
   overlying population. An important particular case is when min_anonymity =
@@ -3764,7 +3822,7 @@ class GooglePrivacyDlpV2beta1KMapEstimationHistogramBucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KMapEstimationQuasiIdValues(_messages.Message):
-  """A tuple of values for the quasi-identifier columns.
+  r"""A tuple of values for the quasi-identifier columns.
 
   Fields:
     estimatedAnonymity: The estimated anonymity for these quasi-identifier
@@ -3777,7 +3835,7 @@ class GooglePrivacyDlpV2beta1KMapEstimationQuasiIdValues(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KMapEstimationResult(_messages.Message):
-  """Result of the reidentifiability analysis. Note that these results are an
+  r"""Result of the reidentifiability analysis. Note that these results are an
   estimation, not exact values.
 
   Fields:
@@ -3794,7 +3852,7 @@ class GooglePrivacyDlpV2beta1KMapEstimationResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1KindExpression(_messages.Message):
-  """A representation of a Datastore kind.
+  r"""A representation of a Datastore kind.
 
   Fields:
     name: The name of the kind.
@@ -3804,7 +3862,7 @@ class GooglePrivacyDlpV2beta1KindExpression(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1LDiversityConfig(_messages.Message):
-  """l-diversity metric, used for analysis of reidentification risk.
+  r"""l-diversity metric, used for analysis of reidentification risk.
 
   Fields:
     quasiIds: Set of quasi-identifiers indicating how equivalence classes are
@@ -3818,7 +3876,7 @@ class GooglePrivacyDlpV2beta1LDiversityConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1LDiversityEquivalenceClass(_messages.Message):
-  """The set of columns' values that share the same l-diversity value.
+  r"""The set of columns' values that share the same l-diversity value.
 
   Fields:
     equivalenceClassSize: Size of the k-anonymity equivalence class.
@@ -3836,7 +3894,7 @@ class GooglePrivacyDlpV2beta1LDiversityEquivalenceClass(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1LDiversityHistogramBucket(_messages.Message):
-  """Histogram bucket of sensitive value frequencies in the table.
+  r"""Histogram bucket of sensitive value frequencies in the table.
 
   Fields:
     bucketSize: Total number of records in this bucket.
@@ -3855,7 +3913,7 @@ class GooglePrivacyDlpV2beta1LDiversityHistogramBucket(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1LDiversityResult(_messages.Message):
-  """Result of the l-diversity computation.
+  r"""Result of the l-diversity computation.
 
   Fields:
     sensitiveValueFrequencyHistogramBuckets: Histogram of l-diversity
@@ -3866,7 +3924,7 @@ class GooglePrivacyDlpV2beta1LDiversityResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1NumericalStatsConfig(_messages.Message):
-  """Compute numerical stats over an individual column, including min, max,
+  r"""Compute numerical stats over an individual column, including min, max,
   and quantiles.
 
   Fields:
@@ -3878,7 +3936,7 @@ class GooglePrivacyDlpV2beta1NumericalStatsConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1NumericalStatsResult(_messages.Message):
-  """Result of the numerical stats computation.
+  r"""Result of the numerical stats computation.
 
   Fields:
     maxValue: Maximum value appearing in the column.
@@ -3893,7 +3951,7 @@ class GooglePrivacyDlpV2beta1NumericalStatsResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1OutputStorageConfig(_messages.Message):
-  """Cloud repository for storing output.
+  r"""Cloud repository for storing output.
 
   Fields:
     storagePath: The path to a Google Cloud Storage location to store output.
@@ -3917,10 +3975,10 @@ class GooglePrivacyDlpV2beta1OutputStorageConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1PartitionId(_messages.Message):
-  """Datastore partition ID. A partition ID identifies a grouping of entities.
-  The grouping is always by project and namespace, however the namespace ID
-  may be empty.  A partition ID contains several dimensions: project ID and
-  namespace ID.
+  r"""Datastore partition ID. A partition ID identifies a grouping of
+  entities. The grouping is always by project and namespace, however the
+  namespace ID may be empty.  A partition ID contains several dimensions:
+  project ID and namespace ID.
 
   Fields:
     namespaceId: If not empty, the ID of the namespace to which the entities
@@ -3933,7 +3991,7 @@ class GooglePrivacyDlpV2beta1PartitionId(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1PrivacyMetric(_messages.Message):
-  """Privacy metric to compute for reidentification risk analysis.
+  r"""Privacy metric to compute for reidentification risk analysis.
 
   Fields:
     categoricalStatsConfig: A GooglePrivacyDlpV2beta1CategoricalStatsConfig
@@ -3954,7 +4012,7 @@ class GooglePrivacyDlpV2beta1PrivacyMetric(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1Projection(_messages.Message):
-  """A representation of a Datastore property in a projection.
+  r"""A representation of a Datastore property in a projection.
 
   Fields:
     property: The property to project.
@@ -3964,7 +4022,7 @@ class GooglePrivacyDlpV2beta1Projection(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1PropertyReference(_messages.Message):
-  """A reference to a property relative to the Datastore kind expressions.
+  r"""A reference to a property relative to the Datastore kind expressions.
 
   Fields:
     name: The name of the property. If name includes "."s, it may be
@@ -3975,7 +4033,7 @@ class GooglePrivacyDlpV2beta1PropertyReference(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1QuasiIdField(_messages.Message):
-  """A quasi-identifier column has a custom_tag, used to know which column in
+  r"""A quasi-identifier column has a custom_tag, used to know which column in
   the data corresponds to which column in the statistical model.
 
   Fields:
@@ -3988,8 +4046,8 @@ class GooglePrivacyDlpV2beta1QuasiIdField(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1RiskAnalysisOperationMetadata(_messages.Message):
-  """Metadata returned within the [`riskAnalysis.operations.get`](/dlp/docs/re
-  ference/rest/v2beta1/riskAnalysis.operations/get) for risk analysis.
+  r"""Metadata returned within the [`riskAnalysis.operations.get`](/dlp/docs/r
+  eference/rest/v2beta1/riskAnalysis.operations/get) for risk analysis.
 
   Fields:
     createTime: The time which this request was started.
@@ -4003,7 +4061,7 @@ class GooglePrivacyDlpV2beta1RiskAnalysisOperationMetadata(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1RiskAnalysisOperationResult(_messages.Message):
-  """Result of a risk analysis
+  r"""Result of a risk analysis
   [`Operation`](/dlp/docs/reference/rest/v2beta1/inspect.operations) request.
 
   Fields:
@@ -4025,7 +4083,7 @@ class GooglePrivacyDlpV2beta1RiskAnalysisOperationResult(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1StorageConfig(_messages.Message):
-  """Shared message indicating Cloud storage type.
+  r"""Shared message indicating Cloud storage type.
 
   Fields:
     bigQueryOptions: BigQuery options specification.
@@ -4039,7 +4097,7 @@ class GooglePrivacyDlpV2beta1StorageConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1SurrogateType(_messages.Message):
-  """Message for detecting output from deidentification transformations such
+  r"""Message for detecting output from deidentification transformations such
   as [`CryptoReplaceFfxFpeConfig`](/dlp/docs/reference/rest/v2beta1/content/de
   identify#CryptoReplaceFfxFpeConfig). These types of transformations are
   those that perform pseudonymization, thereby producing a "surrogate" as
@@ -4051,7 +4109,7 @@ class GooglePrivacyDlpV2beta1SurrogateType(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1TaggedField(_messages.Message):
-  """A column with a semantic tag attached.
+  r"""A column with a semantic tag attached.
 
   Fields:
     customTag: A column can be tagged with a custom tag. In this case, the
@@ -4072,7 +4130,7 @@ class GooglePrivacyDlpV2beta1TaggedField(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1Value(_messages.Message):
-  """Set of primitive values supported by the system. Note that for the
+  r"""Set of primitive values supported by the system. Note that for the
   purposes of inspection or transformation, the number of bytes considered to
   comprise a 'Value' is based on its representation as a UTF-8 encoded string.
   For example, if 'integer_value' is set to 123456789, the number of bytes
@@ -4099,7 +4157,7 @@ class GooglePrivacyDlpV2beta1Value(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1ValueFrequency(_messages.Message):
-  """A value of a field, including its frequency.
+  r"""A value of a field, including its frequency.
 
   Fields:
     count: How many times the value is contained in the field.
@@ -4111,7 +4169,7 @@ class GooglePrivacyDlpV2beta1ValueFrequency(_messages.Message):
 
 
 class GooglePrivacyDlpV2beta1WordList(_messages.Message):
-  """Message defining a list of words or phrases to search for in the data.
+  r"""Message defining a list of words or phrases to search for in the data.
 
   Fields:
     words: Words or phrases defining the dictionary. The dictionary must
@@ -4123,7 +4181,7 @@ class GooglePrivacyDlpV2beta1WordList(_messages.Message):
 
 
 class GoogleProtobufEmpty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -4133,7 +4191,7 @@ class GoogleProtobufEmpty(_messages.Message):
 
 
 class GoogleRpcStatus(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -4181,7 +4239,7 @@ class GoogleRpcStatus(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -4193,7 +4251,7 @@ class GoogleRpcStatus(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -4211,13 +4269,13 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class GoogleTypeDate(_messages.Message):
-  """Represents a whole calendar date, e.g. date of birth. The time of day and
-  time zone are either specified elsewhere or are not significant. The date is
-  relative to the Proleptic Gregorian Calendar. The day may be 0 to represent
-  a year and month where the day is not significant, e.g. credit card
-  expiration date. The year may be 0 to represent a month and day independent
-  of year, e.g. anniversary date. Related types are google.type.TimeOfDay and
-  `google.protobuf.Timestamp`.
+  r"""Represents a whole calendar date, e.g. date of birth. The time of day
+  and time zone are either specified elsewhere or are not significant. The
+  date is relative to the Proleptic Gregorian Calendar. The day may be 0 to
+  represent a year and month where the day is not significant, e.g. credit
+  card expiration date. The year may be 0 to represent a month and day
+  independent of year, e.g. anniversary date. Related types are
+  google.type.TimeOfDay and `google.protobuf.Timestamp`.
 
   Fields:
     day: Day of month. Must be from 1 to 31 and valid for the year and month,
@@ -4234,7 +4292,7 @@ class GoogleTypeDate(_messages.Message):
 
 
 class GoogleTypeTimeOfDay(_messages.Message):
-  """Represents a time of day. The date and time zone are either not
+  r"""Represents a time of day. The date and time zone are either not
   significant or are specified elsewhere. An API may choose to allow leap
   seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
 
@@ -4255,7 +4313,7 @@ class GoogleTypeTimeOfDay(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -4284,7 +4342,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -4296,7 +4354,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format

@@ -50,12 +50,13 @@ def OperationAttributeConfig():
       help_text='The Cloud Composer operation for the {resource}.')
 
 
-def GetLocationResourceSpec():
+def GetLocationResourceSpec(fallthroughs_enabled=True):
   return concepts.ResourceSpec(
       'composer.projects.locations',
       resource_name='location',
       projectsId=ProjectAttributeConfig(),
-      locationsId=LocationAttributeConfig(fallthroughs_enabled=False))
+      locationsId=LocationAttributeConfig(
+          fallthroughs_enabled=fallthroughs_enabled))
 
 
 def GetEnvironmentResourceSpec():
@@ -80,8 +81,13 @@ def AddLocationResourceArg(parser,
                            verb,
                            positional=True,
                            required=True,
-                           plural=False):
+                           plural=False,
+                           help_supplement=None):
   """Add a resource argument for a Cloud Composer location.
+
+  Fallthroughs are disabled if the argument is plural, as this would cause
+  the fallthrough processor to iterate over each character in the fallthrough
+  value and parse it as a location ID.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
@@ -92,13 +98,16 @@ def AddLocationResourceArg(parser,
         than a flag.
     required: boolean, if True, the arg is required
     plural: boolean, if True, expects a list of resources
+    help_supplement: str, Supplementary help text specific to the command
+        in which the resource arg is being used..
   """
+  help_supplement = help_supplement or ''
   noun = 'location' + ('s' if plural else '')
   name = _BuildArgName(noun, positional)
   concept_parsers.ConceptParser.ForResource(
       name,
-      GetLocationResourceSpec(),
-      'The {} {}.'.format(noun, verb),
+      GetLocationResourceSpec(fallthroughs_enabled=not plural),
+      'The {} {}. {}'.format(noun, verb, help_supplement),
       required=required,
       plural=plural).AddToParser(parser)
 

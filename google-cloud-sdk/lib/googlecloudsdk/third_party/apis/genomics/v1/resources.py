@@ -27,25 +27,29 @@ class Collections(enum.Enum):
       'annotations',
       'annotations/{annotationId}',
       {},
-      [u'annotationId']
+      [u'annotationId'],
+      True
   )
   ANNOTATIONSETS = (
       'annotationsets',
       'annotationsets/{annotationSetId}',
       {},
-      [u'annotationSetId']
+      [u'annotationSetId'],
+      True
   )
   CALLSETS = (
       'callsets',
       'callsets/{callSetId}',
       {},
-      [u'callSetId']
+      [u'callSetId'],
+      True
   )
   DATASETS = (
       'datasets',
       'datasets/{datasetId}',
       {},
-      [u'datasetId']
+      [u'datasetId'],
+      True
   )
   OPERATIONS = (
       'operations',
@@ -54,41 +58,49 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   READGROUPSETS = (
       'readgroupsets',
       'readgroupsets/{readGroupSetId}',
       {},
-      [u'readGroupSetId']
+      [u'readGroupSetId'],
+      True
   )
   REFERENCES = (
       'references',
       'references/{referenceId}',
       {},
-      [u'referenceId']
+      [u'referenceId'],
+      True
   )
   REFERENCESETS = (
       'referencesets',
       'referencesets/{referenceSetId}',
       {},
-      [u'referenceSetId']
+      [u'referenceSetId'],
+      True
   )
   VARIANTS = (
       'variants',
       'variants/{variantId}',
       {},
-      [u'variantId']
+      [u'variantId'],
+      True
   )
   VARIANTSETS = (
       'variantsets',
       'variantsets/{variantSetId}',
       {},
-      [u'variantSetId']
+      [u'variantSetId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

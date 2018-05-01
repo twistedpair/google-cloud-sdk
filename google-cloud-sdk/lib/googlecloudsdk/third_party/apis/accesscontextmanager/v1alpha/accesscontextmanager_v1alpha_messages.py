@@ -13,7 +13,7 @@ package = 'accesscontextmanager'
 
 
 class AccessLevel(_messages.Message):
-  """An `AccessLevel` is a label that can be applied to requests to GCP
+  r"""An `AccessLevel` is a label that can be applied to requests to GCP
   services, along with a list of requirements necessary for the label to be
   applied. `AccessLevels` can be referenced in `AccessZones` and in the `Cloud
   Org Policy` API.
@@ -39,7 +39,7 @@ class AccessLevel(_messages.Message):
 
 
 class AccessPolicy(_messages.Message):
-  """`AccessPolicy` is a container for `AccessLevels` (which define the
+  r"""`AccessPolicy` is a container for `AccessLevels` (which define the
   necessary attributes to use GCP services) and `AccessZones` (which define
   regions of services able to freely pass data within a zone). An access
   policy is globally visible within an organization, and the restrictions it
@@ -64,13 +64,13 @@ class AccessPolicy(_messages.Message):
 
 
 class AccessZone(_messages.Message):
-  """`AccessZone` describes a set of GCP resources which can freely import and
-  export data amongst themselves, but not export outside of the `AccessZone`.
-  If a request with a source within this `AccessZone` has a target outside of
-  the `AccessZone`, the request will be blocked. Otherwise the request is
-  allowed. Access Zones cannot overlap, a single GCP project can only belong
-  to a single Access Zone. The restriction against overlapping zones may be
-  lifted in the future.
+  r"""`AccessZone` describes a set of GCP resources which can freely import
+  and export data amongst themselves, but not export outside of the
+  `AccessZone`. If a request with a source within this `AccessZone` has a
+  target outside of the `AccessZone`, the request will be blocked. Otherwise
+  the request is allowed. Access Zones cannot overlap, a single GCP project
+  can only belong to a single Access Zone. The restriction against overlapping
+  zones may be lifted in the future.
 
   Enums:
     ZoneTypeValueValuesEnum: Zone type indicator. A single project is allowed
@@ -135,7 +135,7 @@ class AccessZone(_messages.Message):
   """
 
   class ZoneTypeValueValuesEnum(_messages.Enum):
-    """Zone type indicator. A single project is allowed to be a member of
+    r"""Zone type indicator. A single project is allowed to be a member of
     single regular access zone, but multiple bridge access zones. A project
     cannot be a included in a bridge access zone without being included in
     regular access zone. For bridge access zones, restricted/unrestricted
@@ -161,7 +161,7 @@ class AccessZone(_messages.Message):
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest object.
 
   Fields:
     accessLevel: A AccessLevel resource to be passed as the request body.
@@ -174,7 +174,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Mess
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest object.
 
   Fields:
     name: Required. Resource name for the Access Level.  Format:
@@ -185,7 +185,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsDeleteRequest(_messages.Mess
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest object.
 
   Enums:
     AccessLevelFormatValueValuesEnum: Whether to return `BasicLevels` in the
@@ -207,12 +207,12 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest(_messages.Message
   """
 
   class AccessLevelFormatValueValuesEnum(_messages.Enum):
-    """Whether to return `BasicLevels` in the Cloud Common Expression Language
-    rather than as `BasicLevels`. Defaults to AS_DEFINED, where Access Levels
-    are returned as `BasicLevels` or `CustomLevels` based on how they were
-    created. If set to CEL, all Access Levels are returned as `CustomLevels`.
-    In the CEL case, `BasicLevels` are translated to equivalent
-    `CustomLevels`.
+    r"""Whether to return `BasicLevels` in the Cloud Common Expression
+    Language rather than as `BasicLevels`. Defaults to AS_DEFINED, where
+    Access Levels are returned as `BasicLevels` or `CustomLevels` based on how
+    they were created. If set to CEL, all Access Levels are returned as
+    `CustomLevels`. In the CEL case, `BasicLevels` are translated to
+    equivalent `CustomLevels`.
 
     Values:
       LEVEL_FORMAT_UNSPECIFIED: <no description>
@@ -228,7 +228,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsGetRequest(_messages.Message
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsListRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessLevelsListRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessLevelsListRequest object.
 
   Enums:
     AccessLevelFormatValueValuesEnum: Whether to return `BasicLevels` in the
@@ -248,7 +248,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsListRequest(_messages.Messag
   """
 
   class AccessLevelFormatValueValuesEnum(_messages.Enum):
-    """Whether to return `BasicLevels` in the Cloud Common Expression
+    r"""Whether to return `BasicLevels` in the Cloud Common Expression
     language, as `CustomLevels`, rather than as `BasicLevels`. Defaults to
     returning `AccessLevels` in the format they were defined.
 
@@ -268,7 +268,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsListRequest(_messages.Messag
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest object.
 
   Fields:
     accessLevel: A AccessLevel resource to be passed as the request body.
@@ -285,7 +285,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
 
 
 class AccesscontextmanagerAccessPoliciesAccessZonesCreateRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessZonesCreateRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessZonesCreateRequest object.
 
   Fields:
     accessZone: A AccessZone resource to be passed as the request body.
@@ -298,7 +298,7 @@ class AccesscontextmanagerAccessPoliciesAccessZonesCreateRequest(_messages.Messa
 
 
 class AccesscontextmanagerAccessPoliciesAccessZonesDeleteRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessZonesDeleteRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessZonesDeleteRequest object.
 
   Fields:
     name: Required. Resource name for the Access Zone.  Format:
@@ -309,7 +309,7 @@ class AccesscontextmanagerAccessPoliciesAccessZonesDeleteRequest(_messages.Messa
 
 
 class AccesscontextmanagerAccessPoliciesAccessZonesGetRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessZonesGetRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessZonesGetRequest object.
 
   Fields:
     name: Required. Resource name for the Access Zone.  Format:
@@ -320,7 +320,7 @@ class AccesscontextmanagerAccessPoliciesAccessZonesGetRequest(_messages.Message)
 
 
 class AccesscontextmanagerAccessPoliciesAccessZonesListRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessZonesListRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessZonesListRequest object.
 
   Fields:
     pageSize: Number of Access Zones to include in the list. Default 100.
@@ -336,7 +336,7 @@ class AccesscontextmanagerAccessPoliciesAccessZonesListRequest(_messages.Message
 
 
 class AccesscontextmanagerAccessPoliciesAccessZonesPatchRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesAccessZonesPatchRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesAccessZonesPatchRequest object.
 
   Fields:
     accessZone: A AccessZone resource to be passed as the request body.
@@ -353,7 +353,7 @@ class AccesscontextmanagerAccessPoliciesAccessZonesPatchRequest(_messages.Messag
 
 
 class AccesscontextmanagerAccessPoliciesDeleteRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesDeleteRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesDeleteRequest object.
 
   Fields:
     name: Required. Resource name for the access policy to delete.  Format
@@ -364,7 +364,7 @@ class AccesscontextmanagerAccessPoliciesDeleteRequest(_messages.Message):
 
 
 class AccesscontextmanagerAccessPoliciesGetRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesGetRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesGetRequest object.
 
   Fields:
     name: Required. Resource name for the access policy to get.  Format
@@ -375,7 +375,7 @@ class AccesscontextmanagerAccessPoliciesGetRequest(_messages.Message):
 
 
 class AccesscontextmanagerAccessPoliciesListRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesListRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesListRequest object.
 
   Fields:
     pageSize: Number of AccessPolicy instances to include in the list. Default
@@ -392,7 +392,7 @@ class AccesscontextmanagerAccessPoliciesListRequest(_messages.Message):
 
 
 class AccesscontextmanagerAccessPoliciesPatchRequest(_messages.Message):
-  """A AccesscontextmanagerAccessPoliciesPatchRequest object.
+  r"""A AccesscontextmanagerAccessPoliciesPatchRequest object.
 
   Fields:
     accessPolicy: A AccessPolicy resource to be passed as the request body.
@@ -408,7 +408,7 @@ class AccesscontextmanagerAccessPoliciesPatchRequest(_messages.Message):
 
 
 class AccesscontextmanagerOperationsGetRequest(_messages.Message):
-  """A AccesscontextmanagerOperationsGetRequest object.
+  r"""A AccesscontextmanagerOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -418,7 +418,7 @@ class AccesscontextmanagerOperationsGetRequest(_messages.Message):
 
 
 class BasicLevel(_messages.Message):
-  """`BasicLevel` is an `AccessLevel` using a set of recommended features.
+  r"""`BasicLevel` is an `AccessLevel` using a set of recommended features.
 
   Enums:
     CombiningFunctionValueValuesEnum: How the `conditions` list should be
@@ -440,7 +440,7 @@ class BasicLevel(_messages.Message):
   """
 
   class CombiningFunctionValueValuesEnum(_messages.Enum):
-    """How the `conditions` list should be combined to determine if a request
+    r"""How the `conditions` list should be combined to determine if a request
     is granted this `AccessLevel`. If AND is used, each `Condition` in
     `conditions` must be satisfied for the `AccessLevel` to be applied. If OR
     is used, at least one `Condition` in `conditions` must be satisfied for
@@ -458,7 +458,7 @@ class BasicLevel(_messages.Message):
 
 
 class Condition(_messages.Message):
-  """A condition necessary for an `AccessLevel` to be granted. The Condition
+  r"""A condition necessary for an `AccessLevel` to be granted. The Condition
   is an AND over its fields. So a Condition is true if: 1) the request IP is
   from one of the listed subnetworks AND 2) the originating device complies
   with the listed device policy AND 3) all listed access levels are granted
@@ -494,7 +494,7 @@ class Condition(_messages.Message):
 
 
 class ListAccessLevelsResponse(_messages.Message):
-  """A response to `ListAccessLevelsRequest`.
+  r"""A response to `ListAccessLevelsRequest`.
 
   Fields:
     accessLevels: List of the Access Level instances.
@@ -507,7 +507,7 @@ class ListAccessLevelsResponse(_messages.Message):
 
 
 class ListAccessPoliciesResponse(_messages.Message):
-  """A response to `ListAccessPoliciesRequest`.
+  r"""A response to `ListAccessPoliciesRequest`.
 
   Fields:
     accessPolicies: List of the AccessPolicy instances.
@@ -520,7 +520,7 @@ class ListAccessPoliciesResponse(_messages.Message):
 
 
 class ListAccessZonesResponse(_messages.Message):
-  """A response to `ListAccessZonesRequest`.
+  r"""A response to `ListAccessZonesRequest`.
 
   Fields:
     accessZones: List of the Access Zone instances.
@@ -533,8 +533,8 @@ class ListAccessZonesResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -575,7 +575,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -589,7 +589,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -603,7 +603,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -620,7 +620,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -640,7 +640,7 @@ class Operation(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -669,7 +669,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -681,7 +681,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -707,7 +707,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -755,7 +755,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -767,7 +767,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.

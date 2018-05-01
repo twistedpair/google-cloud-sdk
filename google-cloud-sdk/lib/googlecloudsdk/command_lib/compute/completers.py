@@ -14,6 +14,8 @@
 
 """Compute resource completers for the core.cache.completion_cache module."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.command_lib.resource_manager import completers as resource_manager_completers

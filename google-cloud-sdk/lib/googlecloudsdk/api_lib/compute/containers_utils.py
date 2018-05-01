@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Functions for creating GCE container (Docker) deployments."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import itertools
-import json
 import re
-import shlex
 import enum
 
-from googlecloudsdk.api_lib.compute import file_utils
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import times
+import six
 
 USER_INIT_TEMPLATE = """#cloud-config
 runcmd:
@@ -32,6 +32,13 @@ runcmd:
    '--manifest-url=http://metadata.google.internal/computeMetadata/v1/instance/attributes/google-container-manifest',
    '--manifest-url-header=Metadata-Flavor:Google',
    '--config=/etc/kubernetes/manifests']
+"""
+
+MANIFEST_DISCLAIMER = """# DISCLAIMER:
+# This container declaration format is not a public API and may change without
+# notice. Please use gcloud command-line tool or Google Cloud Console to run
+# Containers on Google Compute Engine.
+
 """
 
 USER_DATA_KEY = 'user-data'
@@ -68,17 +75,6 @@ def _GetUserInit(allow_privileged):
   return USER_INIT_TEMPLATE % (allow_privileged_val)
 
 
-def _GetContainerManifest(
-    name, container_manifest, docker_image, port_mappings, run_command,
-    run_as_privileged):
-  """Loads container manifest from file or creates a new one."""
-  if container_manifest:
-    return file_utils.ReadFile(container_manifest, 'container manifest')
-  else:
-    return CreateContainerManifest(name, docker_image, port_mappings,
-                                   run_command, run_as_privileged)
-
-
 class InvalidMetadataKeyException(exceptions.ToolException):
   """InvalidMetadataKeyException is for not allowed metadata keys."""
 
@@ -97,32 +93,6 @@ class NoGceContainerDeclarationMetadataKey(core_exceptions.Error):
             GCE_CONTAINER_DECLARATION))
 
 
-def CreateContainerManifest(
-    name, docker_image, port_mappings, run_command, run_as_privileged):
-  """Create container deployment manifest."""
-  container = {
-      'name': name,
-      'image': docker_image,
-      'imagePullPolicy': 'Always'
-  }
-  config = {
-      'apiVersion': 'v1',
-      'kind': 'Pod',
-      'metadata': {'name': name},
-      'spec': {'containers': [container]}
-  }
-  if port_mappings:
-    container['ports'] = _ValidateAndParsePortMapping(port_mappings)
-  if run_command:
-    try:
-      container['command'] = shlex.split(run_command)
-    except ValueError as e:
-      raise exceptions.InvalidArgumentException('--run-command', str(e))
-  if run_as_privileged:
-    container['securityContext'] = {'privileged': True}
-  return json.dumps(config, indent=2, sort_keys=True)
-
-
 def ValidateUserMetadata(metadata):
   """Validates if user-specified metadata.
 
@@ -137,28 +107,6 @@ def ValidateUserMetadata(metadata):
   for entry in metadata.items:
     if entry.key in [USER_DATA_KEY, CONTAINER_MANIFEST_KEY, GKE_DOCKER]:
       raise InvalidMetadataKeyException(entry.key)
-
-
-def CreateMetadataMessage(
-    messages, run_as_privileged, container_manifest, docker_image,
-    port_mappings, run_command, user_metadata, name):
-  """Create metadata message with parameters for running Docker."""
-  user_init = _GetUserInit(run_as_privileged)
-  container_manifest = _GetContainerManifest(
-      name=name,
-      container_manifest=container_manifest,
-      docker_image=docker_image,
-      port_mappings=port_mappings,
-      run_command=run_command,
-      run_as_privileged=run_as_privileged)
-  docker_metadata = {}
-  docker_metadata[GKE_DOCKER] = 'true'
-  docker_metadata[USER_DATA_KEY] = user_init
-  docker_metadata[CONTAINER_MANIFEST_KEY] = container_manifest
-  return metadata_utils.ConstructMetadataMessage(
-      messages,
-      metadata=docker_metadata,
-      existing_metadata=user_metadata)
 
 
 def CreateTagsMessage(messages, tags):
@@ -189,7 +137,7 @@ def GetLabelsMessageWithCosVersion(
   labels['container-vm'] = cos_version
   additional_properties = [
       resource_class.LabelsValue.AdditionalProperty(key=k, value=v)
-      for k, v in sorted(labels.iteritems())]
+      for k, v in sorted(six.iteritems(labels))]
   return resource_class.LabelsValue(additionalProperties=additional_properties)
 
 
@@ -380,13 +328,13 @@ def _CreateContainerManifest(args, instance_name):
 
   env_vars = _ReadDictionary(args.container_env_file)
   for env_var_dict in args.container_env or []:
-    for env, val in env_var_dict.iteritems():
+    for env, val in six.iteritems(env_var_dict):
       env_vars[env] = val
   if env_vars:
     container['env'] = [{
         'name': env,
         'value': val
-    } for env, val in env_vars.iteritems()]
+    } for env, val in six.iteritems(env_vars)]
 
   volumes = []
   volume_mounts = []
@@ -424,7 +372,7 @@ def _CreateContainerManifest(args, instance_name):
 
 def DumpYaml(data):
   """Dumps data dict to YAML in format expected by Konlet."""
-  return yaml.dump(data)
+  return MANIFEST_DISCLAIMER + yaml.dump(data)
 
 
 def _CreateYamlContainerManifest(args, instance_name):
@@ -491,7 +439,7 @@ def UpdateMetadata(metadata, args):
     manifest['spec']['restartPolicy'] = RESTART_POLICY_API[
         args.container_restart_policy]
 
-  metadata.value = yaml.dump(manifest)
+  metadata.value = DumpYaml(manifest)
 
 
 def _UpdateMounts(manifest, remove_container_mounts, container_mount_host_path,
@@ -584,10 +532,10 @@ def _UpdateEnv(manifest, remove_container_env, container_env_file,
   current_env.update(_ReadDictionary(container_env_file))
 
   for env_var_dict in container_env:
-    for env, val in env_var_dict.iteritems():
+    for env, val in six.iteritems(env_var_dict):
       current_env[env] = val
   if current_env:
     manifest['spec']['containers'][0]['env'] = [{
         'name': env,
         'value': val
-    } for env, val in current_env.iteritems()]
+    } for env, val in six.iteritems(current_env)]

@@ -23,7 +23,7 @@ from googlecloudsdk.core import log
 import six
 
 
-def Patch(env_resource, field_mask, patch, async):
+def Patch(env_resource, field_mask, patch, is_async):
   """Patches an Environment, optionally waiting for the operation to complete.
 
   This function is intended to perform the common work of an Environment
@@ -36,23 +36,23 @@ def Patch(env_resource, field_mask, patch, async):
     field_mask: str, a field mask string containing comma-separated paths to be
         patched
     patch: Environment, a patch Environment containing updated values to apply
-    async: bool, whether or not to perform the patch asynchronously
+    is_async: bool, whether or not to perform the patch asynchronously
 
   Returns:
-    an Operation corresponding to the Patch call if `async` is True; otherwise
-    None is returned after the operation is complete
+    an Operation corresponding to the Patch call if `is_async` is True;
+    otherwise None is returned after the operation is complete
 
   Raises:
-    command_util.Error: if `async` is False and the operation encounters an
-        error
+    command_util.Error: if `is_async` is False and the operation encounters
+    an error
   """
   operation = environments_api_util.Patch(env_resource, patch, field_mask)
   details = 'with operation [{0}]'.format(operation.name)
-  if async:
+  if is_async:
     log.UpdatedResource(
         env_resource.RelativeName(),
         kind='environment',
-        async=True,
+        is_async=True,
         details=details)
     return operation
 
@@ -65,7 +65,8 @@ def Patch(env_resource, field_mask, patch, async):
         env_resource.RelativeName(), six.text_type(e)))
 
 
-def ConstructPatch(node_count=None,
+def ConstructPatch(env_ref=None,
+                   node_count=None,
                    update_pypi_packages_from_file=None,
                    clear_pypi_packages=None,
                    remove_pypi_packages=None,
@@ -82,6 +83,8 @@ def ConstructPatch(node_count=None,
   """Constructs an environment patch.
 
   Args:
+    env_ref: resource argument, Environment resource argument for environment
+      being updated.
     node_count: int, the desired node count
     update_pypi_packages_from_file: str, path to local requirements file
       containing desired pypi dependencies.
@@ -118,8 +121,7 @@ def ConstructPatch(node_count=None,
     return _ConstructPyPiPackagesPatch(
         True, [],
         command_util.ParseRequirementsFile(update_pypi_packages_from_file))
-  if (clear_pypi_packages or remove_pypi_packages or
-      update_pypi_packages):
+  if clear_pypi_packages or remove_pypi_packages or update_pypi_packages:
     return _ConstructPyPiPackagesPatch(
         clear_pypi_packages, remove_pypi_packages, update_pypi_packages)
   if clear_labels or remove_labels or update_labels:
@@ -128,10 +130,10 @@ def ConstructPatch(node_count=None,
       update_airflow_configs):
     return _ConstructAirflowConfigsPatch(
         clear_airflow_configs, remove_airflow_configs, update_airflow_configs)
-  if (clear_env_variables or remove_env_variables or
-      update_env_variables):
-    return _ConstructEnvVariablesPatch(
-        clear_env_variables, remove_env_variables, update_env_variables)
+  if clear_env_variables or remove_env_variables or update_env_variables:
+    return _ConstructEnvVariablesPatch(env_ref, clear_env_variables,
+                                       remove_env_variables,
+                                       update_env_variables)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 
@@ -150,8 +152,8 @@ def _ConstructNodeCountPatch(node_count):
   return 'config.node_count', messages.Environment(config=config)
 
 
-def _ConstructPyPiPackagesPatch(
-    clear_pypi_packages, remove_pypi_packages, update_pypi_packages):
+def _ConstructPyPiPackagesPatch(clear_pypi_packages, remove_pypi_packages,
+                                update_pypi_packages):
   """Constructs an environment patch for partially updating PyPI packages.
 
   Args:
@@ -166,14 +168,12 @@ def _ConstructPyPiPackagesPatch(
   """
   messages = api_util.GetMessagesModule()
   env_cls = messages.Environment
-  pypi_packages_cls = (
-      messages.SoftwareConfig.PypiPackagesValue)
+  pypi_packages_cls = (messages.SoftwareConfig.PypiPackagesValue)
   entry_cls = pypi_packages_cls.AdditionalProperty
 
   def _BuildEnv(entries):
     software_config = messages.SoftwareConfig(
-        pypiPackages=pypi_packages_cls(
-            additionalProperties=entries))
+        pypiPackages=pypi_packages_cls(additionalProperties=entries))
     config = messages.EnvironmentConfig(softwareConfig=software_config)
     return env_cls(config=config)
 
@@ -238,11 +238,22 @@ def _ConstructAirflowConfigsPatch(clear_airflow_configs, remove_airflow_configs,
       'config.software_config.airflow_config_overrides', entry_cls, _BuildEnv)
 
 
-def _ConstructEnvVariablesPatch(clear_env_variables, remove_env_variables,
-                                update_env_variables):
+def _ConstructEnvVariablesPatch(env_ref, clear_env_variables,
+                                remove_env_variables, update_env_variables):
   """Constructs an environment patch for updating environment variables.
 
+  Note that environment variable updates do not support partial update masks
+  unlike other map updates due to comments in (b/78298321). For this reason, we
+  need to retrieve the Environment, apply an update on EnvVariable dictionary,
+  and patch the entire dictionary. The potential race condition here
+  (environment variables being updated between when we retrieve them and when we
+  send patch request)is not a concern since environment variable updates take
+  5 mins to complete, and environments cannot be updated while already in the
+  updating state.
+
   Args:
+    env_ref: resource argument, Environment resource argument for environment
+      being updated.
     clear_env_variables: bool, whether to clear the environment variables
       dictionary.
     remove_env_variables: iterable(string), Iterable of environment variable
@@ -253,6 +264,12 @@ def _ConstructEnvVariablesPatch(clear_env_variables, remove_env_variables,
   Returns:
     (str, Environment), the field mask and environment to use for update.
   """
+  env_obj = environments_api_util.Get(env_ref)
+  initial_env_var_value = env_obj.config.softwareConfig.envVariables
+  initial_env_var_list = (
+      initial_env_var_value.additionalProperties
+      if initial_env_var_value else [])
+
   messages = api_util.GetMessagesModule()
   env_cls = messages.Environment
   env_variables_cls = messages.SoftwareConfig.EnvVariablesValue
@@ -264,6 +281,7 @@ def _ConstructEnvVariablesPatch(clear_env_variables, remove_env_variables,
     config = messages.EnvironmentConfig(softwareConfig=software_config)
     return env_cls(config=config)
 
-  return command_util.BuildPartialUpdate(
-      clear_env_variables, remove_env_variables, update_env_variables,
-      'config.software_config.env_variables', entry_cls, _BuildEnv)
+  return ('config.software_config.env_variables',
+          command_util.BuildFullMapUpdate(
+              clear_env_variables, remove_env_variables, update_env_variables,
+              initial_env_var_list, entry_cls, _BuildEnv))

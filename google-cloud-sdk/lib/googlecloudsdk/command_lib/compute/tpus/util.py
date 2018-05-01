@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """CLI Utilities for cloud tpu commands."""
+from __future__ import absolute_import
 from collections import OrderedDict
 import copy
 

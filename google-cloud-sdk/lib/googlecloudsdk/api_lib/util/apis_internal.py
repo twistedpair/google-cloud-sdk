@@ -235,4 +235,6 @@ def _GetApiCollections(api_name, api_version):
           collection.collection_name,
           collection.path,
           collection.flat_paths,
-          collection.params)
+          collection.params,
+          collection.enable_uri_parsing,
+      )

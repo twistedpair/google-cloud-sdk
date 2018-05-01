@@ -98,13 +98,13 @@ def IsServiceEnabled(project_id, service_name):
   return False
 
 
-def EnableServiceIfDisabled(project_id, service_name, async=False):
+def EnableServiceIfDisabled(project_id, service_name, is_async=False):
   """Check to see if the service is enabled, and if it is not, do so.
 
   Args:
     project_id: The ID of the project for which to enable the service.
     service_name: The name of the service to enable on the project.
-    async: bool, if True, print the operation ID and return immediately,
+    is_async: bool, if True, print the operation ID and return immediately,
            without waiting for the op to complete.
 
   Raises:
@@ -130,4 +130,4 @@ def EnableServiceIfDisabled(project_id, service_name, async=False):
   operation = EnableServiceApiCall(project_id, service_name)
 
   # Process the enable operation
-  services_util.ProcessOperationResult(operation, async)
+  services_util.ProcessOperationResult(operation, is_async)

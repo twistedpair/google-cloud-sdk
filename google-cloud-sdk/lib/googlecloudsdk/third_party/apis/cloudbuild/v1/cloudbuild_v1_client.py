@@ -51,7 +51,7 @@ class CloudbuildV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
 makes a best effort to cancel the operation, but success is not
 guaranteed.  If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.  Clients can use
@@ -87,7 +87,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -116,7 +116,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding
@@ -162,7 +162,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels a build in progress.
+      r"""Cancels a build in progress.
 
       Args:
         request: (CloudbuildProjectsBuildsCancelRequest) input message
@@ -188,7 +188,7 @@ is the parent resource, without the operations collection id.
     )
 
     def Create(self, request, global_params=None):
-      """Starts a build with the specified configuration.
+      r"""Starts a build with the specified configuration.
 
 This method returns a long-running `Operation`, which includes the build
 ID. Pass the build ID to `GetBuild` to determine the build status (such as
@@ -218,7 +218,7 @@ ID. Pass the build ID to `GetBuild` to determine the build status (such as
     )
 
     def Get(self, request, global_params=None):
-      """Returns information about a previously requested build.
+      r"""Returns information about a previously requested build.
 
 The `Build` that is returned includes its status (such as `SUCCESS`,
 `FAILURE`, or `WORKING`), and timing information.
@@ -247,7 +247,7 @@ The `Build` that is returned includes its status (such as `SUCCESS`,
     )
 
     def List(self, request, global_params=None):
-      """Lists previously requested builds.
+      r"""Lists previously requested builds.
 
 Previously requested builds may still be in-progress, or may have finished
 successfully or unsuccessfully.
@@ -276,7 +276,7 @@ successfully or unsuccessfully.
     )
 
     def Retry(self, request, global_params=None):
-      """Creates a new build based on the specified build.
+      r"""Creates a new build based on the specified build.
 
 This method creates a new build using the original build request, which may
 or may not result in an identical build.
@@ -338,7 +338,7 @@ lifecycle management settings.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new `BuildTrigger`.
+      r"""Creates a new `BuildTrigger`.
 
 This API is experimental.
 
@@ -366,7 +366,7 @@ This API is experimental.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a `BuildTrigger` by its project ID and trigger ID.
+      r"""Deletes a `BuildTrigger` by its project ID and trigger ID.
 
 This API is experimental.
 
@@ -394,7 +394,7 @@ This API is experimental.
     )
 
     def Get(self, request, global_params=None):
-      """Returns information about a `BuildTrigger`.
+      r"""Returns information about a `BuildTrigger`.
 
 This API is experimental.
 
@@ -422,7 +422,7 @@ This API is experimental.
     )
 
     def List(self, request, global_params=None):
-      """Lists existing `BuildTrigger`s.
+      r"""Lists existing `BuildTrigger`s.
 
 This API is experimental.
 
@@ -450,7 +450,7 @@ This API is experimental.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a `BuildTrigger` by its project ID and trigger ID.
+      r"""Updates a `BuildTrigger` by its project ID and trigger ID.
 
 This API is experimental.
 
@@ -478,7 +478,7 @@ This API is experimental.
     )
 
     def Run(self, request, global_params=None):
-      """Runs a `BuildTrigger` at a particular source revision.
+      r"""Runs a `BuildTrigger` at a particular source revision.
 
       Args:
         request: (CloudbuildProjectsTriggersRunRequest) input message

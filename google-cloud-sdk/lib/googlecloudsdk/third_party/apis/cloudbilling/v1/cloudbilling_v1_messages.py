@@ -13,7 +13,7 @@ package = 'cloudbilling'
 
 
 class AggregationInfo(_messages.Message):
-  """Represents the aggregation level and interval for pricing of a single
+  r"""Represents the aggregation level and interval for pricing of a single
   SKU.
 
   Enums:
@@ -29,7 +29,7 @@ class AggregationInfo(_messages.Message):
   """
 
   class AggregationIntervalValueValuesEnum(_messages.Enum):
-    """AggregationIntervalValueValuesEnum enum type.
+    r"""AggregationIntervalValueValuesEnum enum type.
 
     Values:
       AGGREGATION_INTERVAL_UNSPECIFIED: <no description>
@@ -41,7 +41,7 @@ class AggregationInfo(_messages.Message):
     MONTHLY = 2
 
   class AggregationLevelValueValuesEnum(_messages.Enum):
-    """AggregationLevelValueValuesEnum enum type.
+    r"""AggregationLevelValueValuesEnum enum type.
 
     Values:
       AGGREGATION_LEVEL_UNSPECIFIED: <no description>
@@ -58,7 +58,7 @@ class AggregationInfo(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -91,7 +91,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -108,7 +108,7 @@ class AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -126,7 +126,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class BillingAccount(_messages.Message):
-  """A billing account in [GCP Console](https://console.cloud.google.com/).
+  r"""A billing account in [GCP Console](https://console.cloud.google.com/).
   You can assign a billing account to one or more projects.
 
   Fields:
@@ -154,7 +154,7 @@ class BillingAccount(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -164,8 +164,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -179,7 +179,7 @@ class Binding(_messages.Message):
 
 
 class Category(_messages.Message):
-  """Represents the category hierarchy of a SKU.
+  r"""Represents the category hierarchy of a SKU.
 
   Fields:
     resourceFamily: The type of product the SKU refers to. Example: "Compute",
@@ -198,7 +198,7 @@ class Category(_messages.Message):
 
 
 class CloudbillingBillingAccountsGetIamPolicyRequest(_messages.Message):
-  """A CloudbillingBillingAccountsGetIamPolicyRequest object.
+  r"""A CloudbillingBillingAccountsGetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -210,7 +210,7 @@ class CloudbillingBillingAccountsGetIamPolicyRequest(_messages.Message):
 
 
 class CloudbillingBillingAccountsGetRequest(_messages.Message):
-  """A CloudbillingBillingAccountsGetRequest object.
+  r"""A CloudbillingBillingAccountsGetRequest object.
 
   Fields:
     name: The resource name of the billing account to retrieve. For example,
@@ -221,7 +221,7 @@ class CloudbillingBillingAccountsGetRequest(_messages.Message):
 
 
 class CloudbillingBillingAccountsListRequest(_messages.Message):
-  """A CloudbillingBillingAccountsListRequest object.
+  r"""A CloudbillingBillingAccountsListRequest object.
 
   Fields:
     filter: Options for how to filter the returned billing accounts. Currently
@@ -244,7 +244,7 @@ class CloudbillingBillingAccountsListRequest(_messages.Message):
 
 
 class CloudbillingBillingAccountsPatchRequest(_messages.Message):
-  """A CloudbillingBillingAccountsPatchRequest object.
+  r"""A CloudbillingBillingAccountsPatchRequest object.
 
   Fields:
     billingAccount: A BillingAccount resource to be passed as the request
@@ -260,7 +260,7 @@ class CloudbillingBillingAccountsPatchRequest(_messages.Message):
 
 
 class CloudbillingBillingAccountsProjectsListRequest(_messages.Message):
-  """A CloudbillingBillingAccountsProjectsListRequest object.
+  r"""A CloudbillingBillingAccountsProjectsListRequest object.
 
   Fields:
     name: The resource name of the billing account associated with the
@@ -280,7 +280,7 @@ class CloudbillingBillingAccountsProjectsListRequest(_messages.Message):
 
 
 class CloudbillingBillingAccountsSetIamPolicyRequest(_messages.Message):
-  """A CloudbillingBillingAccountsSetIamPolicyRequest object.
+  r"""A CloudbillingBillingAccountsSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -295,7 +295,7 @@ class CloudbillingBillingAccountsSetIamPolicyRequest(_messages.Message):
 
 
 class CloudbillingBillingAccountsTestIamPermissionsRequest(_messages.Message):
-  """A CloudbillingBillingAccountsTestIamPermissionsRequest object.
+  r"""A CloudbillingBillingAccountsTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -310,7 +310,7 @@ class CloudbillingBillingAccountsTestIamPermissionsRequest(_messages.Message):
 
 
 class CloudbillingProjectsGetBillingInfoRequest(_messages.Message):
-  """A CloudbillingProjectsGetBillingInfoRequest object.
+  r"""A CloudbillingProjectsGetBillingInfoRequest object.
 
   Fields:
     name: The resource name of the project for which billing information is
@@ -321,7 +321,7 @@ class CloudbillingProjectsGetBillingInfoRequest(_messages.Message):
 
 
 class CloudbillingProjectsUpdateBillingInfoRequest(_messages.Message):
-  """A CloudbillingProjectsUpdateBillingInfoRequest object.
+  r"""A CloudbillingProjectsUpdateBillingInfoRequest object.
 
   Fields:
     name: The resource name of the project associated with the billing
@@ -336,7 +336,7 @@ class CloudbillingProjectsUpdateBillingInfoRequest(_messages.Message):
 
 
 class CloudbillingServicesListRequest(_messages.Message):
-  """A CloudbillingServicesListRequest object.
+  r"""A CloudbillingServicesListRequest object.
 
   Fields:
     pageSize: Requested page size. Defaults to 5000.
@@ -350,7 +350,7 @@ class CloudbillingServicesListRequest(_messages.Message):
 
 
 class CloudbillingServicesSkusListRequest(_messages.Message):
-  """A CloudbillingServicesSkusListRequest object.
+  r"""A CloudbillingServicesSkusListRequest object.
 
   Fields:
     currencyCode: The ISO 4217 currency code for the pricing info in the
@@ -384,7 +384,7 @@ class CloudbillingServicesSkusListRequest(_messages.Message):
 
 
 class ListBillingAccountsResponse(_messages.Message):
-  """Response message for `ListBillingAccounts`.
+  r"""Response message for `ListBillingAccounts`.
 
   Fields:
     billingAccounts: A list of billing accounts.
@@ -399,7 +399,7 @@ class ListBillingAccountsResponse(_messages.Message):
 
 
 class ListProjectBillingInfoResponse(_messages.Message):
-  """Request message for `ListProjectBillingInfoResponse`.
+  r"""Request message for `ListProjectBillingInfoResponse`.
 
   Fields:
     nextPageToken: A token to retrieve the next page of results. To retrieve
@@ -415,7 +415,7 @@ class ListProjectBillingInfoResponse(_messages.Message):
 
 
 class ListServicesResponse(_messages.Message):
-  """Response message for `ListServices`.
+  r"""Response message for `ListServices`.
 
   Fields:
     nextPageToken: A token to retrieve the next page of results. To retrieve
@@ -430,7 +430,7 @@ class ListServicesResponse(_messages.Message):
 
 
 class ListSkusResponse(_messages.Message):
-  """Response message for `ListSkus`.
+  r"""Response message for `ListSkus`.
 
   Fields:
     nextPageToken: A token to retrieve the next page of results. To retrieve
@@ -445,7 +445,7 @@ class ListSkusResponse(_messages.Message):
 
 
 class Money(_messages.Message):
-  """Represents an amount of money with its currency type.
+  r"""Represents an amount of money with its currency type.
 
   Fields:
     currencyCode: The 3-letter currency code defined in ISO 4217.
@@ -465,19 +465,24 @@ class Money(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -502,7 +507,7 @@ class Policy(_messages.Message):
 
 
 class PricingExpression(_messages.Message):
-  """Expresses a mathematical pricing formula. For Example:-  `usage_unit:
+  r"""Expresses a mathematical pricing formula. For Example:-  `usage_unit:
   GBy` `tiered_rates:`    `[start_usage_amount: 20, unit_price: $10]`
   `[start_usage_amount: 100, unit_price: $5]`  The above expresses a pricing
   formula where the first 20GB is free, the next 80GB is priced at $10 per GB
@@ -545,7 +550,7 @@ class PricingExpression(_messages.Message):
 
 
 class PricingInfo(_messages.Message):
-  """Represents the pricing information for a SKU at a single point of time.
+  r"""Represents the pricing information for a SKU at a single point of time.
 
   Fields:
     aggregationInfo: Aggregation Info. This can be left unspecified if the
@@ -575,9 +580,9 @@ class PricingInfo(_messages.Message):
 
 
 class ProjectBillingInfo(_messages.Message):
-  """Encapsulation of billing information for a GCP Console project. A project
-  has at most one associated billing account at a time (but a billing account
-  can be assigned to multiple projects).
+  r"""Encapsulation of billing information for a GCP Console project. A
+  project has at most one associated billing account at a time (but a billing
+  account can be assigned to multiple projects).
 
   Fields:
     billingAccountName: The resource name of the billing account associated
@@ -604,7 +609,7 @@ class ProjectBillingInfo(_messages.Message):
 
 
 class Service(_messages.Message):
-  """Encapsulates a single service in Google Cloud Platform.
+  r"""Encapsulates a single service in Google Cloud Platform.
 
   Fields:
     displayName: A human readable display name for this service.
@@ -619,7 +624,7 @@ class Service(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -637,7 +642,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class Sku(_messages.Message):
-  """Encapsulates a single SKU in Google Cloud Platform
+  r"""Encapsulates a single SKU in Google Cloud Platform
 
   Fields:
     category: The category hierarchy of this SKU, purely for organizational
@@ -666,7 +671,7 @@ class Sku(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -695,7 +700,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -707,7 +712,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -733,7 +738,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -746,7 +751,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -757,7 +762,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class TierRate(_messages.Message):
-  """The price rate indicating starting usage and its corresponding price.
+  r"""The price rate indicating starting usage and its corresponding price.
 
   Fields:
     startUsageAmount: Usage is priced at this rate only after this amount.

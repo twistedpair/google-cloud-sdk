@@ -12,18 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions for dealing with metadata."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import copy
 
 from googlecloudsdk.api_lib.compute import file_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+import six
 
 
 def _DictToMetadataMessage(message_classes, metadata_dict):
   """Converts a metadata dict to a Metadata message."""
   message = message_classes.Metadata()
   if metadata_dict:
-    for key, value in sorted(metadata_dict.iteritems()):
+    for key, value in sorted(six.iteritems(metadata_dict)):
       message.items.append(message_classes.Metadata.ItemsValueListEntry(
           key=key,
           value=value))
@@ -65,7 +68,7 @@ def ConstructMetadataMessage(message_classes,
   metadata_from_file = metadata_from_file or {}
 
   new_metadata_dict = copy.deepcopy(metadata)
-  for key, file_path in metadata_from_file.iteritems():
+  for key, file_path in six.iteritems(metadata_from_file):
     if key in new_metadata_dict:
       raise exceptions.ToolException(
           'Encountered duplicate metadata key [{0}].'.format(key))

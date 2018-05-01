@@ -53,7 +53,7 @@ class PubsubV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """[ALPHA] This method is a part of a closed Alpha API.
+      r"""[ALPHA] This method is a part of a closed Alpha API.
 Creates a snapshot from the requested subscription.
 If the snapshot already exists, returns `ALREADY_EXISTS`.
 If the requested subscription doesn't exist, returns `NOT_FOUND`.
@@ -94,7 +94,7 @@ requests, you must specify a name in the request.
     )
 
     def Delete(self, request, global_params=None):
-      """Removes an existing snapshot. All messages retained in the snapshot.
+      r"""Removes an existing snapshot. All messages retained in the snapshot.
 are immediately dropped. After a snapshot is deleted, a new one may be
 created with the same name, but the new one has no association with the old
 snapshot or its subscription, unless the same subscription is specified.
@@ -125,7 +125,7 @@ snapshot or its subscription, unless the same subscription is specified.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the configuration details of a snapshot.
+      r"""Gets the configuration details of a snapshot.
 [ALPHA] This method is a part of a closed Alpha API.
 
       Args:
@@ -153,7 +153,7 @@ snapshot or its subscription, unless the same subscription is specified.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -182,7 +182,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists the existing snapshots.
+      r"""Lists the existing snapshots.
 [ALPHA] This method is a part of a closed Alpha API.
 
       Args:
@@ -210,7 +210,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing snapshot. Note that certain properties of a.
+      r"""Updates an existing snapshot. Note that certain properties of a.
 snapshot are not modifiable.
 [ALPHA] This method is a part of a closed Alpha API.
 
@@ -239,7 +239,7 @@ snapshot are not modifiable.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -267,7 +267,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -310,7 +310,7 @@ may "fail open" without warning.
           }
 
     def Acknowledge(self, request, global_params=None):
-      """Acknowledges the messages associated with the `ack_ids` in the.
+      r"""Acknowledges the messages associated with the `ack_ids` in the.
 `AcknowledgeRequest`. The Pub/Sub system can remove the relevant messages
 from the subscription.
 
@@ -343,7 +343,7 @@ than once will not result in an error.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a subscription to a given topic.
+      r"""Creates a subscription to a given topic.
 If the subscription already exists, returns `ALREADY_EXISTS`.
 If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 
@@ -379,7 +379,7 @@ Note that for REST API requests, you must specify a name in the request.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an existing subscription. All messages retained in the subscription.
+      r"""Deletes an existing subscription. All messages retained in the subscription.
 are immediately dropped. Calls to `Pull` after deletion will return
 `NOT_FOUND`. After a subscription is deleted, a new one may be created with
 the same name, but the new one has no association with the old
@@ -410,7 +410,7 @@ subscription or its topic unless the same topic is specified.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the configuration details of a subscription.
+      r"""Gets the configuration details of a subscription.
 
       Args:
         request: (PubsubProjectsSubscriptionsGetRequest) input message
@@ -437,7 +437,7 @@ subscription or its topic unless the same topic is specified.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -466,7 +466,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists matching subscriptions.
+      r"""Lists matching subscriptions.
 
       Args:
         request: (PubsubProjectsSubscriptionsListRequest) input message
@@ -493,7 +493,7 @@ set.
     )
 
     def ModifyAckDeadline(self, request, global_params=None):
-      """Modifies the ack deadline for a specific message. This method is useful.
+      r"""Modifies the ack deadline for a specific message. This method is useful.
 to indicate that more time is needed to process a message by the
 subscriber, or to make the message available for redelivery if the
 processing was interrupted. Note that this does not modify the
@@ -524,7 +524,7 @@ subscription-level `ackDeadlineSeconds` used for subsequent messages.
     )
 
     def ModifyPushConfig(self, request, global_params=None):
-      """Modifies the `PushConfig` for a specified subscription.
+      r"""Modifies the `PushConfig` for a specified subscription.
 
 This may be used to change a push subscription to a pull one (signified by
 an empty `PushConfig`) or vice versa, or change the endpoint URL and other
@@ -556,7 +556,7 @@ continuously through the call regardless of changes to the `PushConfig`.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing subscription. Note that certain properties of a.
+      r"""Updates an existing subscription. Note that certain properties of a.
 subscription, such as its topic, are not modifiable.
 
       Args:
@@ -584,7 +584,7 @@ subscription, such as its topic, are not modifiable.
     )
 
     def Pull(self, request, global_params=None):
-      """Pulls messages from the server. Returns an empty list if there are no.
+      r"""Pulls messages from the server. Returns an empty list if there are no.
 messages available in the backlog. The server may return `UNAVAILABLE` if
 there are too many concurrent pull requests pending for the given
 subscription.
@@ -614,7 +614,7 @@ subscription.
     )
 
     def Seek(self, request, global_params=None):
-      """Seeks an existing subscription to a point in time or to a given snapshot,.
+      r"""Seeks an existing subscription to a point in time or to a given snapshot,.
 whichever is provided in the request.
 [ALPHA] This method is a part of a closed Alpha API.
 
@@ -643,7 +643,7 @@ whichever is provided in the request.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -671,7 +671,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -714,7 +714,7 @@ may "fail open" without warning.
           }
 
     def List(self, request, global_params=None):
-      """Lists the names of the snapshots on this topic.
+      r"""Lists the names of the snapshots on this topic.
 [ALPHA] This method is a part of a closed Alpha API.
 
       Args:
@@ -752,7 +752,7 @@ may "fail open" without warning.
           }
 
     def List(self, request, global_params=None):
-      """Lists the names of the subscriptions on this topic.
+      r"""Lists the names of the subscriptions on this topic.
 
       Args:
         request: (PubsubProjectsTopicsSubscriptionsListRequest) input message
@@ -789,7 +789,7 @@ may "fail open" without warning.
           }
 
     def Create(self, request, global_params=None):
-      """Creates the given topic with the given name.
+      r"""Creates the given topic with the given name.
 
       Args:
         request: (Topic) input message
@@ -816,7 +816,7 @@ may "fail open" without warning.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the topic with the given name. Returns `NOT_FOUND` if the topic.
+      r"""Deletes the topic with the given name. Returns `NOT_FOUND` if the topic.
 does not exist. After a topic is deleted, a new topic may be created with
 the same name; this is an entirely new topic with none of the old
 configuration or subscriptions. Existing subscriptions to this topic are
@@ -847,7 +847,7 @@ not deleted, but their `topic` field is set to `_deleted-topic_`.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the configuration of a topic.
+      r"""Gets the configuration of a topic.
 
       Args:
         request: (PubsubProjectsTopicsGetRequest) input message
@@ -874,7 +874,7 @@ not deleted, but their `topic` field is set to `_deleted-topic_`.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -903,7 +903,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists matching topics.
+      r"""Lists matching topics.
 
       Args:
         request: (PubsubProjectsTopicsListRequest) input message
@@ -930,7 +930,7 @@ set.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing topic. Note that certain properties of a.
+      r"""Updates an existing topic. Note that certain properties of a.
 topic are not modifiable.
 
       Args:
@@ -958,7 +958,7 @@ topic are not modifiable.
     )
 
     def Publish(self, request, global_params=None):
-      """Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic.
+      r"""Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic.
 does not exist. The message payload must not be empty; it must contain
  either a non-empty data field, or at least one attribute.
 
@@ -987,7 +987,7 @@ does not exist. The message payload must not be empty; it must contain
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -1015,7 +1015,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 

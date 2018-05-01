@@ -14,7 +14,7 @@ package = 'containeranalysis'
 
 
 class Artifact(_messages.Message):
-  """Artifact describes a build product.
+  r"""Artifact describes a build product.
 
   Fields:
     checksum: Hash or checksum value of a binary, or Docker Registry 2.0
@@ -42,7 +42,7 @@ class Artifact(_messages.Message):
 
 
 class Attestation(_messages.Message):
-  """Occurrence that represents a single "attestation".  The authenticity of
+  r"""Occurrence that represents a single "attestation".  The authenticity of
   an Attestation can be verified using the attached signature. If the verifier
   trusts the public key of the signer, then verifying the signature is
   sufficient to establish trust.  In this circumstance, the
@@ -59,7 +59,7 @@ class Attestation(_messages.Message):
 
 
 class AttestationAuthority(_messages.Message):
-  """Note kind that represents a logical attestation "role" or "authority".
+  r"""Note kind that represents a logical attestation "role" or "authority".
   For example, an organization might have one `AttestationAuthority` for "QA"
   and one for "build".  This Note is intended to act strictly as a grouping
   mechanism for the attached Occurrences (Attestations).  This grouping
@@ -76,7 +76,7 @@ class AttestationAuthority(_messages.Message):
 
 
 class AttestationAuthorityHint(_messages.Message):
-  """This submessage provides human-readable hints about the purpose of the
+  r"""This submessage provides human-readable hints about the purpose of the
   AttestationAuthority.  Because the name of a Note acts as its resource
   reference, it is important to disambiguate the canonical name of the Note
   (which might be a UUID for security purposes) from "readable" names more
@@ -93,7 +93,7 @@ class AttestationAuthorityHint(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -126,7 +126,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -143,7 +143,7 @@ class AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -161,7 +161,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Basis(_messages.Message):
-  """Basis describes the base image portion (Note) of the DockerImage
+  r"""Basis describes the base image portion (Note) of the DockerImage
   relationship.  Linked occurrences are derived from this or an equivalent
   image via:   FROM <Basis.resource_url> Or an equivalent reference, e.g. a
   tag of the resource_url.
@@ -177,7 +177,7 @@ class Basis(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -187,8 +187,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -202,7 +202,7 @@ class Binding(_messages.Message):
 
 
 class BuildDetails(_messages.Message):
-  """Message encapsulating build provenance details.
+  r"""Message encapsulating build provenance details.
 
   Fields:
     provenance: The actual provenance
@@ -222,8 +222,8 @@ class BuildDetails(_messages.Message):
 
 
 class BuildProvenance(_messages.Message):
-  """Provenance of a build. Contains all information needed to verify the full
-  details about the build from source to completion.
+  r"""Provenance of a build. Contains all information needed to verify the
+  full details about the build from source to completion.
 
   Messages:
     BuildOptionsValue: Special options applied to this build. This is a catch-
@@ -253,7 +253,7 @@ class BuildProvenance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class BuildOptionsValue(_messages.Message):
-    """Special options applied to this build. This is a catch-all field where
+    r"""Special options applied to this build. This is a catch-all field where
     build providers can enter any desired additional details.
 
     Messages:
@@ -265,7 +265,7 @@ class BuildProvenance(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a BuildOptionsValue object.
+      r"""An additional property for a BuildOptionsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -293,7 +293,7 @@ class BuildProvenance(_messages.Message):
 
 
 class BuildSignature(_messages.Message):
-  """Message encapsulating the signature of the verified build.
+  r"""Message encapsulating the signature of the verified build.
 
   Enums:
     KeyTypeValueValuesEnum: The type of the key, either stored in `public_key`
@@ -322,7 +322,7 @@ class BuildSignature(_messages.Message):
   """
 
   class KeyTypeValueValuesEnum(_messages.Enum):
-    """The type of the key, either stored in `public_key` or referenced in
+    r"""The type of the key, either stored in `public_key` or referenced in
     `key_id`
 
     Values:
@@ -341,7 +341,7 @@ class BuildSignature(_messages.Message):
 
 
 class BuildType(_messages.Message):
-  """Note holding the version of the provider's builder and the signature of
+  r"""Note holding the version of the provider's builder and the signature of
   the provenance message in linked BuildDetails.
 
   Fields:
@@ -355,7 +355,7 @@ class BuildType(_messages.Message):
 
 
 class Command(_messages.Message):
-  """Command describes a step performed as part of the build pipeline.
+  r"""Command describes a step performed as part of the build pipeline.
 
   Fields:
     args: Command-line arguments used when executing this Command.
@@ -379,7 +379,7 @@ class Command(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesCreateRequest object.
+  r"""A ContaineranalysisProjectsNotesCreateRequest object.
 
   Fields:
     name: The name of the project. Should be of the form
@@ -397,7 +397,7 @@ class ContaineranalysisProjectsNotesCreateRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesDeleteRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesDeleteRequest object.
+  r"""A ContaineranalysisProjectsNotesDeleteRequest object.
 
   Fields:
     name: The name of the note in the form of
@@ -408,7 +408,7 @@ class ContaineranalysisProjectsNotesDeleteRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesGetIamPolicyRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesGetIamPolicyRequest object.
+  r"""A ContaineranalysisProjectsNotesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -423,7 +423,7 @@ class ContaineranalysisProjectsNotesGetIamPolicyRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesGetRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesGetRequest object.
+  r"""A ContaineranalysisProjectsNotesGetRequest object.
 
   Fields:
     name: The name of the note in the form of
@@ -434,7 +434,7 @@ class ContaineranalysisProjectsNotesGetRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesListRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesListRequest object.
+  r"""A ContaineranalysisProjectsNotesListRequest object.
 
   Fields:
     filter: The filter expression.
@@ -454,7 +454,7 @@ class ContaineranalysisProjectsNotesListRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesOccurrencesListRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesOccurrencesListRequest object.
+  r"""A ContaineranalysisProjectsNotesOccurrencesListRequest object.
 
   Fields:
     filter: The filter expression.
@@ -471,7 +471,7 @@ class ContaineranalysisProjectsNotesOccurrencesListRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesPatchRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesPatchRequest object.
+  r"""A ContaineranalysisProjectsNotesPatchRequest object.
 
   Fields:
     name: The name of the note. Should be of the form
@@ -486,7 +486,7 @@ class ContaineranalysisProjectsNotesPatchRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesSetIamPolicyRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesSetIamPolicyRequest object.
+  r"""A ContaineranalysisProjectsNotesSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -501,7 +501,7 @@ class ContaineranalysisProjectsNotesSetIamPolicyRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsNotesTestIamPermissionsRequest(_messages.Message):
-  """A ContaineranalysisProjectsNotesTestIamPermissionsRequest object.
+  r"""A ContaineranalysisProjectsNotesTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -516,7 +516,7 @@ class ContaineranalysisProjectsNotesTestIamPermissionsRequest(_messages.Message)
 
 
 class ContaineranalysisProjectsOccurrencesCreateRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesCreateRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesCreateRequest object.
 
   Fields:
     name: The name of the project.  Should be of the form
@@ -532,7 +532,7 @@ class ContaineranalysisProjectsOccurrencesCreateRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsOccurrencesDeleteRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesDeleteRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesDeleteRequest object.
 
   Fields:
     name: The name of the occurrence in the form of
@@ -543,7 +543,7 @@ class ContaineranalysisProjectsOccurrencesDeleteRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsOccurrencesGetIamPolicyRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesGetIamPolicyRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -558,7 +558,7 @@ class ContaineranalysisProjectsOccurrencesGetIamPolicyRequest(_messages.Message)
 
 
 class ContaineranalysisProjectsOccurrencesGetNotesRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesGetNotesRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesGetNotesRequest object.
 
   Fields:
     name: The name of the occurrence in the form
@@ -569,7 +569,7 @@ class ContaineranalysisProjectsOccurrencesGetNotesRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsOccurrencesGetRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesGetRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesGetRequest object.
 
   Fields:
     name: The name of the occurrence of the form
@@ -580,7 +580,7 @@ class ContaineranalysisProjectsOccurrencesGetRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest
+  r"""A ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest
   object.
 
   Fields:
@@ -593,7 +593,7 @@ class ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest(_messag
 
 
 class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesListRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesListRequest object.
 
   Enums:
     KindValueValuesEnum: The kind of occurrences to filter on.
@@ -609,7 +609,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """The kind of occurrences to filter on.
+    r"""The kind of occurrences to filter on.
 
     Values:
       KIND_UNSPECIFIED: <no description>
@@ -639,7 +639,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsOccurrencesPatchRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesPatchRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesPatchRequest object.
 
   Fields:
     name: The name of the occurrence. Should be of the form
@@ -654,7 +654,7 @@ class ContaineranalysisProjectsOccurrencesPatchRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsOccurrencesSetIamPolicyRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesSetIamPolicyRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -669,7 +669,7 @@ class ContaineranalysisProjectsOccurrencesSetIamPolicyRequest(_messages.Message)
 
 
 class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Message):
-  """A ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest object.
+  r"""A ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -684,7 +684,7 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
 
 
 class ContaineranalysisProjectsOperationsCreateRequest(_messages.Message):
-  """A ContaineranalysisProjectsOperationsCreateRequest object.
+  r"""A ContaineranalysisProjectsOperationsCreateRequest object.
 
   Fields:
     createOperationRequest: A CreateOperationRequest resource to be passed as
@@ -697,7 +697,7 @@ class ContaineranalysisProjectsOperationsCreateRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsOperationsPatchRequest(_messages.Message):
-  """A ContaineranalysisProjectsOperationsPatchRequest object.
+  r"""A ContaineranalysisProjectsOperationsPatchRequest object.
 
   Fields:
     name: The name of the Operation. Should be of the form
@@ -711,7 +711,7 @@ class ContaineranalysisProjectsOperationsPatchRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsScanConfigsGetRequest(_messages.Message):
-  """A ContaineranalysisProjectsScanConfigsGetRequest object.
+  r"""A ContaineranalysisProjectsScanConfigsGetRequest object.
 
   Fields:
     name: The name of the ScanConfig in the form
@@ -722,7 +722,7 @@ class ContaineranalysisProjectsScanConfigsGetRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsScanConfigsListRequest(_messages.Message):
-  """A ContaineranalysisProjectsScanConfigsListRequest object.
+  r"""A ContaineranalysisProjectsScanConfigsListRequest object.
 
   Fields:
     filter: The filter expression.
@@ -739,7 +739,7 @@ class ContaineranalysisProjectsScanConfigsListRequest(_messages.Message):
 
 
 class ContaineranalysisProjectsScanConfigsPatchRequest(_messages.Message):
-  """A ContaineranalysisProjectsScanConfigsPatchRequest object.
+  r"""A ContaineranalysisProjectsScanConfigsPatchRequest object.
 
   Fields:
     name: The scan config to update of the form
@@ -754,7 +754,7 @@ class ContaineranalysisProjectsScanConfigsPatchRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesCreateRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesCreateRequest object.
+  r"""A ContaineranalysisProvidersNotesCreateRequest object.
 
   Fields:
     name: The name of the project. Should be of the form
@@ -772,7 +772,7 @@ class ContaineranalysisProvidersNotesCreateRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesDeleteRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesDeleteRequest object.
+  r"""A ContaineranalysisProvidersNotesDeleteRequest object.
 
   Fields:
     name: The name of the note in the form of
@@ -783,7 +783,7 @@ class ContaineranalysisProvidersNotesDeleteRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesGetIamPolicyRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesGetIamPolicyRequest object.
+  r"""A ContaineranalysisProvidersNotesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -798,7 +798,7 @@ class ContaineranalysisProvidersNotesGetIamPolicyRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesGetRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesGetRequest object.
+  r"""A ContaineranalysisProvidersNotesGetRequest object.
 
   Fields:
     name: The name of the note in the form of
@@ -809,7 +809,7 @@ class ContaineranalysisProvidersNotesGetRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesListRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesListRequest object.
+  r"""A ContaineranalysisProvidersNotesListRequest object.
 
   Fields:
     filter: The filter expression.
@@ -829,7 +829,7 @@ class ContaineranalysisProvidersNotesListRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesOccurrencesListRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesOccurrencesListRequest object.
+  r"""A ContaineranalysisProvidersNotesOccurrencesListRequest object.
 
   Fields:
     filter: The filter expression.
@@ -846,7 +846,7 @@ class ContaineranalysisProvidersNotesOccurrencesListRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesPatchRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesPatchRequest object.
+  r"""A ContaineranalysisProvidersNotesPatchRequest object.
 
   Fields:
     name: The name of the note. Should be of the form
@@ -861,7 +861,7 @@ class ContaineranalysisProvidersNotesPatchRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesSetIamPolicyRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesSetIamPolicyRequest object.
+  r"""A ContaineranalysisProvidersNotesSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -876,7 +876,7 @@ class ContaineranalysisProvidersNotesSetIamPolicyRequest(_messages.Message):
 
 
 class ContaineranalysisProvidersNotesTestIamPermissionsRequest(_messages.Message):
-  """A ContaineranalysisProvidersNotesTestIamPermissionsRequest object.
+  r"""A ContaineranalysisProvidersNotesTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -891,7 +891,7 @@ class ContaineranalysisProvidersNotesTestIamPermissionsRequest(_messages.Message
 
 
 class CreateOperationRequest(_messages.Message):
-  """Request for creating an operation
+  r"""Request for creating an operation
 
   Fields:
     operation: The operation to create.
@@ -903,7 +903,7 @@ class CreateOperationRequest(_messages.Message):
 
 
 class Deployable(_messages.Message):
-  """An artifact that can be deployed in some runtime.
+  r"""An artifact that can be deployed in some runtime.
 
   Fields:
     resourceUri: Resource URI for the artifact being deployed.
@@ -913,7 +913,7 @@ class Deployable(_messages.Message):
 
 
 class Deployment(_messages.Message):
-  """The period during which some deployable was active in a runtime.
+  r"""The period during which some deployable was active in a runtime.
 
   Enums:
     PlatformValueValuesEnum: Platform hosting this deployment.
@@ -930,7 +930,7 @@ class Deployment(_messages.Message):
   """
 
   class PlatformValueValuesEnum(_messages.Enum):
-    """Platform hosting this deployment.
+    r"""Platform hosting this deployment.
 
     Values:
       PLATFORM_UNSPECIFIED: Unknown
@@ -953,7 +953,7 @@ class Deployment(_messages.Message):
 
 
 class Derived(_messages.Message):
-  """Derived describes the derived image portion (Occurrence) of the
+  r"""Derived describes the derived image portion (Occurrence) of the
   DockerImage relationship.  This image would be produced from a Dockerfile
   with FROM <DockerImage.Basis in attached Note>.
 
@@ -975,7 +975,7 @@ class Derived(_messages.Message):
 
 
 class Detail(_messages.Message):
-  """Identifies all occurrences of this vulnerability in the package for a
+  r"""Identifies all occurrences of this vulnerability in the package for a
   specific distro/location For example: glibc in cpe:/o:debian:debian_linux:8
   for versions 2.1 - 2.2
 
@@ -1013,19 +1013,22 @@ class Detail(_messages.Message):
 
 
 class Discovered(_messages.Message):
-  """Provides information about the scan status of a discovered resource.
+  r"""Provides information about the scan status of a discovered resource.
 
   Enums:
     AnalysisStatusValueValuesEnum: The status of discovery for the resource.
 
   Fields:
     analysisStatus: The status of discovery for the resource.
+    analysisStatusError: When an error is encountered this will contain a
+      LocalizedMessage under details to show to the user. The LocalizedMessage
+      output only and populated by the API.
     operation: Output only. An operation that indicates the status of the
       current scan.
   """
 
   class AnalysisStatusValueValuesEnum(_messages.Enum):
-    """The status of discovery for the resource.
+    r"""The status of discovery for the resource.
 
     Values:
       ANALYSIS_STATUS_UNSPECIFIED: Unknown
@@ -1045,11 +1048,12 @@ class Discovered(_messages.Message):
     UNSUPPORTED_RESOURCE = 5
 
   analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 1)
-  operation = _messages.MessageField('Operation', 2)
+  analysisStatusError = _messages.MessageField('Status', 2)
+  operation = _messages.MessageField('Operation', 3)
 
 
 class Discovery(_messages.Message):
-  """A note that indicates a type of analysis a provider would perform. This
+  r"""A note that indicates a type of analysis a provider would perform. This
   note exists in a provider's project. A `Discovery` occurrence is created in
   a consumer's project at the start of analysis. The occurrence's operation
   will indicate the status of the analysis. Absence of an occurrence linked to
@@ -1064,7 +1068,7 @@ class Discovery(_messages.Message):
   """
 
   class AnalysisKindValueValuesEnum(_messages.Enum):
-    """The kind of analysis that is handled by this discovery.
+    r"""The kind of analysis that is handled by this discovery.
 
     Values:
       KIND_UNSPECIFIED: Unknown
@@ -1093,8 +1097,8 @@ class Discovery(_messages.Message):
 
 
 class Distribution(_messages.Message):
-  """This represents a particular channel of distribution for a given package.
-  e.g. Debian's jessie-backports dpkg mirror
+  r"""This represents a particular channel of distribution for a given
+  package. e.g. Debian's jessie-backports dpkg mirror
 
   Enums:
     ArchitectureValueValuesEnum: The CPU architecture for which packages in
@@ -1114,7 +1118,7 @@ class Distribution(_messages.Message):
   """
 
   class ArchitectureValueValuesEnum(_messages.Enum):
-    """The CPU architecture for which packages in this distribution channel
+    r"""The CPU architecture for which packages in this distribution channel
     were built
 
     Values:
@@ -1135,7 +1139,7 @@ class Distribution(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -1145,7 +1149,7 @@ class Empty(_messages.Message):
 
 
 class FileHashes(_messages.Message):
-  """Container message for hashes of byte content of files, used in Source
+  r"""Container message for hashes of byte content of files, used in Source
   messages to verify integrity of source input to the build.
 
   Fields:
@@ -1156,7 +1160,7 @@ class FileHashes(_messages.Message):
 
 
 class Fingerprint(_messages.Message):
-  """A set of properties that uniquely identify a given Docker image.
+  r"""A set of properties that uniquely identify a given Docker image.
 
   Fields:
     v1Name: The layer-id of the final layer in the Docker image's v1
@@ -1174,11 +1178,11 @@ class Fingerprint(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  """Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method."""
 
 
 class GetVulnzOccurrencesSummaryResponse(_messages.Message):
-  """A summary of how many vulnz occurrences there are per severity type.
+  r"""A summary of how many vulnz occurrences there are per severity type.
   counts by groups, or if we should have different summary messages like this.
 
   Fields:
@@ -1189,7 +1193,7 @@ class GetVulnzOccurrencesSummaryResponse(_messages.Message):
 
 
 class GoogleDevtoolsContaineranalysisV1alpha1AliasContext(_messages.Message):
-  """An alias to a repo revision.
+  r"""An alias to a repo revision.
 
   Enums:
     KindValueValuesEnum: The alias kind.
@@ -1200,7 +1204,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1AliasContext(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       KIND_UNSPECIFIED: Unknown.
@@ -1219,7 +1223,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1AliasContext(_messages.Message):
 
 
 class GoogleDevtoolsContaineranalysisV1alpha1CloudRepoSourceContext(_messages.Message):
-  """A CloudRepoSourceContext denotes a particular revision in a Google Cloud
+  r"""A CloudRepoSourceContext denotes a particular revision in a Google Cloud
   Source Repo.
 
   Fields:
@@ -1234,7 +1238,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1CloudRepoSourceContext(_messages.Me
 
 
 class GoogleDevtoolsContaineranalysisV1alpha1GerritSourceContext(_messages.Message):
-  """A SourceContext referring to a Gerrit project.
+  r"""A SourceContext referring to a Gerrit project.
 
   Fields:
     aliasContext: An alias, which may be a branch or tag.
@@ -1252,7 +1256,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1GerritSourceContext(_messages.Messa
 
 
 class GoogleDevtoolsContaineranalysisV1alpha1GitSourceContext(_messages.Message):
-  """A GitSourceContext denotes a particular revision in a third party Git
+  r"""A GitSourceContext denotes a particular revision in a third party Git
   repository (e.g., GitHub).
 
   Fields:
@@ -1265,7 +1269,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1GitSourceContext(_messages.Message)
 
 
 class GoogleDevtoolsContaineranalysisV1alpha1OperationMetadata(_messages.Message):
-  """Metadata for all operations used and required for all operations that
+  r"""Metadata for all operations used and required for all operations that
   created by Container Analysis Providers
 
   Fields:
@@ -1279,7 +1283,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1OperationMetadata(_messages.Message
 
 
 class GoogleDevtoolsContaineranalysisV1alpha1ProjectRepoId(_messages.Message):
-  """Selects a repo using a Google Cloud Platform project ID (e.g., winged-
+  r"""Selects a repo using a Google Cloud Platform project ID (e.g., winged-
   cargo-31) and a repo name within that project.
 
   Fields:
@@ -1292,7 +1296,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1ProjectRepoId(_messages.Message):
 
 
 class GoogleDevtoolsContaineranalysisV1alpha1RepoId(_messages.Message):
-  """A unique identifier for a Cloud Repo.
+  r"""A unique identifier for a Cloud Repo.
 
   Fields:
     projectRepoId: A combination of a project ID and a repo name.
@@ -1304,7 +1308,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1RepoId(_messages.Message):
 
 
 class GoogleDevtoolsContaineranalysisV1alpha1SourceContext(_messages.Message):
-  """A SourceContext is a reference to a tree of files. A SourceContext
+  r"""A SourceContext is a reference to a tree of files. A SourceContext
   together with a path point to a unique revision of a single file or
   directory.
 
@@ -1321,7 +1325,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1SourceContext(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Labels with user defined metadata.
+    r"""Labels with user defined metadata.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1331,7 +1335,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1SourceContext(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1350,7 +1354,7 @@ class GoogleDevtoolsContaineranalysisV1alpha1SourceContext(_messages.Message):
 
 
 class GrafeasV1beta1OperationMetadata(_messages.Message):
-  """Metadata for an operation.
+  r"""Metadata for an operation.
 
   Fields:
     createTime: Output only. The time this operation was created.
@@ -1362,7 +1366,7 @@ class GrafeasV1beta1OperationMetadata(_messages.Message):
 
 
 class Hash(_messages.Message):
-  """Container message for hash values.
+  r"""Container message for hash values.
 
   Enums:
     TypeValueValuesEnum: The type of hash that was performed.
@@ -1373,7 +1377,7 @@ class Hash(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of hash that was performed.
+    r"""The type of hash that was performed.
 
     Values:
       NONE: No hash requested.
@@ -1387,7 +1391,7 @@ class Hash(_messages.Message):
 
 
 class Installation(_messages.Message):
-  """This represents how a particular software package may be installed on a
+  r"""This represents how a particular software package may be installed on a
   system.
 
   Fields:
@@ -1401,7 +1405,7 @@ class Installation(_messages.Message):
 
 
 class Layer(_messages.Message):
-  """Layer holds metadata specific to a layer of a Docker image.
+  r"""Layer holds metadata specific to a layer of a Docker image.
 
   Enums:
     DirectiveValueValuesEnum: The recovered Dockerfile directive used to
@@ -1414,7 +1418,7 @@ class Layer(_messages.Message):
   """
 
   class DirectiveValueValuesEnum(_messages.Enum):
-    """The recovered Dockerfile directive used to construct this layer.
+    r"""The recovered Dockerfile directive used to construct this layer.
 
     Values:
       DIRECTIVE_UNSPECIFIED: Default value for unsupported/missing directive
@@ -1460,7 +1464,7 @@ class Layer(_messages.Message):
 
 
 class ListNoteOccurrencesResponse(_messages.Message):
-  """Response including listed occurrences for a note.
+  r"""Response including listed occurrences for a note.
 
   Fields:
     nextPageToken: Token to receive the next page of notes.
@@ -1472,7 +1476,7 @@ class ListNoteOccurrencesResponse(_messages.Message):
 
 
 class ListNotesResponse(_messages.Message):
-  """Response including listed notes.
+  r"""Response including listed notes.
 
   Fields:
     nextPageToken: The next pagination token in the list response. It should
@@ -1486,7 +1490,7 @@ class ListNotesResponse(_messages.Message):
 
 
 class ListOccurrencesResponse(_messages.Message):
-  """Response including listed active occurrences.
+  r"""Response including listed active occurrences.
 
   Fields:
     nextPageToken: The next pagination token in the list response. It should
@@ -1500,7 +1504,7 @@ class ListOccurrencesResponse(_messages.Message):
 
 
 class ListScanConfigsResponse(_messages.Message):
-  """A list of ScanConfigs for the project.
+  r"""A list of ScanConfigs for the project.
 
   Fields:
     nextPageToken: A page token to pass in order to get more scans.
@@ -1512,7 +1516,7 @@ class ListScanConfigsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """An occurrence of a particular package installation found within a
+  r"""An occurrence of a particular package installation found within a
   system's filesystem. e.g. glibc was found in /var/lib/dpkg/status
 
   Fields:
@@ -1529,7 +1533,7 @@ class Location(_messages.Message):
 
 
 class Note(_messages.Message):
-  """Provides a detailed description of a `Note`.
+  r"""Provides a detailed description of a `Note`.
 
   Enums:
     KindValueValuesEnum: Output only. This explicitly denotes which kind of
@@ -1559,7 +1563,7 @@ class Note(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """Output only. This explicitly denotes which kind of note is specified.
+    r"""Output only. This explicitly denotes which kind of note is specified.
     This field can be used as a filter in list requests.
 
     Values:
@@ -1603,7 +1607,7 @@ class Note(_messages.Message):
 
 
 class Occurrence(_messages.Message):
-  """`Occurrence` includes information about analysis occurrences for an
+  r"""`Occurrence` includes information about analysis occurrences for an
   image.
 
   Enums:
@@ -1641,7 +1645,7 @@ class Occurrence(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """Output only. This explicitly denotes which of the `Occurrence` details
+    r"""Output only. This explicitly denotes which of the `Occurrence` details
     are specified. This field can be used as a filter in list requests.
 
     Values:
@@ -1685,8 +1689,8 @@ class Occurrence(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -1727,7 +1731,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -1741,7 +1745,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1755,7 +1759,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -1772,7 +1776,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1792,7 +1796,7 @@ class Operation(_messages.Message):
 
 
 class Package(_messages.Message):
-  """This represents a particular package that is distributed over various
+  r"""This represents a particular package that is distributed over various
   channels. e.g. glibc (aka libc6) is distributed by many, at various
   versions.
 
@@ -1806,7 +1810,7 @@ class Package(_messages.Message):
 
 
 class PackageIssue(_messages.Message):
-  """This message wraps a location affected by a vulnerability and its
+  r"""This message wraps a location affected by a vulnerability and its
   associated fix (if one is available).
 
   Fields:
@@ -1822,9 +1826,9 @@ class PackageIssue(_messages.Message):
 
 
 class PgpSignedAttestation(_messages.Message):
-  """An attestation wrapper with a PGP-compatible signature. This message only
-  supports `ATTACHED` signatures, where the payload that is signed is included
-  alongside the signature itself in the same file.
+  r"""An attestation wrapper with a PGP-compatible signature. This message
+  only supports `ATTACHED` signatures, where the payload that is signed is
+  included alongside the signature itself in the same file.
 
   Enums:
     ContentTypeValueValuesEnum: Type (for example schema) of the attestation
@@ -1863,7 +1867,7 @@ class PgpSignedAttestation(_messages.Message):
   """
 
   class ContentTypeValueValuesEnum(_messages.Enum):
-    """Type (for example schema) of the attestation payload that was signed.
+    r"""Type (for example schema) of the attestation payload that was signed.
     The verifier must ensure that the provided type is one that the verifier
     supports, and that the attestation payload is a valid instantiation of
     that type (for example by validating a JSON schema).
@@ -1884,19 +1888,24 @@ class PgpSignedAttestation(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1921,7 +1930,7 @@ class Policy(_messages.Message):
 
 
 class RelatedUrl(_messages.Message):
-  """Metadata for any related URL information
+  r"""Metadata for any related URL information
 
   Fields:
     label: Label to describe usage of the URL
@@ -1933,7 +1942,7 @@ class RelatedUrl(_messages.Message):
 
 
 class RepoSource(_messages.Message):
-  """RepoSource describes the location of the source in a Google Cloud Source
+  r"""RepoSource describes the location of the source in a Google Cloud Source
   Repository.
 
   Fields:
@@ -1952,7 +1961,7 @@ class RepoSource(_messages.Message):
 
 
 class Resource(_messages.Message):
-  """Resource is an entity that can have metadata. E.g., a Docker image.
+  r"""Resource is an entity that can have metadata. E.g., a Docker image.
 
   Fields:
     contentHash: The hash of the resource content. E.g., the Docker digest.
@@ -1968,7 +1977,7 @@ class Resource(_messages.Message):
 
 
 class ScanConfig(_messages.Message):
-  """Indicates various scans and whether they are turned on or off.
+  r"""Indicates various scans and whether they are turned on or off.
 
   Fields:
     description: Output only. A human-readable description of what the
@@ -1984,7 +1993,7 @@ class ScanConfig(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -2002,7 +2011,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class SeverityCount(_messages.Message):
-  """The number of occurrences created for a specific severity.
+  r"""The number of occurrences created for a specific severity.
 
   Enums:
     SeverityValueValuesEnum: The severity of the occurrences.
@@ -2013,7 +2022,7 @@ class SeverityCount(_messages.Message):
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """The severity of the occurrences.
+    r"""The severity of the occurrences.
 
     Values:
       SEVERITY_UNSPECIFIED: Unknown Impact
@@ -2035,7 +2044,7 @@ class SeverityCount(_messages.Message):
 
 
 class Source(_messages.Message):
-  """Source describes the location of the source used for the build.
+  r"""Source describes the location of the source used for the build.
 
   Messages:
     FileHashesValue: Hash(es) of the build source, which can be used to verify
@@ -2067,7 +2076,7 @@ class Source(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FileHashesValue(_messages.Message):
-    """Hash(es) of the build source, which can be used to verify that the
+    r"""Hash(es) of the build source, which can be used to verify that the
     original source integrity was maintained in the build.  The keys to this
     map are file paths used as build source and the values contain the hash
     values for those files.  If the build source came in a single package such
@@ -2082,7 +2091,7 @@ class Source(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a FileHashesValue object.
+      r"""An additional property for a FileHashesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2103,7 +2112,7 @@ class Source(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -2132,7 +2141,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -2144,7 +2153,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -2170,7 +2179,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -2218,7 +2227,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -2230,7 +2239,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -2248,7 +2257,7 @@ class Status(_messages.Message):
 
 
 class StorageSource(_messages.Message):
-  """StorageSource describes the location of the source in an archive file in
+  r"""StorageSource describes the location of the source in an archive file in
   Google Cloud Storage.
 
   Fields:
@@ -2265,7 +2274,7 @@ class StorageSource(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -2278,7 +2287,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -2289,7 +2298,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UpdateOperationRequest(_messages.Message):
-  """Request for updating an existing operation
+  r"""Request for updating an existing operation
 
   Fields:
     operation: The operation to create.
@@ -2301,8 +2310,8 @@ class UpdateOperationRequest(_messages.Message):
 
 
 class Version(_messages.Message):
-  """Version contains structured information about the version of the package.
-  For a discussion of this in Debian/Ubuntu:
+  r"""Version contains structured information about the version of the
+  package. For a discussion of this in Debian/Ubuntu:
   http://serverfault.com/questions/604541/debian-packages-version-convention
   For a discussion of this in Redhat/Fedora/Centos:
   http://blog.jasonantman.com/2014/07/how-yum-and-rpm-compare-versions/
@@ -2321,7 +2330,7 @@ class Version(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """Distinguish between sentinel MIN/MAX versions and normal versions. If
+    r"""Distinguish between sentinel MIN/MAX versions and normal versions. If
     kind is not NORMAL, then the other fields are ignored.
 
     Values:
@@ -2342,7 +2351,7 @@ class Version(_messages.Message):
 
 
 class VulnerabilityDetails(_messages.Message):
-  """Used by Occurrence to point to where the vulnerability exists and how to
+  r"""Used by Occurrence to point to where the vulnerability exists and how to
   fix it.
 
   Enums:
@@ -2362,7 +2371,7 @@ class VulnerabilityDetails(_messages.Message):
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """Output only. The note provider assigned Severity of the vulnerability.
+    r"""Output only. The note provider assigned Severity of the vulnerability.
 
     Values:
       SEVERITY_UNSPECIFIED: Unknown Impact
@@ -2386,7 +2395,7 @@ class VulnerabilityDetails(_messages.Message):
 
 
 class VulnerabilityLocation(_messages.Message):
-  """The location of the vulnerability
+  r"""The location of the vulnerability
 
   Fields:
     cpeUri: The cpe_uri in [cpe format] (https://cpe.mitre.org/specification/)
@@ -2403,7 +2412,7 @@ class VulnerabilityLocation(_messages.Message):
 
 
 class VulnerabilityType(_messages.Message):
-  """VulnerabilityType provides metadata about a security vulnerability.
+  r"""VulnerabilityType provides metadata about a security vulnerability.
 
   Enums:
     SeverityValueValuesEnum: Note provider assigned impact of the
@@ -2418,7 +2427,7 @@ class VulnerabilityType(_messages.Message):
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """Note provider assigned impact of the vulnerability
+    r"""Note provider assigned impact of the vulnerability
 
     Values:
       SEVERITY_UNSPECIFIED: Unknown Impact

@@ -50,7 +50,7 @@ class OsloginV1alpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a POSIX account.
+      r"""Deletes a POSIX account.
 
       Args:
         request: (OsloginUsersProjectsDeleteRequest) input message
@@ -87,7 +87,7 @@ class OsloginV1alpha(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes an SSH public key.
+      r"""Deletes an SSH public key.
 
       Args:
         request: (OsloginUsersSshPublicKeysDeleteRequest) input message
@@ -114,7 +114,7 @@ class OsloginV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves an SSH public key.
+      r"""Retrieves an SSH public key.
 
       Args:
         request: (OsloginUsersSshPublicKeysGetRequest) input message
@@ -141,7 +141,7 @@ class OsloginV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an SSH public key and returns the profile information. This method.
+      r"""Updates an SSH public key and returns the profile information. This method.
 supports patch semantics.
 
       Args:
@@ -179,7 +179,7 @@ supports patch semantics.
           }
 
     def GetLoginProfile(self, request, global_params=None):
-      """Retrieves the profile information used for logging in to a virtual machine.
+      r"""Retrieves the profile information used for logging in to a virtual machine.
 on Google Compute Engine.
 
       Args:
@@ -207,7 +207,7 @@ on Google Compute Engine.
     )
 
     def ImportSshPublicKey(self, request, global_params=None):
-      """Adds an SSH public key and returns the profile information. Default POSIX.
+      r"""Adds an SSH public key and returns the profile information. Default POSIX.
 account information is set when no username and UID exist as part of the
 login profile.
 

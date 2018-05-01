@@ -14,7 +14,7 @@ package = 'storage'
 
 
 class Bucket(_messages.Message):
-  """A bucket.
+  r"""A bucket.
 
   Messages:
     BillingValue: The bucket's billing configuration.
@@ -104,7 +104,7 @@ class Bucket(_messages.Message):
   """
 
   class BillingValue(_messages.Message):
-    """The bucket's billing configuration.
+    r"""The bucket's billing configuration.
 
     Fields:
       requesterPays: When set to true, Requester Pays is enabled for this
@@ -114,7 +114,7 @@ class Bucket(_messages.Message):
     requesterPays = _messages.BooleanField(1)
 
   class CorsValueListEntry(_messages.Message):
-    """A CorsValueListEntry object.
+    r"""A CorsValueListEntry object.
 
     Fields:
       maxAgeSeconds: The value, in seconds, to return in the  Access-Control-
@@ -134,7 +134,7 @@ class Bucket(_messages.Message):
     responseHeader = _messages.StringField(4, repeated=True)
 
   class EncryptionValue(_messages.Message):
-    """Encryption configuration for a bucket.
+    r"""Encryption configuration for a bucket.
 
     Fields:
       defaultKmsKeyName: A Cloud KMS key that will be used to encrypt objects
@@ -145,7 +145,7 @@ class Bucket(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """User-provided labels, in key/value pairs.
+    r"""User-provided labels, in key/value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -155,7 +155,7 @@ class Bucket(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -168,8 +168,8 @@ class Bucket(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   class LifecycleValue(_messages.Message):
-    """The bucket's lifecycle configuration. See lifecycle management for more
-    information.
+    r"""The bucket's lifecycle configuration. See lifecycle management for
+    more information.
 
     Messages:
       RuleValueListEntry: A RuleValueListEntry object.
@@ -180,7 +180,7 @@ class Bucket(_messages.Message):
     """
 
     class RuleValueListEntry(_messages.Message):
-      """A RuleValueListEntry object.
+      r"""A RuleValueListEntry object.
 
       Messages:
         ActionValue: The action to take.
@@ -192,7 +192,7 @@ class Bucket(_messages.Message):
       """
 
       class ActionValue(_messages.Message):
-        """The action to take.
+        r"""The action to take.
 
         Fields:
           storageClass: Target storage class. Required iff the type of the
@@ -205,7 +205,7 @@ class Bucket(_messages.Message):
         type = _messages.StringField(2)
 
       class ConditionValue(_messages.Message):
-        """The condition(s) under which the action will be taken.
+        r"""The condition(s) under which the action will be taken.
 
         Fields:
           age: Age of an object (in days). This condition is satisfied when an
@@ -238,7 +238,7 @@ class Bucket(_messages.Message):
     rule = _messages.MessageField('RuleValueListEntry', 1, repeated=True)
 
   class LoggingValue(_messages.Message):
-    """The bucket's logging configuration, which defines the destination
+    r"""The bucket's logging configuration, which defines the destination
     bucket and optional name prefix for the current bucket's logs.
 
     Fields:
@@ -251,7 +251,8 @@ class Bucket(_messages.Message):
     logObjectPrefix = _messages.StringField(2)
 
   class OwnerValue(_messages.Message):
-    """The owner of the bucket. This is always the project team's owner group.
+    r"""The owner of the bucket. This is always the project team's owner
+    group.
 
     Fields:
       entity: The entity, in the form project-owner-projectId.
@@ -262,7 +263,7 @@ class Bucket(_messages.Message):
     entityId = _messages.StringField(2)
 
   class RetentionPolicyValue(_messages.Message):
-    """Defines the retention policy for a bucket. The Retention policy
+    r"""Defines the retention policy for a bucket. The Retention policy
     enforces a minimum retention time for all objects contained in the bucket,
     based on their creation time. Any attempt to overwrite or delete objects
     younger than the retention period will result in a PERMISSION_DENIED
@@ -288,7 +289,7 @@ class Bucket(_messages.Message):
     retentionPeriod = _messages.IntegerField(3)
 
   class VersioningValue(_messages.Message):
-    """The bucket's versioning configuration.
+    r"""The bucket's versioning configuration.
 
     Fields:
       enabled: While set to true, versioning is fully enabled for this bucket.
@@ -297,9 +298,9 @@ class Bucket(_messages.Message):
     enabled = _messages.BooleanField(1)
 
   class WebsiteValue(_messages.Message):
-    """The bucket's website configuration, controlling how the service behaves
-    when accessing bucket contents as a web site. See the Static Website
-    Examples for more information.
+    r"""The bucket's website configuration, controlling how the service
+    behaves when accessing bucket contents as a web site. See the Static
+    Website Examples for more information.
 
     Fields:
       mainPageSuffix: If the requested object path is missing, the service
@@ -342,7 +343,7 @@ class Bucket(_messages.Message):
 
 
 class BucketAccessControl(_messages.Message):
-  """An access-control entry.
+  r"""An access-control entry.
 
   Messages:
     ProjectTeamValue: The project team associated with the entity, if any.
@@ -369,7 +370,7 @@ class BucketAccessControl(_messages.Message):
   """
 
   class ProjectTeamValue(_messages.Message):
-    """The project team associated with the entity, if any.
+    r"""The project team associated with the entity, if any.
 
     Fields:
       projectNumber: The project number.
@@ -393,7 +394,7 @@ class BucketAccessControl(_messages.Message):
 
 
 class BucketAccessControls(_messages.Message):
-  """An access-control list.
+  r"""An access-control list.
 
   Fields:
     items: The list of items.
@@ -406,7 +407,7 @@ class BucketAccessControls(_messages.Message):
 
 
 class Buckets(_messages.Message):
-  """A list of buckets.
+  r"""A list of buckets.
 
   Fields:
     items: The list of items.
@@ -423,7 +424,7 @@ class Buckets(_messages.Message):
 
 
 class Channel(_messages.Message):
-  """An notification channel used to watch for resource changes.
+  r"""An notification channel used to watch for resource changes.
 
   Messages:
     ParamsValue: Additional parameters controlling delivery channel behavior.
@@ -449,7 +450,7 @@ class Channel(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParamsValue(_messages.Message):
-    """Additional parameters controlling delivery channel behavior. Optional.
+    r"""Additional parameters controlling delivery channel behavior. Optional.
 
     Messages:
       AdditionalProperty: An additional property for a ParamsValue object.
@@ -459,7 +460,7 @@ class Channel(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ParamsValue object.
+      r"""An additional property for a ParamsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -484,7 +485,7 @@ class Channel(_messages.Message):
 
 
 class ComposeRequest(_messages.Message):
-  """A Compose request.
+  r"""A Compose request.
 
   Messages:
     SourceObjectsValueListEntry: A SourceObjectsValueListEntry object.
@@ -497,7 +498,7 @@ class ComposeRequest(_messages.Message):
   """
 
   class SourceObjectsValueListEntry(_messages.Message):
-    """A SourceObjectsValueListEntry object.
+    r"""A SourceObjectsValueListEntry object.
 
     Messages:
       ObjectPreconditionsValue: Conditions that must be met for this operation
@@ -512,7 +513,7 @@ class ComposeRequest(_messages.Message):
     """
 
     class ObjectPreconditionsValue(_messages.Message):
-      """Conditions that must be met for this operation to execute.
+      r"""Conditions that must be met for this operation to execute.
 
       Fields:
         ifGenerationMatch: Only perform the composition if the generation of
@@ -533,7 +534,7 @@ class ComposeRequest(_messages.Message):
 
 
 class Notification(_messages.Message):
-  """A subscription to receive Google PubSub notifications.
+  r"""A subscription to receive Google PubSub notifications.
 
   Messages:
     CustomAttributesValue: An optional list of additional attributes to attach
@@ -560,7 +561,7 @@ class Notification(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomAttributesValue(_messages.Message):
-    """An optional list of additional attributes to attach to each Cloud
+    r"""An optional list of additional attributes to attach to each Cloud
     PubSub message published for this notification subscription.
 
     Messages:
@@ -573,7 +574,7 @@ class Notification(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a CustomAttributesValue object.
+      r"""An additional property for a CustomAttributesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -597,7 +598,7 @@ class Notification(_messages.Message):
 
 
 class Notifications(_messages.Message):
-  """A list of notification subscriptions.
+  r"""A list of notification subscriptions.
 
   Fields:
     items: The list of items.
@@ -610,7 +611,7 @@ class Notifications(_messages.Message):
 
 
 class Object(_messages.Message):
-  """An object.
+  r"""An object.
 
   Messages:
     CustomerEncryptionValue: Metadata of customer-supplied encryption key, if
@@ -692,7 +693,7 @@ class Object(_messages.Message):
   """
 
   class CustomerEncryptionValue(_messages.Message):
-    """Metadata of customer-supplied encryption key, if the object is
+    r"""Metadata of customer-supplied encryption key, if the object is
     encrypted by such a key.
 
     Fields:
@@ -705,7 +706,7 @@ class Object(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """User-provided metadata, in key/value pairs.
+    r"""User-provided metadata, in key/value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -715,7 +716,7 @@ class Object(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -728,7 +729,7 @@ class Object(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   class OwnerValue(_messages.Message):
-    """The owner of the object. This will always be the uploader of the
+    r"""The owner of the object. This will always be the uploader of the
     object.
 
     Fields:
@@ -773,7 +774,7 @@ class Object(_messages.Message):
 
 
 class ObjectAccessControl(_messages.Message):
-  """An access-control entry.
+  r"""An access-control entry.
 
   Messages:
     ProjectTeamValue: The project team associated with the entity, if any.
@@ -802,7 +803,7 @@ class ObjectAccessControl(_messages.Message):
   """
 
   class ProjectTeamValue(_messages.Message):
-    """The project team associated with the entity, if any.
+    r"""The project team associated with the entity, if any.
 
     Fields:
       projectNumber: The project number.
@@ -828,7 +829,7 @@ class ObjectAccessControl(_messages.Message):
 
 
 class ObjectAccessControls(_messages.Message):
-  """An access-control list.
+  r"""An access-control list.
 
   Fields:
     items: The list of items.
@@ -841,7 +842,7 @@ class ObjectAccessControls(_messages.Message):
 
 
 class Objects(_messages.Message):
-  """A list of objects.
+  r"""A list of objects.
 
   Fields:
     items: The list of items.
@@ -861,7 +862,7 @@ class Objects(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """A bucket/object IAM policy.
+  r"""A bucket/object IAM policy.
 
   Messages:
     BindingsValueListEntry: A BindingsValueListEntry object.
@@ -882,7 +883,7 @@ class Policy(_messages.Message):
   """
 
   class BindingsValueListEntry(_messages.Message):
-    """A BindingsValueListEntry object.
+    r"""A BindingsValueListEntry object.
 
     Fields:
       condition: A extra_types.JsonValue attribute.
@@ -940,7 +941,7 @@ class Policy(_messages.Message):
 
 
 class RewriteResponse(_messages.Message):
-  """A rewrite response.
+  r"""A rewrite response.
 
   Fields:
     done: true if the copy is finished; otherwise, false if the copy is in
@@ -967,7 +968,7 @@ class RewriteResponse(_messages.Message):
 
 
 class ServiceAccount(_messages.Message):
-  """A subscription to receive Google PubSub notifications.
+  r"""A subscription to receive Google PubSub notifications.
 
   Fields:
     email_address: The ID of the notification.
@@ -980,7 +981,7 @@ class ServiceAccount(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     AltValueValuesEnum: Data format for the response.
@@ -993,17 +994,15 @@ class StandardQueryParameters(_messages.Message):
       token.
     oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
-    quotaUser: Available to use for quota purposes for server-side
-      applications. Can be any arbitrary string assigned to a user, but should
-      not exceed 40 characters. Overrides userIp if both are provided.
+    quotaUser: An opaque string that represents a user for quota purposes.
+      Must not exceed 40 characters.
     trace: A tracing token of the form "token:<tokenid>" to include in api
       requests.
-    userIp: IP address of the site where the request originates. Use this if
-      you want to enforce per-user limits.
+    userIp: Deprecated. Please use quotaUser instead.
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for the response.
+    r"""Data format for the response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1021,7 +1020,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StorageBucketAccessControlsDeleteRequest(_messages.Message):
-  """A StorageBucketAccessControlsDeleteRequest object.
+  r"""A StorageBucketAccessControlsDeleteRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1038,11 +1037,11 @@ class StorageBucketAccessControlsDeleteRequest(_messages.Message):
 
 
 class StorageBucketAccessControlsDeleteResponse(_messages.Message):
-  """An empty StorageBucketAccessControlsDelete response."""
+  r"""An empty StorageBucketAccessControlsDelete response."""
 
 
 class StorageBucketAccessControlsGetRequest(_messages.Message):
-  """A StorageBucketAccessControlsGetRequest object.
+  r"""A StorageBucketAccessControlsGetRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1059,7 +1058,7 @@ class StorageBucketAccessControlsGetRequest(_messages.Message):
 
 
 class StorageBucketAccessControlsInsertRequest(_messages.Message):
-  """A StorageBucketAccessControlsInsertRequest object.
+  r"""A StorageBucketAccessControlsInsertRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1075,7 +1074,7 @@ class StorageBucketAccessControlsInsertRequest(_messages.Message):
 
 
 class StorageBucketAccessControlsListRequest(_messages.Message):
-  """A StorageBucketAccessControlsListRequest object.
+  r"""A StorageBucketAccessControlsListRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1088,7 +1087,7 @@ class StorageBucketAccessControlsListRequest(_messages.Message):
 
 
 class StorageBucketAccessControlsPatchRequest(_messages.Message):
-  """A StorageBucketAccessControlsPatchRequest object.
+  r"""A StorageBucketAccessControlsPatchRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1108,7 +1107,7 @@ class StorageBucketAccessControlsPatchRequest(_messages.Message):
 
 
 class StorageBucketAccessControlsUpdateRequest(_messages.Message):
-  """A StorageBucketAccessControlsUpdateRequest object.
+  r"""A StorageBucketAccessControlsUpdateRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1128,7 +1127,7 @@ class StorageBucketAccessControlsUpdateRequest(_messages.Message):
 
 
 class StorageBucketsDeleteRequest(_messages.Message):
-  """A StorageBucketsDeleteRequest object.
+  r"""A StorageBucketsDeleteRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1147,11 +1146,11 @@ class StorageBucketsDeleteRequest(_messages.Message):
 
 
 class StorageBucketsDeleteResponse(_messages.Message):
-  """An empty StorageBucketsDelete response."""
+  r"""An empty StorageBucketsDelete response."""
 
 
 class StorageBucketsGetIamPolicyRequest(_messages.Message):
-  """A StorageBucketsGetIamPolicyRequest object.
+  r"""A StorageBucketsGetIamPolicyRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1164,7 +1163,7 @@ class StorageBucketsGetIamPolicyRequest(_messages.Message):
 
 
 class StorageBucketsGetRequest(_messages.Message):
-  """A StorageBucketsGetRequest object.
+  r"""A StorageBucketsGetRequest object.
 
   Enums:
     ProjectionValueValuesEnum: Set of properties to return. Defaults to noAcl.
@@ -1182,7 +1181,7 @@ class StorageBucketsGetRequest(_messages.Message):
   """
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl.
+    r"""Set of properties to return. Defaults to noAcl.
 
     Values:
       full: Include all properties.
@@ -1199,7 +1198,7 @@ class StorageBucketsGetRequest(_messages.Message):
 
 
 class StorageBucketsInsertRequest(_messages.Message):
-  """A StorageBucketsInsertRequest object.
+  r"""A StorageBucketsInsertRequest object.
 
   Enums:
     PredefinedAclValueValuesEnum: Apply a predefined set of access controls to
@@ -1223,7 +1222,7 @@ class StorageBucketsInsertRequest(_messages.Message):
   """
 
   class PredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to this bucket.
+    r"""Apply a predefined set of access controls to this bucket.
 
     Values:
       authenticatedRead: Project team owners get OWNER access, and
@@ -1243,7 +1242,7 @@ class StorageBucketsInsertRequest(_messages.Message):
     publicReadWrite = 4
 
   class PredefinedDefaultObjectAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of default object access controls to this
+    r"""Apply a predefined set of default object access controls to this
     bucket.
 
     Values:
@@ -1267,7 +1266,7 @@ class StorageBucketsInsertRequest(_messages.Message):
     publicRead = 5
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl, unless the bucket
+    r"""Set of properties to return. Defaults to noAcl, unless the bucket
     resource specifies acl or defaultObjectAcl properties, when it defaults to
     full.
 
@@ -1287,7 +1286,7 @@ class StorageBucketsInsertRequest(_messages.Message):
 
 
 class StorageBucketsListRequest(_messages.Message):
-  """A StorageBucketsListRequest object.
+  r"""A StorageBucketsListRequest object.
 
   Enums:
     ProjectionValueValuesEnum: Set of properties to return. Defaults to noAcl.
@@ -1304,7 +1303,7 @@ class StorageBucketsListRequest(_messages.Message):
   """
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl.
+    r"""Set of properties to return. Defaults to noAcl.
 
     Values:
       full: Include all properties.
@@ -1322,7 +1321,7 @@ class StorageBucketsListRequest(_messages.Message):
 
 
 class StorageBucketsLockRetentionPolicyRequest(_messages.Message):
-  """A StorageBucketsLockRetentionPolicyRequest object.
+  r"""A StorageBucketsLockRetentionPolicyRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1338,7 +1337,7 @@ class StorageBucketsLockRetentionPolicyRequest(_messages.Message):
 
 
 class StorageBucketsPatchRequest(_messages.Message):
-  """A StorageBucketsPatchRequest object.
+  r"""A StorageBucketsPatchRequest object.
 
   Enums:
     PredefinedAclValueValuesEnum: Apply a predefined set of access controls to
@@ -1364,7 +1363,7 @@ class StorageBucketsPatchRequest(_messages.Message):
   """
 
   class PredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to this bucket.
+    r"""Apply a predefined set of access controls to this bucket.
 
     Values:
       authenticatedRead: Project team owners get OWNER access, and
@@ -1384,7 +1383,7 @@ class StorageBucketsPatchRequest(_messages.Message):
     publicReadWrite = 4
 
   class PredefinedDefaultObjectAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of default object access controls to this
+    r"""Apply a predefined set of default object access controls to this
     bucket.
 
     Values:
@@ -1408,7 +1407,7 @@ class StorageBucketsPatchRequest(_messages.Message):
     publicRead = 5
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to full.
+    r"""Set of properties to return. Defaults to full.
 
     Values:
       full: Include all properties.
@@ -1428,7 +1427,7 @@ class StorageBucketsPatchRequest(_messages.Message):
 
 
 class StorageBucketsSetIamPolicyRequest(_messages.Message):
-  """A StorageBucketsSetIamPolicyRequest object.
+  r"""A StorageBucketsSetIamPolicyRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1443,7 +1442,7 @@ class StorageBucketsSetIamPolicyRequest(_messages.Message):
 
 
 class StorageBucketsTestIamPermissionsRequest(_messages.Message):
-  """A StorageBucketsTestIamPermissionsRequest object.
+  r"""A StorageBucketsTestIamPermissionsRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1458,7 +1457,7 @@ class StorageBucketsTestIamPermissionsRequest(_messages.Message):
 
 
 class StorageBucketsUpdateRequest(_messages.Message):
-  """A StorageBucketsUpdateRequest object.
+  r"""A StorageBucketsUpdateRequest object.
 
   Enums:
     PredefinedAclValueValuesEnum: Apply a predefined set of access controls to
@@ -1484,7 +1483,7 @@ class StorageBucketsUpdateRequest(_messages.Message):
   """
 
   class PredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to this bucket.
+    r"""Apply a predefined set of access controls to this bucket.
 
     Values:
       authenticatedRead: Project team owners get OWNER access, and
@@ -1504,7 +1503,7 @@ class StorageBucketsUpdateRequest(_messages.Message):
     publicReadWrite = 4
 
   class PredefinedDefaultObjectAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of default object access controls to this
+    r"""Apply a predefined set of default object access controls to this
     bucket.
 
     Values:
@@ -1528,7 +1527,7 @@ class StorageBucketsUpdateRequest(_messages.Message):
     publicRead = 5
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to full.
+    r"""Set of properties to return. Defaults to full.
 
     Values:
       full: Include all properties.
@@ -1548,11 +1547,11 @@ class StorageBucketsUpdateRequest(_messages.Message):
 
 
 class StorageChannelsStopResponse(_messages.Message):
-  """An empty StorageChannelsStop response."""
+  r"""An empty StorageChannelsStop response."""
 
 
 class StorageDefaultObjectAccessControlsDeleteRequest(_messages.Message):
-  """A StorageDefaultObjectAccessControlsDeleteRequest object.
+  r"""A StorageDefaultObjectAccessControlsDeleteRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1569,11 +1568,11 @@ class StorageDefaultObjectAccessControlsDeleteRequest(_messages.Message):
 
 
 class StorageDefaultObjectAccessControlsDeleteResponse(_messages.Message):
-  """An empty StorageDefaultObjectAccessControlsDelete response."""
+  r"""An empty StorageDefaultObjectAccessControlsDelete response."""
 
 
 class StorageDefaultObjectAccessControlsGetRequest(_messages.Message):
-  """A StorageDefaultObjectAccessControlsGetRequest object.
+  r"""A StorageDefaultObjectAccessControlsGetRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1590,7 +1589,7 @@ class StorageDefaultObjectAccessControlsGetRequest(_messages.Message):
 
 
 class StorageDefaultObjectAccessControlsInsertRequest(_messages.Message):
-  """A StorageDefaultObjectAccessControlsInsertRequest object.
+  r"""A StorageDefaultObjectAccessControlsInsertRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1606,7 +1605,7 @@ class StorageDefaultObjectAccessControlsInsertRequest(_messages.Message):
 
 
 class StorageDefaultObjectAccessControlsListRequest(_messages.Message):
-  """A StorageDefaultObjectAccessControlsListRequest object.
+  r"""A StorageDefaultObjectAccessControlsListRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1625,7 +1624,7 @@ class StorageDefaultObjectAccessControlsListRequest(_messages.Message):
 
 
 class StorageDefaultObjectAccessControlsPatchRequest(_messages.Message):
-  """A StorageDefaultObjectAccessControlsPatchRequest object.
+  r"""A StorageDefaultObjectAccessControlsPatchRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1645,7 +1644,7 @@ class StorageDefaultObjectAccessControlsPatchRequest(_messages.Message):
 
 
 class StorageDefaultObjectAccessControlsUpdateRequest(_messages.Message):
-  """A StorageDefaultObjectAccessControlsUpdateRequest object.
+  r"""A StorageDefaultObjectAccessControlsUpdateRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1665,7 +1664,7 @@ class StorageDefaultObjectAccessControlsUpdateRequest(_messages.Message):
 
 
 class StorageNotificationsDeleteRequest(_messages.Message):
-  """A StorageNotificationsDeleteRequest object.
+  r"""A StorageNotificationsDeleteRequest object.
 
   Fields:
     bucket: The parent bucket of the notification.
@@ -1680,11 +1679,11 @@ class StorageNotificationsDeleteRequest(_messages.Message):
 
 
 class StorageNotificationsDeleteResponse(_messages.Message):
-  """An empty StorageNotificationsDelete response."""
+  r"""An empty StorageNotificationsDelete response."""
 
 
 class StorageNotificationsGetRequest(_messages.Message):
-  """A StorageNotificationsGetRequest object.
+  r"""A StorageNotificationsGetRequest object.
 
   Fields:
     bucket: The parent bucket of the notification.
@@ -1699,7 +1698,7 @@ class StorageNotificationsGetRequest(_messages.Message):
 
 
 class StorageNotificationsInsertRequest(_messages.Message):
-  """A StorageNotificationsInsertRequest object.
+  r"""A StorageNotificationsInsertRequest object.
 
   Fields:
     bucket: The parent bucket of the notification.
@@ -1714,7 +1713,7 @@ class StorageNotificationsInsertRequest(_messages.Message):
 
 
 class StorageNotificationsListRequest(_messages.Message):
-  """A StorageNotificationsListRequest object.
+  r"""A StorageNotificationsListRequest object.
 
   Fields:
     bucket: Name of a Google Cloud Storage bucket.
@@ -1727,7 +1726,7 @@ class StorageNotificationsListRequest(_messages.Message):
 
 
 class StorageObjectAccessControlsDeleteRequest(_messages.Message):
-  """A StorageObjectAccessControlsDeleteRequest object.
+  r"""A StorageObjectAccessControlsDeleteRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1750,11 +1749,11 @@ class StorageObjectAccessControlsDeleteRequest(_messages.Message):
 
 
 class StorageObjectAccessControlsDeleteResponse(_messages.Message):
-  """An empty StorageObjectAccessControlsDelete response."""
+  r"""An empty StorageObjectAccessControlsDelete response."""
 
 
 class StorageObjectAccessControlsGetRequest(_messages.Message):
-  """A StorageObjectAccessControlsGetRequest object.
+  r"""A StorageObjectAccessControlsGetRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1777,7 +1776,7 @@ class StorageObjectAccessControlsGetRequest(_messages.Message):
 
 
 class StorageObjectAccessControlsInsertRequest(_messages.Message):
-  """A StorageObjectAccessControlsInsertRequest object.
+  r"""A StorageObjectAccessControlsInsertRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1799,7 +1798,7 @@ class StorageObjectAccessControlsInsertRequest(_messages.Message):
 
 
 class StorageObjectAccessControlsListRequest(_messages.Message):
-  """A StorageObjectAccessControlsListRequest object.
+  r"""A StorageObjectAccessControlsListRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1818,7 +1817,7 @@ class StorageObjectAccessControlsListRequest(_messages.Message):
 
 
 class StorageObjectAccessControlsPatchRequest(_messages.Message):
-  """A StorageObjectAccessControlsPatchRequest object.
+  r"""A StorageObjectAccessControlsPatchRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1844,7 +1843,7 @@ class StorageObjectAccessControlsPatchRequest(_messages.Message):
 
 
 class StorageObjectAccessControlsUpdateRequest(_messages.Message):
-  """A StorageObjectAccessControlsUpdateRequest object.
+  r"""A StorageObjectAccessControlsUpdateRequest object.
 
   Fields:
     bucket: Name of a bucket.
@@ -1870,7 +1869,7 @@ class StorageObjectAccessControlsUpdateRequest(_messages.Message):
 
 
 class StorageObjectsComposeRequest(_messages.Message):
-  """A StorageObjectsComposeRequest object.
+  r"""A StorageObjectsComposeRequest object.
 
   Enums:
     DestinationPredefinedAclValueValuesEnum: Apply a predefined set of access
@@ -1898,7 +1897,7 @@ class StorageObjectsComposeRequest(_messages.Message):
   """
 
   class DestinationPredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to the destination object.
+    r"""Apply a predefined set of access controls to the destination object.
 
     Values:
       authenticatedRead: Object owner gets OWNER access, and
@@ -1931,7 +1930,7 @@ class StorageObjectsComposeRequest(_messages.Message):
 
 
 class StorageObjectsCopyRequest(_messages.Message):
-  """A StorageObjectsCopyRequest object.
+  r"""A StorageObjectsCopyRequest object.
 
   Enums:
     DestinationPredefinedAclValueValuesEnum: Apply a predefined set of access
@@ -1985,7 +1984,7 @@ class StorageObjectsCopyRequest(_messages.Message):
   """
 
   class DestinationPredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to the destination object.
+    r"""Apply a predefined set of access controls to the destination object.
 
     Values:
       authenticatedRead: Object owner gets OWNER access, and
@@ -2008,7 +2007,7 @@ class StorageObjectsCopyRequest(_messages.Message):
     publicRead = 5
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl, unless the object
+    r"""Set of properties to return. Defaults to noAcl, unless the object
     resource specifies the acl property, when it defaults to full.
 
     Values:
@@ -2038,7 +2037,7 @@ class StorageObjectsCopyRequest(_messages.Message):
 
 
 class StorageObjectsDeleteRequest(_messages.Message):
-  """A StorageObjectsDeleteRequest object.
+  r"""A StorageObjectsDeleteRequest object.
 
   Fields:
     bucket: Name of the bucket in which the object resides.
@@ -2072,11 +2071,11 @@ class StorageObjectsDeleteRequest(_messages.Message):
 
 
 class StorageObjectsDeleteResponse(_messages.Message):
-  """An empty StorageObjectsDelete response."""
+  r"""An empty StorageObjectsDelete response."""
 
 
 class StorageObjectsGetIamPolicyRequest(_messages.Message):
-  """A StorageObjectsGetIamPolicyRequest object.
+  r"""A StorageObjectsGetIamPolicyRequest object.
 
   Fields:
     bucket: Name of the bucket in which the object resides.
@@ -2095,7 +2094,7 @@ class StorageObjectsGetIamPolicyRequest(_messages.Message):
 
 
 class StorageObjectsGetRequest(_messages.Message):
-  """A StorageObjectsGetRequest object.
+  r"""A StorageObjectsGetRequest object.
 
   Enums:
     ProjectionValueValuesEnum: Set of properties to return. Defaults to noAcl.
@@ -2123,7 +2122,7 @@ class StorageObjectsGetRequest(_messages.Message):
   """
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl.
+    r"""Set of properties to return. Defaults to noAcl.
 
     Values:
       full: Include all properties.
@@ -2144,7 +2143,7 @@ class StorageObjectsGetRequest(_messages.Message):
 
 
 class StorageObjectsInsertRequest(_messages.Message):
-  """A StorageObjectsInsertRequest object.
+  r"""A StorageObjectsInsertRequest object.
 
   Enums:
     PredefinedAclValueValuesEnum: Apply a predefined set of access controls to
@@ -2189,7 +2188,7 @@ class StorageObjectsInsertRequest(_messages.Message):
   """
 
   class PredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to this object.
+    r"""Apply a predefined set of access controls to this object.
 
     Values:
       authenticatedRead: Object owner gets OWNER access, and
@@ -2212,7 +2211,7 @@ class StorageObjectsInsertRequest(_messages.Message):
     publicRead = 5
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl, unless the object
+    r"""Set of properties to return. Defaults to noAcl, unless the object
     resource specifies the acl property, when it defaults to full.
 
     Values:
@@ -2237,7 +2236,7 @@ class StorageObjectsInsertRequest(_messages.Message):
 
 
 class StorageObjectsListRequest(_messages.Message):
-  """A StorageObjectsListRequest object.
+  r"""A StorageObjectsListRequest object.
 
   Enums:
     ProjectionValueValuesEnum: Set of properties to return. Defaults to noAcl.
@@ -2264,7 +2263,7 @@ class StorageObjectsListRequest(_messages.Message):
   """
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl.
+    r"""Set of properties to return. Defaults to noAcl.
 
     Values:
       full: Include all properties.
@@ -2284,7 +2283,7 @@ class StorageObjectsListRequest(_messages.Message):
 
 
 class StorageObjectsPatchRequest(_messages.Message):
-  """A StorageObjectsPatchRequest object.
+  r"""A StorageObjectsPatchRequest object.
 
   Enums:
     PredefinedAclValueValuesEnum: Apply a predefined set of access controls to
@@ -2316,7 +2315,7 @@ class StorageObjectsPatchRequest(_messages.Message):
   """
 
   class PredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to this object.
+    r"""Apply a predefined set of access controls to this object.
 
     Values:
       authenticatedRead: Object owner gets OWNER access, and
@@ -2339,7 +2338,7 @@ class StorageObjectsPatchRequest(_messages.Message):
     publicRead = 5
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to full.
+    r"""Set of properties to return. Defaults to full.
 
     Values:
       full: Include all properties.
@@ -2362,7 +2361,7 @@ class StorageObjectsPatchRequest(_messages.Message):
 
 
 class StorageObjectsRewriteRequest(_messages.Message):
-  """A StorageObjectsRewriteRequest object.
+  r"""A StorageObjectsRewriteRequest object.
 
   Enums:
     DestinationPredefinedAclValueValuesEnum: Apply a predefined set of access
@@ -2431,7 +2430,7 @@ class StorageObjectsRewriteRequest(_messages.Message):
   """
 
   class DestinationPredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to the destination object.
+    r"""Apply a predefined set of access controls to the destination object.
 
     Values:
       authenticatedRead: Object owner gets OWNER access, and
@@ -2454,7 +2453,7 @@ class StorageObjectsRewriteRequest(_messages.Message):
     publicRead = 5
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl, unless the object
+    r"""Set of properties to return. Defaults to noAcl, unless the object
     resource specifies the acl property, when it defaults to full.
 
     Values:
@@ -2487,7 +2486,7 @@ class StorageObjectsRewriteRequest(_messages.Message):
 
 
 class StorageObjectsSetIamPolicyRequest(_messages.Message):
-  """A StorageObjectsSetIamPolicyRequest object.
+  r"""A StorageObjectsSetIamPolicyRequest object.
 
   Fields:
     bucket: Name of the bucket in which the object resides.
@@ -2508,7 +2507,7 @@ class StorageObjectsSetIamPolicyRequest(_messages.Message):
 
 
 class StorageObjectsTestIamPermissionsRequest(_messages.Message):
-  """A StorageObjectsTestIamPermissionsRequest object.
+  r"""A StorageObjectsTestIamPermissionsRequest object.
 
   Fields:
     bucket: Name of the bucket in which the object resides.
@@ -2529,7 +2528,7 @@ class StorageObjectsTestIamPermissionsRequest(_messages.Message):
 
 
 class StorageObjectsUpdateRequest(_messages.Message):
-  """A StorageObjectsUpdateRequest object.
+  r"""A StorageObjectsUpdateRequest object.
 
   Enums:
     PredefinedAclValueValuesEnum: Apply a predefined set of access controls to
@@ -2561,7 +2560,7 @@ class StorageObjectsUpdateRequest(_messages.Message):
   """
 
   class PredefinedAclValueValuesEnum(_messages.Enum):
-    """Apply a predefined set of access controls to this object.
+    r"""Apply a predefined set of access controls to this object.
 
     Values:
       authenticatedRead: Object owner gets OWNER access, and
@@ -2584,7 +2583,7 @@ class StorageObjectsUpdateRequest(_messages.Message):
     publicRead = 5
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to full.
+    r"""Set of properties to return. Defaults to full.
 
     Values:
       full: Include all properties.
@@ -2607,7 +2606,7 @@ class StorageObjectsUpdateRequest(_messages.Message):
 
 
 class StorageObjectsWatchAllRequest(_messages.Message):
-  """A StorageObjectsWatchAllRequest object.
+  r"""A StorageObjectsWatchAllRequest object.
 
   Enums:
     ProjectionValueValuesEnum: Set of properties to return. Defaults to noAcl.
@@ -2635,7 +2634,7 @@ class StorageObjectsWatchAllRequest(_messages.Message):
   """
 
   class ProjectionValueValuesEnum(_messages.Enum):
-    """Set of properties to return. Defaults to noAcl.
+    r"""Set of properties to return. Defaults to noAcl.
 
     Values:
       full: Include all properties.
@@ -2656,7 +2655,7 @@ class StorageObjectsWatchAllRequest(_messages.Message):
 
 
 class StorageProjectsServiceAccountGetRequest(_messages.Message):
-  """A StorageProjectsServiceAccountGetRequest object.
+  r"""A StorageProjectsServiceAccountGetRequest object.
 
   Fields:
     projectId: Project ID
@@ -2668,7 +2667,7 @@ class StorageProjectsServiceAccountGetRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """A storage.(buckets|objects).testIamPermissions response.
+  r"""A storage.(buckets|objects).testIamPermissions response.
 
   Fields:
     kind: The kind of item this is.

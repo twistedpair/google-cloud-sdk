@@ -13,7 +13,12 @@
 # limitations under the License.
 """Common classes and functions for routers."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import operator
+
+from six.moves import map  # pylint: disable=redefined-builtin
 
 
 def ParseMode(resource_class, mode):
@@ -21,7 +26,8 @@ def ParseMode(resource_class, mode):
 
 
 def ParseGroups(resource_class, groups):
-  return map(resource_class.AdvertisedGroupsValueListEntryValuesEnum, groups)
+  return list(
+      map(resource_class.AdvertisedGroupsValueListEntryValuesEnum, groups))
 
 
 def ParseIpRanges(messages, ip_ranges):

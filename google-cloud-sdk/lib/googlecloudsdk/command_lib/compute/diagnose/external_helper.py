@@ -13,6 +13,7 @@
 # limitations under the License.
 """Helpers for running commands external to gcloud."""
 
+from __future__ import absolute_import
 import subprocess
 from googlecloudsdk.command_lib.compute import ssh_utils
 from googlecloudsdk.command_lib.util.ssh import containers

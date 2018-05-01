@@ -52,7 +52,7 @@ class EnvironmentDeletionWaiter(object):
         log.DeletedResource(
             pending_delete.environment_name,
             kind='environment',
-            async=False,
+            is_async=False,
             failed=six.text_type(e))
     return encountered_errors
 

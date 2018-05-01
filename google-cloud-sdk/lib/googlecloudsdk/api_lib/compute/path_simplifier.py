@@ -14,6 +14,9 @@
 """Simplify fully-qualified paths for compute."""
 
 
+from __future__ import unicode_literals
+
+
 def Name(uri):
   """Get just the name of the object the uri refers to."""
 

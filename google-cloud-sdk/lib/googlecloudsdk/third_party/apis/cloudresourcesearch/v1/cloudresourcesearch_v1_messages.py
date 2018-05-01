@@ -13,7 +13,7 @@ package = 'cloudresourcesearch'
 
 
 class CloudresourcesearchResourcesSearchRequest(_messages.Message):
-  """A CloudresourcesearchResourcesSearchRequest object.
+  r"""A CloudresourcesearchResourcesSearchRequest object.
 
   Fields:
     orderBy: Optional. A comma-separated list of string-valued fields for
@@ -55,7 +55,7 @@ class CloudresourcesearchResourcesSearchRequest(_messages.Message):
 
 
 class SearchResponse(_messages.Message):
-  """Response message for `resources.search`.
+  r"""Response message for `resources.search`.
 
   Fields:
     matchedCount: The approximate total number of resources that match the
@@ -74,7 +74,7 @@ class SearchResponse(_messages.Message):
 
 
 class SearchResult(_messages.Message):
-  """A single Google Cloud Platform resource.
+  r"""A single Google Cloud Platform resource.
 
   Messages:
     ResourceValue: The matched resource, expressed as a JSON object.
@@ -102,7 +102,7 @@ class SearchResult(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceValue(_messages.Message):
-    """The matched resource, expressed as a JSON object.
+    r"""The matched resource, expressed as a JSON object.
 
     Messages:
       AdditionalProperty: An additional property for a ResourceValue object.
@@ -112,7 +112,7 @@ class SearchResult(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResourceValue object.
+      r"""An additional property for a ResourceValue object.
 
       Fields:
         key: Name of the additional property.
@@ -133,7 +133,7 @@ class SearchResult(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -162,7 +162,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -174,7 +174,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format

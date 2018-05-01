@@ -13,7 +13,7 @@ package = 'tpu'
 
 
 class AcceleratorType(_messages.Message):
-  """A accelerator type that a Node can be configured with.
+  r"""A accelerator type that a Node can be configured with.
 
   Fields:
     name: The resource name.
@@ -25,7 +25,7 @@ class AcceleratorType(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -35,7 +35,7 @@ class Empty(_messages.Message):
 
 
 class ListAcceleratorTypesResponse(_messages.Message):
-  """Response for ListAcceleratorTypes.
+  r"""Response for ListAcceleratorTypes.
 
   Fields:
     acceleratorTypes: The listed nodes.
@@ -47,7 +47,7 @@ class ListAcceleratorTypesResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -60,7 +60,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListNodesResponse(_messages.Message):
-  """Response for ListNodes.
+  r"""Response for ListNodes.
 
   Fields:
     nextPageToken: The next page token or empty if none.
@@ -72,7 +72,7 @@ class ListNodesResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -85,7 +85,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListTensorFlowVersionsResponse(_messages.Message):
-  """Response for ListTensorFlowVersions.
+  r"""Response for ListTensorFlowVersions.
 
   Fields:
     nextPageToken: The next page token or empty if none.
@@ -97,7 +97,7 @@ class ListTensorFlowVersionsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -120,7 +120,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -131,7 +131,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -145,7 +145,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -157,7 +157,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -177,7 +177,7 @@ class Location(_messages.Message):
 
 
 class NetworkEndpoint(_messages.Message):
-  """A network endpoint over which a TPU worker can be reached.
+  r"""A network endpoint over which a TPU worker can be reached.
 
   Fields:
     ipAddress: The IP address of this network endpoint.
@@ -189,7 +189,7 @@ class NetworkEndpoint(_messages.Message):
 
 
 class Node(_messages.Message):
-  """A TPU instance.
+  r"""A TPU instance.
 
   Enums:
     HealthValueValuesEnum: The health status of the TPU node.
@@ -238,7 +238,7 @@ class Node(_messages.Message):
   """
 
   class HealthValueValuesEnum(_messages.Enum):
-    """The health status of the TPU node.
+    r"""The health status of the TPU node.
 
     Values:
       HEALTH_UNSPECIFIED: Health status is unknown: not initialized or failed
@@ -253,7 +253,7 @@ class Node(_messages.Message):
     TIMEOUT = 3
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. The current state for the TPU Node.
+    r"""Output only. The current state for the TPU Node.
 
     Values:
       STATE_UNSPECIFIED: TPU node state is not known/set.
@@ -281,7 +281,7 @@ class Node(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Resource labels to represent user-provided metadata.
+    r"""Resource labels to represent user-provided metadata.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -291,7 +291,7 @@ class Node(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -321,8 +321,8 @@ class Node(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -363,7 +363,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -377,7 +377,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -391,7 +391,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -408,7 +408,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -428,7 +428,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  """Represents the metadata of the long-running operation.
+  r"""Represents the metadata of the long-running operation.
 
   Fields:
     apiVersion: [Output only] API version used to start the operation.
@@ -455,7 +455,7 @@ class OperationMetadata(_messages.Message):
 
 
 class ReimageNodeRequest(_messages.Message):
-  """Request for ReimageNode.
+  r"""Request for ReimageNode.
 
   Fields:
     tensorflowVersion: The version for reimage to create.
@@ -465,11 +465,11 @@ class ReimageNodeRequest(_messages.Message):
 
 
 class ResetNodeRequest(_messages.Message):
-  """Request for ResetNode."""
+  r"""Request for ResetNode."""
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -498,7 +498,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -510,7 +510,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -536,11 +536,11 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StartNodeRequest(_messages.Message):
-  """Request for StartNode."""
+  r"""Request for StartNode."""
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -588,7 +588,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -600,7 +600,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -618,11 +618,11 @@ class Status(_messages.Message):
 
 
 class StopNodeRequest(_messages.Message):
-  """Request for StopNode."""
+  r"""Request for StopNode."""
 
 
 class TensorFlowVersion(_messages.Message):
-  """A tensorflow version that a Node can be configured with.
+  r"""A tensorflow version that a Node can be configured with.
 
   Fields:
     name: The resource name.
@@ -634,7 +634,7 @@ class TensorFlowVersion(_messages.Message):
 
 
 class TpuProjectsLocationsAcceleratorTypesGetRequest(_messages.Message):
-  """A TpuProjectsLocationsAcceleratorTypesGetRequest object.
+  r"""A TpuProjectsLocationsAcceleratorTypesGetRequest object.
 
   Fields:
     name: The resource name.
@@ -644,7 +644,7 @@ class TpuProjectsLocationsAcceleratorTypesGetRequest(_messages.Message):
 
 
 class TpuProjectsLocationsAcceleratorTypesListRequest(_messages.Message):
-  """A TpuProjectsLocationsAcceleratorTypesListRequest object.
+  r"""A TpuProjectsLocationsAcceleratorTypesListRequest object.
 
   Fields:
     filter: List filter.
@@ -663,7 +663,7 @@ class TpuProjectsLocationsAcceleratorTypesListRequest(_messages.Message):
 
 
 class TpuProjectsLocationsGetRequest(_messages.Message):
-  """A TpuProjectsLocationsGetRequest object.
+  r"""A TpuProjectsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
@@ -673,7 +673,7 @@ class TpuProjectsLocationsGetRequest(_messages.Message):
 
 
 class TpuProjectsLocationsListRequest(_messages.Message):
-  """A TpuProjectsLocationsListRequest object.
+  r"""A TpuProjectsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -689,7 +689,7 @@ class TpuProjectsLocationsListRequest(_messages.Message):
 
 
 class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesCreateRequest object.
+  r"""A TpuProjectsLocationsNodesCreateRequest object.
 
   Fields:
     node: A Node resource to be passed as the request body.
@@ -703,7 +703,7 @@ class TpuProjectsLocationsNodesCreateRequest(_messages.Message):
 
 
 class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesDeleteRequest object.
+  r"""A TpuProjectsLocationsNodesDeleteRequest object.
 
   Fields:
     name: The resource name.
@@ -713,7 +713,7 @@ class TpuProjectsLocationsNodesDeleteRequest(_messages.Message):
 
 
 class TpuProjectsLocationsNodesGetRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesGetRequest object.
+  r"""A TpuProjectsLocationsNodesGetRequest object.
 
   Fields:
     name: The resource name.
@@ -723,7 +723,7 @@ class TpuProjectsLocationsNodesGetRequest(_messages.Message):
 
 
 class TpuProjectsLocationsNodesListRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesListRequest object.
+  r"""A TpuProjectsLocationsNodesListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -738,7 +738,7 @@ class TpuProjectsLocationsNodesListRequest(_messages.Message):
 
 
 class TpuProjectsLocationsNodesReimageRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesReimageRequest object.
+  r"""A TpuProjectsLocationsNodesReimageRequest object.
 
   Fields:
     name: The resource name.
@@ -751,7 +751,7 @@ class TpuProjectsLocationsNodesReimageRequest(_messages.Message):
 
 
 class TpuProjectsLocationsNodesResetRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesResetRequest object.
+  r"""A TpuProjectsLocationsNodesResetRequest object.
 
   Fields:
     name: The resource name.
@@ -764,7 +764,7 @@ class TpuProjectsLocationsNodesResetRequest(_messages.Message):
 
 
 class TpuProjectsLocationsNodesStartRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesStartRequest object.
+  r"""A TpuProjectsLocationsNodesStartRequest object.
 
   Fields:
     name: The resource name.
@@ -777,7 +777,7 @@ class TpuProjectsLocationsNodesStartRequest(_messages.Message):
 
 
 class TpuProjectsLocationsNodesStopRequest(_messages.Message):
-  """A TpuProjectsLocationsNodesStopRequest object.
+  r"""A TpuProjectsLocationsNodesStopRequest object.
 
   Fields:
     name: The resource name.
@@ -790,7 +790,7 @@ class TpuProjectsLocationsNodesStopRequest(_messages.Message):
 
 
 class TpuProjectsLocationsOperationsCancelRequest(_messages.Message):
-  """A TpuProjectsLocationsOperationsCancelRequest object.
+  r"""A TpuProjectsLocationsOperationsCancelRequest object.
 
   Fields:
     name: The name of the operation resource to be cancelled.
@@ -800,7 +800,7 @@ class TpuProjectsLocationsOperationsCancelRequest(_messages.Message):
 
 
 class TpuProjectsLocationsOperationsDeleteRequest(_messages.Message):
-  """A TpuProjectsLocationsOperationsDeleteRequest object.
+  r"""A TpuProjectsLocationsOperationsDeleteRequest object.
 
   Fields:
     name: The name of the operation resource to be deleted.
@@ -810,7 +810,7 @@ class TpuProjectsLocationsOperationsDeleteRequest(_messages.Message):
 
 
 class TpuProjectsLocationsOperationsGetRequest(_messages.Message):
-  """A TpuProjectsLocationsOperationsGetRequest object.
+  r"""A TpuProjectsLocationsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -820,7 +820,7 @@ class TpuProjectsLocationsOperationsGetRequest(_messages.Message):
 
 
 class TpuProjectsLocationsOperationsListRequest(_messages.Message):
-  """A TpuProjectsLocationsOperationsListRequest object.
+  r"""A TpuProjectsLocationsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -836,7 +836,7 @@ class TpuProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class TpuProjectsLocationsTensorflowVersionsGetRequest(_messages.Message):
-  """A TpuProjectsLocationsTensorflowVersionsGetRequest object.
+  r"""A TpuProjectsLocationsTensorflowVersionsGetRequest object.
 
   Fields:
     name: The resource name.
@@ -846,7 +846,7 @@ class TpuProjectsLocationsTensorflowVersionsGetRequest(_messages.Message):
 
 
 class TpuProjectsLocationsTensorflowVersionsListRequest(_messages.Message):
-  """A TpuProjectsLocationsTensorflowVersionsListRequest object.
+  r"""A TpuProjectsLocationsTensorflowVersionsListRequest object.
 
   Fields:
     filter: List filter.

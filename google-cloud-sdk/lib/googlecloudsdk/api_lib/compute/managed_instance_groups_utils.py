@@ -13,6 +13,8 @@
 # limitations under the License.
 """Common functions and classes for dealing with managed instances groups."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import random
 import re
 import string
@@ -27,6 +29,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 _ALLOWED_UTILIZATION_TARGET_TYPES = [
@@ -90,10 +94,10 @@ def AddAutoscalerArgs(
             'for information on duration formats.'))
   parser.add_argument('--description', help='Notes about Autoscaler.')
   parser.add_argument('--min-num-replicas',
-                      type=arg_parsers.BoundedInt(0, sys.maxint),
+                      type=arg_parsers.BoundedInt(0, sys.maxsize),
                       help='Minimum number of replicas Autoscaler will set.')
   parser.add_argument('--max-num-replicas',
-                      type=arg_parsers.BoundedInt(0, sys.maxint),
+                      type=arg_parsers.BoundedInt(0, sys.maxsize),
                       required=not autoscaling_file_enabled,
                       help='Maximum number of replicas Autoscaler will set.')
   parser.add_argument('--scale-based-on-cpu',
@@ -507,7 +511,7 @@ def AutoscalersForLocations(zones, regions, client,
   # Explicit list() is required to unwind the generator and make sure errors
   # are detected at this level.
   requests = []
-  for project, zones in GroupByProject(zones).iteritems():
+  for project, zones in six.iteritems(GroupByProject(zones)):
     requests += lister.FormatListRequests(
         service=client.apitools_client.autoscalers,
         project=project,
@@ -517,7 +521,7 @@ def AutoscalersForLocations(zones, regions, client,
 
   if regions:
     if hasattr(client.apitools_client, 'regionAutoscalers'):
-      for project, regions in GroupByProject(regions).iteritems():
+      for project, regions in six.iteritems(GroupByProject(regions)):
         requests += lister.FormatListRequests(
             service=client.apitools_client.regionAutoscalers,
             project=project,
@@ -865,7 +869,7 @@ def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False):
   if mode_enabled:
     policy_dict['mode'] = _BuildMode(args, messages, original)
   return messages.AutoscalingPolicy(
-      **dict((key, value) for key, value in policy_dict.iteritems()
+      **dict((key, value) for key, value in six.iteritems(policy_dict)
              if value is not None))  # Filter out None values.
 
 
@@ -1023,7 +1027,7 @@ def _ComputeInstanceGroupSize(items, client, resources):
   ]
 
   zonal_instance_groups = []
-  for project, zone_refs in GroupByProject(zone_refs).iteritems():
+  for project, zone_refs in six.iteritems(GroupByProject(zone_refs)):
     zonal_instance_groups.extend(
         lister.GetZonalResources(
             service=client.apitools_client.instanceGroups,
@@ -1036,7 +1040,7 @@ def _ComputeInstanceGroupSize(items, client, resources):
 
   regional_instance_groups = []
   if getattr(client.apitools_client, 'regionInstanceGroups', None):
-    for project, region_refs in GroupByProject(region_refs).iteritems():
+    for project, region_refs in six.iteritems(GroupByProject(region_refs)):
       regional_instance_groups.extend(
           lister.GetRegionalResources(
               service=client.apitools_client.regionInstanceGroups,

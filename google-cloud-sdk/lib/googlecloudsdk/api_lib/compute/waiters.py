@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities for waiting on Compute Engine operations."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.command_lib.util import time_util

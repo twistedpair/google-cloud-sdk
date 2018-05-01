@@ -27,13 +27,15 @@ class Collections(enum.Enum):
       'infoTypes',
       'infoTypes',
       {},
-      []
+      [],
+      False
   )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
       {},
-      [u'organizationsId']
+      [u'organizationsId'],
+      True
   )
   ORGANIZATIONS_DEIDENTIFYTEMPLATES = (
       'organizations.deidentifyTemplates',
@@ -43,7 +45,8 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/deidentifyTemplates/'
               '{deidentifyTemplatesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   ORGANIZATIONS_INSPECTTEMPLATES = (
       'organizations.inspectTemplates',
@@ -53,19 +56,22 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/inspectTemplates/'
               '{inspectTemplatesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_CONTENT = (
       'projects.content',
-      'projects/{projectsId}/content',
+      'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      False
   )
   PROJECTS_DEIDENTIFYTEMPLATES = (
       'projects.deidentifyTemplates',
@@ -75,7 +81,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/deidentifyTemplates/'
               '{deidentifyTemplatesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_DLPJOBS = (
       'projects.dlpJobs',
@@ -84,13 +91,15 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/dlpJobs/{dlpJobsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_IMAGE = (
       'projects.image',
-      'projects/{projectsId}/image',
+      'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      False
   )
   PROJECTS_INSPECTTEMPLATES = (
       'projects.inspectTemplates',
@@ -99,7 +108,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/inspectTemplates/{inspectTemplatesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_JOBTRIGGERS = (
       'projects.jobTriggers',
@@ -108,11 +118,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/jobTriggers/{jobTriggersId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

@@ -13,6 +13,8 @@
 # limitations under the License.
 """Common classes and functions for regions."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions as calliope_exceptions

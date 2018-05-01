@@ -51,7 +51,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Create a new environment.
+      r"""Create a new environment.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsCreateRequest) input message
@@ -78,7 +78,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Delete an environment.
+      r"""Delete an environment.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsDeleteRequest) input message
@@ -105,7 +105,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Get an existing environment.
+      r"""Get an existing environment.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsGetRequest) input message
@@ -132,7 +132,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """List environments.
+      r"""List environments.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsListRequest) input message
@@ -159,7 +159,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Update an environment.
+      r"""Update an environment.
 
       Args:
         request: (ComposerProjectsLocationsEnvironmentsPatchRequest) input message
@@ -196,7 +196,7 @@ class ComposerV1beta1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
 makes a best effort to cancel the operation, but success is not
 guaranteed.  If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.  Clients can use
@@ -232,7 +232,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is.
+      r"""Deletes a long-running operation. This method indicates that the client is.
 no longer interested in the operation result. It does not cancel the
 operation. If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.
@@ -262,7 +262,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -291,7 +291,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding

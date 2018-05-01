@@ -14,7 +14,7 @@ package = 'cloudresourcemanager'
 
 
 class Ancestor(_messages.Message):
-  """Identifying information for a single ancestor of a project.
+  r"""Identifying information for a single ancestor of a project.
 
   Fields:
     resourceId: Resource id of the ancestor.
@@ -24,7 +24,7 @@ class Ancestor(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -58,7 +58,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -75,7 +75,7 @@ class AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -93,7 +93,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -118,7 +118,7 @@ class Binding(_messages.Message):
 
 
 class BooleanConstraint(_messages.Message):
-  """A `Constraint` that is either enforced or not.  For example a constraint
+  r"""A `Constraint` that is either enforced or not.  For example a constraint
   `constraints/compute.disableSerialPortAccess`. If it is enforced on a VM
   instance, serial port connections will not be opened to that instance.
   """
@@ -126,8 +126,8 @@ class BooleanConstraint(_messages.Message):
 
 
 class BooleanPolicy(_messages.Message):
-  """Used in `policy_type` to specify how `boolean_policy` will behave at this
-  resource.
+  r"""Used in `policy_type` to specify how `boolean_policy` will behave at
+  this resource.
 
   Fields:
     enforced: If `true`, then the `Policy` is enforced. If `false`, then any
@@ -163,7 +163,7 @@ class BooleanPolicy(_messages.Message):
 
 
 class ClearOrgPolicyRequest(_messages.Message):
-  """The request sent to the ClearOrgPolicy method.
+  r"""The request sent to the ClearOrgPolicy method.
 
   Fields:
     constraint: Name of the `Constraint` of the `Policy` to clear.
@@ -176,7 +176,7 @@ class ClearOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersClearOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersClearOrgPolicyRequest object.
+  r"""A CloudresourcemanagerFoldersClearOrgPolicyRequest object.
 
   Fields:
     clearOrgPolicyRequest: A ClearOrgPolicyRequest resource to be passed as
@@ -190,7 +190,7 @@ class CloudresourcemanagerFoldersClearOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest object.
+  r"""A CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest object.
 
   Fields:
     foldersId: Part of `resource`. The name of the resource to start computing
@@ -204,7 +204,7 @@ class CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest(_messages.Message)
 
 
 class CloudresourcemanagerFoldersGetOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersGetOrgPolicyRequest object.
+  r"""A CloudresourcemanagerFoldersGetOrgPolicyRequest object.
 
   Fields:
     foldersId: Part of `resource`. Name of the resource the `Policy` is set
@@ -218,7 +218,7 @@ class CloudresourcemanagerFoldersGetOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest
+  r"""A CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest
   object.
 
   Fields:
@@ -234,7 +234,7 @@ class CloudresourcemanagerFoldersListAvailableOrgPolicyConstraintsRequest(_messa
 
 
 class CloudresourcemanagerFoldersListOrgPoliciesRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersListOrgPoliciesRequest object.
+  r"""A CloudresourcemanagerFoldersListOrgPoliciesRequest object.
 
   Fields:
     foldersId: Part of `resource`. Name of the resource to list Policies for.
@@ -247,7 +247,7 @@ class CloudresourcemanagerFoldersListOrgPoliciesRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersSetOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersSetOrgPolicyRequest object.
+  r"""A CloudresourcemanagerFoldersSetOrgPolicyRequest object.
 
   Fields:
     foldersId: Part of `resource`. Resource name of the resource to attach the
@@ -261,7 +261,7 @@ class CloudresourcemanagerFoldersSetOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerLiensDeleteRequest(_messages.Message):
-  """A CloudresourcemanagerLiensDeleteRequest object.
+  r"""A CloudresourcemanagerLiensDeleteRequest object.
 
   Fields:
     liensId: Part of `name`. The name/identifier of the Lien to delete.
@@ -271,7 +271,7 @@ class CloudresourcemanagerLiensDeleteRequest(_messages.Message):
 
 
 class CloudresourcemanagerLiensListRequest(_messages.Message):
-  """A CloudresourcemanagerLiensListRequest object.
+  r"""A CloudresourcemanagerLiensListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return. This is a suggestion for
@@ -288,7 +288,7 @@ class CloudresourcemanagerLiensListRequest(_messages.Message):
 
 
 class CloudresourcemanagerOperationsGetRequest(_messages.Message):
-  """A CloudresourcemanagerOperationsGetRequest object.
+  r"""A CloudresourcemanagerOperationsGetRequest object.
 
   Fields:
     operationsId: Part of `name`. The name of the operation resource.
@@ -298,7 +298,7 @@ class CloudresourcemanagerOperationsGetRequest(_messages.Message):
 
 
 class CloudresourcemanagerOrganizationsClearOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsClearOrgPolicyRequest object.
+  r"""A CloudresourcemanagerOrganizationsClearOrgPolicyRequest object.
 
   Fields:
     clearOrgPolicyRequest: A ClearOrgPolicyRequest resource to be passed as
@@ -312,7 +312,7 @@ class CloudresourcemanagerOrganizationsClearOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest object.
+  r"""A CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest object.
 
   Fields:
     getEffectiveOrgPolicyRequest: A GetEffectiveOrgPolicyRequest resource to
@@ -326,7 +326,7 @@ class CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest(_messages.Me
 
 
 class CloudresourcemanagerOrganizationsGetIamPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsGetIamPolicyRequest object.
+  r"""A CloudresourcemanagerOrganizationsGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -341,7 +341,7 @@ class CloudresourcemanagerOrganizationsGetIamPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerOrganizationsGetOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsGetOrgPolicyRequest object.
+  r"""A CloudresourcemanagerOrganizationsGetOrgPolicyRequest object.
 
   Fields:
     getOrgPolicyRequest: A GetOrgPolicyRequest resource to be passed as the
@@ -355,7 +355,7 @@ class CloudresourcemanagerOrganizationsGetOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerOrganizationsGetRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsGetRequest object.
+  r"""A CloudresourcemanagerOrganizationsGetRequest object.
 
   Fields:
     organizationsId: Part of `name`. The resource name of the Organization to
@@ -366,7 +366,7 @@ class CloudresourcemanagerOrganizationsGetRequest(_messages.Message):
 
 
 class CloudresourcemanagerOrganizationsListAvailableOrgPolicyConstraintsRequest(_messages.Message):
-  """A
+  r"""A
   CloudresourcemanagerOrganizationsListAvailableOrgPolicyConstraintsRequest
   object.
 
@@ -383,7 +383,7 @@ class CloudresourcemanagerOrganizationsListAvailableOrgPolicyConstraintsRequest(
 
 
 class CloudresourcemanagerOrganizationsListOrgPoliciesRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsListOrgPoliciesRequest object.
+  r"""A CloudresourcemanagerOrganizationsListOrgPoliciesRequest object.
 
   Fields:
     listOrgPoliciesRequest: A ListOrgPoliciesRequest resource to be passed as
@@ -397,7 +397,7 @@ class CloudresourcemanagerOrganizationsListOrgPoliciesRequest(_messages.Message)
 
 
 class CloudresourcemanagerOrganizationsSetIamPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsSetIamPolicyRequest object.
+  r"""A CloudresourcemanagerOrganizationsSetIamPolicyRequest object.
 
   Fields:
     organizationsId: Part of `resource`. REQUIRED: The resource for which the
@@ -412,7 +412,7 @@ class CloudresourcemanagerOrganizationsSetIamPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerOrganizationsSetOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsSetOrgPolicyRequest object.
+  r"""A CloudresourcemanagerOrganizationsSetOrgPolicyRequest object.
 
   Fields:
     organizationsId: Part of `resource`. Resource name of the resource to
@@ -426,7 +426,7 @@ class CloudresourcemanagerOrganizationsSetOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerOrganizationsTestIamPermissionsRequest(_messages.Message):
-  """A CloudresourcemanagerOrganizationsTestIamPermissionsRequest object.
+  r"""A CloudresourcemanagerOrganizationsTestIamPermissionsRequest object.
 
   Fields:
     organizationsId: Part of `resource`. REQUIRED: The resource for which the
@@ -441,7 +441,7 @@ class CloudresourcemanagerOrganizationsTestIamPermissionsRequest(_messages.Messa
 
 
 class CloudresourcemanagerProjectsClearOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsClearOrgPolicyRequest object.
+  r"""A CloudresourcemanagerProjectsClearOrgPolicyRequest object.
 
   Fields:
     clearOrgPolicyRequest: A ClearOrgPolicyRequest resource to be passed as
@@ -455,7 +455,7 @@ class CloudresourcemanagerProjectsClearOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsDeleteRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsDeleteRequest object.
+  r"""A CloudresourcemanagerProjectsDeleteRequest object.
 
   Fields:
     projectId: The Project ID (for example, `foo-bar-123`).  Required.
@@ -465,7 +465,7 @@ class CloudresourcemanagerProjectsDeleteRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsGetAncestryRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsGetAncestryRequest object.
+  r"""A CloudresourcemanagerProjectsGetAncestryRequest object.
 
   Fields:
     getAncestryRequest: A GetAncestryRequest resource to be passed as the
@@ -478,7 +478,7 @@ class CloudresourcemanagerProjectsGetAncestryRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest object.
+  r"""A CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest object.
 
   Fields:
     getEffectiveOrgPolicyRequest: A GetEffectiveOrgPolicyRequest resource to
@@ -492,7 +492,7 @@ class CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest(_messages.Message
 
 
 class CloudresourcemanagerProjectsGetIamPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsGetIamPolicyRequest object.
+  r"""A CloudresourcemanagerProjectsGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -507,7 +507,7 @@ class CloudresourcemanagerProjectsGetIamPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsGetOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsGetOrgPolicyRequest object.
+  r"""A CloudresourcemanagerProjectsGetOrgPolicyRequest object.
 
   Fields:
     getOrgPolicyRequest: A GetOrgPolicyRequest resource to be passed as the
@@ -521,7 +521,7 @@ class CloudresourcemanagerProjectsGetOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsGetRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsGetRequest object.
+  r"""A CloudresourcemanagerProjectsGetRequest object.
 
   Fields:
     projectId: The Project ID (for example, `my-project-123`).  Required.
@@ -531,7 +531,7 @@ class CloudresourcemanagerProjectsGetRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsListAvailableOrgPolicyConstraintsRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsListAvailableOrgPolicyConstraintsRequest
+  r"""A CloudresourcemanagerProjectsListAvailableOrgPolicyConstraintsRequest
   object.
 
   Fields:
@@ -547,7 +547,7 @@ class CloudresourcemanagerProjectsListAvailableOrgPolicyConstraintsRequest(_mess
 
 
 class CloudresourcemanagerProjectsListOrgPoliciesRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsListOrgPoliciesRequest object.
+  r"""A CloudresourcemanagerProjectsListOrgPoliciesRequest object.
 
   Fields:
     listOrgPoliciesRequest: A ListOrgPoliciesRequest resource to be passed as
@@ -560,7 +560,7 @@ class CloudresourcemanagerProjectsListOrgPoliciesRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsListRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsListRequest object.
+  r"""A CloudresourcemanagerProjectsListRequest object.
 
   Fields:
     filter: An expression for filtering the results of the request.  Filter
@@ -588,7 +588,7 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsSetIamPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsSetIamPolicyRequest object.
+  r"""A CloudresourcemanagerProjectsSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -603,7 +603,7 @@ class CloudresourcemanagerProjectsSetIamPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsSetOrgPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsSetOrgPolicyRequest object.
+  r"""A CloudresourcemanagerProjectsSetOrgPolicyRequest object.
 
   Fields:
     projectsId: Part of `resource`. Resource name of the resource to attach
@@ -617,7 +617,7 @@ class CloudresourcemanagerProjectsSetOrgPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsTestIamPermissionsRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsTestIamPermissionsRequest object.
+  r"""A CloudresourcemanagerProjectsTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -632,7 +632,7 @@ class CloudresourcemanagerProjectsTestIamPermissionsRequest(_messages.Message):
 
 
 class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
-  """A CloudresourcemanagerProjectsUndeleteRequest object.
+  r"""A CloudresourcemanagerProjectsUndeleteRequest object.
 
   Fields:
     projectId: The project ID (for example, `foo-bar-123`).  Required.
@@ -645,12 +645,12 @@ class CloudresourcemanagerProjectsUndeleteRequest(_messages.Message):
 
 
 class Constraint(_messages.Message):
-  """A `Constraint` describes a way in which a resource's configuration can be
-  restricted. For example, it controls which cloud services can be activated
-  across an organization, or whether a Compute Engine instance can have serial
-  port connections established. `Constraints` can be configured by the
-  organization's policy adminstrator to fit the needs of the organzation by
-  setting Policies for `Constraints` at different locations in the
+  r"""A `Constraint` describes a way in which a resource's configuration can
+  be restricted. For example, it controls which cloud services can be
+  activated across an organization, or whether a Compute Engine instance can
+  have serial port connections established. `Constraints` can be configured by
+  the organization's policy adminstrator to fit the needs of the organzation
+  by setting Policies for `Constraints` at different locations in the
   organization's resource hierarchy. Policies are inherited down the resource
   hierarchy from higher levels, but can also be overridden. For details about
   the inheritance rules please read about Policies.  `Constraints` have a
@@ -676,7 +676,7 @@ class Constraint(_messages.Message):
   """
 
   class ConstraintDefaultValueValuesEnum(_messages.Enum):
-    """The evaluation behavior of this constraint in the absense of 'Policy'.
+    r"""The evaluation behavior of this constraint in the absense of 'Policy'.
 
     Values:
       CONSTRAINT_DEFAULT_UNSPECIFIED: This is only used for distinguishing
@@ -700,7 +700,7 @@ class Constraint(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -710,13 +710,13 @@ class Empty(_messages.Message):
 
 
 class GetAncestryRequest(_messages.Message):
-  """The request sent to the
+  r"""The request sent to the
 GetAncestry
 method."""
 
 
 class GetAncestryResponse(_messages.Message):
-  """Response from the GetAncestry method.
+  r"""Response from the GetAncestry method.
 
   Fields:
     ancestor: Ancestors are ordered from bottom to top of the resource
@@ -728,7 +728,7 @@ class GetAncestryResponse(_messages.Message):
 
 
 class GetEffectiveOrgPolicyRequest(_messages.Message):
-  """The request sent to the GetEffectiveOrgPolicy method.
+  r"""The request sent to the GetEffectiveOrgPolicy method.
 
   Fields:
     constraint: The name of the `Constraint` to compute the effective
@@ -739,11 +739,11 @@ class GetEffectiveOrgPolicyRequest(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  """Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method."""
 
 
 class GetOrgPolicyRequest(_messages.Message):
-  """The request sent to the GetOrgPolicy method.
+  r"""The request sent to the GetOrgPolicy method.
 
   Fields:
     constraint: Name of the `Constraint` to get the `Policy`.
@@ -753,7 +753,7 @@ class GetOrgPolicyRequest(_messages.Message):
 
 
 class Lien(_messages.Message):
-  """A Lien represents an encumbrance on the actions that can be performed on
+  r"""A Lien represents an encumbrance on the actions that can be performed on
   a resource.
 
   Fields:
@@ -785,7 +785,7 @@ class Lien(_messages.Message):
 
 
 class ListAvailableOrgPolicyConstraintsRequest(_messages.Message):
-  """The request sent to the [ListAvailableOrgPolicyConstraints]
+  r"""The request sent to the [ListAvailableOrgPolicyConstraints]
   google.cloud.OrgPolicy.v1.ListAvailableOrgPolicyConstraints] method.
 
   Fields:
@@ -802,7 +802,7 @@ class ListAvailableOrgPolicyConstraintsRequest(_messages.Message):
 
 
 class ListAvailableOrgPolicyConstraintsResponse(_messages.Message):
-  """The response returned from the ListAvailableOrgPolicyConstraints method.
+  r"""The response returned from the ListAvailableOrgPolicyConstraints method.
   Returns all `Constraints` that could be set at this level of the hierarchy
   (contrast with the response from `ListPolicies`, which returns all policies
   which are set).
@@ -819,7 +819,7 @@ class ListAvailableOrgPolicyConstraintsResponse(_messages.Message):
 
 
 class ListConstraint(_messages.Message):
-  """A `Constraint` that allows or disallows a list of string values, which
+  r"""A `Constraint` that allows or disallows a list of string values, which
   are configured by an Organization's policy administrator with a `Policy`.
 
   Fields:
@@ -831,7 +831,7 @@ class ListConstraint(_messages.Message):
 
 
 class ListLiensResponse(_messages.Message):
-  """The response message for Liens.ListLiens.
+  r"""The response message for Liens.ListLiens.
 
   Fields:
     liens: A list of Liens.
@@ -844,7 +844,7 @@ class ListLiensResponse(_messages.Message):
 
 
 class ListOrgPoliciesRequest(_messages.Message):
-  """The request sent to the ListOrgPolicies method.
+  r"""The request sent to the ListOrgPolicies method.
 
   Fields:
     pageSize: Size of the pages to be returned. This is currently unsupported
@@ -860,7 +860,7 @@ class ListOrgPoliciesRequest(_messages.Message):
 
 
 class ListOrgPoliciesResponse(_messages.Message):
-  """The response returned from the ListOrgPolicies method. It will be empty
+  r"""The response returned from the ListOrgPolicies method. It will be empty
   if no `Policies` are set on the resource.
 
   Fields:
@@ -876,7 +876,7 @@ class ListOrgPoliciesResponse(_messages.Message):
 
 
 class ListPolicy(_messages.Message):
-  """Used in `policy_type` to specify how `list_policy` behaves at this
+  r"""Used in `policy_type` to specify how `list_policy` behaves at this
   resource.  A `ListPolicy` can define specific values that are allowed or
   denied by setting either the `allowed_values` or `denied_values` fields. It
   can also be used to allow or deny all values, by setting the `all_values`
@@ -957,7 +957,7 @@ class ListPolicy(_messages.Message):
   """
 
   class AllValuesValueValuesEnum(_messages.Enum):
-    """The policy all_values state.
+    r"""The policy all_values state.
 
     Values:
       ALL_VALUES_UNSPECIFIED: Indicates that either allowed_values or
@@ -977,7 +977,7 @@ class ListPolicy(_messages.Message):
 
 
 class ListProjectsResponse(_messages.Message):
-  """A page of the response received from the ListProjects method.  A
+  r"""A page of the response received from the ListProjects method.  A
   paginated response where more pages are available has `next_page_token` set.
   This token can be used in a subsequent request to retrieve the next request
   page.
@@ -999,8 +999,8 @@ class ListProjectsResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -1041,7 +1041,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -1055,7 +1055,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1069,7 +1069,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -1086,7 +1086,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1106,7 +1106,7 @@ class Operation(_messages.Message):
 
 
 class OrgPolicy(_messages.Message):
-  """Defines a Cloud Organization `Policy` which is used to specify
+  r"""Defines a Cloud Organization `Policy` which is used to specify
   `Constraints` for configurations of Cloud Platform resources.
 
   Fields:
@@ -1144,7 +1144,7 @@ class OrgPolicy(_messages.Message):
 
 
 class Organization(_messages.Message):
-  """The root node in the resource hierarchy to which a particular entity's
+  r"""The root node in the resource hierarchy to which a particular entity's
   (e.g., company) resources belong.
 
   Enums:
@@ -1167,7 +1167,7 @@ class Organization(_messages.Message):
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
-    """The organization's current lifecycle state. Assigned by the server.
+    r"""The organization's current lifecycle state. Assigned by the server.
     @OutputOnly
 
     Values:
@@ -1189,7 +1189,7 @@ class Organization(_messages.Message):
 
 
 class OrganizationOwner(_messages.Message):
-  """The entity that owns an Organization. The lifetime of the Organization
+  r"""The entity that owns an Organization. The lifetime of the Organization
   and all of its descendants are bound to the `OrganizationOwner`. If the
   `OrganizationOwner` is deleted, the Organization and all its descendants
   will be deleted.
@@ -1203,7 +1203,7 @@ class OrganizationOwner(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
   consists of a list of `bindings`. A `Binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
@@ -1241,7 +1241,7 @@ class Policy(_messages.Message):
 
 
 class Project(_messages.Message):
-  """A Project is a high-level Google Cloud Platform entity.  It is a
+  r"""A Project is a high-level Google Cloud Platform entity.  It is a
   container for ACLs, APIs, App Engine Apps, VMs, and other Google Cloud
   Platform resources.
 
@@ -1289,7 +1289,7 @@ class Project(_messages.Message):
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
-    """The Project lifecycle state.  Read-only.
+    r"""The Project lifecycle state.  Read-only.
 
     Values:
       LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.  This is only
@@ -1308,7 +1308,7 @@ class Project(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The labels associated with this Project.  Label keys must be between 1
+    r"""The labels associated with this Project.  Label keys must be between 1
     and 63 characters long and must conform to the following regular
     expression: \[a-z\](\[-a-z0-9\]*\[a-z0-9\])?.  Label values must be
     between 0 and 63 characters long and must conform to the regular
@@ -1325,7 +1325,7 @@ class Project(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1347,7 +1347,7 @@ class Project(_messages.Message):
 
 
 class ProjectCreationStatus(_messages.Message):
-  """A status object which is used as the `metadata` field for the Operation
+  r"""A status object which is used as the `metadata` field for the Operation
   returned by CreateProject. It provides insight for when significant phases
   of Project creation have completed.
 
@@ -1365,7 +1365,7 @@ class ProjectCreationStatus(_messages.Message):
 
 
 class ResourceId(_messages.Message):
-  """A container to reference an id for any resource type. A `resource` in
+  r"""A container to reference an id for any resource type. A `resource` in
   Google Cloud Platform is a generic term for something you (a developer) may
   want to interact with through one of our API's. Some examples are an App
   Engine app, a Compute Engine instance, a Cloud SQL database, and so on.
@@ -1382,7 +1382,7 @@ class ResourceId(_messages.Message):
 
 
 class RestoreDefault(_messages.Message):
-  """Ignores policies set above this resource and restores the
+  r"""Ignores policies set above this resource and restores the
   `constraint_default` enforcement behavior of the specific `Constraint` at
   this resource.  Suppose that `constraint_default` is set to `ALLOW` for the
   `Constraint` `constraints/serviceuser.services`. Suppose that organization
@@ -1397,7 +1397,7 @@ class RestoreDefault(_messages.Message):
 
 
 class SearchOrganizationsRequest(_messages.Message):
-  """The request sent to the `SearchOrganizations` method.
+  r"""The request sent to the `SearchOrganizations` method.
 
   Fields:
     filter: An optional query string used to filter the Organizations to
@@ -1422,7 +1422,7 @@ class SearchOrganizationsRequest(_messages.Message):
 
 
 class SearchOrganizationsResponse(_messages.Message):
-  """The response returned from the `SearchOrganizations` method.
+  r"""The response returned from the `SearchOrganizations` method.
 
   Fields:
     nextPageToken: A pagination token to be used to retrieve the next page of
@@ -1439,7 +1439,7 @@ class SearchOrganizationsResponse(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -1457,7 +1457,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class SetOrgPolicyRequest(_messages.Message):
-  """The request sent to the SetOrgPolicyRequest method.
+  r"""The request sent to the SetOrgPolicyRequest method.
 
   Fields:
     policy: `Policy` to set on the resource.
@@ -1467,7 +1467,7 @@ class SetOrgPolicyRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1496,7 +1496,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1508,7 +1508,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1534,7 +1534,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -1582,7 +1582,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1594,7 +1594,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1612,7 +1612,7 @@ class Status(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1625,7 +1625,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -1636,7 +1636,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UndeleteProjectRequest(_messages.Message):
-  """The request sent to the UndeleteProject
+  r"""The request sent to the UndeleteProject
 method."""
 
 

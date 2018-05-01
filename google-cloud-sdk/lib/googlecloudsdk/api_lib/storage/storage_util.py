@@ -14,6 +14,8 @@
 
 """Utilities for interacting with Google Cloud Storage."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 import os
 import re
@@ -281,7 +283,11 @@ def _GetGsutilPath():
   return os.path.join(sdk_bin_path, 'gsutil')
 
 
-def RunGsutilCommand(command_name, command_args=None, run_concurrent=False):
+def RunGsutilCommand(command_name,
+                     command_args=None,
+                     run_concurrent=False,
+                     out_func=log.file_only_logger.debug,
+                     err_func=log.file_only_logger.debug):
   """Runs the specified gsutil command and returns the command's exit code.
 
   This is more reliable than storage_api.StorageClient.CopyFilesToGcs especially
@@ -292,6 +298,10 @@ def RunGsutilCommand(command_name, command_args=None, run_concurrent=False):
     command_args: List of arguments to pass to the command.
     run_concurrent: Whether concurrent uploads should be enabled while running
       the command.
+    out_func: str->None, a function to call with the stdout of the gsutil
+        command.
+    err_func: str->None, a function to call with the stderr of the gsutil
+        command.
 
   Returns:
     The exit code of the call to the gsutil command.
@@ -308,5 +318,5 @@ def RunGsutilCommand(command_name, command_args=None, run_concurrent=False):
     gsutil_args = execution_utils.ArgsForExecutableTool(command_path, *args)
   log.debug('Running command: [{args}]]'.format(args=' '.join(gsutil_args)))
   return execution_utils.Exec(gsutil_args, no_exit=True,
-                              out_func=log.file_only_logger.debug,
-                              err_func=log.file_only_logger.debug)
+                              out_func=out_func,
+                              err_func=err_func)

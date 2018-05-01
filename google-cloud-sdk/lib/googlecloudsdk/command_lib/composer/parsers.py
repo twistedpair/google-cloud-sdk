@@ -19,13 +19,17 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 
-def GetLocation():
+def GetLocation(required=True):
   """Returns the value of the composer/location config property.
 
   Config properties can be overridden with command line flags. If the --location
   flag was provided, this will return the value provided with the flag.
+
+  Args:
+    required: boolean, if True, the absence of the [composer/location] property
+        will result in an exception being raised
   """
-  return properties.VALUES.composer.location.Get(required=True)
+  return properties.VALUES.composer.location.Get(required=required)
 
 
 def GetProject():

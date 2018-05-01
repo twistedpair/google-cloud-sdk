@@ -59,7 +59,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new alerting policy.
+      r"""Creates a new alerting policy.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesCreateRequest) input message
@@ -86,7 +86,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an alerting policy.
+      r"""Deletes an alerting policy.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesDeleteRequest) input message
@@ -113,7 +113,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a single alerting policy.
+      r"""Gets a single alerting policy.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesGetRequest) input message
@@ -140,7 +140,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the existing alerting policies for the project.
+      r"""Lists the existing alerting policies for the project.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesListRequest) input message
@@ -167,7 +167,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an alerting policy. You can either replace the entire policy with a new one or replace only certain fields in the current alerting policy by specifying the fields to be updated via updateMask. Returns the updated alerting policy.
+      r"""Updates an alerting policy. You can either replace the entire policy with a new one or replace only certain fields in the current alerting policy by specifying the fields to be updated via updateMask. Returns the updated alerting policy.
 
       Args:
         request: (MonitoringProjectsAlertPoliciesPatchRequest) input message
@@ -204,7 +204,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Stackdriver Monitoring Agent only: Creates a new time series.<aside class="caution">This method is only for use by the Stackdriver Monitoring Agent. Use projects.timeSeries.create instead.</aside>.
+      r"""Stackdriver Monitoring Agent only: Creates a new time series.<aside class="caution">This method is only for use by the Stackdriver Monitoring Agent. Use projects.timeSeries.create instead.</aside>.
 
       Args:
         request: (MonitoringProjectsCollectdTimeSeriesCreateRequest) input message
@@ -241,7 +241,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists the monitored resources that are members of a group.
+      r"""Lists the monitored resources that are members of a group.
 
       Args:
         request: (MonitoringProjectsGroupsMembersListRequest) input message
@@ -278,7 +278,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new group.
+      r"""Creates a new group.
 
       Args:
         request: (MonitoringProjectsGroupsCreateRequest) input message
@@ -305,7 +305,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an existing group.
+      r"""Deletes an existing group.
 
       Args:
         request: (MonitoringProjectsGroupsDeleteRequest) input message
@@ -332,7 +332,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a single group.
+      r"""Gets a single group.
 
       Args:
         request: (MonitoringProjectsGroupsGetRequest) input message
@@ -359,7 +359,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the existing groups.
+      r"""Lists the existing groups.
 
       Args:
         request: (MonitoringProjectsGroupsListRequest) input message
@@ -386,7 +386,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates an existing group. You can change any group attributes except name.
+      r"""Updates an existing group. You can change any group attributes except name.
 
       Args:
         request: (MonitoringProjectsGroupsUpdateRequest) input message
@@ -423,7 +423,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new metric descriptor. User-created metric descriptors define custom metrics.
+      r"""Creates a new metric descriptor. User-created metric descriptors define custom metrics.
 
       Args:
         request: (MetricDescriptor) input message
@@ -450,7 +450,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a metric descriptor. Only user-created custom metrics can be deleted.
+      r"""Deletes a metric descriptor. Only user-created custom metrics can be deleted.
 
       Args:
         request: (MonitoringProjectsMetricDescriptorsDeleteRequest) input message
@@ -477,7 +477,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a single metric descriptor. This method does not require a Stackdriver account.
+      r"""Gets a single metric descriptor. This method does not require a Stackdriver account.
 
       Args:
         request: (MonitoringProjectsMetricDescriptorsGetRequest) input message
@@ -504,7 +504,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists metric descriptors that match a filter. This method does not require a Stackdriver account.
+      r"""Lists metric descriptors that match a filter. This method does not require a Stackdriver account.
 
       Args:
         request: (MonitoringProjectsMetricDescriptorsListRequest) input message
@@ -541,7 +541,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets a single monitored resource descriptor. This method does not require a Stackdriver account.
+      r"""Gets a single monitored resource descriptor. This method does not require a Stackdriver account.
 
       Args:
         request: (MonitoringProjectsMonitoredResourceDescriptorsGetRequest) input message
@@ -568,7 +568,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists monitored resource descriptors that match a filter. This method does not require a Stackdriver account.
+      r"""Lists monitored resource descriptors that match a filter. This method does not require a Stackdriver account.
 
       Args:
         request: (MonitoringProjectsMonitoredResourceDescriptorsListRequest) input message
@@ -605,7 +605,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets a single channel descriptor. The descriptor indicates which fields are expected / permitted for a notification channel of the given type.
+      r"""Gets a single channel descriptor. The descriptor indicates which fields are expected / permitted for a notification channel of the given type.
 
       Args:
         request: (MonitoringProjectsNotificationChannelDescriptorsGetRequest) input message
@@ -632,7 +632,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the descriptors for supported channel types. The use of descriptors makes it possible for new channel types to be dynamically added.
+      r"""Lists the descriptors for supported channel types. The use of descriptors makes it possible for new channel types to be dynamically added.
 
       Args:
         request: (MonitoringProjectsNotificationChannelDescriptorsListRequest) input message
@@ -669,7 +669,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new notification channel, representing a single notification endpoint such as an email address, SMS number, or pagerduty service.
+      r"""Creates a new notification channel, representing a single notification endpoint such as an email address, SMS number, or pagerduty service.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsCreateRequest) input message
@@ -696,7 +696,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a notification channel.
+      r"""Deletes a notification channel.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsDeleteRequest) input message
@@ -723,7 +723,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a single notification channel. The channel includes the relevant configuration details with which the channel was created. However, the response may truncate or omit passwords, API keys, or other private key matter and thus the response may not be 100% identical to the information that was supplied in the call to the create method.
+      r"""Gets a single notification channel. The channel includes the relevant configuration details with which the channel was created. However, the response may truncate or omit passwords, API keys, or other private key matter and thus the response may not be 100% identical to the information that was supplied in the call to the create method.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsGetRequest) input message
@@ -750,7 +750,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def GetVerificationCode(self, request, global_params=None):
-      """Requests a verification code for an already verified channel that can then be used in a call to VerifyNotificationChannel() on a different channel with an equivalent identity in the same or in a different project. This makes it possible to copy a channel between projects without requiring manual reverification of the channel. If the channel is not in the verified state, this method will fail (in other words, this may only be used if the SendNotificationChannelVerificationCode and VerifyNotificationChannel paths have already been used to put the given channel into the verified state).There is no guarantee that the verification codes returned by this method will be of a similar structure or form as the ones that are delivered to the channel via SendNotificationChannelVerificationCode; while VerifyNotificationChannel() will recognize both the codes delivered via SendNotificationChannelVerificationCode() and returned from GetNotificationChannelVerificationCode(), it is typically the case that the verification codes delivered via SendNotificationChannelVerificationCode() will be shorter and also have a shorter expiration (e.g. codes such as "G-123456") whereas GetVerificationCode() will typically return a much longer, websafe base 64 encoded string that has a longer expiration time.
+      r"""Requests a verification code for an already verified channel that can then be used in a call to VerifyNotificationChannel() on a different channel with an equivalent identity in the same or in a different project. This makes it possible to copy a channel between projects without requiring manual reverification of the channel. If the channel is not in the verified state, this method will fail (in other words, this may only be used if the SendNotificationChannelVerificationCode and VerifyNotificationChannel paths have already been used to put the given channel into the verified state).There is no guarantee that the verification codes returned by this method will be of a similar structure or form as the ones that are delivered to the channel via SendNotificationChannelVerificationCode; while VerifyNotificationChannel() will recognize both the codes delivered via SendNotificationChannelVerificationCode() and returned from GetNotificationChannelVerificationCode(), it is typically the case that the verification codes delivered via SendNotificationChannelVerificationCode() will be shorter and also have a shorter expiration (e.g. codes such as "G-123456") whereas GetVerificationCode() will typically return a much longer, websafe base 64 encoded string that has a longer expiration time.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsGetVerificationCodeRequest) input message
@@ -777,7 +777,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the notification channels that have been created for the project.
+      r"""Lists the notification channels that have been created for the project.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsListRequest) input message
@@ -804,7 +804,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a notification channel. Fields not specified in the field mask remain unchanged.
+      r"""Updates a notification channel. Fields not specified in the field mask remain unchanged.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsPatchRequest) input message
@@ -831,7 +831,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def SendVerificationCode(self, request, global_params=None):
-      """Causes a verification code to be delivered to the channel. The code can then be supplied in VerifyNotificationChannel to verify the channel.
+      r"""Causes a verification code to be delivered to the channel. The code can then be supplied in VerifyNotificationChannel to verify the channel.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsSendVerificationCodeRequest) input message
@@ -858,7 +858,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Verify(self, request, global_params=None):
-      """Verifies a NotificationChannel by proving receipt of the code delivered to the channel as a result of calling SendNotificationChannelVerificationCode.
+      r"""Verifies a NotificationChannel by proving receipt of the code delivered to the channel as a result of calling SendNotificationChannelVerificationCode.
 
       Args:
         request: (MonitoringProjectsNotificationChannelsVerifyRequest) input message
@@ -895,7 +895,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates or adds data to one or more time series. The response is empty if all time series in the request were written. If any time series could not be written, a corresponding failure message is included in the error response.
+      r"""Creates or adds data to one or more time series. The response is empty if all time series in the request were written. If any time series could not be written, a corresponding failure message is included in the error response.
 
       Args:
         request: (MonitoringProjectsTimeSeriesCreateRequest) input message
@@ -922,7 +922,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists time series that match a filter. This method does not require a Stackdriver account.
+      r"""Lists time series that match a filter. This method does not require a Stackdriver account.
 
       Args:
         request: (MonitoringProjectsTimeSeriesListRequest) input message
@@ -959,7 +959,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new uptime check configuration.
+      r"""Creates a new uptime check configuration.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsCreateRequest) input message
@@ -986,7 +986,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an uptime check configuration. Note that this method will fail if the uptime check configuration is referenced by an alert policy or other dependent configs that would be rendered invalid by the deletion.
+      r"""Deletes an uptime check configuration. Note that this method will fail if the uptime check configuration is referenced by an alert policy or other dependent configs that would be rendered invalid by the deletion.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsDeleteRequest) input message
@@ -1013,7 +1013,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a single uptime check configuration.
+      r"""Gets a single uptime check configuration.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsGetRequest) input message
@@ -1040,7 +1040,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the existing valid uptime check configurations for the project, leaving out any invalid configurations.
+      r"""Lists the existing valid uptime check configurations for the project, leaving out any invalid configurations.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsListRequest) input message
@@ -1067,7 +1067,7 @@ class MonitoringV3(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an uptime check configuration. You can either replace the entire configuration with a new one or replace only certain fields in the current configuration by specifying the fields to be updated via "updateMask". Returns the updated configuration.
+      r"""Updates an uptime check configuration. You can either replace the entire configuration with a new one or replace only certain fields in the current configuration by specifying the fields to be updated via "updateMask". Returns the updated configuration.
 
       Args:
         request: (MonitoringProjectsUptimeCheckConfigsPatchRequest) input message
@@ -1114,7 +1114,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Returns the list of IPs that checkers run from.
+      r"""Returns the list of IPs that checkers run from.
 
       Args:
         request: (MonitoringUptimeCheckIpsListRequest) input message

@@ -11,8 +11,8 @@ package = 'binaryauthorization'
 
 
 class AdmissionRule(_messages.Message):
-  """An admission rule specifies whether a container image must be attested to
-  by an attestation authority, or whether it is always permitted or denied.
+  r"""An admission rule specifies whether a container image must be attested
+  to by an attestation authority, or whether it is always permitted or denied.
 
   Enums:
     EvaluationModeValueValuesEnum: Required. How this admission rule will be
@@ -33,7 +33,7 @@ class AdmissionRule(_messages.Message):
   """
 
   class EvaluationModeValueValuesEnum(_messages.Enum):
-    """Required. How this admission rule will be evaluated.
+    r"""Required. How this admission rule will be evaluated.
 
     Values:
       EVALUATION_MODE_UNSPECIFIED: Mandatory.
@@ -49,7 +49,7 @@ class AdmissionRule(_messages.Message):
     NEVER_CONFORMANT = 3
 
   class NonConformanceActionValueValuesEnum(_messages.Enum):
-    """Required. The action when an image does not conform to this admission
+    r"""Required. The action when an image does not conform to this admission
     rule.
 
     Values:
@@ -68,7 +68,7 @@ class AdmissionRule(_messages.Message):
 
 
 class AdmissionWhitelistPattern(_messages.Message):
-  """An admission whitelist pattern allows images to be excluded from policy
+  r"""An admission whitelist pattern allows images to be excluded from policy
   enforcement.
 
   Fields:
@@ -81,7 +81,7 @@ class AdmissionWhitelistPattern(_messages.Message):
 
 
 class AttestationAuthority(_messages.Message):
-  """An attestation authority that attests to container image artifacts. An
+  r"""An attestation authority that attests to container image artifacts. An
   existing authority cannot be modified except where indicated.
 
   Fields:
@@ -102,7 +102,7 @@ class AttestationAuthority(_messages.Message):
 
 
 class AttestationAuthorityPublicKey(_messages.Message):
-  """An attestation authority public key that will be used to verify
+  r"""An attestation authority public key that will be used to verify
   attestations signed by this authority.
 
   Fields:
@@ -121,7 +121,7 @@ class AttestationAuthorityPublicKey(_messages.Message):
 
 
 class BinaryauthorizationProjectsAttestationAuthoritiesCreateRequest(_messages.Message):
-  """A BinaryauthorizationProjectsAttestationAuthoritiesCreateRequest object.
+  r"""A BinaryauthorizationProjectsAttestationAuthoritiesCreateRequest object.
 
   Fields:
     attestationAuthority: A AttestationAuthority resource to be passed as the
@@ -136,7 +136,7 @@ class BinaryauthorizationProjectsAttestationAuthoritiesCreateRequest(_messages.M
 
 
 class BinaryauthorizationProjectsAttestationAuthoritiesDeleteRequest(_messages.Message):
-  """A BinaryauthorizationProjectsAttestationAuthoritiesDeleteRequest object.
+  r"""A BinaryauthorizationProjectsAttestationAuthoritiesDeleteRequest object.
 
   Fields:
     name: Required. The name of the attestation authority to delete, in the
@@ -147,7 +147,7 @@ class BinaryauthorizationProjectsAttestationAuthoritiesDeleteRequest(_messages.M
 
 
 class BinaryauthorizationProjectsAttestationAuthoritiesGetIamPolicyRequest(_messages.Message):
-  """A BinaryauthorizationProjectsAttestationAuthoritiesGetIamPolicyRequest
+  r"""A BinaryauthorizationProjectsAttestationAuthoritiesGetIamPolicyRequest
   object.
 
   Fields:
@@ -160,7 +160,7 @@ class BinaryauthorizationProjectsAttestationAuthoritiesGetIamPolicyRequest(_mess
 
 
 class BinaryauthorizationProjectsAttestationAuthoritiesGetRequest(_messages.Message):
-  """A BinaryauthorizationProjectsAttestationAuthoritiesGetRequest object.
+  r"""A BinaryauthorizationProjectsAttestationAuthoritiesGetRequest object.
 
   Fields:
     name: Required. The name of the [attestation
@@ -172,7 +172,7 @@ class BinaryauthorizationProjectsAttestationAuthoritiesGetRequest(_messages.Mess
 
 
 class BinaryauthorizationProjectsAttestationAuthoritiesListRequest(_messages.Message):
-  """A BinaryauthorizationProjectsAttestationAuthoritiesListRequest object.
+  r"""A BinaryauthorizationProjectsAttestationAuthoritiesListRequest object.
 
   Fields:
     pageSize: Requested page size. The server may return fewer results than
@@ -191,7 +191,7 @@ class BinaryauthorizationProjectsAttestationAuthoritiesListRequest(_messages.Mes
 
 
 class BinaryauthorizationProjectsAttestationAuthoritiesSetIamPolicyRequest(_messages.Message):
-  """A BinaryauthorizationProjectsAttestationAuthoritiesSetIamPolicyRequest
+  r"""A BinaryauthorizationProjectsAttestationAuthoritiesSetIamPolicyRequest
   object.
 
   Fields:
@@ -207,7 +207,7 @@ class BinaryauthorizationProjectsAttestationAuthoritiesSetIamPolicyRequest(_mess
 
 
 class BinaryauthorizationProjectsAttestationAuthoritiesTestIamPermissionsRequest(_messages.Message):
-  """A
+  r"""A
   BinaryauthorizationProjectsAttestationAuthoritiesTestIamPermissionsRequest
   object.
 
@@ -224,7 +224,7 @@ class BinaryauthorizationProjectsAttestationAuthoritiesTestIamPermissionsRequest
 
 
 class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
-  """A BinaryauthorizationProjectsGetPolicyRequest object.
+  r"""A BinaryauthorizationProjectsGetPolicyRequest object.
 
   Fields:
     name: Required. The resource name of the policy to retrieve, in the format
@@ -235,7 +235,7 @@ class BinaryauthorizationProjectsGetPolicyRequest(_messages.Message):
 
 
 class BinaryauthorizationProjectsPolicyGetIamPolicyRequest(_messages.Message):
-  """A BinaryauthorizationProjectsPolicyGetIamPolicyRequest object.
+  r"""A BinaryauthorizationProjectsPolicyGetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -247,7 +247,7 @@ class BinaryauthorizationProjectsPolicyGetIamPolicyRequest(_messages.Message):
 
 
 class BinaryauthorizationProjectsPolicySetIamPolicyRequest(_messages.Message):
-  """A BinaryauthorizationProjectsPolicySetIamPolicyRequest object.
+  r"""A BinaryauthorizationProjectsPolicySetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -262,7 +262,7 @@ class BinaryauthorizationProjectsPolicySetIamPolicyRequest(_messages.Message):
 
 
 class BinaryauthorizationProjectsPolicyTestIamPermissionsRequest(_messages.Message):
-  """A BinaryauthorizationProjectsPolicyTestIamPermissionsRequest object.
+  r"""A BinaryauthorizationProjectsPolicyTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -277,7 +277,7 @@ class BinaryauthorizationProjectsPolicyTestIamPermissionsRequest(_messages.Messa
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -302,7 +302,7 @@ class Binding(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -312,7 +312,7 @@ class Empty(_messages.Message):
 
 
 class IamPolicy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
   consists of a list of `bindings`. A `Binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
@@ -347,7 +347,7 @@ class IamPolicy(_messages.Message):
 
 
 class ListAttestationAuthoritiesResponse(_messages.Message):
-  """Response message for
+  r"""Response message for
   BinauthzManagementService.ListAttestationAuthorities][].
 
   Fields:
@@ -363,7 +363,7 @@ class ListAttestationAuthoritiesResponse(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """A policy for container image binary authorization.
+  r"""A policy for container image binary authorization.
 
   Messages:
     ClusterAdmissionRulesValue: Optional. Per-cluster admission rules. Cluster
@@ -393,7 +393,7 @@ class Policy(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClusterAdmissionRulesValue(_messages.Message):
-    """Optional. Per-cluster admission rules. Cluster spec format:
+    r"""Optional. Per-cluster admission rules. Cluster spec format:
     `location.clusterId`. There can be at most one admission rule per cluster
     spec. A `location` is either a compute zone (e.g. us-central1-a) or a
     region (e.g. us-central1). For `clusterId` syntax restrictions see
@@ -410,7 +410,7 @@ class Policy(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ClusterAdmissionRulesValue object.
+      r"""An additional property for a ClusterAdmissionRulesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -430,7 +430,7 @@ class Policy(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -443,7 +443,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -472,7 +472,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -484,7 +484,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -510,7 +510,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class SystemOwnedDrydockNote(_messages.Message):
-  """A system owned drydock note references a Drydock ATTESTATION_AUTHORITY
+  r"""A system owned drydock note references a Drydock ATTESTATION_AUTHORITY
   Note created by the Binary Authorization policy management service.
 
   Fields:
@@ -532,7 +532,7 @@ class SystemOwnedDrydockNote(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -545,7 +545,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -556,7 +556,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UserOwnedDrydockNote(_messages.Message):
-  """An user owned drydock note references a Drydock ATTESTATION_AUTHORITY
+  r"""An user owned drydock note references a Drydock ATTESTATION_AUTHORITY
   Note created by the user.
 
   Fields:

@@ -13,7 +13,7 @@ package = 'cloudfunctions'
 
 
 class CallFunctionRequest(_messages.Message):
-  """Request for the `CallFunction` method.
+  r"""Request for the `CallFunction` method.
 
   Fields:
     data: Input to be passed to the function.
@@ -23,7 +23,7 @@ class CallFunctionRequest(_messages.Message):
 
 
 class CallFunctionResponse(_messages.Message):
-  """Response of `CallFunction` method.
+  r"""Response of `CallFunction` method.
 
   Fields:
     error: Either system or user-function generated error. Set if execution
@@ -40,7 +40,7 @@ class CallFunctionResponse(_messages.Message):
 
 
 class CloudFunction(_messages.Message):
-  """Describes a Cloud Function that contains user computation executed in
+  r"""Describes a Cloud Function that contains user computation executed in
   response to an event. It encapsulate function and triggers configurations.
 
   Enums:
@@ -66,6 +66,8 @@ class CloudFunction(_messages.Message):
     labels: Labels associated with this Cloud Function.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
+    runtime: The runtime in which the function is going to run. If empty,
+      defaults to Node.js 6.
     serviceAccountEmail: Output only. The email of the function's service
       account.
     sourceArchiveUrl: The Google Cloud Storage URL, starting with gs://,
@@ -84,7 +86,7 @@ class CloudFunction(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Output only. Status of the function deployment.
+    r"""Output only. Status of the function deployment.
 
     Values:
       CLOUD_FUNCTION_STATUS_UNSPECIFIED: Not specified. Invalid state.
@@ -105,7 +107,7 @@ class CloudFunction(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Labels associated with this Cloud Function.
+    r"""Labels associated with this Cloud Function.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -115,7 +117,7 @@ class CloudFunction(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -134,18 +136,19 @@ class CloudFunction(_messages.Message):
   httpsTrigger = _messages.MessageField('HttpsTrigger', 5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  serviceAccountEmail = _messages.StringField(8)
-  sourceArchiveUrl = _messages.StringField(9)
-  sourceRepository = _messages.MessageField('SourceRepository', 10)
-  sourceUploadUrl = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  timeout = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  versionId = _messages.IntegerField(15)
+  runtime = _messages.StringField(8)
+  serviceAccountEmail = _messages.StringField(9)
+  sourceArchiveUrl = _messages.StringField(10)
+  sourceRepository = _messages.MessageField('SourceRepository', 11)
+  sourceUploadUrl = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  timeout = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  versionId = _messages.IntegerField(16)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
-  """A CloudfunctionsOperationsGetRequest object.
+  r"""A CloudfunctionsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -155,7 +158,7 @@ class CloudfunctionsOperationsGetRequest(_messages.Message):
 
 
 class CloudfunctionsOperationsListRequest(_messages.Message):
-  """A CloudfunctionsOperationsListRequest object.
+  r"""A CloudfunctionsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -171,7 +174,7 @@ class CloudfunctionsOperationsListRequest(_messages.Message):
 
 
 class CloudfunctionsProjectsLocationsFunctionsCallRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsFunctionsCallRequest object.
+  r"""A CloudfunctionsProjectsLocationsFunctionsCallRequest object.
 
   Fields:
     callFunctionRequest: A CallFunctionRequest resource to be passed as the
@@ -184,7 +187,7 @@ class CloudfunctionsProjectsLocationsFunctionsCallRequest(_messages.Message):
 
 
 class CloudfunctionsProjectsLocationsFunctionsCreateRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsFunctionsCreateRequest object.
+  r"""A CloudfunctionsProjectsLocationsFunctionsCreateRequest object.
 
   Fields:
     cloudFunction: A CloudFunction resource to be passed as the request body.
@@ -197,7 +200,7 @@ class CloudfunctionsProjectsLocationsFunctionsCreateRequest(_messages.Message):
 
 
 class CloudfunctionsProjectsLocationsFunctionsDeleteRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsFunctionsDeleteRequest object.
+  r"""A CloudfunctionsProjectsLocationsFunctionsDeleteRequest object.
 
   Fields:
     name: The name of the function which should be deleted.
@@ -207,7 +210,7 @@ class CloudfunctionsProjectsLocationsFunctionsDeleteRequest(_messages.Message):
 
 
 class CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest
+  r"""A CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest
   object.
 
   Fields:
@@ -222,7 +225,7 @@ class CloudfunctionsProjectsLocationsFunctionsGenerateDownloadUrlRequest(_messag
 
 
 class CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest
+  r"""A CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest
   object.
 
   Fields:
@@ -238,7 +241,7 @@ class CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(_messages
 
 
 class CloudfunctionsProjectsLocationsFunctionsGetRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsFunctionsGetRequest object.
+  r"""A CloudfunctionsProjectsLocationsFunctionsGetRequest object.
 
   Fields:
     name: The name of the function which details should be obtained.
@@ -248,7 +251,7 @@ class CloudfunctionsProjectsLocationsFunctionsGetRequest(_messages.Message):
 
 
 class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsFunctionsListRequest object.
+  r"""A CloudfunctionsProjectsLocationsFunctionsListRequest object.
 
   Fields:
     pageSize: Maximum number of functions to return per call.
@@ -266,7 +269,7 @@ class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):
 
 
 class CloudfunctionsProjectsLocationsFunctionsPatchRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsFunctionsPatchRequest object.
+  r"""A CloudfunctionsProjectsLocationsFunctionsPatchRequest object.
 
   Fields:
     cloudFunction: A CloudFunction resource to be passed as the request body.
@@ -281,7 +284,7 @@ class CloudfunctionsProjectsLocationsFunctionsPatchRequest(_messages.Message):
 
 
 class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
-  """A CloudfunctionsProjectsLocationsListRequest object.
+  r"""A CloudfunctionsProjectsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -297,7 +300,7 @@ class CloudfunctionsProjectsLocationsListRequest(_messages.Message):
 
 
 class EventTrigger(_messages.Message):
-  """Describes EventTrigger, used to request events be sent from another
+  r"""Describes EventTrigger, used to request events be sent from another
   service.
 
   Fields:
@@ -337,7 +340,7 @@ class EventTrigger(_messages.Message):
 
 
 class FailurePolicy(_messages.Message):
-  """Describes the policy in case of function's execution failure. If empty,
+  r"""Describes the policy in case of function's execution failure. If empty,
   then defaults to ignoring failures (i.e. not retrying them).
 
   Fields:
@@ -349,7 +352,7 @@ class FailurePolicy(_messages.Message):
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
-  """Request of `GenerateDownloadUrl` method.
+  r"""Request of `GenerateDownloadUrl` method.
 
   Fields:
     versionId: The optional version of function. If not set, default, current
@@ -360,7 +363,7 @@ class GenerateDownloadUrlRequest(_messages.Message):
 
 
 class GenerateDownloadUrlResponse(_messages.Message):
-  """Response of `GenerateDownloadUrl` method.
+  r"""Response of `GenerateDownloadUrl` method.
 
   Fields:
     downloadUrl: The generated Google Cloud Storage signed URL that should be
@@ -371,11 +374,11 @@ class GenerateDownloadUrlResponse(_messages.Message):
 
 
 class GenerateUploadUrlRequest(_messages.Message):
-  """Request of `GenerateSourceUploadUrl` method."""
+  r"""Request of `GenerateSourceUploadUrl` method."""
 
 
 class GenerateUploadUrlResponse(_messages.Message):
-  """Response of `GenerateSourceUploadUrl` method.
+  r"""Response of `GenerateSourceUploadUrl` method.
 
   Fields:
     uploadUrl: The generated Google Cloud Storage signed URL that should be
@@ -387,7 +390,7 @@ class GenerateUploadUrlResponse(_messages.Message):
 
 
 class HttpsTrigger(_messages.Message):
-  """Describes HttpsTrigger, could be used to connect web hooks to function.
+  r"""Describes HttpsTrigger, could be used to connect web hooks to function.
 
   Fields:
     url: Output only. The deployed url for the function.
@@ -397,7 +400,7 @@ class HttpsTrigger(_messages.Message):
 
 
 class ListFunctionsResponse(_messages.Message):
-  """Response for the `ListFunctions` method.
+  r"""Response for the `ListFunctions` method.
 
   Fields:
     functions: The functions that match the request.
@@ -411,7 +414,7 @@ class ListFunctionsResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -424,7 +427,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -437,7 +440,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -460,7 +463,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -471,7 +474,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -485,7 +488,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -497,7 +500,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -517,8 +520,8 @@ class Location(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -559,7 +562,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -573,7 +576,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -587,7 +590,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -604,7 +607,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -624,7 +627,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadataV1(_messages.Message):
-  """Metadata describing an Operation
+  r"""Metadata describing an Operation
 
   Enums:
     TypeValueValuesEnum: Type of operation.
@@ -643,7 +646,7 @@ class OperationMetadataV1(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Type of operation.
+    r"""Type of operation.
 
     Values:
       OPERATION_UNSPECIFIED: Unknown operation type.
@@ -658,7 +661,7 @@ class OperationMetadataV1(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestValue(_messages.Message):
-    """The original request that started the operation.
+    r"""The original request that started the operation.
 
     Messages:
       AdditionalProperty: An additional property for a RequestValue object.
@@ -669,7 +672,7 @@ class OperationMetadataV1(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a RequestValue object.
+      r"""An additional property for a RequestValue object.
 
       Fields:
         key: Name of the additional property.
@@ -689,7 +692,7 @@ class OperationMetadataV1(_messages.Message):
 
 
 class OperationMetadataV1Beta2(_messages.Message):
-  """Metadata describing an Operation
+  r"""Metadata describing an Operation
 
   Enums:
     TypeValueValuesEnum: Type of operation.
@@ -708,7 +711,7 @@ class OperationMetadataV1Beta2(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Type of operation.
+    r"""Type of operation.
 
     Values:
       OPERATION_UNSPECIFIED: Unknown operation type.
@@ -723,7 +726,7 @@ class OperationMetadataV1Beta2(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestValue(_messages.Message):
-    """The original request that started the operation.
+    r"""The original request that started the operation.
 
     Messages:
       AdditionalProperty: An additional property for a RequestValue object.
@@ -734,7 +737,7 @@ class OperationMetadataV1Beta2(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a RequestValue object.
+      r"""An additional property for a RequestValue object.
 
       Fields:
         key: Name of the additional property.
@@ -754,7 +757,7 @@ class OperationMetadataV1Beta2(_messages.Message):
 
 
 class Retry(_messages.Message):
-  """Describes the retry policy in case of function's execution failure. A
+  r"""Describes the retry policy in case of function's execution failure. A
   function execution will be retried on any failure. A failed execution will
   be retried up to 7 days with an exponential backoff (capped at 10 seconds).
   Retried execution is charged as any other execution.
@@ -763,7 +766,7 @@ class Retry(_messages.Message):
 
 
 class SourceRepository(_messages.Message):
-  """Describes SourceRepository, used to represent parameters related to
+  r"""Describes SourceRepository, used to represent parameters related to
   source repository where a function is hosted.
 
   Fields:
@@ -788,7 +791,7 @@ class SourceRepository(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -817,7 +820,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -829,7 +832,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -855,7 +858,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -903,7 +906,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -915,7 +918,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.

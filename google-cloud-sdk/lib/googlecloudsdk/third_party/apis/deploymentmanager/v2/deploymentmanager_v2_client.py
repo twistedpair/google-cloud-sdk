@@ -52,7 +52,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
           }
 
     def CancelPreview(self, request, global_params=None):
-      """Cancels and removes the preview currently associated with the deployment.
+      r"""Cancels and removes the preview currently associated with the deployment.
 
       Args:
         request: (DeploymentmanagerDeploymentsCancelPreviewRequest) input message
@@ -78,7 +78,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a deployment and all of the resources in the deployment.
+      r"""Deletes a deployment and all of the resources in the deployment.
 
       Args:
         request: (DeploymentmanagerDeploymentsDeleteRequest) input message
@@ -104,7 +104,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a specific deployment.
+      r"""Gets information about a specific deployment.
 
       Args:
         request: (DeploymentmanagerDeploymentsGetRequest) input message
@@ -130,7 +130,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
       Args:
         request: (DeploymentmanagerDeploymentsGetIamPolicyRequest) input message
@@ -156,7 +156,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a deployment and all of the resources described by the deployment manifest.
+      r"""Creates a deployment and all of the resources described by the deployment manifest.
 
       Args:
         request: (DeploymentmanagerDeploymentsInsertRequest) input message
@@ -182,7 +182,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all deployments for a given project.
+      r"""Lists all deployments for a given project.
 
       Args:
         request: (DeploymentmanagerDeploymentsListRequest) input message
@@ -208,7 +208,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
+      r"""Updates a deployment and all of the resources described by the deployment manifest. This method supports patch semantics.
 
       Args:
         request: (DeploymentmanagerDeploymentsPatchRequest) input message
@@ -234,7 +234,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (DeploymentmanagerDeploymentsSetIamPolicyRequest) input message
@@ -260,7 +260,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def Stop(self, request, global_params=None):
-      """Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
+      r"""Stops an ongoing operation. This does not roll back any work that has already been completed, but prevents any new work from being started.
 
       Args:
         request: (DeploymentmanagerDeploymentsStopRequest) input message
@@ -286,7 +286,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 
       Args:
         request: (DeploymentmanagerDeploymentsTestIamPermissionsRequest) input message
@@ -312,7 +312,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a deployment and all of the resources described by the deployment manifest.
+      r"""Updates a deployment and all of the resources described by the deployment manifest.
 
       Args:
         request: (DeploymentmanagerDeploymentsUpdateRequest) input message
@@ -348,7 +348,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a specific manifest.
+      r"""Gets information about a specific manifest.
 
       Args:
         request: (DeploymentmanagerManifestsGetRequest) input message
@@ -374,7 +374,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all manifests for a given deployment.
+      r"""Lists all manifests for a given deployment.
 
       Args:
         request: (DeploymentmanagerManifestsListRequest) input message
@@ -410,7 +410,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a specific operation.
+      r"""Gets information about a specific operation.
 
       Args:
         request: (DeploymentmanagerOperationsGetRequest) input message
@@ -436,7 +436,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all operations for a project.
+      r"""Lists all operations for a project.
 
       Args:
         request: (DeploymentmanagerOperationsListRequest) input message
@@ -472,7 +472,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a single resource.
+      r"""Gets information about a single resource.
 
       Args:
         request: (DeploymentmanagerResourcesGetRequest) input message
@@ -498,7 +498,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all resources in a given deployment.
+      r"""Lists all resources in a given deployment.
 
       Args:
         request: (DeploymentmanagerResourcesListRequest) input message
@@ -534,7 +534,7 @@ class DeploymentmanagerV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists all resource types for Deployment Manager.
+      r"""Lists all resource types for Deployment Manager.
 
       Args:
         request: (DeploymentmanagerTypesListRequest) input message

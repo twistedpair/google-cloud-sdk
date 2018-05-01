@@ -13,7 +13,7 @@ package = 'logging'
 
 
 class BucketOptions(_messages.Message):
-  """BucketOptions describes the bucket boundaries used to create a histogram
+  r"""BucketOptions describes the bucket boundaries used to create a histogram
   for the distribution. The buckets can be in a linear sequence, an
   exponential sequence, or each bucket can be specified explicitly.
   BucketOptions does not include the number of values in each bucket.A bucket
@@ -40,7 +40,7 @@ class BucketOptions(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo {   rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
@@ -50,9 +50,9 @@ class Empty(_messages.Message):
 
 
 class Explicit(_messages.Message):
-  """Specifies a set of buckets with arbitrary widths.There are size(bounds) +
-  1 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i <
-  N-1): boundsi  Lower bound (1 <= i < N); boundsi - 1The bounds field must
+  r"""Specifies a set of buckets with arbitrary widths.There are size(bounds)
+  + 1 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i
+  < N-1): boundsi  Lower bound (1 <= i < N); boundsi - 1The bounds field must
   contain at least one element. If bounds has only one element, then there are
   no finite buckets, and that single element is the common boundary of the
   overflow and underflow buckets.
@@ -65,7 +65,7 @@ class Explicit(_messages.Message):
 
 
 class Exponential(_messages.Message):
-  """Specifies an exponential sequence of buckets that have a width that is
+  r"""Specifies an exponential sequence of buckets that have a width that is
   proportional to the value of the lower bound. Each bucket represents a
   constant relative uncertainty on a specific value in the bucket.There are
   num_finite_buckets + 2 (= N) buckets. Bucket i has the following
@@ -84,9 +84,9 @@ class Exponential(_messages.Message):
 
 
 class HttpRequest(_messages.Message):
-  """A common proto for logging HTTP requests. Only contains semantics defined
-  by the HTTP specification. Product-specific logging information MUST be
-  defined in a separate message.
+  r"""A common proto for logging HTTP requests. Only contains semantics
+  defined by the HTTP specification. Product-specific logging information MUST
+  be defined in a separate message.
 
   Fields:
     cacheFillBytes: The number of HTTP response bytes inserted into cache. Set
@@ -140,7 +140,7 @@ class HttpRequest(_messages.Message):
 
 
 class LabelDescriptor(_messages.Message):
-  """A description of a label.
+  r"""A description of a label.
 
   Enums:
     ValueTypeValueValuesEnum: The type of data that can be assigned to the
@@ -153,7 +153,7 @@ class LabelDescriptor(_messages.Message):
   """
 
   class ValueTypeValueValuesEnum(_messages.Enum):
-    """The type of data that can be assigned to the label.
+    r"""The type of data that can be assigned to the label.
 
     Values:
       STRING: A variable-length string. This is the default.
@@ -170,7 +170,7 @@ class LabelDescriptor(_messages.Message):
 
 
 class Linear(_messages.Message):
-  """Specifies a linear sequence of buckets that all have the same width
+  r"""Specifies a linear sequence of buckets that all have the same width
   (except overflow and underflow). Each bucket represents a constant absolute
   uncertainty on the specific value in the bucket.There are num_finite_buckets
   + 2 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i
@@ -189,7 +189,7 @@ class Linear(_messages.Message):
 
 
 class ListExclusionsResponse(_messages.Message):
-  """Result returned from ListExclusions.
+  r"""Result returned from ListExclusions.
 
   Fields:
     exclusions: A list of exclusions.
@@ -204,7 +204,7 @@ class ListExclusionsResponse(_messages.Message):
 
 
 class ListLogEntriesRequest(_messages.Message):
-  """The parameters to ListLogEntries.
+  r"""The parameters to ListLogEntries.
 
   Fields:
     filter: Optional. A filter that chooses which log entries to return. See
@@ -248,7 +248,7 @@ class ListLogEntriesRequest(_messages.Message):
 
 
 class ListLogEntriesResponse(_messages.Message):
-  """Result returned from ListLogEntries.
+  r"""Result returned from ListLogEntries.
 
   Fields:
     entries: A list of log entries. If entries is empty, nextPageToken may
@@ -271,7 +271,7 @@ class ListLogEntriesResponse(_messages.Message):
 
 
 class ListLogMetricsResponse(_messages.Message):
-  """Result returned from ListLogMetrics.
+  r"""Result returned from ListLogMetrics.
 
   Fields:
     metrics: A list of logs-based metrics.
@@ -286,7 +286,7 @@ class ListLogMetricsResponse(_messages.Message):
 
 
 class ListLogsResponse(_messages.Message):
-  """Result returned from ListLogs.
+  r"""Result returned from ListLogs.
 
   Fields:
     logNames: A list of log names. For example, "projects/my-project/syslog"
@@ -302,7 +302,7 @@ class ListLogsResponse(_messages.Message):
 
 
 class ListMonitoredResourceDescriptorsResponse(_messages.Message):
-  """Result returned from ListMonitoredResourceDescriptors.
+  r"""Result returned from ListMonitoredResourceDescriptors.
 
   Fields:
     nextPageToken: If there might be more results than those appearing in this
@@ -317,7 +317,7 @@ class ListMonitoredResourceDescriptorsResponse(_messages.Message):
 
 
 class ListSinksResponse(_messages.Message):
-  """Result returned from ListSinks.
+  r"""Result returned from ListSinks.
 
   Fields:
     nextPageToken: If there might be more results than appear in this
@@ -332,7 +332,7 @@ class ListSinksResponse(_messages.Message):
 
 
 class LogEntry(_messages.Message):
-  """An individual entry in a log.
+  r"""An individual entry in a log.
 
   Enums:
     SeverityValueValuesEnum: Optional. The severity of the log entry. The
@@ -401,9 +401,11 @@ class LogEntry(_messages.Message):
     timestamp: Optional. The time the event described by the log entry
       occurred. This time is used to compute the log entry's age and to
       enforce the logs retention period. If this field is omitted in a new log
-      entry, then Stackdriver Logging assigns it the current time.Incoming log
-      entries should have timestamps that are no more than the logs retention
-      period in the past, and no more than 24 hours in the future. Log entries
+      entry, then Stackdriver Logging assigns it the current time. Timestamps
+      have nanosecond accuracy, but trailing zeros in the fractional seconds
+      might be omitted when the timestamp is displayed.Incoming log entries
+      should have timestamps that are no more than the logs retention period
+      in the past, and no more than 24 hours in the future. Log entries
       outside those time boundaries will not be available when calling
       entries.list, but those log entries can still be exported with LogSinks.
     trace: Optional. Resource name of the trace associated with the log entry,
@@ -413,7 +415,7 @@ class LogEntry(_messages.Message):
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """Optional. The severity of the log entry. The default value is
+    r"""Optional. The severity of the log entry. The default value is
     LogSeverity.DEFAULT.
 
     Values:
@@ -440,7 +442,7 @@ class LogEntry(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class JsonPayloadValue(_messages.Message):
-    """The log entry payload, represented as a structure that is expressed as
+    r"""The log entry payload, represented as a structure that is expressed as
     a JSON object.
 
     Messages:
@@ -452,7 +454,7 @@ class LogEntry(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a JsonPayloadValue object.
+      r"""An additional property for a JsonPayloadValue object.
 
       Fields:
         key: Name of the additional property.
@@ -466,7 +468,7 @@ class LogEntry(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. A set of user-defined (key, value) data that provides
+    r"""Optional. A set of user-defined (key, value) data that provides
     additional information about the log entry.
 
     Messages:
@@ -477,7 +479,7 @@ class LogEntry(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -491,7 +493,7 @@ class LogEntry(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProtoPayloadValue(_messages.Message):
-    """The log entry payload, represented as a protocol buffer. Some Google
+    r"""The log entry payload, represented as a protocol buffer. Some Google
     Cloud Platform services use this field for their log entry payloads.
 
     Messages:
@@ -504,7 +506,7 @@ class LogEntry(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ProtoPayloadValue object.
+      r"""An additional property for a ProtoPayloadValue object.
 
       Fields:
         key: Name of the additional property.
@@ -534,7 +536,7 @@ class LogEntry(_messages.Message):
 
 
 class LogEntryOperation(_messages.Message):
-  """Additional information about a potentially long-running operation with
+  r"""Additional information about a potentially long-running operation with
   which a log entry is associated.
 
   Fields:
@@ -556,7 +558,7 @@ class LogEntryOperation(_messages.Message):
 
 
 class LogEntrySourceLocation(_messages.Message):
-  """Additional information about the source code location that produced the
+  r"""Additional information about the source code location that produced the
   log entry.
 
   Fields:
@@ -578,7 +580,7 @@ class LogEntrySourceLocation(_messages.Message):
 
 
 class LogExclusion(_messages.Message):
-  """Specifies a set of log entries that are not to be stored in Stackdriver
+  r"""Specifies a set of log entries that are not to be stored in Stackdriver
   Logging. If your project receives a large volume of logs, you might be able
   to use exclusions to reduce your chargeable logs. Exclusions are processed
   after log sinks, so you can export log entries before they are excluded.
@@ -607,7 +609,7 @@ class LogExclusion(_messages.Message):
 
 
 class LogLine(_messages.Message):
-  """Application log line emitted while processing a request.
+  r"""Application log line emitted while processing a request.
 
   Enums:
     SeverityValueValuesEnum: Severity of this log entry.
@@ -620,7 +622,7 @@ class LogLine(_messages.Message):
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
-    """Severity of this log entry.
+    r"""Severity of this log entry.
 
     Values:
       DEFAULT: (0) The log entry has no assigned severity level.
@@ -651,7 +653,7 @@ class LogLine(_messages.Message):
 
 
 class LogMetric(_messages.Message):
-  """Describes a logs-based metric. The value of the metric is the number of
+  r"""Describes a logs-based metric. The value of the metric is the number of
   log entries that match a logs filter in a given time interval.Logs-based
   metric can also be used to extract values from logs and create a a
   distribution of the values. The distribution records the statistics of the
@@ -743,8 +745,8 @@ class LogMetric(_messages.Message):
   """
 
   class VersionValueValuesEnum(_messages.Enum):
-    """Deprecated. The API version that created or updated this metric. The v2
-    format is used by default and cannot be changed.
+    r"""Deprecated. The API version that created or updated this metric. The
+    v2 format is used by default and cannot be changed.
 
     Values:
       V2: Stackdriver Logging API v2.
@@ -755,7 +757,7 @@ class LogMetric(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelExtractorsValue(_messages.Message):
-    """Optional. A map from a label key string to an extractor expression
+    r"""Optional. A map from a label key string to an extractor expression
     which is used to extract data from a log entry field and assign as the
     label value. Each label key specified in the LabelDescriptor must have an
     associated extractor expression in this map. The syntax of the extractor
@@ -776,7 +778,7 @@ class LogMetric(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelExtractorsValue object.
+      r"""An additional property for a LabelExtractorsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -799,7 +801,7 @@ class LogMetric(_messages.Message):
 
 
 class LogSink(_messages.Message):
-  """Describes a sink used to export log entries to one of the following
+  r"""Describes a sink used to export log entries to one of the following
   destinations in any project: a Cloud Storage bucket, a BigQuery dataset, or
   a Cloud Pub/Sub topic. A logs filter controls which log entries are
   exported. The sink must be created within a project, organization, billing
@@ -858,7 +860,7 @@ class LogSink(_messages.Message):
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):
-    """Deprecated. The log entry format to use for this sink's exported log
+    r"""Deprecated. The log entry format to use for this sink's exported log
     entries. The v2 format is used by default and cannot be changed.
 
     Values:
@@ -882,7 +884,7 @@ class LogSink(_messages.Message):
 
 
 class LoggingBillingAccountsExclusionsCreateRequest(_messages.Message):
-  """A LoggingBillingAccountsExclusionsCreateRequest object.
+  r"""A LoggingBillingAccountsExclusionsCreateRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -897,7 +899,7 @@ class LoggingBillingAccountsExclusionsCreateRequest(_messages.Message):
 
 
 class LoggingBillingAccountsExclusionsDeleteRequest(_messages.Message):
-  """A LoggingBillingAccountsExclusionsDeleteRequest object.
+  r"""A LoggingBillingAccountsExclusionsDeleteRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion to delete:
@@ -912,7 +914,7 @@ class LoggingBillingAccountsExclusionsDeleteRequest(_messages.Message):
 
 
 class LoggingBillingAccountsExclusionsGetRequest(_messages.Message):
-  """A LoggingBillingAccountsExclusionsGetRequest object.
+  r"""A LoggingBillingAccountsExclusionsGetRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion:
@@ -927,7 +929,7 @@ class LoggingBillingAccountsExclusionsGetRequest(_messages.Message):
 
 
 class LoggingBillingAccountsExclusionsListRequest(_messages.Message):
-  """A LoggingBillingAccountsExclusionsListRequest object.
+  r"""A LoggingBillingAccountsExclusionsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -948,7 +950,7 @@ class LoggingBillingAccountsExclusionsListRequest(_messages.Message):
 
 
 class LoggingBillingAccountsExclusionsPatchRequest(_messages.Message):
-  """A LoggingBillingAccountsExclusionsPatchRequest object.
+  r"""A LoggingBillingAccountsExclusionsPatchRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -972,7 +974,7 @@ class LoggingBillingAccountsExclusionsPatchRequest(_messages.Message):
 
 
 class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
-  """A LoggingBillingAccountsLogsDeleteRequest object.
+  r"""A LoggingBillingAccountsLogsDeleteRequest object.
 
   Fields:
     logName: Required. The resource name of the log to delete:
@@ -989,7 +991,7 @@ class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
 
 
 class LoggingBillingAccountsLogsListRequest(_messages.Message):
-  """A LoggingBillingAccountsLogsListRequest object.
+  r"""A LoggingBillingAccountsLogsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1010,7 +1012,7 @@ class LoggingBillingAccountsLogsListRequest(_messages.Message):
 
 
 class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
-  """A LoggingBillingAccountsSinksCreateRequest object.
+  r"""A LoggingBillingAccountsSinksCreateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1036,7 +1038,7 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
 
 
 class LoggingBillingAccountsSinksDeleteRequest(_messages.Message):
-  """A LoggingBillingAccountsSinksDeleteRequest object.
+  r"""A LoggingBillingAccountsSinksDeleteRequest object.
 
   Fields:
     sinkName: Required. The full resource name of the sink to delete,
@@ -1052,7 +1054,7 @@ class LoggingBillingAccountsSinksDeleteRequest(_messages.Message):
 
 
 class LoggingBillingAccountsSinksGetRequest(_messages.Message):
-  """A LoggingBillingAccountsSinksGetRequest object.
+  r"""A LoggingBillingAccountsSinksGetRequest object.
 
   Fields:
     sinkName: Required. The resource name of the sink:
@@ -1067,7 +1069,7 @@ class LoggingBillingAccountsSinksGetRequest(_messages.Message):
 
 
 class LoggingBillingAccountsSinksListRequest(_messages.Message):
-  """A LoggingBillingAccountsSinksListRequest object.
+  r"""A LoggingBillingAccountsSinksListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1088,7 +1090,7 @@ class LoggingBillingAccountsSinksListRequest(_messages.Message):
 
 
 class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
-  """A LoggingBillingAccountsSinksPatchRequest object.
+  r"""A LoggingBillingAccountsSinksPatchRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1127,7 +1129,7 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
 
 
 class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
-  """A LoggingBillingAccountsSinksUpdateRequest object.
+  r"""A LoggingBillingAccountsSinksUpdateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1166,7 +1168,7 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
 
 
 class LoggingExclusionsCreateRequest(_messages.Message):
-  """A LoggingExclusionsCreateRequest object.
+  r"""A LoggingExclusionsCreateRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -1181,7 +1183,7 @@ class LoggingExclusionsCreateRequest(_messages.Message):
 
 
 class LoggingExclusionsDeleteRequest(_messages.Message):
-  """A LoggingExclusionsDeleteRequest object.
+  r"""A LoggingExclusionsDeleteRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion to delete:
@@ -1196,7 +1198,7 @@ class LoggingExclusionsDeleteRequest(_messages.Message):
 
 
 class LoggingExclusionsGetRequest(_messages.Message):
-  """A LoggingExclusionsGetRequest object.
+  r"""A LoggingExclusionsGetRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion:
@@ -1211,7 +1213,7 @@ class LoggingExclusionsGetRequest(_messages.Message):
 
 
 class LoggingExclusionsListRequest(_messages.Message):
-  """A LoggingExclusionsListRequest object.
+  r"""A LoggingExclusionsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1232,7 +1234,7 @@ class LoggingExclusionsListRequest(_messages.Message):
 
 
 class LoggingExclusionsPatchRequest(_messages.Message):
-  """A LoggingExclusionsPatchRequest object.
+  r"""A LoggingExclusionsPatchRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -1256,7 +1258,7 @@ class LoggingExclusionsPatchRequest(_messages.Message):
 
 
 class LoggingFoldersExclusionsCreateRequest(_messages.Message):
-  """A LoggingFoldersExclusionsCreateRequest object.
+  r"""A LoggingFoldersExclusionsCreateRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -1271,7 +1273,7 @@ class LoggingFoldersExclusionsCreateRequest(_messages.Message):
 
 
 class LoggingFoldersExclusionsDeleteRequest(_messages.Message):
-  """A LoggingFoldersExclusionsDeleteRequest object.
+  r"""A LoggingFoldersExclusionsDeleteRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion to delete:
@@ -1286,7 +1288,7 @@ class LoggingFoldersExclusionsDeleteRequest(_messages.Message):
 
 
 class LoggingFoldersExclusionsGetRequest(_messages.Message):
-  """A LoggingFoldersExclusionsGetRequest object.
+  r"""A LoggingFoldersExclusionsGetRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion:
@@ -1301,7 +1303,7 @@ class LoggingFoldersExclusionsGetRequest(_messages.Message):
 
 
 class LoggingFoldersExclusionsListRequest(_messages.Message):
-  """A LoggingFoldersExclusionsListRequest object.
+  r"""A LoggingFoldersExclusionsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1322,7 +1324,7 @@ class LoggingFoldersExclusionsListRequest(_messages.Message):
 
 
 class LoggingFoldersExclusionsPatchRequest(_messages.Message):
-  """A LoggingFoldersExclusionsPatchRequest object.
+  r"""A LoggingFoldersExclusionsPatchRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -1346,7 +1348,7 @@ class LoggingFoldersExclusionsPatchRequest(_messages.Message):
 
 
 class LoggingFoldersLogsDeleteRequest(_messages.Message):
-  """A LoggingFoldersLogsDeleteRequest object.
+  r"""A LoggingFoldersLogsDeleteRequest object.
 
   Fields:
     logName: Required. The resource name of the log to delete:
@@ -1363,7 +1365,7 @@ class LoggingFoldersLogsDeleteRequest(_messages.Message):
 
 
 class LoggingFoldersLogsListRequest(_messages.Message):
-  """A LoggingFoldersLogsListRequest object.
+  r"""A LoggingFoldersLogsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1384,7 +1386,7 @@ class LoggingFoldersLogsListRequest(_messages.Message):
 
 
 class LoggingFoldersSinksCreateRequest(_messages.Message):
-  """A LoggingFoldersSinksCreateRequest object.
+  r"""A LoggingFoldersSinksCreateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1410,7 +1412,7 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
 
 
 class LoggingFoldersSinksDeleteRequest(_messages.Message):
-  """A LoggingFoldersSinksDeleteRequest object.
+  r"""A LoggingFoldersSinksDeleteRequest object.
 
   Fields:
     sinkName: Required. The full resource name of the sink to delete,
@@ -1426,7 +1428,7 @@ class LoggingFoldersSinksDeleteRequest(_messages.Message):
 
 
 class LoggingFoldersSinksGetRequest(_messages.Message):
-  """A LoggingFoldersSinksGetRequest object.
+  r"""A LoggingFoldersSinksGetRequest object.
 
   Fields:
     sinkName: Required. The resource name of the sink:
@@ -1441,7 +1443,7 @@ class LoggingFoldersSinksGetRequest(_messages.Message):
 
 
 class LoggingFoldersSinksListRequest(_messages.Message):
-  """A LoggingFoldersSinksListRequest object.
+  r"""A LoggingFoldersSinksListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1462,7 +1464,7 @@ class LoggingFoldersSinksListRequest(_messages.Message):
 
 
 class LoggingFoldersSinksPatchRequest(_messages.Message):
-  """A LoggingFoldersSinksPatchRequest object.
+  r"""A LoggingFoldersSinksPatchRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1501,7 +1503,7 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
 
 
 class LoggingFoldersSinksUpdateRequest(_messages.Message):
-  """A LoggingFoldersSinksUpdateRequest object.
+  r"""A LoggingFoldersSinksUpdateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1540,7 +1542,7 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
 
 
 class LoggingLogsDeleteRequest(_messages.Message):
-  """A LoggingLogsDeleteRequest object.
+  r"""A LoggingLogsDeleteRequest object.
 
   Fields:
     logName: Required. The resource name of the log to delete:
@@ -1557,7 +1559,7 @@ class LoggingLogsDeleteRequest(_messages.Message):
 
 
 class LoggingLogsListRequest(_messages.Message):
-  """A LoggingLogsListRequest object.
+  r"""A LoggingLogsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1578,7 +1580,7 @@ class LoggingLogsListRequest(_messages.Message):
 
 
 class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
-  """A LoggingMonitoredResourceDescriptorsListRequest object.
+  r"""A LoggingMonitoredResourceDescriptorsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1595,7 +1597,7 @@ class LoggingMonitoredResourceDescriptorsListRequest(_messages.Message):
 
 
 class LoggingOrganizationsExclusionsCreateRequest(_messages.Message):
-  """A LoggingOrganizationsExclusionsCreateRequest object.
+  r"""A LoggingOrganizationsExclusionsCreateRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -1610,7 +1612,7 @@ class LoggingOrganizationsExclusionsCreateRequest(_messages.Message):
 
 
 class LoggingOrganizationsExclusionsDeleteRequest(_messages.Message):
-  """A LoggingOrganizationsExclusionsDeleteRequest object.
+  r"""A LoggingOrganizationsExclusionsDeleteRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion to delete:
@@ -1625,7 +1627,7 @@ class LoggingOrganizationsExclusionsDeleteRequest(_messages.Message):
 
 
 class LoggingOrganizationsExclusionsGetRequest(_messages.Message):
-  """A LoggingOrganizationsExclusionsGetRequest object.
+  r"""A LoggingOrganizationsExclusionsGetRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion:
@@ -1640,7 +1642,7 @@ class LoggingOrganizationsExclusionsGetRequest(_messages.Message):
 
 
 class LoggingOrganizationsExclusionsListRequest(_messages.Message):
-  """A LoggingOrganizationsExclusionsListRequest object.
+  r"""A LoggingOrganizationsExclusionsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1661,7 +1663,7 @@ class LoggingOrganizationsExclusionsListRequest(_messages.Message):
 
 
 class LoggingOrganizationsExclusionsPatchRequest(_messages.Message):
-  """A LoggingOrganizationsExclusionsPatchRequest object.
+  r"""A LoggingOrganizationsExclusionsPatchRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -1685,7 +1687,7 @@ class LoggingOrganizationsExclusionsPatchRequest(_messages.Message):
 
 
 class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
-  """A LoggingOrganizationsLogsDeleteRequest object.
+  r"""A LoggingOrganizationsLogsDeleteRequest object.
 
   Fields:
     logName: Required. The resource name of the log to delete:
@@ -1702,7 +1704,7 @@ class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
 
 
 class LoggingOrganizationsLogsListRequest(_messages.Message):
-  """A LoggingOrganizationsLogsListRequest object.
+  r"""A LoggingOrganizationsLogsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1723,7 +1725,7 @@ class LoggingOrganizationsLogsListRequest(_messages.Message):
 
 
 class LoggingOrganizationsSinksCreateRequest(_messages.Message):
-  """A LoggingOrganizationsSinksCreateRequest object.
+  r"""A LoggingOrganizationsSinksCreateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1749,7 +1751,7 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
 
 
 class LoggingOrganizationsSinksDeleteRequest(_messages.Message):
-  """A LoggingOrganizationsSinksDeleteRequest object.
+  r"""A LoggingOrganizationsSinksDeleteRequest object.
 
   Fields:
     sinkName: Required. The full resource name of the sink to delete,
@@ -1765,7 +1767,7 @@ class LoggingOrganizationsSinksDeleteRequest(_messages.Message):
 
 
 class LoggingOrganizationsSinksGetRequest(_messages.Message):
-  """A LoggingOrganizationsSinksGetRequest object.
+  r"""A LoggingOrganizationsSinksGetRequest object.
 
   Fields:
     sinkName: Required. The resource name of the sink:
@@ -1780,7 +1782,7 @@ class LoggingOrganizationsSinksGetRequest(_messages.Message):
 
 
 class LoggingOrganizationsSinksListRequest(_messages.Message):
-  """A LoggingOrganizationsSinksListRequest object.
+  r"""A LoggingOrganizationsSinksListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1801,7 +1803,7 @@ class LoggingOrganizationsSinksListRequest(_messages.Message):
 
 
 class LoggingOrganizationsSinksPatchRequest(_messages.Message):
-  """A LoggingOrganizationsSinksPatchRequest object.
+  r"""A LoggingOrganizationsSinksPatchRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1840,7 +1842,7 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
 
 
 class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
-  """A LoggingOrganizationsSinksUpdateRequest object.
+  r"""A LoggingOrganizationsSinksUpdateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -1879,7 +1881,7 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
 
 
 class LoggingProjectsExclusionsCreateRequest(_messages.Message):
-  """A LoggingProjectsExclusionsCreateRequest object.
+  r"""A LoggingProjectsExclusionsCreateRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -1894,7 +1896,7 @@ class LoggingProjectsExclusionsCreateRequest(_messages.Message):
 
 
 class LoggingProjectsExclusionsDeleteRequest(_messages.Message):
-  """A LoggingProjectsExclusionsDeleteRequest object.
+  r"""A LoggingProjectsExclusionsDeleteRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion to delete:
@@ -1909,7 +1911,7 @@ class LoggingProjectsExclusionsDeleteRequest(_messages.Message):
 
 
 class LoggingProjectsExclusionsGetRequest(_messages.Message):
-  """A LoggingProjectsExclusionsGetRequest object.
+  r"""A LoggingProjectsExclusionsGetRequest object.
 
   Fields:
     name: Required. The resource name of an existing exclusion:
@@ -1924,7 +1926,7 @@ class LoggingProjectsExclusionsGetRequest(_messages.Message):
 
 
 class LoggingProjectsExclusionsListRequest(_messages.Message):
-  """A LoggingProjectsExclusionsListRequest object.
+  r"""A LoggingProjectsExclusionsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -1945,7 +1947,7 @@ class LoggingProjectsExclusionsListRequest(_messages.Message):
 
 
 class LoggingProjectsExclusionsPatchRequest(_messages.Message):
-  """A LoggingProjectsExclusionsPatchRequest object.
+  r"""A LoggingProjectsExclusionsPatchRequest object.
 
   Fields:
     logExclusion: A LogExclusion resource to be passed as the request body.
@@ -1969,7 +1971,7 @@ class LoggingProjectsExclusionsPatchRequest(_messages.Message):
 
 
 class LoggingProjectsLogsDeleteRequest(_messages.Message):
-  """A LoggingProjectsLogsDeleteRequest object.
+  r"""A LoggingProjectsLogsDeleteRequest object.
 
   Fields:
     logName: Required. The resource name of the log to delete:
@@ -1986,7 +1988,7 @@ class LoggingProjectsLogsDeleteRequest(_messages.Message):
 
 
 class LoggingProjectsLogsListRequest(_messages.Message):
-  """A LoggingProjectsLogsListRequest object.
+  r"""A LoggingProjectsLogsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -2007,7 +2009,7 @@ class LoggingProjectsLogsListRequest(_messages.Message):
 
 
 class LoggingProjectsMetricsCreateRequest(_messages.Message):
-  """A LoggingProjectsMetricsCreateRequest object.
+  r"""A LoggingProjectsMetricsCreateRequest object.
 
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
@@ -2020,7 +2022,7 @@ class LoggingProjectsMetricsCreateRequest(_messages.Message):
 
 
 class LoggingProjectsMetricsDeleteRequest(_messages.Message):
-  """A LoggingProjectsMetricsDeleteRequest object.
+  r"""A LoggingProjectsMetricsDeleteRequest object.
 
   Fields:
     metricName: The resource name of the metric to delete:
@@ -2031,7 +2033,7 @@ class LoggingProjectsMetricsDeleteRequest(_messages.Message):
 
 
 class LoggingProjectsMetricsGetRequest(_messages.Message):
-  """A LoggingProjectsMetricsGetRequest object.
+  r"""A LoggingProjectsMetricsGetRequest object.
 
   Fields:
     metricName: The resource name of the desired metric:
@@ -2042,7 +2044,7 @@ class LoggingProjectsMetricsGetRequest(_messages.Message):
 
 
 class LoggingProjectsMetricsListRequest(_messages.Message):
-  """A LoggingProjectsMetricsListRequest object.
+  r"""A LoggingProjectsMetricsListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -2062,7 +2064,7 @@ class LoggingProjectsMetricsListRequest(_messages.Message):
 
 
 class LoggingProjectsMetricsUpdateRequest(_messages.Message):
-  """A LoggingProjectsMetricsUpdateRequest object.
+  r"""A LoggingProjectsMetricsUpdateRequest object.
 
   Fields:
     logMetric: A LogMetric resource to be passed as the request body.
@@ -2078,7 +2080,7 @@ class LoggingProjectsMetricsUpdateRequest(_messages.Message):
 
 
 class LoggingProjectsSinksCreateRequest(_messages.Message):
-  """A LoggingProjectsSinksCreateRequest object.
+  r"""A LoggingProjectsSinksCreateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -2104,7 +2106,7 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
 
 
 class LoggingProjectsSinksDeleteRequest(_messages.Message):
-  """A LoggingProjectsSinksDeleteRequest object.
+  r"""A LoggingProjectsSinksDeleteRequest object.
 
   Fields:
     sinkName: Required. The full resource name of the sink to delete,
@@ -2120,7 +2122,7 @@ class LoggingProjectsSinksDeleteRequest(_messages.Message):
 
 
 class LoggingProjectsSinksGetRequest(_messages.Message):
-  """A LoggingProjectsSinksGetRequest object.
+  r"""A LoggingProjectsSinksGetRequest object.
 
   Fields:
     sinkName: Required. The resource name of the sink:
@@ -2135,7 +2137,7 @@ class LoggingProjectsSinksGetRequest(_messages.Message):
 
 
 class LoggingProjectsSinksListRequest(_messages.Message):
-  """A LoggingProjectsSinksListRequest object.
+  r"""A LoggingProjectsSinksListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -2156,7 +2158,7 @@ class LoggingProjectsSinksListRequest(_messages.Message):
 
 
 class LoggingProjectsSinksPatchRequest(_messages.Message):
-  """A LoggingProjectsSinksPatchRequest object.
+  r"""A LoggingProjectsSinksPatchRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -2195,7 +2197,7 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
 
 
 class LoggingProjectsSinksUpdateRequest(_messages.Message):
-  """A LoggingProjectsSinksUpdateRequest object.
+  r"""A LoggingProjectsSinksUpdateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -2234,7 +2236,7 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
 
 
 class LoggingSinksCreateRequest(_messages.Message):
-  """A LoggingSinksCreateRequest object.
+  r"""A LoggingSinksCreateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -2260,7 +2262,7 @@ class LoggingSinksCreateRequest(_messages.Message):
 
 
 class LoggingSinksDeleteRequest(_messages.Message):
-  """A LoggingSinksDeleteRequest object.
+  r"""A LoggingSinksDeleteRequest object.
 
   Fields:
     sinkName: Required. The full resource name of the sink to delete,
@@ -2276,7 +2278,7 @@ class LoggingSinksDeleteRequest(_messages.Message):
 
 
 class LoggingSinksGetRequest(_messages.Message):
-  """A LoggingSinksGetRequest object.
+  r"""A LoggingSinksGetRequest object.
 
   Fields:
     sinkName: Required. The resource name of the sink:
@@ -2291,7 +2293,7 @@ class LoggingSinksGetRequest(_messages.Message):
 
 
 class LoggingSinksListRequest(_messages.Message):
-  """A LoggingSinksListRequest object.
+  r"""A LoggingSinksListRequest object.
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
@@ -2312,7 +2314,7 @@ class LoggingSinksListRequest(_messages.Message):
 
 
 class LoggingSinksUpdateRequest(_messages.Message):
-  """A LoggingSinksUpdateRequest object.
+  r"""A LoggingSinksUpdateRequest object.
 
   Fields:
     logSink: A LogSink resource to be passed as the request body.
@@ -2351,7 +2353,7 @@ class LoggingSinksUpdateRequest(_messages.Message):
 
 
 class MetricDescriptor(_messages.Message):
-  """Defines a metric type and its schema. Once a metric descriptor is
+  r"""Defines a metric type and its schema. Once a metric descriptor is
   created, deleting or altering it stops data collection and makes the metric
   type's existing data unusable.
 
@@ -2411,7 +2413,7 @@ class MetricDescriptor(_messages.Message):
   """
 
   class MetricKindValueValuesEnum(_messages.Enum):
-    """Whether the metric records instantaneous values, changes to a value,
+    r"""Whether the metric records instantaneous values, changes to a value,
     etc. Some combinations of metric_kind and value_type might not be
     supported.
 
@@ -2430,7 +2432,7 @@ class MetricDescriptor(_messages.Message):
     CUMULATIVE = 3
 
   class ValueTypeValueValuesEnum(_messages.Enum):
-    """Whether the measurement is an integer, a floating-point number, etc.
+    r"""Whether the measurement is an integer, a floating-point number, etc.
     Some combinations of metric_kind and value_type might not be supported.
 
     Values:
@@ -2463,7 +2465,7 @@ class MetricDescriptor(_messages.Message):
 
 
 class MonitoredResource(_messages.Message):
-  """An object representing a resource that can be used for monitoring,
+  r"""An object representing a resource that can be used for monitoring,
   logging, billing, or other purposes. Examples include virtual machine
   instances, databases, and storage devices such as disks. The type field
   identifies a MonitoredResourceDescriptor object that describes the
@@ -2490,7 +2492,7 @@ class MonitoredResource(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Required. Values for all of the labels listed in the associated
+    r"""Required. Values for all of the labels listed in the associated
     monitored resource descriptor. For example, Compute Engine VM instances
     use the labels "project_id", "instance_id", and "zone".
 
@@ -2502,7 +2504,7 @@ class MonitoredResource(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2519,8 +2521,8 @@ class MonitoredResource(_messages.Message):
 
 
 class MonitoredResourceDescriptor(_messages.Message):
-  """An object that describes the schema of a MonitoredResource object using a
-  type name and a set of labels. For example, the monitored resource
+  r"""An object that describes the schema of a MonitoredResource object using
+  a type name and a set of labels. For example, the monitored resource
   descriptor for Google Compute Engine VM instances has a type of
   "gce_instance" and specifies the use of the labels "instance_id" and "zone"
   to identify particular VM instances.Different APIs can support different
@@ -2557,7 +2559,7 @@ class MonitoredResourceDescriptor(_messages.Message):
 
 
 class RequestLog(_messages.Message):
-  """Complete log information about a single HTTP request to an App Engine
+  r"""Complete log information about a single HTTP request to an App Engine
   application.
 
   Fields:
@@ -2650,7 +2652,7 @@ class RequestLog(_messages.Message):
 
 
 class SourceLocation(_messages.Message):
-  """Specifies a location in a source code file.
+  r"""Specifies a location in a source code file.
 
   Fields:
     file: Source file name. Depending on the runtime environment, this might
@@ -2670,8 +2672,8 @@ class SourceLocation(_messages.Message):
 
 
 class SourceReference(_messages.Message):
-  """A reference to a particular snapshot of the source tree used to build and
-  deploy an application.
+  r"""A reference to a particular snapshot of the source tree used to build
+  and deploy an application.
 
   Fields:
     repository: Optional. A URI string identifying the repository. Example:
@@ -2685,7 +2687,7 @@ class SourceReference(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -2714,7 +2716,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -2726,7 +2728,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -2752,7 +2754,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class WriteLogEntriesRequest(_messages.Message):
-  """The parameters to WriteLogEntries.
+  r"""The parameters to WriteLogEntries.
 
   Messages:
     LabelsValue: Optional. Default labels that are added to the labels field
@@ -2809,7 +2811,7 @@ class WriteLogEntriesRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. Default labels that are added to the labels field of all log
+    r"""Optional. Default labels that are added to the labels field of all log
     entries in entries. If a log entry already has a label with the same key
     as a label in this parameter, then the log entry's label is not changed.
     See LogEntry.
@@ -2822,7 +2824,7 @@ class WriteLogEntriesRequest(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2843,7 +2845,7 @@ class WriteLogEntriesRequest(_messages.Message):
 
 
 class WriteLogEntriesResponse(_messages.Message):
-  """Result returned from WriteLogEntries. empty"""
+  r"""Result returned from WriteLogEntries. empty"""
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -14,7 +14,7 @@ package = 'appengine'
 
 
 class AppengineAppsAuthorizedCertificatesCreateRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesCreateRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesCreateRequest object.
 
   Fields:
     authorizedCertificate: A AuthorizedCertificate resource to be passed as
@@ -27,7 +27,7 @@ class AppengineAppsAuthorizedCertificatesCreateRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesDeleteRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesDeleteRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesDeleteRequest object.
 
   Fields:
     name: Name of the resource to delete. Example:
@@ -38,7 +38,7 @@ class AppengineAppsAuthorizedCertificatesDeleteRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesGetRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesGetRequest object.
 
   Enums:
     ViewValueValuesEnum: Controls the set of fields returned in the GET
@@ -51,7 +51,7 @@ class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Controls the set of fields returned in the GET response.
+    r"""Controls the set of fields returned in the GET response.
 
     Values:
       BASIC_CERTIFICATE: <no description>
@@ -65,7 +65,7 @@ class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesListRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesListRequest object.
 
   Enums:
     ViewValueValuesEnum: Controls the set of fields returned in the LIST
@@ -79,7 +79,7 @@ class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Controls the set of fields returned in the LIST response.
+    r"""Controls the set of fields returned in the LIST response.
 
     Values:
       BASIC_CERTIFICATE: <no description>
@@ -95,7 +95,7 @@ class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesPatchRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesPatchRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesPatchRequest object.
 
   Fields:
     authorizedCertificate: A AuthorizedCertificate resource to be passed as
@@ -113,7 +113,7 @@ class AppengineAppsAuthorizedCertificatesPatchRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
-  """A AppengineAppsAuthorizedDomainsListRequest object.
+  r"""A AppengineAppsAuthorizedDomainsListRequest object.
 
   Fields:
     pageSize: Maximum results to return per page.
@@ -127,7 +127,7 @@ class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsCreateRequest object.
+  r"""A AppengineAppsDomainMappingsCreateRequest object.
 
   Enums:
     OverrideStrategyValueValuesEnum: Whether the domain creation should
@@ -147,7 +147,7 @@ class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
   """
 
   class OverrideStrategyValueValuesEnum(_messages.Enum):
-    """Whether the domain creation should override any existing mappings for
+    r"""Whether the domain creation should override any existing mappings for
     this domain. By default, overrides are rejected.
 
     Values:
@@ -166,7 +166,7 @@ class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsDeleteRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsDeleteRequest object.
+  r"""A AppengineAppsDomainMappingsDeleteRequest object.
 
   Fields:
     name: Name of the resource to delete. Example:
@@ -177,7 +177,7 @@ class AppengineAppsDomainMappingsDeleteRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsGetRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsGetRequest object.
+  r"""A AppengineAppsDomainMappingsGetRequest object.
 
   Fields:
     name: Name of the resource requested. Example:
@@ -188,7 +188,7 @@ class AppengineAppsDomainMappingsGetRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsListRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsListRequest object.
+  r"""A AppengineAppsDomainMappingsListRequest object.
 
   Fields:
     pageSize: Maximum results to return per page.
@@ -202,7 +202,7 @@ class AppengineAppsDomainMappingsListRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsPatchRequest object.
+  r"""A AppengineAppsDomainMappingsPatchRequest object.
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
@@ -224,7 +224,7 @@ class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
 
 
 class AppengineAppsLocationsGetRequest(_messages.Message):
-  """A AppengineAppsLocationsGetRequest object.
+  r"""A AppengineAppsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
@@ -234,7 +234,7 @@ class AppengineAppsLocationsGetRequest(_messages.Message):
 
 
 class AppengineAppsLocationsListRequest(_messages.Message):
-  """A AppengineAppsLocationsListRequest object.
+  r"""A AppengineAppsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -250,7 +250,7 @@ class AppengineAppsLocationsListRequest(_messages.Message):
 
 
 class AppengineAppsOperationsGetRequest(_messages.Message):
-  """A AppengineAppsOperationsGetRequest object.
+  r"""A AppengineAppsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -260,7 +260,7 @@ class AppengineAppsOperationsGetRequest(_messages.Message):
 
 
 class AppengineAppsOperationsListRequest(_messages.Message):
-  """A AppengineAppsOperationsListRequest object.
+  r"""A AppengineAppsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -276,7 +276,7 @@ class AppengineAppsOperationsListRequest(_messages.Message):
 
 
 class AuthorizedCertificate(_messages.Message):
-  """An SSL certificate that a user has been authorized to administer. A user
+  r"""An SSL certificate that a user has been authorized to administer. A user
   is authorized to administer any certificate that applies to one of their
   authorized domains.
 
@@ -329,7 +329,7 @@ class AuthorizedCertificate(_messages.Message):
 
 
 class AuthorizedDomain(_messages.Message):
-  """A domain that a user has been authorized to administer. To authorize use
+  r"""A domain that a user has been authorized to administer. To authorize use
   of a domain, verify ownership via Webmaster Central
   (https://www.google.com/webmasters/verification/home).
 
@@ -345,7 +345,7 @@ class AuthorizedDomain(_messages.Message):
 
 
 class CertificateRawData(_messages.Message):
-  """An SSL certificate obtained from a certificate authority.
+  r"""An SSL certificate obtained from a certificate authority.
 
   Fields:
     privateKey: Unencrypted PEM encoded RSA private key. This field is set
@@ -364,7 +364,7 @@ class CertificateRawData(_messages.Message):
 
 
 class CreateVersionMetadataV1(_messages.Message):
-  """Metadata for the given google.longrunning.Operation during a
+  r"""Metadata for the given google.longrunning.Operation during a
   google.appengine.v1.CreateVersionRequest.
 
   Fields:
@@ -376,7 +376,7 @@ class CreateVersionMetadataV1(_messages.Message):
 
 
 class CreateVersionMetadataV1Alpha(_messages.Message):
-  """Metadata for the given google.longrunning.Operation during a
+  r"""Metadata for the given google.longrunning.Operation during a
   google.appengine.v1alpha.CreateVersionRequest.
 
   Fields:
@@ -388,7 +388,7 @@ class CreateVersionMetadataV1Alpha(_messages.Message):
 
 
 class CreateVersionMetadataV1Beta(_messages.Message):
-  """Metadata for the given google.longrunning.Operation during a
+  r"""Metadata for the given google.longrunning.Operation during a
   google.appengine.v1beta.CreateVersionRequest.
 
   Fields:
@@ -400,7 +400,7 @@ class CreateVersionMetadataV1Beta(_messages.Message):
 
 
 class DomainMapping(_messages.Message):
-  """A domain serving an App Engine application.
+  r"""A domain serving an App Engine application.
 
   Fields:
     id: Relative name of the domain serving the application. Example:
@@ -421,7 +421,7 @@ class DomainMapping(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo {   rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
@@ -431,7 +431,7 @@ class Empty(_messages.Message):
 
 
 class ListAuthorizedCertificatesResponse(_messages.Message):
-  """Response message for AuthorizedCertificates.ListAuthorizedCertificates.
+  r"""Response message for AuthorizedCertificates.ListAuthorizedCertificates.
 
   Fields:
     certificates: The SSL certificates the user is authorized to administer.
@@ -443,7 +443,7 @@ class ListAuthorizedCertificatesResponse(_messages.Message):
 
 
 class ListAuthorizedDomainsResponse(_messages.Message):
-  """Response message for AuthorizedDomains.ListAuthorizedDomains.
+  r"""Response message for AuthorizedDomains.ListAuthorizedDomains.
 
   Fields:
     domains: The authorized domains belonging to the user.
@@ -455,7 +455,7 @@ class ListAuthorizedDomainsResponse(_messages.Message):
 
 
 class ListDomainMappingsResponse(_messages.Message):
-  """Response message for DomainMappings.ListDomainMappings.
+  r"""Response message for DomainMappings.ListDomainMappings.
 
   Fields:
     domainMappings: The domain mappings for the application.
@@ -467,7 +467,7 @@ class ListDomainMappingsResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -480,7 +480,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -493,7 +493,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -516,7 +516,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -527,7 +527,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -541,7 +541,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -553,7 +553,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -573,7 +573,7 @@ class Location(_messages.Message):
 
 
 class LocationMetadata(_messages.Message):
-  """Metadata for the given google.cloud.location.Location.
+  r"""Metadata for the given google.cloud.location.Location.
 
   Fields:
     flexibleEnvironmentAvailable: App Engine flexible environment is available
@@ -587,7 +587,7 @@ class LocationMetadata(_messages.Message):
 
 
 class ManagedCertificate(_messages.Message):
-  """A certificate managed by App Engine.
+  r"""A certificate managed by App Engine.
 
   Enums:
     StatusValueValuesEnum: Status of certificate management. Refers to the
@@ -603,8 +603,8 @@ class ManagedCertificate(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of certificate management. Refers to the most recent certificate
-    acquisition or renewal attempt.@OutputOnly
+    r"""Status of certificate management. Refers to the most recent
+    certificate acquisition or renewal attempt.@OutputOnly
 
     Values:
       UNSPECIFIED_STATUS: <no description>
@@ -648,8 +648,8 @@ class ManagedCertificate(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation. It
@@ -690,7 +690,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation. It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -704,7 +704,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -718,7 +718,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success. If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as Delete, the response
     is google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
@@ -735,7 +735,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -755,7 +755,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     endTime: Timestamp that this operation completed.@OutputOnly
@@ -778,7 +778,7 @@ class OperationMetadata(_messages.Message):
 
 
 class OperationMetadataV1(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     createVersionMetadata: A CreateVersionMetadataV1 attribute.
@@ -806,7 +806,7 @@ class OperationMetadataV1(_messages.Message):
 
 
 class OperationMetadataV1Alpha(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     createVersionMetadata: A CreateVersionMetadataV1Alpha attribute.
@@ -834,7 +834,7 @@ class OperationMetadataV1Alpha(_messages.Message):
 
 
 class OperationMetadataV1Beta(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     createVersionMetadata: A CreateVersionMetadataV1Beta attribute.
@@ -862,7 +862,7 @@ class OperationMetadataV1Beta(_messages.Message):
 
 
 class OperationMetadataV1Beta5(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     endTime: Timestamp that this operation completed.@OutputOnly
@@ -882,7 +882,7 @@ class OperationMetadataV1Beta5(_messages.Message):
 
 
 class ResourceRecord(_messages.Message):
-  """A DNS resource record.
+  r"""A DNS resource record.
 
   Enums:
     TypeValueValuesEnum: Resource record type. Example: AAAA.
@@ -896,7 +896,7 @@ class ResourceRecord(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Resource record type. Example: AAAA.
+    r"""Resource record type. Example: AAAA.
 
     Values:
       A: An A resource record. Data is an IPv4 address.
@@ -913,7 +913,7 @@ class ResourceRecord(_messages.Message):
 
 
 class SslSettings(_messages.Message):
-  """SSL configuration for a DomainMapping resource.
+  r"""SSL configuration for a DomainMapping resource.
 
   Fields:
     certificateId: ID of the AuthorizedCertificate resource configuring SSL
@@ -934,7 +934,7 @@ class SslSettings(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -963,7 +963,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -975,7 +975,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1001,7 +1001,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The Status type defines a logical error model that is suitable for
+  r"""The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by gRPC (https://github.com/grpc). The error model is designed to be:
   Simple to use and understand for most users Flexible enough to meet
@@ -1048,7 +1048,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1060,7 +1060,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.

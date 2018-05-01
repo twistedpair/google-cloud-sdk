@@ -13,6 +13,7 @@
 # limitations under the License.
 """Code that's shared between multiple routers subcommands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.api_lib.compute import routers_utils
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import exceptions as core_exceptions

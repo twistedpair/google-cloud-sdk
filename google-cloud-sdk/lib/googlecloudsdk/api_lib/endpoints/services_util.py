@@ -293,14 +293,14 @@ def GetServiceConfigIdFromSubmitConfigSourceResponse(response):
   return response.get('serviceConfig', {}).get('id')
 
 
-def PushMultipleServiceConfigFiles(service_name, config_files, async,
+def PushMultipleServiceConfigFiles(service_name, config_files, is_async,
                                    validate_only=False):
   """Pushes a given set of service configuration files.
 
   Args:
     service_name: name of the service.
     config_files: a list of ConfigFile message objects.
-    async: whether to wait for aync operations or not.
+    is_async: whether to wait for aync operations or not.
     validate_only: whether to perform a validate-only run of the operation
                      or not.
 
@@ -327,7 +327,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async,
           submitConfigSourceRequest=config_source_request,
       ))
   api_response = client.services_configs.Submit(submit_request)
-  operation = ProcessOperationResult(api_response, async)
+  operation = ProcessOperationResult(api_response, is_async)
 
   response = operation.get('response', {})
   diagnostics = response.get('diagnostics', [])
@@ -353,7 +353,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, async,
 
 
 def PushOpenApiServiceConfig(
-    service_name, spec_file_contents, spec_file_path, async,
+    service_name, spec_file_contents, spec_file_path, is_async,
     validate_only=False):
   """Pushes a given Open API service configuration.
 
@@ -361,7 +361,7 @@ def PushOpenApiServiceConfig(
     service_name: name of the service
     spec_file_contents: the contents of the Open API spec file.
     spec_file_path: the path of the Open API spec file.
-    async: whether to wait for aync operations or not.
+    is_async: whether to wait for aync operations or not.
     validate_only: whether to perform a validate-only run of the operation
                    or not.
 
@@ -377,7 +377,7 @@ def PushOpenApiServiceConfig(
       fileType=(messages.ConfigFile.
                 FileTypeValueValuesEnum.OPEN_API_YAML),
   )
-  return PushMultipleServiceConfigFiles(service_name, [config_file], async,
+  return PushMultipleServiceConfigFiles(service_name, [config_file], is_async,
                                         validate_only=validate_only)
 
 
@@ -445,18 +445,18 @@ def ValidateEmailString(email):
   return EMAIL_REGEX.match(email or '') is not None and len(email) <= 254
 
 
-def ProcessOperationResult(result, async=False):
+def ProcessOperationResult(result, is_async=False):
   """Validate and process Operation outcome for user display.
 
   Args:
     result: The message to process (expected to be of type Operation)'
-    async: If False, the method will block until the operation completes.
+    is_async: If False, the method will block until the operation completes.
 
   Returns:
     The processed Operation message in Python dict form
   """
-  op = GetProcessedOperationResult(result, async)
-  if async:
+  op = GetProcessedOperationResult(result, is_async)
+  if is_async:
     cmd = OP_WAIT_CMD.format(op.get('name'))
     log.status.Print('Asynchronous operation is in progress... '
                      'Use the following command to wait for its '
@@ -469,7 +469,7 @@ def ProcessOperationResult(result, async=False):
   return op
 
 
-def GetProcessedOperationResult(result, async=False):
+def GetProcessedOperationResult(result, is_async=False):
   """Validate and process Operation result message for user display.
 
   This method checks to make sure the result is of type Operation and
@@ -478,7 +478,7 @@ def GetProcessedOperationResult(result, async=False):
 
   Args:
     result: The message to process (expected to be of type Operation)'
-    async: If False, the method will block until the operation completes.
+    is_async: If False, the method will block until the operation completes.
 
   Returns:
     The processed message in Python dict form
@@ -492,7 +492,7 @@ def GetProcessedOperationResult(result, async=False):
 
   result_dict = encoding.MessageToDict(result)
 
-  if not async:
+  if not is_async:
     op_name = result_dict['name']
     op_ref = resources.REGISTRY.Parse(
         op_name,

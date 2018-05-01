@@ -51,7 +51,7 @@ class CloudtasksV2beta2(base_api.BaseApiClient):
           }
 
     def Acknowledge(self, request, global_params=None):
-      """Acknowledges a pull task.
+      r"""Acknowledges a pull task.
 
 The worker, that is, the entity that
 leased this task must call this method
@@ -95,7 +95,7 @@ https://developers.google.com/api-client-library/python/guide/batch.
     )
 
     def CancelLease(self, request, global_params=None):
-      """Cancel a pull task's lease.
+      r"""Cancel a pull task's lease.
 
 The worker can use this method to cancel a task's lease by
 setting its schedule_time to now. This will
@@ -127,7 +127,7 @@ LeaseTasks.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a task and adds it to a queue.
+      r"""Creates a task and adds it to a queue.
 
 To add multiple tasks at the same time, use
 [HTTP batching](/storage/docs/json_api/v1/how-tos/batch)
@@ -166,7 +166,7 @@ Tasks cannot be updated after creation; there is no UpdateTask command.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a task.
+      r"""Deletes a task.
 
 A task can be deleted if it is scheduled or dispatched. A task
 cannot be deleted if it has completed successfully or permanently
@@ -197,7 +197,7 @@ failed.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a task.
+      r"""Gets a task.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksGetRequest) input message
@@ -224,7 +224,7 @@ failed.
     )
 
     def Lease(self, request, global_params=None):
-      """Leases tasks from a pull queue for.
+      r"""Leases tasks from a pull queue for.
 lease_duration.
 
 This method is invoked by the worker to obtain a lease. The
@@ -272,7 +272,7 @@ is exceeded.
     )
 
     def List(self, request, global_params=None):
-      """Lists the tasks in a queue.
+      r"""Lists the tasks in a queue.
 
 By default, only the BASIC view is retrieved
 due to performance considerations;
@@ -304,7 +304,7 @@ subset of information which is returned.
     )
 
     def RenewLease(self, request, global_params=None):
-      """Renew the current lease of a pull task.
+      r"""Renew the current lease of a pull task.
 
 The worker can use this method to extend the lease by a new
 duration, starting from now. The new task lease will be
@@ -335,7 +335,7 @@ returned in the task's schedule_time.
     )
 
     def Run(self, request, global_params=None):
-      """Forces a task to run now.
+      r"""Forces a task to run now.
 
 This command is meant to be used for manual debugging. For
 example, RunTask can be used to retry a failed
@@ -400,7 +400,7 @@ pull tasks.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a queue.
+      r"""Creates a queue.
 
 Queues created with this method allow tasks to live for a maximum of 31
 days. After a task is 31 days old, the task will be deleted regardless of whether
@@ -437,7 +437,7 @@ before using this method.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a queue.
+      r"""Deletes a queue.
 
 This command will delete the queue even if it has tasks in it.
 
@@ -475,7 +475,7 @@ before using this method.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a queue.
+      r"""Gets a queue.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesGetRequest) input message
@@ -502,7 +502,7 @@ before using this method.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a Queue.
+      r"""Gets the access control policy for a Queue.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -536,7 +536,7 @@ specified resource parent:
     )
 
     def List(self, request, global_params=None):
-      """Lists queues.
+      r"""Lists queues.
 
 Queues are returned in lexicographical order.
 
@@ -565,7 +565,7 @@ Queues are returned in lexicographical order.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a queue.
+      r"""Updates a queue.
 
 This method creates the queue if it does not exist and updates
 the queue if it does exist.
@@ -605,7 +605,7 @@ before using this method.
     )
 
     def Pause(self, request, global_params=None):
-      """Pauses the queue.
+      r"""Pauses the queue.
 
 If a queue is paused then the system will stop dispatching tasks
 until the queue is resumed via
@@ -638,7 +638,7 @@ state is PAUSED.
     )
 
     def Purge(self, request, global_params=None):
-      """Purges a queue by deleting all of its tasks.
+      r"""Purges a queue by deleting all of its tasks.
 
 All tasks created before this method is called are permanently deleted.
 
@@ -670,7 +670,7 @@ might be dispatched before the purge takes effect. A purge is irreversible.
     )
 
     def Resume(self, request, global_params=None):
-      """Resume a queue.
+      r"""Resume a queue.
 
 This method resumes a queue after it has been
 PAUSED or
@@ -708,7 +708,7 @@ queues, follow the 500/50/5 pattern described in
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy for a Queue. Replaces any existing.
+      r"""Sets the access control policy for a Queue. Replaces any existing.
 policy.
 
 Note: The Cloud Console does not check queue-level IAM permissions yet.
@@ -744,7 +744,7 @@ specified resource parent:
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on a Queue.
+      r"""Returns permissions that a caller has on a Queue.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -787,7 +787,7 @@ may "fail open" without warning.
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a location.
+      r"""Gets information about a location.
 
       Args:
         request: (CloudtasksProjectsLocationsGetRequest) input message
@@ -814,7 +814,7 @@ may "fail open" without warning.
     )
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (CloudtasksProjectsLocationsListRequest) input message

@@ -14,6 +14,7 @@
 
 """Helpers for compute instance-groups managed instance-configs commands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 
 

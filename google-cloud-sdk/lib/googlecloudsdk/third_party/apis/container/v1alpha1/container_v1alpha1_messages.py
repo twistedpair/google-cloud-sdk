@@ -13,7 +13,7 @@ package = 'container'
 
 
 class AcceleratorConfig(_messages.Message):
-  """AcceleratorConfig represents a Hardware Accelerator request.
+  r"""AcceleratorConfig represents a Hardware Accelerator request.
 
   Fields:
     acceleratorCount: The number of the accelerator cards exposed to an
@@ -27,7 +27,7 @@ class AcceleratorConfig(_messages.Message):
 
 
 class AddonsConfig(_messages.Message):
-  """Configuration for the addons that can be automatically spun up in the
+  r"""Configuration for the addons that can be automatically spun up in the
   cluster, enabling additional functionality.
 
   Fields:
@@ -59,7 +59,7 @@ class AddonsConfig(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Configuration for audit logging.
+  r"""Configuration for audit logging.
 
   Fields:
     enabled: Enable audit logging of the Kubernetes API.  If enabled, audit
@@ -70,7 +70,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuthorizationLoggingOptions(_messages.Message):
-  """Authorization-related information used by Cloud Audit Logging.
+  r"""Authorization-related information used by Cloud Audit Logging.
 
   Enums:
     PermissionTypeValueValuesEnum: The type of the permission that was
@@ -81,7 +81,7 @@ class AuthorizationLoggingOptions(_messages.Message):
   """
 
   class PermissionTypeValueValuesEnum(_messages.Enum):
-    """The type of the permission that was checked.
+    r"""The type of the permission that was checked.
 
     Values:
       PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
@@ -100,8 +100,8 @@ class AuthorizationLoggingOptions(_messages.Message):
 
 
 class AutoUpgradeOptions(_messages.Message):
-  """AutoUpgradeOptions defines the set of options for the user to control how
-  the Auto Upgrades will proceed.
+  r"""AutoUpgradeOptions defines the set of options for the user to control
+  how the Auto Upgrades will proceed.
 
   Fields:
     autoUpgradeStartTime: [Output only] This field is set when upgrades are
@@ -119,7 +119,7 @@ class AutoUpgradeOptions(_messages.Message):
 
 
 class BinaryAuthorization(_messages.Message):
-  """Configuration for Binary Authorization.
+  r"""Configuration for Binary Authorization.
 
   Fields:
     enabled: Enable Binary Authorization for this cluster. If enabled, all
@@ -130,7 +130,7 @@ class BinaryAuthorization(_messages.Message):
 
 
 class CIDR(_messages.Message):
-  """CIDR contains an optional name and one CIDR block.
+  r"""CIDR contains an optional name and one CIDR block.
 
   Fields:
     name: Network name is an optional field for users to identify CIDR blocks.
@@ -142,7 +142,7 @@ class CIDR(_messages.Message):
 
 
 class CancelOperationRequest(_messages.Message):
-  """CancelOperationRequest cancels a single operation.
+  r"""CancelOperationRequest cancels a single operation.
 
   Fields:
     name: The name (project, location, operation id) of the operation to
@@ -166,7 +166,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class CidrBlock(_messages.Message):
-  """CidrBlock contains an optional name and one CIDR block.
+  r"""CidrBlock contains an optional name and one CIDR block.
 
   Fields:
     cidrBlock: cidr_block must be specified in CIDR notation.
@@ -179,7 +179,7 @@ class CidrBlock(_messages.Message):
 
 
 class ClientCertificateConfig(_messages.Message):
-  """Configuration for client certificates on the cluster.
+  r"""Configuration for client certificates on the cluster.
 
   Fields:
     issueClientCertificate: Issue a client certificate.
@@ -189,7 +189,7 @@ class ClientCertificateConfig(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  """A Google Kubernetes Engine cluster.
+  r"""A Google Kubernetes Engine cluster.
 
   Enums:
     StatusValueValuesEnum: [Output only] The current status of this cluster.
@@ -330,7 +330,7 @@ class Cluster(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """[Output only] The current status of this cluster.
+    r"""[Output only] The current status of this cluster.
 
     Values:
       STATUS_UNSPECIFIED: Not set.
@@ -358,7 +358,7 @@ class Cluster(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceLabelsValue(_messages.Message):
-    """The resource labels for the cluster to use to annotate any related GCE
+    r"""The resource labels for the cluster to use to annotate any related GCE
     resources.
 
     Messages:
@@ -370,7 +370,7 @@ class Cluster(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResourceLabelsValue object.
+      r"""An additional property for a ResourceLabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -431,7 +431,7 @@ class Cluster(_messages.Message):
 
 
 class ClusterAutoscaling(_messages.Message):
-  """ClusterAutoscaling contains global, per-cluster information required by
+  r"""ClusterAutoscaling contains global, per-cluster information required by
   Cluster Autoscaler to automatically adjust the size of the cluster and
   create/delete node pools based on the current needs.
 
@@ -447,8 +447,8 @@ class ClusterAutoscaling(_messages.Message):
 
 
 class ClusterStatus(_messages.Message):
-  """ClusterStatus is used for internal only purposes by the monitoring server
-  to transition a cluster between DEGRADED AND RUNNING using
+  r"""ClusterStatus is used for internal only purposes by the monitoring
+  server to transition a cluster between DEGRADED AND RUNNING using
   UpdateClusterInternal. The message is used in ClusterUpdate's
   DesiredClusterStatus field and should not be confused with Cluster's Status
   Enum. TODO(b/69364507) Implement a PatchClusterInternal method that takes an
@@ -466,7 +466,7 @@ class ClusterStatus(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """The current status of the cluster.
+    r"""The current status of the cluster.
 
     Values:
       UNKNOWN: The UNKNOWN status should never be set
@@ -486,7 +486,7 @@ class ClusterStatus(_messages.Message):
 
 
 class ClusterUpdate(_messages.Message):
-  """ClusterUpdate describes an update to the cluster. Exactly one update can
+  r"""ClusterUpdate describes an update to the cluster. Exactly one update can
   be applied to a cluster with each request, so at most one field can be
   provided.
 
@@ -580,7 +580,7 @@ class ClusterUpdate(_messages.Message):
 
 
 class ClusterUpdateOptions(_messages.Message):
-  """ClusterUpdateOptions specifies extra options or settings that affect how
+  r"""ClusterUpdateOptions specifies extra options or settings that affect how
   a cluster update operation runs. It is an optional object passed in to
   ClusterUpdate calls.
 
@@ -595,7 +595,7 @@ class ClusterUpdateOptions(_messages.Message):
 
 
 class CompleteIPRotationRequest(_messages.Message):
-  """CompleteIPRotationRequest moves the cluster master back into single-IP
+  r"""CompleteIPRotationRequest moves the cluster master back into single-IP
   mode.
 
   Fields:
@@ -622,7 +622,7 @@ class CompleteIPRotationRequest(_messages.Message):
 
 
 class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message):
-  """A ContainerProjectsAggregatedUsableSubnetworksListRequest object.
+  r"""A ContainerProjectsAggregatedUsableSubnetworksListRequest object.
 
   Fields:
     filter: Filtering currently only supports equality on the networkProjectId
@@ -649,7 +649,7 @@ class ContainerProjectsAggregatedUsableSubnetworksListRequest(_messages.Message)
 
 
 class ContainerProjectsGetIamPolicyRequest(_messages.Message):
-  """A ContainerProjectsGetIamPolicyRequest object.
+  r"""A ContainerProjectsGetIamPolicyRequest object.
 
   Fields:
     googleIamV1GetIamPolicyRequest: A GoogleIamV1GetIamPolicyRequest resource
@@ -664,7 +664,7 @@ class ContainerProjectsGetIamPolicyRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
-  """A ContainerProjectsLocationsClustersDeleteRequest object.
+  r"""A ContainerProjectsLocationsClustersDeleteRequest object.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to delete. This field has
@@ -688,7 +688,7 @@ class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsClustersGetRequest(_messages.Message):
-  """A ContainerProjectsLocationsClustersGetRequest object.
+  r"""A ContainerProjectsLocationsClustersGetRequest object.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to retrieve. This field has
@@ -712,7 +712,7 @@ class ContainerProjectsLocationsClustersGetRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsClustersListRequest(_messages.Message):
-  """A ContainerProjectsLocationsClustersListRequest object.
+  r"""A ContainerProjectsLocationsClustersListRequest object.
 
   Fields:
     parent: The parent (project and location) where the clusters will be
@@ -735,7 +735,7 @@ class ContainerProjectsLocationsClustersListRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsClustersNodePoolsDeleteRequest(_messages.Message):
-  """A ContainerProjectsLocationsClustersNodePoolsDeleteRequest object.
+  r"""A ContainerProjectsLocationsClustersNodePoolsDeleteRequest object.
 
   Fields:
     clusterId: Deprecate. The name of the cluster. This field has been
@@ -764,7 +764,7 @@ class ContainerProjectsLocationsClustersNodePoolsDeleteRequest(_messages.Message
 
 
 class ContainerProjectsLocationsClustersNodePoolsGetRequest(_messages.Message):
-  """A ContainerProjectsLocationsClustersNodePoolsGetRequest object.
+  r"""A ContainerProjectsLocationsClustersNodePoolsGetRequest object.
 
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
@@ -793,7 +793,7 @@ class ContainerProjectsLocationsClustersNodePoolsGetRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
-  """A ContainerProjectsLocationsClustersNodePoolsListRequest object.
+  r"""A ContainerProjectsLocationsClustersNodePoolsListRequest object.
 
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
@@ -819,7 +819,7 @@ class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
-  """A ContainerProjectsLocationsGetServerConfigRequest object.
+  r"""A ContainerProjectsLocationsGetServerConfigRequest object.
 
   Fields:
     name: The name (project and location) of the server config to get
@@ -840,7 +840,7 @@ class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsListRequest(_messages.Message):
-  """A ContainerProjectsLocationsListRequest object.
+  r"""A ContainerProjectsLocationsListRequest object.
 
   Fields:
     pageSize: Only return up to this many ListLocationsResponse in the
@@ -865,7 +865,7 @@ class ContainerProjectsLocationsListRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsOperationsGetRequest(_messages.Message):
-  """A ContainerProjectsLocationsOperationsGetRequest object.
+  r"""A ContainerProjectsLocationsOperationsGetRequest object.
 
   Fields:
     name: The name (project, location, operation id) of the operation to get.
@@ -889,7 +889,7 @@ class ContainerProjectsLocationsOperationsGetRequest(_messages.Message):
 
 
 class ContainerProjectsLocationsOperationsListRequest(_messages.Message):
-  """A ContainerProjectsLocationsOperationsListRequest object.
+  r"""A ContainerProjectsLocationsOperationsListRequest object.
 
   Fields:
     parent: The parent (project and location) where the operations will be
@@ -912,7 +912,7 @@ class ContainerProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class ContainerProjectsSetIamPolicyRequest(_messages.Message):
-  """A ContainerProjectsSetIamPolicyRequest object.
+  r"""A ContainerProjectsSetIamPolicyRequest object.
 
   Fields:
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
@@ -927,7 +927,7 @@ class ContainerProjectsSetIamPolicyRequest(_messages.Message):
 
 
 class ContainerProjectsTestIamPermissionsRequest(_messages.Message):
-  """A ContainerProjectsTestIamPermissionsRequest object.
+  r"""A ContainerProjectsTestIamPermissionsRequest object.
 
   Fields:
     googleIamV1TestIamPermissionsRequest: A
@@ -943,7 +943,7 @@ class ContainerProjectsTestIamPermissionsRequest(_messages.Message):
 
 
 class ContainerProjectsZonesClustersDeleteRequest(_messages.Message):
-  """A ContainerProjectsZonesClustersDeleteRequest object.
+  r"""A ContainerProjectsZonesClustersDeleteRequest object.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to delete. This field has
@@ -967,7 +967,7 @@ class ContainerProjectsZonesClustersDeleteRequest(_messages.Message):
 
 
 class ContainerProjectsZonesClustersGetRequest(_messages.Message):
-  """A ContainerProjectsZonesClustersGetRequest object.
+  r"""A ContainerProjectsZonesClustersGetRequest object.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to retrieve. This field has
@@ -991,7 +991,7 @@ class ContainerProjectsZonesClustersGetRequest(_messages.Message):
 
 
 class ContainerProjectsZonesClustersListRequest(_messages.Message):
-  """A ContainerProjectsZonesClustersListRequest object.
+  r"""A ContainerProjectsZonesClustersListRequest object.
 
   Fields:
     parent: The parent (project and location) where the clusters will be
@@ -1014,7 +1014,7 @@ class ContainerProjectsZonesClustersListRequest(_messages.Message):
 
 
 class ContainerProjectsZonesClustersNodePoolsDeleteRequest(_messages.Message):
-  """A ContainerProjectsZonesClustersNodePoolsDeleteRequest object.
+  r"""A ContainerProjectsZonesClustersNodePoolsDeleteRequest object.
 
   Fields:
     clusterId: Deprecate. The name of the cluster. This field has been
@@ -1043,7 +1043,7 @@ class ContainerProjectsZonesClustersNodePoolsDeleteRequest(_messages.Message):
 
 
 class ContainerProjectsZonesClustersNodePoolsGetRequest(_messages.Message):
-  """A ContainerProjectsZonesClustersNodePoolsGetRequest object.
+  r"""A ContainerProjectsZonesClustersNodePoolsGetRequest object.
 
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
@@ -1072,7 +1072,7 @@ class ContainerProjectsZonesClustersNodePoolsGetRequest(_messages.Message):
 
 
 class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
-  """A ContainerProjectsZonesClustersNodePoolsListRequest object.
+  r"""A ContainerProjectsZonesClustersNodePoolsListRequest object.
 
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
@@ -1098,7 +1098,7 @@ class ContainerProjectsZonesClustersNodePoolsListRequest(_messages.Message):
 
 
 class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
-  """A ContainerProjectsZonesGetServerconfigRequest object.
+  r"""A ContainerProjectsZonesGetServerconfigRequest object.
 
   Fields:
     name: The name (project and location) of the server config to get
@@ -1119,7 +1119,7 @@ class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
 
 
 class ContainerProjectsZonesOperationsGetRequest(_messages.Message):
-  """A ContainerProjectsZonesOperationsGetRequest object.
+  r"""A ContainerProjectsZonesOperationsGetRequest object.
 
   Fields:
     name: The name (project, location, operation id) of the operation to get.
@@ -1143,7 +1143,7 @@ class ContainerProjectsZonesOperationsGetRequest(_messages.Message):
 
 
 class ContainerProjectsZonesOperationsListRequest(_messages.Message):
-  """A ContainerProjectsZonesOperationsListRequest object.
+  r"""A ContainerProjectsZonesOperationsListRequest object.
 
   Fields:
     parent: The parent (project and location) where the operations will be
@@ -1166,7 +1166,7 @@ class ContainerProjectsZonesOperationsListRequest(_messages.Message):
 
 
 class CreateClusterRequest(_messages.Message):
-  """CreateClusterRequest creates a cluster.
+  r"""CreateClusterRequest creates a cluster.
 
   Fields:
     cluster: A [cluster resource](/container-
@@ -1190,7 +1190,7 @@ class CreateClusterRequest(_messages.Message):
 
 
 class CreateNodePoolRequest(_messages.Message):
-  """CreateNodePoolRequest creates a node pool for a cluster.
+  r"""CreateNodePoolRequest creates a node pool for a cluster.
 
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
@@ -1218,7 +1218,7 @@ class CreateNodePoolRequest(_messages.Message):
 
 
 class CustomImageConfig(_messages.Message):
-  """CustomImageConfig contains the information
+  r"""CustomImageConfig contains the information
 
   Fields:
     image: The name of the image to use for this node.
@@ -1232,7 +1232,7 @@ class CustomImageConfig(_messages.Message):
 
 
 class DailyMaintenanceWindow(_messages.Message):
-  """Time window specified for daily maintenance operations.
+  r"""Time window specified for daily maintenance operations.
 
   Fields:
     daysInCycle: Allows to define schedule that runs every nth day of the
@@ -1250,7 +1250,7 @@ class DailyMaintenanceWindow(_messages.Message):
 
 
 class ElafrosConfig(_messages.Message):
-  """Configuration options for Elafros, an open serverless platform that runs
+  r"""Configuration options for Elafros, an open serverless platform that runs
   functions, apps, and containers.
 
   Fields:
@@ -1261,7 +1261,7 @@ class ElafrosConfig(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -1271,7 +1271,7 @@ class Empty(_messages.Message):
 
 
 class Expr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
+  r"""Represents an expression text. Example:      title: "User account
   presence"     description: "Determines whether the request has a user
   account"     expression: "size(request.user) > 0"
 
@@ -1295,7 +1295,7 @@ class Expr(_messages.Message):
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -1330,7 +1330,7 @@ class GoogleIamV1AuditConfig(_messages.Message):
 
 
 class GoogleIamV1AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -1347,7 +1347,7 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -1365,7 +1365,7 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
 
 
 class GoogleIamV1Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. NOTE: an
@@ -1380,8 +1380,8 @@ class GoogleIamV1Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -1396,7 +1396,7 @@ class GoogleIamV1Binding(_messages.Message):
 
 
 class GoogleIamV1CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log
+  r"""Write a Cloud Audit log
 
   Enums:
     LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
@@ -1409,7 +1409,7 @@ class GoogleIamV1CloudAuditOptions(_messages.Message):
   """
 
   class LogNameValueValuesEnum(_messages.Enum):
-    """The log_name to populate in the Cloud Audit Record.
+    r"""The log_name to populate in the Cloud Audit Record.
 
     Values:
       UNSPECIFIED_LOG_NAME: Default. Should not be used.
@@ -1425,7 +1425,7 @@ class GoogleIamV1CloudAuditOptions(_messages.Message):
 
 
 class GoogleIamV1Condition(_messages.Message):
-  """A condition to be met.
+  r"""A condition to be met.
 
   Enums:
     IamValueValuesEnum: Trusted attributes supplied by the IAM system.
@@ -1445,7 +1445,7 @@ class GoogleIamV1Condition(_messages.Message):
   """
 
   class IamValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by the IAM system.
+    r"""Trusted attributes supplied by the IAM system.
 
     Values:
       NO_ATTR: Default non-attribute.
@@ -1488,7 +1488,7 @@ class GoogleIamV1Condition(_messages.Message):
     CREDENTIALS_TYPE = 6
 
   class OpValueValuesEnum(_messages.Enum):
-    """An operator to apply the subject with.
+    r"""An operator to apply the subject with.
 
     Values:
       NO_OP: Default no-op.
@@ -1508,8 +1508,8 @@ class GoogleIamV1Condition(_messages.Message):
     DISCHARGED = 5
 
   class SysValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by any service that owns resources and uses
-    the IAM system for access control.
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
 
     Values:
       NO_ATTR: Default non-attribute type
@@ -1533,7 +1533,7 @@ class GoogleIamV1Condition(_messages.Message):
 
 
 class GoogleIamV1CounterOptions(_messages.Message):
-  """Increment a streamz counter with the specified metric and field names.
+  r"""Increment a streamz counter with the specified metric and field names.
   Metric names should start with a '/', generally be lowercase-only, and end
   in "_count". Field names should not contain an initial slash. The actual
   exported metric names will have "/iam/policy" prepended.  Field names
@@ -1557,7 +1557,7 @@ class GoogleIamV1CounterOptions(_messages.Message):
 
 
 class GoogleIamV1DataAccessOptions(_messages.Message):
-  """Write a Data Access (Gin) log
+  r"""Write a Data Access (Gin) log
 
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
@@ -1570,7 +1570,7 @@ class GoogleIamV1DataAccessOptions(_messages.Message):
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
-    """Whether Gin logging should happen in a fail-closed manner at the
+    r"""Whether Gin logging should happen in a fail-closed manner at the
     caller. This is relevant only in the LocalIAM implementation, for now.
 
     Values:
@@ -1595,11 +1595,11 @@ class GoogleIamV1DataAccessOptions(_messages.Message):
 
 
 class GoogleIamV1GetIamPolicyRequest(_messages.Message):
-  """Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method."""
 
 
 class GoogleIamV1LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write
+  r"""Specifies what kind of log the caller must write
 
   Fields:
     cloudAudit: Cloud audit options.
@@ -1613,19 +1613,24 @@ class GoogleIamV1LogConfig(_messages.Message):
 
 
 class GoogleIamV1Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1660,7 +1665,7 @@ class GoogleIamV1Policy(_messages.Message):
 
 
 class GoogleIamV1Rule(_messages.Message):
-  """A rule to be applied in a Policy.
+  r"""A rule to be applied in a Policy.
 
   Enums:
     ActionValueValuesEnum: Required
@@ -1685,7 +1690,7 @@ class GoogleIamV1Rule(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    """Required
+    r"""Required
 
     Values:
       NO_ACTION: Default no action.
@@ -1714,7 +1719,7 @@ class GoogleIamV1Rule(_messages.Message):
 
 
 class GoogleIamV1SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -1732,7 +1737,7 @@ class GoogleIamV1SetIamPolicyRequest(_messages.Message):
 
 
 class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1745,7 +1750,7 @@ class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
 
 
 class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -1756,7 +1761,7 @@ class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
 
 
 class HorizontalPodAutoscaling(_messages.Message):
-  """Configuration options for the horizontal pod autoscaling feature, which
+  r"""Configuration options for the horizontal pod autoscaling feature, which
   increases or decreases the number of replica pods a replication controller
   has based on the resource usage of the existing pods.
 
@@ -1770,7 +1775,7 @@ class HorizontalPodAutoscaling(_messages.Message):
 
 
 class HttpLoadBalancing(_messages.Message):
-  """Configuration options for the HTTP (L7) load balancing controller addon,
+  r"""Configuration options for the HTTP (L7) load balancing controller addon,
   which makes it easy to set up HTTP load balancers for services in a cluster.
 
   Fields:
@@ -1783,7 +1788,7 @@ class HttpLoadBalancing(_messages.Message):
 
 
 class IPAllocationPolicy(_messages.Message):
-  """Configuration for controlling how IPs are allocated in the cluster.
+  r"""Configuration for controlling how IPs are allocated in the cluster.
 
   Fields:
     allowRouteOverlap: If true, allow allocation of cluster CIDR ranges that
@@ -1869,7 +1874,7 @@ class IPAllocationPolicy(_messages.Message):
 
 
 class IstioConfig(_messages.Message):
-  """Configuration options for Istio addon.
+  r"""Configuration options for Istio addon.
 
   Enums:
     AuthValueValuesEnum: The specified Istio auth mode, either none, or mutual
@@ -1881,7 +1886,7 @@ class IstioConfig(_messages.Message):
   """
 
   class AuthValueValuesEnum(_messages.Enum):
-    """The specified Istio auth mode, either none, or mutual TLS.
+    r"""The specified Istio auth mode, either none, or mutual TLS.
 
     Values:
       AUTH_NONE: auth not enabled
@@ -1895,7 +1900,7 @@ class IstioConfig(_messages.Message):
 
 
 class KubernetesDashboard(_messages.Message):
-  """Configuration for the Kubernetes Dashboard.
+  r"""Configuration for the Kubernetes Dashboard.
 
   Fields:
     disabled: Whether the Kubernetes Dashboard is enabled for this cluster.
@@ -1905,8 +1910,8 @@ class KubernetesDashboard(_messages.Message):
 
 
 class LegacyAbac(_messages.Message):
-  """Configuration for the legacy Attribute Based Access Control authorization
-  mode.
+  r"""Configuration for the legacy Attribute Based Access Control
+  authorization mode.
 
   Fields:
     enabled: Whether the ABAC authorizer is enabled for this cluster. When
@@ -1919,7 +1924,7 @@ class LegacyAbac(_messages.Message):
 
 
 class ListClustersResponse(_messages.Message):
-  """ListClustersResponse is the result of ListClustersRequest.
+  r"""ListClustersResponse is the result of ListClustersRequest.
 
   Fields:
     clusters: A list of clusters in the project in the specified zone, or
@@ -1935,7 +1940,7 @@ class ListClustersResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """ListLocationsResponse returns the list of all GKE locations and their
+  r"""ListLocationsResponse returns the list of all GKE locations and their
   recommendation state.
 
   Fields:
@@ -1953,7 +1958,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListNodePoolsResponse(_messages.Message):
-  """ListNodePoolsResponse is the result of ListNodePoolsRequest.
+  r"""ListNodePoolsResponse is the result of ListNodePoolsRequest.
 
   Fields:
     nodePools: A list of node pools for a cluster.
@@ -1963,7 +1968,7 @@ class ListNodePoolsResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """ListOperationsResponse is the result of ListOperationsRequest.
+  r"""ListOperationsResponse is the result of ListOperationsRequest.
 
   Fields:
     missingZones: If any zones are listed here, the list of operations
@@ -1978,7 +1983,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListUsableSubnetworksResponse(_messages.Message):
-  """ListUsableSubnetworksResponse is the response of
+  r"""ListUsableSubnetworksResponse is the response of
   ListUsableSubnetworksRequest.
 
   Fields:
@@ -1998,7 +2003,7 @@ class ListUsableSubnetworksResponse(_messages.Message):
 
 
 class LocalSsdVolumeConfig(_messages.Message):
-  """LocalSsdVolumeConfig is comprised of three fields, count, type, and
+  r"""LocalSsdVolumeConfig is comprised of three fields, count, type, and
   format. Count is the number of ssds of this grouping requested, type is the
   interface type and is either nvme or scsi, and format is whether the disk is
   to be formatted with a filesystem or left for block storage
@@ -2013,7 +2018,7 @@ class LocalSsdVolumeConfig(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    """Format of the local SSD (fs/block).
+    r"""Format of the local SSD (fs/block).
 
     Values:
       FORMAT_UNSPECIFIED: Default value
@@ -2030,7 +2035,7 @@ class LocalSsdVolumeConfig(_messages.Message):
 
 
 class Location(_messages.Message):
-  """Location returns the location name, and if the location is recommended
+  r"""Location returns the location name, and if the location is recommended
   for GKE cluster scheduling.
 
   Enums:
@@ -2049,7 +2054,7 @@ class Location(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Contains the type of location this Location is for. Regional or Zonal.
+    r"""Contains the type of location this Location is for. Regional or Zonal.
 
     Values:
       LOCATION_TYPE_UNSPECIFIED: LOCATION_TYPE_UNSPECIFIED means the location
@@ -2067,7 +2072,7 @@ class Location(_messages.Message):
 
 
 class MaintenancePolicy(_messages.Message):
-  """MaintenancePolicy defines the maintenance policy to be used for the
+  r"""MaintenancePolicy defines the maintenance policy to be used for the
   cluster.
 
   Fields:
@@ -2079,7 +2084,7 @@ class MaintenancePolicy(_messages.Message):
 
 
 class MaintenanceWindow(_messages.Message):
-  """MaintenanceWindow defines the maintenance window to be used for the
+  r"""MaintenanceWindow defines the maintenance window to be used for the
   cluster.
 
   Fields:
@@ -2091,7 +2096,7 @@ class MaintenanceWindow(_messages.Message):
 
 
 class MasterAuth(_messages.Message):
-  """The authentication information for accessing the master endpoint.
+  r"""The authentication information for accessing the master endpoint.
   Authentication can be done using HTTP basic auth or using client
   certificates.
 
@@ -2123,11 +2128,11 @@ class MasterAuth(_messages.Message):
 
 
 class MasterAuthorizedNetworks(_messages.Message):
-  """Configuration options for the master authorized networks feature. Enabled
-  master authorized networks will disallow all external traffic to access
-  Kubernetes master through HTTPS except traffic from the given CIDR blocks,
-  Google Compute Engine Public IPs and Google Prod IPs. This message is
-  deprecated, use MasterAuthorizedNetworksConfig instead.
+  r"""Configuration options for the master authorized networks feature.
+  Enabled master authorized networks will disallow all external traffic to
+  access Kubernetes master through HTTPS except traffic from the given CIDR
+  blocks, Google Compute Engine Public IPs and Google Prod IPs. This message
+  is deprecated, use MasterAuthorizedNetworksConfig instead.
 
   Fields:
     cidrs: Network CIDRs define up to 10 external networks that could access
@@ -2140,10 +2145,10 @@ class MasterAuthorizedNetworks(_messages.Message):
 
 
 class MasterAuthorizedNetworksConfig(_messages.Message):
-  """Configuration options for the master authorized networks feature. Enabled
-  master authorized networks will disallow all external traffic to access
-  Kubernetes master through HTTPS except traffic from the given CIDR blocks,
-  Google Compute Engine Public IPs and Google Prod IPs.
+  r"""Configuration options for the master authorized networks feature.
+  Enabled master authorized networks will disallow all external traffic to
+  access Kubernetes master through HTTPS except traffic from the given CIDR
+  blocks, Google Compute Engine Public IPs and Google Prod IPs.
 
   Fields:
     cidrBlocks: cidr_blocks define up to 10 external networks that could
@@ -2156,7 +2161,7 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
 
 
 class Metric(_messages.Message):
-  """Progress metric is (string, int|float|string) pair.
+  r"""Progress metric is (string, int|float|string) pair.
 
   Fields:
     doubleValue: For metrics with floating point value.
@@ -2173,7 +2178,7 @@ class Metric(_messages.Message):
 
 
 class NetworkConfig(_messages.Message):
-  """Parameters for cluster networking.
+  r"""Parameters for cluster networking.
 
   Fields:
     enableSharedNetwork: Enable the ability to reference subnets belonging to
@@ -2190,7 +2195,7 @@ class NetworkConfig(_messages.Message):
 
 
 class NetworkPolicy(_messages.Message):
-  """Configuration options for the NetworkPolicy feature.
+  r"""Configuration options for the NetworkPolicy feature.
   https://kubernetes.io/docs/concepts/services-networking/networkpolicies/
 
   Enums:
@@ -2202,7 +2207,7 @@ class NetworkPolicy(_messages.Message):
   """
 
   class ProviderValueValuesEnum(_messages.Enum):
-    """The selected network policy provider.
+    r"""The selected network policy provider.
 
     Values:
       PROVIDER_UNSPECIFIED: Not set
@@ -2216,7 +2221,7 @@ class NetworkPolicy(_messages.Message):
 
 
 class NetworkPolicyConfig(_messages.Message):
-  """Configuration for NetworkPolicy. This only tracks whether the addon is
+  r"""Configuration for NetworkPolicy. This only tracks whether the addon is
   enabled or not on the Master, it does not track whether network policy is
   enabled for the nodes.
 
@@ -2228,7 +2233,7 @@ class NetworkPolicyConfig(_messages.Message):
 
 
 class NodeConfig(_messages.Message):
-  """Parameters that describe the nodes in a cluster.
+  r"""Parameters that describe the nodes in a cluster.
 
   Messages:
     LabelsValue: The map of Kubernetes labels (key/value pairs) to be applied
@@ -2334,7 +2339,7 @@ class NodeConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The map of Kubernetes labels (key/value pairs) to be applied to each
+    r"""The map of Kubernetes labels (key/value pairs) to be applied to each
     node. These will added in addition to any default label(s) that Kubernetes
     may apply to the node. In case of conflict in label keys, the applied set
     may differ depending on the Kubernetes version -- it's best to assume the
@@ -2350,7 +2355,7 @@ class NodeConfig(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2364,7 +2369,7 @@ class NodeConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """The metadata key/value pairs assigned to instances in the cluster.
+    r"""The metadata key/value pairs assigned to instances in the cluster.
     Keys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes
     in length. These are reflected as part of a URL in the metadata server.
     Additionally, to avoid ambiguity, keys must not conflict with any other
@@ -2385,7 +2390,7 @@ class NodeConfig(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2418,7 +2423,7 @@ class NodeConfig(_messages.Message):
 
 
 class NodeManagement(_messages.Message):
-  """NodeManagement defines the set of node management services turned on for
+  r"""NodeManagement defines the set of node management services turned on for
   the node pool.
 
   Fields:
@@ -2433,7 +2438,7 @@ class NodeManagement(_messages.Message):
 
 
 class NodePool(_messages.Message):
-  """NodePool contains the name and configuration for a cluster's node pool.
+  r"""NodePool contains the name and configuration for a cluster's node pool.
   Node pools are a set of nodes (i.e. VM's), with a common configuration and
   specification, under the control of the cluster master. They may have a set
   of Kubernetes labels applied to them, which may be used to reference them
@@ -2465,7 +2470,7 @@ class NodePool(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """[Output only] The status of the nodes in this pool instance.
+    r"""[Output only] The status of the nodes in this pool instance.
 
     Values:
       STATUS_UNSPECIFIED: Not set.
@@ -2505,7 +2510,7 @@ class NodePool(_messages.Message):
 
 
 class NodePoolAutoscaling(_messages.Message):
-  """NodePoolAutoscaling contains information required by cluster autoscaler
+  r"""NodePoolAutoscaling contains information required by cluster autoscaler
   to adjust the size of the node pool to the current cluster usage.
 
   Fields:
@@ -2524,7 +2529,7 @@ class NodePoolAutoscaling(_messages.Message):
 
 
 class NodeTaint(_messages.Message):
-  """Kubernetes taint is comprised of three fields: key, value, and effect.
+  r"""Kubernetes taint is comprised of three fields: key, value, and effect.
   Effect can only be one of three types:  NoSchedule, PreferNoSchedule or
   NoExecute.  For more information, including usage and the valid values, see:
   https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -2539,7 +2544,7 @@ class NodeTaint(_messages.Message):
   """
 
   class EffectValueValuesEnum(_messages.Enum):
-    """Effect for taint.
+    r"""Effect for taint.
 
     Values:
       EFFECT_UNSPECIFIED: Not set
@@ -2558,7 +2563,7 @@ class NodeTaint(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This operation resource represents operations that may have happened or
+  r"""This operation resource represents operations that may have happened or
   are happening on the cluster. All fields are output only.
 
   Enums:
@@ -2589,7 +2594,7 @@ class Operation(_messages.Message):
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    """The operation type.
+    r"""The operation type.
 
     Values:
       TYPE_UNSPECIFIED: Not set.
@@ -2631,7 +2636,7 @@ class Operation(_messages.Message):
     UPDATE_IP_ALLOCATION_POLICY = 17
 
   class StatusValueValuesEnum(_messages.Enum):
-    """The current status of the operation.
+    r"""The current status of the operation.
 
     Values:
       STATUS_UNSPECIFIED: Not set.
@@ -2661,7 +2666,7 @@ class Operation(_messages.Message):
 
 
 class OperationProgress(_messages.Message):
-  """Information about operation (or operation stage) progress.
+  r"""Information about operation (or operation stage) progress.
 
   Enums:
     StatusValueValuesEnum: Status of an operation stage. Unset for single-
@@ -2679,7 +2684,7 @@ class OperationProgress(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of an operation stage. Unset for single-stage operations.
+    r"""Status of an operation stage. Unset for single-stage operations.
 
     Values:
       STATUS_UNSPECIFIED: Not set.
@@ -2701,7 +2706,7 @@ class OperationProgress(_messages.Message):
 
 
 class PodSecurityPolicyConfig(_messages.Message):
-  """Configuration for the PodSecurityPolicy feature.
+  r"""Configuration for the PodSecurityPolicy feature.
 
   Fields:
     enabled: Enable the PodSecurityPolicy controller for this cluster. If
@@ -2712,7 +2717,7 @@ class PodSecurityPolicyConfig(_messages.Message):
 
 
 class ResourceLimit(_messages.Message):
-  """Contains information about amount of some resource in the cluster. For
+  r"""Contains information about amount of some resource in the cluster. For
   memory, value should be in GB.
 
   Fields:
@@ -2727,9 +2732,9 @@ class ResourceLimit(_messages.Message):
 
 
 class RollbackNodePoolUpgradeRequest(_messages.Message):
-  """RollbackNodePoolUpgradeRequest rollbacks the previously Aborted or Failed
-  NodePool upgrade. This will be an no-op if the last upgrade successfully
-  completed.
+  r"""RollbackNodePoolUpgradeRequest rollbacks the previously Aborted or
+  Failed NodePool upgrade. This will be an no-op if the last upgrade
+  successfully completed.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to rollback. This field has
@@ -2757,7 +2762,7 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
 
 
 class ServerConfig(_messages.Message):
-  """Kubernetes Engine service configuration.
+  r"""Kubernetes Engine service configuration.
 
   Fields:
     buildClientInfo: apiserver build BuildData::ClientInfo()
@@ -2778,7 +2783,7 @@ class ServerConfig(_messages.Message):
 
 
 class SetAddonsConfigRequest(_messages.Message):
-  """SetAddonsRequest sets the addons associated with the cluster.
+  r"""SetAddonsRequest sets the addons associated with the cluster.
 
   Fields:
     addonsConfig: The desired configurations for the various addons available
@@ -2805,7 +2810,7 @@ class SetAddonsConfigRequest(_messages.Message):
 
 
 class SetLabelsRequest(_messages.Message):
-  """SetLabelsRequest sets the Google Cloud Platform labels on a Google
+  r"""SetLabelsRequest sets the Google Cloud Platform labels on a Google
   Container Engine cluster, which will in turn set them for Google Compute
   Engine resources used by that cluster
 
@@ -2836,7 +2841,7 @@ class SetLabelsRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceLabelsValue(_messages.Message):
-    """The labels to set for that cluster.
+    r"""The labels to set for that cluster.
 
     Messages:
       AdditionalProperty: An additional property for a ResourceLabelsValue
@@ -2847,7 +2852,7 @@ class SetLabelsRequest(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResourceLabelsValue object.
+      r"""An additional property for a ResourceLabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2869,8 +2874,8 @@ class SetLabelsRequest(_messages.Message):
 
 
 class SetLegacyAbacRequest(_messages.Message):
-  """SetLegacyAbacRequest enables or disables the ABAC authorization mechanism
-  for a cluster.
+  r"""SetLegacyAbacRequest enables or disables the ABAC authorization
+  mechanism for a cluster.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to update. This field has
@@ -2897,7 +2902,7 @@ class SetLegacyAbacRequest(_messages.Message):
 
 
 class SetLocationsRequest(_messages.Message):
-  """SetLocationsRequest sets the locations of the cluster.
+  r"""SetLocationsRequest sets the locations of the cluster.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
@@ -2928,7 +2933,7 @@ class SetLocationsRequest(_messages.Message):
 
 
 class SetLoggingServiceRequest(_messages.Message):
-  """SetLoggingServiceRequest sets the logging service of a cluster.
+  r"""SetLoggingServiceRequest sets the logging service of a cluster.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
@@ -2957,7 +2962,7 @@ class SetLoggingServiceRequest(_messages.Message):
 
 
 class SetMaintenancePolicyRequest(_messages.Message):
-  """SetMaintenancePolicyRequest sets the maintenance policy for a cluster.
+  r"""SetMaintenancePolicyRequest sets the maintenance policy for a cluster.
 
   Fields:
     clusterId: The name of the cluster to update.
@@ -2982,7 +2987,7 @@ class SetMaintenancePolicyRequest(_messages.Message):
 
 
 class SetMasterAuthRequest(_messages.Message):
-  """SetMasterAuthRequest updates the admin password of a cluster.
+  r"""SetMasterAuthRequest updates the admin password of a cluster.
 
   Enums:
     ActionValueValuesEnum: The exact form of action to be taken on the master
@@ -3005,7 +3010,7 @@ class SetMasterAuthRequest(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    """The exact form of action to be taken on the master auth.
+    r"""The exact form of action to be taken on the master auth.
 
     Values:
       UNKNOWN: Operation is unknown and will error out.
@@ -3031,7 +3036,7 @@ class SetMasterAuthRequest(_messages.Message):
 
 
 class SetMonitoringServiceRequest(_messages.Message):
-  """SetMonitoringServiceRequest sets the monitoring service of a cluster.
+  r"""SetMonitoringServiceRequest sets the monitoring service of a cluster.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
@@ -3060,7 +3065,7 @@ class SetMonitoringServiceRequest(_messages.Message):
 
 
 class SetNetworkPolicyRequest(_messages.Message):
-  """SetNetworkPolicyRequest enables/disables network policy for a cluster.
+  r"""SetNetworkPolicyRequest enables/disables network policy for a cluster.
 
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
@@ -3088,7 +3093,7 @@ class SetNetworkPolicyRequest(_messages.Message):
 
 
 class SetNodePoolAutoscalingRequest(_messages.Message):
-  """SetNodePoolAutoscalingRequest sets the autoscaler settings of a node
+  r"""SetNodePoolAutoscalingRequest sets the autoscaler settings of a node
   pool.
 
   Fields:
@@ -3119,7 +3124,7 @@ class SetNodePoolAutoscalingRequest(_messages.Message):
 
 
 class SetNodePoolManagementRequest(_messages.Message):
-  """SetNodePoolManagementRequest sets the node management properties of a
+  r"""SetNodePoolManagementRequest sets the node management properties of a
   node pool.
 
   Fields:
@@ -3150,7 +3155,7 @@ class SetNodePoolManagementRequest(_messages.Message):
 
 
 class SetNodePoolSizeRequest(_messages.Message):
-  """SetNodePoolSizeRequest sets the size a node pool.
+  r"""SetNodePoolSizeRequest sets the size a node pool.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to update. This field has
@@ -3179,7 +3184,7 @@ class SetNodePoolSizeRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -3208,7 +3213,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -3220,7 +3225,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -3246,8 +3251,8 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StartIPRotationRequest(_messages.Message):
-  """StartIPRotationRequest creates a new IP for the cluster and then performs
-  a node upgrade on each node pool to point to the new IP.
+  r"""StartIPRotationRequest creates a new IP for the cluster and then
+  performs a node upgrade on each node pool to point to the new IP.
 
   Fields:
     clusterId: Deprecated. The name of the cluster. This field has been
@@ -3274,7 +3279,7 @@ class StartIPRotationRequest(_messages.Message):
 
 
 class UpdateClusterRequest(_messages.Message):
-  """UpdateClusterRequest updates the settings of a cluster.
+  r"""UpdateClusterRequest updates the settings of a cluster.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
@@ -3302,7 +3307,7 @@ class UpdateClusterRequest(_messages.Message):
 
 
 class UpdateMasterRequest(_messages.Message):
-  """UpdateMasterRequest updates the master of the cluster.
+  r"""UpdateMasterRequest updates the master of the cluster.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
@@ -3337,7 +3342,7 @@ class UpdateMasterRequest(_messages.Message):
 
 
 class UpdateNodePoolRequest(_messages.Message):
-  """SetNodePoolVersionRequest updates the version of a node pool.
+  r"""SetNodePoolVersionRequest updates the version of a node pool.
 
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
@@ -3382,7 +3387,7 @@ class UpdateNodePoolRequest(_messages.Message):
 
 
 class UsableSubnetwork(_messages.Message):
-  """UsableSubnetwork resource returns the subnetwork name, its associated
+  r"""UsableSubnetwork resource returns the subnetwork name, its associated
   network and the primary CIDR range.
 
   Fields:
@@ -3398,7 +3403,7 @@ class UsableSubnetwork(_messages.Message):
 
 
 class WorkloadMetadataConfig(_messages.Message):
-  """WorkloadMetadataConfig defines the metadata configuration to expose to
+  r"""WorkloadMetadataConfig defines the metadata configuration to expose to
   workloads on the node pool.
 
   Enums:
@@ -3411,7 +3416,7 @@ class WorkloadMetadataConfig(_messages.Message):
   """
 
   class NodeMetadataValueValuesEnum(_messages.Enum):
-    """NodeMetadata is the configuration for how to expose the node metadata
+    r"""NodeMetadata is the configuration for how to expose the node metadata
     to the workload running on the node.
 
     Values:

@@ -13,6 +13,8 @@
 # limitations under the License.
 """Code that's shared between multiple backend-buckets subcommands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.command_lib.compute.backend_buckets import flags as backend_buckets_flags
 
 

@@ -49,7 +49,7 @@ class SourcerepoV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a repo in the given project with the given name.
+      r"""Creates a repo in the given project with the given name.
 
 If the named repository already exists, `CreateRepo` returns
 `ALREADY_EXISTS`.
@@ -79,7 +79,7 @@ If the named repository already exists, `CreateRepo` returns
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a repo.
+      r"""Deletes a repo.
 
       Args:
         request: (SourcerepoProjectsReposDeleteRequest) input message
@@ -106,7 +106,7 @@ If the named repository already exists, `CreateRepo` returns
     )
 
     def Get(self, request, global_params=None):
-      """Returns information about a repo.
+      r"""Returns information about a repo.
 
       Args:
         request: (SourcerepoProjectsReposGetRequest) input message
@@ -133,7 +133,7 @@ If the named repository already exists, `CreateRepo` returns
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -162,7 +162,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Returns all repos belonging to a project. The sizes of the repos are.
+      r"""Returns all repos belonging to a project. The sizes of the repos are.
 not set by ListRepos.  To get the size of a repo, use GetRepo.
 
       Args:
@@ -190,7 +190,7 @@ not set by ListRepos.  To get the size of a repo, use GetRepo.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates information about a repo.
+      r"""Updates information about a repo.
 
       Args:
         request: (SourcerepoProjectsReposPatchRequest) input message
@@ -217,7 +217,7 @@ not set by ListRepos.  To get the size of a repo, use GetRepo.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -245,7 +245,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -284,7 +284,7 @@ permissions, not a NOT_FOUND error.
           }
 
     def GetConfig(self, request, global_params=None):
-      """Returns the Cloud Source Repositories configuration of the project.
+      r"""Returns the Cloud Source Repositories configuration of the project.
 
       Args:
         request: (SourcerepoProjectsGetConfigRequest) input message
@@ -311,7 +311,7 @@ permissions, not a NOT_FOUND error.
     )
 
     def UpdateConfig(self, request, global_params=None):
-      """Updates the Cloud Source Repositories configuration of the project.
+      r"""Updates the Cloud Source Repositories configuration of the project.
 
       Args:
         request: (SourcerepoProjectsUpdateConfigRequest) input message

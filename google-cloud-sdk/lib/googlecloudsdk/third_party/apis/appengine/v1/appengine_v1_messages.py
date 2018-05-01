@@ -14,7 +14,7 @@ package = 'appengine'
 
 
 class ApiConfigHandler(_messages.Message):
-  """Google Cloud Endpoints
+  r"""Google Cloud Endpoints
   (https://cloud.google.com/appengine/docs/python/endpoints/) configuration
   for API handlers.
 
@@ -36,8 +36,8 @@ class ApiConfigHandler(_messages.Message):
   """
 
   class AuthFailActionValueValuesEnum(_messages.Enum):
-    """Action to take when users access resources that require authentication.
-    Defaults to redirect.
+    r"""Action to take when users access resources that require
+    authentication. Defaults to redirect.
 
     Values:
       AUTH_FAIL_ACTION_UNSPECIFIED: Not specified. AUTH_FAIL_ACTION_REDIRECT
@@ -53,7 +53,7 @@ class ApiConfigHandler(_messages.Message):
     AUTH_FAIL_ACTION_UNAUTHORIZED = 2
 
   class LoginValueValuesEnum(_messages.Enum):
-    """Level of login required to access this resource. Defaults to optional.
+    r"""Level of login required to access this resource. Defaults to optional.
 
     Values:
       LOGIN_UNSPECIFIED: Not specified. LOGIN_OPTIONAL is assumed.
@@ -72,7 +72,7 @@ class ApiConfigHandler(_messages.Message):
     LOGIN_REQUIRED = 3
 
   class SecurityLevelValueValuesEnum(_messages.Enum):
-    """Security (HTTPS) enforcement for this URL.
+    r"""Security (HTTPS) enforcement for this URL.
 
     Values:
       SECURE_UNSPECIFIED: Not specified.
@@ -102,7 +102,7 @@ class ApiConfigHandler(_messages.Message):
 
 
 class ApiEndpointHandler(_messages.Message):
-  """Uses Google Cloud Endpoints to handle requests.
+  r"""Uses Google Cloud Endpoints to handle requests.
 
   Fields:
     scriptPath: Path to the script from the application root directory.
@@ -112,7 +112,7 @@ class ApiEndpointHandler(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesCreateRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesCreateRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesCreateRequest object.
 
   Fields:
     authorizedCertificate: A AuthorizedCertificate resource to be passed as
@@ -125,7 +125,7 @@ class AppengineAppsAuthorizedCertificatesCreateRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesDeleteRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesDeleteRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesDeleteRequest object.
 
   Fields:
     name: Name of the resource to delete. Example:
@@ -136,7 +136,7 @@ class AppengineAppsAuthorizedCertificatesDeleteRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesGetRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesGetRequest object.
 
   Enums:
     ViewValueValuesEnum: Controls the set of fields returned in the GET
@@ -149,7 +149,7 @@ class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Controls the set of fields returned in the GET response.
+    r"""Controls the set of fields returned in the GET response.
 
     Values:
       BASIC_CERTIFICATE: <no description>
@@ -163,7 +163,7 @@ class AppengineAppsAuthorizedCertificatesGetRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesListRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesListRequest object.
 
   Enums:
     ViewValueValuesEnum: Controls the set of fields returned in the LIST
@@ -177,7 +177,7 @@ class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Controls the set of fields returned in the LIST response.
+    r"""Controls the set of fields returned in the LIST response.
 
     Values:
       BASIC_CERTIFICATE: <no description>
@@ -193,7 +193,7 @@ class AppengineAppsAuthorizedCertificatesListRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedCertificatesPatchRequest(_messages.Message):
-  """A AppengineAppsAuthorizedCertificatesPatchRequest object.
+  r"""A AppengineAppsAuthorizedCertificatesPatchRequest object.
 
   Fields:
     authorizedCertificate: A AuthorizedCertificate resource to be passed as
@@ -211,7 +211,7 @@ class AppengineAppsAuthorizedCertificatesPatchRequest(_messages.Message):
 
 
 class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
-  """A AppengineAppsAuthorizedDomainsListRequest object.
+  r"""A AppengineAppsAuthorizedDomainsListRequest object.
 
   Fields:
     pageSize: Maximum results to return per page.
@@ -225,7 +225,7 @@ class AppengineAppsAuthorizedDomainsListRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsCreateRequest object.
+  r"""A AppengineAppsDomainMappingsCreateRequest object.
 
   Enums:
     OverrideStrategyValueValuesEnum: Whether the domain creation should
@@ -240,7 +240,7 @@ class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
   """
 
   class OverrideStrategyValueValuesEnum(_messages.Enum):
-    """Whether the domain creation should override any existing mappings for
+    r"""Whether the domain creation should override any existing mappings for
     this domain. By default, overrides are rejected.
 
     Values:
@@ -258,7 +258,7 @@ class AppengineAppsDomainMappingsCreateRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsDeleteRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsDeleteRequest object.
+  r"""A AppengineAppsDomainMappingsDeleteRequest object.
 
   Fields:
     name: Name of the resource to delete. Example:
@@ -269,7 +269,7 @@ class AppengineAppsDomainMappingsDeleteRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsGetRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsGetRequest object.
+  r"""A AppengineAppsDomainMappingsGetRequest object.
 
   Fields:
     name: Name of the resource requested. Example:
@@ -280,7 +280,7 @@ class AppengineAppsDomainMappingsGetRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsListRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsListRequest object.
+  r"""A AppengineAppsDomainMappingsListRequest object.
 
   Fields:
     pageSize: Maximum results to return per page.
@@ -294,7 +294,7 @@ class AppengineAppsDomainMappingsListRequest(_messages.Message):
 
 
 class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
-  """A AppengineAppsDomainMappingsPatchRequest object.
+  r"""A AppengineAppsDomainMappingsPatchRequest object.
 
   Fields:
     domainMapping: A DomainMapping resource to be passed as the request body.
@@ -309,7 +309,7 @@ class AppengineAppsDomainMappingsPatchRequest(_messages.Message):
 
 
 class AppengineAppsFirewallIngressRulesBatchUpdateRequest(_messages.Message):
-  """A AppengineAppsFirewallIngressRulesBatchUpdateRequest object.
+  r"""A AppengineAppsFirewallIngressRulesBatchUpdateRequest object.
 
   Fields:
     batchUpdateIngressRulesRequest: A BatchUpdateIngressRulesRequest resource
@@ -323,7 +323,7 @@ class AppengineAppsFirewallIngressRulesBatchUpdateRequest(_messages.Message):
 
 
 class AppengineAppsFirewallIngressRulesCreateRequest(_messages.Message):
-  """A AppengineAppsFirewallIngressRulesCreateRequest object.
+  r"""A AppengineAppsFirewallIngressRulesCreateRequest object.
 
   Fields:
     firewallRule: A FirewallRule resource to be passed as the request body.
@@ -336,7 +336,7 @@ class AppengineAppsFirewallIngressRulesCreateRequest(_messages.Message):
 
 
 class AppengineAppsFirewallIngressRulesDeleteRequest(_messages.Message):
-  """A AppengineAppsFirewallIngressRulesDeleteRequest object.
+  r"""A AppengineAppsFirewallIngressRulesDeleteRequest object.
 
   Fields:
     name: Name of the Firewall resource to delete. Example:
@@ -347,7 +347,7 @@ class AppengineAppsFirewallIngressRulesDeleteRequest(_messages.Message):
 
 
 class AppengineAppsFirewallIngressRulesGetRequest(_messages.Message):
-  """A AppengineAppsFirewallIngressRulesGetRequest object.
+  r"""A AppengineAppsFirewallIngressRulesGetRequest object.
 
   Fields:
     name: Name of the Firewall resource to retrieve. Example:
@@ -358,7 +358,7 @@ class AppengineAppsFirewallIngressRulesGetRequest(_messages.Message):
 
 
 class AppengineAppsFirewallIngressRulesListRequest(_messages.Message):
-  """A AppengineAppsFirewallIngressRulesListRequest object.
+  r"""A AppengineAppsFirewallIngressRulesListRequest object.
 
   Fields:
     matchingAddress: A valid IP Address. If set, only rules matching this
@@ -377,7 +377,7 @@ class AppengineAppsFirewallIngressRulesListRequest(_messages.Message):
 
 
 class AppengineAppsFirewallIngressRulesPatchRequest(_messages.Message):
-  """A AppengineAppsFirewallIngressRulesPatchRequest object.
+  r"""A AppengineAppsFirewallIngressRulesPatchRequest object.
 
   Fields:
     firewallRule: A FirewallRule resource to be passed as the request body.
@@ -392,7 +392,7 @@ class AppengineAppsFirewallIngressRulesPatchRequest(_messages.Message):
 
 
 class AppengineAppsGetRequest(_messages.Message):
-  """A AppengineAppsGetRequest object.
+  r"""A AppengineAppsGetRequest object.
 
   Fields:
     name: Name of the Application resource to get. Example: apps/myapp.
@@ -402,7 +402,7 @@ class AppengineAppsGetRequest(_messages.Message):
 
 
 class AppengineAppsLocationsGetRequest(_messages.Message):
-  """A AppengineAppsLocationsGetRequest object.
+  r"""A AppengineAppsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
@@ -412,7 +412,7 @@ class AppengineAppsLocationsGetRequest(_messages.Message):
 
 
 class AppengineAppsLocationsListRequest(_messages.Message):
-  """A AppengineAppsLocationsListRequest object.
+  r"""A AppengineAppsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -428,7 +428,7 @@ class AppengineAppsLocationsListRequest(_messages.Message):
 
 
 class AppengineAppsOperationsGetRequest(_messages.Message):
-  """A AppengineAppsOperationsGetRequest object.
+  r"""A AppengineAppsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -438,7 +438,7 @@ class AppengineAppsOperationsGetRequest(_messages.Message):
 
 
 class AppengineAppsOperationsListRequest(_messages.Message):
-  """A AppengineAppsOperationsListRequest object.
+  r"""A AppengineAppsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -454,7 +454,7 @@ class AppengineAppsOperationsListRequest(_messages.Message):
 
 
 class AppengineAppsPatchRequest(_messages.Message):
-  """A AppengineAppsPatchRequest object.
+  r"""A AppengineAppsPatchRequest object.
 
   Fields:
     application: A Application resource to be passed as the request body.
@@ -468,7 +468,7 @@ class AppengineAppsPatchRequest(_messages.Message):
 
 
 class AppengineAppsRepairRequest(_messages.Message):
-  """A AppengineAppsRepairRequest object.
+  r"""A AppengineAppsRepairRequest object.
 
   Fields:
     name: Name of the application to repair. Example: apps/myapp
@@ -481,7 +481,7 @@ class AppengineAppsRepairRequest(_messages.Message):
 
 
 class AppengineAppsServicesDeleteRequest(_messages.Message):
-  """A AppengineAppsServicesDeleteRequest object.
+  r"""A AppengineAppsServicesDeleteRequest object.
 
   Fields:
     name: Name of the resource requested. Example:
@@ -492,7 +492,7 @@ class AppengineAppsServicesDeleteRequest(_messages.Message):
 
 
 class AppengineAppsServicesGetRequest(_messages.Message):
-  """A AppengineAppsServicesGetRequest object.
+  r"""A AppengineAppsServicesGetRequest object.
 
   Fields:
     name: Name of the resource requested. Example:
@@ -503,7 +503,7 @@ class AppengineAppsServicesGetRequest(_messages.Message):
 
 
 class AppengineAppsServicesListRequest(_messages.Message):
-  """A AppengineAppsServicesListRequest object.
+  r"""A AppengineAppsServicesListRequest object.
 
   Fields:
     pageSize: Maximum results to return per page.
@@ -517,7 +517,7 @@ class AppengineAppsServicesListRequest(_messages.Message):
 
 
 class AppengineAppsServicesPatchRequest(_messages.Message):
-  """A AppengineAppsServicesPatchRequest object.
+  r"""A AppengineAppsServicesPatchRequest object.
 
   Fields:
     migrateTraffic: Set to true to gradually shift traffic to one or more
@@ -547,7 +547,7 @@ class AppengineAppsServicesPatchRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsCreateRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsCreateRequest object.
+  r"""A AppengineAppsServicesVersionsCreateRequest object.
 
   Fields:
     parent: Name of the parent resource to create this version under. Example:
@@ -560,7 +560,7 @@ class AppengineAppsServicesVersionsCreateRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsDeleteRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsDeleteRequest object.
+  r"""A AppengineAppsServicesVersionsDeleteRequest object.
 
   Fields:
     name: Name of the resource requested. Example:
@@ -571,7 +571,7 @@ class AppengineAppsServicesVersionsDeleteRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsGetRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsGetRequest object.
+  r"""A AppengineAppsServicesVersionsGetRequest object.
 
   Enums:
     ViewValueValuesEnum: Controls the set of fields returned in the Get
@@ -584,7 +584,7 @@ class AppengineAppsServicesVersionsGetRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Controls the set of fields returned in the Get response.
+    r"""Controls the set of fields returned in the Get response.
 
     Values:
       BASIC: <no description>
@@ -598,7 +598,7 @@ class AppengineAppsServicesVersionsGetRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsInstancesDebugRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsInstancesDebugRequest object.
+  r"""A AppengineAppsServicesVersionsInstancesDebugRequest object.
 
   Fields:
     debugInstanceRequest: A DebugInstanceRequest resource to be passed as the
@@ -612,7 +612,7 @@ class AppengineAppsServicesVersionsInstancesDebugRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsInstancesDeleteRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsInstancesDeleteRequest object.
+  r"""A AppengineAppsServicesVersionsInstancesDeleteRequest object.
 
   Fields:
     name: Name of the resource requested. Example:
@@ -623,7 +623,7 @@ class AppengineAppsServicesVersionsInstancesDeleteRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsInstancesGetRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsInstancesGetRequest object.
+  r"""A AppengineAppsServicesVersionsInstancesGetRequest object.
 
   Fields:
     name: Name of the resource requested. Example:
@@ -634,7 +634,7 @@ class AppengineAppsServicesVersionsInstancesGetRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsInstancesListRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsInstancesListRequest object.
+  r"""A AppengineAppsServicesVersionsInstancesListRequest object.
 
   Fields:
     pageSize: Maximum results to return per page.
@@ -649,7 +649,7 @@ class AppengineAppsServicesVersionsInstancesListRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsListRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsListRequest object.
+  r"""A AppengineAppsServicesVersionsListRequest object.
 
   Enums:
     ViewValueValuesEnum: Controls the set of fields returned in the List
@@ -664,7 +664,7 @@ class AppengineAppsServicesVersionsListRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Controls the set of fields returned in the List response.
+    r"""Controls the set of fields returned in the List response.
 
     Values:
       BASIC: <no description>
@@ -680,7 +680,7 @@ class AppengineAppsServicesVersionsListRequest(_messages.Message):
 
 
 class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
-  """A AppengineAppsServicesVersionsPatchRequest object.
+  r"""A AppengineAppsServicesVersionsPatchRequest object.
 
   Fields:
     name: Name of the resource to update. Example:
@@ -695,7 +695,7 @@ class AppengineAppsServicesVersionsPatchRequest(_messages.Message):
 
 
 class Application(_messages.Message):
-  """An Application resource contains the top-level configuration of an App
+  r"""An Application resource contains the top-level configuration of an App
   Engine application.
 
   Enums:
@@ -736,7 +736,7 @@ class Application(_messages.Message):
   """
 
   class ServingStatusValueValuesEnum(_messages.Enum):
-    """Serving status of this application.
+    r"""Serving status of this application.
 
     Values:
       UNSPECIFIED: Serving status is unspecified.
@@ -765,7 +765,7 @@ class Application(_messages.Message):
 
 
 class AuthorizedCertificate(_messages.Message):
-  """An SSL certificate that a user has been authorized to administer. A user
+  r"""An SSL certificate that a user has been authorized to administer. A user
   is authorized to administer any certificate that applies to one of their
   authorized domains.
 
@@ -812,7 +812,7 @@ class AuthorizedCertificate(_messages.Message):
 
 
 class AuthorizedDomain(_messages.Message):
-  """A domain that a user has been authorized to administer. To authorize use
+  r"""A domain that a user has been authorized to administer. To authorize use
   of a domain, verify ownership via Webmaster Central
   (https://www.google.com/webmasters/verification/home).
 
@@ -828,8 +828,8 @@ class AuthorizedDomain(_messages.Message):
 
 
 class AutomaticScaling(_messages.Message):
-  """Automatic scaling is based on request rate, response latencies, and other
-  application metrics.
+  r"""Automatic scaling is based on request rate, response latencies, and
+  other application metrics.
 
   Fields:
     coolDownPeriod: Amount of time that the Autoscaler
@@ -875,10 +875,10 @@ class AutomaticScaling(_messages.Message):
 
 
 class BasicScaling(_messages.Message):
-  """A service with basic scaling will create an instance when the application
-  receives a request. The instance will be turned down when the app becomes
-  idle. Basic scaling is ideal for work that is intermittent or driven by user
-  activity.
+  r"""A service with basic scaling will create an instance when the
+  application receives a request. The instance will be turned down when the
+  app becomes idle. Basic scaling is ideal for work that is intermittent or
+  driven by user activity.
 
   Fields:
     idleTimeout: Duration of time after the last request that an instance must
@@ -891,7 +891,7 @@ class BasicScaling(_messages.Message):
 
 
 class BatchUpdateIngressRulesRequest(_messages.Message):
-  """Request message for Firewall.BatchUpdateIngressRules.
+  r"""Request message for Firewall.BatchUpdateIngressRules.
 
   Fields:
     ingressRules: A list of FirewallRules to replace the existing set.
@@ -901,7 +901,7 @@ class BatchUpdateIngressRulesRequest(_messages.Message):
 
 
 class BatchUpdateIngressRulesResponse(_messages.Message):
-  """Response message for Firewall.UpdateAllIngressRules.
+  r"""Response message for Firewall.UpdateAllIngressRules.
 
   Fields:
     ingressRules: The full list of ingress FirewallRules for this application.
@@ -911,7 +911,7 @@ class BatchUpdateIngressRulesResponse(_messages.Message):
 
 
 class CertificateRawData(_messages.Message):
-  """An SSL certificate obtained from a certificate authority.
+  r"""An SSL certificate obtained from a certificate authority.
 
   Fields:
     privateKey: Unencrypted PEM encoded RSA private key. This field is set
@@ -930,7 +930,7 @@ class CertificateRawData(_messages.Message):
 
 
 class CloudBuildOptions(_messages.Message):
-  """Options for the build operations performed as a part of the version
+  r"""Options for the build operations performed as a part of the version
   deployment. Only applicable for App Engine flexible environment when
   creating a version using source code directly.
 
@@ -949,7 +949,7 @@ class CloudBuildOptions(_messages.Message):
 
 
 class ContainerInfo(_messages.Message):
-  """Docker image that is used to create a container and start a VM instance
+  r"""Docker image that is used to create a container and start a VM instance
   for the version that you deploy. Only applicable for instances running in
   the App Engine flexible environment.
 
@@ -963,7 +963,7 @@ class ContainerInfo(_messages.Message):
 
 
 class CpuUtilization(_messages.Message):
-  """Target scaling by CPU usage.
+  r"""Target scaling by CPU usage.
 
   Fields:
     aggregationWindowLength: Period of time over which CPU utilization is
@@ -977,7 +977,7 @@ class CpuUtilization(_messages.Message):
 
 
 class CreateVersionMetadataV1(_messages.Message):
-  """Metadata for the given google.longrunning.Operation during a
+  r"""Metadata for the given google.longrunning.Operation during a
   google.appengine.v1.CreateVersionRequest.
 
   Fields:
@@ -989,7 +989,7 @@ class CreateVersionMetadataV1(_messages.Message):
 
 
 class CreateVersionMetadataV1Alpha(_messages.Message):
-  """Metadata for the given google.longrunning.Operation during a
+  r"""Metadata for the given google.longrunning.Operation during a
   google.appengine.v1alpha.CreateVersionRequest.
 
   Fields:
@@ -1001,7 +1001,7 @@ class CreateVersionMetadataV1Alpha(_messages.Message):
 
 
 class CreateVersionMetadataV1Beta(_messages.Message):
-  """Metadata for the given google.longrunning.Operation during a
+  r"""Metadata for the given google.longrunning.Operation during a
   google.appengine.v1beta.CreateVersionRequest.
 
   Fields:
@@ -1013,7 +1013,7 @@ class CreateVersionMetadataV1Beta(_messages.Message):
 
 
 class DebugInstanceRequest(_messages.Message):
-  """Request message for Instances.DebugInstance.
+  r"""Request message for Instances.DebugInstance.
 
   Fields:
     sshKey: Public SSH key to add to the instance. Examples: [USERNAME]:ssh-
@@ -1028,7 +1028,7 @@ class DebugInstanceRequest(_messages.Message):
 
 
 class Deployment(_messages.Message):
-  """Code and application artifacts used to deploy a version to App Engine.
+  r"""Code and application artifacts used to deploy a version to App Engine.
 
   Messages:
     FilesValue: Manifest of the files stored in Google Cloud Storage that are
@@ -1052,7 +1052,7 @@ class Deployment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FilesValue(_messages.Message):
-    """Manifest of the files stored in Google Cloud Storage that are included
+    r"""Manifest of the files stored in Google Cloud Storage that are included
     as part of this version. All files must be readable using the credentials
     supplied with this call.
 
@@ -1064,7 +1064,7 @@ class Deployment(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a FilesValue object.
+      r"""An additional property for a FilesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1083,7 +1083,7 @@ class Deployment(_messages.Message):
 
 
 class DiskUtilization(_messages.Message):
-  """Target scaling by disk usage. Only applicable in the App Engine flexible
+  r"""Target scaling by disk usage. Only applicable in the App Engine flexible
   environment.
 
   Fields:
@@ -1100,7 +1100,7 @@ class DiskUtilization(_messages.Message):
 
 
 class DomainMapping(_messages.Message):
-  """A domain serving an App Engine application.
+  r"""A domain serving an App Engine application.
 
   Fields:
     id: Relative name of the domain serving the application. Example:
@@ -1121,7 +1121,7 @@ class DomainMapping(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo {   rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
@@ -1131,7 +1131,7 @@ class Empty(_messages.Message):
 
 
 class EndpointsApiService(_messages.Message):
-  """Cloud Endpoints (https://cloud.google.com/endpoints) configuration. The
+  r"""Cloud Endpoints (https://cloud.google.com/endpoints) configuration. The
   Endpoints API Service provides tooling for serving Open API and gRPC
   endpoints via an NGINX proxy. Only valid for App Engine Flexible environment
   deployments.The fields here refer to the name and configuration id of a
@@ -1151,7 +1151,7 @@ class EndpointsApiService(_messages.Message):
 
 
 class ErrorHandler(_messages.Message):
-  """Custom static error page to be served when an error occurs.
+  r"""Custom static error page to be served when an error occurs.
 
   Enums:
     ErrorCodeValueValuesEnum: Error condition this handler applies to.
@@ -1163,7 +1163,7 @@ class ErrorHandler(_messages.Message):
   """
 
   class ErrorCodeValueValuesEnum(_messages.Enum):
-    """Error condition this handler applies to.
+    r"""Error condition this handler applies to.
 
     Values:
       ERROR_CODE_UNSPECIFIED: Not specified. ERROR_CODE_DEFAULT is assumed.
@@ -1185,8 +1185,8 @@ class ErrorHandler(_messages.Message):
 
 
 class FeatureSettings(_messages.Message):
-  """The feature specific settings to be used in the application. These define
-  behaviors that are user configurable.
+  r"""The feature specific settings to be used in the application. These
+  define behaviors that are user configurable.
 
   Fields:
     splitHealthChecks: Boolean value indicating if split health checks should
@@ -1201,7 +1201,7 @@ class FeatureSettings(_messages.Message):
 
 
 class FileInfo(_messages.Message):
-  """Single source file that is part of the version to be deployed. Each
+  r"""Single source file that is part of the version to be deployed. Each
   source file that is deployed must be specified separately.
 
   Fields:
@@ -1219,7 +1219,7 @@ class FileInfo(_messages.Message):
 
 
 class FirewallRule(_messages.Message):
-  """A single firewall rule that is evaluated against incoming traffic and
+  r"""A single firewall rule that is evaluated against incoming traffic and
   provides an action to take on matched requests.
 
   Enums:
@@ -1245,7 +1245,7 @@ class FirewallRule(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    """The action to take on matched requests.
+    r"""The action to take on matched requests.
 
     Values:
       UNSPECIFIED_ACTION: <no description>
@@ -1263,7 +1263,7 @@ class FirewallRule(_messages.Message):
 
 
 class HealthCheck(_messages.Message):
-  """Health checking configuration for VM instances. Unhealthy instances are
+  r"""Health checking configuration for VM instances. Unhealthy instances are
   killed and replaced with new instances. Only applicable for instances in App
   Engine flexible environment.
 
@@ -1292,7 +1292,7 @@ class HealthCheck(_messages.Message):
 
 
 class IdentityAwareProxy(_messages.Message):
-  """Identity-Aware Proxy
+  r"""Identity-Aware Proxy
 
   Fields:
     enabled: Whether the serving infrastructure will authenticate and
@@ -1314,7 +1314,7 @@ class IdentityAwareProxy(_messages.Message):
 
 
 class Instance(_messages.Message):
-  """An Instance resource is the computing unit that App Engine uses to
+  r"""An Instance resource is the computing unit that App Engine uses to
   automatically scale an application.
 
   Enums:
@@ -1349,7 +1349,7 @@ class Instance(_messages.Message):
   """
 
   class AvailabilityValueValuesEnum(_messages.Enum):
-    """Availability of the instance.@OutputOnly
+    r"""Availability of the instance.@OutputOnly
 
     Values:
       UNSPECIFIED: <no description>
@@ -1379,7 +1379,7 @@ class Instance(_messages.Message):
 
 
 class Library(_messages.Message):
-  """Third-party Python runtime library that is required by the application.
+  r"""Third-party Python runtime library that is required by the application.
 
   Fields:
     name: Name of the library. Example: "django".
@@ -1391,7 +1391,7 @@ class Library(_messages.Message):
 
 
 class ListAuthorizedCertificatesResponse(_messages.Message):
-  """Response message for AuthorizedCertificates.ListAuthorizedCertificates.
+  r"""Response message for AuthorizedCertificates.ListAuthorizedCertificates.
 
   Fields:
     certificates: The SSL certificates the user is authorized to administer.
@@ -1403,7 +1403,7 @@ class ListAuthorizedCertificatesResponse(_messages.Message):
 
 
 class ListAuthorizedDomainsResponse(_messages.Message):
-  """Response message for AuthorizedDomains.ListAuthorizedDomains.
+  r"""Response message for AuthorizedDomains.ListAuthorizedDomains.
 
   Fields:
     domains: The authorized domains belonging to the user.
@@ -1415,7 +1415,7 @@ class ListAuthorizedDomainsResponse(_messages.Message):
 
 
 class ListDomainMappingsResponse(_messages.Message):
-  """Response message for DomainMappings.ListDomainMappings.
+  r"""Response message for DomainMappings.ListDomainMappings.
 
   Fields:
     domainMappings: The domain mappings for the application.
@@ -1427,7 +1427,7 @@ class ListDomainMappingsResponse(_messages.Message):
 
 
 class ListIngressRulesResponse(_messages.Message):
-  """Response message for Firewall.ListIngressRules.
+  r"""Response message for Firewall.ListIngressRules.
 
   Fields:
     ingressRules: The ingress FirewallRules for this application.
@@ -1439,7 +1439,7 @@ class ListIngressRulesResponse(_messages.Message):
 
 
 class ListInstancesResponse(_messages.Message):
-  """Response message for Instances.ListInstances.
+  r"""Response message for Instances.ListInstances.
 
   Fields:
     instances: The instances belonging to the requested version.
@@ -1451,7 +1451,7 @@ class ListInstancesResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -1464,7 +1464,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -1477,7 +1477,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListServicesResponse(_messages.Message):
-  """Response message for Services.ListServices.
+  r"""Response message for Services.ListServices.
 
   Fields:
     nextPageToken: Continuation token for fetching the next page of results.
@@ -1489,7 +1489,7 @@ class ListServicesResponse(_messages.Message):
 
 
 class ListVersionsResponse(_messages.Message):
-  """Response message for Versions.ListVersions.
+  r"""Response message for Versions.ListVersions.
 
   Fields:
     nextPageToken: Continuation token for fetching the next page of results.
@@ -1501,7 +1501,7 @@ class ListVersionsResponse(_messages.Message):
 
 
 class LivenessCheck(_messages.Message):
-  """Health checking configuration for VM instances. Unhealthy instances are
+  r"""Health checking configuration for VM instances. Unhealthy instances are
   killed and replaced with new instances.
 
   Fields:
@@ -1527,7 +1527,7 @@ class LivenessCheck(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1550,7 +1550,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -1561,7 +1561,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1575,7 +1575,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -1587,7 +1587,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1607,7 +1607,7 @@ class Location(_messages.Message):
 
 
 class LocationMetadata(_messages.Message):
-  """Metadata for the given google.cloud.location.Location.
+  r"""Metadata for the given google.cloud.location.Location.
 
   Fields:
     flexibleEnvironmentAvailable: App Engine flexible environment is available
@@ -1621,7 +1621,7 @@ class LocationMetadata(_messages.Message):
 
 
 class ManualScaling(_messages.Message):
-  """A service with manual scaling runs continuously, allowing you to perform
+  r"""A service with manual scaling runs continuously, allowing you to perform
   complex initialization and rely on the state of its memory over time.
 
   Fields:
@@ -1635,7 +1635,7 @@ class ManualScaling(_messages.Message):
 
 
 class Network(_messages.Message):
-  """Extra network settings. Only applicable in the App Engine flexible
+  r"""Extra network settings. Only applicable in the App Engine flexible
   environment.
 
   Fields:
@@ -1670,7 +1670,7 @@ class Network(_messages.Message):
 
 
 class NetworkUtilization(_messages.Message):
-  """Target scaling by network usage. Only applicable in the App Engine
+  r"""Target scaling by network usage. Only applicable in the App Engine
   flexible environment.
 
   Fields:
@@ -1687,8 +1687,8 @@ class NetworkUtilization(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation. It
@@ -1729,7 +1729,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation. It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -1743,7 +1743,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1757,7 +1757,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success. If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as Delete, the response
     is google.protobuf.Empty. If the original method is standard
     Get/Create/Update, the response should be the resource. For other methods,
@@ -1774,7 +1774,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1794,7 +1794,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     endTime: Timestamp that this operation completed.@OutputOnly
@@ -1817,7 +1817,7 @@ class OperationMetadata(_messages.Message):
 
 
 class OperationMetadataV1(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     createVersionMetadata: A CreateVersionMetadataV1 attribute.
@@ -1845,7 +1845,7 @@ class OperationMetadataV1(_messages.Message):
 
 
 class OperationMetadataV1Alpha(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     createVersionMetadata: A CreateVersionMetadataV1Alpha attribute.
@@ -1873,7 +1873,7 @@ class OperationMetadataV1Alpha(_messages.Message):
 
 
 class OperationMetadataV1Beta(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     createVersionMetadata: A CreateVersionMetadataV1Beta attribute.
@@ -1901,7 +1901,7 @@ class OperationMetadataV1Beta(_messages.Message):
 
 
 class OperationMetadataV1Beta5(_messages.Message):
-  """Metadata for the given google.longrunning.Operation.
+  r"""Metadata for the given google.longrunning.Operation.
 
   Fields:
     endTime: Timestamp that this operation completed.@OutputOnly
@@ -1921,7 +1921,7 @@ class OperationMetadataV1Beta5(_messages.Message):
 
 
 class ReadinessCheck(_messages.Message):
-  """Readiness checking configuration for VM instances. Unhealthy instances
+  r"""Readiness checking configuration for VM instances. Unhealthy instances
   are removed from traffic rotation.
 
   Fields:
@@ -1949,11 +1949,11 @@ class ReadinessCheck(_messages.Message):
 
 
 class RepairApplicationRequest(_messages.Message):
-  """Request message for 'Applications.RepairApplication'."""
+  r"""Request message for 'Applications.RepairApplication'."""
 
 
 class RequestUtilization(_messages.Message):
-  """Target scaling by request utilization. Only applicable in the App Engine
+  r"""Target scaling by request utilization. Only applicable in the App Engine
   flexible environment.
 
   Fields:
@@ -1966,7 +1966,7 @@ class RequestUtilization(_messages.Message):
 
 
 class ResourceRecord(_messages.Message):
-  """A DNS resource record.
+  r"""A DNS resource record.
 
   Enums:
     TypeValueValuesEnum: Resource record type. Example: AAAA.
@@ -1980,7 +1980,7 @@ class ResourceRecord(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Resource record type. Example: AAAA.
+    r"""Resource record type. Example: AAAA.
 
     Values:
       RECORD_TYPE_UNSPECIFIED: An unknown resource record.
@@ -1999,7 +1999,7 @@ class ResourceRecord(_messages.Message):
 
 
 class Resources(_messages.Message):
-  """Machine resources for a version.
+  r"""Machine resources for a version.
 
   Fields:
     cpu: Number of CPU cores needed.
@@ -2015,7 +2015,7 @@ class Resources(_messages.Message):
 
 
 class ScriptHandler(_messages.Message):
-  """Executes a script to handle the request that matches the URL pattern.
+  r"""Executes a script to handle the request that matches the URL pattern.
 
   Fields:
     scriptPath: Path to the script from the application root directory.
@@ -2025,7 +2025,7 @@ class ScriptHandler(_messages.Message):
 
 
 class Service(_messages.Message):
-  """A Service resource is a logical component of an application that can
+  r"""A Service resource is a logical component of an application that can
   share state and communicate in a secure fashion with other services. For
   example, an application that handles customer requests might include
   separate services to handle tasks such as backend data analysis or API
@@ -2048,7 +2048,7 @@ class Service(_messages.Message):
 
 
 class SslSettings(_messages.Message):
-  """SSL configuration for a DomainMapping resource.
+  r"""SSL configuration for a DomainMapping resource.
 
   Fields:
     certificateId: ID of the AuthorizedCertificate resource configuring SSL
@@ -2060,7 +2060,7 @@ class SslSettings(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -2089,7 +2089,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -2101,7 +2101,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -2127,7 +2127,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StandardSchedulerSettings(_messages.Message):
-  """Scheduler settings for standard environment.
+  r"""Scheduler settings for standard environment.
 
   Fields:
     maxInstances: Maximum number of instances to run for this version. Set to
@@ -2147,7 +2147,7 @@ class StandardSchedulerSettings(_messages.Message):
 
 
 class StaticFilesHandler(_messages.Message):
-  """Files served directly to the user for a given URL, such as images, CSS
+  r"""Files served directly to the user for a given URL, such as images, CSS
   stylesheets, or JavaScript source files. Static file handlers describe which
   files in the application directory are static files, and which URLs serve
   them.
@@ -2178,7 +2178,7 @@ class StaticFilesHandler(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HttpHeadersValue(_messages.Message):
-    """HTTP headers to use for all responses from these URLs.
+    r"""HTTP headers to use for all responses from these URLs.
 
     Messages:
       AdditionalProperty: An additional property for a HttpHeadersValue
@@ -2189,7 +2189,7 @@ class StaticFilesHandler(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a HttpHeadersValue object.
+      r"""An additional property for a HttpHeadersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2211,7 +2211,7 @@ class StaticFilesHandler(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The Status type defines a logical error model that is suitable for
+  r"""The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by gRPC (https://github.com/grpc). The error model is designed to be:
   Simple to use and understand for most users Flexible enough to meet
@@ -2258,7 +2258,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -2270,7 +2270,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -2288,7 +2288,7 @@ class Status(_messages.Message):
 
 
 class TrafficSplit(_messages.Message):
-  """Traffic routing configuration for versions within a single service.
+  r"""Traffic routing configuration for versions within a single service.
   Traffic splits define how traffic directed to the service is assigned to
   versions.
 
@@ -2322,7 +2322,7 @@ class TrafficSplit(_messages.Message):
   """
 
   class ShardByValueValuesEnum(_messages.Enum):
-    """Mechanism used to determine which version a request is sent to. The
+    r"""Mechanism used to determine which version a request is sent to. The
     traffic selection algorithm will be stable for either type until
     allocations are changed.
 
@@ -2344,7 +2344,7 @@ class TrafficSplit(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AllocationsValue(_messages.Message):
-    """Mapping from version IDs within the service to fractional (0.000, 1]
+    r"""Mapping from version IDs within the service to fractional (0.000, 1]
     allocations of traffic for that version. Each version can be specified
     only once, but some versions in the service may not have any traffic
     allocation. Services that have traffic allocated cannot be deleted until
@@ -2362,7 +2362,7 @@ class TrafficSplit(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a AllocationsValue object.
+      r"""An additional property for a AllocationsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2379,7 +2379,7 @@ class TrafficSplit(_messages.Message):
 
 
 class UrlDispatchRule(_messages.Message):
-  """Rules to match an HTTP request and dispatch that request to a service.
+  r"""Rules to match an HTTP request and dispatch that request to a service.
 
   Fields:
     domain: Domain name to match against. The wildcard "*" is supported if
@@ -2397,7 +2397,7 @@ class UrlDispatchRule(_messages.Message):
 
 
 class UrlMap(_messages.Message):
-  """URL pattern and description of how the URL should be handled. App Engine
+  r"""URL pattern and description of how the URL should be handled. App Engine
   can handle URLs by executing application code or by serving static files
   uploaded with the version, such as images, CSS, or JavaScript.
 
@@ -2428,8 +2428,8 @@ class UrlMap(_messages.Message):
   """
 
   class AuthFailActionValueValuesEnum(_messages.Enum):
-    """Action to take when users access resources that require authentication.
-    Defaults to redirect.
+    r"""Action to take when users access resources that require
+    authentication. Defaults to redirect.
 
     Values:
       AUTH_FAIL_ACTION_UNSPECIFIED: Not specified. AUTH_FAIL_ACTION_REDIRECT
@@ -2445,7 +2445,7 @@ class UrlMap(_messages.Message):
     AUTH_FAIL_ACTION_UNAUTHORIZED = 2
 
   class LoginValueValuesEnum(_messages.Enum):
-    """Level of login required to access this resource.
+    r"""Level of login required to access this resource.
 
     Values:
       LOGIN_UNSPECIFIED: Not specified. LOGIN_OPTIONAL is assumed.
@@ -2464,7 +2464,7 @@ class UrlMap(_messages.Message):
     LOGIN_REQUIRED = 3
 
   class RedirectHttpResponseCodeValueValuesEnum(_messages.Enum):
-    """30x code to use when performing redirects for the secure field.
+    r"""30x code to use when performing redirects for the secure field.
     Defaults to 302.
 
     Values:
@@ -2481,7 +2481,7 @@ class UrlMap(_messages.Message):
     REDIRECT_HTTP_RESPONSE_CODE_307 = 4
 
   class SecurityLevelValueValuesEnum(_messages.Enum):
-    """Security (HTTPS) enforcement for this URL.
+    r"""Security (HTTPS) enforcement for this URL.
 
     Values:
       SECURE_UNSPECIFIED: Not specified.
@@ -2514,7 +2514,7 @@ class UrlMap(_messages.Message):
 
 
 class Version(_messages.Message):
-  """A Version resource is a specific set of source code and configuration
+  r"""A Version resource is a specific set of source code and configuration
   files that are deployed into a service.
 
   Enums:
@@ -2621,7 +2621,7 @@ class Version(_messages.Message):
   """
 
   class InboundServicesValueListEntryValuesEnum(_messages.Enum):
-    """InboundServicesValueListEntryValuesEnum enum type.
+    r"""InboundServicesValueListEntryValuesEnum enum type.
 
     Values:
       INBOUND_SERVICE_UNSPECIFIED: <no description>
@@ -2645,7 +2645,7 @@ class Version(_messages.Message):
     INBOUND_SERVICE_WARMUP = 8
 
   class ServingStatusValueValuesEnum(_messages.Enum):
-    """Current serving status of this version. Only the versions with a
+    r"""Current serving status of this version. Only the versions with a
     SERVING status create instances and can be
     billed.SERVING_STATUS_UNSPECIFIED is an invalid value. Defaults to
     SERVING.
@@ -2663,7 +2663,7 @@ class Version(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class BetaSettingsValue(_messages.Message):
-    """Metadata settings that are supplied to this version to enable beta
+    r"""Metadata settings that are supplied to this version to enable beta
     runtime features.
 
     Messages:
@@ -2675,7 +2675,7 @@ class Version(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a BetaSettingsValue object.
+      r"""An additional property for a BetaSettingsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2689,8 +2689,8 @@ class Version(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvVariablesValue(_messages.Message):
-    """Environment variables available to the application.Only returned in GET
-    requests if view=FULL is set.
+    r"""Environment variables available to the application.Only returned in
+    GET requests if view=FULL is set.
 
     Messages:
       AdditionalProperty: An additional property for a EnvVariablesValue
@@ -2701,7 +2701,7 @@ class Version(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a EnvVariablesValue object.
+      r"""An additional property for a EnvVariablesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2750,7 +2750,7 @@ class Version(_messages.Message):
 
 
 class Volume(_messages.Message):
-  """Volumes mounted within the app container. Only applicable in the App
+  r"""Volumes mounted within the app container. Only applicable in the App
   Engine flexible environment.
 
   Fields:
@@ -2765,7 +2765,7 @@ class Volume(_messages.Message):
 
 
 class ZipInfo(_messages.Message):
-  """The zip file information for a zip deployment.
+  r"""The zip file information for a zip deployment.
 
   Fields:
     filesCount: An estimate of the number of files in a zip for a zip

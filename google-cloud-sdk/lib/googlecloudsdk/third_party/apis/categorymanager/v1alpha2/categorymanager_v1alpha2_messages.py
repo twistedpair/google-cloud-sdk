@@ -13,7 +13,7 @@ package = 'categorymanager'
 
 
 class Annotation(_messages.Message):
-  """Each annotation denotes one category in a taxonomy (e.g. ssn).
+  r"""Each annotation denotes one category in a taxonomy (e.g. ssn).
   Annotations can be defined in a hierarchy. For example, consider the
   following hierachy:               Geolocation                    |
   ------------------------------------   |                |                 |
@@ -44,7 +44,7 @@ class Annotation(_messages.Message):
 
 
 class AnnotationTag(_messages.Message):
-  """An annotation tag on an asset (e.g. a Cloud spanner table).  Each asset
+  r"""An annotation tag on an asset (e.g. a Cloud spanner table).  Each asset
   can have multiple annotation tags, but only one annotation tag from each
   taxonomy.
 
@@ -69,7 +69,7 @@ class AnnotationTag(_messages.Message):
 
 
 class ApplyAnnotationTagRequest(_messages.Message):
-  """Request message for "TaggingApi.ApplyAnnotationTag".
+  r"""Request message for "TaggingApi.ApplyAnnotationTag".
 
   Fields:
     annotation: [Required] Resource name of the annotation tag.
@@ -84,7 +84,7 @@ class ApplyAnnotationTagRequest(_messages.Message):
 
 
 class Asset(_messages.Message):
-  """A message that include asset resource name and some auxiliary
+  r"""A message that include asset resource name and some auxiliary
   information.
 
   Enums:
@@ -105,7 +105,7 @@ class Asset(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Type of the asset, if available.
+    r"""Type of the asset, if available.
 
     Values:
       TYPE_UNSPECIFIED: Unknown type.
@@ -132,7 +132,7 @@ class Asset(_messages.Message):
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -165,7 +165,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -182,7 +182,7 @@ class AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -200,7 +200,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -210,8 +210,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -225,7 +225,7 @@ class Binding(_messages.Message):
 
 
 class CategorymanagerAssetsAnnotationTagsListRequest(_messages.Message):
-  """A CategorymanagerAssetsAnnotationTagsListRequest object.
+  r"""A CategorymanagerAssetsAnnotationTagsListRequest object.
 
   Fields:
     name: [Required] Resource name of the asset, must be RFC3986 escaped.
@@ -245,7 +245,7 @@ class CategorymanagerAssetsAnnotationTagsListRequest(_messages.Message):
 
 
 class CategorymanagerAssetsApplyAnnotationTagRequest(_messages.Message):
-  """A CategorymanagerAssetsApplyAnnotationTagRequest object.
+  r"""A CategorymanagerAssetsApplyAnnotationTagRequest object.
 
   Fields:
     applyAnnotationTagRequest: A ApplyAnnotationTagRequest resource to be
@@ -259,7 +259,7 @@ class CategorymanagerAssetsApplyAnnotationTagRequest(_messages.Message):
 
 
 class CategorymanagerAssetsDeleteAnnotationTagRequest(_messages.Message):
-  """A CategorymanagerAssetsDeleteAnnotationTagRequest object.
+  r"""A CategorymanagerAssetsDeleteAnnotationTagRequest object.
 
   Fields:
     annotation: [Required] Resource name of the annotation tag to be removed.
@@ -279,7 +279,7 @@ class CategorymanagerAssetsDeleteAnnotationTagRequest(_messages.Message):
 
 
 class CategorymanagerAssetsSearchRequest(_messages.Message):
-  """A CategorymanagerAssetsSearchRequest object.
+  r"""A CategorymanagerAssetsSearchRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -312,7 +312,7 @@ class CategorymanagerAssetsSearchRequest(_messages.Message):
 
 
 class CategorymanagerOperationsGetRequest(_messages.Message):
-  """A CategorymanagerOperationsGetRequest object.
+  r"""A CategorymanagerOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -322,7 +322,7 @@ class CategorymanagerOperationsGetRequest(_messages.Message):
 
 
 class CategorymanagerOrganizationsGetTaxonomyStoreRequest(_messages.Message):
-  """A CategorymanagerOrganizationsGetTaxonomyStoreRequest object.
+  r"""A CategorymanagerOrganizationsGetTaxonomyStoreRequest object.
 
   Fields:
     parent: [Required] id of the organization that contains the taxonomy
@@ -333,7 +333,7 @@ class CategorymanagerOrganizationsGetTaxonomyStoreRequest(_messages.Message):
 
 
 class CategorymanagerProjectsCopyRequest(_messages.Message):
-  """A CategorymanagerProjectsCopyRequest object.
+  r"""A CategorymanagerProjectsCopyRequest object.
 
   Fields:
     copyTaxonomyRequest: A CopyTaxonomyRequest resource to be passed as the
@@ -347,7 +347,7 @@ class CategorymanagerProjectsCopyRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesAnnotationsCreateRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesAnnotationsCreateRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesAnnotationsCreateRequest object.
 
   Fields:
     annotation: A Annotation resource to be passed as the request body.
@@ -360,7 +360,7 @@ class CategorymanagerProjectsTaxonomiesAnnotationsCreateRequest(_messages.Messag
 
 
 class CategorymanagerProjectsTaxonomiesAnnotationsDeleteRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesAnnotationsDeleteRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesAnnotationsDeleteRequest object.
 
   Fields:
     name: [Required] Resource name of the annotation to be deleted.
@@ -370,7 +370,7 @@ class CategorymanagerProjectsTaxonomiesAnnotationsDeleteRequest(_messages.Messag
 
 
 class CategorymanagerProjectsTaxonomiesAnnotationsGetRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesAnnotationsGetRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesAnnotationsGetRequest object.
 
   Fields:
     name: [Required] Resource name of the annotation to be returned.
@@ -380,7 +380,7 @@ class CategorymanagerProjectsTaxonomiesAnnotationsGetRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesAnnotationsListRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesAnnotationsListRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesAnnotationsListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -395,7 +395,7 @@ class CategorymanagerProjectsTaxonomiesAnnotationsListRequest(_messages.Message)
 
 
 class CategorymanagerProjectsTaxonomiesAnnotationsPatchRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesAnnotationsPatchRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesAnnotationsPatchRequest object.
 
   Fields:
     annotation: A Annotation resource to be passed as the request body.
@@ -414,7 +414,7 @@ class CategorymanagerProjectsTaxonomiesAnnotationsPatchRequest(_messages.Message
 
 
 class CategorymanagerProjectsTaxonomiesCopyRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesCopyRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesCopyRequest object.
 
   Fields:
     copyAnnotationRequest: A CopyAnnotationRequest resource to be passed as
@@ -428,7 +428,7 @@ class CategorymanagerProjectsTaxonomiesCopyRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesCreateRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesCreateRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesCreateRequest object.
 
   Fields:
     parent: [Required] Resource name of the taxonomy store that the newly
@@ -441,7 +441,7 @@ class CategorymanagerProjectsTaxonomiesCreateRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesDeleteRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesDeleteRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesDeleteRequest object.
 
   Fields:
     name: [Required] Resource name of the taxonomy to be deleted.
@@ -451,7 +451,7 @@ class CategorymanagerProjectsTaxonomiesDeleteRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesGetIamPolicyRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesGetIamPolicyRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -466,7 +466,7 @@ class CategorymanagerProjectsTaxonomiesGetIamPolicyRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesGetRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesGetRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesGetRequest object.
 
   Fields:
     name: [Required] Resource name of the taxonomy to be returned.
@@ -476,7 +476,7 @@ class CategorymanagerProjectsTaxonomiesGetRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesListRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesListRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -491,7 +491,7 @@ class CategorymanagerProjectsTaxonomiesListRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesPatchRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesPatchRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesPatchRequest object.
 
   Fields:
     name: [Required] Resource name of the taxonomy to be updated.
@@ -508,7 +508,7 @@ class CategorymanagerProjectsTaxonomiesPatchRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesSetIamPolicyRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesSetIamPolicyRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -523,7 +523,7 @@ class CategorymanagerProjectsTaxonomiesSetIamPolicyRequest(_messages.Message):
 
 
 class CategorymanagerProjectsTaxonomiesTestIamPermissionsRequest(_messages.Message):
-  """A CategorymanagerProjectsTaxonomiesTestIamPermissionsRequest object.
+  r"""A CategorymanagerProjectsTaxonomiesTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -538,7 +538,7 @@ class CategorymanagerProjectsTaxonomiesTestIamPermissionsRequest(_messages.Messa
 
 
 class CategorymanagerTaxonomiesSearchRequest(_messages.Message):
-  """A CategorymanagerTaxonomiesSearchRequest object.
+  r"""A CategorymanagerTaxonomiesSearchRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -556,7 +556,7 @@ class CategorymanagerTaxonomiesSearchRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresCopyRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresCopyRequest object.
+  r"""A CategorymanagerTaxonomyStoresCopyRequest object.
 
   Fields:
     copyTaxonomyRequest: A CopyTaxonomyRequest resource to be passed as the
@@ -570,11 +570,11 @@ class CategorymanagerTaxonomyStoresCopyRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresGetCommonRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresGetCommonRequest object."""
+  r"""A CategorymanagerTaxonomyStoresGetCommonRequest object."""
 
 
 class CategorymanagerTaxonomyStoresGetIamPolicyRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresGetIamPolicyRequest object.
+  r"""A CategorymanagerTaxonomyStoresGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -589,7 +589,7 @@ class CategorymanagerTaxonomyStoresGetIamPolicyRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresSetIamPolicyRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresSetIamPolicyRequest object.
+  r"""A CategorymanagerTaxonomyStoresSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -604,7 +604,8 @@ class CategorymanagerTaxonomyStoresSetIamPolicyRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsCreateRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsCreateRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsCreateRequest
+  object.
 
   Fields:
     annotation: A Annotation resource to be passed as the request body.
@@ -617,7 +618,8 @@ class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsCreateRequest(_messages.
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsDeleteRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsDeleteRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsDeleteRequest
+  object.
 
   Fields:
     name: [Required] Resource name of the annotation to be deleted.
@@ -627,7 +629,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsDeleteRequest(_messages.
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsGetRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsGetRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsGetRequest object.
 
   Fields:
     name: [Required] Resource name of the annotation to be returned.
@@ -637,7 +639,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsGetRequest(_messages.Mes
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsListRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsListRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -652,7 +654,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsListRequest(_messages.Me
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsPatchRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsPatchRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesAnnotationsPatchRequest object.
 
   Fields:
     annotation: A Annotation resource to be passed as the request body.
@@ -671,7 +673,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsPatchRequest(_messages.M
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesCopyRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesCopyRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesCopyRequest object.
 
   Fields:
     copyAnnotationRequest: A CopyAnnotationRequest resource to be passed as
@@ -685,7 +687,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesCopyRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesCreateRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesCreateRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesCreateRequest object.
 
   Fields:
     parent: [Required] Resource name of the taxonomy store that the newly
@@ -698,7 +700,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesCreateRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesDeleteRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesDeleteRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesDeleteRequest object.
 
   Fields:
     name: [Required] Resource name of the taxonomy to be deleted.
@@ -708,7 +710,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesDeleteRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesGetIamPolicyRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesGetIamPolicyRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -723,7 +725,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesGetIamPolicyRequest(_messages.Messa
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesGetRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesGetRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesGetRequest object.
 
   Fields:
     name: [Required] Resource name of the taxonomy to be returned.
@@ -733,7 +735,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesGetRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesListRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesListRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.
@@ -748,7 +750,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesListRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesPatchRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesPatchRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesPatchRequest object.
 
   Fields:
     name: [Required] Resource name of the taxonomy to be updated.
@@ -765,7 +767,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesPatchRequest(_messages.Message):
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesSetIamPolicyRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesSetIamPolicyRequest object.
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -780,7 +782,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesSetIamPolicyRequest(_messages.Messa
 
 
 class CategorymanagerTaxonomyStoresTaxonomiesTestIamPermissionsRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTaxonomiesTestIamPermissionsRequest
+  r"""A CategorymanagerTaxonomyStoresTaxonomiesTestIamPermissionsRequest
   object.
 
   Fields:
@@ -796,7 +798,7 @@ class CategorymanagerTaxonomyStoresTaxonomiesTestIamPermissionsRequest(_messages
 
 
 class CategorymanagerTaxonomyStoresTestIamPermissionsRequest(_messages.Message):
-  """A CategorymanagerTaxonomyStoresTestIamPermissionsRequest object.
+  r"""A CategorymanagerTaxonomyStoresTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -811,7 +813,7 @@ class CategorymanagerTaxonomyStoresTestIamPermissionsRequest(_messages.Message):
 
 
 class CopyAnnotationRequest(_messages.Message):
-  """Request message for "CategoryApi.CopyAnnotation".
+  r"""Request message for "CategoryApi.CopyAnnotation".
 
   Fields:
     parentAnnotationId: If provided, the copied annotation will be a child
@@ -825,7 +827,7 @@ class CopyAnnotationRequest(_messages.Message):
 
 
 class CopyTaxonomyRequest(_messages.Message):
-  """Request message for "CategoryApi.CopyTaxonomy".
+  r"""Request message for "CategoryApi.CopyTaxonomy".
 
   Fields:
     sourceTaxonomy: [Required] Resource name of the taxonomy to be copied
@@ -836,7 +838,7 @@ class CopyTaxonomyRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -846,11 +848,11 @@ class Empty(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  """Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method."""
 
 
 class ListAnnotationTagsResponse(_messages.Message):
-  """Response message for "TaggingApi.ListAnnotationTags".
+  r"""Response message for "TaggingApi.ListAnnotationTags".
 
   Fields:
     nextPageToken: Token to retrieve the next page of results, or empty if
@@ -863,7 +865,7 @@ class ListAnnotationTagsResponse(_messages.Message):
 
 
 class ListAnnotationsResponse(_messages.Message):
-  """Response message for "CategoryApi.ListAnnotations".
+  r"""Response message for "CategoryApi.ListAnnotations".
 
   Fields:
     annotations: Annotations that are in this taxonomy.
@@ -876,7 +878,7 @@ class ListAnnotationsResponse(_messages.Message):
 
 
 class ListTaxonomiesResponse(_messages.Message):
-  """Response message for "CategoryApi.ListTaxonomies".
+  r"""Response message for "CategoryApi.ListTaxonomies".
 
   Fields:
     nextPageToken: Token to retrieve the next page of results, or empty if
@@ -889,8 +891,8 @@ class ListTaxonomiesResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -931,7 +933,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -945,7 +947,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -959,7 +961,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -976,7 +978,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -996,19 +998,24 @@ class Operation(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1033,7 +1040,7 @@ class Policy(_messages.Message):
 
 
 class SearchAssetsResponse(_messages.Message):
-  """Response message for "TaggingApi.SearchAssets".
+  r"""Response message for "TaggingApi.SearchAssets".
 
   Fields:
     assets: A list of asset resource names with auxiliary information.
@@ -1046,7 +1053,7 @@ class SearchAssetsResponse(_messages.Message):
 
 
 class SearchTaxonomiesResponse(_messages.Message):
-  """Response message for "CategoryApi.SearchTaxonomies".
+  r"""Response message for "CategoryApi.SearchTaxonomies".
 
   Fields:
     nextPageToken: Token to retrieve the next page of results, or empty if
@@ -1060,7 +1067,7 @@ class SearchTaxonomiesResponse(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -1078,7 +1085,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1107,7 +1114,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1119,7 +1126,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1145,7 +1152,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -1193,7 +1200,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1205,7 +1212,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1223,7 +1230,7 @@ class Status(_messages.Message):
 
 
 class Taxonomy(_messages.Message):
-  """A taxonomy is a collection of categories of business significance,
+  r"""A taxonomy is a collection of categories of business significance,
   typically associated with the substance of the category (e.g. credit card,
   SSN), or how it is used (e.g. account name, user ID).
 
@@ -1242,7 +1249,7 @@ class Taxonomy(_messages.Message):
 
 
 class TaxonomyStore(_messages.Message):
-  """A taxonomy store keeps a collection of taxonomies. Each organization or
+  r"""A taxonomy store keeps a collection of taxonomies. Each organization or
   each project that does not belong to any organization can have at most one
   taxonomy store.
 
@@ -1259,7 +1266,7 @@ class TaxonomyStore(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1272,7 +1279,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the

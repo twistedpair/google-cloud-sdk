@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute disk-types commands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 

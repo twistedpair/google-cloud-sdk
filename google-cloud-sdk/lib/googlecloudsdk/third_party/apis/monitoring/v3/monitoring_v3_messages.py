@@ -15,7 +15,7 @@ package = 'monitoring'
 
 
 class Aggregation(_messages.Message):
-  """Describes how to combine multiple time series to provide different views
+  r"""Describes how to combine multiple time series to provide different views
   of the data. Aggregation consists of an alignment step on individual time
   series (alignment_period and per_series_aligner) followed by an optional
   reduction step of the data across the aligned time series
@@ -79,7 +79,7 @@ class Aggregation(_messages.Message):
   """
 
   class CrossSeriesReducerValueValuesEnum(_messages.Enum):
-    """The approach to be used to combine time series. Not all reducer
+    r"""The approach to be used to combine time series. Not all reducer
     functions may be applied to all time series, depending on the metric type
     and the value type of the original time series. Reduction may change the
     metric type of value type of the time series.Time series data must be
@@ -160,7 +160,7 @@ class Aggregation(_messages.Message):
     REDUCE_PERCENTILE_05 = 13
 
   class PerSeriesAlignerValueValuesEnum(_messages.Enum):
-    """The approach to be used to align individual time series. Not all
+    r"""The approach to be used to align individual time series. Not all
     alignment functions may be applied to all time series, depending on the
     metric type and value type of the original time series. Alignment may
     change the metric type or the value type of the time series.Time series
@@ -298,9 +298,10 @@ class Aggregation(_messages.Message):
 
 
 class AlertPolicy(_messages.Message):
-  """A description of the conditions under which some aspect of your system is
-  considered to be "unhealthy" and the ways to notify people or services about
-  this state. For an overview of alert policies, see Introduction to Alerting.
+  r"""A description of the conditions under which some aspect of your system
+  is considered to be "unhealthy" and the ways to notify people or services
+  about this state. For an overview of alert policies, see Introduction to
+  Alerting.
 
   Enums:
     CombinerValueValuesEnum: How to combine the results of multiple conditions
@@ -363,7 +364,7 @@ class AlertPolicy(_messages.Message):
   """
 
   class CombinerValueValuesEnum(_messages.Enum):
-    """How to combine the results of multiple conditions to determine if an
+    r"""How to combine the results of multiple conditions to determine if an
     incident should be opened.
 
     Values:
@@ -386,7 +387,7 @@ class AlertPolicy(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
-    """User-supplied key/value data to be used for organizing and identifying
+    r"""User-supplied key/value data to be used for organizing and identifying
     the AlertPolicy objects.The field can contain up to 64 entries. Each key
     and value is limited to 63 Unicode characters or 128 bytes, whichever is
     smaller. Labels and values can contain only lowercase letters, numerals,
@@ -400,7 +401,7 @@ class AlertPolicy(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a UserLabelsValue object.
+      r"""An additional property for a UserLabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -425,8 +426,8 @@ class AlertPolicy(_messages.Message):
 
 
 class BasicAuthentication(_messages.Message):
-  """A type of authentication to perform against the specified resource or URL
-  that uses username and password. Currently, only Basic authentication is
+  r"""A type of authentication to perform against the specified resource or
+  URL that uses username and password. Currently, only Basic authentication is
   supported in Uptime Monitoring.
 
   Fields:
@@ -439,7 +440,7 @@ class BasicAuthentication(_messages.Message):
 
 
 class BucketOptions(_messages.Message):
-  """BucketOptions describes the bucket boundaries used to create a histogram
+  r"""BucketOptions describes the bucket boundaries used to create a histogram
   for the distribution. The buckets can be in a linear sequence, an
   exponential sequence, or each bucket can be specified explicitly.
   BucketOptions does not include the number of values in each bucket.A bucket
@@ -466,7 +467,7 @@ class BucketOptions(_messages.Message):
 
 
 class CollectdPayload(_messages.Message):
-  """A collection of data points sent from a collectd-based plugin. See the
+  r"""A collection of data points sent from a collectd-based plugin. See the
   collectd documentation for more information.
 
   Messages:
@@ -486,7 +487,7 @@ class CollectdPayload(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """The measurement metadata. Example: "process_id" -> 12345
+    r"""The measurement metadata. Example: "process_id" -> 12345
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -496,7 +497,7 @@ class CollectdPayload(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -519,7 +520,7 @@ class CollectdPayload(_messages.Message):
 
 
 class CollectdPayloadError(_messages.Message):
-  """Describes the error status for payloads that were not written.
+  r"""Describes the error status for payloads that were not written.
 
   Fields:
     error: Records the error status for the payload. If this field is present,
@@ -537,7 +538,7 @@ class CollectdPayloadError(_messages.Message):
 
 
 class CollectdValue(_messages.Message):
-  """A single data point from a collectd-based plugin.
+  r"""A single data point from a collectd-based plugin.
 
   Enums:
     DataSourceTypeValueValuesEnum: The type of measurement.
@@ -550,7 +551,7 @@ class CollectdValue(_messages.Message):
   """
 
   class DataSourceTypeValueValuesEnum(_messages.Enum):
-    """The type of measurement.
+    r"""The type of measurement.
 
     Values:
       UNSPECIFIED_DATA_SOURCE_TYPE: An unspecified data source type. This
@@ -576,7 +577,7 @@ class CollectdValue(_messages.Message):
 
 
 class CollectdValueError(_messages.Message):
-  """Describes the error status for values that were not written.
+  r"""Describes the error status for values that were not written.
 
   Fields:
     error: Records the error status for the value.
@@ -589,7 +590,7 @@ class CollectdValueError(_messages.Message):
 
 
 class Condition(_messages.Message):
-  """A condition is a true/false test that determines when an alerting policy
+  r"""A condition is a true/false test that determines when an alerting policy
   should open an incident. If a condition evaluates to true, it signifies that
   something is wrong.
 
@@ -625,7 +626,7 @@ class Condition(_messages.Message):
 
 
 class ContentMatcher(_messages.Message):
-  """Used to perform string matching. Currently, this matches on the exact
+  r"""Used to perform string matching. Currently, this matches on the exact
   content. In the future, it can be expanded to allow for regular expressions
   and more complex matching.
 
@@ -637,7 +638,7 @@ class ContentMatcher(_messages.Message):
 
 
 class CreateCollectdTimeSeriesRequest(_messages.Message):
-  """The CreateCollectdTimeSeries request.
+  r"""The CreateCollectdTimeSeries request.
 
   Fields:
     collectdPayloads: The collectd payloads representing the time series data.
@@ -655,7 +656,7 @@ class CreateCollectdTimeSeriesRequest(_messages.Message):
 
 
 class CreateCollectdTimeSeriesResponse(_messages.Message):
-  """The CreateCollectdTimeSeries response.
+  r"""The CreateCollectdTimeSeries response.
 
   Fields:
     payloadErrors: Records the error status for points that were not written
@@ -667,7 +668,7 @@ class CreateCollectdTimeSeriesResponse(_messages.Message):
 
 
 class CreateTimeSeriesRequest(_messages.Message):
-  """The CreateTimeSeries request.
+  r"""The CreateTimeSeries request.
 
   Fields:
     timeSeries: The new data to be added to a list of time series. Adds at
@@ -681,7 +682,7 @@ class CreateTimeSeriesRequest(_messages.Message):
 
 
 class Distribution(_messages.Message):
-  """Distribution contains summary statistics for a population of values. It
+  r"""Distribution contains summary statistics for a population of values. It
   optionally contains a histogram representing the distribution of those
   values across a set of buckets.The summary statistics are the count, mean,
   sum of the squared deviation from the mean, the minimum, and the maximum of
@@ -729,7 +730,7 @@ class Distribution(_messages.Message):
 
 
 class Documentation(_messages.Message):
-  """A content string and a MIME type that describes the content string's
+  r"""A content string and a MIME type that describes the content string's
   format.
 
   Fields:
@@ -747,7 +748,7 @@ class Documentation(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo {   rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
@@ -757,9 +758,9 @@ class Empty(_messages.Message):
 
 
 class Explicit(_messages.Message):
-  """Specifies a set of buckets with arbitrary widths.There are size(bounds) +
-  1 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i <
-  N-1): boundsi  Lower bound (1 <= i < N); boundsi - 1The bounds field must
+  r"""Specifies a set of buckets with arbitrary widths.There are size(bounds)
+  + 1 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i
+  < N-1): boundsi  Lower bound (1 <= i < N); boundsi - 1The bounds field must
   contain at least one element. If bounds has only one element, then there are
   no finite buckets, and that single element is the common boundary of the
   overflow and underflow buckets.
@@ -772,7 +773,7 @@ class Explicit(_messages.Message):
 
 
 class Exponential(_messages.Message):
-  """Specifies an exponential sequence of buckets that have a width that is
+  r"""Specifies an exponential sequence of buckets that have a width that is
   proportional to the value of the lower bound. Each bucket represents a
   constant relative uncertainty on a specific value in the bucket.There are
   num_finite_buckets + 2 (= N) buckets. Bucket i has the following
@@ -791,7 +792,7 @@ class Exponential(_messages.Message):
 
 
 class Field(_messages.Message):
-  """A single field of a message type.
+  r"""A single field of a message type.
 
   Enums:
     CardinalityValueValuesEnum: The field cardinality.
@@ -816,7 +817,7 @@ class Field(_messages.Message):
   """
 
   class CardinalityValueValuesEnum(_messages.Enum):
-    """The field cardinality.
+    r"""The field cardinality.
 
     Values:
       CARDINALITY_UNKNOWN: For fields with unknown cardinality.
@@ -830,7 +831,7 @@ class Field(_messages.Message):
     CARDINALITY_REPEATED = 3
 
   class KindValueValuesEnum(_messages.Enum):
-    """The field type.
+    r"""The field type.
 
     Values:
       TYPE_UNKNOWN: Field type unknown.
@@ -886,7 +887,7 @@ class Field(_messages.Message):
 
 
 class GetNotificationChannelVerificationCodeRequest(_messages.Message):
-  """The GetNotificationChannelVerificationCode request.
+  r"""The GetNotificationChannelVerificationCode request.
 
   Fields:
     expireTime: The desired expiration time. If specified, the API will
@@ -904,7 +905,7 @@ class GetNotificationChannelVerificationCodeRequest(_messages.Message):
 
 
 class GetNotificationChannelVerificationCodeResponse(_messages.Message):
-  """The GetNotificationChannelVerificationCode request.
+  r"""The GetNotificationChannelVerificationCode request.
 
   Fields:
     code: The verification code, which may be used to verify other channels
@@ -922,7 +923,7 @@ class GetNotificationChannelVerificationCodeResponse(_messages.Message):
 
 
 class Group(_messages.Message):
-  """The description of a dynamic collection of monitored resources. Each
+  r"""The description of a dynamic collection of monitored resources. Each
   group has a filter that is matched against monitored resources and their
   associated metadata. If a group's filter matches an available monitored
   resource, then that resource is a member of that group. Groups can contain
@@ -970,7 +971,7 @@ class Group(_messages.Message):
 
 
 class HttpCheck(_messages.Message):
-  """Information involved in an HTTP/HTTPS uptime check request.
+  r"""Information involved in an HTTP/HTTPS uptime check request.
 
   Messages:
     HeadersValue: The list of headers to send as part of the uptime check
@@ -1010,9 +1011,9 @@ class HttpCheck(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
-    """The list of headers to send as part of the uptime check request. If two
-    headers have the same key and different values, they should be entered as
-    a single header, with the value being a comma-separated list of all the
+    r"""The list of headers to send as part of the uptime check request. If
+    two headers have the same key and different values, they should be entered
+    as a single header, with the value being a comma-separated list of all the
     desired values as described at
     https://www.w3.org/Protocols/rfc2616/rfc2616.txt (page 31). Entering two
     separate headers with the same key in a Create call will cause the first
@@ -1027,7 +1028,7 @@ class HttpCheck(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a HeadersValue object.
+      r"""An additional property for a HeadersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1048,7 +1049,7 @@ class HttpCheck(_messages.Message):
 
 
 class InternalChecker(_messages.Message):
-  """Nimbus InternalCheckers.
+  r"""Nimbus InternalCheckers.
 
   Fields:
     checkerId: The checker ID.
@@ -1068,7 +1069,7 @@ class InternalChecker(_messages.Message):
 
 
 class LabelDescriptor(_messages.Message):
-  """A description of a label.
+  r"""A description of a label.
 
   Enums:
     ValueTypeValueValuesEnum: The type of data that can be assigned to the
@@ -1081,7 +1082,7 @@ class LabelDescriptor(_messages.Message):
   """
 
   class ValueTypeValueValuesEnum(_messages.Enum):
-    """The type of data that can be assigned to the label.
+    r"""The type of data that can be assigned to the label.
 
     Values:
       STRING: A variable-length string. This is the default.
@@ -1098,7 +1099,7 @@ class LabelDescriptor(_messages.Message):
 
 
 class Linear(_messages.Message):
-  """Specifies a linear sequence of buckets that all have the same width
+  r"""Specifies a linear sequence of buckets that all have the same width
   (except overflow and underflow). Each bucket represents a constant absolute
   uncertainty on the specific value in the bucket.There are num_finite_buckets
   + 2 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i
@@ -1117,7 +1118,7 @@ class Linear(_messages.Message):
 
 
 class ListAlertPoliciesResponse(_messages.Message):
-  """The protocol for the ListAlertPolicies response.
+  r"""The protocol for the ListAlertPolicies response.
 
   Fields:
     alertPolicies: The returned alert policies.
@@ -1131,7 +1132,7 @@ class ListAlertPoliciesResponse(_messages.Message):
 
 
 class ListGroupMembersResponse(_messages.Message):
-  """The ListGroupMembers response.
+  r"""The ListGroupMembers response.
 
   Fields:
     members: A set of monitored resources in the group.
@@ -1147,7 +1148,7 @@ class ListGroupMembersResponse(_messages.Message):
 
 
 class ListGroupsResponse(_messages.Message):
-  """The ListGroups response.
+  r"""The ListGroups response.
 
   Fields:
     group: The groups that match the specified filters.
@@ -1161,7 +1162,7 @@ class ListGroupsResponse(_messages.Message):
 
 
 class ListMetricDescriptorsResponse(_messages.Message):
-  """The ListMetricDescriptors response.
+  r"""The ListMetricDescriptors response.
 
   Fields:
     metricDescriptors: The metric descriptors that are available to the
@@ -1176,7 +1177,7 @@ class ListMetricDescriptorsResponse(_messages.Message):
 
 
 class ListMonitoredResourceDescriptorsResponse(_messages.Message):
-  """The ListMonitoredResourceDescriptors response.
+  r"""The ListMonitoredResourceDescriptors response.
 
   Fields:
     nextPageToken: If there are more results than have been returned, then
@@ -1191,7 +1192,7 @@ class ListMonitoredResourceDescriptorsResponse(_messages.Message):
 
 
 class ListNotificationChannelDescriptorsResponse(_messages.Message):
-  """The ListNotificationChannelDescriptors response.
+  r"""The ListNotificationChannelDescriptors response.
 
   Fields:
     channelDescriptors: The monitored resource descriptors supported for the
@@ -1207,7 +1208,7 @@ class ListNotificationChannelDescriptorsResponse(_messages.Message):
 
 
 class ListNotificationChannelsResponse(_messages.Message):
-  """The ListNotificationChannels response.
+  r"""The ListNotificationChannels response.
 
   Fields:
     nextPageToken: If not empty, indicates that there may be more results that
@@ -1223,7 +1224,7 @@ class ListNotificationChannelsResponse(_messages.Message):
 
 
 class ListTimeSeriesResponse(_messages.Message):
-  """The ListTimeSeries response.
+  r"""The ListTimeSeries response.
 
   Fields:
     nextPageToken: If there are more results than have been returned, then
@@ -1238,7 +1239,7 @@ class ListTimeSeriesResponse(_messages.Message):
 
 
 class ListUptimeCheckConfigsResponse(_messages.Message):
-  """The protocol for the ListUptimeCheckConfigs response.
+  r"""The protocol for the ListUptimeCheckConfigs response.
 
   Fields:
     nextPageToken: This field represents the pagination token to retrieve the
@@ -1257,7 +1258,7 @@ class ListUptimeCheckConfigsResponse(_messages.Message):
 
 
 class ListUptimeCheckIpsResponse(_messages.Message):
-  """The protocol for the ListUptimeCheckIps response.
+  r"""The protocol for the ListUptimeCheckIps response.
 
   Fields:
     nextPageToken: This field represents the pagination token to retrieve the
@@ -1275,7 +1276,7 @@ class ListUptimeCheckIpsResponse(_messages.Message):
 
 
 class Metric(_messages.Message):
-  """A specific metric, identified by specifying values for all of the labels
+  r"""A specific metric, identified by specifying values for all of the labels
   of a MetricDescriptor.
 
   Messages:
@@ -1291,7 +1292,7 @@ class Metric(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The set of label values that uniquely identify this metric. All labels
+    r"""The set of label values that uniquely identify this metric. All labels
     listed in the MetricDescriptor must be assigned values.
 
     Messages:
@@ -1302,7 +1303,7 @@ class Metric(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1319,11 +1320,11 @@ class Metric(_messages.Message):
 
 
 class MetricAbsence(_messages.Message):
-  """A condition type that checks that monitored resources are reporting data.
-  The configuration defines a metric and a set of monitored resources. The
-  predicate is considered in violation when a time series for the specified
-  metric of a monitored resource does not include any data in the specified
-  duration.
+  r"""A condition type that checks that monitored resources are reporting
+  data. The configuration defines a metric and a set of monitored resources.
+  The predicate is considered in violation when a time series for the
+  specified metric of a monitored resource does not include any data in the
+  specified duration.
 
   Fields:
     aggregations: Specifies the alignment of data points in individual time
@@ -1359,7 +1360,7 @@ class MetricAbsence(_messages.Message):
 
 
 class MetricDescriptor(_messages.Message):
-  """Defines a metric type and its schema. Once a metric descriptor is
+  r"""Defines a metric type and its schema. Once a metric descriptor is
   created, deleting or altering it stops data collection and makes the metric
   type's existing data unusable.
 
@@ -1403,7 +1404,7 @@ class MetricDescriptor(_messages.Message):
   """
 
   class MetricKindValueValuesEnum(_messages.Enum):
-    """Whether the metric records instantaneous values, changes to a value,
+    r"""Whether the metric records instantaneous values, changes to a value,
     etc. Some combinations of metric_kind and value_type might not be
     supported.
 
@@ -1422,7 +1423,7 @@ class MetricDescriptor(_messages.Message):
     CUMULATIVE = 3
 
   class ValueTypeValueValuesEnum(_messages.Enum):
-    """Whether the measurement is an integer, a floating-point number, etc.
+    r"""Whether the measurement is an integer, a floating-point number, etc.
     Some combinations of metric_kind and value_type might not be supported.
 
     Values:
@@ -1455,7 +1456,7 @@ class MetricDescriptor(_messages.Message):
 
 
 class MetricThreshold(_messages.Message):
-  """A condition type that compares a collection of time series against a
+  r"""A condition type that compares a collection of time series against a
   threshold.
 
   Enums:
@@ -1525,7 +1526,7 @@ class MetricThreshold(_messages.Message):
   """
 
   class ComparisonValueValuesEnum(_messages.Enum):
-    """The comparison to apply between the time series (indicated by filter
+    r"""The comparison to apply between the time series (indicated by filter
     and aggregation) and the threshold (indicated by threshold_value). The
     comparison is applied on each time series, with the time series on the
     left-hand side and the threshold on the right-hand side.Only COMPARISON_LT
@@ -1561,7 +1562,7 @@ class MetricThreshold(_messages.Message):
 
 
 class MonitoredResource(_messages.Message):
-  """An object representing a resource that can be used for monitoring,
+  r"""An object representing a resource that can be used for monitoring,
   logging, billing, or other purposes. Examples include virtual machine
   instances, databases, and storage devices such as disks. The type field
   identifies a MonitoredResourceDescriptor object that describes the
@@ -1588,7 +1589,7 @@ class MonitoredResource(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Required. Values for all of the labels listed in the associated
+    r"""Required. Values for all of the labels listed in the associated
     monitored resource descriptor. For example, Compute Engine VM instances
     use the labels "project_id", "instance_id", and "zone".
 
@@ -1600,7 +1601,7 @@ class MonitoredResource(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1617,8 +1618,8 @@ class MonitoredResource(_messages.Message):
 
 
 class MonitoredResourceDescriptor(_messages.Message):
-  """An object that describes the schema of a MonitoredResource object using a
-  type name and a set of labels. For example, the monitored resource
+  r"""An object that describes the schema of a MonitoredResource object using
+  a type name and a set of labels. For example, the monitored resource
   descriptor for Google Compute Engine VM instances has a type of
   "gce_instance" and specifies the use of the labels "instance_id" and "zone"
   to identify particular VM instances.Different APIs can support different
@@ -1655,7 +1656,7 @@ class MonitoredResourceDescriptor(_messages.Message):
 
 
 class MonitoredResourceMetadata(_messages.Message):
-  """Auxiliary metadata for a MonitoredResource object. MonitoredResource
+  r"""Auxiliary metadata for a MonitoredResource object. MonitoredResource
   objects contain the minimum set of information to uniquely identify a
   monitored resource instance. There is some other useful auxiliary metadata.
   Google Stackdriver Monitoring & Logging uses an ingestion pipeline to
@@ -1687,7 +1688,7 @@ class MonitoredResourceMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SystemLabelsValue(_messages.Message):
-    """Output only. Values for predefined system metadata labels. System
+    r"""Output only. Values for predefined system metadata labels. System
     labels are a kind of metadata extracted by Google Stackdriver. Stackdriver
     determines what system labels are useful and how to obtain their values.
     Some examples: "machine_image", "vpc", "subnet_id", "security_group",
@@ -1704,7 +1705,7 @@ class MonitoredResourceMetadata(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a SystemLabelsValue object.
+      r"""An additional property for a SystemLabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1718,7 +1719,7 @@ class MonitoredResourceMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
-    """Output only. A map of user-defined metadata labels.
+    r"""Output only. A map of user-defined metadata labels.
 
     Messages:
       AdditionalProperty: An additional property for a UserLabelsValue object.
@@ -1728,7 +1729,7 @@ class MonitoredResourceMetadata(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a UserLabelsValue object.
+      r"""An additional property for a UserLabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1745,7 +1746,7 @@ class MonitoredResourceMetadata(_messages.Message):
 
 
 class MonitoringProjectsAlertPoliciesCreateRequest(_messages.Message):
-  """A MonitoringProjectsAlertPoliciesCreateRequest object.
+  r"""A MonitoringProjectsAlertPoliciesCreateRequest object.
 
   Fields:
     alertPolicy: A AlertPolicy resource to be passed as the request body.
@@ -1763,7 +1764,7 @@ class MonitoringProjectsAlertPoliciesCreateRequest(_messages.Message):
 
 
 class MonitoringProjectsAlertPoliciesDeleteRequest(_messages.Message):
-  """A MonitoringProjectsAlertPoliciesDeleteRequest object.
+  r"""A MonitoringProjectsAlertPoliciesDeleteRequest object.
 
   Fields:
     name: The alerting policy to delete. The format is:
@@ -1775,7 +1776,7 @@ class MonitoringProjectsAlertPoliciesDeleteRequest(_messages.Message):
 
 
 class MonitoringProjectsAlertPoliciesGetRequest(_messages.Message):
-  """A MonitoringProjectsAlertPoliciesGetRequest object.
+  r"""A MonitoringProjectsAlertPoliciesGetRequest object.
 
   Fields:
     name: The alerting policy to retrieve. The format is
@@ -1786,7 +1787,7 @@ class MonitoringProjectsAlertPoliciesGetRequest(_messages.Message):
 
 
 class MonitoringProjectsAlertPoliciesListRequest(_messages.Message):
-  """A MonitoringProjectsAlertPoliciesListRequest object.
+  r"""A MonitoringProjectsAlertPoliciesListRequest object.
 
   Fields:
     filter: If provided, this field specifies the criteria that must be met by
@@ -1816,7 +1817,7 @@ class MonitoringProjectsAlertPoliciesListRequest(_messages.Message):
 
 
 class MonitoringProjectsAlertPoliciesPatchRequest(_messages.Message):
-  """A MonitoringProjectsAlertPoliciesPatchRequest object.
+  r"""A MonitoringProjectsAlertPoliciesPatchRequest object.
 
   Fields:
     alertPolicy: A AlertPolicy resource to be passed as the request body.
@@ -1850,7 +1851,7 @@ class MonitoringProjectsAlertPoliciesPatchRequest(_messages.Message):
 
 
 class MonitoringProjectsCollectdTimeSeriesCreateRequest(_messages.Message):
-  """A MonitoringProjectsCollectdTimeSeriesCreateRequest object.
+  r"""A MonitoringProjectsCollectdTimeSeriesCreateRequest object.
 
   Fields:
     createCollectdTimeSeriesRequest: A CreateCollectdTimeSeriesRequest
@@ -1864,7 +1865,7 @@ class MonitoringProjectsCollectdTimeSeriesCreateRequest(_messages.Message):
 
 
 class MonitoringProjectsGroupsCreateRequest(_messages.Message):
-  """A MonitoringProjectsGroupsCreateRequest object.
+  r"""A MonitoringProjectsGroupsCreateRequest object.
 
   Fields:
     group: A Group resource to be passed as the request body.
@@ -1879,7 +1880,7 @@ class MonitoringProjectsGroupsCreateRequest(_messages.Message):
 
 
 class MonitoringProjectsGroupsDeleteRequest(_messages.Message):
-  """A MonitoringProjectsGroupsDeleteRequest object.
+  r"""A MonitoringProjectsGroupsDeleteRequest object.
 
   Fields:
     name: The group to delete. The format is
@@ -1890,7 +1891,7 @@ class MonitoringProjectsGroupsDeleteRequest(_messages.Message):
 
 
 class MonitoringProjectsGroupsGetRequest(_messages.Message):
-  """A MonitoringProjectsGroupsGetRequest object.
+  r"""A MonitoringProjectsGroupsGetRequest object.
 
   Fields:
     name: The group to retrieve. The format is
@@ -1901,7 +1902,7 @@ class MonitoringProjectsGroupsGetRequest(_messages.Message):
 
 
 class MonitoringProjectsGroupsListRequest(_messages.Message):
-  """A MonitoringProjectsGroupsListRequest object.
+  r"""A MonitoringProjectsGroupsListRequest object.
 
   Fields:
     ancestorsOfGroup: A group name:
@@ -1938,7 +1939,7 @@ class MonitoringProjectsGroupsListRequest(_messages.Message):
 
 
 class MonitoringProjectsGroupsMembersListRequest(_messages.Message):
-  """A MonitoringProjectsGroupsMembersListRequest object.
+  r"""A MonitoringProjectsGroupsMembersListRequest object.
 
   Fields:
     filter: An optional list filter describing the members to be returned. The
@@ -1969,7 +1970,7 @@ class MonitoringProjectsGroupsMembersListRequest(_messages.Message):
 
 
 class MonitoringProjectsGroupsUpdateRequest(_messages.Message):
-  """A MonitoringProjectsGroupsUpdateRequest object.
+  r"""A MonitoringProjectsGroupsUpdateRequest object.
 
   Fields:
     group: A Group resource to be passed as the request body.
@@ -1988,7 +1989,7 @@ class MonitoringProjectsGroupsUpdateRequest(_messages.Message):
 
 
 class MonitoringProjectsMetricDescriptorsDeleteRequest(_messages.Message):
-  """A MonitoringProjectsMetricDescriptorsDeleteRequest object.
+  r"""A MonitoringProjectsMetricDescriptorsDeleteRequest object.
 
   Fields:
     name: The metric descriptor on which to execute the request. The format is
@@ -2000,7 +2001,7 @@ class MonitoringProjectsMetricDescriptorsDeleteRequest(_messages.Message):
 
 
 class MonitoringProjectsMetricDescriptorsGetRequest(_messages.Message):
-  """A MonitoringProjectsMetricDescriptorsGetRequest object.
+  r"""A MonitoringProjectsMetricDescriptorsGetRequest object.
 
   Fields:
     name: The metric descriptor on which to execute the request. The format is
@@ -2013,7 +2014,7 @@ class MonitoringProjectsMetricDescriptorsGetRequest(_messages.Message):
 
 
 class MonitoringProjectsMetricDescriptorsListRequest(_messages.Message):
-  """A MonitoringProjectsMetricDescriptorsListRequest object.
+  r"""A MonitoringProjectsMetricDescriptorsListRequest object.
 
   Fields:
     filter: If this field is empty, all custom and system-defined metric
@@ -2038,7 +2039,7 @@ class MonitoringProjectsMetricDescriptorsListRequest(_messages.Message):
 
 
 class MonitoringProjectsMonitoredResourceDescriptorsGetRequest(_messages.Message):
-  """A MonitoringProjectsMonitoredResourceDescriptorsGetRequest object.
+  r"""A MonitoringProjectsMonitoredResourceDescriptorsGetRequest object.
 
   Fields:
     name: The monitored resource descriptor to get. The format is "projects/{p
@@ -2050,7 +2051,7 @@ class MonitoringProjectsMonitoredResourceDescriptorsGetRequest(_messages.Message
 
 
 class MonitoringProjectsMonitoredResourceDescriptorsListRequest(_messages.Message):
-  """A MonitoringProjectsMonitoredResourceDescriptorsListRequest object.
+  r"""A MonitoringProjectsMonitoredResourceDescriptorsListRequest object.
 
   Fields:
     filter: An optional filter describing the descriptors to be returned. The
@@ -2075,7 +2076,7 @@ class MonitoringProjectsMonitoredResourceDescriptorsListRequest(_messages.Messag
 
 
 class MonitoringProjectsNotificationChannelDescriptorsGetRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelDescriptorsGetRequest object.
+  r"""A MonitoringProjectsNotificationChannelDescriptorsGetRequest object.
 
   Fields:
     name: The channel type for which to execute the request. The format is
@@ -2086,7 +2087,7 @@ class MonitoringProjectsNotificationChannelDescriptorsGetRequest(_messages.Messa
 
 
 class MonitoringProjectsNotificationChannelDescriptorsListRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelDescriptorsListRequest object.
+  r"""A MonitoringProjectsNotificationChannelDescriptorsListRequest object.
 
   Fields:
     name: The REST resource name of the parent from which to retrieve the
@@ -2108,7 +2109,7 @@ class MonitoringProjectsNotificationChannelDescriptorsListRequest(_messages.Mess
 
 
 class MonitoringProjectsNotificationChannelsCreateRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelsCreateRequest object.
+  r"""A MonitoringProjectsNotificationChannelsCreateRequest object.
 
   Fields:
     name: The project on which to execute the request. The format is:
@@ -2126,7 +2127,7 @@ class MonitoringProjectsNotificationChannelsCreateRequest(_messages.Message):
 
 
 class MonitoringProjectsNotificationChannelsDeleteRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelsDeleteRequest object.
+  r"""A MonitoringProjectsNotificationChannelsDeleteRequest object.
 
   Fields:
     force: If true, the notification channel will be deleted regardless of its
@@ -2142,7 +2143,7 @@ class MonitoringProjectsNotificationChannelsDeleteRequest(_messages.Message):
 
 
 class MonitoringProjectsNotificationChannelsGetRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelsGetRequest object.
+  r"""A MonitoringProjectsNotificationChannelsGetRequest object.
 
   Fields:
     name: The channel for which to execute the request. The format is
@@ -2153,7 +2154,7 @@ class MonitoringProjectsNotificationChannelsGetRequest(_messages.Message):
 
 
 class MonitoringProjectsNotificationChannelsGetVerificationCodeRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelsGetVerificationCodeRequest
+  r"""A MonitoringProjectsNotificationChannelsGetVerificationCodeRequest
   object.
 
   Fields:
@@ -2171,7 +2172,7 @@ class MonitoringProjectsNotificationChannelsGetVerificationCodeRequest(_messages
 
 
 class MonitoringProjectsNotificationChannelsListRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelsListRequest object.
+  r"""A MonitoringProjectsNotificationChannelsListRequest object.
 
   Fields:
     filter: If provided, this field specifies the criteria that must be met by
@@ -2202,7 +2203,7 @@ class MonitoringProjectsNotificationChannelsListRequest(_messages.Message):
 
 
 class MonitoringProjectsNotificationChannelsPatchRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelsPatchRequest object.
+  r"""A MonitoringProjectsNotificationChannelsPatchRequest object.
 
   Fields:
     name: The full REST resource name for this channel. The syntax is:
@@ -2219,7 +2220,7 @@ class MonitoringProjectsNotificationChannelsPatchRequest(_messages.Message):
 
 
 class MonitoringProjectsNotificationChannelsSendVerificationCodeRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelsSendVerificationCodeRequest
+  r"""A MonitoringProjectsNotificationChannelsSendVerificationCodeRequest
   object.
 
   Fields:
@@ -2234,7 +2235,7 @@ class MonitoringProjectsNotificationChannelsSendVerificationCodeRequest(_message
 
 
 class MonitoringProjectsNotificationChannelsVerifyRequest(_messages.Message):
-  """A MonitoringProjectsNotificationChannelsVerifyRequest object.
+  r"""A MonitoringProjectsNotificationChannelsVerifyRequest object.
 
   Fields:
     name: The notification channel to verify.
@@ -2247,7 +2248,7 @@ class MonitoringProjectsNotificationChannelsVerifyRequest(_messages.Message):
 
 
 class MonitoringProjectsTimeSeriesCreateRequest(_messages.Message):
-  """A MonitoringProjectsTimeSeriesCreateRequest object.
+  r"""A MonitoringProjectsTimeSeriesCreateRequest object.
 
   Fields:
     createTimeSeriesRequest: A CreateTimeSeriesRequest resource to be passed
@@ -2261,7 +2262,7 @@ class MonitoringProjectsTimeSeriesCreateRequest(_messages.Message):
 
 
 class MonitoringProjectsTimeSeriesListRequest(_messages.Message):
-  """A MonitoringProjectsTimeSeriesListRequest object.
+  r"""A MonitoringProjectsTimeSeriesListRequest object.
 
   Enums:
     AggregationCrossSeriesReducerValueValuesEnum: The approach to be used to
@@ -2345,7 +2346,7 @@ class MonitoringProjectsTimeSeriesListRequest(_messages.Message):
   """
 
   class AggregationCrossSeriesReducerValueValuesEnum(_messages.Enum):
-    """The approach to be used to combine time series. Not all reducer
+    r"""The approach to be used to combine time series. Not all reducer
     functions may be applied to all time series, depending on the metric type
     and the value type of the original time series. Reduction may change the
     metric type of value type of the time series.Time series data must be
@@ -2386,7 +2387,7 @@ class MonitoringProjectsTimeSeriesListRequest(_messages.Message):
     REDUCE_PERCENTILE_05 = 13
 
   class AggregationPerSeriesAlignerValueValuesEnum(_messages.Enum):
-    """The approach to be used to align individual time series. Not all
+    r"""The approach to be used to align individual time series. Not all
     alignment functions may be applied to all time series, depending on the
     metric type and value type of the original time series. Alignment may
     change the metric type or the value type of the time series.Time series
@@ -2437,7 +2438,7 @@ class MonitoringProjectsTimeSeriesListRequest(_messages.Message):
     ALIGN_PERCENT_CHANGE = 18
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Specifies which information is returned about the time series.
+    r"""Specifies which information is returned about the time series.
 
     Values:
       FULL: <no description>
@@ -2461,7 +2462,7 @@ class MonitoringProjectsTimeSeriesListRequest(_messages.Message):
 
 
 class MonitoringProjectsUptimeCheckConfigsCreateRequest(_messages.Message):
-  """A MonitoringProjectsUptimeCheckConfigsCreateRequest object.
+  r"""A MonitoringProjectsUptimeCheckConfigsCreateRequest object.
 
   Fields:
     parent: The project in which to create the uptime check. The format  is
@@ -2475,7 +2476,7 @@ class MonitoringProjectsUptimeCheckConfigsCreateRequest(_messages.Message):
 
 
 class MonitoringProjectsUptimeCheckConfigsDeleteRequest(_messages.Message):
-  """A MonitoringProjectsUptimeCheckConfigsDeleteRequest object.
+  r"""A MonitoringProjectsUptimeCheckConfigsDeleteRequest object.
 
   Fields:
     name: The uptime check configuration to delete. The format  is
@@ -2486,7 +2487,7 @@ class MonitoringProjectsUptimeCheckConfigsDeleteRequest(_messages.Message):
 
 
 class MonitoringProjectsUptimeCheckConfigsGetRequest(_messages.Message):
-  """A MonitoringProjectsUptimeCheckConfigsGetRequest object.
+  r"""A MonitoringProjectsUptimeCheckConfigsGetRequest object.
 
   Fields:
     name: The uptime check configuration to retrieve. The format  is
@@ -2497,7 +2498,7 @@ class MonitoringProjectsUptimeCheckConfigsGetRequest(_messages.Message):
 
 
 class MonitoringProjectsUptimeCheckConfigsListRequest(_messages.Message):
-  """A MonitoringProjectsUptimeCheckConfigsListRequest object.
+  r"""A MonitoringProjectsUptimeCheckConfigsListRequest object.
 
   Fields:
     pageSize: The maximum number of results to return in a single response.
@@ -2518,7 +2519,7 @@ class MonitoringProjectsUptimeCheckConfigsListRequest(_messages.Message):
 
 
 class MonitoringProjectsUptimeCheckConfigsPatchRequest(_messages.Message):
-  """A MonitoringProjectsUptimeCheckConfigsPatchRequest object.
+  r"""A MonitoringProjectsUptimeCheckConfigsPatchRequest object.
 
   Fields:
     name: A unique resource name for this UptimeCheckConfig. The format
@@ -2540,7 +2541,7 @@ class MonitoringProjectsUptimeCheckConfigsPatchRequest(_messages.Message):
 
 
 class MonitoringUptimeCheckIpsListRequest(_messages.Message):
-  """A MonitoringUptimeCheckIpsListRequest object.
+  r"""A MonitoringUptimeCheckIpsListRequest object.
 
   Fields:
     pageSize: The maximum number of results to return in a single response.
@@ -2559,7 +2560,7 @@ class MonitoringUptimeCheckIpsListRequest(_messages.Message):
 
 
 class MutationRecord(_messages.Message):
-  """Describes a change made to a configuration.
+  r"""Describes a change made to a configuration.
 
   Fields:
     mutateTime: When the change occurred.
@@ -2571,7 +2572,7 @@ class MutationRecord(_messages.Message):
 
 
 class NotificationChannel(_messages.Message):
-  """A NotificationChannel is a medium through which an alert is delivered
+  r"""A NotificationChannel is a medium through which an alert is delivered
   when a policy violation is detected. Examples of channels include email,
   SMS, and third-party messaging applications. Fields containing sensitive
   information like authentication tokens or contact info are only partially
@@ -2654,7 +2655,7 @@ class NotificationChannel(_messages.Message):
   """
 
   class VerificationStatusValueValuesEnum(_messages.Enum):
-    """Indicates whether this channel has been verified or not. On a
+    r"""Indicates whether this channel has been verified or not. On a
     ListNotificationChannels or GetNotificationChannel operation, this field
     is expected to be populated.If the value is UNVERIFIED, then it indicates
     that the channel is non-functioning (it both requires verification and
@@ -2687,7 +2688,7 @@ class NotificationChannel(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Configuration fields that define the channel and its behavior. The
+    r"""Configuration fields that define the channel and its behavior. The
     permissible and required labels are specified in the
     NotificationChannelDescriptor.labels of the NotificationChannelDescriptor
     corresponding to the type field.
@@ -2700,7 +2701,7 @@ class NotificationChannel(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2714,7 +2715,7 @@ class NotificationChannel(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
-    """User-supplied key/value data that does not need to conform to the
+    r"""User-supplied key/value data that does not need to conform to the
     corresponding NotificationChannelDescriptor's schema, unlike the labels
     field. This field is intended to be used for organizing and identifying
     the NotificationChannel objects.The field can contain up to 64 entries.
@@ -2730,7 +2731,7 @@ class NotificationChannel(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a UserLabelsValue object.
+      r"""An additional property for a UserLabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2753,7 +2754,7 @@ class NotificationChannel(_messages.Message):
 
 
 class NotificationChannelDescriptor(_messages.Message):
-  """A description of a notification channel. The descriptor includes the
+  r"""A description of a notification channel. The descriptor includes the
   properties of the channel and the set of labels or fields that must be
   specified to configure channels of a given type.
 
@@ -2779,7 +2780,7 @@ class NotificationChannelDescriptor(_messages.Message):
   """
 
   class SupportedTiersValueListEntryValuesEnum(_messages.Enum):
-    """SupportedTiersValueListEntryValuesEnum enum type.
+    r"""SupportedTiersValueListEntryValuesEnum enum type.
 
     Values:
       SERVICE_TIER_UNSPECIFIED: <no description>
@@ -2799,7 +2800,7 @@ class NotificationChannelDescriptor(_messages.Message):
 
 
 class Option(_messages.Message):
-  """A protocol buffer option, which can be attached to a message, field,
+  r"""A protocol buffer option, which can be attached to a message, field,
   enumeration, etc.
 
   Messages:
@@ -2823,7 +2824,7 @@ class Option(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ValueValue(_messages.Message):
-    """The option's value packed in an Any message. If the value is a
+    r"""The option's value packed in an Any message. If the value is a
     primitive, the corresponding wrapper type defined in
     google/protobuf/wrappers.proto should be used. If the value is an enum, it
     should be stored as an int32 value using the google.protobuf.Int32Value
@@ -2838,7 +2839,7 @@ class Option(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ValueValue object.
+      r"""An additional property for a ValueValue object.
 
       Fields:
         key: Name of the additional property.
@@ -2855,7 +2856,7 @@ class Option(_messages.Message):
 
 
 class Point(_messages.Message):
-  """A single data point in a time series.
+  r"""A single data point in a time series.
 
   Fields:
     interval: The time interval to which the data point applies. For GAUGE
@@ -2874,7 +2875,7 @@ class Point(_messages.Message):
 
 
 class Range(_messages.Message):
-  """The range of the population values.
+  r"""The range of the population values.
 
   Fields:
     max: The maximum of the population values.
@@ -2886,7 +2887,7 @@ class Range(_messages.Message):
 
 
 class ResourceGroup(_messages.Message):
-  """The resource submessage for group checks. It can be used instead of a
+  r"""The resource submessage for group checks. It can be used instead of a
   monitored resource, when multiple resources are being monitored.
 
   Enums:
@@ -2899,7 +2900,7 @@ class ResourceGroup(_messages.Message):
   """
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
-    """The resource type of the group members.
+    r"""The resource type of the group members.
 
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Default value (not valid).
@@ -2916,11 +2917,11 @@ class ResourceGroup(_messages.Message):
 
 
 class SendNotificationChannelVerificationCodeRequest(_messages.Message):
-  """The SendNotificationChannelVerificationCode request."""
+  r"""The SendNotificationChannelVerificationCode request."""
 
 
 class SourceContext(_messages.Message):
-  """SourceContext represents information about the source of a protobuf
+  r"""SourceContext represents information about the source of a protobuf
   element, like the file in which it is defined.
 
   Fields:
@@ -2933,7 +2934,7 @@ class SourceContext(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -2962,7 +2963,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -2974,7 +2975,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -3000,7 +3001,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The Status type defines a logical error model that is suitable for
+  r"""The Status type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by gRPC (https://github.com/grpc). The error model is designed to be:
   Simple to use and understand for most users Flexible enough to meet
@@ -3047,7 +3048,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -3059,7 +3060,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -3077,7 +3078,7 @@ class Status(_messages.Message):
 
 
 class TcpCheck(_messages.Message):
-  """Information required for a TCP uptime check request.
+  r"""Information required for a TCP uptime check request.
 
   Fields:
     port: The port to the page to run the check against. Will be combined with
@@ -3089,9 +3090,9 @@ class TcpCheck(_messages.Message):
 
 
 class TimeInterval(_messages.Message):
-  """A time interval extending just after a start time through an end time. If
-  the start time is the same as the end time, then the interval represents a
-  single point in time.
+  r"""A time interval extending just after a start time through an end time.
+  If the start time is the same as the end time, then the interval represents
+  a single point in time.
 
   Fields:
     endTime: Required. The end of the time interval.
@@ -3105,7 +3106,7 @@ class TimeInterval(_messages.Message):
 
 
 class TimeSeries(_messages.Message):
-  """A collection of data points that describes the time-varying values of a
+  r"""A collection of data points that describes the time-varying values of a
   metric. A time series is identified by a combination of a fully-specified
   monitored resource and a fully-specified metric. This type is used for both
   listing and creating time series.
@@ -3158,7 +3159,7 @@ class TimeSeries(_messages.Message):
   """
 
   class MetricKindValueValuesEnum(_messages.Enum):
-    """The metric kind of the time series. When listing time series, this
+    r"""The metric kind of the time series. When listing time series, this
     metric kind might be different from the metric kind of the associated
     metric if this time series is an alignment or reduction of other time
     series.When creating a time series, this field is optional. If present, it
@@ -3182,9 +3183,9 @@ class TimeSeries(_messages.Message):
     CUMULATIVE = 3
 
   class ValueTypeValueValuesEnum(_messages.Enum):
-    """The value type of the time series. When listing time series, this value
-    type might be different from the value type of the associated metric if
-    this time series is an alignment or reduction of other time series.When
+    r"""The value type of the time series. When listing time series, this
+    value type might be different from the value type of the associated metric
+    if this time series is an alignment or reduction of other time series.When
     creating a time series, this field is optional. If present, it must be the
     same as the type of the data in the points field.
 
@@ -3216,7 +3217,7 @@ class TimeSeries(_messages.Message):
 
 
 class Trigger(_messages.Message):
-  """Specifies how many time series must fail a predicate to trigger a
+  r"""Specifies how many time series must fail a predicate to trigger a
   condition. If not specified, then a {count: 1} trigger is used.
 
   Fields:
@@ -3231,7 +3232,7 @@ class Trigger(_messages.Message):
 
 
 class Type(_messages.Message):
-  """A protocol buffer message type.
+  r"""A protocol buffer message type.
 
   Enums:
     SyntaxValueValuesEnum: The source syntax.
@@ -3246,7 +3247,7 @@ class Type(_messages.Message):
   """
 
   class SyntaxValueValuesEnum(_messages.Enum):
-    """The source syntax.
+    r"""The source syntax.
 
     Values:
       SYNTAX_PROTO2: Syntax proto2.
@@ -3264,7 +3265,7 @@ class Type(_messages.Message):
 
 
 class TypedValue(_messages.Message):
-  """A single strongly-typed value.
+  r"""A single strongly-typed value.
 
   Fields:
     boolValue: A Boolean value: true or false.
@@ -3285,7 +3286,7 @@ class TypedValue(_messages.Message):
 
 
 class UptimeCheckConfig(_messages.Message):
-  """This message configures which resources and services to monitor for
+  r"""This message configures which resources and services to monitor for
   availability.
 
   Enums:
@@ -3333,7 +3334,7 @@ class UptimeCheckConfig(_messages.Message):
   """
 
   class SelectedRegionsValueListEntryValuesEnum(_messages.Enum):
-    """SelectedRegionsValueListEntryValuesEnum enum type.
+    r"""SelectedRegionsValueListEntryValuesEnum enum type.
 
     Values:
       REGION_UNSPECIFIED: <no description>
@@ -3363,8 +3364,8 @@ class UptimeCheckConfig(_messages.Message):
 
 
 class UptimeCheckIp(_messages.Message):
-  """Contains the region, location, and list of IP addresses where checkers in
-  the location run from.
+  r"""Contains the region, location, and list of IP addresses where checkers
+  in the location run from.
 
   Enums:
     RegionValueValuesEnum: A broad region category in which the IP address is
@@ -3383,7 +3384,7 @@ class UptimeCheckIp(_messages.Message):
   """
 
   class RegionValueValuesEnum(_messages.Enum):
-    """A broad region category in which the IP address is located.
+    r"""A broad region category in which the IP address is located.
 
     Values:
       REGION_UNSPECIFIED: Default value if no region is specified. Will result
@@ -3409,7 +3410,7 @@ class UptimeCheckIp(_messages.Message):
 
 
 class VerifyNotificationChannelRequest(_messages.Message):
-  """The VerifyNotificationChannel request.
+  r"""The VerifyNotificationChannel request.
 
   Fields:
     code: The verification code that was delivered to the channel as a result

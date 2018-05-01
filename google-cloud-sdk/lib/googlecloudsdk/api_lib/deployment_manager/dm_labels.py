@@ -11,14 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Utility for DM labels."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+import six
 
-def UpdateLabels(labels,
-                 labels_proto,
-                 update_labels=None,
-                 remove_labels=None):
+
+def UpdateLabels(labels, labels_proto, update_labels=None, remove_labels=None):
   """Returns a list of label protos based on the current state plus edits.
 
   Args:
@@ -50,5 +50,7 @@ def UpdateLabels(labels,
       new_labels.pop(key, None)
 
   # Return the label protos with all edits applied, sorted for reproducability
-  return [labels_proto(key=key, value=value)
-          for key, value in sorted(new_labels.iteritems())]
+  return [
+      labels_proto(key=key, value=value)
+      for key, value in sorted(six.iteritems(new_labels))
+  ]

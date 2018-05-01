@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities for running Daisy builds on Google Container Builder."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
@@ -88,7 +90,7 @@ def CheckIamPermissions(project_id):
     operation = services_api.EnableServiceApiCall(project.projectId,
                                                   cloudbuild_service_name)
     # Wait for the operation to finish.
-    services_util.ProcessOperationResult(operation, async=False)
+    services_util.ProcessOperationResult(operation, is_async=False)
 
   # Now that we're sure the service account exists, actually check permissions.
   service_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(

@@ -58,7 +58,7 @@ class DlpV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Returns a list of the sensitive information types that the DLP API.
+      r"""Returns a list of the sensitive information types that the DLP API.
 supports. For more information, see [Listing supported predefined
 infoTypes](/dlp/docs/listing-infotypes).
 
@@ -96,7 +96,7 @@ infoTypes](/dlp/docs/listing-infotypes).
           }
 
     def Create(self, request, global_params=None):
-      """Creates a DeidentifyTemplate for re-using frequently used configuration.
+      r"""Creates a DeidentifyTemplate for re-using frequently used configuration.
 for de-identifying content, images, and storage.
 
       Args:
@@ -124,7 +124,7 @@ for de-identifying content, images, and storage.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a DeidentifyTemplate.
+      r"""Deletes a DeidentifyTemplate.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesDeleteRequest) input message
@@ -151,7 +151,7 @@ for de-identifying content, images, and storage.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a DeidentifyTemplate.
+      r"""Gets a DeidentifyTemplate.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesGetRequest) input message
@@ -178,7 +178,7 @@ for de-identifying content, images, and storage.
     )
 
     def List(self, request, global_params=None):
-      """Lists DeidentifyTemplates.
+      r"""Lists DeidentifyTemplates.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesListRequest) input message
@@ -205,7 +205,7 @@ for de-identifying content, images, and storage.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the DeidentifyTemplate.
+      r"""Updates the DeidentifyTemplate.
 
       Args:
         request: (DlpOrganizationsDeidentifyTemplatesPatchRequest) input message
@@ -242,7 +242,7 @@ for de-identifying content, images, and storage.
           }
 
     def Create(self, request, global_params=None):
-      """Creates an InspectTemplate for re-using frequently used configuration.
+      r"""Creates an InspectTemplate for re-using frequently used configuration.
 for inspecting content, images, and storage.
 
       Args:
@@ -270,7 +270,7 @@ for inspecting content, images, and storage.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an InspectTemplate.
+      r"""Deletes an InspectTemplate.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesDeleteRequest) input message
@@ -297,7 +297,7 @@ for inspecting content, images, and storage.
     )
 
     def Get(self, request, global_params=None):
-      """Gets an InspectTemplate.
+      r"""Gets an InspectTemplate.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesGetRequest) input message
@@ -324,7 +324,7 @@ for inspecting content, images, and storage.
     )
 
     def List(self, request, global_params=None):
-      """Lists InspectTemplates.
+      r"""Lists InspectTemplates.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesListRequest) input message
@@ -351,7 +351,7 @@ for inspecting content, images, and storage.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the InspectTemplate.
+      r"""Updates the InspectTemplate.
 
       Args:
         request: (DlpOrganizationsInspectTemplatesPatchRequest) input message
@@ -398,7 +398,7 @@ for inspecting content, images, and storage.
           }
 
     def Deidentify(self, request, global_params=None):
-      """De-identifies potentially sensitive info from a ContentItem.
+      r"""De-identifies potentially sensitive info from a ContentItem.
 This method has limits on input size and output size.
 [How-to guide](/dlp/docs/deidentify-sensitive-data)
 
@@ -427,7 +427,7 @@ This method has limits on input size and output size.
     )
 
     def Inspect(self, request, global_params=None):
-      """Finds potentially sensitive info in content.
+      r"""Finds potentially sensitive info in content.
 This method has limits on input size, processing time, and output size.
 [How-to guide for text](/dlp/docs/inspecting-text), [How-to guide for
 images](/dlp/docs/inspecting-images)
@@ -457,7 +457,7 @@ images](/dlp/docs/inspecting-images)
     )
 
     def Reidentify(self, request, global_params=None):
-      """Re-identifies content that has been de-identified.
+      r"""Re-identifies content that has been de-identified.
 
       Args:
         request: (DlpProjectsContentReidentifyRequest) input message
@@ -494,7 +494,7 @@ images](/dlp/docs/inspecting-images)
           }
 
     def Create(self, request, global_params=None):
-      """Creates a DeidentifyTemplate for re-using frequently used configuration.
+      r"""Creates a DeidentifyTemplate for re-using frequently used configuration.
 for de-identifying content, images, and storage.
 
       Args:
@@ -522,7 +522,7 @@ for de-identifying content, images, and storage.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a DeidentifyTemplate.
+      r"""Deletes a DeidentifyTemplate.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesDeleteRequest) input message
@@ -549,7 +549,7 @@ for de-identifying content, images, and storage.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a DeidentifyTemplate.
+      r"""Gets a DeidentifyTemplate.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesGetRequest) input message
@@ -576,7 +576,7 @@ for de-identifying content, images, and storage.
     )
 
     def List(self, request, global_params=None):
-      """Lists DeidentifyTemplates.
+      r"""Lists DeidentifyTemplates.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesListRequest) input message
@@ -603,7 +603,7 @@ for de-identifying content, images, and storage.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the DeidentifyTemplate.
+      r"""Updates the DeidentifyTemplate.
 
       Args:
         request: (DlpProjectsDeidentifyTemplatesPatchRequest) input message
@@ -640,7 +640,7 @@ for de-identifying content, images, and storage.
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running DlpJob. The server.
+      r"""Starts asynchronous cancellation on a long-running DlpJob. The server.
 makes a best effort to cancel the DlpJob, but success is not
 guaranteed.
 
@@ -669,7 +669,7 @@ guaranteed.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a new job to inspect storage or calculate risk metrics.
+      r"""Creates a new job to inspect storage or calculate risk metrics.
 [How-to guide](/dlp/docs/compute-risk-analysis).
 
       Args:
@@ -697,7 +697,7 @@ guaranteed.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a long-running DlpJob. This method indicates that the client is.
+      r"""Deletes a long-running DlpJob. This method indicates that the client is.
 no longer interested in the DlpJob result. The job will be cancelled if
 possible.
 
@@ -726,7 +726,7 @@ possible.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running DlpJob.
+      r"""Gets the latest state of a long-running DlpJob.
 
       Args:
         request: (DlpProjectsDlpJobsGetRequest) input message
@@ -753,7 +753,7 @@ possible.
     )
 
     def List(self, request, global_params=None):
-      """Lists DlpJobs that match the specified filter in the request.
+      r"""Lists DlpJobs that match the specified filter in the request.
 
       Args:
         request: (DlpProjectsDlpJobsListRequest) input message
@@ -790,7 +790,7 @@ possible.
           }
 
     def Redact(self, request, global_params=None):
-      """Redacts potentially sensitive info from an image.
+      r"""Redacts potentially sensitive info from an image.
 This method has limits on input size, processing time, and output size.
 [How-to guide](/dlp/docs/redacting-sensitive-data-images)
 
@@ -829,7 +829,7 @@ This method has limits on input size, processing time, and output size.
           }
 
     def Create(self, request, global_params=None):
-      """Creates an InspectTemplate for re-using frequently used configuration.
+      r"""Creates an InspectTemplate for re-using frequently used configuration.
 for inspecting content, images, and storage.
 
       Args:
@@ -857,7 +857,7 @@ for inspecting content, images, and storage.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an InspectTemplate.
+      r"""Deletes an InspectTemplate.
 
       Args:
         request: (DlpProjectsInspectTemplatesDeleteRequest) input message
@@ -884,7 +884,7 @@ for inspecting content, images, and storage.
     )
 
     def Get(self, request, global_params=None):
-      """Gets an InspectTemplate.
+      r"""Gets an InspectTemplate.
 
       Args:
         request: (DlpProjectsInspectTemplatesGetRequest) input message
@@ -911,7 +911,7 @@ for inspecting content, images, and storage.
     )
 
     def List(self, request, global_params=None):
-      """Lists InspectTemplates.
+      r"""Lists InspectTemplates.
 
       Args:
         request: (DlpProjectsInspectTemplatesListRequest) input message
@@ -938,7 +938,7 @@ for inspecting content, images, and storage.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the InspectTemplate.
+      r"""Updates the InspectTemplate.
 
       Args:
         request: (DlpProjectsInspectTemplatesPatchRequest) input message
@@ -975,7 +975,7 @@ for inspecting content, images, and storage.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a job trigger to run DLP actions such as scanning storage for.
+      r"""Creates a job trigger to run DLP actions such as scanning storage for.
 sensitive information on a set schedule.
 
       Args:
@@ -1003,7 +1003,7 @@ sensitive information on a set schedule.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a job trigger.
+      r"""Deletes a job trigger.
 
       Args:
         request: (DlpProjectsJobTriggersDeleteRequest) input message
@@ -1030,7 +1030,7 @@ sensitive information on a set schedule.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a job trigger.
+      r"""Gets a job trigger.
 
       Args:
         request: (DlpProjectsJobTriggersGetRequest) input message
@@ -1057,7 +1057,7 @@ sensitive information on a set schedule.
     )
 
     def List(self, request, global_params=None):
-      """Lists job triggers.
+      r"""Lists job triggers.
 
       Args:
         request: (DlpProjectsJobTriggersListRequest) input message
@@ -1084,7 +1084,7 @@ sensitive information on a set schedule.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a job trigger.
+      r"""Updates a job trigger.
 
       Args:
         request: (DlpProjectsJobTriggersPatchRequest) input message

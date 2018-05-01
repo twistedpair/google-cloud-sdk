@@ -17,9 +17,12 @@ These utility functions enable easy replacement of parameters into
 ReplicaPool template files.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import yaml
+import six
 
 
 def AddTemplateParamArgs(parser):
@@ -60,7 +63,7 @@ def ParseTemplate(template_file, params=None, params_from_file=None):
   params_from_file = params_from_file or {}
 
   joined_params = dict(params)
-  for key, file_path in params_from_file.iteritems():
+  for key, file_path in six.iteritems(params_from_file):
     if key in joined_params:
       raise exceptions.ToolException('Duplicate param key: ' + key)
     try:
@@ -105,7 +108,7 @@ def ReplaceTemplateParams(node, params):
     references found in the node that were not provided and used_params were
     the params that we actually used.
   """
-  if isinstance(node, basestring):
+  if isinstance(node, six.string_types):
     if node.startswith('{{') and node.endswith('}}'):
       param = node[2:-2].strip()
       if param in params:

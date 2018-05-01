@@ -27,7 +27,8 @@ class Collections(enum.Enum):
       'apps',
       'apps/{appsId}',
       {},
-      [u'appsId']
+      [u'appsId'],
+      True
   )
   APPS_AUTHORIZEDCERTIFICATES = (
       'apps.authorizedCertificates',
@@ -37,7 +38,8 @@ class Collections(enum.Enum):
               'apps/{appsId}/authorizedCertificates/'
               '{authorizedCertificatesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   APPS_DOMAINMAPPINGS = (
       'apps.domainMappings',
@@ -46,7 +48,8 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/domainMappings/{domainMappingsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   APPS_LOCATIONS = (
       'apps.locations',
@@ -55,7 +58,8 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/locations/{locationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   APPS_OPERATIONS = (
       'apps.operations',
@@ -64,11 +68,14 @@ class Collections(enum.Enum):
           '':
               'apps/{appsId}/operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

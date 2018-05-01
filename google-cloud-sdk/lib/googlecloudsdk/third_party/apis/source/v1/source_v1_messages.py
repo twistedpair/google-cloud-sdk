@@ -12,7 +12,7 @@ package = 'source'
 
 
 class Action(_messages.Message):
-  """An action to perform on a path in a workspace.
+  r"""An action to perform on a path in a workspace.
 
   Fields:
     copyAction: Copy the contents of one path to another.
@@ -26,7 +26,7 @@ class Action(_messages.Message):
 
 
 class Alias(_messages.Message):
-  """An alias is a named reference to a revision. Examples include git
+  r"""An alias is a named reference to a revision. Examples include git
   branches and tags.
 
   Enums:
@@ -42,7 +42,7 @@ class Alias(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: ANY is used to indicate to ListAliases to return aliases of all
@@ -71,7 +71,7 @@ class Alias(_messages.Message):
 
 
 class AliasContext(_messages.Message):
-  """An alias to a repo revision.
+  r"""An alias to a repo revision.
 
   Enums:
     KindValueValuesEnum: The alias kind.
@@ -82,7 +82,7 @@ class AliasContext(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: Do not use.
@@ -102,7 +102,7 @@ class AliasContext(_messages.Message):
 
 
 class ChangedFileInfo(_messages.Message):
-  """Represents file information.
+  r"""Represents file information.
 
   Enums:
     OperationValueValuesEnum: The operation type for the file.
@@ -123,7 +123,7 @@ class ChangedFileInfo(_messages.Message):
   """
 
   class OperationValueValuesEnum(_messages.Enum):
-    """The operation type for the file.
+    r"""The operation type for the file.
 
     Values:
       OPERATION_UNSPECIFIED: No operation was specified.
@@ -147,8 +147,8 @@ class ChangedFileInfo(_messages.Message):
 
 
 class CloudRepoSourceContext(_messages.Message):
-  """A CloudRepoSourceContext denotes a particular revision in a cloud repo (a
-  repo hosted by the Google Cloud Platform).
+  r"""A CloudRepoSourceContext denotes a particular revision in a cloud repo
+  (a repo hosted by the Google Cloud Platform).
 
   Fields:
     aliasContext: An alias, which may be a branch or tag.
@@ -164,7 +164,7 @@ class CloudRepoSourceContext(_messages.Message):
 
 
 class CloudWorkspaceId(_messages.Message):
-  """A CloudWorkspaceId is a unique identifier for a cloud workspace. A cloud
+  r"""A CloudWorkspaceId is a unique identifier for a cloud workspace. A cloud
   workspace is a place associated with a repo where modified files can be
   stored before they are committed.
 
@@ -179,7 +179,7 @@ class CloudWorkspaceId(_messages.Message):
 
 
 class CloudWorkspaceSourceContext(_messages.Message):
-  """A CloudWorkspaceSourceContext denotes a workspace at a particular
+  r"""A CloudWorkspaceSourceContext denotes a workspace at a particular
   snapshot.
 
   Fields:
@@ -193,7 +193,7 @@ class CloudWorkspaceSourceContext(_messages.Message):
 
 
 class CommitWorkspaceRequest(_messages.Message):
-  """Request for CommitWorkspace.
+  r"""Request for CommitWorkspace.
 
   Fields:
     author: Author of the commit in the format: "Author Name
@@ -214,7 +214,7 @@ class CommitWorkspaceRequest(_messages.Message):
 
 
 class CopyAction(_messages.Message):
-  """Copy the contents of a file or directory at from_path in the specified
+  r"""Copy the contents of a file or directory at from_path in the specified
   revision or snapshot to to_path.  To rename a file, copy it to the new path
   and delete the old.
 
@@ -232,7 +232,7 @@ class CopyAction(_messages.Message):
 
 
 class CreateWorkspaceRequest(_messages.Message):
-  """Request for CreateWorkspace.
+  r"""Request for CreateWorkspace.
 
   Fields:
     actions: An ordered sequence of actions to perform in the workspace. Can
@@ -260,7 +260,7 @@ class CreateWorkspaceRequest(_messages.Message):
 
 
 class DeleteAction(_messages.Message):
-  """Delete a file or directory.
+  r"""Delete a file or directory.
 
   Fields:
     path: The path of the file or directory. If path refers to a directory,
@@ -271,7 +271,7 @@ class DeleteAction(_messages.Message):
 
 
 class DirectoryEntry(_messages.Message):
-  """Information about a directory.
+  r"""Information about a directory.
 
   Fields:
     info: Information about the entry.
@@ -288,7 +288,7 @@ class DirectoryEntry(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -298,11 +298,11 @@ class Empty(_messages.Message):
 
 
 class ExternalReference(_messages.Message):
-  """A submodule or subrepository."""
+  r"""A submodule or subrepository."""
 
 
 class File(_messages.Message):
-  """A file, with contents and metadata.  Pagination can be used to limit the
+  r"""A file, with contents and metadata.  Pagination can be used to limit the
   size of the file. Otherwise, there is a default max size for the contents.
   Whether the file has been truncated can be determined by comparing
   len(contents) to info.Size.
@@ -319,7 +319,7 @@ class File(_messages.Message):
 
 
 class FileInfo(_messages.Message):
-  """File metadata, including a hash of the file contents.
+  r"""File metadata, including a hash of the file contents.
 
   Enums:
     ModeValueValuesEnum: The mode of the file: an executable, a symbolic link,
@@ -337,7 +337,7 @@ class FileInfo(_messages.Message):
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    """The mode of the file: an executable, a symbolic link, or neither.
+    r"""The mode of the file: an executable, a symbolic link, or neither.
 
     Values:
       FILE_MODE_UNSPECIFIED: No file mode was specified.
@@ -357,7 +357,7 @@ class FileInfo(_messages.Message):
 
 
 class GerritSourceContext(_messages.Message):
-  """A SourceContext referring to a Gerrit project.
+  r"""A SourceContext referring to a Gerrit project.
 
   Fields:
     aliasContext: An alias, which may be a branch or tag.
@@ -377,7 +377,7 @@ class GerritSourceContext(_messages.Message):
 
 
 class GetRevisionsResponse(_messages.Message):
-  """Response for GetRevisions.
+  r"""Response for GetRevisions.
 
   Fields:
     revisions: The revisions.
@@ -387,7 +387,7 @@ class GetRevisionsResponse(_messages.Message):
 
 
 class GitSourceContext(_messages.Message):
-  """A GitSourceContext denotes a particular revision in a third party Git
+  r"""A GitSourceContext denotes a particular revision in a third party Git
   repository (e.g. GitHub).
 
   Fields:
@@ -400,7 +400,7 @@ class GitSourceContext(_messages.Message):
 
 
 class ListAliasesResponse(_messages.Message):
-  """Response for ListAliases.
+  r"""Response for ListAliases.
 
   Fields:
     aliases: The list of aliases.
@@ -416,7 +416,7 @@ class ListAliasesResponse(_messages.Message):
 
 
 class ListChangedFilesRequest(_messages.Message):
-  """Request for ListChangedFiles.
+  r"""Request for ListChangedFiles.
 
   Fields:
     pageSize: The maximum number of ChangedFileInfo values to return.
@@ -433,7 +433,7 @@ class ListChangedFilesRequest(_messages.Message):
 
 
 class ListChangedFilesResponse(_messages.Message):
-  """Response for ListChangedFiles.
+  r"""Response for ListChangedFiles.
 
   Fields:
     changedFiles: Note: ChangedFileInfo.from_path is not set here.
@@ -450,7 +450,7 @@ class ListChangedFilesResponse(_messages.Message):
 
 
 class ListFilesResponse(_messages.Message):
-  """Response for ListFiles.
+  r"""Response for ListFiles.
 
   Fields:
     files: The contents field is empty.
@@ -463,7 +463,7 @@ class ListFilesResponse(_messages.Message):
 
 
 class ListReposResponse(_messages.Message):
-  """Response for ListRepos.
+  r"""Response for ListRepos.
 
   Fields:
     repos: The listed repos.
@@ -473,7 +473,7 @@ class ListReposResponse(_messages.Message):
 
 
 class ListRevisionsResponse(_messages.Message):
-  """Response for ListRevisions.
+  r"""Response for ListRevisions.
 
   Fields:
     nextPageToken: Use as the value of page_token in the next call to obtain
@@ -486,7 +486,7 @@ class ListRevisionsResponse(_messages.Message):
 
 
 class ListSnapshotsResponse(_messages.Message):
-  """Response for ListSnapshots.
+  r"""Response for ListSnapshots.
 
   Fields:
     nextPageToken: Use as the value of page_token in the next call to obtain
@@ -499,7 +499,7 @@ class ListSnapshotsResponse(_messages.Message):
 
 
 class ListWorkspacesResponse(_messages.Message):
-  """Response for ListWorkspaces.
+  r"""Response for ListWorkspaces.
 
   Fields:
     workspaces: The listed workspaces.
@@ -509,7 +509,7 @@ class ListWorkspacesResponse(_messages.Message):
 
 
 class MergeInfo(_messages.Message):
-  """MergeInfo holds information needed while resolving merges, and refreshes
+  r"""MergeInfo holds information needed while resolving merges, and refreshes
   that involve conflicts.
 
   Fields:
@@ -544,7 +544,7 @@ class MergeInfo(_messages.Message):
 
 
 class MergeRequest(_messages.Message):
-  """Request for Merge.
+  r"""Request for Merge.
 
   Fields:
     revisionId: The other revision to be merged.
@@ -557,7 +557,7 @@ class MergeRequest(_messages.Message):
 
 
 class ModifyWorkspaceRequest(_messages.Message):
-  """Request for ModifyWorkspace.
+  r"""Request for ModifyWorkspace.
 
   Fields:
     actions: An ordered sequence of actions to perform in the workspace.  May
@@ -573,14 +573,14 @@ class ModifyWorkspaceRequest(_messages.Message):
 
 
 class ProjectRepoId(_messages.Message):
-  """Selects a repo using a Google Cloud Platform project ID (e.g. winged-
+  r"""Selects a repo using a Google Cloud Platform project ID (e.g. winged-
   cargo-31) and a repo name within that project.
   """
 
 
 
 class ReadResponse(_messages.Message):
-  """Response to read request. Exactly one of entries, file or
+  r"""Response to read request. Exactly one of entries, file or
   external_reference will be populated, depending on what the path in the
   request denotes.
 
@@ -605,7 +605,7 @@ class ReadResponse(_messages.Message):
 
 
 class RefreshWorkspaceRequest(_messages.Message):
-  """Request for RefreshWorkspace.
+  r"""Request for RefreshWorkspace.
 
   Fields:
     workspaceId: The ID of the workspace.
@@ -615,7 +615,7 @@ class RefreshWorkspaceRequest(_messages.Message):
 
 
 class Repo(_messages.Message):
-  """A repository (or repo) stores files for a version-control system.
+  r"""A repository (or repo) stores files for a version-control system.
 
   Enums:
     StateValueValuesEnum: The state the repo is in.
@@ -637,7 +637,7 @@ class Repo(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """The state the repo is in.
+    r"""The state the repo is in.
 
     Values:
       STATE_UNSPECIFIED: No state was specified.
@@ -649,7 +649,7 @@ class Repo(_messages.Message):
     DELETED = 2
 
   class VcsValueValuesEnum(_messages.Enum):
-    """The version control system of the repo.
+    r"""The version control system of the repo.
 
     Values:
       VCS_UNSPECIFIED: No version control system was specified.
@@ -668,7 +668,7 @@ class Repo(_messages.Message):
 
 
 class RepoId(_messages.Message):
-  """A unique identifier for a cloud repo.
+  r"""A unique identifier for a cloud repo.
 
   Fields:
     projectRepoId: A combination of a project ID and a repo name.
@@ -680,7 +680,7 @@ class RepoId(_messages.Message):
 
 
 class RepoSyncConfig(_messages.Message):
-  """RepoSync configuration information.
+  r"""RepoSync configuration information.
 
   Enums:
     StatusValueValuesEnum: The status of RepoSync.
@@ -692,7 +692,7 @@ class RepoSyncConfig(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """The status of RepoSync.
+    r"""The status of RepoSync.
 
     Values:
       REPO_SYNC_STATUS_UNSPECIFIED: No RepoSync status was specified.
@@ -712,7 +712,7 @@ class RepoSyncConfig(_messages.Message):
 
 
 class ResolveFilesRequest(_messages.Message):
-  """Request for ResolveFiles.
+  r"""Request for ResolveFiles.
 
   Fields:
     resolvedPaths: Files that should be marked as resolved in the workspace.
@@ -732,7 +732,7 @@ class ResolveFilesRequest(_messages.Message):
 
 
 class RevertRefreshRequest(_messages.Message):
-  """Request for RevertRefresh.
+  r"""Request for RevertRefresh.
 
   Fields:
     workspaceId: The ID of the workspace.
@@ -742,7 +742,7 @@ class RevertRefreshRequest(_messages.Message):
 
 
 class Revision(_messages.Message):
-  """A revision is a snapshot of a file tree, with associated metadata. This
+  r"""A revision is a snapshot of a file tree, with associated metadata. This
   message contains metadata only. Use the Read or ReadFromWorkspaceOrAlias
   rpcs to read the contents of the revision's file tree.
 
@@ -779,7 +779,7 @@ class Revision(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  """A snapshot is a version of a workspace. Each change to a workspace's
+  r"""A snapshot is a version of a workspace. Each change to a workspace's
   files creates a new snapshot. A workspace consists of a sequence of
   snapshots.
 
@@ -796,7 +796,7 @@ class Snapshot(_messages.Message):
 
 
 class SourceContext(_messages.Message):
-  """A SourceContext is a reference to a tree of files. A SourceContext
+  r"""A SourceContext is a reference to a tree of files. A SourceContext
   together with a path point to a unique revision of a single file or
   directory.
 
@@ -815,7 +815,7 @@ class SourceContext(_messages.Message):
 
 
 class SourceProjectsReposAliasesCreateRequest(_messages.Message):
-  """A SourceProjectsReposAliasesCreateRequest object.
+  r"""A SourceProjectsReposAliasesCreateRequest object.
 
   Fields:
     alias: A Alias resource to be passed as the request body.
@@ -831,7 +831,7 @@ class SourceProjectsReposAliasesCreateRequest(_messages.Message):
 
 
 class SourceProjectsReposAliasesDeleteRequest(_messages.Message):
-  """A SourceProjectsReposAliasesDeleteRequest object.
+  r"""A SourceProjectsReposAliasesDeleteRequest object.
 
   Enums:
     KindValueValuesEnum: The kind of the alias to delete.
@@ -847,7 +847,7 @@ class SourceProjectsReposAliasesDeleteRequest(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """The kind of the alias to delete.
+    r"""The kind of the alias to delete.
 
     Values:
       ANY: <no description>
@@ -873,7 +873,7 @@ class SourceProjectsReposAliasesDeleteRequest(_messages.Message):
 
 
 class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
-  """A SourceProjectsReposAliasesFilesGetRequest object.
+  r"""A SourceProjectsReposAliasesFilesGetRequest object.
 
   Enums:
     KindValueValuesEnum: The alias kind.
@@ -922,7 +922,7 @@ class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -936,7 +936,7 @@ class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
     OTHER = 3
 
   class SourceContextGerritAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -976,7 +976,7 @@ class SourceProjectsReposAliasesFilesGetRequest(_messages.Message):
 
 
 class SourceProjectsReposAliasesGetRequest(_messages.Message):
-  """A SourceProjectsReposAliasesGetRequest object.
+  r"""A SourceProjectsReposAliasesGetRequest object.
 
   Enums:
     KindValueValuesEnum: The kind of the alias.
@@ -990,7 +990,7 @@ class SourceProjectsReposAliasesGetRequest(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """The kind of the alias.
+    r"""The kind of the alias.
 
     Values:
       ANY: <no description>
@@ -1015,7 +1015,7 @@ class SourceProjectsReposAliasesGetRequest(_messages.Message):
 
 
 class SourceProjectsReposAliasesListFilesRequest(_messages.Message):
-  """A SourceProjectsReposAliasesListFilesRequest object.
+  r"""A SourceProjectsReposAliasesListFilesRequest object.
 
   Enums:
     KindValueValuesEnum: The alias kind.
@@ -1058,7 +1058,7 @@ class SourceProjectsReposAliasesListFilesRequest(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1072,7 +1072,7 @@ class SourceProjectsReposAliasesListFilesRequest(_messages.Message):
     OTHER = 3
 
   class SourceContextGerritAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1110,7 +1110,7 @@ class SourceProjectsReposAliasesListFilesRequest(_messages.Message):
 
 
 class SourceProjectsReposAliasesListRequest(_messages.Message):
-  """A SourceProjectsReposAliasesListRequest object.
+  r"""A SourceProjectsReposAliasesListRequest object.
 
   Enums:
     KindValueValuesEnum: Return only aliases of this kind.
@@ -1126,7 +1126,7 @@ class SourceProjectsReposAliasesListRequest(_messages.Message):
   """
 
   class KindValueValuesEnum(_messages.Enum):
-    """Return only aliases of this kind.
+    r"""Return only aliases of this kind.
 
     Values:
       ANY: <no description>
@@ -1152,7 +1152,7 @@ class SourceProjectsReposAliasesListRequest(_messages.Message):
 
 
 class SourceProjectsReposAliasesUpdateRequest(_messages.Message):
-  """A SourceProjectsReposAliasesUpdateRequest object.
+  r"""A SourceProjectsReposAliasesUpdateRequest object.
 
   Fields:
     alias: A Alias resource to be passed as the request body.
@@ -1173,7 +1173,7 @@ class SourceProjectsReposAliasesUpdateRequest(_messages.Message):
 
 
 class SourceProjectsReposDeleteRequest(_messages.Message):
-  """A SourceProjectsReposDeleteRequest object.
+  r"""A SourceProjectsReposDeleteRequest object.
 
   Fields:
     projectId: The ID of the project.
@@ -1187,7 +1187,7 @@ class SourceProjectsReposDeleteRequest(_messages.Message):
 
 
 class SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest(_messages.Message):
-  """A SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest object.
+  r"""A SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest object.
 
   Fields:
     alias: MOVABLE alias to read from, if the workspace doesn't exist.
@@ -1218,7 +1218,7 @@ class SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest(_messages.Message)
 
 
 class SourceProjectsReposGetRequest(_messages.Message):
-  """A SourceProjectsReposGetRequest object.
+  r"""A SourceProjectsReposGetRequest object.
 
   Fields:
     projectId: The ID of the project.
@@ -1232,7 +1232,7 @@ class SourceProjectsReposGetRequest(_messages.Message):
 
 
 class SourceProjectsReposListRequest(_messages.Message):
-  """A SourceProjectsReposListRequest object.
+  r"""A SourceProjectsReposListRequest object.
 
   Fields:
     projectId: The project ID whose repos should be listed.
@@ -1242,7 +1242,7 @@ class SourceProjectsReposListRequest(_messages.Message):
 
 
 class SourceProjectsReposMergeRequest(_messages.Message):
-  """A SourceProjectsReposMergeRequest object.
+  r"""A SourceProjectsReposMergeRequest object.
 
   Fields:
     mergeRequest: A MergeRequest resource to be passed as the request body.
@@ -1256,7 +1256,7 @@ class SourceProjectsReposMergeRequest(_messages.Message):
 
 
 class SourceProjectsReposRevisionsFilesGetRequest(_messages.Message):
-  """A SourceProjectsReposRevisionsFilesGetRequest object.
+  r"""A SourceProjectsReposRevisionsFilesGetRequest object.
 
   Enums:
     SourceContextCloudRepoAliasContextKindValueValuesEnum: The alias kind.
@@ -1305,7 +1305,7 @@ class SourceProjectsReposRevisionsFilesGetRequest(_messages.Message):
   """
 
   class SourceContextCloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1319,7 +1319,7 @@ class SourceProjectsReposRevisionsFilesGetRequest(_messages.Message):
     OTHER = 3
 
   class SourceContextGerritAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1359,7 +1359,7 @@ class SourceProjectsReposRevisionsFilesGetRequest(_messages.Message):
 
 
 class SourceProjectsReposRevisionsGetBatchGetRequest(_messages.Message):
-  """A SourceProjectsReposRevisionsGetBatchGetRequest object.
+  r"""A SourceProjectsReposRevisionsGetBatchGetRequest object.
 
   Fields:
     projectId: The ID of the project.
@@ -1375,7 +1375,7 @@ class SourceProjectsReposRevisionsGetBatchGetRequest(_messages.Message):
 
 
 class SourceProjectsReposRevisionsGetRequest(_messages.Message):
-  """A SourceProjectsReposRevisionsGetRequest object.
+  r"""A SourceProjectsReposRevisionsGetRequest object.
 
   Fields:
     projectId: The ID of the project.
@@ -1391,7 +1391,7 @@ class SourceProjectsReposRevisionsGetRequest(_messages.Message):
 
 
 class SourceProjectsReposRevisionsListFilesRequest(_messages.Message):
-  """A SourceProjectsReposRevisionsListFilesRequest object.
+  r"""A SourceProjectsReposRevisionsListFilesRequest object.
 
   Enums:
     SourceContextCloudRepoAliasContextKindValueValuesEnum: The alias kind.
@@ -1434,7 +1434,7 @@ class SourceProjectsReposRevisionsListFilesRequest(_messages.Message):
   """
 
   class SourceContextCloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1448,7 +1448,7 @@ class SourceProjectsReposRevisionsListFilesRequest(_messages.Message):
     OTHER = 3
 
   class SourceContextGerritAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1486,7 +1486,7 @@ class SourceProjectsReposRevisionsListFilesRequest(_messages.Message):
 
 
 class SourceProjectsReposRevisionsListRequest(_messages.Message):
-  """A SourceProjectsReposRevisionsListRequest object.
+  r"""A SourceProjectsReposRevisionsListRequest object.
 
   Enums:
     WalkDirectionValueValuesEnum: The direction to walk the graph.
@@ -1508,7 +1508,7 @@ class SourceProjectsReposRevisionsListRequest(_messages.Message):
   """
 
   class WalkDirectionValueValuesEnum(_messages.Enum):
-    """The direction to walk the graph.
+    r"""The direction to walk the graph.
 
     Values:
       BACKWARD: <no description>
@@ -1529,7 +1529,7 @@ class SourceProjectsReposRevisionsListRequest(_messages.Message):
 
 
 class SourceProjectsReposUpdateRequest(_messages.Message):
-  """A SourceProjectsReposUpdateRequest object.
+  r"""A SourceProjectsReposUpdateRequest object.
 
   Fields:
     projectId: The ID of the project.
@@ -1544,7 +1544,7 @@ class SourceProjectsReposUpdateRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesCommitWorkspaceRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesCommitWorkspaceRequest object.
+  r"""A SourceProjectsReposWorkspacesCommitWorkspaceRequest object.
 
   Fields:
     commitWorkspaceRequest: A CommitWorkspaceRequest resource to be passed as
@@ -1562,7 +1562,7 @@ class SourceProjectsReposWorkspacesCommitWorkspaceRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesCreateRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesCreateRequest object.
+  r"""A SourceProjectsReposWorkspacesCreateRequest object.
 
   Fields:
     createWorkspaceRequest: A CreateWorkspaceRequest resource to be passed as
@@ -1577,7 +1577,7 @@ class SourceProjectsReposWorkspacesCreateRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesDeleteRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesDeleteRequest object.
+  r"""A SourceProjectsReposWorkspacesDeleteRequest object.
 
   Fields:
     currentSnapshotId: If non-empty, current_snapshot_id must refer to the
@@ -1597,7 +1597,7 @@ class SourceProjectsReposWorkspacesDeleteRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesFilesGetRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesFilesGetRequest object.
+  r"""A SourceProjectsReposWorkspacesFilesGetRequest object.
 
   Enums:
     SourceContextCloudRepoAliasContextKindValueValuesEnum: The alias kind.
@@ -1645,7 +1645,7 @@ class SourceProjectsReposWorkspacesFilesGetRequest(_messages.Message):
   """
 
   class SourceContextCloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1659,7 +1659,7 @@ class SourceProjectsReposWorkspacesFilesGetRequest(_messages.Message):
     OTHER = 3
 
   class SourceContextGerritAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1699,7 +1699,7 @@ class SourceProjectsReposWorkspacesFilesGetRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesGetRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesGetRequest object.
+  r"""A SourceProjectsReposWorkspacesGetRequest object.
 
   Fields:
     name: The unique name of the workspace within the repo.  This is the name
@@ -1716,7 +1716,7 @@ class SourceProjectsReposWorkspacesGetRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesListFilesRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesListFilesRequest object.
+  r"""A SourceProjectsReposWorkspacesListFilesRequest object.
 
   Enums:
     SourceContextCloudRepoAliasContextKindValueValuesEnum: The alias kind.
@@ -1758,7 +1758,7 @@ class SourceProjectsReposWorkspacesListFilesRequest(_messages.Message):
   """
 
   class SourceContextCloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1772,7 +1772,7 @@ class SourceProjectsReposWorkspacesListFilesRequest(_messages.Message):
     OTHER = 3
 
   class SourceContextGerritAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1810,7 +1810,7 @@ class SourceProjectsReposWorkspacesListFilesRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesListRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesListRequest object.
+  r"""A SourceProjectsReposWorkspacesListRequest object.
 
   Enums:
     ViewValueValuesEnum: Specifies which parts of the Workspace resource
@@ -1825,7 +1825,7 @@ class SourceProjectsReposWorkspacesListRequest(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Specifies which parts of the Workspace resource should be returned in
+    r"""Specifies which parts of the Workspace resource should be returned in
     the response.
 
     Values:
@@ -1844,7 +1844,7 @@ class SourceProjectsReposWorkspacesListRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesModifyWorkspaceRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesModifyWorkspaceRequest object.
+  r"""A SourceProjectsReposWorkspacesModifyWorkspaceRequest object.
 
   Fields:
     modifyWorkspaceRequest: A ModifyWorkspaceRequest resource to be passed as
@@ -1862,7 +1862,7 @@ class SourceProjectsReposWorkspacesModifyWorkspaceRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesRefreshWorkspaceRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesRefreshWorkspaceRequest object.
+  r"""A SourceProjectsReposWorkspacesRefreshWorkspaceRequest object.
 
   Fields:
     name: The unique name of the workspace within the repo.  This is the name
@@ -1880,7 +1880,7 @@ class SourceProjectsReposWorkspacesRefreshWorkspaceRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesResolveFilesRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesResolveFilesRequest object.
+  r"""A SourceProjectsReposWorkspacesResolveFilesRequest object.
 
   Fields:
     name: The unique name of the workspace within the repo.  This is the name
@@ -1898,7 +1898,7 @@ class SourceProjectsReposWorkspacesResolveFilesRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesRevertRefreshRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesRevertRefreshRequest object.
+  r"""A SourceProjectsReposWorkspacesRevertRefreshRequest object.
 
   Fields:
     name: The unique name of the workspace within the repo.  This is the name
@@ -1916,7 +1916,7 @@ class SourceProjectsReposWorkspacesRevertRefreshRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesSnapshotsFilesGetRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesSnapshotsFilesGetRequest object.
+  r"""A SourceProjectsReposWorkspacesSnapshotsFilesGetRequest object.
 
   Enums:
     SourceContextCloudRepoAliasContextKindValueValuesEnum: The alias kind.
@@ -1964,7 +1964,7 @@ class SourceProjectsReposWorkspacesSnapshotsFilesGetRequest(_messages.Message):
   """
 
   class SourceContextCloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -1978,7 +1978,7 @@ class SourceProjectsReposWorkspacesSnapshotsFilesGetRequest(_messages.Message):
     OTHER = 3
 
   class SourceContextGerritAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -2018,7 +2018,7 @@ class SourceProjectsReposWorkspacesSnapshotsFilesGetRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesSnapshotsGetRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesSnapshotsGetRequest object.
+  r"""A SourceProjectsReposWorkspacesSnapshotsGetRequest object.
 
   Fields:
     name: The unique name of the workspace within the repo.  This is the name
@@ -2038,7 +2038,7 @@ class SourceProjectsReposWorkspacesSnapshotsGetRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesSnapshotsListFilesRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesSnapshotsListFilesRequest object.
+  r"""A SourceProjectsReposWorkspacesSnapshotsListFilesRequest object.
 
   Enums:
     SourceContextCloudRepoAliasContextKindValueValuesEnum: The alias kind.
@@ -2080,7 +2080,7 @@ class SourceProjectsReposWorkspacesSnapshotsListFilesRequest(_messages.Message):
   """
 
   class SourceContextCloudRepoAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -2094,7 +2094,7 @@ class SourceProjectsReposWorkspacesSnapshotsListFilesRequest(_messages.Message):
     OTHER = 3
 
   class SourceContextGerritAliasContextKindValueValuesEnum(_messages.Enum):
-    """The alias kind.
+    r"""The alias kind.
 
     Values:
       ANY: <no description>
@@ -2132,7 +2132,7 @@ class SourceProjectsReposWorkspacesSnapshotsListFilesRequest(_messages.Message):
 
 
 class SourceProjectsReposWorkspacesSnapshotsListRequest(_messages.Message):
-  """A SourceProjectsReposWorkspacesSnapshotsListRequest object.
+  r"""A SourceProjectsReposWorkspacesSnapshotsListRequest object.
 
   Fields:
     name: The unique name of the workspace within the repo.  This is the name
@@ -2154,7 +2154,7 @@ class SourceProjectsReposWorkspacesSnapshotsListRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -2183,7 +2183,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -2195,7 +2195,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -2221,7 +2221,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class UpdateRepoRequest(_messages.Message):
-  """Request for UpdateRepo.
+  r"""Request for UpdateRepo.
 
   Fields:
     repoId: The ID of the repo to be updated.
@@ -2241,7 +2241,7 @@ class UpdateRepoRequest(_messages.Message):
 
 
 class Workspace(_messages.Message):
-  """A Cloud Workspace stores modified files before they are committed to a
+  r"""A Cloud Workspace stores modified files before they are committed to a
   repo. This message contains metadata. Use the Read or
   ReadFromWorkspaceOrAlias methods to read files from the workspace, and use
   ModifyWorkspace to change files.
@@ -2269,7 +2269,7 @@ class Workspace(_messages.Message):
 
 
 class WriteAction(_messages.Message):
-  """Create or modify a file.
+  r"""Create or modify a file.
 
   Enums:
     ModeValueValuesEnum: The new mode of the file.
@@ -2281,7 +2281,7 @@ class WriteAction(_messages.Message):
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    """The new mode of the file.
+    r"""The new mode of the file.
 
     Values:
       FILE_MODE_UNSPECIFIED: No file mode was specified.

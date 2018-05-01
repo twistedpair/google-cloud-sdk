@@ -14,6 +14,8 @@
 
 """Base classes for abstracting away common logic."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 import argparse  # pylint: disable=unused-import
 import json
@@ -38,6 +40,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import text
+import six
 from typing import Any, Generator  # pylint: disable=unused-import
 
 
@@ -780,13 +783,11 @@ HELP = textwrap.dedent("""\
 def SerializeDict(value, fmt):
   """Serializes value to either JSON or YAML."""
   if fmt == 'json':
-    return json.dumps(
-        value,
-        indent=2,
-        sort_keys=True,
-        separators=(',', ': '))
+    return six.text_type(
+        json.dumps(
+            value, indent=2, sort_keys=True, separators=(str(','), str(': '))))
   else:
-    return yaml.dump(value)
+    return six.text_type(yaml.dump(value))
 
 
 def DeserializeValue(value, fmt):

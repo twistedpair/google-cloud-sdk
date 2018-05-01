@@ -14,7 +14,7 @@ package = 'cloudshell'
 
 
 class CloudshellUsersEnvironmentsGetRequest(_messages.Message):
-  """A CloudshellUsersEnvironmentsGetRequest object.
+  r"""A CloudshellUsersEnvironmentsGetRequest object.
 
   Fields:
     name: Name of the requested resource, for example
@@ -26,7 +26,7 @@ class CloudshellUsersEnvironmentsGetRequest(_messages.Message):
 
 
 class CloudshellUsersEnvironmentsPatchRequest(_messages.Message):
-  """A CloudshellUsersEnvironmentsPatchRequest object.
+  r"""A CloudshellUsersEnvironmentsPatchRequest object.
 
   Fields:
     environment: A Environment resource to be passed as the request body.
@@ -43,7 +43,7 @@ class CloudshellUsersEnvironmentsPatchRequest(_messages.Message):
 
 
 class CloudshellUsersEnvironmentsPublicKeysCreateRequest(_messages.Message):
-  """A CloudshellUsersEnvironmentsPublicKeysCreateRequest object.
+  r"""A CloudshellUsersEnvironmentsPublicKeysCreateRequest object.
 
   Fields:
     createPublicKeyRequest: A CreatePublicKeyRequest resource to be passed as
@@ -56,7 +56,7 @@ class CloudshellUsersEnvironmentsPublicKeysCreateRequest(_messages.Message):
 
 
 class CloudshellUsersEnvironmentsPublicKeysDeleteRequest(_messages.Message):
-  """A CloudshellUsersEnvironmentsPublicKeysDeleteRequest object.
+  r"""A CloudshellUsersEnvironmentsPublicKeysDeleteRequest object.
 
   Fields:
     name: Name of the resource to be deleted, e.g.
@@ -67,7 +67,7 @@ class CloudshellUsersEnvironmentsPublicKeysDeleteRequest(_messages.Message):
 
 
 class CloudshellUsersEnvironmentsStartRequest(_messages.Message):
-  """A CloudshellUsersEnvironmentsStartRequest object.
+  r"""A CloudshellUsersEnvironmentsStartRequest object.
 
   Fields:
     name: Name of the resource that should be started, for example
@@ -82,7 +82,7 @@ class CloudshellUsersEnvironmentsStartRequest(_messages.Message):
 
 
 class CreatePublicKeyRequest(_messages.Message):
-  """Request message for CreatePublicKey.
+  r"""Request message for CreatePublicKey.
 
   Fields:
     key: Key that should be added to the environment.
@@ -92,7 +92,7 @@ class CreatePublicKeyRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -102,7 +102,7 @@ class Empty(_messages.Message):
 
 
 class Environment(_messages.Message):
-  """A Cloud Shell environment, which is defined as the combination of a
+  r"""A Cloud Shell environment, which is defined as the combination of a
   Docker image specifying what is installed on the environment and a home
   directory containing the user's data that will remain across sessions. Each
   user has a single environment with the ID "default".
@@ -135,7 +135,7 @@ class Environment(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. Current execution state of this environment.
+    r"""Output only. Current execution state of this environment.
 
     Values:
       STATE_UNSPECIFIED: The environment's states is unknown.
@@ -163,8 +163,8 @@ class Environment(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -205,7 +205,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -219,7 +219,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -233,7 +233,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -250,7 +250,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -270,7 +270,7 @@ class Operation(_messages.Message):
 
 
 class PublicKey(_messages.Message):
-  """A public SSH key, corresponding to a private SSH key held by the client.
+  r"""A public SSH key, corresponding to a private SSH key held by the client.
 
   Enums:
     FormatValueValuesEnum: Required. Format of this key's content.
@@ -288,7 +288,7 @@ class PublicKey(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    """Required. Format of this key's content.
+    r"""Required. Format of this key's content.
 
     Values:
       FORMAT_UNSPECIFIED: Unknown format. Do not use.
@@ -311,7 +311,7 @@ class PublicKey(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -340,7 +340,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -352,7 +352,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -378,7 +378,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StartEnvironmentMetadata(_messages.Message):
-  """Message included in the metadata field of operations returned from
+  r"""Message included in the metadata field of operations returned from
   StartEnvironment.
 
   Enums:
@@ -389,7 +389,7 @@ class StartEnvironmentMetadata(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Current state of the environment being started.
+    r"""Current state of the environment being started.
 
     Values:
       STATE_UNSPECIFIED: The environment's start state is unknown.
@@ -411,11 +411,11 @@ class StartEnvironmentMetadata(_messages.Message):
 
 
 class StartEnvironmentRequest(_messages.Message):
-  """Request message for StartEnvironment."""
+  r"""Request message for StartEnvironment."""
 
 
 class StartEnvironmentResponse(_messages.Message):
-  """Message included in the response field of operations returned from
+  r"""Message included in the response field of operations returned from
   StartEnvironment once the operation is complete.
 
   Fields:
@@ -426,7 +426,7 @@ class StartEnvironmentResponse(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -474,7 +474,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -486,7 +486,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.

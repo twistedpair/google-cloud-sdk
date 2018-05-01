@@ -1,0 +1,17 @@
+project_content:
+  name: project_content
+  collection: dlp.projects.content
+  attributes:
+    - &project_content
+      parameter_name: projectsId
+      attribute_name: project
+      help: The project ID.
+
+project_image:
+  name: project_image
+  collection: dlp.projects.image
+  attributes:
+    - &project_image
+      parameter_name: projectsId
+      attribute_name: project
+      help: The project ID.

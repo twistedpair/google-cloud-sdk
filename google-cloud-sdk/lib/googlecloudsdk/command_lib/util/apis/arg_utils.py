@@ -27,6 +27,9 @@ from googlecloudsdk.core.resource import resource_property
 
 import six
 
+# Used to determine if a value has been set for an argument
+UNSPECIFIED = object()
+
 
 class Error(Exception):
   """Base exception for this module."""
@@ -243,7 +246,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
       help=attributes.help_text,
       hidden=attributes.hidden,
   )
-  if attributes.default is not None:
+  if attributes.default != UNSPECIFIED:
     arg.kwargs['default'] = attributes.default
   if action != 'store_true':
     # For this special action type, it won't accept a bunch of the common
@@ -253,7 +256,6 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
         metavar.replace('-', '_'))
     arg.kwargs['type'] = t
     arg.kwargs['choices'] = choices
-
   if not attributes.is_positional:
     arg.kwargs['required'] = attributes.required
   return arg

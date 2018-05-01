@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20180413",
+ "revision": "20180420",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -56,12 +56,12 @@
   },
   "quotaUser": {
    "type": "string",
-   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "description": "An opaque string that represents a user for quota purposes. Must not exceed 40 characters.",
    "location": "query"
   },
   "userIp": {
    "type": "string",
-   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "description": "Deprecated. Please use quotaUser instead.",
    "location": "query"
   }
  },
@@ -2191,9 +2191,11 @@
      "enum": [
       "EXTERNAL",
       "INTERNAL",
+      "INTERNAL_SELF_MANAGED",
       "INVALID_LOAD_BALANCING_SCHEME"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -2722,7 +2724,7 @@
     },
     "members": {
      "type": "array",
-     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` or `joe@example.com`.\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
+     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` .\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
      "items": {
       "type": "string"
      }
@@ -3865,6 +3867,10 @@
      "type": "string",
      "description": "[Output Only] Name of the resource.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "region": {
+     "type": "string",
+     "description": "[Output Only] URL of the region where the disk type resides. Only applicable for regional resources. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body."
     },
     "selfLink": {
      "type": "string",
@@ -8480,6 +8486,17 @@
    "id": "InstanceGroupManagerUpdatePolicy",
    "type": "object",
    "properties": {
+    "instanceRedistributionType": {
+     "type": "string",
+     "enum": [
+      "NONE",
+      "PROACTIVE"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
     "maxSurge": {
      "$ref": "FixedOrPercent",
      "description": "The maximum number of instances that can be created above the specified targetSize during the update process. By default, a fixed value of 1 is used. This value can be either a fixed number or a percentage if the instance group has 10 or more instances. If you set a percentage, the number of instances will be rounded up if necessary.\n\nAt least one of either maxSurge or maxUnavailable must be greater than 0. Learn more about maxSurge."
@@ -13185,7 +13202,7 @@
     },
     "description": {
      "type": "string",
-     "description": "[Output Only] An optional textual description of the resource."
+     "description": "An optional description of this resource. Provide this property when you create the resource."
     },
     "id": {
      "type": "string",
@@ -14980,7 +14997,7 @@
    "properties": {
     "instance": {
      "type": "string",
-     "description": "The URL of the instance. Serves as a merge key during UpdatePerInstanceConfigs operation."
+     "description": "The URL of the instance. Serves as a merge key during UpdatePerInstanceConfigs operation, i.e. if per-instance config with the same instance URL exists then it will be updated, otherwise a new one will be created."
     },
     "override": {
      "$ref": "ManagedInstanceOverride"
@@ -14990,7 +15007,7 @@
   "Policy": {
    "id": "Policy",
    "type": "object",
-   "description": "Defines an Identity and Access Management (IAM) policy. It is used to specify access control policies for Cloud Platform resources.\n\n\n\nA `Policy` consists of a list of `bindings`. A `Binding` binds a list of `members` to a `role`, where the members can be user accounts, Google groups, Google domains, and service accounts. A `role` is a named list of permissions defined by IAM.\n\n**Example**\n\n{ \"bindings\": [ { \"role\": \"roles/owner\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-other-app@appspot.gserviceaccount.com\", ] }, { \"role\": \"roles/viewer\", \"members\": [\"user:sean@example.com\"] } ] }\n\nFor a description of IAM and its features, see the [IAM developer's guide](https://cloud.google.com/iam/docs).",
+   "description": "Defines an Identity and Access Management (IAM) policy. It is used to specify access control policies for Cloud Platform resources.\n\n\n\nA `Policy` consists of a list of `bindings`. A `binding` binds a list of `members` to a `role`, where the members can be user accounts, Google groups, Google domains, and service accounts. A `role` is a named list of permissions defined by IAM.\n\n**JSON Example**\n\n{ \"bindings\": [ { \"role\": \"roles/owner\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-other-app@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles/viewer\", \"members\": [\"user:sean@example.com\"] } ] }\n\n**YAML Example**\n\nbindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-other-app@appspot.gserviceaccount.com role: roles/owner - members: - user:sean@example.com role: roles/viewer\n\n\n\nFor a description of IAM and its features, see the [IAM developer's guide](https://cloud.google.com/iam/docs).",
    "properties": {
     "auditConfigs": {
      "type": "array",
@@ -15026,6 +15043,19 @@
      "type": "integer",
      "description": "Deprecated.",
      "format": "int32"
+    }
+   }
+  },
+  "PreconfiguredWafSet": {
+   "id": "PreconfiguredWafSet",
+   "type": "object",
+   "properties": {
+    "expressionSets": {
+     "type": "array",
+     "description": "List of entities that are currently supported for WAF rules.",
+     "items": {
+      "$ref": "WafExpressionSet"
+     }
     }
    }
   },
@@ -18373,6 +18403,24 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "SecurityPoliciesListPreconfiguredExpressionSetsResponse": {
+   "id": "SecurityPoliciesListPreconfiguredExpressionSetsResponse",
+   "type": "object",
+   "properties": {
+    "preconfiguredExpressionSets": {
+     "$ref": "SecurityPoliciesWafConfig"
+    }
+   }
+  },
+  "SecurityPoliciesWafConfig": {
+   "id": "SecurityPoliciesWafConfig",
+   "type": "object",
+   "properties": {
+    "wafRules": {
+     "$ref": "PreconfiguredWafSet"
     }
    }
   },
@@ -23257,6 +23305,40 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "WafExpressionSet": {
+   "id": "WafExpressionSet",
+   "type": "object",
+   "properties": {
+    "aliases": {
+     "type": "array",
+     "description": "A list of alternate IDs. The format should be: - E.g. XSS-stable Generic suffix like \"stable\" is particularly useful if a policy likes to avail newer set of expressions without having to change the policy. A given alias name can't be used for more than one entity set.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "expressions": {
+     "type": "array",
+     "description": "List of available expressions.",
+     "items": {
+      "$ref": "WafExpressionSetExpression"
+     }
+    },
+    "id": {
+     "type": "string",
+     "description": "Google specified expression set ID. The format should be: - E.g. XSS-20170329"
+    }
+   }
+  },
+  "WafExpressionSetExpression": {
+   "id": "WafExpressionSetExpression",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "Expression ID should uniquely identify the origin of the expression. E.g. owasp-crs-v020901-id973337 identifies Owasp core rule set version 2.9.1 rule id 973337. The ID could be used to determine the individual attack definition that has been detected. It could also be used to exclude it from the policy in case of false positive."
     }
    }
   },
@@ -34205,7 +34287,7 @@
      "id": "compute.licenses.list",
      "path": "{project}/global/licenses",
      "httpMethod": "GET",
-     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 8. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.",
+     "description": "Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -42014,6 +42096,54 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "listPreconfiguredExpressionSets": {
+     "id": "compute.securityPolicies.listPreconfiguredExpressionSets",
+     "path": "{project}/global/securityPolicies/listPreconfiguredExpressionSets",
+     "httpMethod": "GET",
+     "description": "Gets the current list of preconfigured Web Application Firewall (WAF) expressions.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "SecurityPoliciesListPreconfiguredExpressionSetsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "patch": {

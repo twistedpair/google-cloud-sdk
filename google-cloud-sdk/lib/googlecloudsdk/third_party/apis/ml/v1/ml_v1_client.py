@@ -53,7 +53,7 @@ class MlV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels a running job.
+      r"""Cancels a running job.
 
       Args:
         request: (MlProjectsJobsCancelRequest) input message
@@ -80,7 +80,7 @@ class MlV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      """Creates a training or a batch prediction job.
+      r"""Creates a training or a batch prediction job.
 
       Args:
         request: (MlProjectsJobsCreateRequest) input message
@@ -107,7 +107,7 @@ class MlV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Describes a job.
+      r"""Describes a job.
 
       Args:
         request: (MlProjectsJobsGetRequest) input message
@@ -134,7 +134,7 @@ class MlV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -163,7 +163,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists the jobs in the project.
+      r"""Lists the jobs in the project.
 
 If there are no jobs that match the request parameters, the list
 request returns an empty response body: {}.
@@ -193,7 +193,7 @@ request returns an empty response body: {}.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a specific job resource.
+      r"""Updates a specific job resource.
 
 Currently the only supported fields to update are `labels`.
 
@@ -222,7 +222,7 @@ Currently the only supported fields to update are `labels`.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -250,7 +250,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -293,7 +293,7 @@ may "fail open" without warning.
           }
 
     def Get(self, request, global_params=None):
-      """Get the complete list of CMLE capabilities in a location, along with their.
+      r"""Get the complete list of CMLE capabilities in a location, along with their.
 location-specific properties.
 
       Args:
@@ -321,7 +321,7 @@ location-specific properties.
     )
 
     def List(self, request, global_params=None):
-      """List all locations that provides at least one type of CMLE capability.
+      r"""List all locations that provides at least one type of CMLE capability.
 
       Args:
         request: (MlProjectsLocationsListRequest) input message
@@ -358,7 +358,7 @@ location-specific properties.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new version of a model from a trained TensorFlow model.
+      r"""Creates a new version of a model from a trained TensorFlow model.
 
 If the version created in the cloud by this call is the first deployed
 version of the specified model, it will be made the default version of the
@@ -392,7 +392,7 @@ new version to be the default, you must call
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a model version.
+      r"""Deletes a model version.
 
 Each model can have multiple versions deployed and in use at any given
 time. Use this method to remove a single version.
@@ -425,7 +425,7 @@ of the model unless it is the only remaining version.
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a model version.
+      r"""Gets information about a model version.
 
 Models can have multiple versions. You can call
 [projects.models.versions.list](/ml-engine/reference/rest/v1/projects.models.versions/list)
@@ -457,7 +457,7 @@ versions of a model.
     )
 
     def List(self, request, global_params=None):
-      """Gets basic information about all the versions of a model.
+      r"""Gets basic information about all the versions of a model.
 
 If you expect that a model has many versions, or if you need to handle
 only a limited number of results at a time, you can request that the list
@@ -491,7 +491,7 @@ request returns an empty response body: {}.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the specified Version resource.
+      r"""Updates the specified Version resource.
 
 Currently the only supported field to update is `description`.
 
@@ -520,7 +520,7 @@ Currently the only supported field to update is `description`.
     )
 
     def SetDefault(self, request, global_params=None):
-      """Designates a version to be the default for the model.
+      r"""Designates a version to be the default for the model.
 
 The default version is used for prediction requests made against the model
 that don't specify a version.
@@ -564,7 +564,7 @@ setting manually using this method.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a model which will later contain one or more versions.
+      r"""Creates a model which will later contain one or more versions.
 
 You must add at least one version before you can request predictions from
 the model. Add versions by calling
@@ -595,7 +595,7 @@ the model. Add versions by calling
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a model.
+      r"""Deletes a model.
 
 You can only delete a model if there are no versions in it. You can delete
 versions by calling
@@ -626,7 +626,7 @@ versions by calling
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a model, including its name, the description (if.
+      r"""Gets information about a model, including its name, the description (if.
 set), and the default version (if at least one version of the model has
 been deployed).
 
@@ -655,7 +655,7 @@ been deployed).
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -684,7 +684,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists the models in a project.
+      r"""Lists the models in a project.
 
 Each project can contain multiple models, and each model can have multiple
 versions.
@@ -717,7 +717,7 @@ returns an empty response body: {}.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a specific model resource.
+      r"""Updates a specific model resource.
 
 Currently the only supported fields to update are `description` and
 `default_version.name`.
@@ -747,7 +747,7 @@ Currently the only supported fields to update are `description` and
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -775,7 +775,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -818,7 +818,7 @@ may "fail open" without warning.
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
 makes a best effort to cancel the operation, but success is not
 guaranteed.  If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.  Clients can use
@@ -854,7 +854,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is.
+      r"""Deletes a long-running operation. This method indicates that the client is.
 no longer interested in the operation result. It does not cancel the
 operation. If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.
@@ -884,7 +884,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -913,7 +913,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding
@@ -959,7 +959,7 @@ is the parent resource, without the operations collection id.
           }
 
     def GetConfig(self, request, global_params=None):
-      """Get the service account information associated with your project. You need.
+      r"""Get the service account information associated with your project. You need.
 this information in order to grant the service account permissions for
 the Google Cloud Storage location where you put your model training code
 for training the model with Google Cloud Machine Learning.
@@ -989,7 +989,7 @@ for training the model with Google Cloud Machine Learning.
     )
 
     def Predict(self, request, global_params=None):
-      """Performs prediction on the data in the request.
+      r"""Performs prediction on the data in the request.
 Cloud ML Engine implements a custom `predict` verb on top of an HTTP POST
 method. <p>For details of the request and response format, see the **guide
 to the [predict request format](/ml-engine/docs/v1/predict-request)**.

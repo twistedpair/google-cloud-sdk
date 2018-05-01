@@ -109,9 +109,15 @@ PREREQUISITE_OPTION_ERROR_MSG = """\
 Cannot specify --{opt} without --{prerequisite}.
 """
 
+CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG = """\
+Flag --enable-stackdriver-kubernetes requires Cloud Logging and Cloud Monitoring enabled with --enable-cloud-logging and --enable-cloud-monitoring.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_CONCURRENT_NODE_COUNT = 20
+
+MAX_AUTHORIZED_NETWORKS_CIDRS = 20
 
 INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
@@ -1632,6 +1638,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.local_ssd_volume_configs:
       for pool in cluster.nodePools:
         self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
+    if options.enable_stackdriver_kubernetes:
+      if options.enable_cloud_logging and options.enable_cloud_monitoring:
+        cluster.loggingService = 'logging.googleapis.com/kubernetes'
+        cluster.monitoringService = 'monitoring.googleapis.com/kubernetes'
+      else:
+        raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
     if options.addons:
       # Istio is disabled by default
       if ISTIO in options.addons:

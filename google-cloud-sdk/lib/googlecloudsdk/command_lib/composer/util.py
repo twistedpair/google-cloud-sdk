@@ -410,8 +410,7 @@ def BuildPartialUpdate(clear, remove_keys, set_entries, field_mask_prefix,
   # set_entries is sorted by key to make it easier for tests to set the
   # expected patch object.
   set_entries = OrderedDict(
-      (k.strip(), v)
-      for k, v in sorted(six.iteritems(set_entries or {})))
+      (k.strip(), v) for k, v in sorted(six.iteritems(set_entries or {})))
   if clear:
     entries = [
         entry_cls(key=key, value=value)
@@ -433,6 +432,57 @@ def BuildPartialUpdate(clear, remove_keys, set_entries, field_mask_prefix,
   # field mask since dictionary iteration order is undefined.
   field_mask_entries.sort()
   return ','.join(field_mask_entries), env_builder(entries)
+
+
+def BuildFullMapUpdate(clear, remove_keys, set_entries, initial_entries,
+                       entry_cls, env_builder):
+  """Builds the patch environment for an environment update.
+
+  To be used when BuildPartialUpdate cannot be used due to lack of support for
+  field masks containing map keys.
+
+  Follows the environments update semantic which applies operations
+  in an effective order of clear -> remove -> set.
+
+  Leading and trailing whitespace is stripped from elements in remove_keys
+  and the keys of set_entries.
+
+  Args:
+    clear: bool, If true, the patch removes existing keys.
+    remove_keys: iterable(string), Iterable of keys to remove.
+    set_entries: {string: string}, Dict containing entries to set.
+    initial_entries: [AdditionalProperty], list of AdditionalProperty class with
+      key and value fields, representing starting dict to update from.
+    entry_cls: AdditionalProperty, The AdditionalProperty class for the type
+      of entry being updated.
+    env_builder: [AdditionalProperty] -> Environment, A function which produces
+      a patch Environment with the given list of entry_cls properties.
+
+
+  Returns:
+    Environment, a patch environment produced by env_builder.
+  """
+  # Transform initial entries list to dictionary for easy processing
+  entries_dict = OrderedDict(
+      (entry.key, entry.value) for entry in initial_entries)
+  # Remove values that are no longer desired
+  if clear:
+    entries_dict = OrderedDict()
+  remove_keys = set(k.strip() for k in remove_keys or [])
+  for key in remove_keys:
+    if key in entries_dict:
+      del entries_dict[key]
+  # Update dictionary with new values
+  # set_entries is sorted by key to make it easier for tests to set the
+  # expected patch object.
+  set_entries = OrderedDict(
+      (k.strip(), v) for k, v in sorted(six.iteritems(set_entries or {})))
+  entries_dict.update(set_entries)
+  # Transform dictionary back into list of entry_cls
+  return env_builder([
+      entry_cls(key=key, value=value)
+      for key, value in six.iteritems(entries_dict)
+  ])
 
 
 def IsInRunningState(environment):

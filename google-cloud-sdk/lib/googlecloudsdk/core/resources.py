@@ -818,7 +818,8 @@ class Registry(object):
                                      existing_parser.collection_info.base_url])
       collection_parsers[collection_name] = parser
 
-      self._AddParserForUriPath(api_name, api_version, subname, parser, path)
+      if collection_info.enable_uri_parsing:
+        self._AddParserForUriPath(api_name, api_version, subname, parser, path)
 
   def _AddParserForUriPath(self, api_name, api_version,
                            subcollection, parser, path):

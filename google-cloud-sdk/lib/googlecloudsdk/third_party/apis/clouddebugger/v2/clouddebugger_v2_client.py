@@ -53,7 +53,7 @@ class ClouddebuggerV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Returns the list of all active breakpoints for the debuggee.
+      r"""Returns the list of all active breakpoints for the debuggee.
 
 The breakpoint specification (`location`, `condition`, and `expressions`
 fields) is semantically immutable, although the field values may
@@ -91,7 +91,7 @@ setting those breakpoints again.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the breakpoint state or mutable fields.
+      r"""Updates the breakpoint state or mutable fields.
 The entire Breakpoint message must be sent back to the controller service.
 
 Updates to active breakpoint fields are only allowed if the new value
@@ -134,7 +134,7 @@ or snapping the location to the correct line of code.
           }
 
     def Register(self, request, global_params=None):
-      """Registers the debuggee with the controller service.
+      r"""Registers the debuggee with the controller service.
 
 All agents attached to the same application must call this method with
 exactly the same request content to get back the same stable `debuggee_id`.
@@ -189,7 +189,7 @@ from data loss, or change the `debuggee_id` format. Agents must handle
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the breakpoint from the debuggee.
+      r"""Deletes the breakpoint from the debuggee.
 
       Args:
         request: (ClouddebuggerDebuggerDebuggeesBreakpointsDeleteRequest) input message
@@ -215,7 +215,7 @@ from data loss, or change the `debuggee_id` format. Agents must handle
     )
 
     def Get(self, request, global_params=None):
-      """Gets breakpoint information.
+      r"""Gets breakpoint information.
 
       Args:
         request: (ClouddebuggerDebuggerDebuggeesBreakpointsGetRequest) input message
@@ -241,7 +241,7 @@ from data loss, or change the `debuggee_id` format. Agents must handle
     )
 
     def List(self, request, global_params=None):
-      """Lists all breakpoints for the debuggee.
+      r"""Lists all breakpoints for the debuggee.
 
       Args:
         request: (ClouddebuggerDebuggerDebuggeesBreakpointsListRequest) input message
@@ -267,7 +267,7 @@ from data loss, or change the `debuggee_id` format. Agents must handle
     )
 
     def Set(self, request, global_params=None):
-      """Sets the breakpoint to the debuggee.
+      r"""Sets the breakpoint to the debuggee.
 
       Args:
         request: (ClouddebuggerDebuggerDebuggeesBreakpointsSetRequest) input message
@@ -303,7 +303,7 @@ from data loss, or change the `debuggee_id` format. Agents must handle
           }
 
     def List(self, request, global_params=None):
-      """Lists all the debuggees that the user has access to.
+      r"""Lists all the debuggees that the user has access to.
 
       Args:
         request: (ClouddebuggerDebuggerDebuggeesListRequest) input message

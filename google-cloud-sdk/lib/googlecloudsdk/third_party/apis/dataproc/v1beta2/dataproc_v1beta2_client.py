@@ -55,7 +55,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates new workflow template.
+      r"""Creates new workflow template.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesCreateRequest) input message
@@ -82,7 +82,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a workflow template. It does not cancel in-progress workflows.
+      r"""Deletes a workflow template. It does not cancel in-progress workflows.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesDeleteRequest) input message
@@ -109,7 +109,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves the latest workflow template.Can retrieve previously instantiated template by specifying optional version parameter.
+      r"""Retrieves the latest workflow template.Can retrieve previously instantiated template by specifying optional version parameter.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesGetRequest) input message
@@ -136,7 +136,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesGetIamPolicyRequest) input message
@@ -163,7 +163,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      """Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateRequest) input message
@@ -190,7 +190,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def InstantiateInline(self, request, global_params=None):
-      """Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesInstantiateInlineRequest) input message
@@ -217,7 +217,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists workflows that match the specified filter in the request.
+      r"""Lists workflows that match the specified filter in the request.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesListRequest) input message
@@ -244,7 +244,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest) input message
@@ -271,7 +271,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest) input message
@@ -298,7 +298,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates (replaces) workflow template. The updated template must contain version that matches the current server version.
+      r"""Updates (replaces) workflow template. The updated template must contain version that matches the current server version.
 
       Args:
         request: (WorkflowTemplate) input message
@@ -345,7 +345,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a cluster in a project.
+      r"""Creates a cluster in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersCreateRequest) input message
@@ -371,7 +371,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a cluster in a project.
+      r"""Deletes a cluster in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersDeleteRequest) input message
@@ -397,7 +397,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Diagnose(self, request, global_params=None):
-      """Gets cluster diagnostic information. After the operation completes, the Operation.response field contains DiagnoseClusterOutputLocation.
+      r"""Gets cluster diagnostic information. After the operation completes, the Operation.response field contains DiagnoseClusterOutputLocation.
 
       Args:
         request: (DataprocProjectsRegionsClustersDiagnoseRequest) input message
@@ -423,7 +423,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the resource representation for a cluster in a project.
+      r"""Gets the resource representation for a cluster in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersGetRequest) input message
@@ -449,7 +449,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (DataprocProjectsRegionsClustersGetIamPolicyRequest) input message
@@ -476,7 +476,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all regions/{region}/clusters in a project.
+      r"""Lists all regions/{region}/clusters in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersListRequest) input message
@@ -502,7 +502,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a cluster in a project.
+      r"""Updates a cluster in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersPatchRequest) input message
@@ -528,7 +528,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (DataprocProjectsRegionsClustersSetIamPolicyRequest) input message
@@ -555,7 +555,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (DataprocProjectsRegionsClustersTestIamPermissionsRequest) input message
@@ -592,7 +592,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts a job cancellation request. To access the job resource after cancellation, call regions/{region}/jobs.list or regions/{region}/jobs.get.
+      r"""Starts a job cancellation request. To access the job resource after cancellation, call regions/{region}/jobs.list or regions/{region}/jobs.get.
 
       Args:
         request: (DataprocProjectsRegionsJobsCancelRequest) input message
@@ -618,7 +618,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the job from the project. If the job is active, the delete fails, and the response returns FAILED_PRECONDITION.
+      r"""Deletes the job from the project. If the job is active, the delete fails, and the response returns FAILED_PRECONDITION.
 
       Args:
         request: (DataprocProjectsRegionsJobsDeleteRequest) input message
@@ -644,7 +644,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the resource representation for a job in a project.
+      r"""Gets the resource representation for a job in a project.
 
       Args:
         request: (DataprocProjectsRegionsJobsGetRequest) input message
@@ -670,7 +670,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (DataprocProjectsRegionsJobsGetIamPolicyRequest) input message
@@ -697,7 +697,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists regions/{region}/jobs in a project.
+      r"""Lists regions/{region}/jobs in a project.
 
       Args:
         request: (DataprocProjectsRegionsJobsListRequest) input message
@@ -723,7 +723,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a job in a project.
+      r"""Updates a job in a project.
 
       Args:
         request: (DataprocProjectsRegionsJobsPatchRequest) input message
@@ -749,7 +749,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (DataprocProjectsRegionsJobsSetIamPolicyRequest) input message
@@ -776,7 +776,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Submit(self, request, global_params=None):
-      """Submits a job to a cluster.
+      r"""Submits a job to a cluster.
 
       Args:
         request: (DataprocProjectsRegionsJobsSubmitRequest) input message
@@ -802,7 +802,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (DataprocProjectsRegionsJobsTestIamPermissionsRequest) input message
@@ -839,7 +839,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
 
       Args:
         request: (DataprocProjectsRegionsOperationsCancelRequest) input message
@@ -866,7 +866,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED.
 
       Args:
         request: (DataprocProjectsRegionsOperationsDeleteRequest) input message
@@ -893,7 +893,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (DataprocProjectsRegionsOperationsGetRequest) input message
@@ -920,7 +920,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (DataprocProjectsRegionsOperationsGetIamPolicyRequest) input message
@@ -947,7 +947,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (DataprocProjectsRegionsOperationsListRequest) input message
@@ -974,7 +974,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (DataprocProjectsRegionsOperationsSetIamPolicyRequest) input message
@@ -1001,7 +1001,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (DataprocProjectsRegionsOperationsTestIamPermissionsRequest) input message
@@ -1038,7 +1038,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates new workflow template.
+      r"""Creates new workflow template.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesCreateRequest) input message
@@ -1065,7 +1065,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a workflow template. It does not cancel in-progress workflows.
+      r"""Deletes a workflow template. It does not cancel in-progress workflows.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesDeleteRequest) input message
@@ -1092,7 +1092,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves the latest workflow template.Can retrieve previously instantiated template by specifying optional version parameter.
+      r"""Retrieves the latest workflow template.Can retrieve previously instantiated template by specifying optional version parameter.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesGetRequest) input message
@@ -1119,7 +1119,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesGetIamPolicyRequest) input message
@@ -1146,7 +1146,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Instantiate(self, request, global_params=None):
-      """Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateRequest) input message
@@ -1173,7 +1173,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def InstantiateInline(self, request, global_params=None):
-      """Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
+      r"""Instantiates a template and begins execution.This method is equivalent to executing the sequence CreateWorkflowTemplate, InstantiateWorkflowTemplate, DeleteWorkflowTemplate.The returned Operation can be used to track execution of workflow by polling operations.get. The Operation will complete when entire workflow is finished.The running workflow can be aborted via operations.cancel. This will cause any inflight jobs to be cancelled and workflow-owned clusters to be deleted.The Operation.metadata will be WorkflowMetadata.On successful completion, Operation.response will be Empty.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesInstantiateInlineRequest) input message
@@ -1200,7 +1200,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists workflows that match the specified filter in the request.
+      r"""Lists workflows that match the specified filter in the request.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesListRequest) input message
@@ -1227,7 +1227,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesSetIamPolicyRequest) input message
@@ -1254,7 +1254,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
         request: (DataprocProjectsRegionsWorkflowTemplatesTestIamPermissionsRequest) input message
@@ -1281,7 +1281,7 @@ class DataprocV1beta2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates (replaces) workflow template. The updated template must contain version that matches the current server version.
+      r"""Updates (replaces) workflow template. The updated template must contain version that matches the current server version.
 
       Args:
         request: (WorkflowTemplate) input message

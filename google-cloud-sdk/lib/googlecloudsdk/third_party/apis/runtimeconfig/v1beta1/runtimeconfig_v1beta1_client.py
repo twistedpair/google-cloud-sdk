@@ -52,7 +52,7 @@ class RuntimeconfigV1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -81,7 +81,7 @@ service.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -124,7 +124,7 @@ may "fail open" without warning.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a variable within the given configuration. You cannot create.
+      r"""Creates a variable within the given configuration. You cannot create.
 a variable with a name that is a prefix of an existing variable name, or a
 name that has an existing variable name as a prefix.
 
@@ -158,7 +158,7 @@ documentation.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a variable or multiple variables.
+      r"""Deletes a variable or multiple variables.
 
 If you specify a variable name, then that variable is deleted. If you
 specify a prefix and `recursive` is true, then all variables with that
@@ -190,7 +190,7 @@ variables by prefix.
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a single variable.
+      r"""Gets information about a single variable.
 
       Args:
         request: (RuntimeconfigProjectsConfigsVariablesGetRequest) input message
@@ -217,7 +217,7 @@ variables by prefix.
     )
 
     def List(self, request, global_params=None):
-      """Lists variables within given a configuration, matching any provided.
+      r"""Lists variables within given a configuration, matching any provided.
 filters. This only lists variable names, not the values, unless
 `return_values` is true, in which case only variables that user has IAM
 permission to GetVariable will be returned.
@@ -247,7 +247,7 @@ permission to GetVariable will be returned.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -280,7 +280,7 @@ may "fail open" without warning.
     )
 
     def Update(self, request, global_params=None):
-      """Updates an existing variable with a new value.
+      r"""Updates an existing variable with a new value.
 
       Args:
         request: (Variable) input message
@@ -307,7 +307,7 @@ may "fail open" without warning.
     )
 
     def Watch(self, request, global_params=None):
-      """Watches a specific variable and waits for a change in the variable's value.
+      r"""Watches a specific variable and waits for a change in the variable's value.
 When there is a change, this method returns the new value or times out.
 
 If a variable is deleted while being watched, the `variableState` state is
@@ -357,7 +357,7 @@ documentation.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a Waiter resource. This operation returns a long-running Operation.
+      r"""Creates a Waiter resource. This operation returns a long-running Operation.
 resource which can be polled for completion. However, a waiter with the
 given name will exist (and can be retrieved) prior to the operation
 completing. If the operation fails, the failed Waiter resource will
@@ -388,7 +388,7 @@ still exist and must be deleted prior to subsequent creation attempts.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the waiter with the specified name.
+      r"""Deletes the waiter with the specified name.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersDeleteRequest) input message
@@ -415,7 +415,7 @@ still exist and must be deleted prior to subsequent creation attempts.
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a single waiter.
+      r"""Gets information about a single waiter.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersGetRequest) input message
@@ -442,7 +442,7 @@ still exist and must be deleted prior to subsequent creation attempts.
     )
 
     def List(self, request, global_params=None):
-      """List waiters within the given configuration.
+      r"""List waiters within the given configuration.
 
       Args:
         request: (RuntimeconfigProjectsConfigsWaitersListRequest) input message
@@ -469,7 +469,7 @@ still exist and must be deleted prior to subsequent creation attempts.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -512,7 +512,7 @@ may "fail open" without warning.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new RuntimeConfig resource. The configuration name must be.
+      r"""Creates a new RuntimeConfig resource. The configuration name must be.
 unique within project.
 
       Args:
@@ -540,7 +540,7 @@ unique within project.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a RuntimeConfig resource.
+      r"""Deletes a RuntimeConfig resource.
 
       Args:
         request: (RuntimeconfigProjectsConfigsDeleteRequest) input message
@@ -567,7 +567,7 @@ unique within project.
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a RuntimeConfig resource.
+      r"""Gets information about a RuntimeConfig resource.
 
       Args:
         request: (RuntimeconfigProjectsConfigsGetRequest) input message
@@ -594,7 +594,7 @@ unique within project.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -623,7 +623,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists all the RuntimeConfig resources within project.
+      r"""Lists all the RuntimeConfig resources within project.
 
       Args:
         request: (RuntimeconfigProjectsConfigsListRequest) input message
@@ -650,7 +650,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -678,7 +678,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -711,7 +711,7 @@ may "fail open" without warning.
     )
 
     def Update(self, request, global_params=None):
-      """Updates a RuntimeConfig resource. The configuration must exist beforehand.
+      r"""Updates a RuntimeConfig resource. The configuration must exist beforehand.
 
       Args:
         request: (RuntimeConfig) input message

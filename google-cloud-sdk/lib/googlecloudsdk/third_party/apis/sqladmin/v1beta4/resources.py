@@ -27,41 +27,49 @@ class Collections(enum.Enum):
       'backupRuns',
       'projects/{project}/instances/{instance}/backupRuns/{id}',
       {},
-      [u'project', u'instance', u'id']
+      [u'project', u'instance', u'id'],
+      True
   )
   DATABASES = (
       'databases',
       'projects/{project}/instances/{instance}/databases/{database}',
       {},
-      [u'project', u'instance', u'database']
+      [u'project', u'instance', u'database'],
+      True
   )
   INSTANCES = (
       'instances',
       'projects/{project}/instances/{instance}',
       {},
-      [u'project', u'instance']
+      [u'project', u'instance'],
+      True
   )
   OPERATIONS = (
       'operations',
       'projects/{project}/operations/{operation}',
       {},
-      [u'project', u'operation']
+      [u'project', u'operation'],
+      True
   )
   SSLCERTS = (
       'sslCerts',
       'projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}',
       {},
-      [u'project', u'instance', u'sha1Fingerprint']
+      [u'project', u'instance', u'sha1Fingerprint'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{project}',
       {},
-      [u'project']
+      [u'project'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

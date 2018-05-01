@@ -49,7 +49,7 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Fetches an Organization resource identified by the specified resource name.
+      r"""Fetches an Organization resource identified by the specified resource name.
 
       Args:
         request: (CloudresourcemanagerOrganizationsGetRequest) input message
@@ -75,7 +75,7 @@ class CloudresourcemanagerV1beta1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for an Organization resource. May be empty.
+      r"""Gets the access control policy for an Organization resource. May be empty.
 if no such policy or resource exists. The `resource` field should be the
 organization's resource name, e.g. "organizations/123".
 
@@ -103,7 +103,7 @@ organization's resource name, e.g. "organizations/123".
     )
 
     def List(self, request, global_params=None):
-      """Lists Organization resources that are visible to the user and satisfy.
+      r"""Lists Organization resources that are visible to the user and satisfy.
 the specified filter. This method returns Organizations in an unspecified
 order. New Organizations do not necessarily appear at the end of the list.
 
@@ -131,7 +131,7 @@ order. New Organizations do not necessarily appear at the end of the list.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on an Organization resource. Replaces any.
+      r"""Sets the access control policy on an Organization resource. Replaces any.
 existing policy. The `resource` field should be the organization's resource
 name, e.g. "organizations/123".
 
@@ -159,7 +159,7 @@ name, e.g. "organizations/123".
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified Organization.
+      r"""Returns permissions that a caller has on the specified Organization.
 The `resource` field should be the organization's resource name,
 e.g. "organizations/123".
 
@@ -187,7 +187,7 @@ e.g. "organizations/123".
     )
 
     def Update(self, request, global_params=None):
-      """Updates an Organization resource identified by the specified resource name.
+      r"""Updates an Organization resource identified by the specified resource name.
 
       Args:
         request: (CloudresourcemanagerOrganizationsUpdateRequest) input message
@@ -223,7 +223,7 @@ e.g. "organizations/123".
           }
 
     def Create(self, request, global_params=None):
-      """Creates a Project resource.
+      r"""Creates a Project resource.
 
 Initially, the Project resource is owned by its creator exclusively.
 The creator can later grant permission to others to read or update the
@@ -258,7 +258,7 @@ project, folder, or organization.
     )
 
     def Delete(self, request, global_params=None):
-      """Marks the Project identified by the specified.
+      r"""Marks the Project identified by the specified.
 `project_id` (for example, `my-project-123`) for deletion.
 This method will only affect the Project if it has a lifecycle state of
 ACTIVE.
@@ -304,7 +304,7 @@ The caller must have modify permissions for this Project.
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves the Project identified by the specified.
+      r"""Retrieves the Project identified by the specified.
 `project_id` (for example, `my-project-123`).
 
 The caller must have read permissions for this Project.
@@ -333,7 +333,7 @@ The caller must have read permissions for this Project.
     )
 
     def GetAncestry(self, request, global_params=None):
-      """Gets a list of ancestors in the resource hierarchy for the Project.
+      r"""Gets a list of ancestors in the resource hierarchy for the Project.
 identified by the specified `project_id` (for example, `my-project-123`).
 
 The caller must have read permissions for this Project.
@@ -362,7 +362,7 @@ The caller must have read permissions for this Project.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Returns the IAM access control policy for the specified Project.
+      r"""Returns the IAM access control policy for the specified Project.
 Permission is denied if the policy or the resource does not exist.
 
 For additional information about resource structure and identification,
@@ -392,7 +392,7 @@ see [Resource Names](/apis/design/resource_names).
     )
 
     def List(self, request, global_params=None):
-      """Lists Projects that are visible to the user and satisfy the.
+      r"""Lists Projects that are visible to the user and satisfy the.
 specified filter. This method returns Projects in an unspecified order.
 This method is eventually consistent with project mutations; this means
 that a newly created project may not appear in the results or recent
@@ -423,7 +423,7 @@ retrieve the latest state of a project, use the GetProjectmethod.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the IAM access control policy for the specified Project. Overwrites.
+      r"""Sets the IAM access control policy for the specified Project. Overwrites.
 any existing policy.
 
 The following constraints apply when using `setIamPolicy()`:
@@ -487,7 +487,7 @@ roles.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified Project.
+      r"""Returns permissions that a caller has on the specified Project.
 
       Args:
         request: (CloudresourcemanagerProjectsTestIamPermissionsRequest) input message
@@ -513,7 +513,7 @@ roles.
     )
 
     def Undelete(self, request, global_params=None):
-      """Restores the Project identified by the specified.
+      r"""Restores the Project identified by the specified.
 `project_id` (for example, `my-project-123`).
 You can only use this method for a Project that has a lifecycle state of
 DELETE_REQUESTED.
@@ -545,7 +545,7 @@ The caller must have modify permissions for this Project.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the attributes of the Project identified by the specified.
+      r"""Updates the attributes of the Project identified by the specified.
 `project_id` (for example, `my-project-123`).
 
 The caller must have modify permissions for this Project.

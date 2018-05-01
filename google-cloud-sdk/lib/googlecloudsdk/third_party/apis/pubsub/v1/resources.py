@@ -27,7 +27,8 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_SNAPSHOTS = (
       'projects.snapshots',
@@ -36,7 +37,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/snapshots/{snapshotsId}',
       },
-      [u'snapshot']
+      [u'snapshot'],
+      True
   )
   PROJECTS_SUBSCRIPTIONS = (
       'projects.subscriptions',
@@ -45,7 +47,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/subscriptions/{subscriptionsId}',
       },
-      [u'subscription']
+      [u'subscription'],
+      True
   )
   PROJECTS_TOPICS = (
       'projects.topics',
@@ -54,11 +57,14 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/topics/{topicsId}',
       },
-      [u'topic']
+      [u'topic'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

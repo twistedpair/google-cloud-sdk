@@ -50,7 +50,7 @@ class CloudshellV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Adds a public SSH key to an environment, allowing clients with the.
+      r"""Adds a public SSH key to an environment, allowing clients with the.
 corresponding private key to connect to that environment via SSH. If a key
 with the same format and content already exists, this will return the
 existing key.
@@ -80,7 +80,7 @@ existing key.
     )
 
     def Delete(self, request, global_params=None):
-      """Removes a public SSH key from an environment. Clients will no longer be.
+      r"""Removes a public SSH key from an environment. Clients will no longer be.
 able to connect to the environment using the corresponding private key.
 
       Args:
@@ -118,7 +118,7 @@ able to connect to the environment using the corresponding private key.
           }
 
     def Get(self, request, global_params=None):
-      """Gets an environment. Returns NOT_FOUND if the environment does not exist.
+      r"""Gets an environment. Returns NOT_FOUND if the environment does not exist.
 
       Args:
         request: (CloudshellUsersEnvironmentsGetRequest) input message
@@ -145,7 +145,7 @@ able to connect to the environment using the corresponding private key.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing environment.
+      r"""Updates an existing environment.
 
       Args:
         request: (CloudshellUsersEnvironmentsPatchRequest) input message
@@ -172,7 +172,7 @@ able to connect to the environment using the corresponding private key.
     )
 
     def Start(self, request, global_params=None):
-      """Starts an existing environment, allowing clients to connect to it. The.
+      r"""Starts an existing environment, allowing clients to connect to it. The.
 returned operation will contain an instance of StartEnvironmentMetadata in
 its metadata field. Users can wait for the environment to start by polling
 this operation via GetOperation. Once the environment has finished starting

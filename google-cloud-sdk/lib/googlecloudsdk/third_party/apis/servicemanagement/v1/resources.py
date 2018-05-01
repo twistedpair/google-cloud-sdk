@@ -27,41 +27,49 @@ class Collections(enum.Enum):
       'operations',
       'operations/{operationsId}',
       {},
-      [u'operationsId']
+      [u'operationsId'],
+      True
   )
   SERVICES = (
       'services',
       'services/{serviceName}',
       {},
-      [u'serviceName']
+      [u'serviceName'],
+      True
   )
   SERVICES_CONFIGS = (
       'services.configs',
       'services/{serviceName}/configs/{configId}',
       {},
-      [u'serviceName', u'configId']
+      [u'serviceName', u'configId'],
+      True
   )
   SERVICES_CUSTOMERSETTINGS = (
       'services.customerSettings',
       'services/{serviceName}/customerSettings/{customerId}',
       {},
-      [u'serviceName', u'customerId']
+      [u'serviceName', u'customerId'],
+      True
   )
   SERVICES_PROJECTSETTINGS = (
       'services.projectSettings',
       'services/{serviceName}/projectSettings/{consumerProjectId}',
       {},
-      [u'serviceName', u'consumerProjectId']
+      [u'serviceName', u'consumerProjectId'],
+      True
   )
   SERVICES_ROLLOUTS = (
       'services.rollouts',
       'services/{serviceName}/rollouts/{rolloutId}',
       {},
-      [u'serviceName', u'rolloutId']
+      [u'serviceName', u'rolloutId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

@@ -14,4 +14,5 @@
 """Constants used for Cloud Datastore."""
 
 # Special marker used for the default namespace in gcloud commands.
+from __future__ import unicode_literals
 DEFAULT_NAMESPACE = '(default)'

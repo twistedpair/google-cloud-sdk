@@ -27,13 +27,15 @@ class Collections(enum.Enum):
       'users',
       'users/{usersId}',
       {},
-      [u'usersId']
+      [u'usersId'],
+      True
   )
   USERS_PROJECTS = (
       'users.projects',
       'users/{user}/projects/{project}',
       {},
-      [u'user', u'project']
+      [u'user', u'project'],
+      True
   )
   USERS_SSHPUBLICKEYS = (
       'users.sshPublicKeys',
@@ -42,11 +44,14 @@ class Collections(enum.Enum):
           '':
               'users/{usersId}/sshPublicKeys/{sshPublicKeysId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

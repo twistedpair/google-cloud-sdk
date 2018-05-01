@@ -13,7 +13,7 @@ package = 'bigtableclusteradmin'
 
 
 class BigtableclusteradminOperationsCancelRequest(_messages.Message):
-  """A BigtableclusteradminOperationsCancelRequest object.
+  r"""A BigtableclusteradminOperationsCancelRequest object.
 
   Fields:
     cancelOperationRequest: A CancelOperationRequest resource to be passed as
@@ -26,7 +26,7 @@ class BigtableclusteradminOperationsCancelRequest(_messages.Message):
 
 
 class BigtableclusteradminOperationsDeleteRequest(_messages.Message):
-  """A BigtableclusteradminOperationsDeleteRequest object.
+  r"""A BigtableclusteradminOperationsDeleteRequest object.
 
   Fields:
     name: A string attribute.
@@ -36,7 +36,7 @@ class BigtableclusteradminOperationsDeleteRequest(_messages.Message):
 
 
 class BigtableclusteradminOperationsGetRequest(_messages.Message):
-  """A BigtableclusteradminOperationsGetRequest object.
+  r"""A BigtableclusteradminOperationsGetRequest object.
 
   Fields:
     name: A string attribute.
@@ -46,7 +46,7 @@ class BigtableclusteradminOperationsGetRequest(_messages.Message):
 
 
 class BigtableclusteradminOperationsListRequest(_messages.Message):
-  """A BigtableclusteradminOperationsListRequest object.
+  r"""A BigtableclusteradminOperationsListRequest object.
 
   Fields:
     filter: A string attribute.
@@ -62,7 +62,7 @@ class BigtableclusteradminOperationsListRequest(_messages.Message):
 
 
 class BigtableclusteradminProjectsAggregatedClustersListRequest(_messages.Message):
-  """A BigtableclusteradminProjectsAggregatedClustersListRequest object.
+  r"""A BigtableclusteradminProjectsAggregatedClustersListRequest object.
 
   Fields:
     name: A string attribute.
@@ -72,7 +72,7 @@ class BigtableclusteradminProjectsAggregatedClustersListRequest(_messages.Messag
 
 
 class BigtableclusteradminProjectsZonesClustersDeleteRequest(_messages.Message):
-  """A BigtableclusteradminProjectsZonesClustersDeleteRequest object.
+  r"""A BigtableclusteradminProjectsZonesClustersDeleteRequest object.
 
   Fields:
     name: A string attribute.
@@ -82,7 +82,7 @@ class BigtableclusteradminProjectsZonesClustersDeleteRequest(_messages.Message):
 
 
 class BigtableclusteradminProjectsZonesClustersGetRequest(_messages.Message):
-  """A BigtableclusteradminProjectsZonesClustersGetRequest object.
+  r"""A BigtableclusteradminProjectsZonesClustersGetRequest object.
 
   Fields:
     name: A string attribute.
@@ -92,7 +92,7 @@ class BigtableclusteradminProjectsZonesClustersGetRequest(_messages.Message):
 
 
 class BigtableclusteradminProjectsZonesListRequest(_messages.Message):
-  """A BigtableclusteradminProjectsZonesListRequest object.
+  r"""A BigtableclusteradminProjectsZonesListRequest object.
 
   Fields:
     name: A string attribute.
@@ -102,11 +102,11 @@ class BigtableclusteradminProjectsZonesListRequest(_messages.Message):
 
 
 class CancelOperationRequest(_messages.Message):
-  """A CancelOperationRequest object."""
+  r"""A CancelOperationRequest object."""
 
 
 class Cluster(_messages.Message):
-  """A Cluster object.
+  r"""A Cluster object.
 
   Enums:
     DefaultStorageTypeValueValuesEnum:
@@ -122,7 +122,7 @@ class Cluster(_messages.Message):
   """
 
   class DefaultStorageTypeValueValuesEnum(_messages.Enum):
-    """DefaultStorageTypeValueValuesEnum enum type.
+    r"""DefaultStorageTypeValueValuesEnum enum type.
 
     Values:
       STORAGE_HDD: <no description>
@@ -143,7 +143,7 @@ class Cluster(_messages.Message):
 
 
 class CreateClusterRequest(_messages.Message):
-  """A CreateClusterRequest object.
+  r"""A CreateClusterRequest object.
 
   Fields:
     cluster: A Cluster attribute.
@@ -157,11 +157,11 @@ class CreateClusterRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A Empty object."""
+  r"""A Empty object."""
 
 
 class ListClustersResponse(_messages.Message):
-  """A ListClustersResponse object.
+  r"""A ListClustersResponse object.
 
   Fields:
     clusters: A Cluster attribute.
@@ -173,7 +173,7 @@ class ListClustersResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """A ListOperationsResponse object.
+  r"""A ListOperationsResponse object.
 
   Fields:
     nextPageToken: A string attribute.
@@ -185,7 +185,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListZonesResponse(_messages.Message):
-  """A ListZonesResponse object.
+  r"""A ListZonesResponse object.
 
   Fields:
     zones: A Zone attribute.
@@ -195,7 +195,7 @@ class ListZonesResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """A Operation object.
+  r"""A Operation object.
 
   Messages:
     MetadataValue: A MetadataValue object.
@@ -211,7 +211,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """A MetadataValue object.
+    r"""A MetadataValue object.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -221,7 +221,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -235,7 +235,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """A ResponseValue object.
+    r"""A ResponseValue object.
 
     Messages:
       AdditionalProperty: An additional property for a ResponseValue object.
@@ -245,7 +245,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -265,7 +265,7 @@ class Operation(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     AltValueValuesEnum: Data format for the response.
@@ -278,17 +278,15 @@ class StandardQueryParameters(_messages.Message):
       token.
     oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
-    quotaUser: Available to use for quota purposes for server-side
-      applications. Can be any arbitrary string assigned to a user, but should
-      not exceed 40 characters. Overrides userIp if both are provided.
+    quotaUser: An opaque string that represents a user for quota purposes.
+      Must not exceed 40 characters.
     trace: A tracing token of the form "token:<tokenid>" to include in api
       requests.
-    userIp: IP address of the site where the request originates. Use this if
-      you want to enforce per-user limits.
+    userIp: Deprecated. Please use quotaUser instead.
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for the response.
+    r"""Data format for the response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -306,7 +304,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """A Status object.
+  r"""A Status object.
 
   Messages:
     DetailsValueListEntry: A DetailsValueListEntry object.
@@ -319,7 +317,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -331,7 +329,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -349,7 +347,7 @@ class Status(_messages.Message):
 
 
 class Zone(_messages.Message):
-  """A Zone object.
+  r"""A Zone object.
 
   Enums:
     StatusValueValuesEnum:
@@ -361,7 +359,7 @@ class Zone(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """StatusValueValuesEnum enum type.
+    r"""StatusValueValuesEnum enum type.
 
     Values:
       EMERGENCY_MAINENANCE: <no description>

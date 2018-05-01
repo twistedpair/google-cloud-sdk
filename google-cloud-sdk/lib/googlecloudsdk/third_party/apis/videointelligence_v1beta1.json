@@ -569,7 +569,7 @@
       "type": "object",
       "properties": {
         "inputUri": {
-          "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
+          "description": "Output only. Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
         "segmentLabelAnnotations": {
@@ -605,7 +605,7 @@
           "$ref": "GoogleCloudVideointelligenceV1beta2_ExplicitContentAnnotation"
         },
         "error": {
-          "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
+          "description": "Output only. Non-streaming error only. If set, indicates an error. Note\nthat for a single `AnnotateVideoRequest` some videos may succeed and some\nmay fail.",
           "$ref": "GoogleRpc_Status"
         }
       }
@@ -777,21 +777,21 @@
       "type": "object",
       "properties": {
         "inputUri": {
-          "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
+          "description": "Output only. Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
         "progressPercent": {
-          "description": "Approximate percentage processed thus far.\nGuaranteed to be 100 when fully processed.",
+          "description": "Output only. Approximate percentage processed thus far. Guaranteed to be\n100 when fully processed.",
           "type": "integer",
           "format": "int32"
         },
         "startTime": {
-          "description": "Time when the request was received.",
+          "description": "Output only. Time when the request was received.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Time of the most recent update.",
+          "description": "Output only. Time of the most recent update.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -817,7 +817,7 @@
       "type": "object",
       "properties": {
         "inputUri": {
-          "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
+          "description": "Output only. Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
         "segmentLabelAnnotations": {
@@ -853,7 +853,7 @@
           "$ref": "GoogleCloudVideointelligenceV1_ExplicitContentAnnotation"
         },
         "error": {
-          "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
+          "description": "Output only. Non-streaming error only. If set, indicates an error. Note\nthat for a single `AnnotateVideoRequest` some videos may succeed and some\nmay fail.",
           "$ref": "GoogleRpc_Status"
         }
       }
@@ -1025,21 +1025,21 @@
       "type": "object",
       "properties": {
         "inputUri": {
-          "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
+          "description": "Output only. Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
         "progressPercent": {
-          "description": "Approximate percentage processed thus far.\nGuaranteed to be 100 when fully processed.",
+          "description": "Output only. Approximate percentage processed thus far. Guaranteed to be\n100 when fully processed.",
           "type": "integer",
           "format": "int32"
         },
         "startTime": {
-          "description": "Time when the request was received.",
+          "description": "Output only. Time when the request was received.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Time of the most recent update.",
+          "description": "Output only. Time of the most recent update.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -1065,7 +1065,7 @@
       "type": "object",
       "properties": {
         "inputUri": {
-          "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
+          "description": "Output only. Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
         "segmentLabelAnnotations": {
@@ -1115,7 +1115,7 @@
           }
         },
         "error": {
-          "description": "If set, indicates an error. Note that for a single `AnnotateVideoRequest`\nsome videos may succeed and some may fail.",
+          "description": "Output only. Non-streaming error only. If set, indicates an error. Note\nthat for a single `AnnotateVideoRequest` some videos may succeed and some\nmay fail.",
           "$ref": "GoogleRpc_Status"
         }
       }
@@ -1489,21 +1489,21 @@
       "type": "object",
       "properties": {
         "inputUri": {
-          "description": "Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
+          "description": "Output only. Video file location in\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/).",
           "type": "string"
         },
         "progressPercent": {
-          "description": "Approximate percentage processed thus far.\nGuaranteed to be 100 when fully processed.",
+          "description": "Output only. Approximate percentage processed thus far. Guaranteed to be\n100 when fully processed.",
           "type": "integer",
           "format": "int32"
         },
         "startTime": {
-          "description": "Time when the request was received.",
+          "description": "Output only. Time when the request was received.",
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Time of the most recent update.",
+          "description": "Output only. Time of the most recent update.",
           "type": "string",
           "format": "google-datetime"
         }

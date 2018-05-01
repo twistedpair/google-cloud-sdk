@@ -1795,6 +1795,21 @@
           "type": "string"
         }
       }
+    },
+    "AddSubnetworkResponse": {
+      "id": "AddSubnetworkResponse",
+      "description": "Message returning the name of the created service subnetwork.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Subnetwork name.\nSee https:\/\/cloud.google.com\/compute\/docs\/vpc\/",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "Subnetwork CIDR range in \"10.x.x.x\/y\" format.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {

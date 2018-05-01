@@ -21,6 +21,8 @@ import re
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.composer import parsers
 from googlecloudsdk.core import properties
 
 ENVIRONMENT_NAME_ARG = base.Argument(
@@ -180,6 +182,88 @@ REMOVE_PYPI_PACKAGES_FLAG = base.Argument(
     """)
 
 
+def AddImportSourceFlag(parser, folder):
+  """Adds a --source flag for a storage import command to a parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser to which to add the flag
+    folder: str, the top-level folder in the bucket into which the import
+        command will write. Should not contain any slashes. For example, 'dags'.
+  """
+  base.Argument(
+      '--source',
+      required=True,
+      help="""\
+      Path to a local directory/file or Cloud Storage bucket/object to be
+      imported into the {}/ subdirectory in the environment's Cloud Storage
+      bucket. Cloud Storage paths must begin with 'gs://'.
+      """.format(folder)).AddToParser(parser)
+
+
+def AddImportDestinationFlag(parser, folder):
+  """Adds a --destination flag for a storage import command to a parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser to which to add the flag
+    folder: str, the top-level folder in the bucket into which the import
+        command will write. Should not contain any slashes. For example, 'dags'.
+  """
+  base.Argument(
+      '--destination',
+      metavar='DESTINATION',
+      required=False,
+      help="""\
+      An optional subdirectory under the {}/ directory in the environment's Cloud
+      Storage bucket into which to import files. May contain forward slashes to
+      delimit multiple levels of subdirectory nesting, but should not contain
+      leading or trailing slashes. If the DESTINATION does not exist, it will be
+      created.
+      """.format(folder)).AddToParser(parser)
+
+
+def AddExportSourceFlag(parser, folder):
+  """Adds a --source flag for a storage export command to a parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser to which to add the flag
+    folder: str, the top-level folder in the bucket from which the export
+        command will read. Should not contain any slashes. For example, 'dags'.
+  """
+  base.Argument(
+      '--source',
+      help="""\
+      An optional relative path to a file or directory to be exported from the
+      {}/ subdirectory in the environment's Cloud Storage bucket.
+      """.format(folder)).AddToParser(parser)
+
+
+def AddExportDestinationFlag(parser):
+  """Adds a --destination flag for a storage export command to a parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser to which to add the flag
+  """
+  base.Argument(
+      '--destination',
+      metavar='DESTINATION',
+      required=True,
+      help="""\
+      The path to an existing local directory or a Cloud Storage
+      bucket/directory into which to export files.
+      """).AddToParser(parser)
+
+
+def AddDeleteTargetPositional(parser, folder):
+  base.Argument(
+      'target',
+      nargs='?',
+      help="""\
+      A relative path to a file or subdirectory to delete within the
+      {folder} Cloud Storage subdirectory. If not specified, the entire contents
+      of the {folder} subdirectory will be deleted.
+      """.format(folder=folder)).AddToParser(parser)
+
+
 def _IsValidEnvVarName(name):
   """Validates that a user-provided arg is a valid environment variable name.
 
@@ -229,6 +313,24 @@ def IsValidUserPort(val):
   if 1024 <= port and port <= 65535:
     return port
   raise argparse.ArgumentTypeError('PORT must be in range [1024, 65535].')
+
+
+def ValidateDiskSize(parameter_name, disk_size):
+  """Validates that a disk size is a multiple of some number of GB.
+
+  Args:
+    parameter_name: parameter_name, the name of the parameter, formatted as
+        it would be in help text (e.g., '--disk-size' or 'DISK_SIZE')
+    disk_size: int, the disk size in bytes
+
+  Raises:
+    exceptions.InvalidArgumentException: the disk size was invalid
+  """
+  gb_mask = (1 << 30) - 1
+  if disk_size & gb_mask:
+    raise exceptions.InvalidArgumentException(
+        parameter_name,
+        'Must be an integer quantity of GB.')
 
 
 def _AddPartialDictUpdateFlagsToGroup(update_type_group, clear_flag,
@@ -294,3 +396,41 @@ def AddAirflowConfigUpdateFlagsToGroup(update_type_group):
   _AddPartialDictUpdateFlagsToGroup(
       update_type_group, CLEAR_AIRFLOW_CONFIGS_FLAG,
       REMOVE_AIRFLOW_CONFIGS_FLAG, UPDATE_AIRFLOW_CONFIGS_FLAG)
+
+
+def FallthroughToLocationProperty(location_refs, flag_name, failure_msg):
+  """Provides a list containing composer/location if `location_refs` is empty.
+
+  This intended to be used as a fallthrough for a plural Location resource arg.
+  The built-in fallthrough for plural resource args doesn't play well with
+  properties, as it will iterate over each character in the string and parse
+  it as the resource type. This function will parse the entire property and
+  return a singleton list if `location_refs` is empty.
+
+  Args:
+    location_refs: [core.resources.Resource], a possibly empty list of location
+        resource references
+    flag_name: str, if `location_refs` is empty, and the composer/location
+        property is also missing, an error message will be reported that will
+        advise the user to set this flag name
+    failure_msg: str, an error message to accompany the advisory described in
+        the docs for `flag_name`.
+
+  Returns:
+    [core.resources.Resource]: a non-empty list of location resourc references.
+    If `location_refs` was non-empty, it will be the same list, otherwise it
+    will be a singleton list containing the value of the [composer/location]
+    property.
+
+  Raises:
+    exceptions.RequiredArgumentException: both the user-provided locations
+        and property fallback were empty
+  """
+  if location_refs:
+    return location_refs
+
+  fallthrough_location = parsers.GetLocation(required=False)
+  if fallthrough_location:
+    return [parsers.ParseLocation(fallthrough_location)]
+  else:
+    raise exceptions.RequiredArgumentException(flag_name, failure_msg)

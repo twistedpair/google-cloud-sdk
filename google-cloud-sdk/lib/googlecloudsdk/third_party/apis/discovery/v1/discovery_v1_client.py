@@ -48,7 +48,7 @@ class DiscoveryV1(base_api.BaseApiClient):
           }
 
     def GetRest(self, request, global_params=None):
-      """Retrieve the description of a particular version of an api.
+      r"""Retrieve the description of a particular version of an api.
 
       Args:
         request: (DiscoveryApisGetRestRequest) input message
@@ -74,7 +74,7 @@ class DiscoveryV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Retrieve the list of APIs supported at this endpoint.
+      r"""Retrieve the list of APIs supported at this endpoint.
 
       Args:
         request: (DiscoveryApisListRequest) input message

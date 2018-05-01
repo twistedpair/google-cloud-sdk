@@ -14,13 +14,15 @@
 
 """Helpers for constructing messages for instance configs requests."""
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope import exceptions
+import six
 
 
 def GetMode(messages, mode):
   """Returns mode message basing on short user friendly string."""
   enum_class = messages.ManagedInstanceOverrideDiskOverride.ModeValueValuesEnum
-  if isinstance(mode, basestring):
+  if isinstance(mode, six.string_types):
     return {
         'ro': enum_class.READ_ONLY,
         'rw': enum_class.READ_WRITE,

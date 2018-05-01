@@ -60,7 +60,7 @@ class GenomicsV1(base_api.BaseApiClient):
           }
 
     def BatchCreate(self, request, global_params=None):
-      """Creates one or more new annotations atomically. All annotations must.
+      r"""Creates one or more new annotations atomically. All annotations must.
 belong to the same annotation set. Caller must have WRITE
 permission for this annotation set. For optimal performance, batch
 positionally adjacent annotations together.
@@ -99,7 +99,7 @@ CreateAnnotation.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a new annotation. Caller must have WRITE permission.
+      r"""Creates a new annotation. Caller must have WRITE permission.
 for the associated annotation set.
 
 The following fields are required:
@@ -146,7 +146,7 @@ for additional restrictions on each field.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an annotation. Caller must have WRITE permission for.
+      r"""Deletes an annotation. Caller must have WRITE permission for.
 the associated annotation set.
 
       Args:
@@ -173,7 +173,7 @@ the associated annotation set.
     )
 
     def Get(self, request, global_params=None):
-      """Gets an annotation. Caller must have READ permission.
+      r"""Gets an annotation. Caller must have READ permission.
 for the associated annotation set.
 
       Args:
@@ -200,7 +200,7 @@ for the associated annotation set.
     )
 
     def Search(self, request, global_params=None):
-      """Searches for annotations that match the given criteria. Results are.
+      r"""Searches for annotations that match the given criteria. Results are.
 ordered by genomic coordinate (by reference sequence, then position).
 Annotations with equivalent genomic coordinates are returned in an
 unspecified order. This order is consistent, such that two queries for the
@@ -232,7 +232,7 @@ READ permission for the queried annotation sets.
     )
 
     def Update(self, request, global_params=None):
-      """Updates an annotation. Caller must have.
+      r"""Updates an annotation. Caller must have.
 WRITE permission for the associated dataset.
 
       Args:
@@ -269,7 +269,7 @@ WRITE permission for the associated dataset.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new annotation set. Caller must have WRITE permission for the.
+      r"""Creates a new annotation set. Caller must have WRITE permission for the.
 associated dataset.
 
 The following fields are required:
@@ -304,7 +304,7 @@ server-generated (for example, the `id` field).
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an annotation set. Caller must have WRITE permission.
+      r"""Deletes an annotation set. Caller must have WRITE permission.
 for the associated annotation set.
 
       Args:
@@ -331,7 +331,7 @@ for the associated annotation set.
     )
 
     def Get(self, request, global_params=None):
-      """Gets an annotation set. Caller must have READ permission for.
+      r"""Gets an annotation set. Caller must have READ permission for.
 the associated dataset.
 
       Args:
@@ -358,7 +358,7 @@ the associated dataset.
     )
 
     def Search(self, request, global_params=None):
-      """Searches for annotation sets that match the given criteria. Annotation sets.
+      r"""Searches for annotation sets that match the given criteria. Annotation sets.
 are returned in an unspecified order. This order is consistent, such that
 two queries for the same content (regardless of page size) yield annotation
 sets in the same order across their respective streams of paginated
@@ -388,7 +388,7 @@ responses. Caller must have READ permission for the queried datasets.
     )
 
     def Update(self, request, global_params=None):
-      """Updates an annotation set. The update must respect all mutability.
+      r"""Updates an annotation set. The update must respect all mutability.
 restrictions and other invariants described on the annotation set resource.
 Caller must have WRITE permission for the associated dataset.
 
@@ -426,7 +426,7 @@ Caller must have WRITE permission for the associated dataset.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new call set.
+      r"""Creates a new call set.
 
       Args:
         request: (CallSet) input message
@@ -452,7 +452,7 @@ Caller must have WRITE permission for the associated dataset.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a call set.
+      r"""Deletes a call set.
 
       Args:
         request: (GenomicsCallsetsDeleteRequest) input message
@@ -478,7 +478,7 @@ Caller must have WRITE permission for the associated dataset.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a call set by ID.
+      r"""Gets a call set by ID.
 
       Args:
         request: (GenomicsCallsetsGetRequest) input message
@@ -504,7 +504,7 @@ Caller must have WRITE permission for the associated dataset.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a call set.
+      r"""Updates a call set.
 
 This method supports patch semantics.
 
@@ -532,7 +532,7 @@ This method supports patch semantics.
     )
 
     def Search(self, request, global_params=None):
-      """Gets a list of call sets matching the criteria.
+      r"""Gets a list of call sets matching the criteria.
 
 Implements
 [GlobalAllianceApi.searchCallSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L178).
@@ -571,7 +571,7 @@ Implements
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new dataset.
+      r"""Creates a new dataset.
 
       Args:
         request: (Dataset) input message
@@ -597,7 +597,7 @@ Implements
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a dataset and all of its contents (all read group sets,.
+      r"""Deletes a dataset and all of its contents (all read group sets,.
 reference sets, variant sets, call sets, annotation sets, etc.)
 This is reversible (up to one week after the deletion) via
 the
@@ -628,7 +628,7 @@ operation.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a dataset by ID.
+      r"""Gets a dataset by ID.
 
       Args:
         request: (GenomicsDatasetsGetRequest) input message
@@ -654,7 +654,7 @@ operation.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for the dataset. This is empty if the.
+      r"""Gets the access control policy for the dataset. This is empty if the.
 policy or resource does not exist.
 
 See <a href="/iam/docs/managing-policies#getting_a_policy">Getting a
@@ -685,7 +685,7 @@ Policy</a> for more information.
     )
 
     def List(self, request, global_params=None):
-      """Lists datasets within a project.
+      r"""Lists datasets within a project.
 
       Args:
         request: (GenomicsDatasetsListRequest) input message
@@ -711,7 +711,7 @@ Policy</a> for more information.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a dataset.
+      r"""Updates a dataset.
 
 This method supports patch semantics.
 
@@ -739,7 +739,7 @@ This method supports patch semantics.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified dataset. Replaces any.
+      r"""Sets the access control policy on the specified dataset. Replaces any.
 existing policy.
 
 See <a href="/iam/docs/managing-policies#setting_a_policy">Setting a
@@ -770,7 +770,7 @@ Policy</a> for more information.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 See <a href="/iam/docs/managing-policies#testing_permissions">Testing
 Permissions</a> for more information.
 
@@ -799,7 +799,7 @@ Permissions</a> for more information.
     )
 
     def Undelete(self, request, global_params=None):
-      """Undeletes a dataset by restoring a dataset which was deleted via this API.
+      r"""Undeletes a dataset by restoring a dataset which was deleted via this API.
 
 This operation is only possible for a week after the deletion occurred.
 
@@ -837,7 +837,7 @@ This operation is only possible for a week after the deletion occurred.
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation.
 
       Args:
         request: (GenomicsOperationsCancelRequest) input message
@@ -864,7 +864,7 @@ This operation is only possible for a week after the deletion occurred.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -893,7 +893,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request.
+      r"""Lists operations that match the specified filter in the request.
 
       Args:
         request: (GenomicsOperationsListRequest) input message
@@ -930,7 +930,7 @@ service.
           }
 
     def List(self, request, global_params=None):
-      """Lists fixed width coverage buckets for a read group set, each of which.
+      r"""Lists fixed width coverage buckets for a read group set, each of which.
 correspond to a range of a reference sequence. Each bucket summarizes
 coverage information across its corresponding genomic range.
 
@@ -974,7 +974,7 @@ set.
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a read group set.
+      r"""Deletes a read group set.
 
       Args:
         request: (GenomicsReadgroupsetsDeleteRequest) input message
@@ -1000,7 +1000,7 @@ set.
     )
 
     def Export(self, request, global_params=None):
-      """Exports a read group set to a BAM file in Google Cloud Storage.
+      r"""Exports a read group set to a BAM file in Google Cloud Storage.
 
 Note that currently there may be some differences between exported BAM
 files and the original BAM file at the time of import. See
@@ -1031,7 +1031,7 @@ for caveats.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a read group set by ID.
+      r"""Gets a read group set by ID.
 
       Args:
         request: (GenomicsReadgroupsetsGetRequest) input message
@@ -1057,7 +1057,7 @@ for caveats.
     )
 
     def Import(self, request, global_params=None):
-      """Creates read group sets by asynchronously importing the provided.
+      r"""Creates read group sets by asynchronously importing the provided.
 information.
 
 The caller must have WRITE permissions to the dataset.
@@ -1096,7 +1096,7 @@ and position)
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a read group set.
+      r"""Updates a read group set.
 
 This method supports patch semantics.
 
@@ -1124,7 +1124,7 @@ This method supports patch semantics.
     )
 
     def Search(self, request, global_params=None):
-      """Searches for read group sets matching the criteria.
+      r"""Searches for read group sets matching the criteria.
 
 Implements
 [GlobalAllianceApi.searchReadGroupSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/readmethods.avdl#L135).
@@ -1163,7 +1163,7 @@ Implements
           }
 
     def Search(self, request, global_params=None):
-      """Gets a list of reads for one or more read group sets.
+      r"""Gets a list of reads for one or more read group sets.
 
 Reads search operates over a genomic coordinate space of reference sequence
 & position defined over the reference sequences to which the requested
@@ -1218,7 +1218,7 @@ Implements
           }
 
     def List(self, request, global_params=None):
-      """Lists the bases in a reference, optionally restricted to a range.
+      r"""Lists the bases in a reference, optionally restricted to a range.
 
 Implements
 [GlobalAllianceApi.getReferenceBases](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L221).
@@ -1257,7 +1257,7 @@ Implements
           }
 
     def Get(self, request, global_params=None):
-      """Gets a reference.
+      r"""Gets a reference.
 
 Implements
 [GlobalAllianceApi.getReference](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L158).
@@ -1286,7 +1286,7 @@ Implements
     )
 
     def Search(self, request, global_params=None):
-      """Searches for references which match the given criteria.
+      r"""Searches for references which match the given criteria.
 
 Implements
 [GlobalAllianceApi.searchReferences](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L146).
@@ -1325,7 +1325,7 @@ Implements
           }
 
     def Get(self, request, global_params=None):
-      """Gets a reference set.
+      r"""Gets a reference set.
 
 Implements
 [GlobalAllianceApi.getReferenceSet](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L83).
@@ -1354,7 +1354,7 @@ Implements
     )
 
     def Search(self, request, global_params=None):
-      """Searches for reference sets which match the given criteria.
+      r"""Searches for reference sets which match the given criteria.
 
 Implements
 [GlobalAllianceApi.searchReferenceSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/referencemethods.avdl#L71)
@@ -1393,7 +1393,7 @@ Implements
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new variant.
+      r"""Creates a new variant.
 
       Args:
         request: (Variant) input message
@@ -1419,7 +1419,7 @@ Implements
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a variant.
+      r"""Deletes a variant.
 
       Args:
         request: (GenomicsVariantsDeleteRequest) input message
@@ -1445,7 +1445,7 @@ Implements
     )
 
     def Get(self, request, global_params=None):
-      """Gets a variant by ID.
+      r"""Gets a variant by ID.
 
       Args:
         request: (GenomicsVariantsGetRequest) input message
@@ -1471,7 +1471,7 @@ Implements
     )
 
     def Import(self, request, global_params=None):
-      """Creates variant data by asynchronously importing the provided information.
+      r"""Creates variant data by asynchronously importing the provided information.
 
 The variants for import will be merged with any existing variant that
 matches its reference sequence, start, end, reference bases, and
@@ -1510,7 +1510,7 @@ Imported VCF headers are appended to the metadata already in a variant set.
     )
 
     def Merge(self, request, global_params=None):
-      """Merges the given variants with existing variants.
+      r"""Merges the given variants with existing variants.
 
 Each variant will be
 merged with an existing variant that matches its reference sequence,
@@ -1622,7 +1622,7 @@ if that is indeed the case.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a variant.
+      r"""Updates a variant.
 
 This method supports patch semantics. Returns the modified variant without
 its calls.
@@ -1651,7 +1651,7 @@ its calls.
     )
 
     def Search(self, request, global_params=None):
-      """Gets a list of variants matching the criteria.
+      r"""Gets a list of variants matching the criteria.
 
 Implements
 [GlobalAllianceApi.searchVariants](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L126).
@@ -1690,7 +1690,7 @@ Implements
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new variant set.
+      r"""Creates a new variant set.
 
 The provided variant set must have a valid `datasetId` set - all other
 fields are optional. Note that the `id` field will be ignored, as this is
@@ -1720,7 +1720,7 @@ assigned by the server.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a variant set including all variants, call sets, and calls within.
+      r"""Deletes a variant set including all variants, call sets, and calls within.
 This is not reversible.
 
       Args:
@@ -1747,7 +1747,7 @@ This is not reversible.
     )
 
     def Export(self, request, global_params=None):
-      """Exports variant set data to an external destination.
+      r"""Exports variant set data to an external destination.
 
       Args:
         request: (GenomicsVariantsetsExportRequest) input message
@@ -1773,7 +1773,7 @@ This is not reversible.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a variant set by ID.
+      r"""Gets a variant set by ID.
 
       Args:
         request: (GenomicsVariantsetsGetRequest) input message
@@ -1799,7 +1799,7 @@ This is not reversible.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a variant set using patch semantics.
+      r"""Updates a variant set using patch semantics.
 
       Args:
         request: (GenomicsVariantsetsPatchRequest) input message
@@ -1825,7 +1825,7 @@ This is not reversible.
     )
 
     def Search(self, request, global_params=None):
-      """Returns a list of all variant sets matching search criteria.
+      r"""Returns a list of all variant sets matching search criteria.
 
 Implements
 [GlobalAllianceApi.searchVariantSets](https://github.com/ga4gh/schemas/blob/v0.5.1/src/main/resources/avro/variantmethods.avdl#L49).

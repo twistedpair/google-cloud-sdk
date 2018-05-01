@@ -67,7 +67,7 @@ class ContainerV1(base_api.BaseApiClient):
           }
 
     def AckRepairwork(self, request, global_params=None):
-      """AcknowledgeRepairWork accepts acknowledgements of repair work from the.
+      r"""AcknowledgeRepairWork accepts acknowledgements of repair work from the.
 Hosted Master.
 
       Args:
@@ -94,7 +94,7 @@ Hosted Master.
     )
 
     def GetRepairwork(self, request, global_params=None):
-      """This method requests work from the API server to see if there are.
+      r"""This method requests work from the API server to see if there are.
 any repairs to be done on the Hosted Master.
 
       Args:
@@ -131,7 +131,7 @@ any repairs to be done on the Hosted Master.
           }
 
     def Finalize(self, request, global_params=None):
-      """FinalizeNamespace finalizes the GKE bits for a Kubernetes namespace.  Right.
+      r"""FinalizeNamespace finalizes the GKE bits for a Kubernetes namespace.  Right.
 now, this involved purging IAM policies.
 
       Args:
@@ -188,7 +188,7 @@ now, this involved purging IAM policies.
           }
 
     def Create(self, request, global_params=None):
-      """Creates signed URLs that allow for writing a file to a private GCS bucket.
+      r"""Creates signed URLs that allow for writing a file to a private GCS bucket.
 for storing backups of hosted master data. Signed URLs are explained here:
 https://cloud.google.com/storage/docs/access-control#Signed-URLs
 
@@ -226,7 +226,7 @@ https://cloud.google.com/storage/docs/access-control#Signed-URLs
           }
 
     def Create(self, request, global_params=None):
-      """Creates a compute-read-write (https://www.googleapis.com/auth/compute).
+      r"""Creates a compute-read-write (https://www.googleapis.com/auth/compute).
 scoped OAuth2 access token for <project_number>, to allow a hosted master
 to make modifications to its user's project.
 
@@ -264,7 +264,7 @@ to make modifications to its user's project.
           }
 
     def Audit(self, request, global_params=None):
-      """Audits the provided events to Cloud Audit Logging and/or Gin, depending on.
+      r"""Audits the provided events to Cloud Audit Logging and/or Gin, depending on.
 policies defined by GKE.
 
       Args:
@@ -291,7 +291,7 @@ policies defined by GKE.
     )
 
     def Authenticate(self, request, global_params=None):
-      """Processes a request to authenticate a token. If it is able to authenticate.
+      r"""Processes a request to authenticate a token. If it is able to authenticate.
 the token, the email for the authorized user is also returned.
 AuthenticateResponse also contains fields from the AuthenticateRequest. The
 server is expected to only fill in the AuthenticateResponse.Status. This is
@@ -323,7 +323,7 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authentication.k8s
     )
 
     def Authorize(self, request, global_params=None):
-      """Processes the attributes of a user request and determines whether or not.
+      r"""Processes the attributes of a user request and determines whether or not.
 to authorize the request. If unauthorized, a reason is also provided. The
 AuthorizeResponse also contains fields from the AuthorizeRequest. The
 server is expected to only fill in the AuthorizeResponse.Status. This is
@@ -355,7 +355,7 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
     )
 
     def Imagereview(self, request, global_params=None):
-      """Processes a request to verify the container image. If unverified, a reason.
+      r"""Processes a request to verify the container image. If unverified, a reason.
 is also provided. The ImageReviewResponse also contains fields from the
 ImageReviewRequest. The server is expected to only fill in the
 ImageReviewResponse.Status. This is due to how the ImageReview types are
@@ -386,7 +386,7 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta
     )
 
     def Signcertificate(self, request, global_params=None):
-      """Signs a CertificateSigningRequest (CSR) with the cluster's certificate.
+      r"""Signs a CertificateSigningRequest (CSR) with the cluster's certificate.
 authority (CA).
 
       Args:
@@ -423,7 +423,7 @@ authority (CA).
           }
 
     def Create(self, request, global_params=None):
-      """Creates signed URLs that allow for writing a file to a private GCS bucket.
+      r"""Creates signed URLs that allow for writing a file to a private GCS bucket.
 for storing backups of hosted master data. Signed URLs are explained here:
 https://cloud.google.com/storage/docs/access-control#Signed-URLs
 
@@ -461,7 +461,7 @@ https://cloud.google.com/storage/docs/access-control#Signed-URLs
           }
 
     def Create(self, request, global_params=None):
-      """Creates a compute-read-write (https://www.googleapis.com/auth/compute).
+      r"""Creates a compute-read-write (https://www.googleapis.com/auth/compute).
 scoped OAuth2 access token for <project_number>, to allow a hosted master
 to make modifications to its user's project.
 
@@ -499,7 +499,7 @@ to make modifications to its user's project.
           }
 
     def Audit(self, request, global_params=None):
-      """Audits the provided events to Cloud Audit Logging and/or Gin, depending on.
+      r"""Audits the provided events to Cloud Audit Logging and/or Gin, depending on.
 policies defined by GKE.
 
       Args:
@@ -526,7 +526,7 @@ policies defined by GKE.
     )
 
     def Authenticate(self, request, global_params=None):
-      """Processes a request to authenticate a token. If it is able to authenticate.
+      r"""Processes a request to authenticate a token. If it is able to authenticate.
 the token, the email for the authorized user is also returned.
 AuthenticateResponse also contains fields from the AuthenticateRequest. The
 server is expected to only fill in the AuthenticateResponse.Status. This is
@@ -558,7 +558,7 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authentication.k8s
     )
 
     def Authorize(self, request, global_params=None):
-      """Processes the attributes of a user request and determines whether or not.
+      r"""Processes the attributes of a user request and determines whether or not.
 to authorize the request. If unauthorized, a reason is also provided. The
 AuthorizeResponse also contains fields from the AuthorizeRequest. The
 server is expected to only fill in the AuthorizeResponse.Status. This is
@@ -590,7 +590,7 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1be
     )
 
     def Imagereview(self, request, global_params=None):
-      """Processes a request to verify the container image. If unverified, a reason.
+      r"""Processes a request to verify the container image. If unverified, a reason.
 is also provided. The ImageReviewResponse also contains fields from the
 ImageReviewRequest. The server is expected to only fill in the
 ImageReviewResponse.Status. This is due to how the ImageReview types are
@@ -621,7 +621,7 @@ https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta
     )
 
     def Signcertificate(self, request, global_params=None):
-      """Signs a CertificateSigningRequest (CSR) with the cluster's certificate.
+      r"""Signs a CertificateSigningRequest (CSR) with the cluster's certificate.
 authority (CA).
 
       Args:
@@ -668,7 +668,7 @@ authority (CA).
           }
 
     def Create(self, request, global_params=None):
-      """Creates a node pool for a cluster.
+      r"""Creates a node pool for a cluster.
 
       Args:
         request: (CreateNodePoolRequest) input message
@@ -695,7 +695,7 @@ authority (CA).
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a node pool from a cluster.
+      r"""Deletes a node pool from a cluster.
 
       Args:
         request: (ContainerProjectsLocationsClustersNodePoolsDeleteRequest) input message
@@ -722,7 +722,7 @@ authority (CA).
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves the node pool requested.
+      r"""Retrieves the node pool requested.
 
       Args:
         request: (ContainerProjectsLocationsClustersNodePoolsGetRequest) input message
@@ -749,7 +749,7 @@ authority (CA).
     )
 
     def List(self, request, global_params=None):
-      """Lists the node pools for a cluster.
+      r"""Lists the node pools for a cluster.
 
       Args:
         request: (ContainerProjectsLocationsClustersNodePoolsListRequest) input message
@@ -776,7 +776,7 @@ authority (CA).
     )
 
     def Rollback(self, request, global_params=None):
-      """Roll back the previously Aborted or Failed NodePool upgrade.
+      r"""Roll back the previously Aborted or Failed NodePool upgrade.
 This will be an no-op if the last upgrade successfully completed.
 
       Args:
@@ -804,7 +804,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetAutoscaling(self, request, global_params=None):
-      """Sets the autoscaling settings of a specific node pool.
+      r"""Sets the autoscaling settings of a specific node pool.
 
       Args:
         request: (SetNodePoolAutoscalingRequest) input message
@@ -831,7 +831,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetManagement(self, request, global_params=None):
-      """Sets the NodeManagement options for a node pool.
+      r"""Sets the NodeManagement options for a node pool.
 
       Args:
         request: (SetNodePoolManagementRequest) input message
@@ -858,7 +858,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetSize(self, request, global_params=None):
-      """Sets the size of a specific node pool.
+      r"""Sets the size of a specific node pool.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -885,7 +885,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the version and/or image type of a specific node pool.
+      r"""Updates the version and/or image type of a specific node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message
@@ -922,7 +922,7 @@ This will be an no-op if the last upgrade successfully completed.
           }
 
     def CompleteIpRotation(self, request, global_params=None):
-      """Completes master IP rotation.
+      r"""Completes master IP rotation.
 
       Args:
         request: (CompleteIPRotationRequest) input message
@@ -949,7 +949,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a cluster, consisting of the specified number and type of Google.
+      r"""Creates a cluster, consisting of the specified number and type of Google.
 Compute Engine instances.
 
 By default, the cluster is created in the project's
@@ -988,7 +988,7 @@ which CIDR range is being used by the cluster.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the cluster, including the Kubernetes endpoint and all worker.
+      r"""Deletes the cluster, including the Kubernetes endpoint and all worker.
 nodes.
 
 Firewalls and routes that were configured during cluster creation
@@ -1023,7 +1023,7 @@ at the initial create time.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the details of a specific cluster.
+      r"""Gets the details of a specific cluster.
 
       Args:
         request: (ContainerProjectsLocationsClustersGetRequest) input message
@@ -1050,7 +1050,7 @@ at the initial create time.
     )
 
     def List(self, request, global_params=None):
-      """Lists all clusters owned by a project in either the specified zone or all.
+      r"""Lists all clusters owned by a project in either the specified zone or all.
 zones.
 
       Args:
@@ -1078,7 +1078,7 @@ zones.
     )
 
     def SetAddons(self, request, global_params=None):
-      """Sets the addons of a specific cluster.
+      r"""Sets the addons of a specific cluster.
 
       Args:
         request: (SetAddonsConfigRequest) input message
@@ -1105,7 +1105,7 @@ zones.
     )
 
     def SetLegacyAbac(self, request, global_params=None):
-      """Enables or disables the ABAC authorization mechanism on a cluster.
+      r"""Enables or disables the ABAC authorization mechanism on a cluster.
 
       Args:
         request: (SetLegacyAbacRequest) input message
@@ -1132,7 +1132,7 @@ zones.
     )
 
     def SetLocations(self, request, global_params=None):
-      """Sets the locations of a specific cluster.
+      r"""Sets the locations of a specific cluster.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -1159,7 +1159,7 @@ zones.
     )
 
     def SetLogging(self, request, global_params=None):
-      """Sets the logging service of a specific cluster.
+      r"""Sets the logging service of a specific cluster.
 
       Args:
         request: (SetLoggingServiceRequest) input message
@@ -1186,7 +1186,7 @@ zones.
     )
 
     def SetMaintenancePolicy(self, request, global_params=None):
-      """Sets the maintenance policy for a cluster.
+      r"""Sets the maintenance policy for a cluster.
 
       Args:
         request: (SetMaintenancePolicyRequest) input message
@@ -1213,7 +1213,7 @@ zones.
     )
 
     def SetMasterAuth(self, request, global_params=None):
-      """Used to set master auth materials. Currently supports :-.
+      r"""Used to set master auth materials. Currently supports :-.
 Changing the admin password of a specific cluster.
 This can be either via password generation or explicitly set the password.
 
@@ -1242,7 +1242,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def SetMonitoring(self, request, global_params=None):
-      """Sets the monitoring service of a specific cluster.
+      r"""Sets the monitoring service of a specific cluster.
 
       Args:
         request: (SetMonitoringServiceRequest) input message
@@ -1269,7 +1269,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def SetNetworkPolicy(self, request, global_params=None):
-      """Enables/Disables Network Policy for a cluster.
+      r"""Enables/Disables Network Policy for a cluster.
 
       Args:
         request: (SetNetworkPolicyRequest) input message
@@ -1296,7 +1296,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def SetResourceLabels(self, request, global_params=None):
-      """Sets labels on a cluster.
+      r"""Sets labels on a cluster.
 
       Args:
         request: (SetLabelsRequest) input message
@@ -1323,7 +1323,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def StartIpRotation(self, request, global_params=None):
-      """Start master IP rotation.
+      r"""Start master IP rotation.
 
       Args:
         request: (StartIPRotationRequest) input message
@@ -1350,7 +1350,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the settings of a specific cluster.
+      r"""Updates the settings of a specific cluster.
 
       Args:
         request: (UpdateClusterRequest) input message
@@ -1377,7 +1377,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def UpdateMaster(self, request, global_params=None):
-      """Updates the master of a specific cluster.
+      r"""Updates the master of a specific cluster.
 
       Args:
         request: (UpdateMasterRequest) input message
@@ -1414,7 +1414,7 @@ This can be either via password generation or explicitly set the password.
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels the specified operation.
+      r"""Cancels the specified operation.
 
       Args:
         request: (CancelOperationRequest) input message
@@ -1441,7 +1441,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified operation.
+      r"""Gets the specified operation.
 
       Args:
         request: (ContainerProjectsLocationsOperationsGetRequest) input message
@@ -1468,7 +1468,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def List(self, request, global_params=None):
-      """Lists all operations in a project in a specific zone or all zones.
+      r"""Lists all operations in a project in a specific zone or all zones.
 
       Args:
         request: (ContainerProjectsLocationsOperationsListRequest) input message
@@ -1505,7 +1505,7 @@ This can be either via password generation or explicitly set the password.
           }
 
     def GetServerConfig(self, request, global_params=None):
-      """Returns configuration info about the Kubernetes Engine service.
+      r"""Returns configuration info about the Kubernetes Engine service.
 
       Args:
         request: (ContainerProjectsLocationsGetServerConfigRequest) input message
@@ -1542,7 +1542,7 @@ This can be either via password generation or explicitly set the password.
           }
 
     def Autoscaling(self, request, global_params=None):
-      """Sets the autoscaling settings of a specific node pool.
+      r"""Sets the autoscaling settings of a specific node pool.
 
       Args:
         request: (SetNodePoolAutoscalingRequest) input message
@@ -1568,7 +1568,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a node pool for a cluster.
+      r"""Creates a node pool for a cluster.
 
       Args:
         request: (CreateNodePoolRequest) input message
@@ -1594,7 +1594,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a node pool from a cluster.
+      r"""Deletes a node pool from a cluster.
 
       Args:
         request: (ContainerProjectsZonesClustersNodePoolsDeleteRequest) input message
@@ -1620,7 +1620,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves the node pool requested.
+      r"""Retrieves the node pool requested.
 
       Args:
         request: (ContainerProjectsZonesClustersNodePoolsGetRequest) input message
@@ -1646,7 +1646,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def List(self, request, global_params=None):
-      """Lists the node pools for a cluster.
+      r"""Lists the node pools for a cluster.
 
       Args:
         request: (ContainerProjectsZonesClustersNodePoolsListRequest) input message
@@ -1672,7 +1672,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def Rollback(self, request, global_params=None):
-      """Roll back the previously Aborted or Failed NodePool upgrade.
+      r"""Roll back the previously Aborted or Failed NodePool upgrade.
 This will be an no-op if the last upgrade successfully completed.
 
       Args:
@@ -1699,7 +1699,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetManagement(self, request, global_params=None):
-      """Sets the NodeManagement options for a node pool.
+      r"""Sets the NodeManagement options for a node pool.
 
       Args:
         request: (SetNodePoolManagementRequest) input message
@@ -1725,7 +1725,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetSize(self, request, global_params=None):
-      """Sets the size of a specific node pool.
+      r"""Sets the size of a specific node pool.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -1751,7 +1751,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the version and/or image type of a specific node pool.
+      r"""Updates the version and/or image type of a specific node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message
@@ -1787,7 +1787,7 @@ This will be an no-op if the last upgrade successfully completed.
           }
 
     def Addons(self, request, global_params=None):
-      """Sets the addons of a specific cluster.
+      r"""Sets the addons of a specific cluster.
 
       Args:
         request: (SetAddonsConfigRequest) input message
@@ -1813,7 +1813,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def CompleteIpRotation(self, request, global_params=None):
-      """Completes master IP rotation.
+      r"""Completes master IP rotation.
 
       Args:
         request: (CompleteIPRotationRequest) input message
@@ -1839,7 +1839,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a cluster, consisting of the specified number and type of Google.
+      r"""Creates a cluster, consisting of the specified number and type of Google.
 Compute Engine instances.
 
 By default, the cluster is created in the project's
@@ -1877,7 +1877,7 @@ which CIDR range is being used by the cluster.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the cluster, including the Kubernetes endpoint and all worker.
+      r"""Deletes the cluster, including the Kubernetes endpoint and all worker.
 nodes.
 
 Firewalls and routes that were configured during cluster creation
@@ -1911,7 +1911,7 @@ at the initial create time.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the details of a specific cluster.
+      r"""Gets the details of a specific cluster.
 
       Args:
         request: (ContainerProjectsZonesClustersGetRequest) input message
@@ -1937,7 +1937,7 @@ at the initial create time.
     )
 
     def LegacyAbac(self, request, global_params=None):
-      """Enables or disables the ABAC authorization mechanism on a cluster.
+      r"""Enables or disables the ABAC authorization mechanism on a cluster.
 
       Args:
         request: (SetLegacyAbacRequest) input message
@@ -1963,7 +1963,7 @@ at the initial create time.
     )
 
     def List(self, request, global_params=None):
-      """Lists all clusters owned by a project in either the specified zone or all.
+      r"""Lists all clusters owned by a project in either the specified zone or all.
 zones.
 
       Args:
@@ -1990,7 +1990,7 @@ zones.
     )
 
     def Locations(self, request, global_params=None):
-      """Sets the locations of a specific cluster.
+      r"""Sets the locations of a specific cluster.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -2016,7 +2016,7 @@ zones.
     )
 
     def Logging(self, request, global_params=None):
-      """Sets the logging service of a specific cluster.
+      r"""Sets the logging service of a specific cluster.
 
       Args:
         request: (SetLoggingServiceRequest) input message
@@ -2042,7 +2042,7 @@ zones.
     )
 
     def Master(self, request, global_params=None):
-      """Updates the master of a specific cluster.
+      r"""Updates the master of a specific cluster.
 
       Args:
         request: (UpdateMasterRequest) input message
@@ -2068,7 +2068,7 @@ zones.
     )
 
     def Monitoring(self, request, global_params=None):
-      """Sets the monitoring service of a specific cluster.
+      r"""Sets the monitoring service of a specific cluster.
 
       Args:
         request: (SetMonitoringServiceRequest) input message
@@ -2094,7 +2094,7 @@ zones.
     )
 
     def ResourceLabels(self, request, global_params=None):
-      """Sets labels on a cluster.
+      r"""Sets labels on a cluster.
 
       Args:
         request: (SetLabelsRequest) input message
@@ -2120,7 +2120,7 @@ zones.
     )
 
     def SetMaintenancePolicy(self, request, global_params=None):
-      """Sets the maintenance policy for a cluster.
+      r"""Sets the maintenance policy for a cluster.
 
       Args:
         request: (SetMaintenancePolicyRequest) input message
@@ -2146,7 +2146,7 @@ zones.
     )
 
     def SetMasterAuth(self, request, global_params=None):
-      """Used to set master auth materials. Currently supports :-.
+      r"""Used to set master auth materials. Currently supports :-.
 Changing the admin password of a specific cluster.
 This can be either via password generation or explicitly set the password.
 
@@ -2174,7 +2174,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def SetNetworkPolicy(self, request, global_params=None):
-      """Enables/Disables Network Policy for a cluster.
+      r"""Enables/Disables Network Policy for a cluster.
 
       Args:
         request: (SetNetworkPolicyRequest) input message
@@ -2200,7 +2200,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def StartIpRotation(self, request, global_params=None):
-      """Start master IP rotation.
+      r"""Start master IP rotation.
 
       Args:
         request: (StartIPRotationRequest) input message
@@ -2226,7 +2226,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def Update(self, request, global_params=None):
-      """Updates the settings of a specific cluster.
+      r"""Updates the settings of a specific cluster.
 
       Args:
         request: (UpdateClusterRequest) input message
@@ -2262,7 +2262,7 @@ This can be either via password generation or explicitly set the password.
           }
 
     def Cancel(self, request, global_params=None):
-      """Cancels the specified operation.
+      r"""Cancels the specified operation.
 
       Args:
         request: (CancelOperationRequest) input message
@@ -2288,7 +2288,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the specified operation.
+      r"""Gets the specified operation.
 
       Args:
         request: (ContainerProjectsZonesOperationsGetRequest) input message
@@ -2314,7 +2314,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def List(self, request, global_params=None):
-      """Lists all operations in a project in a specific zone or all zones.
+      r"""Lists all operations in a project in a specific zone or all zones.
 
       Args:
         request: (ContainerProjectsZonesOperationsListRequest) input message
@@ -2350,7 +2350,7 @@ This can be either via password generation or explicitly set the password.
           }
 
     def GetServerconfig(self, request, global_params=None):
-      """Returns configuration info about the Kubernetes Engine service.
+      r"""Returns configuration info about the Kubernetes Engine service.
 
       Args:
         request: (ContainerProjectsZonesGetServerconfigRequest) input message

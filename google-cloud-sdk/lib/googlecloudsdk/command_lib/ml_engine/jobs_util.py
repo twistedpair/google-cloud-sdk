@@ -185,28 +185,28 @@ def PrintSubmitFollowUp(job_id, print_follow_up_message=True):
     log.status.Print(_FOLLOW_UP_MESSAGE.format(job_id=job_id))
 
 
-def GetStreamLogs(async_, stream_logs):
+def GetStreamLogs(asyncronous, stream_logs):
   """Return, based on the command line arguments, whether we should stream logs.
 
   Both arguments cannot be set (they're mutually exclusive flags) and the
   default is False.
 
   Args:
-    async_: bool, the value of the --async flag.
+    asyncronous: bool, the value of the --async flag.
     stream_logs: bool, the value of the --stream-logs flag.
 
   Returns:
     bool, whether to stream the logs
 
   Raises:
-    ValueError: if both async_ and stream_logs are True.
+    ValueError: if both asyncronous and stream_logs are True.
   """
-  if async_ and stream_logs:
+  if asyncronous and stream_logs:
     # Doesn't have to be a nice error; they're mutually exclusive so we should
     # never get here.
     raise ValueError('--async and --stream-logs cannot both be set.')
 
-  if async_:
+  if asyncronous:
     # TODO(b/36195821): Use the flag deprecation machinery when it supports the
     # store_true action
     log.warning('The --async flag is deprecated, as the default behavior is to '

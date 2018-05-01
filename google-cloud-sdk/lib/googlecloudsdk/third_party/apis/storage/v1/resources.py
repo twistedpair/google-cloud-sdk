@@ -27,47 +27,56 @@ class Collections(enum.Enum):
       'bucketAccessControls',
       'b/{bucket}/acl/{entity}',
       {},
-      [u'bucket', u'entity']
+      [u'bucket', u'entity'],
+      True
   )
   BUCKETS = (
       'buckets',
       'b/{bucket}',
       {},
-      [u'bucket']
+      [u'bucket'],
+      True
   )
   DEFAULTOBJECTACCESSCONTROLS = (
       'defaultObjectAccessControls',
       'b/{bucket}/defaultObjectAcl/{entity}',
       {},
-      [u'bucket', u'entity']
+      [u'bucket', u'entity'],
+      True
   )
   NOTIFICATIONS = (
       'notifications',
       'b/{bucket}/notificationConfigs/{notification}',
       {},
-      [u'bucket', u'notification']
+      [u'bucket', u'notification'],
+      True
   )
   OBJECTACCESSCONTROLS = (
       'objectAccessControls',
       'b/{bucket}/o/{object}/acl/{entity}',
       {},
-      [u'bucket', u'object', u'entity']
+      [u'bucket', u'object', u'entity'],
+      True
   )
   OBJECTS = (
       'objects',
       'b/{bucket}/o/{object}',
       {},
-      [u'bucket', u'object']
+      [u'bucket', u'object'],
+      True
   )
   PROJECTS_SERVICEACCOUNT = (
       'projects.serviceAccount',
       'projects/{projectId}/serviceAccount',
       {},
-      [u'projectId']
+      [u'projectId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

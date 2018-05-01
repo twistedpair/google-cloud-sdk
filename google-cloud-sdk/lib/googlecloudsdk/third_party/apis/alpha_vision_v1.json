@@ -4109,7 +4109,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The FieldMask that specifies which fields\nto update.\nIf update_mask isn't specified, all mutable fields are to be updated.\nValid mask paths include `display_name` and `description`.",
+                      "description": "The FieldMask that specifies which fields\nto update.\nIf update_mask isn't specified, all mutable fields are to be updated.\nValid mask paths include `product_labels`, `display_name` and\n`description`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

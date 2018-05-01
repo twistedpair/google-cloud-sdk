@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute backend-services backend commands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import log

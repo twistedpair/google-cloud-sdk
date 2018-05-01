@@ -13,8 +13,8 @@ package = 'replicapoolupdater'
 
 
 class FixedOrPercent(_messages.Message):
-  """Used to specify an amount of instances within an instance group. Only one
-  of fixed and percentage can be specified.
+  r"""Used to specify an amount of instances within an instance group. Only
+  one of fixed and percentage can be specified.
 
   Fields:
     fixed: Specify a fixed amount of instances
@@ -27,7 +27,7 @@ class FixedOrPercent(_messages.Message):
 
 
 class InstanceUpdate(_messages.Message):
-  """Update of a single instance.
+  r"""Update of a single instance.
 
   Messages:
     ErrorValue: Errors that occurred during the instance update.
@@ -47,7 +47,7 @@ class InstanceUpdate(_messages.Message):
   """
 
   class ErrorValue(_messages.Message):
-    """Errors that occurred during the instance update.
+    r"""Errors that occurred during the instance update.
 
     Messages:
       ErrorsValueListEntry: A ErrorsValueListEntry object.
@@ -58,7 +58,7 @@ class InstanceUpdate(_messages.Message):
     """
 
     class ErrorsValueListEntry(_messages.Message):
-      """A ErrorsValueListEntry object.
+      r"""A ErrorsValueListEntry object.
 
       Fields:
         code: [Output Only] The error type identifier for this error.
@@ -79,7 +79,7 @@ class InstanceUpdate(_messages.Message):
 
 
 class InstanceUpdateList(_messages.Message):
-  """Response returned by ListInstanceUpdates method.
+  r"""Response returned by ListInstanceUpdates method.
 
   Fields:
     items: Collection of requested instance updates.
@@ -95,7 +95,7 @@ class InstanceUpdateList(_messages.Message):
 
 
 class ListRolloutResponse(_messages.Message):
-  """A ListRolloutResponse object.
+  r"""A ListRolloutResponse object.
 
   Fields:
     resources: A Rollout attribute.
@@ -105,7 +105,7 @@ class ListRolloutResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """An operation resource, used to manage asynchronous API requests.
+  r"""An operation resource, used to manage asynchronous API requests.
 
   Messages:
     ErrorValue: [Output Only] If errors occurred during processing of this
@@ -147,7 +147,7 @@ class Operation(_messages.Message):
   """
 
   class ErrorValue(_messages.Message):
-    """[Output Only] If errors occurred during processing of this operation,
+    r"""[Output Only] If errors occurred during processing of this operation,
     this field will be populated.
 
     Messages:
@@ -159,7 +159,7 @@ class Operation(_messages.Message):
     """
 
     class ErrorsValueListEntry(_messages.Message):
-      """A ErrorsValueListEntry object.
+      r"""A ErrorsValueListEntry object.
 
       Fields:
         code: [Output Only] The error type identifier for this error.
@@ -175,7 +175,7 @@ class Operation(_messages.Message):
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
   class WarningsValueListEntry(_messages.Message):
-    """A WarningsValueListEntry object.
+    r"""A WarningsValueListEntry object.
 
     Messages:
       DataValueListEntry: A DataValueListEntry object.
@@ -187,7 +187,7 @@ class Operation(_messages.Message):
     """
 
     class DataValueListEntry(_messages.Message):
-      """A DataValueListEntry object.
+      r"""A DataValueListEntry object.
 
       Fields:
         key: [Output Only] Metadata key for this warning.
@@ -226,7 +226,7 @@ class Operation(_messages.Message):
 
 
 class OperationList(_messages.Message):
-  """Contains a list of Operation resources.
+  r"""Contains a list of Operation resources.
 
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
@@ -246,7 +246,7 @@ class OperationList(_messages.Message):
 
 
 class RampUpRolloutRequest(_messages.Message):
-  """A RampUpRolloutRequest object.
+  r"""A RampUpRolloutRequest object.
 
   Fields:
     canarySize: The new amount of instances in the IGM to update instances to.
@@ -256,7 +256,7 @@ class RampUpRolloutRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRollingUpdatesCancelRequest(_messages.Message):
-  """A ReplicapoolupdaterRollingUpdatesCancelRequest object.
+  r"""A ReplicapoolupdaterRollingUpdatesCancelRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -270,7 +270,7 @@ class ReplicapoolupdaterRollingUpdatesCancelRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRollingUpdatesGetRequest(_messages.Message):
-  """A ReplicapoolupdaterRollingUpdatesGetRequest object.
+  r"""A ReplicapoolupdaterRollingUpdatesGetRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -284,7 +284,7 @@ class ReplicapoolupdaterRollingUpdatesGetRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRollingUpdatesInsertRequest(_messages.Message):
-  """A ReplicapoolupdaterRollingUpdatesInsertRequest object.
+  r"""A ReplicapoolupdaterRollingUpdatesInsertRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -298,7 +298,7 @@ class ReplicapoolupdaterRollingUpdatesInsertRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRollingUpdatesListInstanceUpdatesRequest(_messages.Message):
-  """A ReplicapoolupdaterRollingUpdatesListInstanceUpdatesRequest object.
+  r"""A ReplicapoolupdaterRollingUpdatesListInstanceUpdatesRequest object.
 
   Fields:
     filter: Optional. Filter expression for filtering listed resources.
@@ -320,7 +320,7 @@ class ReplicapoolupdaterRollingUpdatesListInstanceUpdatesRequest(_messages.Messa
 
 
 class ReplicapoolupdaterRollingUpdatesListRequest(_messages.Message):
-  """A ReplicapoolupdaterRollingUpdatesListRequest object.
+  r"""A ReplicapoolupdaterRollingUpdatesListRequest object.
 
   Fields:
     filter: Optional. Filter expression for filtering listed resources.
@@ -340,7 +340,7 @@ class ReplicapoolupdaterRollingUpdatesListRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRollingUpdatesPauseRequest(_messages.Message):
-  """A ReplicapoolupdaterRollingUpdatesPauseRequest object.
+  r"""A ReplicapoolupdaterRollingUpdatesPauseRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -354,7 +354,7 @@ class ReplicapoolupdaterRollingUpdatesPauseRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRollingUpdatesResumeRequest(_messages.Message):
-  """A ReplicapoolupdaterRollingUpdatesResumeRequest object.
+  r"""A ReplicapoolupdaterRollingUpdatesResumeRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -368,7 +368,7 @@ class ReplicapoolupdaterRollingUpdatesResumeRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRollingUpdatesRollbackRequest(_messages.Message):
-  """A ReplicapoolupdaterRollingUpdatesRollbackRequest object.
+  r"""A ReplicapoolupdaterRollingUpdatesRollbackRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -382,7 +382,7 @@ class ReplicapoolupdaterRollingUpdatesRollbackRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutAbandonRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutAbandonRequest object.
+  r"""A ReplicapoolupdaterRolloutAbandonRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -396,7 +396,7 @@ class ReplicapoolupdaterRolloutAbandonRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutCommitRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutCommitRequest object.
+  r"""A ReplicapoolupdaterRolloutCommitRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -410,7 +410,7 @@ class ReplicapoolupdaterRolloutCommitRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutGetRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutGetRequest object.
+  r"""A ReplicapoolupdaterRolloutGetRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -424,7 +424,7 @@ class ReplicapoolupdaterRolloutGetRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutInsertRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutInsertRequest object.
+  r"""A ReplicapoolupdaterRolloutInsertRequest object.
 
   Enums:
     UpdatePolicyInitialisationMethodValueValuesEnum: How the update policy
@@ -439,7 +439,7 @@ class ReplicapoolupdaterRolloutInsertRequest(_messages.Message):
   """
 
   class UpdatePolicyInitialisationMethodValueValuesEnum(_messages.Enum):
-    """How the update policy should be initialised.
+    r"""How the update policy should be initialised.
 
     Values:
       FROM_IGM: <no description>
@@ -455,7 +455,7 @@ class ReplicapoolupdaterRolloutInsertRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutListRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutListRequest object.
+  r"""A ReplicapoolupdaterRolloutListRequest object.
 
   Fields:
     filter: Optional. Filter expression for filtering listed resources.
@@ -475,7 +475,7 @@ class ReplicapoolupdaterRolloutListRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutPauseRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutPauseRequest object.
+  r"""A ReplicapoolupdaterRolloutPauseRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -489,7 +489,7 @@ class ReplicapoolupdaterRolloutPauseRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutRampupRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutRampupRequest object.
+  r"""A ReplicapoolupdaterRolloutRampupRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -506,7 +506,7 @@ class ReplicapoolupdaterRolloutRampupRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutResumeRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutResumeRequest object.
+  r"""A ReplicapoolupdaterRolloutResumeRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -520,7 +520,7 @@ class ReplicapoolupdaterRolloutResumeRequest(_messages.Message):
 
 
 class ReplicapoolupdaterRolloutRollbackRequest(_messages.Message):
-  """A ReplicapoolupdaterRolloutRollbackRequest object.
+  r"""A ReplicapoolupdaterRolloutRollbackRequest object.
 
   Fields:
     project: The Google Developers Console project name.
@@ -534,7 +534,7 @@ class ReplicapoolupdaterRolloutRollbackRequest(_messages.Message):
 
 
 class ReplicapoolupdaterZoneOperationsGetRequest(_messages.Message):
-  """A ReplicapoolupdaterZoneOperationsGetRequest object.
+  r"""A ReplicapoolupdaterZoneOperationsGetRequest object.
 
   Fields:
     operation: Name of the operation resource to return.
@@ -548,7 +548,7 @@ class ReplicapoolupdaterZoneOperationsGetRequest(_messages.Message):
 
 
 class ReplicapoolupdaterZoneOperationsListRequest(_messages.Message):
-  """A ReplicapoolupdaterZoneOperationsListRequest object.
+  r"""A ReplicapoolupdaterZoneOperationsListRequest object.
 
   Fields:
     filter: Optional. Filter expression for filtering listed resources.
@@ -568,7 +568,7 @@ class ReplicapoolupdaterZoneOperationsListRequest(_messages.Message):
 
 
 class RollingUpdate(_messages.Message):
-  """The following represents a resource describing a single update (rollout)
+  r"""The following represents a resource describing a single update (rollout)
   of a group of instances to the given template.
 
   Messages:
@@ -619,7 +619,7 @@ class RollingUpdate(_messages.Message):
   """
 
   class ErrorValue(_messages.Message):
-    """[Output Only] Errors that occurred during the rolling update.
+    r"""[Output Only] Errors that occurred during the rolling update.
 
     Messages:
       ErrorsValueListEntry: A ErrorsValueListEntry object.
@@ -630,7 +630,7 @@ class RollingUpdate(_messages.Message):
     """
 
     class ErrorsValueListEntry(_messages.Message):
-      """A ErrorsValueListEntry object.
+      r"""A ErrorsValueListEntry object.
 
       Fields:
         code: [Output Only] The error type identifier for this error.
@@ -646,7 +646,7 @@ class RollingUpdate(_messages.Message):
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
   class PolicyValue(_messages.Message):
-    """Parameters of the update process.
+    r"""Parameters of the update process.
 
     Fields:
       autoPauseAfterInstances: Number of instances to update before the
@@ -697,7 +697,7 @@ class RollingUpdate(_messages.Message):
 
 
 class RollingUpdateList(_messages.Message):
-  """Response returned by List method.
+  r"""Response returned by List method.
 
   Fields:
     items: Collection of requested updates.
@@ -713,7 +713,7 @@ class RollingUpdateList(_messages.Message):
 
 
 class Rollout(_messages.Message):
-  """A Rollout object.
+  r"""A Rollout object.
 
   Fields:
     canarySize: The amount of instances within the instance group manager to
@@ -755,7 +755,7 @@ class Rollout(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     AltValueValuesEnum: Data format for the response.
@@ -768,17 +768,15 @@ class StandardQueryParameters(_messages.Message):
       token.
     oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
-    quotaUser: Available to use for quota purposes for server-side
-      applications. Can be any arbitrary string assigned to a user, but should
-      not exceed 40 characters. Overrides userIp if both are provided.
+    quotaUser: An opaque string that represents a user for quota purposes.
+      Must not exceed 40 characters.
     trace: A tracing token of the form "token:<tokenid>" to include in api
       requests.
-    userIp: IP address of the site where the request originates. Use this if
-      you want to enforce per-user limits.
+    userIp: Deprecated. Please use quotaUser instead.
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for the response.
+    r"""Data format for the response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -796,7 +794,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class UpdatePolicy(_messages.Message):
-  """A UpdatePolicy object.
+  r"""A UpdatePolicy object.
 
   Fields:
     maxSurge: Maximum number of instances that can be created above the

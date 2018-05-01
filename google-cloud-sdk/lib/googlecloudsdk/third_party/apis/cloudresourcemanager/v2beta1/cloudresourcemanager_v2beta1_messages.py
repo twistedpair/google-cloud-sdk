@@ -14,7 +14,7 @@ package = 'cloudresourcemanager'
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -48,7 +48,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -65,7 +65,7 @@ class AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -83,7 +83,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -108,7 +108,7 @@ class Binding(_messages.Message):
 
 
 class CloudresourcemanagerFoldersCreateRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersCreateRequest object.
+  r"""A CloudresourcemanagerFoldersCreateRequest object.
 
   Fields:
     folder: A Folder resource to be passed as the request body.
@@ -121,7 +121,7 @@ class CloudresourcemanagerFoldersCreateRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersDeleteRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersDeleteRequest object.
+  r"""A CloudresourcemanagerFoldersDeleteRequest object.
 
   Fields:
     foldersId: Part of `name`. the resource name of the Folder to be deleted.
@@ -132,7 +132,7 @@ class CloudresourcemanagerFoldersDeleteRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersGetIamPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersGetIamPolicyRequest object.
+  r"""A CloudresourcemanagerFoldersGetIamPolicyRequest object.
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
@@ -147,7 +147,7 @@ class CloudresourcemanagerFoldersGetIamPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersGetRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersGetRequest object.
+  r"""A CloudresourcemanagerFoldersGetRequest object.
 
   Fields:
     foldersId: Part of `name`. The resource name of the Folder to retrieve.
@@ -158,7 +158,7 @@ class CloudresourcemanagerFoldersGetRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersListRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersListRequest object.
+  r"""A CloudresourcemanagerFoldersListRequest object.
 
   Fields:
     pageSize: The maximum number of Folders to return in the response. This
@@ -181,7 +181,7 @@ class CloudresourcemanagerFoldersListRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersMoveRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersMoveRequest object.
+  r"""A CloudresourcemanagerFoldersMoveRequest object.
 
   Fields:
     foldersId: Part of `name`. The resource name of the Folder to move. Must
@@ -195,7 +195,7 @@ class CloudresourcemanagerFoldersMoveRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersPatchRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersPatchRequest object.
+  r"""A CloudresourcemanagerFoldersPatchRequest object.
 
   Fields:
     folder: A Folder resource to be passed as the request body.
@@ -211,7 +211,7 @@ class CloudresourcemanagerFoldersPatchRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersSetIamPolicyRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersSetIamPolicyRequest object.
+  r"""A CloudresourcemanagerFoldersSetIamPolicyRequest object.
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
@@ -226,7 +226,7 @@ class CloudresourcemanagerFoldersSetIamPolicyRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersTestIamPermissionsRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersTestIamPermissionsRequest object.
+  r"""A CloudresourcemanagerFoldersTestIamPermissionsRequest object.
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
@@ -241,7 +241,7 @@ class CloudresourcemanagerFoldersTestIamPermissionsRequest(_messages.Message):
 
 
 class CloudresourcemanagerFoldersUndeleteRequest(_messages.Message):
-  """A CloudresourcemanagerFoldersUndeleteRequest object.
+  r"""A CloudresourcemanagerFoldersUndeleteRequest object.
 
   Fields:
     foldersId: Part of `name`. The resource name of the Folder to undelete.
@@ -255,7 +255,7 @@ class CloudresourcemanagerFoldersUndeleteRequest(_messages.Message):
 
 
 class Folder(_messages.Message):
-  """A Folder in an Organization's resource hierarchy, used to organize that
+  r"""A Folder in an Organization's resource hierarchy, used to organize that
   Organization's resources.
 
   Enums:
@@ -283,7 +283,7 @@ class Folder(_messages.Message):
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
-    """Output only.  The lifecycle state of the folder. Updates to the
+    r"""Output only.  The lifecycle state of the folder. Updates to the
     lifecycle_state must be performed via [DeleteFolder] and [UndeleteFolder].
 
     Values:
@@ -303,7 +303,7 @@ class Folder(_messages.Message):
 
 
 class FolderOperation(_messages.Message):
-  """Metadata describing a long running folder operation
+  r"""Metadata describing a long running folder operation
 
   Enums:
     OperationTypeValueValuesEnum: The type of this operation.
@@ -318,7 +318,7 @@ class FolderOperation(_messages.Message):
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    """The type of this operation.
+    r"""The type of this operation.
 
     Values:
       OPERATION_TYPE_UNSPECIFIED: Operation type not specified.
@@ -336,7 +336,7 @@ class FolderOperation(_messages.Message):
 
 
 class FolderOperationError(_messages.Message):
-  """A classification of the Folder Operation error.
+  r"""A classification of the Folder Operation error.
 
   Enums:
     ErrorMessageIdValueValuesEnum: The type of operation error experienced.
@@ -346,7 +346,7 @@ class FolderOperationError(_messages.Message):
   """
 
   class ErrorMessageIdValueValuesEnum(_messages.Enum):
-    """The type of operation error experienced.
+    r"""The type of operation error experienced.
 
     Values:
       ERROR_TYPE_UNSPECIFIED: The error type was unrecognized or unspecified.
@@ -383,11 +383,11 @@ class FolderOperationError(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  """Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method."""
 
 
 class ListFoldersResponse(_messages.Message):
-  """The ListFolders response message.
+  r"""The ListFolders response message.
 
   Fields:
     folders: A possibly paginated list of Folders that are direct descendants
@@ -402,7 +402,7 @@ class ListFoldersResponse(_messages.Message):
 
 
 class MoveFolderRequest(_messages.Message):
-  """The MoveFolder request message.
+  r"""The MoveFolder request message.
 
   Fields:
     destinationParent: The resource name of the Folder or Organization to
@@ -414,8 +414,8 @@ class MoveFolderRequest(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -456,7 +456,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -470,7 +470,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -484,7 +484,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -501,7 +501,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -521,7 +521,7 @@ class Operation(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
   consists of a list of `bindings`. A `Binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
@@ -559,7 +559,7 @@ class Policy(_messages.Message):
 
 
 class ProjectCreationStatus(_messages.Message):
-  """A status object which is used as the `metadata` field for the Operation
+  r"""A status object which is used as the `metadata` field for the Operation
   returned by CreateProject. It provides insight for when significant phases
   of Project creation have completed.
 
@@ -577,7 +577,7 @@ class ProjectCreationStatus(_messages.Message):
 
 
 class SearchFoldersRequest(_messages.Message):
-  """The request message for searching folders.
+  r"""The request message for searching folders.
 
   Fields:
     pageSize: The maximum number of folders to return in the response. This
@@ -604,7 +604,7 @@ class SearchFoldersRequest(_messages.Message):
 
 
 class SearchFoldersResponse(_messages.Message):
-  """The response message for searching folders.
+  r"""The response message for searching folders.
 
   Fields:
     folders: A possibly paginated folder search results. the specified parent
@@ -619,7 +619,7 @@ class SearchFoldersResponse(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -637,7 +637,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -666,7 +666,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -678,7 +678,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -704,7 +704,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -752,7 +752,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -764,7 +764,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -782,7 +782,7 @@ class Status(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -795,7 +795,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -806,7 +806,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UndeleteFolderRequest(_messages.Message):
-  """The UndeleteFolder request message."""
+  r"""The UndeleteFolder request message."""
 
 
 encoding.AddCustomJsonFieldMapping(

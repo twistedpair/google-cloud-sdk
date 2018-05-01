@@ -12,7 +12,7 @@ package = 'dns'
 
 
 class Change(_messages.Message):
-  """An atomic update to a collection of ResourceRecordSets.
+  r"""An atomic update to a collection of ResourceRecordSets.
 
   Enums:
     StatusValueValuesEnum: Status of the operation (output only).
@@ -32,7 +32,7 @@ class Change(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of the operation (output only).
+    r"""Status of the operation (output only).
 
     Values:
       done: <no description>
@@ -51,7 +51,7 @@ class Change(_messages.Message):
 
 
 class ChangesListResponse(_messages.Message):
-  """The response to a request to enumerate Changes to a ResourceRecordSets
+  r"""The response to a request to enumerate Changes to a ResourceRecordSets
   collection.
 
   Fields:
@@ -76,7 +76,7 @@ class ChangesListResponse(_messages.Message):
 
 
 class DnsChangesCreateRequest(_messages.Message):
-  """A DnsChangesCreateRequest object.
+  r"""A DnsChangesCreateRequest object.
 
   Fields:
     change: A Change resource to be passed as the request body.
@@ -95,7 +95,7 @@ class DnsChangesCreateRequest(_messages.Message):
 
 
 class DnsChangesGetRequest(_messages.Message):
-  """A DnsChangesGetRequest object.
+  r"""A DnsChangesGetRequest object.
 
   Fields:
     changeId: The identifier of the requested change, from a previous
@@ -115,7 +115,7 @@ class DnsChangesGetRequest(_messages.Message):
 
 
 class DnsChangesListRequest(_messages.Message):
-  """A DnsChangesListRequest object.
+  r"""A DnsChangesListRequest object.
 
   Enums:
     SortByValueValuesEnum: Sorting criterion. The only supported value is
@@ -134,7 +134,7 @@ class DnsChangesListRequest(_messages.Message):
   """
 
   class SortByValueValuesEnum(_messages.Enum):
-    """Sorting criterion. The only supported value is change sequence.
+    r"""Sorting criterion. The only supported value is change sequence.
 
     Values:
       changeSequence: <no description>
@@ -150,7 +150,7 @@ class DnsChangesListRequest(_messages.Message):
 
 
 class DnsDnsKeysGetRequest(_messages.Message):
-  """A DnsDnsKeysGetRequest object.
+  r"""A DnsDnsKeysGetRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -173,7 +173,7 @@ class DnsDnsKeysGetRequest(_messages.Message):
 
 
 class DnsDnsKeysListRequest(_messages.Message):
-  """A DnsDnsKeysListRequest object.
+  r"""A DnsDnsKeysListRequest object.
 
   Fields:
     digestType: An optional comma-separated list of digest types to compute
@@ -196,7 +196,7 @@ class DnsDnsKeysListRequest(_messages.Message):
 
 
 class DnsKey(_messages.Message):
-  """A DNSSEC key pair.
+  r"""A DNSSEC key pair.
 
   Enums:
     AlgorithmValueValuesEnum: String mnemonic specifying the DNSSEC algorithm
@@ -244,7 +244,7 @@ class DnsKey(_messages.Message):
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
-    """String mnemonic specifying the DNSSEC algorithm of this key. Immutable
+    r"""String mnemonic specifying the DNSSEC algorithm of this key. Immutable
     after creation time.
 
     Values:
@@ -261,7 +261,7 @@ class DnsKey(_messages.Message):
     rsasha512 = 4
 
   class TypeValueValuesEnum(_messages.Enum):
-    """One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING have
+    r"""One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING have
     the Secure Entry Point flag set and, when active, will be used to sign
     only resource record sets of type DNSKEY. Otherwise, the Secure Entry
     Point flag will be cleared and this key will be used to sign only resource
@@ -288,7 +288,7 @@ class DnsKey(_messages.Message):
 
 
 class DnsKeyDigest(_messages.Message):
-  """A DnsKeyDigest object.
+  r"""A DnsKeyDigest object.
 
   Enums:
     TypeValueValuesEnum: Specifies the algorithm used to calculate this
@@ -301,7 +301,7 @@ class DnsKeyDigest(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Specifies the algorithm used to calculate this digest.
+    r"""Specifies the algorithm used to calculate this digest.
 
     Values:
       sha1: <no description>
@@ -317,7 +317,7 @@ class DnsKeyDigest(_messages.Message):
 
 
 class DnsKeySpec(_messages.Message):
-  """Parameters for DnsKey key generation. Used for generating initial keys
+  r"""Parameters for DnsKey key generation. Used for generating initial keys
   for a new ManagedZone and as default when adding a new DnsKey.
 
   Enums:
@@ -342,7 +342,7 @@ class DnsKeySpec(_messages.Message):
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
-    """String mnemonic specifying the DNSSEC algorithm of this key.
+    r"""String mnemonic specifying the DNSSEC algorithm of this key.
 
     Values:
       ecdsap256sha256: <no description>
@@ -358,7 +358,7 @@ class DnsKeySpec(_messages.Message):
     rsasha512 = 4
 
   class KeyTypeValueValuesEnum(_messages.Enum):
-    """One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING have
+    r"""One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING have
     the Secure Entry Point flag set and, when active, will be used to sign
     only resource record sets of type DNSKEY. Otherwise, the Secure Entry
     Point flag will be cleared and this key will be used to sign only resource
@@ -378,7 +378,7 @@ class DnsKeySpec(_messages.Message):
 
 
 class DnsKeysListResponse(_messages.Message):
-  """The response to a request to enumerate DnsKeys in a ManagedZone.
+  r"""The response to a request to enumerate DnsKeys in a ManagedZone.
 
   Fields:
     dnsKeys: The requested resources.
@@ -402,7 +402,7 @@ class DnsKeysListResponse(_messages.Message):
 
 
 class DnsManagedZoneOperationsGetRequest(_messages.Message):
-  """A DnsManagedZoneOperationsGetRequest object.
+  r"""A DnsManagedZoneOperationsGetRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -420,7 +420,7 @@ class DnsManagedZoneOperationsGetRequest(_messages.Message):
 
 
 class DnsManagedZoneOperationsListRequest(_messages.Message):
-  """A DnsManagedZoneOperationsListRequest object.
+  r"""A DnsManagedZoneOperationsListRequest object.
 
   Enums:
     SortByValueValuesEnum: Sorting criterion. The only supported values are
@@ -438,7 +438,7 @@ class DnsManagedZoneOperationsListRequest(_messages.Message):
   """
 
   class SortByValueValuesEnum(_messages.Enum):
-    """Sorting criterion. The only supported values are START_TIME and ID.
+    r"""Sorting criterion. The only supported values are START_TIME and ID.
 
     Values:
       id: <no description>
@@ -455,7 +455,7 @@ class DnsManagedZoneOperationsListRequest(_messages.Message):
 
 
 class DnsManagedZonesCreateRequest(_messages.Message):
-  """A DnsManagedZonesCreateRequest object.
+  r"""A DnsManagedZonesCreateRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -471,7 +471,7 @@ class DnsManagedZonesCreateRequest(_messages.Message):
 
 
 class DnsManagedZonesDeleteRequest(_messages.Message):
-  """A DnsManagedZonesDeleteRequest object.
+  r"""A DnsManagedZonesDeleteRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -488,11 +488,11 @@ class DnsManagedZonesDeleteRequest(_messages.Message):
 
 
 class DnsManagedZonesDeleteResponse(_messages.Message):
-  """An empty DnsManagedZonesDelete response."""
+  r"""An empty DnsManagedZonesDelete response."""
 
 
 class DnsManagedZonesGetRequest(_messages.Message):
-  """A DnsManagedZonesGetRequest object.
+  r"""A DnsManagedZonesGetRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -509,7 +509,7 @@ class DnsManagedZonesGetRequest(_messages.Message):
 
 
 class DnsManagedZonesListRequest(_messages.Message):
-  """A DnsManagedZonesListRequest object.
+  r"""A DnsManagedZonesListRequest object.
 
   Fields:
     dnsName: Restricts the list to return only zones with this domain name.
@@ -527,7 +527,7 @@ class DnsManagedZonesListRequest(_messages.Message):
 
 
 class DnsManagedZonesPatchRequest(_messages.Message):
-  """A DnsManagedZonesPatchRequest object.
+  r"""A DnsManagedZonesPatchRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -547,7 +547,7 @@ class DnsManagedZonesPatchRequest(_messages.Message):
 
 
 class DnsManagedZonesUpdateRequest(_messages.Message):
-  """A DnsManagedZonesUpdateRequest object.
+  r"""A DnsManagedZonesUpdateRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -567,7 +567,7 @@ class DnsManagedZonesUpdateRequest(_messages.Message):
 
 
 class DnsPoliciesCreateRequest(_messages.Message):
-  """A DnsPoliciesCreateRequest object.
+  r"""A DnsPoliciesCreateRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -583,7 +583,7 @@ class DnsPoliciesCreateRequest(_messages.Message):
 
 
 class DnsPoliciesDeleteRequest(_messages.Message):
-  """A DnsPoliciesDeleteRequest object.
+  r"""A DnsPoliciesDeleteRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -599,11 +599,11 @@ class DnsPoliciesDeleteRequest(_messages.Message):
 
 
 class DnsPoliciesDeleteResponse(_messages.Message):
-  """An empty DnsPoliciesDelete response."""
+  r"""An empty DnsPoliciesDelete response."""
 
 
 class DnsPoliciesGetRequest(_messages.Message):
-  """A DnsPoliciesGetRequest object.
+  r"""A DnsPoliciesGetRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -619,7 +619,7 @@ class DnsPoliciesGetRequest(_messages.Message):
 
 
 class DnsPoliciesListRequest(_messages.Message):
-  """A DnsPoliciesListRequest object.
+  r"""A DnsPoliciesListRequest object.
 
   Fields:
     maxResults: Optional. Maximum number of results to be returned. If
@@ -635,7 +635,7 @@ class DnsPoliciesListRequest(_messages.Message):
 
 
 class DnsPoliciesPatchRequest(_messages.Message):
-  """A DnsPoliciesPatchRequest object.
+  r"""A DnsPoliciesPatchRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -653,7 +653,7 @@ class DnsPoliciesPatchRequest(_messages.Message):
 
 
 class DnsPoliciesUpdateRequest(_messages.Message):
-  """A DnsPoliciesUpdateRequest object.
+  r"""A DnsPoliciesUpdateRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -671,7 +671,7 @@ class DnsPoliciesUpdateRequest(_messages.Message):
 
 
 class DnsProjectsGetRequest(_messages.Message):
-  """A DnsProjectsGetRequest object.
+  r"""A DnsProjectsGetRequest object.
 
   Fields:
     clientOperationId: For mutating operation requests only. An optional
@@ -685,7 +685,7 @@ class DnsProjectsGetRequest(_messages.Message):
 
 
 class DnsResourceRecordSetsListRequest(_messages.Message):
-  """A DnsResourceRecordSetsListRequest object.
+  r"""A DnsResourceRecordSetsListRequest object.
 
   Fields:
     managedZone: Identifies the managed zone addressed by this request. Can be
@@ -710,7 +710,7 @@ class DnsResourceRecordSetsListRequest(_messages.Message):
 
 
 class ManagedZone(_messages.Message):
-  """A zone is a subtree of the DNS namespace under one administrative
+  r"""A zone is a subtree of the DNS namespace under one administrative
   responsibility. A ManagedZone is a resource that represents a DNS zone
   hosted by the Cloud DNS service.
 
@@ -754,7 +754,7 @@ class ManagedZone(_messages.Message):
   """
 
   class VisibilityValueValuesEnum(_messages.Enum):
-    """The zone's visibility: public zones are exposed to the Internet, while
+    r"""The zone's visibility: public zones are exposed to the Internet, while
     private zones are visible only to GCP resources.
 
     Values:
@@ -766,7 +766,7 @@ class ManagedZone(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """User labels.
+    r"""User labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -776,7 +776,7 @@ class ManagedZone(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -804,7 +804,7 @@ class ManagedZone(_messages.Message):
 
 
 class ManagedZoneDnsSecConfig(_messages.Message):
-  """A ManagedZoneDnsSecConfig object.
+  r"""A ManagedZoneDnsSecConfig object.
 
   Enums:
     NonExistenceValueValuesEnum: Specifies the mechanism used to provide
@@ -825,7 +825,7 @@ class ManagedZoneDnsSecConfig(_messages.Message):
   """
 
   class NonExistenceValueValuesEnum(_messages.Enum):
-    """Specifies the mechanism used to provide authenticated denial-of-
+    r"""Specifies the mechanism used to provide authenticated denial-of-
     existence responses. Output only while state is not OFF.
 
     Values:
@@ -836,7 +836,7 @@ class ManagedZoneDnsSecConfig(_messages.Message):
     nsec3 = 1
 
   class StateValueValuesEnum(_messages.Enum):
-    """Specifies whether DNSSEC is enabled, and what mode it is in.
+    r"""Specifies whether DNSSEC is enabled, and what mode it is in.
 
     Values:
       off: <no description>
@@ -854,7 +854,7 @@ class ManagedZoneDnsSecConfig(_messages.Message):
 
 
 class ManagedZoneForwardingConfig(_messages.Message):
-  """A ManagedZoneForwardingConfig object.
+  r"""A ManagedZoneForwardingConfig object.
 
   Fields:
     kind: Identifies what kind of resource this is. Value: the fixed string
@@ -869,7 +869,7 @@ class ManagedZoneForwardingConfig(_messages.Message):
 
 
 class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
-  """A ManagedZoneForwardingConfigNameServerTarget object.
+  r"""A ManagedZoneForwardingConfigNameServerTarget object.
 
   Fields:
     ipv4Address: IPv4 address of a target name server.
@@ -882,7 +882,7 @@ class ManagedZoneForwardingConfigNameServerTarget(_messages.Message):
 
 
 class ManagedZoneOperationsListResponse(_messages.Message):
-  """A ManagedZoneOperationsListResponse object.
+  r"""A ManagedZoneOperationsListResponse object.
 
   Fields:
     header: A ResponseHeader attribute.
@@ -906,7 +906,7 @@ class ManagedZoneOperationsListResponse(_messages.Message):
 
 
 class ManagedZonePrivateVisibilityConfig(_messages.Message):
-  """A ManagedZonePrivateVisibilityConfig object.
+  r"""A ManagedZonePrivateVisibilityConfig object.
 
   Fields:
     kind: Identifies what kind of resource this is. Value: the fixed string
@@ -919,7 +919,7 @@ class ManagedZonePrivateVisibilityConfig(_messages.Message):
 
 
 class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
-  """A ManagedZonePrivateVisibilityConfigNetwork object.
+  r"""A ManagedZonePrivateVisibilityConfigNetwork object.
 
   Fields:
     kind: Identifies what kind of resource this is. Value: the fixed string
@@ -934,7 +934,7 @@ class ManagedZonePrivateVisibilityConfigNetwork(_messages.Message):
 
 
 class ManagedZonesListResponse(_messages.Message):
-  """A ManagedZonesListResponse object.
+  r"""A ManagedZonesListResponse object.
 
   Fields:
     header: A ResponseHeader attribute.
@@ -958,7 +958,7 @@ class ManagedZonesListResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """An operation represents a successful mutation performed on a Cloud DNS
+  r"""An operation represents a successful mutation performed on a Cloud DNS
   resource. Operations provide: - An audit log of server resource mutations. -
   A way to recover/retry API calls in the case where the response is never
   received by the caller. Use the caller specified client_operation_id.
@@ -990,7 +990,7 @@ class Operation(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of the operation. Can be one of the following: "PENDING" or
+    r"""Status of the operation. Can be one of the following: "PENDING" or
     "DONE" (output only).
 
     Values:
@@ -1011,7 +1011,7 @@ class Operation(_messages.Message):
 
 
 class OperationDnsKeyContext(_messages.Message):
-  """A OperationDnsKeyContext object.
+  r"""A OperationDnsKeyContext object.
 
   Fields:
     newValue: The post-operation DnsKey resource.
@@ -1023,7 +1023,7 @@ class OperationDnsKeyContext(_messages.Message):
 
 
 class OperationManagedZoneContext(_messages.Message):
-  """A OperationManagedZoneContext object.
+  r"""A OperationManagedZoneContext object.
 
   Fields:
     newValue: The post-operation ManagedZone resource.
@@ -1035,7 +1035,7 @@ class OperationManagedZoneContext(_messages.Message):
 
 
 class PoliciesListResponse(_messages.Message):
-  """A PoliciesListResponse object.
+  r"""A PoliciesListResponse object.
 
   Fields:
     header: A ResponseHeader attribute.
@@ -1059,7 +1059,7 @@ class PoliciesListResponse(_messages.Message):
 
 
 class PoliciesPatchResponse(_messages.Message):
-  """A PoliciesPatchResponse object.
+  r"""A PoliciesPatchResponse object.
 
   Fields:
     header: A ResponseHeader attribute.
@@ -1071,7 +1071,7 @@ class PoliciesPatchResponse(_messages.Message):
 
 
 class PoliciesUpdateResponse(_messages.Message):
-  """A PoliciesUpdateResponse object.
+  r"""A PoliciesUpdateResponse object.
 
   Fields:
     header: A ResponseHeader attribute.
@@ -1083,7 +1083,7 @@ class PoliciesUpdateResponse(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """A policy is a collection of rules applied to one or more networks that
+  r"""A policy is a collection of rules applied to one or more networks that
   specify forwarding behavior for that network.
 
   Fields:
@@ -1117,7 +1117,7 @@ class Policy(_messages.Message):
 
 
 class PolicyAlternativeNameServerConfig(_messages.Message):
-  """A PolicyAlternativeNameServerConfig object.
+  r"""A PolicyAlternativeNameServerConfig object.
 
   Fields:
     kind: Identifies what kind of resource this is. Value: the fixed string
@@ -1133,7 +1133,7 @@ class PolicyAlternativeNameServerConfig(_messages.Message):
 
 
 class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
-  """A PolicyAlternativeNameServerConfigTargetNameServer object.
+  r"""A PolicyAlternativeNameServerConfigTargetNameServer object.
 
   Fields:
     ipv4Address: IPv4 address to forward to.
@@ -1146,7 +1146,7 @@ class PolicyAlternativeNameServerConfigTargetNameServer(_messages.Message):
 
 
 class PolicyNetwork(_messages.Message):
-  """A PolicyNetwork object.
+  r"""A PolicyNetwork object.
 
   Fields:
     kind: Identifies what kind of resource this is. Value: the fixed string
@@ -1161,7 +1161,7 @@ class PolicyNetwork(_messages.Message):
 
 
 class Project(_messages.Message):
-  """A project resource. The project is a top level container for resources
+  r"""A project resource. The project is a top level container for resources
   including Cloud DNS ManagedZones. Projects can be created only in the APIs
   console.
 
@@ -1184,7 +1184,7 @@ class Project(_messages.Message):
 
 
 class Quota(_messages.Message):
-  """Limits associated with a Project.
+  r"""Limits associated with a Project.
 
   Fields:
     blackHoleHidesSystemZones: Whether a black hole zone should suppress
@@ -1236,7 +1236,7 @@ class Quota(_messages.Message):
 
 
 class ResourceRecordSet(_messages.Message):
-  """A unit of data that will be returned by the DNS servers.
+  r"""A unit of data that will be returned by the DNS servers.
 
   Fields:
     kind: Identifies what kind of resource this is. Value: the fixed string
@@ -1259,7 +1259,7 @@ class ResourceRecordSet(_messages.Message):
 
 
 class ResourceRecordSetsListResponse(_messages.Message):
-  """A ResourceRecordSetsListResponse object.
+  r"""A ResourceRecordSetsListResponse object.
 
   Fields:
     header: A ResponseHeader attribute.
@@ -1283,7 +1283,7 @@ class ResourceRecordSetsListResponse(_messages.Message):
 
 
 class ResponseHeader(_messages.Message):
-  """Elements common to every response.
+  r"""Elements common to every response.
 
   Fields:
     operationId: For mutating operation requests that completed successfully.
@@ -1295,7 +1295,7 @@ class ResponseHeader(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     AltValueValuesEnum: Data format for the response.
@@ -1308,17 +1308,15 @@ class StandardQueryParameters(_messages.Message):
       token.
     oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
-    quotaUser: Available to use for quota purposes for server-side
-      applications. Can be any arbitrary string assigned to a user, but should
-      not exceed 40 characters. Overrides userIp if both are provided.
+    quotaUser: An opaque string that represents a user for quota purposes.
+      Must not exceed 40 characters.
     trace: A tracing token of the form "token:<tokenid>" to include in api
       requests.
-    userIp: IP address of the site where the request originates. Use this if
-      you want to enforce per-user limits.
+    userIp: Deprecated. Please use quotaUser instead.
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for the response.
+    r"""Data format for the response.
 
     Values:
       json: Responses with Content-Type of application/json

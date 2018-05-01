@@ -5,6 +5,67 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 200.0.0 (2018-05-01)
+
+### Breaking Changes
+
+*   **(Cloud DNS)** Modified `gcloud beta dns dnskeys describe` command to remove the `dsRecord`
+  field for closer correspondence to the Google Cloud DNS API. Please use
+  the flag ` --format "value(ds_record())"` instead.
+*   **(Cloud DNS)** Moved the `gcloud beta dns dnskeys` commands to `gcloud beta dns dns-keys`;
+  the old commands are deprecated and will soon be removed.
+*   **(Cloud Interconnect)** Deprecated `gcloud compute interconnects patch` and renamed it to
+  `gcloud compute interconnects update`.
+
+
+### App Engine Flexible Environment
+
+* Fixed a bug due to which some Flexible deployments would fail with
+  LargeFileError.
+
+### Cloud Composer
+
+* Initial (beta track) release of the `gcloud beta composer` command group.
+  Cloud Composer is a managed Apache Airflow service. To learn more, see
+  [https://cloud.google.com/composer/docs/](https://cloud.google.com/composer/docs/).
+
+
+### Cloud DNS
+
+* Promoted `gcloud dns dns-keys <list|describe>` commands to GA.
+
+### Cloud SQL
+
+* Added `--source-ip-address` and `--source-port` flags to
+  `gcloud beta sql instances create` to support creating external primary
+  instances.
+*   Added the following flags to `gcloud beta sql instances create` to support
+    creating read replicas of external primary instances:
+    *   `--master-username`
+    *   `--master-password`,
+    *   `--prompt-for-master-password`
+    *   `--master-dump-file-path`,
+    *   `--master-ca-certificate-path`
+    *   `--client-certificate-path`
+    *   `--client-key-path`
+
+### Cloud Storage
+
+* Updated gsutil component to 4.31
+
+### Compute Engine
+
+* Promoted support for disabling firewall rules to beta.
+
+### Kubernetes Engine
+
+* Added `--enable-stackdriver-kubernetes` flag to enable Stackdriver logging and
+  monitoring beta experience.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 199.0.0 (2018-04-24)
 
 ### Breaking Changes
@@ -17,10 +78,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   directions or the [App Engine Standard
   Environment](https://cloud.google.com/appengine/docs/standard/python/config/appref) directions for your application's language.
 
-
-### BigQuery
-
-* Enabled creation of tables with second-level clustering.
 
 ### Cloud Bigtable
 
@@ -65,7 +122,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Updated for Python 3 compatibility.
 *   Promoted `gcloud container clusters create --enable-ip-alias` to GA.
     *   `--enable-ip-alias` no longer requires the `--create-subnetwork`
-        option to be specified when creating a GKE cluster.
+        option to be specified when creating a cluster.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).

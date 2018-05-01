@@ -2681,10 +2681,10 @@ class Batch(object):
       A new Batch of results or None if either the next batch has already been
       fetched or there are no more results.
     """
-    async = self.next_batch_async(fetch_options)
-    if async is None:
+    asynchronous = self.next_batch_async(fetch_options)
+    if asynchronous is None:
       return None
-    return async.get_result()
+    return asynchronous.get_result()
 
   def _compiled_query(self):
     return self._batch_shared.compiled_query

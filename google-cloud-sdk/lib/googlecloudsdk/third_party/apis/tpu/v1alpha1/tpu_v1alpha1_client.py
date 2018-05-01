@@ -53,7 +53,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets AcceleratorType.
+      r"""Gets AcceleratorType.
 
       Args:
         request: (TpuProjectsLocationsAcceleratorTypesGetRequest) input message
@@ -80,7 +80,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists accelerator types supported by this API.
+      r"""Lists accelerator types supported by this API.
 
       Args:
         request: (TpuProjectsLocationsAcceleratorTypesListRequest) input message
@@ -117,7 +117,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a node.
+      r"""Creates a node.
 
       Args:
         request: (TpuProjectsLocationsNodesCreateRequest) input message
@@ -144,7 +144,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a node.
+      r"""Deletes a node.
 
       Args:
         request: (TpuProjectsLocationsNodesDeleteRequest) input message
@@ -171,7 +171,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the details of a node.
+      r"""Gets the details of a node.
 
       Args:
         request: (TpuProjectsLocationsNodesGetRequest) input message
@@ -198,7 +198,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists nodes.
+      r"""Lists nodes.
 
       Args:
         request: (TpuProjectsLocationsNodesListRequest) input message
@@ -225,7 +225,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Reimage(self, request, global_params=None):
-      """Reimages a node's OS.
+      r"""Reimages a node's OS.
 
       Args:
         request: (TpuProjectsLocationsNodesReimageRequest) input message
@@ -252,7 +252,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Reset(self, request, global_params=None):
-      """Resets a node, which stops and starts the VM.
+      r"""Resets a node, which stops and starts the VM.
 
       Args:
         request: (TpuProjectsLocationsNodesResetRequest) input message
@@ -279,7 +279,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Start(self, request, global_params=None):
-      """Starts a node.
+      r"""Starts a node.
 
       Args:
         request: (TpuProjectsLocationsNodesStartRequest) input message
@@ -306,7 +306,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Stop(self, request, global_params=None):
-      """Stops a node.
+      r"""Stops a node.
 
       Args:
         request: (TpuProjectsLocationsNodesStopRequest) input message
@@ -343,7 +343,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
 makes a best effort to cancel the operation, but success is not
 guaranteed.  If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.  Clients can use
@@ -379,7 +379,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is.
+      r"""Deletes a long-running operation. This method indicates that the client is.
 no longer interested in the operation result. It does not cancel the
 operation. If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.
@@ -409,7 +409,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -438,7 +438,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding
@@ -484,7 +484,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Get(self, request, global_params=None):
-      """Gets TensorFlow Version.
+      r"""Gets TensorFlow Version.
 
       Args:
         request: (TpuProjectsLocationsTensorflowVersionsGetRequest) input message
@@ -511,7 +511,7 @@ is the parent resource, without the operations collection id.
     )
 
     def List(self, request, global_params=None):
-      """Lists TensorFlow versions supported by this API.
+      r"""Lists TensorFlow versions supported by this API.
 
       Args:
         request: (TpuProjectsLocationsTensorflowVersionsListRequest) input message
@@ -548,7 +548,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a location.
+      r"""Gets information about a location.
 
       Args:
         request: (TpuProjectsLocationsGetRequest) input message
@@ -575,7 +575,7 @@ is the parent resource, without the operations collection id.
     )
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (TpuProjectsLocationsListRequest) input message

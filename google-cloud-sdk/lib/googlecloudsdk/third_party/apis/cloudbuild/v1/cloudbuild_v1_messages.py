@@ -13,7 +13,7 @@ package = 'cloudbuild'
 
 
 class ArtifactObjects(_messages.Message):
-  """Files in the workspace to upload to Cloud Storage upon successful
+  r"""Files in the workspace to upload to Cloud Storage upon successful
   completion of all build steps.
 
   Fields:
@@ -33,7 +33,7 @@ class ArtifactObjects(_messages.Message):
 
 
 class ArtifactResult(_messages.Message):
-  """An artifact that was uploaded during a build. This is a single record in
+  r"""An artifact that was uploaded during a build. This is a single record in
   the artifact manifest JSON file.
 
   Fields:
@@ -48,7 +48,7 @@ class ArtifactResult(_messages.Message):
 
 
 class Artifacts(_messages.Message):
-  """Artifacts produced by a build that should be uploaded upon successful
+  r"""Artifacts produced by a build that should be uploaded upon successful
   completion of all build steps.
 
   Fields:
@@ -71,7 +71,7 @@ class Artifacts(_messages.Message):
 
 
 class Build(_messages.Message):
-  """A build resource in the Container Builder API.  At a high level, a
+  r"""A build resource in the Container Builder API.  At a high level, a
   `Build` describes where to find source code, how to build it (for example,
   the builder image to run on the source), and where to store the built
   artifacts.  Fields can include the following variables, which will be
@@ -140,7 +140,7 @@ class Build(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of the build. @OutputOnly
+    r"""Status of the build. @OutputOnly
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
@@ -163,7 +163,7 @@ class Build(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
-    """Substitutions data for `Build` resource.
+    r"""Substitutions data for `Build` resource.
 
     Messages:
       AdditionalProperty: An additional property for a SubstitutionsValue
@@ -174,7 +174,7 @@ class Build(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a SubstitutionsValue object.
+      r"""An additional property for a SubstitutionsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -188,7 +188,7 @@ class Build(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TimingValue(_messages.Message):
-    """Stores timing information for phases of the build. Valid keys are:  *
+    r"""Stores timing information for phases of the build. Valid keys are:  *
     BUILD: time to execute all build steps * PUSH: time to push all specified
     images. * FETCHSOURCE: time to fetch source.  If the build does not
     specify source or images, these keys will not be included. @OutputOnly
@@ -201,7 +201,7 @@ class Build(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a TimingValue object.
+      r"""An additional property for a TimingValue object.
 
       Fields:
         key: Name of the additional property.
@@ -238,7 +238,7 @@ class Build(_messages.Message):
 
 
 class BuildOperationMetadata(_messages.Message):
-  """Metadata for build operations.
+  r"""Metadata for build operations.
 
   Fields:
     build: The build that the operation is tracking.
@@ -248,7 +248,7 @@ class BuildOperationMetadata(_messages.Message):
 
 
 class BuildOptions(_messages.Message):
-  """Optional arguments to enable specific features of builds.
+  r"""Optional arguments to enable specific features of builds.
 
   Enums:
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
@@ -278,7 +278,7 @@ class BuildOptions(_messages.Message):
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
-    """Option to define build log streaming behavior to Google Cloud Storage.
+    r"""Option to define build log streaming behavior to Google Cloud Storage.
 
     Values:
       STREAM_DEFAULT: Service may automatically determine build log streaming
@@ -292,7 +292,7 @@ class BuildOptions(_messages.Message):
     STREAM_OFF = 2
 
   class MachineTypeValueValuesEnum(_messages.Enum):
-    """Compute Engine machine type on which to run the build.
+    r"""Compute Engine machine type on which to run the build.
 
     Values:
       UNSPECIFIED: Standard machine type.
@@ -304,7 +304,7 @@ class BuildOptions(_messages.Message):
     N1_HIGHCPU_32 = 2
 
   class RequestedVerifyOptionValueValuesEnum(_messages.Enum):
-    """Requested verifiability options.
+    r"""Requested verifiability options.
 
     Values:
       NOT_VERIFIED: Not a verifiable build. (default)
@@ -314,7 +314,7 @@ class BuildOptions(_messages.Message):
     VERIFIED = 1
 
   class SourceProvenanceHashValueListEntryValuesEnum(_messages.Enum):
-    """SourceProvenanceHashValueListEntryValuesEnum enum type.
+    r"""SourceProvenanceHashValueListEntryValuesEnum enum type.
 
     Values:
       NONE: <no description>
@@ -326,7 +326,7 @@ class BuildOptions(_messages.Message):
     MD5 = 2
 
   class SubstitutionOptionValueValuesEnum(_messages.Enum):
-    """Option to specify behavior when there is an error in the substitution
+    r"""Option to specify behavior when there is an error in the substitution
     checks.
 
     Values:
@@ -346,7 +346,7 @@ class BuildOptions(_messages.Message):
 
 
 class BuildStep(_messages.Message):
-  """A step in the build pipeline.
+  r"""A step in the build pipeline.
 
   Enums:
     StatusValueValuesEnum: Status of the build step. At this time, build step
@@ -411,7 +411,7 @@ class BuildStep(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    """Status of the build step. At this time, build step status is only
+    r"""Status of the build step. At this time, build step status is only
     updated on build completion; step status is not updated in real-time as
     the build progresses. @OutputOnly
 
@@ -449,7 +449,7 @@ class BuildStep(_messages.Message):
 
 
 class BuildTrigger(_messages.Message):
-  """Configuration for an automated build in response to source repository
+  r"""Configuration for an automated build in response to source repository
   changes.
 
   Messages:
@@ -472,7 +472,7 @@ class BuildTrigger(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
-    """Substitutions data for Build resource.
+    r"""Substitutions data for Build resource.
 
     Messages:
       AdditionalProperty: An additional property for a SubstitutionsValue
@@ -483,7 +483,7 @@ class BuildTrigger(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a SubstitutionsValue object.
+      r"""An additional property for a SubstitutionsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -506,7 +506,7 @@ class BuildTrigger(_messages.Message):
 
 
 class BuiltImage(_messages.Message):
-  """An image built by the pipeline.
+  r"""An image built by the pipeline.
 
   Fields:
     digest: Docker Registry 2.0 digest.
@@ -522,15 +522,15 @@ class BuiltImage(_messages.Message):
 
 
 class CancelBuildRequest(_messages.Message):
-  """Request to cancel an ongoing build."""
+  r"""Request to cancel an ongoing build."""
 
 
 class CancelOperationRequest(_messages.Message):
-  """The request message for Operations.CancelOperation."""
+  r"""The request message for Operations.CancelOperation."""
 
 
 class CloudbuildOperationsCancelRequest(_messages.Message):
-  """A CloudbuildOperationsCancelRequest object.
+  r"""A CloudbuildOperationsCancelRequest object.
 
   Fields:
     cancelOperationRequest: A CancelOperationRequest resource to be passed as
@@ -543,7 +543,7 @@ class CloudbuildOperationsCancelRequest(_messages.Message):
 
 
 class CloudbuildOperationsGetRequest(_messages.Message):
-  """A CloudbuildOperationsGetRequest object.
+  r"""A CloudbuildOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -553,7 +553,7 @@ class CloudbuildOperationsGetRequest(_messages.Message):
 
 
 class CloudbuildOperationsListRequest(_messages.Message):
-  """A CloudbuildOperationsListRequest object.
+  r"""A CloudbuildOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -569,7 +569,7 @@ class CloudbuildOperationsListRequest(_messages.Message):
 
 
 class CloudbuildProjectsBuildsCancelRequest(_messages.Message):
-  """A CloudbuildProjectsBuildsCancelRequest object.
+  r"""A CloudbuildProjectsBuildsCancelRequest object.
 
   Fields:
     cancelBuildRequest: A CancelBuildRequest resource to be passed as the
@@ -584,7 +584,7 @@ class CloudbuildProjectsBuildsCancelRequest(_messages.Message):
 
 
 class CloudbuildProjectsBuildsCreateRequest(_messages.Message):
-  """A CloudbuildProjectsBuildsCreateRequest object.
+  r"""A CloudbuildProjectsBuildsCreateRequest object.
 
   Fields:
     build: A Build resource to be passed as the request body.
@@ -596,7 +596,7 @@ class CloudbuildProjectsBuildsCreateRequest(_messages.Message):
 
 
 class CloudbuildProjectsBuildsGetRequest(_messages.Message):
-  """A CloudbuildProjectsBuildsGetRequest object.
+  r"""A CloudbuildProjectsBuildsGetRequest object.
 
   Fields:
     id: ID of the build.
@@ -608,7 +608,7 @@ class CloudbuildProjectsBuildsGetRequest(_messages.Message):
 
 
 class CloudbuildProjectsBuildsListRequest(_messages.Message):
-  """A CloudbuildProjectsBuildsListRequest object.
+  r"""A CloudbuildProjectsBuildsListRequest object.
 
   Fields:
     filter: The raw filter text to constrain the results.
@@ -624,7 +624,7 @@ class CloudbuildProjectsBuildsListRequest(_messages.Message):
 
 
 class CloudbuildProjectsBuildsRetryRequest(_messages.Message):
-  """A CloudbuildProjectsBuildsRetryRequest object.
+  r"""A CloudbuildProjectsBuildsRetryRequest object.
 
   Fields:
     id: Build ID of the original build.
@@ -639,7 +639,7 @@ class CloudbuildProjectsBuildsRetryRequest(_messages.Message):
 
 
 class CloudbuildProjectsTriggersCreateRequest(_messages.Message):
-  """A CloudbuildProjectsTriggersCreateRequest object.
+  r"""A CloudbuildProjectsTriggersCreateRequest object.
 
   Fields:
     buildTrigger: A BuildTrigger resource to be passed as the request body.
@@ -651,7 +651,7 @@ class CloudbuildProjectsTriggersCreateRequest(_messages.Message):
 
 
 class CloudbuildProjectsTriggersDeleteRequest(_messages.Message):
-  """A CloudbuildProjectsTriggersDeleteRequest object.
+  r"""A CloudbuildProjectsTriggersDeleteRequest object.
 
   Fields:
     projectId: ID of the project that owns the trigger.
@@ -663,7 +663,7 @@ class CloudbuildProjectsTriggersDeleteRequest(_messages.Message):
 
 
 class CloudbuildProjectsTriggersGetRequest(_messages.Message):
-  """A CloudbuildProjectsTriggersGetRequest object.
+  r"""A CloudbuildProjectsTriggersGetRequest object.
 
   Fields:
     projectId: ID of the project that owns the trigger.
@@ -675,7 +675,7 @@ class CloudbuildProjectsTriggersGetRequest(_messages.Message):
 
 
 class CloudbuildProjectsTriggersListRequest(_messages.Message):
-  """A CloudbuildProjectsTriggersListRequest object.
+  r"""A CloudbuildProjectsTriggersListRequest object.
 
   Fields:
     projectId: ID of the project for which to list BuildTriggers.
@@ -685,7 +685,7 @@ class CloudbuildProjectsTriggersListRequest(_messages.Message):
 
 
 class CloudbuildProjectsTriggersPatchRequest(_messages.Message):
-  """A CloudbuildProjectsTriggersPatchRequest object.
+  r"""A CloudbuildProjectsTriggersPatchRequest object.
 
   Fields:
     buildTrigger: A BuildTrigger resource to be passed as the request body.
@@ -699,7 +699,7 @@ class CloudbuildProjectsTriggersPatchRequest(_messages.Message):
 
 
 class CloudbuildProjectsTriggersRunRequest(_messages.Message):
-  """A CloudbuildProjectsTriggersRunRequest object.
+  r"""A CloudbuildProjectsTriggersRunRequest object.
 
   Fields:
     projectId: ID of the project.
@@ -713,7 +713,7 @@ class CloudbuildProjectsTriggersRunRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -723,7 +723,7 @@ class Empty(_messages.Message):
 
 
 class FileHashes(_messages.Message):
-  """Container message for hashes of byte content of files, used in
+  r"""Container message for hashes of byte content of files, used in
   SourceProvenance messages to verify integrity of source input to the build.
 
   Fields:
@@ -734,7 +734,7 @@ class FileHashes(_messages.Message):
 
 
 class Hash(_messages.Message):
-  """Container message for hash values.
+  r"""Container message for hash values.
 
   Enums:
     TypeValueValuesEnum: The type of hash that was performed.
@@ -745,7 +745,7 @@ class Hash(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The type of hash that was performed.
+    r"""The type of hash that was performed.
 
     Values:
       NONE: No hash requested.
@@ -761,7 +761,7 @@ class Hash(_messages.Message):
 
 
 class ListBuildTriggersResponse(_messages.Message):
-  """Response containing existing `BuildTriggers`.
+  r"""Response containing existing `BuildTriggers`.
 
   Fields:
     triggers: `BuildTriggers` for the project, sorted by `create_time`
@@ -772,7 +772,7 @@ class ListBuildTriggersResponse(_messages.Message):
 
 
 class ListBuildsResponse(_messages.Message):
-  """Response including listed builds.
+  r"""Response including listed builds.
 
   Fields:
     builds: Builds will be sorted by `create_time`, descending.
@@ -784,7 +784,7 @@ class ListBuildsResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -797,8 +797,8 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -839,7 +839,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -853,7 +853,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -867,7 +867,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -884,7 +884,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -904,7 +904,7 @@ class Operation(_messages.Message):
 
 
 class RepoSource(_messages.Message):
-  """Location of the source in a Google Cloud Source Repository.
+  r"""Location of the source in a Google Cloud Source Repository.
 
   Fields:
     branchName: Name of the branch to build.
@@ -928,7 +928,7 @@ class RepoSource(_messages.Message):
 
 
 class Results(_messages.Message):
-  """Artifacts created by the build pipeline.
+  r"""Artifacts created by the build pipeline.
 
   Fields:
     artifactManifest: Path to the artifact manifest. Only populated when
@@ -947,11 +947,11 @@ class Results(_messages.Message):
 
 
 class RetryBuildRequest(_messages.Message):
-  """Specifies a build to retry."""
+  r"""Specifies a build to retry."""
 
 
 class Secret(_messages.Message):
-  """Pairs a set of secret environment variables containing encrypted values
+  r"""Pairs a set of secret environment variables containing encrypted values
   with the Cloud KMS key to use to decrypt the value.
 
   Messages:
@@ -972,7 +972,7 @@ class Secret(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SecretEnvValue(_messages.Message):
-    """Map of environment variable name to its encrypted value.  Secret
+    r"""Map of environment variable name to its encrypted value.  Secret
     environment variables must be unique across all of a build's secrets, and
     must be used by at least one build step. Values can be at most 1 KB in
     size. There can be at most ten secret values across all of a build's
@@ -986,7 +986,7 @@ class Secret(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a SecretEnvValue object.
+      r"""An additional property for a SecretEnvValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1003,7 +1003,7 @@ class Secret(_messages.Message):
 
 
 class Source(_messages.Message):
-  """Location of the source in a supported storage service.
+  r"""Location of the source in a supported storage service.
 
   Fields:
     repoSource: If provided, get the source from this location in a Cloud
@@ -1017,7 +1017,7 @@ class Source(_messages.Message):
 
 
 class SourceProvenance(_messages.Message):
-  """Provenance of the source. Ways to find the original source, or verify
+  r"""Provenance of the source. Ways to find the original source, or verify
   that some source was used for this build.
 
   Messages:
@@ -1047,7 +1047,7 @@ class SourceProvenance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FileHashesValue(_messages.Message):
-    """Hash(es) of the build source, which can be used to verify that the
+    r"""Hash(es) of the build source, which can be used to verify that the
     original source integrity was maintained in the build. Note that
     `FileHashes` will only be populated if `BuildOptions` has requested a
     `SourceProvenanceHash`.  The keys to this map are file paths used as build
@@ -1064,7 +1064,7 @@ class SourceProvenance(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a FileHashesValue object.
+      r"""An additional property for a FileHashesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1082,7 +1082,7 @@ class SourceProvenance(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1111,7 +1111,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1123,7 +1123,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1149,7 +1149,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -1197,7 +1197,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1209,7 +1209,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1227,7 +1227,7 @@ class Status(_messages.Message):
 
 
 class StorageSource(_messages.Message):
-  """Location of the source in an archive file in Google Cloud Storage.
+  r"""Location of the source in an archive file in Google Cloud Storage.
 
   Fields:
     bucket: Google Cloud Storage bucket containing the source (see [Bucket
@@ -1245,7 +1245,7 @@ class StorageSource(_messages.Message):
 
 
 class TimeSpan(_messages.Message):
-  """Start and end times for a build execution phase.
+  r"""Start and end times for a build execution phase.
 
   Fields:
     endTime: End of time span.
@@ -1257,7 +1257,7 @@ class TimeSpan(_messages.Message):
 
 
 class Volume(_messages.Message):
-  """Volume describes a Docker container volume which is mounted into build
+  r"""Volume describes a Docker container volume which is mounted into build
   steps in order to persist files across build step execution.
 
   Fields:

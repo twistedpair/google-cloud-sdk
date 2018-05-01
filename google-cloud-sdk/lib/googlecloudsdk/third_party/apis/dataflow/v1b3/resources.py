@@ -27,41 +27,49 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectId}',
       {},
-      [u'projectId']
+      [u'projectId'],
+      True
   )
   PROJECTS_JOBS = (
       'projects.jobs',
       'projects/{projectId}/jobs/{jobId}',
       {},
-      [u'projectId', u'jobId']
+      [u'projectId', u'jobId'],
+      True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
       'projects/{projectId}/locations/{location}',
       {},
-      [u'projectId', u'location']
+      [u'projectId', u'location'],
+      True
   )
   PROJECTS_LOCATIONS_JOBS = (
       'projects.locations.jobs',
       'projects/{projectId}/locations/{location}/jobs/{jobId}',
       {},
-      [u'projectId', u'location', u'jobId']
+      [u'projectId', u'location', u'jobId'],
+      True
   )
   PROJECTS_LOCATIONS_TEMPLATES = (
       'projects.locations.templates',
       'projects/{projectId}/locations/{location}/templates:get',
       {},
-      [u'projectId', u'location']
+      [u'projectId', u'location'],
+      True
   )
   PROJECTS_TEMPLATES = (
       'projects.templates',
       'projects/{projectId}/templates:get',
       {},
-      [u'projectId']
+      [u'projectId'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

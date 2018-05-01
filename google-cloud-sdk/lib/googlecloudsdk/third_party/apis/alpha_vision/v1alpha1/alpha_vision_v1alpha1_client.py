@@ -50,7 +50,7 @@ class AlphaVisionV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates and returns a new `ReferenceImage` resource.
+      r"""Creates and returns a new `ReferenceImage` resource.
 
 The `product_category` and `boundingPoly` fields are optional and, if used,
 should both be specified.
@@ -98,7 +98,7 @@ Possible errors:
     )
 
     def Delete(self, request, global_params=None):
-      """Marks a reference image for deletion. The image will remain in the catalog.
+      r"""Marks a reference image for deletion. The image will remain in the catalog.
 until the next time the catalog is indexed (currently daily).
 
 The actual image files are not deleted from Google Cloud Storage.
@@ -130,7 +130,7 @@ Returns `NOT_FOUND` if the reference image does not exist.
     )
 
     def Get(self, request, global_params=None):
-      """Gets a reference image.
+      r"""Gets a reference image.
 Returns `NOT_FOUND` if the specified image does not exist.
 
       Args:
@@ -158,7 +158,7 @@ Returns `NOT_FOUND` if the specified image does not exist.
     )
 
     def List(self, request, global_params=None):
-      """Lists reference images.
+      r"""Lists reference images.
 
 Possible errors:
 
@@ -204,7 +204,7 @@ is 1000. Page sizes higher than 1000 will be treated as 1000.
           }
 
     def Create(self, request, global_params=None):
-      """Creates and returns a new catalog resource.
+      r"""Creates and returns a new catalog resource.
 
 Note: For v1alpha1, a catalog will not be returned by `ListCatalogs` until
 reference images have been added to it. Therefore it's important that you
@@ -236,7 +236,7 @@ reference images.
     )
 
     def Delete(self, request, global_params=None):
-      """Permanently deletes a catalog and its reference images from the service.
+      r"""Permanently deletes a catalog and its reference images from the service.
 
 The actual image files are not deleted from Google Cloud Storage.
 
@@ -267,7 +267,7 @@ Returns NOT_FOUND if the catalog does not exist.
     )
 
     def DeleteReferenceImages(self, request, global_params=None):
-      """Marks all reference images associated with a product for deletion.
+      r"""Marks all reference images associated with a product for deletion.
 
 The actual image files are not deleted from Google Cloud Storage.
 
@@ -303,7 +303,7 @@ Possible errors:
     )
 
     def Import(self, request, global_params=None):
-      """Asynchronous API that imports a list of reference images to specified.
+      r"""Asynchronous API that imports a list of reference images to specified.
 catalogs based on a list of image names.
 
 This API implements the google.longrunning.Operation API allowing users
@@ -356,7 +356,7 @@ entire image.
     )
 
     def List(self, request, global_params=None):
-      """Lists catalogs (in an unspecified order).
+      r"""Lists catalogs (in an unspecified order).
 
 Note: Does not return empty catalogs (catalogs without reference images).
 

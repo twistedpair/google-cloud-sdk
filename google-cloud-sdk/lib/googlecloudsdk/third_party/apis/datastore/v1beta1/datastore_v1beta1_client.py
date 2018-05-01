@@ -48,7 +48,7 @@ class DatastoreV1beta1(base_api.BaseApiClient):
           }
 
     def Export(self, request, global_params=None):
-      """Exports a copy of all or a subset of entities from Google Cloud Datastore.
+      r"""Exports a copy of all or a subset of entities from Google Cloud Datastore.
 to another storage system, such as Google Cloud Storage. Recent updates to
 entities may not be reflected in the export. The export occurs in the
 background and its progress can be monitored and managed via the
@@ -81,7 +81,7 @@ Cloud Storage.
     )
 
     def Import(self, request, global_params=None):
-      """Imports entities into Google Cloud Datastore. Existing entities with the.
+      r"""Imports entities into Google Cloud Datastore. Existing entities with the.
 same key are overwritten. The import occurs in the background and its
 progress can be monitored and managed via the Operation resource that is
 created.  If an ImportEntities operation is cancelled, it is possible

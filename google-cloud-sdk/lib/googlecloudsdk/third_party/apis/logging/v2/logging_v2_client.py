@@ -69,7 +69,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingBillingAccountsExclusionsCreateRequest) input message
@@ -96,7 +96,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an exclusion.
+      r"""Deletes an exclusion.
 
       Args:
         request: (LoggingBillingAccountsExclusionsDeleteRequest) input message
@@ -123,7 +123,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the description of an exclusion.
+      r"""Gets the description of an exclusion.
 
       Args:
         request: (LoggingBillingAccountsExclusionsGetRequest) input message
@@ -150,7 +150,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions in a parent resource.
 
       Args:
         request: (LoggingBillingAccountsExclusionsListRequest) input message
@@ -177,7 +177,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion.
 
       Args:
         request: (LoggingBillingAccountsExclusionsPatchRequest) input message
@@ -214,7 +214,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingBillingAccountsLogsDeleteRequest) input message
@@ -241,7 +241,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingBillingAccountsLogsListRequest) input message
@@ -278,7 +278,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingBillingAccountsSinksCreateRequest) input message
@@ -305,7 +305,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
+      r"""Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingBillingAccountsSinksDeleteRequest) input message
@@ -332,7 +332,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a sink.
+      r"""Gets a sink.
 
       Args:
         request: (LoggingBillingAccountsSinksGetRequest) input message
@@ -359,7 +359,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists sinks.
+      r"""Lists sinks.
 
       Args:
         request: (LoggingBillingAccountsSinksListRequest) input message
@@ -386,7 +386,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingBillingAccountsSinksPatchRequest) input message
@@ -413,7 +413,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingBillingAccountsSinksUpdateRequest) input message
@@ -460,7 +460,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists log entries. Use this method to retrieve log entries from Stackdriver Logging. For ways to export log entries, see Exporting Logs.
+      r"""Lists log entries. Use this method to retrieve log entries from Stackdriver Logging. For ways to export log entries, see Exporting Logs.
 
       Args:
         request: (ListLogEntriesRequest) input message
@@ -486,7 +486,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Write(self, request, global_params=None):
-      """Log entry resourcesWrites log entries to Stackdriver Logging. This API method is the only way to send log entries to Stackdriver Logging. This method is used, directly or indirectly, by the Stackdriver Logging agent (fluentd) and all logging libraries configured to use Stackdriver Logging. A single request may contain log entries for a maximum of 1000 different resources (projects, organizations, billing accounts or folders).
+      r"""Writes log entries to Stackdriver Logging. This API method is the only way to send log entries to Stackdriver Logging. This method is used, directly or indirectly, by the Stackdriver Logging agent (fluentd) and all logging libraries configured to use Stackdriver Logging. A single request may contain log entries for a maximum of 1000 different resources (projects, organizations, billing accounts or folders).
 
       Args:
         request: (WriteLogEntriesRequest) input message
@@ -522,7 +522,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingExclusionsCreateRequest) input message
@@ -549,7 +549,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an exclusion.
+      r"""Deletes an exclusion.
 
       Args:
         request: (LoggingExclusionsDeleteRequest) input message
@@ -576,7 +576,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the description of an exclusion.
+      r"""Gets the description of an exclusion.
 
       Args:
         request: (LoggingExclusionsGetRequest) input message
@@ -603,7 +603,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions in a parent resource.
 
       Args:
         request: (LoggingExclusionsListRequest) input message
@@ -630,7 +630,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion.
 
       Args:
         request: (LoggingExclusionsPatchRequest) input message
@@ -667,7 +667,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingFoldersExclusionsCreateRequest) input message
@@ -694,7 +694,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an exclusion.
+      r"""Deletes an exclusion.
 
       Args:
         request: (LoggingFoldersExclusionsDeleteRequest) input message
@@ -721,7 +721,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the description of an exclusion.
+      r"""Gets the description of an exclusion.
 
       Args:
         request: (LoggingFoldersExclusionsGetRequest) input message
@@ -748,7 +748,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions in a parent resource.
 
       Args:
         request: (LoggingFoldersExclusionsListRequest) input message
@@ -775,7 +775,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion.
 
       Args:
         request: (LoggingFoldersExclusionsPatchRequest) input message
@@ -812,7 +812,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingFoldersLogsDeleteRequest) input message
@@ -839,7 +839,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingFoldersLogsListRequest) input message
@@ -876,7 +876,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingFoldersSinksCreateRequest) input message
@@ -903,7 +903,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
+      r"""Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingFoldersSinksDeleteRequest) input message
@@ -930,7 +930,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a sink.
+      r"""Gets a sink.
 
       Args:
         request: (LoggingFoldersSinksGetRequest) input message
@@ -957,7 +957,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists sinks.
+      r"""Lists sinks.
 
       Args:
         request: (LoggingFoldersSinksListRequest) input message
@@ -984,7 +984,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingFoldersSinksPatchRequest) input message
@@ -1011,7 +1011,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingFoldersSinksUpdateRequest) input message
@@ -1058,7 +1058,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingLogsDeleteRequest) input message
@@ -1085,7 +1085,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingLogsListRequest) input message
@@ -1122,7 +1122,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists the descriptors for monitored resource types used by Stackdriver Logging.
+      r"""Lists the descriptors for monitored resource types used by Stackdriver Logging.
 
       Args:
         request: (LoggingMonitoredResourceDescriptorsListRequest) input message
@@ -1158,7 +1158,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingOrganizationsExclusionsCreateRequest) input message
@@ -1185,7 +1185,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an exclusion.
+      r"""Deletes an exclusion.
 
       Args:
         request: (LoggingOrganizationsExclusionsDeleteRequest) input message
@@ -1212,7 +1212,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the description of an exclusion.
+      r"""Gets the description of an exclusion.
 
       Args:
         request: (LoggingOrganizationsExclusionsGetRequest) input message
@@ -1239,7 +1239,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions in a parent resource.
 
       Args:
         request: (LoggingOrganizationsExclusionsListRequest) input message
@@ -1266,7 +1266,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion.
 
       Args:
         request: (LoggingOrganizationsExclusionsPatchRequest) input message
@@ -1303,7 +1303,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingOrganizationsLogsDeleteRequest) input message
@@ -1330,7 +1330,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingOrganizationsLogsListRequest) input message
@@ -1367,7 +1367,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingOrganizationsSinksCreateRequest) input message
@@ -1394,7 +1394,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
+      r"""Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingOrganizationsSinksDeleteRequest) input message
@@ -1421,7 +1421,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a sink.
+      r"""Gets a sink.
 
       Args:
         request: (LoggingOrganizationsSinksGetRequest) input message
@@ -1448,7 +1448,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists sinks.
+      r"""Lists sinks.
 
       Args:
         request: (LoggingOrganizationsSinksListRequest) input message
@@ -1475,7 +1475,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingOrganizationsSinksPatchRequest) input message
@@ -1502,7 +1502,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingOrganizationsSinksUpdateRequest) input message
@@ -1549,7 +1549,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingProjectsExclusionsCreateRequest) input message
@@ -1576,7 +1576,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an exclusion.
+      r"""Deletes an exclusion.
 
       Args:
         request: (LoggingProjectsExclusionsDeleteRequest) input message
@@ -1603,7 +1603,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the description of an exclusion.
+      r"""Gets the description of an exclusion.
 
       Args:
         request: (LoggingProjectsExclusionsGetRequest) input message
@@ -1630,7 +1630,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions in a parent resource.
 
       Args:
         request: (LoggingProjectsExclusionsListRequest) input message
@@ -1657,7 +1657,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion.
 
       Args:
         request: (LoggingProjectsExclusionsPatchRequest) input message
@@ -1694,7 +1694,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
+      r"""Deletes all the log entries in a log. The log reappears if it receives new entries. Log entries written shortly before the delete operation might not be deleted.
 
       Args:
         request: (LoggingProjectsLogsDeleteRequest) input message
@@ -1721,7 +1721,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
+      r"""Lists the logs in projects, organizations, folders, or billing accounts. Only logs that have entries are listed.
 
       Args:
         request: (LoggingProjectsLogsListRequest) input message
@@ -1758,7 +1758,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a logs-based metric.
+      r"""Creates a logs-based metric.
 
       Args:
         request: (LoggingProjectsMetricsCreateRequest) input message
@@ -1785,7 +1785,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a logs-based metric.
+      r"""Deletes a logs-based metric.
 
       Args:
         request: (LoggingProjectsMetricsDeleteRequest) input message
@@ -1812,7 +1812,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a logs-based metric.
+      r"""Gets a logs-based metric.
 
       Args:
         request: (LoggingProjectsMetricsGetRequest) input message
@@ -1839,7 +1839,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists logs-based metrics.
+      r"""Lists logs-based metrics.
 
       Args:
         request: (LoggingProjectsMetricsListRequest) input message
@@ -1866,7 +1866,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Creates or updates a logs-based metric.
+      r"""Creates or updates a logs-based metric.
 
       Args:
         request: (LoggingProjectsMetricsUpdateRequest) input message
@@ -1903,7 +1903,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingProjectsSinksCreateRequest) input message
@@ -1930,7 +1930,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
+      r"""Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingProjectsSinksDeleteRequest) input message
@@ -1957,7 +1957,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a sink.
+      r"""Gets a sink.
 
       Args:
         request: (LoggingProjectsSinksGetRequest) input message
@@ -1984,7 +1984,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists sinks.
+      r"""Lists sinks.
 
       Args:
         request: (LoggingProjectsSinksListRequest) input message
@@ -2011,7 +2011,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingProjectsSinksPatchRequest) input message
@@ -2038,7 +2038,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingProjectsSinksUpdateRequest) input message
@@ -2085,7 +2085,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
+      r"""Creates a sink that exports specified log entries to a destination. The export of newly-ingested log entries begins immediately, unless the sink's writer_identity is not permitted to write to the destination. A sink can export log entries only from the resource owning the sink.
 
       Args:
         request: (LoggingSinksCreateRequest) input message
@@ -2112,7 +2112,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
+      r"""Deletes a sink. If the sink has a unique writer_identity, then that service account is also deleted.
 
       Args:
         request: (LoggingSinksDeleteRequest) input message
@@ -2139,7 +2139,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a sink.
+      r"""Gets a sink.
 
       Args:
         request: (LoggingSinksGetRequest) input message
@@ -2166,7 +2166,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists sinks.
+      r"""Lists sinks.
 
       Args:
         request: (LoggingSinksListRequest) input message
@@ -2193,7 +2193,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingSinksUpdateRequest) input message

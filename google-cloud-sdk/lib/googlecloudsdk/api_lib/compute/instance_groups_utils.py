@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions and classes for dealing with instances groups."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import encoding
 import enum
 
@@ -21,6 +23,8 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 INSTANCE_GROUP_GET_NAMED_PORT_DETAILED_HELP = {
     'brief': 'Lists the named ports for an instance group resource',
@@ -298,7 +302,7 @@ def SplitInstancesInRequest(request,
   result = []
   all_instances = getattr(request, request_field).instances or []
   n = len(all_instances)
-  for i in xrange(0, n, max_length):
+  for i in range(0, n, max_length):
     request_part = encoding.CopyProtoMessage(request)
     field = getattr(request_part, request_field)
     field.instances = all_instances[i:i+max_length]
@@ -389,7 +393,7 @@ def ComputeInstanceGroupManagerMembership(
     project_to_zones[zone_ref.project].add(zone_ref.zone)
 
   zonal_instance_group_managers = []
-  for project, zones in project_to_zones.iteritems():
+  for project, zones in six.iteritems(project_to_zones):
     zonal_instance_group_managers.extend(lister.GetZonalResources(
         service=client.apitools_client.instanceGroupManagers,
         project=project,
@@ -409,7 +413,7 @@ def ComputeInstanceGroupManagerMembership(
       if region_ref.project not in project_to_regions:
         project_to_regions[region_ref.project] = set()
       project_to_regions[region_ref.project].add(region_ref.region)
-    for project, regions in project_to_regions.iteritems():
+    for project, regions in six.iteritems(project_to_regions):
       regional_instance_group_managers.extend(lister.GetRegionalResources(
           service=client.apitools_client.regionInstanceGroupManagers,
           project=project,

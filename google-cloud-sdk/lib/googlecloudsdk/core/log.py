@@ -982,7 +982,7 @@ def GetLogFilePath():
 def _PrintResourceChange(operation,
                          resource,
                          kind,
-                         async,
+                         is_async,
                          details,
                          failed,
                          operation_past_tense=None):
@@ -994,7 +994,7 @@ def _PrintResourceChange(operation,
     operation: str, The completed operation name.
     resource: str, The resource name.
     kind: str, The resource kind (instance, cluster, project, etc.).
-    async: bool, True if the operation is in progress.
+    is_async: bool, True if the operation is in progress.
     details: str, Extra details appended to the message. Keep it succinct.
     failed: str, Failure message. For commands that operate on multiple
       resources and report all successes and failures before exiting. Failure
@@ -1007,7 +1007,7 @@ def _PrintResourceChange(operation,
   if failed:
     msg.append('Failed to')
     msg.append(operation)
-  elif async:
+  elif is_async:
     msg.append(operation.capitalize())
     msg.append('in progress for')
   else:
@@ -1028,73 +1028,74 @@ def _PrintResourceChange(operation,
   writer('{0}{1}'.format(' '.join(msg), period))
 
 
-def CreatedResource(resource, kind=None, async=False, details=None,
+def CreatedResource(resource, kind=None, is_async=False, details=None,
                     failed=None):
   """Prints a status message indicating that a resource was created.
 
   Args:
     resource: str, The resource name.
     kind: str, The resource kind (instance, cluster, project, etc.).
-    async: bool, True if the operation is in progress.
+    is_async: bool, True if the operation is in progress.
     details: str, Extra details appended to the message. Keep it succinct.
     failed: str, Failure message.
   """
-  _PrintResourceChange('create', resource, kind, async, details, failed)
+  _PrintResourceChange('create', resource, kind, is_async, details, failed)
 
 
-def DeletedResource(resource, kind=None, async=False, details=None,
+def DeletedResource(resource, kind=None, is_async=False, details=None,
                     failed=None):
   """Prints a status message indicating that a resource was deleted.
 
   Args:
     resource: str, The resource name.
     kind: str, The resource kind (instance, cluster, project, etc.).
-    async: bool, True if the operation is in progress.
+    is_async: bool, True if the operation is in progress.
     details: str, Extra details appended to the message. Keep it succinct.
     failed: str, Failure message.
   """
-  _PrintResourceChange('delete', resource, kind, async, details, failed)
+  _PrintResourceChange('delete', resource, kind, is_async, details, failed)
 
 
-def RestoredResource(resource, kind=None, async=False, details=None,
+def RestoredResource(resource, kind=None, is_async=False, details=None,
                      failed=None):
   """Prints a status message indicating that a resource was restored.
 
   Args:
     resource: str, The resource name.
     kind: str, The resource kind (instance, cluster, project, etc.).
-    async: bool, True if the operation is in progress.
+    is_async: bool, True if the operation is in progress.
     details: str, Extra details appended to the message. Keep it succinct.
     failed: str, Failure message.
   """
-  _PrintResourceChange('restore', resource, kind, async, details, failed)
+  _PrintResourceChange('restore', resource, kind, is_async, details, failed)
 
 
-def UpdatedResource(resource, kind=None, async=False, details=None,
+def UpdatedResource(resource, kind=None, is_async=False, details=None,
                     failed=None):
   """Prints a status message indicating that a resource was updated.
 
   Args:
     resource: str, The resource name.
     kind: str, The resource kind (instance, cluster, project, etc.).
-    async: bool, True if the operation is in progress.
+    is_async: bool, True if the operation is in progress.
     details: str, Extra details appended to the message. Keep it succinct.
     failed: str, Failure message.
   """
-  _PrintResourceChange('update', resource, kind, async, details, failed)
+  _PrintResourceChange('update', resource, kind, is_async, details, failed)
 
 
-def ResetResource(resource, kind=None, async=False, details=None, failed=None):
+def ResetResource(resource, kind=None, is_async=False, details=None,
+                  failed=None):
   """Prints a status message indicating that a resource was reset.
 
   Args:
     resource: str, The resource name.
     kind: str, The resource kind (instance, cluster, project, etc.).
-    async: bool, True if the operation is in progress.
+    is_async: bool, True if the operation is in progress.
     details: str, Extra details appended to the message. Keep it succinct.
     failed: str, Failure message.
   """
-  _PrintResourceChange('reset', resource, kind, async, details, failed,
+  _PrintResourceChange('reset', resource, kind, is_async, details, failed,
                        operation_past_tense='reset')
 
 

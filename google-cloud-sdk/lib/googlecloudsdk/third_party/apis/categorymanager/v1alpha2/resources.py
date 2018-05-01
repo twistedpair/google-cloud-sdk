@@ -27,13 +27,15 @@ class Collections(enum.Enum):
       'assets',
       'assets/{assetId}',
       {},
-      [u'assetId']
+      [u'assetId'],
+      True
   )
   ASSETS_TAG = (
       'assets.tag',
       'assets/{assetId}/annotationTag',
       {},
-      [u'assetId']
+      [u'assetId'],
+      True
   )
   OPERATIONS = (
       'operations',
@@ -42,13 +44,15 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_TAXONOMIES = (
       'projects.taxonomies',
@@ -57,7 +61,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/taxonomies/{taxonomiesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_TAXONOMIES_ANNOTATIONS = (
       'projects.taxonomies.annotations',
@@ -67,13 +72,15 @@ class Collections(enum.Enum):
               'projects/{projectsId}/taxonomies/{taxonomiesId}/annotations/'
               '{annotationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   TAXONOMYSTORES = (
       'taxonomyStores',
       'taxonomyStores/{taxonomyStoresId}',
       {},
-      [u'taxonomyStoresId']
+      [u'taxonomyStoresId'],
+      True
   )
   TAXONOMYSTORES_TAXONOMIES = (
       'taxonomyStores.taxonomies',
@@ -82,7 +89,8 @@ class Collections(enum.Enum):
           '':
               'taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   TAXONOMYSTORES_TAXONOMIES_ANNOTATIONS = (
       'taxonomyStores.taxonomies.annotations',
@@ -92,11 +100,14 @@ class Collections(enum.Enum):
               'taxonomyStores/{taxonomyStoresId}/taxonomies/{taxonomiesId}/'
               'annotations/{annotationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

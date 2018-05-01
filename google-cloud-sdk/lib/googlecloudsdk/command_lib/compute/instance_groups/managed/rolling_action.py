@@ -13,6 +13,7 @@
 # limitations under the License.
 """Create requests for rolling-action restart/recreate commands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope

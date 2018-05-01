@@ -191,7 +191,7 @@ class DiscoveryDoc(object):
                   all_names[parent_name].GetPath(DEFAULT_PATH_NAME),
                   parent_path=parent_path))
         parent_collection = self.MakeResourceCollection(
-            parent_name, parent_path, api_version)
+            parent_name, parent_path, True, api_version)
         to_process.append(parent_collection)
         all_names[parent_name] = parent_collection
         all_paths.add(parent_path)
@@ -208,16 +208,18 @@ class DiscoveryDoc(object):
         # required to be declared to disambiguate.
         continue
       path = paths.pop()
-      if path == custom_resources[name]:
+      if path == custom_resources[name]['path']:
         # There is 1 path and it is the same as the custom one registered.
         print ('WARNING: Custom resource [{}] in API [{}/{}] is redundant.'
                .format(name, self.api_name, api_version))
     return generated
 
-  def MakeResourceCollection(self, collection_name, path, api_version):
+  def MakeResourceCollection(self, collection_name, path, enable_uri_parsing,
+                             api_version):
     return resource_util.CollectionInfo(
         self.api_name, api_version, self.base_url, self.docs_url,
-        collection_name, path, {}, resource_util.GetParamsFromPath(path))
+        collection_name, path, {}, resource_util.GetParamsFromPath(path),
+        enable_uri_parsing)
 
 
 def _GetParentCollection(collection_info):

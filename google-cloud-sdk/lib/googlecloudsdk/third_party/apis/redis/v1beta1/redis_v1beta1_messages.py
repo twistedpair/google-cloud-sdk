@@ -14,7 +14,7 @@ package = 'redis'
 
 
 class GoogleCloudCommonOperationMetadata(_messages.Message):
-  """Represents the metadata of the long-running operation.
+  r"""Represents the metadata of the long-running operation.
 
   Fields:
     apiVersion: [Output only] API version used to start the operation.
@@ -41,7 +41,7 @@ class GoogleCloudCommonOperationMetadata(_messages.Message):
 
 
 class GoogleCloudRedisV1beta1LocationMetadata(_messages.Message):
-  """This location metadata represents additional configuration options for a
+  r"""This location metadata represents additional configuration options for a
   given location where a Redis instance may be created. All fields are output
   only. It is returned as content of the
   `google.cloud.location.Location.metadata` field.
@@ -61,7 +61,7 @@ class GoogleCloudRedisV1beta1LocationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AvailableZonesValue(_messages.Message):
-    """Output only. The set of available zones in the location. The map is
+    r"""Output only. The set of available zones in the location. The map is
     keyed by the lowercase ID of each zone, as defined by GCE. These keys can
     be specified in `location_id` or `alternative_location_id` fields when
     creating a Redis instance.
@@ -75,7 +75,7 @@ class GoogleCloudRedisV1beta1LocationMetadata(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a AvailableZonesValue object.
+      r"""An additional property for a AvailableZonesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -91,14 +91,14 @@ class GoogleCloudRedisV1beta1LocationMetadata(_messages.Message):
 
 
 class GoogleCloudRedisV1beta1ZoneMetadata(_messages.Message):
-  """Defines specific information for a particular zone. Currently empty and
+  r"""Defines specific information for a particular zone. Currently empty and
   reserved for future use only.
   """
 
 
 
 class Instance(_messages.Message):
-  """A Google Cloud Redis instance.
+  r"""A Google Cloud Redis instance.
 
   Enums:
     StateValueValuesEnum: Output only. The current state of this instance.
@@ -128,7 +128,7 @@ class Instance(_messages.Message):
       event.
     displayName: An arbitrary and optional user-provided name for the
       instance.
-    host: Output only. Hostname or IP address of the exposed redis endpoint
+    host: Output only. Hostname or IP address of the exposed Redis endpoint
       used by clients to connect to the service.
     labels: Resource labels to represent user provided metadata
     locationId: Optional. The zone where the instance will be provisioned. If
@@ -145,7 +145,7 @@ class Instance(_messages.Message):
       which specific zone (or collection of zones for cross-zone instances) an
       instance should be provisioned in. Refer to [location_id] and
       [alternative_location_id] fields for more details.
-    port: Output only. The port number of the exposed redis endpoint.
+    port: Output only. The port number of the exposed Redis endpoint.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
       are:  * maxmemory-policy  * notify-keyspace-events
@@ -164,7 +164,7 @@ class Instance(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. The current state of this instance.
+    r"""Output only. The current state of this instance.
 
     Values:
       STATE_UNSPECIFIED: Not set.
@@ -192,7 +192,7 @@ class Instance(_messages.Message):
     IMPORTING = 8
 
   class TierValueValuesEnum(_messages.Enum):
-    """Required. The service tier of the instance.
+    r"""Required. The service tier of the instance.
 
     Values:
       TIER_UNSPECIFIED: Not set.
@@ -206,7 +206,7 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Resource labels to represent user provided metadata
+    r"""Resource labels to represent user provided metadata
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -216,7 +216,7 @@ class Instance(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -230,7 +230,7 @@ class Instance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RedisConfigsValue(_messages.Message):
-    """Optional. Redis configuration parameters, according to
+    r"""Optional. Redis configuration parameters, according to
     http://redis.io/topics/config. Currently, the only supported parameters
     are:  * maxmemory-policy  * notify-keyspace-events
 
@@ -243,7 +243,7 @@ class Instance(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a RedisConfigsValue object.
+      r"""An additional property for a RedisConfigsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -275,7 +275,7 @@ class Instance(_messages.Message):
 
 
 class ListInstancesResponse(_messages.Message):
-  """Response for ListInstances.
+  r"""Response for ListInstances.
 
   Fields:
     instances: A list of Redis instances in the project in the specified
@@ -296,7 +296,7 @@ class ListInstancesResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -309,7 +309,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -322,7 +322,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -345,7 +345,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -356,7 +356,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -370,7 +370,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -382,7 +382,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -402,7 +402,7 @@ class Location(_messages.Message):
 
 
 class LocationMetadata(_messages.Message):
-  """This location metadata represents additional configuration options for a
+  r"""This location metadata represents additional configuration options for a
   given location where a Redis instance may be created. All fields are output
   only. It is returned as content of the
   `google.cloud.location.Location.metadata` field.
@@ -422,7 +422,7 @@ class LocationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AvailableZonesValue(_messages.Message):
-    """Output only. The set of available zones in the location. The map is
+    r"""Output only. The set of available zones in the location. The map is
     keyed by the lowercase ID of each zone, as defined by GCE. These keys can
     be specified in `location_id` or `alternative_location_id` fields when
     creating a Redis instance.
@@ -436,7 +436,7 @@ class LocationMetadata(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a AvailableZonesValue object.
+      r"""An additional property for a AvailableZonesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -452,8 +452,8 @@ class LocationMetadata(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -494,7 +494,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -508,7 +508,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -522,7 +522,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -539,7 +539,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -559,7 +559,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  """This operation metadata represents the state of operations that may have
+  r"""This operation metadata represents the state of operations that may have
   happened or are happening on the instance. All fields are output only. It is
   returned as content of the `google.longrunning.Operation.metadata` field.
   The `google.longrunning.Operation.name` field will be of the form
@@ -592,7 +592,7 @@ class OperationMetadata(_messages.Message):
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    """Output only. The operation type.
+    r"""Output only. The operation type.
 
     Values:
       TYPE_UNSPECIFIED: Not set.
@@ -610,7 +610,7 @@ class OperationMetadata(_messages.Message):
     MAINTENANCE_FOR_REDIS_INSTANCE = 5
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. The current state of the operation.
+    r"""Output only. The current state of the operation.
 
     Values:
       STATUS_UNSPECIFIED: Not set.
@@ -635,7 +635,7 @@ class OperationMetadata(_messages.Message):
 
 
 class RedisProjectsLocationsGetRequest(_messages.Message):
-  """A RedisProjectsLocationsGetRequest object.
+  r"""A RedisProjectsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
@@ -645,7 +645,7 @@ class RedisProjectsLocationsGetRequest(_messages.Message):
 
 
 class RedisProjectsLocationsInstancesCreateRequest(_messages.Message):
-  """A RedisProjectsLocationsInstancesCreateRequest object.
+  r"""A RedisProjectsLocationsInstancesCreateRequest object.
 
   Fields:
     instance: A Instance resource to be passed as the request body.
@@ -665,7 +665,7 @@ class RedisProjectsLocationsInstancesCreateRequest(_messages.Message):
 
 
 class RedisProjectsLocationsInstancesDeleteRequest(_messages.Message):
-  """A RedisProjectsLocationsInstancesDeleteRequest object.
+  r"""A RedisProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
     name: Required. Redis instance resource name using the form:
@@ -677,7 +677,7 @@ class RedisProjectsLocationsInstancesDeleteRequest(_messages.Message):
 
 
 class RedisProjectsLocationsInstancesGetRequest(_messages.Message):
-  """A RedisProjectsLocationsInstancesGetRequest object.
+  r"""A RedisProjectsLocationsInstancesGetRequest object.
 
   Fields:
     name: Required. Redis instance resource name using the form:
@@ -689,7 +689,7 @@ class RedisProjectsLocationsInstancesGetRequest(_messages.Message):
 
 
 class RedisProjectsLocationsInstancesListRequest(_messages.Message):
-  """A RedisProjectsLocationsInstancesListRequest object.
+  r"""A RedisProjectsLocationsInstancesListRequest object.
 
   Fields:
     pageSize: The maximum number of items to return.  If not specified, a
@@ -710,7 +710,7 @@ class RedisProjectsLocationsInstancesListRequest(_messages.Message):
 
 
 class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
-  """A RedisProjectsLocationsInstancesPatchRequest object.
+  r"""A RedisProjectsLocationsInstancesPatchRequest object.
 
   Fields:
     instance: A Instance resource to be passed as the request body.
@@ -734,7 +734,7 @@ class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
 
 
 class RedisProjectsLocationsListRequest(_messages.Message):
-  """A RedisProjectsLocationsListRequest object.
+  r"""A RedisProjectsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -750,7 +750,7 @@ class RedisProjectsLocationsListRequest(_messages.Message):
 
 
 class RedisProjectsLocationsOperationsGetRequest(_messages.Message):
-  """A RedisProjectsLocationsOperationsGetRequest object.
+  r"""A RedisProjectsLocationsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -760,7 +760,7 @@ class RedisProjectsLocationsOperationsGetRequest(_messages.Message):
 
 
 class RedisProjectsLocationsOperationsListRequest(_messages.Message):
-  """A RedisProjectsLocationsOperationsListRequest object.
+  r"""A RedisProjectsLocationsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -776,7 +776,7 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -805,7 +805,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -817,7 +817,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -843,7 +843,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -891,7 +891,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -903,7 +903,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -921,7 +921,7 @@ class Status(_messages.Message):
 
 
 class ZoneMetadata(_messages.Message):
-  """Defines specific information for a particular zone. Currently empty and
+  r"""Defines specific information for a particular zone. Currently empty and
   reserved for future use only.
   """
 

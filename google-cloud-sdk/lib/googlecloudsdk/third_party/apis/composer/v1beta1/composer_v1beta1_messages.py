@@ -13,7 +13,7 @@ package = 'composer'
 
 
 class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
-  """A ComposerProjectsLocationsEnvironmentsCreateRequest object.
+  r"""A ComposerProjectsLocationsEnvironmentsCreateRequest object.
 
   Fields:
     environment: A Environment resource to be passed as the request body.
@@ -26,7 +26,7 @@ class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
 
 
 class ComposerProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
-  """A ComposerProjectsLocationsEnvironmentsDeleteRequest object.
+  r"""A ComposerProjectsLocationsEnvironmentsDeleteRequest object.
 
   Fields:
     name: The environment to delete, in the form:
@@ -38,7 +38,7 @@ class ComposerProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
 
 
 class ComposerProjectsLocationsEnvironmentsGetRequest(_messages.Message):
-  """A ComposerProjectsLocationsEnvironmentsGetRequest object.
+  r"""A ComposerProjectsLocationsEnvironmentsGetRequest object.
 
   Fields:
     name: The resource name of the environment to get, in the form:
@@ -50,7 +50,7 @@ class ComposerProjectsLocationsEnvironmentsGetRequest(_messages.Message):
 
 
 class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
-  """A ComposerProjectsLocationsEnvironmentsListRequest object.
+  r"""A ComposerProjectsLocationsEnvironmentsListRequest object.
 
   Fields:
     pageSize: The maximum number of environments to return.
@@ -66,7 +66,7 @@ class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
 
 
 class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
-  """A ComposerProjectsLocationsEnvironmentsPatchRequest object.
+  r"""A ComposerProjectsLocationsEnvironmentsPatchRequest object.
 
   Fields:
     environment: A Environment resource to be passed as the request body.
@@ -163,7 +163,7 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
 
 
 class ComposerProjectsLocationsOperationsCancelRequest(_messages.Message):
-  """A ComposerProjectsLocationsOperationsCancelRequest object.
+  r"""A ComposerProjectsLocationsOperationsCancelRequest object.
 
   Fields:
     name: The name of the operation resource to be cancelled.
@@ -173,7 +173,7 @@ class ComposerProjectsLocationsOperationsCancelRequest(_messages.Message):
 
 
 class ComposerProjectsLocationsOperationsDeleteRequest(_messages.Message):
-  """A ComposerProjectsLocationsOperationsDeleteRequest object.
+  r"""A ComposerProjectsLocationsOperationsDeleteRequest object.
 
   Fields:
     name: The name of the operation resource to be deleted.
@@ -183,7 +183,7 @@ class ComposerProjectsLocationsOperationsDeleteRequest(_messages.Message):
 
 
 class ComposerProjectsLocationsOperationsGetRequest(_messages.Message):
-  """A ComposerProjectsLocationsOperationsGetRequest object.
+  r"""A ComposerProjectsLocationsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -193,7 +193,7 @@ class ComposerProjectsLocationsOperationsGetRequest(_messages.Message):
 
 
 class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
-  """A ComposerProjectsLocationsOperationsListRequest object.
+  r"""A ComposerProjectsLocationsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -209,7 +209,7 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -219,7 +219,7 @@ class Empty(_messages.Message):
 
 
 class Environment(_messages.Message):
-  """An environment for running orchestration tasks.
+  r"""An environment for running orchestration tasks.
 
   Enums:
     StateValueValuesEnum: The current state of the environment.
@@ -253,7 +253,7 @@ class Environment(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """The current state of the environment.
+    r"""The current state of the environment.
 
     Values:
       STATE_UNSPECIFIED: The state of the environment is unknown.
@@ -274,7 +274,7 @@ class Environment(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. User-defined labels for this environment. The labels map can
+    r"""Optional. User-defined labels for this environment. The labels map can
     contain no more than 64 entries. Entries of the labels map are UTF8
     strings that comply with the following restrictions:  * Keys must conform
     to regexp: \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
@@ -289,7 +289,7 @@ class Environment(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -311,7 +311,7 @@ class Environment(_messages.Message):
 
 
 class EnvironmentConfig(_messages.Message):
-  """Configuration information for an environment.
+  r"""Configuration information for an environment.
 
   Fields:
     airflowUri: The URI of the Apache Airflow Web UI hosted within this
@@ -339,7 +339,7 @@ class EnvironmentConfig(_messages.Message):
 
 
 class ListEnvironmentsResponse(_messages.Message):
-  """The environments in a project and location.
+  r"""The environments in a project and location.
 
   Fields:
     environments: The list of environments returned by a
@@ -353,7 +353,7 @@ class ListEnvironmentsResponse(_messages.Message):
 
 
 class ListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -366,7 +366,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class NodeConfig(_messages.Message):
-  """The configuration information for the Container Engine nodes running the
+  r"""The configuration information for the Container Engine nodes running the
   Apache Airflow software.
 
   Fields:
@@ -439,8 +439,8 @@ class NodeConfig(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -481,7 +481,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -495,7 +495,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -509,7 +509,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -526,7 +526,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -546,7 +546,7 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  """Metadata describing an operation.
+  r"""Metadata describing an operation.
 
   Enums:
     OperationTypeValueValuesEnum: Output only. The type of operation being
@@ -566,7 +566,7 @@ class OperationMetadata(_messages.Message):
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    """Output only. The type of operation being performed.
+    r"""Output only. The type of operation being performed.
 
     Values:
       TYPE_UNSPECIFIED: Unused.
@@ -580,7 +580,7 @@ class OperationMetadata(_messages.Message):
     UPDATE = 3
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. The current operation state.
+    r"""Output only. The current operation state.
 
     Values:
       STATE_UNSPECIFIED: Unused.
@@ -604,7 +604,7 @@ class OperationMetadata(_messages.Message):
 
 
 class SoftwareConfig(_messages.Message):
-  """Specifies the selection and config of software inside the environment.
+  r"""Specifies the selection and config of software inside the environment.
 
   Messages:
     AirflowConfigOverridesValue: Optional. Apache Airflow configuration
@@ -683,7 +683,7 @@ class SoftwareConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AirflowConfigOverridesValue(_messages.Message):
-    """Optional. Apache Airflow configuration properties to override.
+    r"""Optional. Apache Airflow configuration properties to override.
     Property keys contain the section and property name, separated by a
     hyphen, for example `core-dags_are_paused_at_creation`. Sections must not
     contain hyphens ("-"), opening square brackets ("["),  or closing square
@@ -707,7 +707,7 @@ class SoftwareConfig(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a AirflowConfigOverridesValue object.
+      r"""An additional property for a AirflowConfigOverridesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -721,7 +721,7 @@ class SoftwareConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvVariablesValue(_messages.Message):
-    """Optional. Additional environment variables to provide to the Apache
+    r"""Optional. Additional environment variables to provide to the Apache
     Airflow scheduler, worker, and webserver processes.  Environment variable
     names must match the regular expression `a-zA-Z_*`. Furthermore, they
     cannot specify Apache Airflow software configuration overrides (i.e.,
@@ -740,7 +740,7 @@ class SoftwareConfig(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a EnvVariablesValue object.
+      r"""An additional property for a EnvVariablesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -754,7 +754,7 @@ class SoftwareConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PypiPackagesValue(_messages.Message):
-    """Optional. Custom Python Package Index (PyPI) packages to be installed
+    r"""Optional. Custom Python Package Index (PyPI) packages to be installed
     in the environment.  Keys refer to the lowercase package name such as
     `numpy` and values are the lowercase extras and version specifier such as
     `==1.12.0`, `[devel,gcp_api]`, or `[devel]>=1.8.2, <1.9.2`. To specify a
@@ -770,7 +770,7 @@ class SoftwareConfig(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PypiPackagesValue object.
+      r"""An additional property for a PypiPackagesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -789,7 +789,7 @@ class SoftwareConfig(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -818,7 +818,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -830,7 +830,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -856,7 +856,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -904,7 +904,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -916,7 +916,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.

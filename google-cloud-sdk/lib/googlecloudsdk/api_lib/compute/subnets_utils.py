@@ -13,7 +13,10 @@
 # limitations under the License.
 """Code that's shared between multiple subnets subcommands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import exceptions
+import six
 
 
 def MakeSubnetworkUpdateRequest(client,
@@ -59,7 +62,7 @@ def MakeSubnetworkUpdateRequest(client,
               **subnet_ref.AsDict()))])[0]
 
     for secondary_range in add_secondary_ranges:
-      for range_name, ip_cidr_range in sorted(secondary_range.iteritems()):
+      for range_name, ip_cidr_range in sorted(six.iteritems(secondary_range)):
         subnetwork.secondaryIpRanges.append(
             client.messages.SubnetworkSecondaryRange(
                 rangeName=range_name, ipCidrRange=ip_cidr_range))

@@ -13,9 +13,13 @@
 # limitations under the License.
 
 """A module for generating resource names."""
-import cStringIO
+from __future__ import absolute_import
+from __future__ import unicode_literals
+import io
 import random
 import string
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
 _LENGTH = 12
 _BEGIN_ALPHABET = string.ascii_lowercase
@@ -30,8 +34,8 @@ def GenerateRandomName():
     a lowercase letter followed by 10 characters drawn from the set
     [-a-z0-9] and finally a character drawn from the set [a-z0-9].
   """
-  buf = cStringIO.StringIO()
-  buf.write(random.choice(_BEGIN_ALPHABET))
-  for _ in xrange(_LENGTH - 1):
-    buf.write(random.choice(_ALPHABET))
+  buf = io.StringIO()
+  buf.write(six.text_type(random.choice(_BEGIN_ALPHABET)))
+  for _ in range(_LENGTH - 1):
+    buf.write(six.text_type(random.choice(_ALPHABET)))
   return buf.getvalue()

@@ -16,7 +16,7 @@ package = 'runtimeconfig'
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -51,7 +51,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -68,7 +68,7 @@ class AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -86,7 +86,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class AuthorizationLoggingOptions(_messages.Message):
-  """Authorization-related information used by Cloud Audit Logging.
+  r"""Authorization-related information used by Cloud Audit Logging.
 
   Enums:
     PermissionTypeValueValuesEnum: The type of the permission that was
@@ -97,7 +97,7 @@ class AuthorizationLoggingOptions(_messages.Message):
   """
 
   class PermissionTypeValueValuesEnum(_messages.Enum):
-    """The type of the permission that was checked.
+    r"""The type of the permission that was checked.
 
     Values:
       PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
@@ -116,7 +116,7 @@ class AuthorizationLoggingOptions(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. NOTE: an
@@ -131,8 +131,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -147,7 +147,7 @@ class Binding(_messages.Message):
 
 
 class Cardinality(_messages.Message):
-  """A Cardinality condition for the Waiter resource. A cardinality condition
+  r"""A Cardinality condition for the Waiter resource. A cardinality condition
   is met when the number of variables under a specified path prefix reaches a
   predefined number. For example, if you set a Cardinality condition where the
   `path` is set to `/foo` and the number of paths is set to 2, the following
@@ -169,7 +169,7 @@ class Cardinality(_messages.Message):
 
 
 class CloudAuditOptions(_messages.Message):
-  """Write a Cloud Audit log
+  r"""Write a Cloud Audit log
 
   Enums:
     LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
@@ -182,7 +182,7 @@ class CloudAuditOptions(_messages.Message):
   """
 
   class LogNameValueValuesEnum(_messages.Enum):
-    """The log_name to populate in the Cloud Audit Record.
+    r"""The log_name to populate in the Cloud Audit Record.
 
     Values:
       UNSPECIFIED_LOG_NAME: Default. Should not be used.
@@ -198,7 +198,7 @@ class CloudAuditOptions(_messages.Message):
 
 
 class Condition(_messages.Message):
-  """A condition to be met.
+  r"""A condition to be met.
 
   Enums:
     IamValueValuesEnum: Trusted attributes supplied by the IAM system.
@@ -218,7 +218,7 @@ class Condition(_messages.Message):
   """
 
   class IamValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by the IAM system.
+    r"""Trusted attributes supplied by the IAM system.
 
     Values:
       NO_ATTR: Default non-attribute.
@@ -261,7 +261,7 @@ class Condition(_messages.Message):
     CREDENTIALS_TYPE = 6
 
   class OpValueValuesEnum(_messages.Enum):
-    """An operator to apply the subject with.
+    r"""An operator to apply the subject with.
 
     Values:
       NO_OP: Default no-op.
@@ -281,8 +281,8 @@ class Condition(_messages.Message):
     DISCHARGED = 5
 
   class SysValueValuesEnum(_messages.Enum):
-    """Trusted attributes supplied by any service that owns resources and uses
-    the IAM system for access control.
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
 
     Values:
       NO_ATTR: Default non-attribute type
@@ -306,7 +306,7 @@ class Condition(_messages.Message):
 
 
 class CounterOptions(_messages.Message):
-  """Increment a streamz counter with the specified metric and field names.
+  r"""Increment a streamz counter with the specified metric and field names.
   Metric names should start with a '/', generally be lowercase-only, and end
   in "_count". Field names should not contain an initial slash. The actual
   exported metric names will have "/iam/policy" prepended.  Field names
@@ -330,7 +330,7 @@ class CounterOptions(_messages.Message):
 
 
 class DataAccessOptions(_messages.Message):
-  """Write a Data Access (Gin) log
+  r"""Write a Data Access (Gin) log
 
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
@@ -343,7 +343,7 @@ class DataAccessOptions(_messages.Message):
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
-    """Whether Gin logging should happen in a fail-closed manner at the
+    r"""Whether Gin logging should happen in a fail-closed manner at the
     caller. This is relevant only in the LocalIAM implementation, for now.
 
     Values:
@@ -368,7 +368,7 @@ class DataAccessOptions(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -378,7 +378,7 @@ class Empty(_messages.Message):
 
 
 class EndCondition(_messages.Message):
-  """The condition that a Waiter resource is waiting for.
+  r"""The condition that a Waiter resource is waiting for.
 
   Fields:
     cardinality: The cardinality of the `EndCondition`.
@@ -388,7 +388,7 @@ class EndCondition(_messages.Message):
 
 
 class Expr(_messages.Message):
-  """Represents an expression text. Example:      title: "User account
+  r"""Represents an expression text. Example:      title: "User account
   presence"     description: "Determines whether the request has a user
   account"     expression: "size(request.user) > 0"
 
@@ -412,7 +412,7 @@ class Expr(_messages.Message):
 
 
 class ListConfigsResponse(_messages.Message):
-  """`ListConfigs()` returns the following response. The order of returned
+  r"""`ListConfigs()` returns the following response. The order of returned
   objects is arbitrary; that is, it is not ordered in any particular way.
 
   Fields:
@@ -431,7 +431,7 @@ class ListConfigsResponse(_messages.Message):
 
 
 class ListVariablesResponse(_messages.Message):
-  """Response for the `ListVariables()` method.
+  r"""Response for the `ListVariables()` method.
 
   Fields:
     nextPageToken: This token allows you to get the next page of results for
@@ -448,8 +448,8 @@ class ListVariablesResponse(_messages.Message):
 
 
 class ListWaitersResponse(_messages.Message):
-  """Response for the `ListWaiters()` method. Order of returned waiter objects
-  is arbitrary.
+  r"""Response for the `ListWaiters()` method. Order of returned waiter
+  objects is arbitrary.
 
   Fields:
     nextPageToken: This token allows you to get the next page of results for
@@ -465,7 +465,7 @@ class ListWaitersResponse(_messages.Message):
 
 
 class LogConfig(_messages.Message):
-  """Specifies what kind of log the caller must write
+  r"""Specifies what kind of log the caller must write
 
   Fields:
     cloudAudit: Cloud audit options.
@@ -479,8 +479,8 @@ class LogConfig(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -521,7 +521,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -535,7 +535,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -549,7 +549,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -566,7 +566,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -586,19 +586,24 @@ class Operation(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -633,7 +638,7 @@ class Policy(_messages.Message):
 
 
 class Rule(_messages.Message):
-  """A rule to be applied in a Policy.
+  r"""A rule to be applied in a Policy.
 
   Enums:
     ActionValueValuesEnum: Required
@@ -658,7 +663,7 @@ class Rule(_messages.Message):
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    """Required
+    r"""Required
 
     Values:
       NO_ACTION: Default no action.
@@ -687,7 +692,7 @@ class Rule(_messages.Message):
 
 
 class RuntimeConfig(_messages.Message):
-  """A RuntimeConfig resource is the primary resource in the Cloud
+  r"""A RuntimeConfig resource is the primary resource in the Cloud
   RuntimeConfig service. A RuntimeConfig resource consists of metadata and a
   hierarchy of variables.
 
@@ -709,7 +714,7 @@ class RuntimeConfig(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsCreateRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsCreateRequest object.
+  r"""A RuntimeconfigProjectsConfigsCreateRequest object.
 
   Fields:
     parent: The [project ID](https://support.google.com/cloud/answer/6158840?h
@@ -730,7 +735,7 @@ class RuntimeconfigProjectsConfigsCreateRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsDeleteRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsDeleteRequest object.
+  r"""A RuntimeconfigProjectsConfigsDeleteRequest object.
 
   Fields:
     name: The RuntimeConfig resource to delete, in the format:
@@ -741,7 +746,7 @@ class RuntimeconfigProjectsConfigsDeleteRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsGetIamPolicyRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsGetIamPolicyRequest object.
+  r"""A RuntimeconfigProjectsConfigsGetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -753,7 +758,7 @@ class RuntimeconfigProjectsConfigsGetIamPolicyRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsGetRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsGetRequest object.
+  r"""A RuntimeconfigProjectsConfigsGetRequest object.
 
   Fields:
     name: The name of the RuntimeConfig resource to retrieve, in the format:
@@ -764,7 +769,7 @@ class RuntimeconfigProjectsConfigsGetRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsListRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsListRequest object.
+  r"""A RuntimeconfigProjectsConfigsListRequest object.
 
   Fields:
     pageSize: Specifies the number of results to return per page. If there are
@@ -783,7 +788,7 @@ class RuntimeconfigProjectsConfigsListRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsOperationsGetRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsOperationsGetRequest object.
+  r"""A RuntimeconfigProjectsConfigsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -793,7 +798,8 @@ class RuntimeconfigProjectsConfigsOperationsGetRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest object.
+  r"""A RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest
+  object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -808,7 +814,7 @@ class RuntimeconfigProjectsConfigsOperationsTestIamPermissionsRequest(_messages.
 
 
 class RuntimeconfigProjectsConfigsSetIamPolicyRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsSetIamPolicyRequest object.
+  r"""A RuntimeconfigProjectsConfigsSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -823,7 +829,7 @@ class RuntimeconfigProjectsConfigsSetIamPolicyRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsTestIamPermissionsRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsTestIamPermissionsRequest object.
+  r"""A RuntimeconfigProjectsConfigsTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -838,7 +844,7 @@ class RuntimeconfigProjectsConfigsTestIamPermissionsRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsVariablesCreateRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsVariablesCreateRequest object.
+  r"""A RuntimeconfigProjectsConfigsVariablesCreateRequest object.
 
   Fields:
     parent: The path to the RutimeConfig resource that this variable should
@@ -859,7 +865,7 @@ class RuntimeconfigProjectsConfigsVariablesCreateRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsVariablesDeleteRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsVariablesDeleteRequest object.
+  r"""A RuntimeconfigProjectsConfigsVariablesDeleteRequest object.
 
   Fields:
     name: The name of the variable to delete, in the format:
@@ -873,7 +879,7 @@ class RuntimeconfigProjectsConfigsVariablesDeleteRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsVariablesGetRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsVariablesGetRequest object.
+  r"""A RuntimeconfigProjectsConfigsVariablesGetRequest object.
 
   Fields:
     name: The name of the variable to return, in the format:
@@ -884,7 +890,7 @@ class RuntimeconfigProjectsConfigsVariablesGetRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsVariablesListRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsVariablesListRequest object.
+  r"""A RuntimeconfigProjectsConfigsVariablesListRequest object.
 
   Fields:
     filter: Filters variables by matching the specified filter. For example:
@@ -911,7 +917,7 @@ class RuntimeconfigProjectsConfigsVariablesListRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest object.
+  r"""A RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -926,7 +932,7 @@ class RuntimeconfigProjectsConfigsVariablesTestIamPermissionsRequest(_messages.M
 
 
 class RuntimeconfigProjectsConfigsVariablesWatchRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsVariablesWatchRequest object.
+  r"""A RuntimeconfigProjectsConfigsVariablesWatchRequest object.
 
   Fields:
     name: The name of the variable to watch, in the format:
@@ -940,7 +946,7 @@ class RuntimeconfigProjectsConfigsVariablesWatchRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsWaitersCreateRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsWaitersCreateRequest object.
+  r"""A RuntimeconfigProjectsConfigsWaitersCreateRequest object.
 
   Fields:
     parent: The path to the configuration that will own the waiter. The
@@ -961,7 +967,7 @@ class RuntimeconfigProjectsConfigsWaitersCreateRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsWaitersDeleteRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsWaitersDeleteRequest object.
+  r"""A RuntimeconfigProjectsConfigsWaitersDeleteRequest object.
 
   Fields:
     name: The Waiter resource to delete, in the format:
@@ -972,7 +978,7 @@ class RuntimeconfigProjectsConfigsWaitersDeleteRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsWaitersGetRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsWaitersGetRequest object.
+  r"""A RuntimeconfigProjectsConfigsWaitersGetRequest object.
 
   Fields:
     name: The fully-qualified name of the Waiter resource object to retrieve,
@@ -984,7 +990,7 @@ class RuntimeconfigProjectsConfigsWaitersGetRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsWaitersListRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsWaitersListRequest object.
+  r"""A RuntimeconfigProjectsConfigsWaitersListRequest object.
 
   Fields:
     pageSize: Specifies the number of results to return per page. If there are
@@ -1003,7 +1009,7 @@ class RuntimeconfigProjectsConfigsWaitersListRequest(_messages.Message):
 
 
 class RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest(_messages.Message):
-  """A RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest object.
+  r"""A RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -1018,7 +1024,7 @@ class RuntimeconfigProjectsConfigsWaitersTestIamPermissionsRequest(_messages.Mes
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -1036,7 +1042,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1065,7 +1071,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1077,7 +1083,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1103,7 +1109,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -1151,7 +1157,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1163,7 +1169,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1181,7 +1187,7 @@ class Status(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1194,7 +1200,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -1205,7 +1211,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Variable(_messages.Message):
-  """Describes a single variable within a RuntimeConfig resource. The name
+  r"""Describes a single variable within a RuntimeConfig resource. The name
   denotes the hierarchical variable name. For example, `ports/serving_port` is
   a valid variable name. The variable value is an opaque string and only leaf
   variables can have values (that is, variables that do not have any child
@@ -1243,7 +1249,7 @@ class Variable(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """[Ouput only] The current state of the variable. The variable state
+    r"""[Ouput only] The current state of the variable. The variable state
     indicates the outcome of the `variables().watch` call and is visible
     through the `get` and `list` calls.
 
@@ -1266,7 +1272,7 @@ class Variable(_messages.Message):
 
 
 class Waiter(_messages.Message):
-  """A Waiter resource waits for some end condition within a RuntimeConfig
+  r"""A Waiter resource waits for some end condition within a RuntimeConfig
   resource to be met before it returns. For example, assume you have a
   distributed system where each node writes to a Variable resource
   indidicating the node's readiness as part of the startup process.  You then
@@ -1320,7 +1326,7 @@ class Waiter(_messages.Message):
 
 
 class WatchVariableRequest(_messages.Message):
-  """Request for the `WatchVariable()` method.
+  r"""Request for the `WatchVariable()` method.
 
   Fields:
     newerThan: If specified, checks the current timestamp of the variable and

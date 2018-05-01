@@ -51,7 +51,7 @@ class RedisV1beta1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a Redis instance based on the specified tier and memory size.
+      r"""Creates a Redis instance based on the specified tier and memory size.
 
 By default, the instance is peered to the project's
 [default network](/compute/docs/networks-and-firewalls#networks).
@@ -89,7 +89,7 @@ is no need to call DeleteOperation.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a specific Redis instance.  Instance stops serving and data is.
+      r"""Deletes a specific Redis instance.  Instance stops serving and data is.
 deleted.
 
       Args:
@@ -117,7 +117,7 @@ deleted.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the details of a specific Redis instance.
+      r"""Gets the details of a specific Redis instance.
 
       Args:
         request: (RedisProjectsLocationsInstancesGetRequest) input message
@@ -144,7 +144,7 @@ deleted.
     )
 
     def List(self, request, global_params=None):
-      """Lists all Redis instances owned by a project in either the specified.
+      r"""Lists all Redis instances owned by a project in either the specified.
 location (region) or all locations.
 
 The location should have the following format:
@@ -178,7 +178,7 @@ available to the project are queried, and the results are aggregated.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the metadata and configuration of a specific Redis instance.
+      r"""Updates the metadata and configuration of a specific Redis instance.
 
 Completed longrunning.Operation will contain the new instance object
 in the response field. The returned operation is automatically deleted
@@ -219,7 +219,7 @@ after a few hours, so there is no need to call DeleteOperation.
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -248,7 +248,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding
@@ -294,7 +294,7 @@ is the parent resource, without the operations collection id.
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a location.
+      r"""Gets information about a location.
 
       Args:
         request: (RedisProjectsLocationsGetRequest) input message
@@ -321,7 +321,7 @@ is the parent resource, without the operations collection id.
     )
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (RedisProjectsLocationsListRequest) input message

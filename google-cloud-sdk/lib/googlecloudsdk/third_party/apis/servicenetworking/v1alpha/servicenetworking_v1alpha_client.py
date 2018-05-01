@@ -49,7 +49,7 @@ class ServicenetworkingV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -88,7 +88,7 @@ service.
           }
 
     def AddSubnetwork(self, request, global_params=None):
-      """Service provider use this method to provision a new subnet in a.
+      r"""Service provider use this method to provision a new subnet in a.
 peered service shared VPC network.
 It will validate previously provided reserved ranges, find non-conflicting
 sub-range of requested size (expressed in
@@ -121,7 +121,7 @@ Operation<response: AddSubnetworkResponse>
     )
 
     def Peer(self, request, global_params=None):
-      """To connect service to a VPC network peering connection.
+      r"""To connect service to a VPC network peering connection.
 must be established prior to service provisioning.
 This method must be invoked by the consumer VPC network administrator
 It will establish a permanent peering connection with a shared

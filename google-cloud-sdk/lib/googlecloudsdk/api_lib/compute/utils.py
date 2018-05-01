@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utility functions that don't belong in the other utility modules."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 import io
 import re

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions for dealing with instances and instance templates."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import collections
 import re
 
@@ -200,7 +202,7 @@ def CreateServiceAccountMessages(messages, scopes, service_account):
     accounts_to_scopes[account].extend(scope_uri)
 
   res = []
-  for account, scopes in sorted(accounts_to_scopes.iteritems()):
+  for account, scopes in sorted(six.iteritems(accounts_to_scopes)):
     res.append(messages.ServiceAccount(email=account,
                                        scopes=sorted(scopes)))
   return res
@@ -1011,11 +1013,11 @@ def GetTags(args, client):
 
 def GetLabels(args, client):
   if args.labels:
-    return client.messages.Instance.LabelsValue(
-        additionalProperties=[
-            client.messages.Instance.LabelsValue.AdditionalProperty(
-                key=key, value=value)
-            for key, value in sorted(args.labels.iteritems())])
+    return client.messages.Instance.LabelsValue(additionalProperties=[
+        client.messages.Instance.LabelsValue.AdditionalProperty(
+            key=key, value=value)
+        for key, value in sorted(six.iteritems(args.labels))
+    ])
   return None
 
 

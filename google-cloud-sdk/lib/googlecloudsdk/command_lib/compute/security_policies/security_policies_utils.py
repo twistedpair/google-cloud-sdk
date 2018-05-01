@@ -13,6 +13,7 @@
 # limitations under the License.
 """Code that's shared between multiple security policies subcommands."""
 
+from __future__ import absolute_import
 import base64
 import json
 

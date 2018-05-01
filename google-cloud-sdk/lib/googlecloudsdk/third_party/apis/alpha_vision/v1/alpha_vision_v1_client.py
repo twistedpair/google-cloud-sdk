@@ -58,7 +58,7 @@ class AlphaVisionV1(base_api.BaseApiClient):
           }
 
     def AsyncBatchAnnotate(self, request, global_params=None):
-      """Run async image detection and annotation for a list of generic files (e.g.
+      r"""Run async image detection and annotation for a list of generic files (e.g.
 PDF) which may contain multiple pages and multiple images per page.
 Progress and results can be retrieved through the
 `google.longrunning.Operations` interface.
@@ -99,7 +99,7 @@ Progress and results can be retrieved through the
           }
 
     def Annotate(self, request, global_params=None):
-      """Run image detection and annotation for a batch of images.
+      r"""Run image detection and annotation for a batch of images.
 
       Args:
         request: (BatchAnnotateImagesRequest) input message
@@ -135,7 +135,7 @@ Progress and results can be retrieved through the
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -184,7 +184,7 @@ service.
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation.  The server.
+      r"""Starts asynchronous cancellation on a long-running operation.  The server.
 makes a best effort to cancel the operation, but success is not
 guaranteed.  If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.  Clients can use
@@ -220,7 +220,7 @@ corresponding to `Code.CANCELLED`.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is.
+      r"""Deletes a long-running operation. This method indicates that the client is.
 no longer interested in the operation result. It does not cancel the
 operation. If the server doesn't support this method, it returns
 `google.rpc.Code.UNIMPLEMENTED`.
@@ -250,7 +250,7 @@ operation. If the server doesn't support this method, it returns
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -279,7 +279,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the.
+      r"""Lists operations that match the specified filter in the request. If the.
 server doesn't support this method, it returns `UNIMPLEMENTED`.
 
 NOTE: the `name` binding allows API services to override the binding
@@ -325,7 +325,7 @@ is the parent resource, without the operations collection id.
           }
 
     def List(self, request, global_params=None):
-      """Lists the Products in a ProductSet, in an unspecified order. If the.
+      r"""Lists the Products in a ProductSet, in an unspecified order. If the.
 ProductSet does not exist, the products field of the response will be
 empty.
 
@@ -368,7 +368,7 @@ Possible errors:
           }
 
     def AddProduct(self, request, global_params=None):
-      """Adds a Product to the specified ProductSet. If the Product is already.
+      r"""Adds a Product to the specified ProductSet. If the Product is already.
 present, no change is made.
 
 One Product can be added to at most 100 ProductSets.
@@ -402,7 +402,7 @@ Possible errors:
     )
 
     def Create(self, request, global_params=None):
-      """Creates and returns a new ProductSet resource.
+      r"""Creates and returns a new ProductSet resource.
 
 Possible errors:
 
@@ -434,7 +434,7 @@ Possible errors:
     )
 
     def Delete(self, request, global_params=None):
-      """Permanently deletes a ProductSet. All Products and ReferenceImages in the.
+      r"""Permanently deletes a ProductSet. All Products and ReferenceImages in the.
 ProductSet will be deleted.
 
 The actual image files are not deleted from Google Cloud Storage.
@@ -468,7 +468,7 @@ Possible errors:
     )
 
     def Get(self, request, global_params=None):
-      """Gets information associated with a ProductSet.
+      r"""Gets information associated with a ProductSet.
 
 Possible errors:
 
@@ -499,7 +499,7 @@ Possible errors:
     )
 
     def Import(self, request, global_params=None):
-      """Asynchronous API that imports a list of reference images to specified.
+      r"""Asynchronous API that imports a list of reference images to specified.
 product sets based on a list of image names.
 
 The google.longrunning.Operation API can be used to keep track of the
@@ -536,7 +536,7 @@ ImportProductSetsGcsSource.csv_file_uri.
     )
 
     def List(self, request, global_params=None):
-      """Lists ProductSets in an unspecified order.
+      r"""Lists ProductSets in an unspecified order.
 
 Possible errors:
 
@@ -568,7 +568,7 @@ Possible errors:
     )
 
     def Patch(self, request, global_params=None):
-      """Makes changes to a ProductSet resource.
+      r"""Makes changes to a ProductSet resource.
 Only display_name can be updated currently.
 
 Possible errors:
@@ -602,7 +602,7 @@ Possible errors:
     )
 
     def RemoveProduct(self, request, global_params=None):
-      """Removes a Product from the specified ProductSet,.
+      r"""Removes a Product from the specified ProductSet,.
 
 Possible errors:
 
@@ -643,7 +643,7 @@ Possible errors:
           }
 
     def Create(self, request, global_params=None):
-      """Creates and returns a new `ReferenceImage` resource.
+      r"""Creates and returns a new `ReferenceImage` resource.
 
 The `bounding_poly` field is optional. If `bounding_poly` is not specified,
 the system will try to detect regions of interest in the image that are
@@ -688,7 +688,7 @@ Possible errors:
     )
 
     def Delete(self, request, global_params=None):
-      """Marks a reference image for deletion.
+      r"""Marks a reference image for deletion.
 
 The image metadata will be deleted right away, but search queries
 against ProductSets containing the image may still work until all related
@@ -725,7 +725,7 @@ Possible errors:
     )
 
     def Get(self, request, global_params=None):
-      """Gets information associated with a ReferenceImage.
+      r"""Gets information associated with a ReferenceImage.
 
 Possible errors:
 
@@ -756,7 +756,7 @@ Possible errors:
     )
 
     def List(self, request, global_params=None):
-      """Lists reference images.
+      r"""Lists reference images.
 
 Possible errors:
 
@@ -799,7 +799,7 @@ Possible errors:
           }
 
     def Create(self, request, global_params=None):
-      """Creates and returns a new product resource.
+      r"""Creates and returns a new product resource.
 
 Possible errors:
 
@@ -833,7 +833,7 @@ Possible errors:
     )
 
     def Delete(self, request, global_params=None):
-      """Permanently deletes a product and its reference images.
+      r"""Permanently deletes a product and its reference images.
 
 Metadata of the product and all its images will be deleted right away, but
 search queries against ProductSets containing the product may still work
@@ -868,7 +868,7 @@ Possible errors:
     )
 
     def Get(self, request, global_params=None):
-      """Gets information associated with a Product.
+      r"""Gets information associated with a Product.
 
 Possible errors:
 
@@ -899,7 +899,7 @@ Possible errors:
     )
 
     def List(self, request, global_params=None):
-      """Lists products (in an unspecified order).
+      r"""Lists products (in an unspecified order).
 
 Possible errors:
 
@@ -930,7 +930,7 @@ Possible errors:
     )
 
     def Patch(self, request, global_params=None):
-      """Makes changes to a Product resource.
+      r"""Makes changes to a Product resource.
 Only display_name, description and labels can be updated right now.
 
 If labels are updated, the change will not be reflected in queries until

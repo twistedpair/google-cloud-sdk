@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute forwarding-rules commands."""
 
+from __future__ import absolute_import
 import textwrap
 
 from googlecloudsdk.calliope import arg_parsers

@@ -13,6 +13,7 @@
 # limitations under the License.
 """Functions for dealing with managed instances groups updates."""
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope import arg_parsers
 
 

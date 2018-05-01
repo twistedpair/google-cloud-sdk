@@ -14,16 +14,18 @@
 
 """Library that handles importing files for Deployment Manager."""
 
-
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 import posixpath
 import re
-import urlparse
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import yaml
 import requests
+import six
+import six.moves.urllib.parse
 
 IMPORTS = 'imports'
 PATH = 'path'
@@ -105,7 +107,7 @@ class _ImportFile(_BaseImport):
           self.content = resource.read()
       except IOError as e:
         raise exceptions.ConfigError(
-            "Unable to read file '%s'. %s" % (self.full_path, e.message))
+            "Unable to read file '%s'. %s" % (self.full_path, str(e)))
     return self.content
 
   def BuildChildPath(self, child_path):
@@ -127,7 +129,7 @@ class _ImportUrl(_BaseImport):
     if self.base_name is None:
       # We must use posixpath explicitly so this will work on Windows.
       self.base_name = posixpath.basename(
-          urlparse.urlparse(self.full_path).path)
+          six.moves.urllib.parse.urlparse(self.full_path).path)
     return self.base_name
 
   def Exists(self):
@@ -170,12 +172,12 @@ class _ImportUrl(_BaseImport):
   def BuildChildPath(self, child_path):
     if _IsUrl(child_path):
       return child_path
-    return urlparse.urljoin(self.full_path, child_path)
+    return six.moves.urllib.parse.urljoin(self.full_path, child_path)
 
   @staticmethod
   def _ValidateUrl(url):
     """Make sure the url fits the format we expect."""
-    parsed_url = urlparse.urlparse(url)
+    parsed_url = six.moves.urllib.parse.urlparse(url)
 
     if parsed_url.scheme not in ('http', 'https'):
       raise exceptions.ConfigError(
@@ -195,7 +197,7 @@ class _ImportUrl(_BaseImport):
 
 def _IsUrl(resource_handle):
   """Returns true if the passed resource_handle is a url."""
-  parsed = urlparse.urlparse(resource_handle)
+  parsed = six.moves.urllib.parse.urlparse(resource_handle)
   return parsed.scheme and parsed.netloc
 
 
@@ -207,9 +209,10 @@ def _IsValidCompositeTypeSyntax(composite_type_name):
 
   Catches most syntax errors by checking that the string contains the substring
   '/composite:' preceded and followed by at least one character, none of which
-  are colons, periods, slashes, or whitespace.
+  are colons, slashes, or whitespace. Periods may follow the substring, but not
+  proceed it.
   """
-  return re.match(r'^[^/:.\s]+/composite:[^/:.\s]+$', composite_type_name)
+  return re.match(r'^[^/:.\s]+/composite:[^/:\s]+$', composite_type_name)
 
 
 def _BuildFileImportObject(full_path, name=None):
@@ -567,10 +570,10 @@ def BuildTargetConfigFromManifest(client, messages, project_id, deployment_id,
           'Manifest reuse with properties requires '
           'there only be a single resource.')
     single_resource = config_yaml['resources'][0]
-    if not single_resource.has_key('properties'):
+    if 'properties' not in single_resource:
       single_resource['properties'] = {}
     existing_properties = single_resource['properties']
-    for key, value in properties.iteritems():
+    for key, value in six.iteritems(properties):
       existing_properties[key] = value
     config_file.content = yaml.dump(config_yaml)
 

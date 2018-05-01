@@ -64,11 +64,14 @@ aren't. Don't fiddle with the spacing in the list => string code without
 verifying against the actual compute implementation.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import re
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.util import times
+import six
 
 
 def ConvertEQPatternToFullMatch(pattern):
@@ -193,7 +196,7 @@ def _GuessOperandType(operand):
     return bool
   if operand.replace('_', '').isupper():
     return messages.EnumField
-  return unicode
+  return six.text_type
 
 
 class Rewriter(resource_expr_rewrite.Backend):
@@ -247,7 +250,7 @@ class Rewriter(resource_expr_rewrite.Backend):
     # Determine if the operand is matchable or a literal string.
     if not key_type:
       key_type = _GuessOperandType(operand)
-    matchable = key_type is unicode
+    matchable = key_type is six.text_type
 
     # Convert time stamps to ISO RFC 3339 normal form.
     if key.endswith('Timestamp') or key.endswith('_timestamp'):

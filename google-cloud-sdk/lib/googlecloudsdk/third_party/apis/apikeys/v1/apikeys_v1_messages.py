@@ -12,7 +12,7 @@ package = 'apikeys'
 
 
 class AndroidApplication(_messages.Message):
-  """Identifier of an Android application for API key use.
+  r"""Identifier of an Android application for API key use.
 
   Fields:
     packageName: The package name of the application.
@@ -24,7 +24,7 @@ class AndroidApplication(_messages.Message):
 
 
 class AndroidKeyDetails(_messages.Message):
-  """Key details that are specific to android keys.
+  r"""Key details that are specific to android keys.
 
   Fields:
     allowedApplications: A list of Android applications that are allowed to
@@ -35,8 +35,8 @@ class AndroidKeyDetails(_messages.Message):
 
 
 class ApiKey(_messages.Message):
-  """The representation of an API key managed by the `ApiKeys` API. An API key
-  is used for programmatic access to a project by a service account.
+  r"""The representation of an API key managed by the `ApiKeys` API. An API
+  key is used for programmatic access to a project by a service account.
 
   Fields:
     androidKeyDetails: Key details that are specific to android keys.
@@ -76,7 +76,7 @@ class ApiKey(_messages.Message):
 
 
 class ApiTarget(_messages.Message):
-  """A restriction for a specific service and optionally one or multiple
+  r"""A restriction for a specific service and optionally one or multiple
   specific methods. Both fields are not case sensitive.
 
   Fields:
@@ -91,7 +91,7 @@ class ApiTarget(_messages.Message):
 
 
 class ApiTargetKeyDetails(_messages.Message):
-  """Key details that specify which APIs a key is allowed to be used on.
+  r"""Key details that specify which APIs a key is allowed to be used on.
 
   Messages:
     ApiTargetsValue: A restriction for a specific service and optionally one
@@ -112,7 +112,7 @@ class ApiTargetKeyDetails(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ApiTargetsValue(_messages.Message):
-    """A restriction for a specific service and optionally one or multiple
+    r"""A restriction for a specific service and optionally one or multiple
     specific methods. Requests will be allowed if they match any of these
     restrictions. If no restrictions are specified, all targets are allowed.
     Key is the service name for this restriction. It should be api_v1_name of
@@ -127,7 +127,7 @@ class ApiTargetKeyDetails(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ApiTargetsValue object.
+      r"""An additional property for a ApiTargetsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -143,7 +143,7 @@ class ApiTargetKeyDetails(_messages.Message):
 
 
 class ApikeysProjectsApiKeysBatchDeleteRequest(_messages.Message):
-  """A ApikeysProjectsApiKeysBatchDeleteRequest object.
+  r"""A ApikeysProjectsApiKeysBatchDeleteRequest object.
 
   Fields:
     keyIds: The identifiers for the keys to be deleted.
@@ -155,7 +155,7 @@ class ApikeysProjectsApiKeysBatchDeleteRequest(_messages.Message):
 
 
 class ApikeysProjectsApiKeysCreateRequest(_messages.Message):
-  """A ApikeysProjectsApiKeysCreateRequest object.
+  r"""A ApikeysProjectsApiKeysCreateRequest object.
 
   Fields:
     apiKey: A ApiKey resource to be passed as the request body.
@@ -167,7 +167,7 @@ class ApikeysProjectsApiKeysCreateRequest(_messages.Message):
 
 
 class ApikeysProjectsApiKeysDeleteRequest(_messages.Message):
-  """A ApikeysProjectsApiKeysDeleteRequest object.
+  r"""A ApikeysProjectsApiKeysDeleteRequest object.
 
   Fields:
     keyId: The identifier for the key to be deleted.
@@ -179,7 +179,7 @@ class ApikeysProjectsApiKeysDeleteRequest(_messages.Message):
 
 
 class ApikeysProjectsApiKeysGetRequest(_messages.Message):
-  """A ApikeysProjectsApiKeysGetRequest object.
+  r"""A ApikeysProjectsApiKeysGetRequest object.
 
   Fields:
     keyId: The identifier for the key to be retrieved.
@@ -191,7 +191,7 @@ class ApikeysProjectsApiKeysGetRequest(_messages.Message):
 
 
 class ApikeysProjectsApiKeysListRequest(_messages.Message):
-  """A ApikeysProjectsApiKeysListRequest object.
+  r"""A ApikeysProjectsApiKeysListRequest object.
 
   Fields:
     pageSize: Specifies the maximum number of results to be returned at a
@@ -206,7 +206,7 @@ class ApikeysProjectsApiKeysListRequest(_messages.Message):
 
 
 class ApikeysProjectsApiKeysPatchRequest(_messages.Message):
-  """A ApikeysProjectsApiKeysPatchRequest object.
+  r"""A ApikeysProjectsApiKeysPatchRequest object.
 
   Fields:
     apiKey: A ApiKey resource to be passed as the request body.
@@ -222,7 +222,7 @@ class ApikeysProjectsApiKeysPatchRequest(_messages.Message):
 
 
 class ApikeysProjectsApiKeysRegenerateRequest(_messages.Message):
-  """A ApikeysProjectsApiKeysRegenerateRequest object.
+  r"""A ApikeysProjectsApiKeysRegenerateRequest object.
 
   Fields:
     keyId: The identifier for the key to be regenerated.
@@ -234,7 +234,7 @@ class ApikeysProjectsApiKeysRegenerateRequest(_messages.Message):
 
 
 class ApikeysProjectsApiKeysRevertRequest(_messages.Message):
-  """A ApikeysProjectsApiKeysRevertRequest object.
+  r"""A ApikeysProjectsApiKeysRevertRequest object.
 
   Fields:
     keyId: The identifier for the key to be reverted.
@@ -246,7 +246,7 @@ class ApikeysProjectsApiKeysRevertRequest(_messages.Message):
 
 
 class ApikeysProjectsDeletedApiKeysListRequest(_messages.Message):
-  """A ApikeysProjectsDeletedApiKeysListRequest object.
+  r"""A ApikeysProjectsDeletedApiKeysListRequest object.
 
   Fields:
     pageSize: Specifies the maximum number of results to be returned at a
@@ -261,7 +261,7 @@ class ApikeysProjectsDeletedApiKeysListRequest(_messages.Message):
 
 
 class ApikeysProjectsGetProjectForApiKeyRequest(_messages.Message):
-  """A ApikeysProjectsGetProjectForApiKeyRequest object.
+  r"""A ApikeysProjectsGetProjectForApiKeyRequest object.
 
   Fields:
     apiKey: Finds the project that owns the key with this `current_key` value.
@@ -271,7 +271,7 @@ class ApikeysProjectsGetProjectForApiKeyRequest(_messages.Message):
 
 
 class BrowserKeyDetails(_messages.Message):
-  """Key details that are specific to browser keys.
+  r"""Key details that are specific to browser keys.
 
   Fields:
     allowedReferrers: A list of regular expressions for the referrer URLs that
@@ -282,7 +282,7 @@ class BrowserKeyDetails(_messages.Message):
 
 
 class DeletedApiKey(_messages.Message):
-  """Information about a deleted API key.
+  r"""Information about a deleted API key.
 
   Enums:
     SourceValueValuesEnum: What caused the key to be deleted @OutputOnly
@@ -294,7 +294,7 @@ class DeletedApiKey(_messages.Message):
   """
 
   class SourceValueValuesEnum(_messages.Enum):
-    """What caused the key to be deleted @OutputOnly
+    r"""What caused the key to be deleted @OutputOnly
 
     Values:
       DELETION: This API Key was deleted via a DeleteApiKey API call.
@@ -309,7 +309,7 @@ class DeletedApiKey(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -319,7 +319,7 @@ class Empty(_messages.Message):
 
 
 class GetProjectForApiKeyResponse(_messages.Message):
-  """Response message for `GetProjectForApiKey` method.
+  r"""Response message for `GetProjectForApiKey` method.
 
   Fields:
     projectNumber: The project number corresponding to the project key in the
@@ -331,7 +331,7 @@ class GetProjectForApiKeyResponse(_messages.Message):
 
 
 class IosKeyDetails(_messages.Message):
-  """Key details that are specific to iOS keys.
+  r"""Key details that are specific to iOS keys.
 
   Fields:
     allowedBundleIds: A list of bundle IDs that are allowed when making API
@@ -342,7 +342,7 @@ class IosKeyDetails(_messages.Message):
 
 
 class ListApiKeysResponse(_messages.Message):
-  """Response message for `ListApiKeys` method.
+  r"""Response message for `ListApiKeys` method.
 
   Fields:
     keys: A list of API keys.
@@ -354,7 +354,7 @@ class ListApiKeysResponse(_messages.Message):
 
 
 class ListDeletedApiKeysResponse(_messages.Message):
-  """Response message for `ListDeletedApiKeys` method.
+  r"""Response message for `ListDeletedApiKeys` method.
 
   Fields:
     keys: A list of deleted API keys.
@@ -366,7 +366,7 @@ class ListDeletedApiKeysResponse(_messages.Message):
 
 
 class ServerKeyDetails(_messages.Message):
-  """Key details that are specific to server keys.
+  r"""Key details that are specific to server keys.
 
   Fields:
     allowedIps: A list of the caller IP addresses that are allowed when making
@@ -377,7 +377,7 @@ class ServerKeyDetails(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -406,7 +406,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -418,7 +418,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format

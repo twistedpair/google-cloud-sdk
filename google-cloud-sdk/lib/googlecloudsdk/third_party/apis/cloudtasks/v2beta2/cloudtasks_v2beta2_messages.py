@@ -14,7 +14,7 @@ package = 'cloudtasks'
 
 
 class AcknowledgeTaskRequest(_messages.Message):
-  """Request message for acknowledging a task using AcknowledgeTask.
+  r"""Request message for acknowledging a task using AcknowledgeTask.
 
   Fields:
     scheduleTime: Required.  The task's current schedule time, available in
@@ -27,7 +27,7 @@ class AcknowledgeTaskRequest(_messages.Message):
 
 
 class AppEngineHttpRequest(_messages.Message):
-  """App Engine HTTP request.  The message defines the HTTP request that is
+  r"""App Engine HTTP request.  The message defines the HTTP request that is
   sent to an App Engine app when the task is dispatched.  This proto can only
   be used for tasks in a queue which has app_engine_http_target set.  Using
   AppEngineHttpRequest requires [`appengine.applications.get`](/appengine/docs
@@ -143,10 +143,10 @@ class AppEngineHttpRequest(_messages.Message):
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
-    """The HTTP method to use for the request. The default is POST.  The app's
-    request handler for the task's target URL must be able to handle HTTP
-    requests with this http_method, otherwise the task attempt will fail with
-    error code 405 (Method Not Allowed). See [Writing a push task request
+    r"""The HTTP method to use for the request. The default is POST.  The
+    app's request handler for the task's target URL must be able to handle
+    HTTP requests with this http_method, otherwise the task attempt will fail
+    with error code 405 (Method Not Allowed). See [Writing a push task request
     handler](/appengine/docs/java/taskqueue/push/creating-
     handlers#writing_a_push_task_request_handler) and the documentation for
     the request handlers in the language your app is written in e.g. [Python
@@ -169,7 +169,7 @@ class AppEngineHttpRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
-    """HTTP request headers.  This map contains the header field names and
+    r"""HTTP request headers.  This map contains the header field names and
     values. Headers can be set when the [task is
     created](google.cloud.tasks.v2beta2.CloudTasks.CreateTask). Repeated
     headers are not supported but a header value can contain commas.  Cloud
@@ -204,7 +204,7 @@ class AppEngineHttpRequest(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a HeadersValue object.
+      r"""An additional property for a HeadersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -224,7 +224,7 @@ class AppEngineHttpRequest(_messages.Message):
 
 
 class AppEngineHttpTarget(_messages.Message):
-  """App Engine HTTP target.  The task will be delivered to the App Engine
+  r"""App Engine HTTP target.  The task will be delivered to the App Engine
   application hostname specified by its AppEngineHttpTarget and
   AppEngineHttpRequest. The documentation for AppEngineHttpRequest explains
   how the task's host URL is constructed.  Using AppEngineHttpTarget requires
@@ -243,7 +243,7 @@ class AppEngineHttpTarget(_messages.Message):
 
 
 class AppEngineRouting(_messages.Message):
-  """App Engine Routing.  For more information about services, versions, and
+  r"""App Engine Routing.  For more information about services, versions, and
   instances see [An Overview of App Engine](/appengine/docs/python/an-
   overview-of-app-engine), [Microservices Architecture on Google App
   Engine](/appengine/docs/python/microservices-on-app-engine), [App Engine
@@ -312,7 +312,7 @@ class AppEngineRouting(_messages.Message):
 
 
 class AttemptStatus(_messages.Message):
-  """The status of a task attempt.
+  r"""The status of a task attempt.
 
   Fields:
     dispatchTime: Output only. The time that this attempt was dispatched.
@@ -333,7 +333,7 @@ class AttemptStatus(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -343,8 +343,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -358,7 +358,7 @@ class Binding(_messages.Message):
 
 
 class CancelLeaseRequest(_messages.Message):
-  """Request message for canceling a lease using CancelLease.
+  r"""Request message for canceling a lease using CancelLease.
 
   Enums:
     ResponseViewValueValuesEnum: The response_view specifies which subset of
@@ -384,7 +384,7 @@ class CancelLeaseRequest(_messages.Message):
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Task will be returned.
+    r"""The response_view specifies which subset of the Task will be returned.
     By default response_view is BASIC; not all information is retrieved by
     default because some data, such as payloads, might be desirable to return
     only when needed because of its large size or because of the sensitivity
@@ -412,7 +412,7 @@ class CancelLeaseRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsGetRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsGetRequest object.
+  r"""A CloudtasksProjectsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
@@ -422,7 +422,7 @@ class CloudtasksProjectsLocationsGetRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsListRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsListRequest object.
+  r"""A CloudtasksProjectsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -438,7 +438,7 @@ class CloudtasksProjectsLocationsListRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesCreateRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesCreateRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesCreateRequest object.
 
   Fields:
     parent: Required.  The location name in which the queue will be created.
@@ -453,7 +453,7 @@ class CloudtasksProjectsLocationsQueuesCreateRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesDeleteRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesDeleteRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesDeleteRequest object.
 
   Fields:
     name: Required.  The queue name. For example:
@@ -464,7 +464,7 @@ class CloudtasksProjectsLocationsQueuesDeleteRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesGetIamPolicyRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesGetIamPolicyRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -479,7 +479,7 @@ class CloudtasksProjectsLocationsQueuesGetIamPolicyRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesGetRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesGetRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesGetRequest object.
 
   Fields:
     name: Required.  The resource name of the queue. For example:
@@ -490,7 +490,7 @@ class CloudtasksProjectsLocationsQueuesGetRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesListRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesListRequest object.
 
   Fields:
     filter: `filter` can be used to specify a subset of queues. Any Queue
@@ -520,7 +520,7 @@ class CloudtasksProjectsLocationsQueuesListRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesPatchRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesPatchRequest object.
 
   Fields:
     name: The queue name.  The queue name must have the following format:
@@ -546,7 +546,7 @@ class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesPauseRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesPauseRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesPauseRequest object.
 
   Fields:
     name: Required.  The queue name. For example:
@@ -560,7 +560,7 @@ class CloudtasksProjectsLocationsQueuesPauseRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesPurgeRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesPurgeRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesPurgeRequest object.
 
   Fields:
     name: Required.  The queue name. For example:
@@ -574,7 +574,7 @@ class CloudtasksProjectsLocationsQueuesPurgeRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesResumeRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesResumeRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesResumeRequest object.
 
   Fields:
     name: Required.  The queue name. For example:
@@ -588,7 +588,7 @@ class CloudtasksProjectsLocationsQueuesResumeRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesSetIamPolicyRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesSetIamPolicyRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -603,7 +603,7 @@ class CloudtasksProjectsLocationsQueuesSetIamPolicyRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest object.
 
   Fields:
     acknowledgeTaskRequest: A AcknowledgeTaskRequest resource to be passed as
@@ -618,7 +618,7 @@ class CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest(_messages.Message
 
 
 class CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest object.
 
   Fields:
     cancelLeaseRequest: A CancelLeaseRequest resource to be passed as the
@@ -633,7 +633,7 @@ class CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest(_messages.Message
 
 
 class CloudtasksProjectsLocationsQueuesTasksCreateRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksCreateRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksCreateRequest object.
 
   Fields:
     createTaskRequest: A CreateTaskRequest resource to be passed as the
@@ -648,7 +648,7 @@ class CloudtasksProjectsLocationsQueuesTasksCreateRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesTasksDeleteRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksDeleteRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksDeleteRequest object.
 
   Fields:
     name: Required.  The task name. For example:
@@ -660,7 +660,7 @@ class CloudtasksProjectsLocationsQueuesTasksDeleteRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesTasksGetRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksGetRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksGetRequest object.
 
   Enums:
     ResponseViewValueValuesEnum: The response_view specifies which subset of
@@ -685,7 +685,7 @@ class CloudtasksProjectsLocationsQueuesTasksGetRequest(_messages.Message):
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Task will be returned.
+    r"""The response_view specifies which subset of the Task will be returned.
     By default response_view is BASIC; not all information is retrieved by
     default because some data, such as payloads, might be desirable to return
     only when needed because of its large size or because of the sensitivity
@@ -707,7 +707,7 @@ class CloudtasksProjectsLocationsQueuesTasksGetRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesTasksLeaseRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksLeaseRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksLeaseRequest object.
 
   Fields:
     leaseTasksRequest: A LeaseTasksRequest resource to be passed as the
@@ -721,7 +721,7 @@ class CloudtasksProjectsLocationsQueuesTasksLeaseRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksListRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksListRequest object.
 
   Enums:
     ResponseViewValueValuesEnum: The response_view specifies which subset of
@@ -759,7 +759,7 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Task will be returned.
+    r"""The response_view specifies which subset of the Task will be returned.
     By default response_view is BASIC; not all information is retrieved by
     default because some data, such as payloads, might be desirable to return
     only when needed because of its large size or because of the sensitivity
@@ -784,7 +784,7 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest object.
 
   Fields:
     name: Required.  The task name. For example:
@@ -799,7 +799,7 @@ class CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest(_messages.Message)
 
 
 class CloudtasksProjectsLocationsQueuesTasksRunRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTasksRunRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTasksRunRequest object.
 
   Fields:
     name: Required.  The task name. For example:
@@ -814,7 +814,7 @@ class CloudtasksProjectsLocationsQueuesTasksRunRequest(_messages.Message):
 
 
 class CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest(_messages.Message):
-  """A CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest object.
+  r"""A CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -829,7 +829,7 @@ class CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest(_messages.Messa
 
 
 class CreateTaskRequest(_messages.Message):
-  """Request message for CreateTask.
+  r"""Request message for CreateTask.
 
   Enums:
     ResponseViewValueValuesEnum: The response_view specifies which subset of
@@ -873,7 +873,7 @@ class CreateTaskRequest(_messages.Message):
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Task will be returned.
+    r"""The response_view specifies which subset of the Task will be returned.
     By default response_view is BASIC; not all information is retrieved by
     default because some data, such as payloads, might be desirable to return
     only when needed because of its large size or because of the sensitivity
@@ -901,7 +901,7 @@ class CreateTaskRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -911,11 +911,11 @@ class Empty(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  """Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method."""
 
 
 class LeaseTasksRequest(_messages.Message):
-  """Request message for leasing tasks using LeaseTasks.
+  r"""Request message for leasing tasks using LeaseTasks.
 
   Enums:
     ResponseViewValueValuesEnum: The response_view specifies which subset of
@@ -959,7 +959,7 @@ class LeaseTasksRequest(_messages.Message):
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Task will be returned.
+    r"""The response_view specifies which subset of the Task will be returned.
     By default response_view is BASIC; not all information is retrieved by
     default because some data, such as payloads, might be desirable to return
     only when needed because of its large size or because of the sensitivity
@@ -989,7 +989,7 @@ class LeaseTasksRequest(_messages.Message):
 
 
 class LeaseTasksResponse(_messages.Message):
-  """Response message for leasing tasks using LeaseTasks.
+  r"""Response message for leasing tasks using LeaseTasks.
 
   Fields:
     tasks: The leased tasks.
@@ -999,7 +999,7 @@ class LeaseTasksResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -1012,7 +1012,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListQueuesResponse(_messages.Message):
-  """Response message for ListQueues.
+  r"""Response message for ListQueues.
 
   Fields:
     nextPageToken: A token to retrieve next page of results.  To return the
@@ -1027,7 +1027,7 @@ class ListQueuesResponse(_messages.Message):
 
 
 class ListTasksResponse(_messages.Message):
-  """Response message for listing tasks using ListTasks.
+  r"""Response message for listing tasks using ListTasks.
 
   Fields:
     nextPageToken: A token to retrieve next page of results.  To return the
@@ -1041,7 +1041,7 @@ class ListTasksResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -1064,7 +1064,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -1075,7 +1075,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1089,7 +1089,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -1101,7 +1101,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1121,23 +1121,28 @@ class Location(_messages.Message):
 
 
 class PauseQueueRequest(_messages.Message):
-  """Request message for PauseQueue."""
+  r"""Request message for PauseQueue."""
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     bindings: Associates a list of `members` to a `role`. `bindings` with no
@@ -1160,7 +1165,7 @@ class Policy(_messages.Message):
 
 
 class PullMessage(_messages.Message):
-  """The pull message contains data that can be used by the caller of
+  r"""The pull message contains data that can be used by the caller of
   LeaseTasks to process the task.  This proto can only be used for tasks in a
   queue which has pull_target set.
 
@@ -1184,15 +1189,15 @@ class PullMessage(_messages.Message):
 
 
 class PullTarget(_messages.Message):
-  """Pull target."""
+  r"""Pull target."""
 
 
 class PurgeQueueRequest(_messages.Message):
-  """Request message for PurgeQueue."""
+  r"""Request message for PurgeQueue."""
 
 
 class Queue(_messages.Message):
-  """A queue is a container of related tasks. Queues are configured to manage
+  r"""A queue is a container of related tasks. Queues are configured to manage
   how those tasks are dispatched. Configurable properties include rate limits,
   retry options, target types, and others.
 
@@ -1249,7 +1254,7 @@ class Queue(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. The state of the queue.  `state` can only be changed by
+    r"""Output only. The state of the queue.  `state` can only be changed by
     called PauseQueue, ResumeQueue, or uploading
     [queue.yaml/xml](/appengine/docs/python/config/queueref). UpdateQueue
     cannot be used to change `state`.
@@ -1290,7 +1295,7 @@ class Queue(_messages.Message):
 
 
 class RateLimits(_messages.Message):
-  """Rate limits.  This message determines the maximum rate that tasks can be
+  r"""Rate limits.  This message determines the maximum rate that tasks can be
   dispatched by a queue, regardless of whether the dispatch is a first task
   attempt or a retry.
 
@@ -1341,7 +1346,7 @@ class RateLimits(_messages.Message):
 
 
 class RenewLeaseRequest(_messages.Message):
-  """Request message for renewing a lease using RenewLease.
+  r"""Request message for renewing a lease using RenewLease.
 
   Enums:
     ResponseViewValueValuesEnum: The response_view specifies which subset of
@@ -1370,7 +1375,7 @@ class RenewLeaseRequest(_messages.Message):
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Task will be returned.
+    r"""The response_view specifies which subset of the Task will be returned.
     By default response_view is BASIC; not all information is retrieved by
     default because some data, such as payloads, might be desirable to return
     only when needed because of its large size or because of the sensitivity
@@ -1399,11 +1404,11 @@ class RenewLeaseRequest(_messages.Message):
 
 
 class ResumeQueueRequest(_messages.Message):
-  """Request message for ResumeQueue."""
+  r"""Request message for ResumeQueue."""
 
 
 class RetryConfig(_messages.Message):
-  """Retry config.  These settings determine how a failed task attempt is
+  r"""Retry config.  These settings determine how a failed task attempt is
   retried.
 
   Fields:
@@ -1465,7 +1470,7 @@ class RetryConfig(_messages.Message):
 
 
 class RunTaskRequest(_messages.Message):
-  """Request message for forcing a task to run now using RunTask.
+  r"""Request message for forcing a task to run now using RunTask.
 
   Enums:
     ResponseViewValueValuesEnum: The response_view specifies which subset of
@@ -1487,7 +1492,7 @@ class RunTaskRequest(_messages.Message):
   """
 
   class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Task will be returned.
+    r"""The response_view specifies which subset of the Task will be returned.
     By default response_view is BASIC; not all information is retrieved by
     default because some data, such as payloads, might be desirable to return
     only when needed because of its large size or because of the sensitivity
@@ -1514,7 +1519,7 @@ class RunTaskRequest(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -1527,7 +1532,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -1556,7 +1561,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -1568,7 +1573,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -1594,7 +1599,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -1642,7 +1647,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1654,7 +1659,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1672,7 +1677,7 @@ class Status(_messages.Message):
 
 
 class Task(_messages.Message):
-  """A unit of scheduled work.
+  r"""A unit of scheduled work.
 
   Enums:
     ViewValueValuesEnum: Output only. The view specifies which subset of the
@@ -1714,7 +1719,7 @@ class Task(_messages.Message):
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    """Output only. The view specifies which subset of the Task has been
+    r"""Output only. The view specifies which subset of the Task has been
     returned.
 
     Values:
@@ -1742,7 +1747,7 @@ class Task(_messages.Message):
 
 
 class TaskStatus(_messages.Message):
-  """Status of the task.
+  r"""Status of the task.
 
   Fields:
     attemptDispatchCount: Output only. The number of attempts dispatched.
@@ -1767,7 +1772,7 @@ class TaskStatus(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1780,7 +1785,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the

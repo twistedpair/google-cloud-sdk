@@ -253,7 +253,7 @@ class Argument(object):
         is_positional=is_positional,
         type=util.ParseType(data.get('type')),
         choices=[util.Choice(d) for d in choices] if choices else None,
-        default=data.get('default'),
+        default=data.get('default', arg_utils.UNSPECIFIED),
         fallback=util.Hook.FromData(data, 'fallback'),
         processor=util.Hook.FromData(data, 'processor'),
         required=data.get('required', False),
@@ -265,9 +265,9 @@ class Argument(object):
   # pylint:disable=redefined-builtin, type param needs to match the schema.
   def __init__(self, api_field=None, arg_name=None, help_text=None,
                metavar=None, completer=None, is_positional=None, type=None,
-               choices=None, default=None, fallback=None, processor=None,
-               required=False, hidden=False, action=None, repeated=None,
-               generate=True):
+               choices=None, default=arg_utils.UNSPECIFIED, fallback=None,
+               processor=None, required=False, hidden=False, action=None,
+               repeated=None, generate=True):
     self.api_field = api_field
     self.arg_name = arg_name
     self.help_text = help_text

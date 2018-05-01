@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -188,7 +189,7 @@ def AddRequestedLinkCount(parser):
       """)
 
 
-def AddRequestedLinkCountForPatch(parser):
+def AddRequestedLinkCountForUpdate(parser):
   """Adds requestedLinkCount flag to the argparse.ArgumentParser."""
   parser.add_argument(
       '--requested-link-count',
@@ -235,7 +236,7 @@ def AddAdminEnabled(parser):
       """)
 
 
-def AddAdminEnabledForPatch(parser):
+def AddAdminEnabledForUpdate(parser):
   """Adds adminEnabled flag to the argparse.ArgumentParser."""
   admin_enabled_args = parser.add_mutually_exclusive_group()
   admin_enabled_args.add_argument(

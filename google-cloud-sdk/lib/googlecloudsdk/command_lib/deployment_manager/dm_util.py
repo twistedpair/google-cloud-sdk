@@ -13,8 +13,11 @@
 # limitations under the License.
 
 """Util functions for DM commands."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import base64
-import StringIO
+import binascii
+import io
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
@@ -34,7 +37,7 @@ def DecodeFingerprint(fingerprint):
   try:
     decoded_fingerprint = base64.urlsafe_b64decode(
         http_encoding.Encode(fingerprint))
-  except TypeError:
+  except (TypeError, binascii.Error):
     raise calliope_exceptions.InvalidArgumentException(
         '--fingerprint', 'fingerprint cannot be decoded.')
   return decoded_fingerprint
@@ -71,7 +74,7 @@ def RenderMessageAsYaml(message):
   Returns:
     A ready-to-print string representation of the message.
   """
-  output_message = StringIO.StringIO()
+  output_message = io.StringIO()
   resource_printer.Print(message, 'yaml', out=output_message)
   return output_message.getvalue()
 

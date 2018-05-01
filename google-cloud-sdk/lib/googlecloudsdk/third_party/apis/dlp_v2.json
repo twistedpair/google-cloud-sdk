@@ -316,6 +316,10 @@
         "wordList": {
           "description": "List of words or phrases to search for.",
           "$ref": "GooglePrivacyDlpV2WordList"
+        },
+        "cloudStoragePath": {
+          "description": "Newline-delimited file of words in Cloud Storage. Only a single file\nis accepted.",
+          "$ref": "GooglePrivacyDlpV2CloudStoragePath"
         }
       }
     },
@@ -330,6 +334,17 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2CloudStoragePath": {
+      "id": "GooglePrivacyDlpV2CloudStoragePath",
+      "description": "Message representing a path in Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "path": {
+          "description": "A url representing a file or path (no wildcards) in Cloud Storage.\nExample: gs:\/\/[BUCKET_NAME]\/dictionary.txt",
+          "type": "string"
         }
       }
     },
@@ -2284,6 +2299,10 @@
         "pubSub": {
           "description": "Publish a notification to a pubsub topic.",
           "$ref": "GooglePrivacyDlpV2PublishToPubSub"
+        },
+        "publishSummaryToCscc": {
+          "description": "Publish summary to Cloud Security Command Center (Alpha).",
+          "$ref": "GooglePrivacyDlpV2PublishSummaryToCscc"
         }
       }
     },
@@ -2337,6 +2356,13 @@
           "description": "Cloud Pub\/Sub topic to send notifications to. The topic must have given\npublishing access rights to the DLP API service account executing\nthe long running DlpJob sending the notifications.\nFormat is projects\/{project}\/topics\/{topic}.",
           "type": "string"
         }
+      }
+    },
+    "GooglePrivacyDlpV2PublishSummaryToCscc": {
+      "id": "GooglePrivacyDlpV2PublishSummaryToCscc",
+      "description": "Publish the result summary of a DlpJob to the Cloud Security\nCommand Center (CSCC Alpha).\nThis action is only available for projects which are parts of\nan organization and whitelisted for the alpha Cloud Security Command\nCenter.\nThe action will publish count of finding instances and their info types.\nThe summary of findings will be persisted in CSCC and are governed by CSCC\nservice-specific policy, see https:\/\/cloud.google.com\/terms\/service-terms\nOnly a single instance of this action can be specified.\nCompatible with: Inspect",
+      "type": "object",
+      "properties": {
       }
     },
     "GooglePrivacyDlpV2Trigger": {
@@ -2535,6 +2561,21 @@
           "items": {
             "$ref": "GooglePrivacyDlpV2FieldId"
           }
+        },
+        "entityId": {
+          "description": "Optional message indicating that multiple rows might be associated to a\nsingle individual. If the same entity_id is associated to multiple\nquasi-identifier tuples over distict rows, we consider the entire\ncollection of tuples as the composite quasi-identifier. This collection\nis a multiset: the order in which the different tuples appear in the\ndataset is ignored, but their frequency is taken into account.\n\nImportant note: a maximum of 1000 rows can be associated to a single\nentity ID. If more rows are associated with the same entity ID, some\nmight be ignored.",
+          "$ref": "GooglePrivacyDlpV2EntityId"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2EntityId": {
+      "id": "GooglePrivacyDlpV2EntityId",
+      "description": "An entity in a dataset is a field or set of fields that correspond to a\nsingle person. For example, in medical records the `EntityId` might be a\npatient identifier, or for financial records it might be an account\nidentifier. This message is used when generalizations or analysis must take\ninto account that multiple rows correspond to the same entity.",
+      "type": "object",
+      "properties": {
+        "field": {
+          "description": "Composite key indicating which field contains the entity identifier.",
+          "$ref": "GooglePrivacyDlpV2FieldId"
         }
       }
     },

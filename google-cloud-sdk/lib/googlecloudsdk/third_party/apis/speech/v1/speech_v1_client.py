@@ -49,7 +49,7 @@ class SpeechV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -88,7 +88,7 @@ service.
           }
 
     def Longrunningrecognize(self, request, global_params=None):
-      """Performs asynchronous speech recognition: receive results via the.
+      r"""Performs asynchronous speech recognition: receive results via the.
 google.longrunning.Operations interface. Returns either an
 `Operation.error` or an `Operation.response` which contains
 a `LongRunningRecognizeResponse` message.
@@ -117,7 +117,7 @@ a `LongRunningRecognizeResponse` message.
     )
 
     def Recognize(self, request, global_params=None):
-      """Performs synchronous speech recognition: receive results after all audio.
+      r"""Performs synchronous speech recognition: receive results after all audio.
 has been sent and processed.
 
       Args:

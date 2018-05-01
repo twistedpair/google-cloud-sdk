@@ -1,4 +1,4 @@
-# Copyright 2017 Google Inc. All Rights Reserved.
+# Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,39 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from __future__ import unicode_literals
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.category_manager import utils
+from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import resources
+from googlecloudsdk.core.credentials import http
+import six
+from six.moves import range  # pylint: disable=redefined-builtin
 
-DELETE_TAG_NAME_PATTERN = '{}/annotationTag'
+_MAX_ASSET_LIMIT = 1000000000
+_HEADERS = {'Content-Type': 'application/json'}
+_DELETE_TAG_NAME_PATTERN = '{}/annotationTag'
+_SEARCH_NAME_FORMAT = '{}assets:search?{}'
+_HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
+                      'Response content: {}')
+
+
+class MessageDecodeError(core_exceptions.Error):
+  """Error raised when a failure to decode a message occurs."""
+  pass
+
+
+def GetHeaders():
+  return _HEADERS
+
+
+def GetHttpErrorFormat():
+  return _HTTP_ERROR_FORMAT
+
+
+def GetDeleteTagNamePattern():
+  return _DELETE_TAG_NAME_PATTERN
 
 
 def ListAssetAnnotationTags(asset_resource):
@@ -73,8 +103,100 @@ def DeleteAnnotationTag(asset_resource, annotation_resource, sub_asset=None):
   messages = utils.GetMessagesModule()
   # Set url_escape=True because the resource name of the asset must be escaped.
   req = messages.CategorymanagerAssetsDeleteAnnotationTagRequest(
-      name=DELETE_TAG_NAME_PATTERN.format(
+      name=_DELETE_TAG_NAME_PATTERN.format(
           asset_resource.RelativeName(url_escape=True)),
       annotation=annotation_resource.RelativeName(),
       subAsset=sub_asset)
   return utils.GetClientInstance().assets.DeleteAnnotationTag(request=req)
+
+
+def SearchAssets(annotations, show_only_annotatable, match_child_annotations,
+                 query_filter, page_size, limit):
+  """Performs backend call to search for assets given a set of constraints.
+
+  Args:
+    annotations: Array of annotation strings of the annotations to be looked up.
+    show_only_annotatable: A boolean indicating whether or not to exclude
+      assets that are not annotatable.
+    match_child_annotations: A boolean value which if set to true
+    indicates that for any annotation with child annotations, also list assets
+      that are annotated by those child annotations.
+    query_filter: A filter string that includes additional predicates for assets
+    page_size: The request page size.
+    limit: The maximum number of assets returned.
+
+  Yields:
+    A generator of Asset objects matching the given set of constraints.
+
+  Raises:
+    HttpRequestFailError: An HTTP request error if backend call fails.
+    MessageDecodeError: An error indicating that the received server payload
+      could not be decoded into a valid response.
+
+  Notes:
+    This method is doing the HTTP request to search assets manually because the
+    generated python apitools API does not support '.' characters in the query
+    params, see b/31244944.
+
+    Furthermore, this method does not support multiple retries on failure. The
+    issue with implementing retries appears to be that using a generator saves
+    the function's state and prevents resetting the generator to enable the
+    function to be called again.
+  """
+  query_params = [
+      ('query.filter', query_filter),  # pylint: disable=ugly-g4-fix-formatting
+      ('query.annotatable_only', show_only_annotatable),
+      ('query.include_annotated_by_group', match_child_annotations),
+      ('pageSize', page_size),
+  ]
+
+  for annotation in annotations:
+    query_params.append(('query.annotations', annotation))
+
+  # Filter away query params which have not been specified.
+  query_params = [(k, v) for k, v in query_params if v is not None]
+  base_url = resources.GetApiBaseUrl(utils.API_NAME, utils.API_VERSION)
+
+  asset_limit = limit or _MAX_ASSET_LIMIT
+  page_size = asset_limit if page_size is None else min(page_size, asset_limit)
+
+  search_response_class = utils.GetMessagesModule().SearchAssetsResponse
+
+  while asset_limit > 0:
+    url = _SEARCH_NAME_FORMAT.format(
+        base_url, six.moves.urllib.parse.urlencode(query_params))
+    response, content = http.Http().request(uri=url, headers=_HEADERS)
+
+    status_code = response['status']
+    if status_code != '200':
+      msg = _HTTP_ERROR_FORMAT.format(status_code, content)
+      raise exceptions.HttpException(msg)
+
+    try:
+      search_response = encoding.JsonToMessage(search_response_class, content)
+    except ValueError as e:
+      err_msg = ('Failed receiving proper response from server, cannot'
+                 'parse received assets. Error details: ' + str(e))
+      raise MessageDecodeError(err_msg)
+
+    for asset in search_response.assets:
+      yield asset
+
+    next_token = getattr(search_response, 'nextPageToken', None)
+    if next_token is None:
+      return
+    _AddPageTokenQueryParam(query_params, next_token)
+
+    asset_limit -= len(search_response.assets)
+    page_size = min(page_size, asset_limit)
+
+
+def _AddPageTokenQueryParam(query_params, next_token):
+  """Add page token query param or replace previous token."""
+  page_token_query_param = ('pageToken', next_token)
+  for i in range(len(query_params)):
+    query_param, _ = query_params[i]
+    if query_param == 'pageToken':
+      query_params[i] = page_token_query_param
+      return
+  query_params.append(page_token_query_param)

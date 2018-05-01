@@ -14,7 +14,7 @@ package = 'cloudkms'
 
 
 class AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -47,7 +47,7 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -64,7 +64,7 @@ class AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -82,7 +82,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -92,8 +92,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -107,7 +107,7 @@ class Binding(_messages.Message):
 
 
 class CloudkmsProjectsLocationsGetRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsGetRequest object.
+  r"""A CloudkmsProjectsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
@@ -117,7 +117,7 @@ class CloudkmsProjectsLocationsGetRequest(_messages.Message):
 
 
 class CloudkmsProjectsLocationsKeyRingsCreateRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCreateRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCreateRequest object.
 
   Fields:
     keyRing: A KeyRing resource to be passed as the request body.
@@ -133,7 +133,7 @@ class CloudkmsProjectsLocationsKeyRingsCreateRequest(_messages.Message):
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest object.
 
   Fields:
     cryptoKey: A CryptoKey resource to be passed as the request body.
@@ -148,7 +148,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest(_messages.Message
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreateRequest(_messages.Message):
-  """A
+  r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreateRequest
   object.
 
@@ -164,7 +164,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreateRequest(
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroyRequest(_messages.Message):
-  """A
+  r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroyRequest
   object.
 
@@ -179,7 +179,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroyRequest
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest
   object.
 
   Fields:
@@ -190,7 +190,8 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest(_me
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest
+  r"""A
+  CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest
   object.
 
   Fields:
@@ -211,7 +212,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_m
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest(_messages.Message):
-  """A
+  r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest
   object.
 
@@ -230,7 +231,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest(_
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestoreRequest(_messages.Message):
-  """A
+  r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestoreRequest
   object.
 
@@ -245,7 +246,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsRestoreRequest
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysDecryptRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysDecryptRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysDecryptRequest object.
 
   Fields:
     decryptRequest: A DecryptRequest resource to be passed as the request
@@ -259,7 +260,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysDecryptRequest(_messages.Messag
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest object.
 
   Fields:
     encryptRequest: A EncryptRequest resource to be passed as the request
@@ -274,7 +275,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest(_messages.Messag
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -286,7 +287,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysGetIamPolicyRequest(_messages.M
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysGetRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysGetRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysGetRequest object.
 
   Fields:
     name: The name of the CryptoKey to get.
@@ -296,7 +297,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysGetRequest(_messages.Message):
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest object.
 
   Fields:
     pageSize: Optional limit on the number of CryptoKeys to include in the
@@ -315,7 +316,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest(_messages.Message):
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysPatchRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysPatchRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysPatchRequest object.
 
   Fields:
     cryptoKey: A CryptoKey resource to be passed as the request body.
@@ -330,7 +331,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysPatchRequest(_messages.Message)
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicyRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicyRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -345,7 +346,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysSetIamPolicyRequest(_messages.M
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissionsRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissionsRequest
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissionsRequest
   object.
 
   Fields:
@@ -361,7 +362,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysTestIamPermissionsRequest(_mess
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersionRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersionRequest
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersionRequest
   object.
 
   Fields:
@@ -376,7 +377,7 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersionRequest(_me
 
 
 class CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -388,7 +389,7 @@ class CloudkmsProjectsLocationsKeyRingsGetIamPolicyRequest(_messages.Message):
 
 
 class CloudkmsProjectsLocationsKeyRingsGetRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsGetRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsGetRequest object.
 
   Fields:
     name: The name of the KeyRing to get.
@@ -398,7 +399,7 @@ class CloudkmsProjectsLocationsKeyRingsGetRequest(_messages.Message):
 
 
 class CloudkmsProjectsLocationsKeyRingsListRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsListRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsListRequest object.
 
   Fields:
     pageSize: Optional limit on the number of KeyRings to include in the
@@ -417,7 +418,7 @@ class CloudkmsProjectsLocationsKeyRingsListRequest(_messages.Message):
 
 
 class CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -432,7 +433,7 @@ class CloudkmsProjectsLocationsKeyRingsSetIamPolicyRequest(_messages.Message):
 
 
 class CloudkmsProjectsLocationsKeyRingsTestIamPermissionsRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsKeyRingsTestIamPermissionsRequest object.
+  r"""A CloudkmsProjectsLocationsKeyRingsTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -447,7 +448,7 @@ class CloudkmsProjectsLocationsKeyRingsTestIamPermissionsRequest(_messages.Messa
 
 
 class CloudkmsProjectsLocationsListRequest(_messages.Message):
-  """A CloudkmsProjectsLocationsListRequest object.
+  r"""A CloudkmsProjectsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -463,7 +464,7 @@ class CloudkmsProjectsLocationsListRequest(_messages.Message):
 
 
 class CryptoKey(_messages.Message):
-  """A CryptoKey represents a logical key that can be used for cryptographic
+  r"""A CryptoKey represents a logical key that can be used for cryptographic
   operations.  A CryptoKey is made up of one or more versions, which represent
   the actual key material used in cryptographic operations.
 
@@ -498,8 +499,8 @@ class CryptoKey(_messages.Message):
   """
 
   class PurposeValueValuesEnum(_messages.Enum):
-    """The immutable purpose of this CryptoKey. Currently, the only acceptable
-    purpose is ENCRYPT_DECRYPT.
+    r"""The immutable purpose of this CryptoKey. Currently, the only
+    acceptable purpose is ENCRYPT_DECRYPT.
 
     Values:
       CRYPTO_KEY_PURPOSE_UNSPECIFIED: Not specified.
@@ -511,7 +512,7 @@ class CryptoKey(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Labels with user-defined metadata. For more information, see [Labeling
+    r"""Labels with user-defined metadata. For more information, see [Labeling
     Keys](/kms/docs/labeling-keys).
 
     Messages:
@@ -522,7 +523,7 @@ class CryptoKey(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -544,7 +545,7 @@ class CryptoKey(_messages.Message):
 
 
 class CryptoKeyVersion(_messages.Message):
-  """A CryptoKeyVersion represents an individual cryptographic key, and the
+  r"""A CryptoKeyVersion represents an individual cryptographic key, and the
   associated key material.  It can be used for cryptographic operations either
   directly, or via its parent CryptoKey, in which case the server will choose
   the appropriate version for the operation.  For security reasons, the raw
@@ -569,7 +570,7 @@ class CryptoKeyVersion(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """The current state of the CryptoKeyVersion.
+    r"""The current state of the CryptoKeyVersion.
 
     Values:
       CRYPTO_KEY_VERSION_STATE_UNSPECIFIED: Not specified.
@@ -596,7 +597,7 @@ class CryptoKeyVersion(_messages.Message):
 
 
 class DecryptRequest(_messages.Message):
-  """Request message for KeyManagementService.Decrypt.
+  r"""Request message for KeyManagementService.Decrypt.
 
   Fields:
     additionalAuthenticatedData: Optional data that must match the data
@@ -610,7 +611,7 @@ class DecryptRequest(_messages.Message):
 
 
 class DecryptResponse(_messages.Message):
-  """Response message for KeyManagementService.Decrypt.
+  r"""Response message for KeyManagementService.Decrypt.
 
   Fields:
     plaintext: The decrypted data originally supplied in
@@ -621,11 +622,11 @@ class DecryptResponse(_messages.Message):
 
 
 class DestroyCryptoKeyVersionRequest(_messages.Message):
-  """Request message for KeyManagementService.DestroyCryptoKeyVersion."""
+  r"""Request message for KeyManagementService.DestroyCryptoKeyVersion."""
 
 
 class EncryptRequest(_messages.Message):
-  """Request message for KeyManagementService.Encrypt.
+  r"""Request message for KeyManagementService.Encrypt.
 
   Fields:
     additionalAuthenticatedData: Optional data that, if specified, must also
@@ -640,7 +641,7 @@ class EncryptRequest(_messages.Message):
 
 
 class EncryptResponse(_messages.Message):
-  """Response message for KeyManagementService.Encrypt.
+  r"""Response message for KeyManagementService.Encrypt.
 
   Fields:
     ciphertext: The encrypted data.
@@ -652,7 +653,7 @@ class EncryptResponse(_messages.Message):
 
 
 class KeyRing(_messages.Message):
-  """A KeyRing is a toplevel logical grouping of CryptoKeys.
+  r"""A KeyRing is a toplevel logical grouping of CryptoKeys.
 
   Fields:
     createTime: Output only. The time at which this KeyRing was created.
@@ -665,7 +666,7 @@ class KeyRing(_messages.Message):
 
 
 class ListCryptoKeyVersionsResponse(_messages.Message):
-  """Response message for KeyManagementService.ListCryptoKeyVersions.
+  r"""Response message for KeyManagementService.ListCryptoKeyVersions.
 
   Fields:
     cryptoKeyVersions: The list of CryptoKeyVersions.
@@ -681,7 +682,7 @@ class ListCryptoKeyVersionsResponse(_messages.Message):
 
 
 class ListCryptoKeysResponse(_messages.Message):
-  """Response message for KeyManagementService.ListCryptoKeys.
+  r"""Response message for KeyManagementService.ListCryptoKeys.
 
   Fields:
     cryptoKeys: The list of CryptoKeys.
@@ -697,7 +698,7 @@ class ListCryptoKeysResponse(_messages.Message):
 
 
 class ListKeyRingsResponse(_messages.Message):
-  """Response message for KeyManagementService.ListKeyRings.
+  r"""Response message for KeyManagementService.ListKeyRings.
 
   Fields:
     keyRings: The list of KeyRings.
@@ -712,7 +713,7 @@ class ListKeyRingsResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -725,7 +726,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -748,7 +749,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -759,7 +760,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -773,7 +774,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -785,7 +786,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -805,19 +806,24 @@ class Location(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -842,11 +848,11 @@ class Policy(_messages.Message):
 
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):
-  """Request message for KeyManagementService.RestoreCryptoKeyVersion."""
+  r"""Request message for KeyManagementService.RestoreCryptoKeyVersion."""
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -864,7 +870,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -893,7 +899,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -905,7 +911,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -931,7 +937,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -944,7 +950,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -955,7 +961,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class UpdateCryptoKeyPrimaryVersionRequest(_messages.Message):
-  """Request message for KeyManagementService.UpdateCryptoKeyPrimaryVersion.
+  r"""Request message for KeyManagementService.UpdateCryptoKeyPrimaryVersion.
 
   Fields:
     cryptoKeyVersionId: The id of the child CryptoKeyVersion to use as

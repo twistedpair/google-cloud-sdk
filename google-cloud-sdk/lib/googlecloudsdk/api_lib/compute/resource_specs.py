@@ -12,14 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Annotates the resource types with extra information."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import collections
-import httplib
 
 from apitools.base.protorpclite import messages
 
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import property_selector
+import six
+import six.moves.http_client
 
 
 def _FirewallRulesToCell(firewall):
@@ -221,7 +224,7 @@ def FormatDescribeMachineTypeName(resources, com_path):
 def _OperationHttpStatusToCell(operation):
   """Returns the HTTP response code of the given operation."""
   if operation.get('status') == 'DONE':
-    return operation.get('httpErrorStatusCode') or httplib.OK
+    return operation.get('httpErrorStatusCode') or six.moves.http_client.OK
   else:
     return ''
 
@@ -1027,7 +1030,7 @@ def GetSpec(resource_type, message_classes, api_version):
 
   table_cols = []
   for name, action in spec.table_cols:
-    if isinstance(action, basestring):
+    if isinstance(action, six.string_types):
       table_cols.append((name, property_selector.PropertyGetter(action)))
     elif callable(action):
       table_cols.append((name, action))

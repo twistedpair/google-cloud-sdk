@@ -15,6 +15,7 @@
 """Flags and helpers for the compute related commands."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import functools
 import enum  # pylint: disable=unused-import, for pytype
 
@@ -778,6 +779,17 @@ def AddRegexArg(parser):
 def AddPolicyFileFlag(parser):
   parser.add_argument('policy_file', help="""\
       JSON or YAML file containing the IAM policy.""")
+
+
+def AddStorageLocationFlag(parser, resource):
+  parser.add_argument(
+      '--storage-location',
+      metavar='LOCATION',
+      help="""\
+      Google Cloud Storage location, either regional or multi-regional, where
+      {} content is to be stored. If absent, a nearby regional or
+      multi-regional location is chosen automatically.
+      """.format(resource))
 
 
 def RewriteFilter(args, message=None, frontend_fields=None):

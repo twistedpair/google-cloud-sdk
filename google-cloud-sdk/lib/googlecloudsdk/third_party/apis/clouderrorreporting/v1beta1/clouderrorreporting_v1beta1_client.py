@@ -51,7 +51,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists the specified events.
+      r"""Lists the specified events.
 
       Args:
         request: (ClouderrorreportingProjectsEventsListRequest) input message
@@ -78,7 +78,7 @@ class ClouderrorreportingV1beta1(base_api.BaseApiClient):
     )
 
     def Report(self, request, global_params=None):
-      """Report an individual error event.
+      r"""Report an individual error event.
 
 This endpoint accepts <strong>either</strong> an OAuth token,
 <strong>or</strong> an
@@ -122,7 +122,7 @@ a `key` parameter. For example:
           }
 
     def List(self, request, global_params=None):
-      """Lists the specified groups.
+      r"""Lists the specified groups.
 
       Args:
         request: (ClouderrorreportingProjectsGroupStatsListRequest) input message
@@ -159,7 +159,7 @@ a `key` parameter. For example:
           }
 
     def Get(self, request, global_params=None):
-      """Get the specified group.
+      r"""Get the specified group.
 
       Args:
         request: (ClouderrorreportingProjectsGroupsGetRequest) input message
@@ -186,7 +186,7 @@ a `key` parameter. For example:
     )
 
     def Update(self, request, global_params=None):
-      """Replace the data for the specified group.
+      r"""Replace the data for the specified group.
 Fails if the group does not exist.
 
       Args:
@@ -224,7 +224,7 @@ Fails if the group does not exist.
           }
 
     def DeleteEvents(self, request, global_params=None):
-      """Deletes all error events of a given project.
+      r"""Deletes all error events of a given project.
 
       Args:
         request: (ClouderrorreportingProjectsDeleteEventsRequest) input message

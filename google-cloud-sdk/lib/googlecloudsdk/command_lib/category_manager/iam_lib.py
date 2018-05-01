@@ -13,6 +13,8 @@
 # limitations under the License.
 """Commands for IAM related operations in Cloud Category Manager."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.category_manager import store
 from googlecloudsdk.api_lib.category_manager import utils
 from googlecloudsdk.command_lib.category_manager import util

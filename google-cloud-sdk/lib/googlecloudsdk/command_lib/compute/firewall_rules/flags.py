@@ -13,6 +13,8 @@
 # limitations under the License.
 """Flags and helpers for the compute firewall-rules commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
@@ -44,7 +46,7 @@ DEFAULT_LIST_FORMAT = """\
     )"""
 
 # Needs to be indented to show up correctly in help text
-LIST_WITH_ALL_FIELDS_FORMAT_ALPHA = """\
+LIST_WITH_ALL_FIELDS_FORMAT_BETA = """\
 table(
                     name,
                     network,
@@ -61,7 +63,7 @@ table(
                     disabled
                 )"""
 
-DEFAULT_LIST_FORMAT_ALPHA = """\
+DEFAULT_LIST_FORMAT_BETA = """\
     table(
       name,
       network.basename(),

@@ -27,7 +27,8 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_LOCATIONS = (
       'projects.locations',
@@ -36,7 +37,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_LOCATIONS_KEYRINGS = (
       'projects.locations.keyRings',
@@ -46,7 +48,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/keyRings/'
               '{keyRingsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS = (
       'projects.locations.keyRings.cryptoKeys',
@@ -56,7 +59,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/keyRings/'
               '{keyRingsId}/cryptoKeys/{cryptoKeysId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_LOCATIONS_KEYRINGS_CRYPTOKEYS_CRYPTOKEYVERSIONS = (
       'projects.locations.keyRings.cryptoKeys.cryptoKeyVersions',
@@ -67,11 +71,14 @@ class Collections(enum.Enum):
               '{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/'
               '{cryptoKeyVersionsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

@@ -14,6 +14,7 @@
 
 """Flags and helpers for the compute backend-buckets commands."""
 
+from __future__ import absolute_import
 from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base

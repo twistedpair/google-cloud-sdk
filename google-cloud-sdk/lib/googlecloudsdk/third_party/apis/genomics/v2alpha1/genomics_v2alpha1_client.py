@@ -51,7 +51,7 @@ class GenomicsV2alpha1(base_api.BaseApiClient):
           }
 
     def Run(self, request, global_params=None):
-      """Runs a pipeline.
+      r"""Runs a pipeline.
 
 **Note:** In order to use this method, the Genomics Service Agent
 must have access to your project.  This is done automatically when the
@@ -96,7 +96,7 @@ Service Agent the required permissions.
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation.
 
       Args:
         request: (GenomicsProjectsOperationsCancelRequest) input message
@@ -123,7 +123,7 @@ Service Agent the required permissions.
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.  Clients can use this.
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
 method to poll the operation result at intervals as recommended by the API
 service.
 
@@ -152,7 +152,7 @@ service.
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request.
+      r"""Lists operations that match the specified filter in the request.
 
       Args:
         request: (GenomicsProjectsOperationsListRequest) input message
@@ -199,7 +199,7 @@ service.
           }
 
     def CheckIn(self, request, global_params=None):
-      """The worker uses this method to retrieve the assigned operation and.
+      r"""The worker uses this method to retrieve the assigned operation and.
 provide periodic status updates.
 
       Args:

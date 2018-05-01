@@ -14,6 +14,9 @@
 """Code that's shared between multiple networks subcommands."""
 
 
+from __future__ import unicode_literals
+
+
 def GetSubnetMode(network):
   """Returns the subnet mode of the input network."""
   if network.get('IPv4Range') is not None:

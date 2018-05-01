@@ -52,7 +52,7 @@ class CloudbillingV1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists the projects associated with a billing account. The current.
+      r"""Lists the projects associated with a billing account. The current.
 authenticated user must have the `billing.resourceAssociations.list` IAM
 permission, which is often given to billing account
 [viewers](https://cloud.google.com/billing/docs/how-to/billing-access).
@@ -92,7 +92,7 @@ permission, which is often given to billing account
           }
 
     def Create(self, request, global_params=None):
-      """Creates a billing account.
+      r"""Creates a billing account.
 This method can only be used to create
 [billing subaccounts](https://cloud.google.com/billing/docs/concepts)
 for GCP resellers.
@@ -128,7 +128,7 @@ typically given to billing account
     )
 
     def Get(self, request, global_params=None):
-      """Gets information about a billing account. The current authenticated user.
+      r"""Gets information about a billing account. The current authenticated user.
 must be a [viewer of the billing
 account](https://cloud.google.com/billing/docs/how-to/billing-access).
 
@@ -157,7 +157,7 @@ account](https://cloud.google.com/billing/docs/how-to/billing-access).
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a billing account.
+      r"""Gets the access control policy for a billing account.
 The caller must have the `billing.accounts.getIamPolicy` permission on the
 account, which is often given to billing account
 [viewers](https://cloud.google.com/billing/docs/how-to/billing-access).
@@ -190,7 +190,7 @@ account, which is often given to billing account
     )
 
     def List(self, request, global_params=None):
-      """Lists the billing accounts that the current authenticated user has.
+      r"""Lists the billing accounts that the current authenticated user has.
 permission to [view](https://cloud.google.com/billing/docs/how-to/billing-access).
 
       Args:
@@ -217,7 +217,7 @@ permission to [view](https://cloud.google.com/billing/docs/how-to/billing-access
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a billing account's fields.
+      r"""Updates a billing account's fields.
 Currently the only field that can be edited is `display_name`.
 The current authenticated user must have the `billing.accounts.update`
 IAM permission, which is typically given to the
@@ -252,7 +252,7 @@ of the billing account.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy for a billing account. Replaces any existing.
+      r"""Sets the access control policy for a billing account. Replaces any existing.
 policy.
 The caller must have the `billing.accounts.setIamPolicy` permission on the
 account, which is often given to billing account
@@ -286,7 +286,7 @@ account, which is often given to billing account
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Tests the access control policy for a billing account. This method takes.
+      r"""Tests the access control policy for a billing account. This method takes.
 the resource and a set of permissions as input and returns the subset of
 the input permissions that the caller is allowed for that resource.
 
@@ -328,7 +328,7 @@ the input permissions that the caller is allowed for that resource.
           }
 
     def GetBillingInfo(self, request, global_params=None):
-      """Gets the billing information for a project. The current authenticated user.
+      r"""Gets the billing information for a project. The current authenticated user.
 must have [permission to view the
 project](https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo
 ).
@@ -358,7 +358,7 @@ project](https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo
     )
 
     def UpdateBillingInfo(self, request, global_params=None):
-      """Sets or updates the billing account associated with a project. You specify.
+      r"""Sets or updates the billing account associated with a project. You specify.
 the new billing account by setting the `billing_account_name` in the
 `ProjectBillingInfo` resource to the resource name of a billing account.
 Associating a project with an open billing account enables billing on the
@@ -425,7 +425,7 @@ disable billing, you should always call this method with the name of an
           }
 
     def List(self, request, global_params=None):
-      """Lists all publicly available SKUs for a given cloud service.
+      r"""Lists all publicly available SKUs for a given cloud service.
 
       Args:
         request: (CloudbillingServicesSkusListRequest) input message
@@ -462,7 +462,7 @@ disable billing, you should always call this method with the name of an
           }
 
     def List(self, request, global_params=None):
-      """Lists all public cloud services.
+      r"""Lists all public cloud services.
 
       Args:
         request: (CloudbillingServicesListRequest) input message

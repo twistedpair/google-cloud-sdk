@@ -13,9 +13,11 @@
 # limitations under the License.
 """Utility functions for create command."""
 
+from __future__ import absolute_import
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import properties
+from six.moves import range  # pylint: disable=redefined-builtin
 
 
 def ParseRegionDisksResources(resources, disks, replica_zones, project,
@@ -131,7 +133,7 @@ def _DeduceRegionInProject(resources, current_project, disk_resource,
           'Zone [{}] lives in different project than disk [{}].'.format(
               str(zone.SelfLink()), str(disk_resource.SelfLink())))
   # check if all zones live in the same region
-  for i in xrange(len(current_zones) - 1):
+  for i in range(len(current_zones) - 1):
     if (utils.ZoneNameToRegionName(current_zones[i].zone) !=
         utils.ZoneNameToRegionName(current_zones[i + 1].zone)):
       raise exceptions.InvalidArgumentException('--replica-zones', (

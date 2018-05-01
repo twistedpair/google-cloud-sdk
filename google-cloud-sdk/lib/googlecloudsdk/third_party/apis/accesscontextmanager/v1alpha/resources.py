@@ -30,7 +30,8 @@ class Collections(enum.Enum):
           '':
               'accessPolicies/{accessPoliciesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   ACCESSPOLICIES_ACCESSLEVELS = (
       'accessPolicies.accessLevels',
@@ -40,7 +41,8 @@ class Collections(enum.Enum):
               'accessPolicies/{accessPoliciesId}/accessLevels/'
               '{accessLevelsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   ACCESSPOLICIES_ACCESSZONES = (
       'accessPolicies.accessZones',
@@ -49,7 +51,8 @@ class Collections(enum.Enum):
           '':
               'accessPolicies/{accessPoliciesId}/accessZones/{accessZonesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   OPERATIONS = (
       'operations',
@@ -58,11 +61,14 @@ class Collections(enum.Enum):
           '':
               'operations/{operationsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

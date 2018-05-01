@@ -27,7 +27,8 @@ class Collections(enum.Enum):
       'projects',
       'projects/{projectsId}',
       {},
-      [u'projectsId']
+      [u'projectsId'],
+      True
   )
   PROJECTS_ALERTPOLICIES = (
       'projects.alertPolicies',
@@ -36,14 +37,16 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/alertPolicies/{alertPoliciesId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_ALERTPOLICIES_CONDITIONS = (
       'projects.alertPolicies.conditions',
       'projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/'
       '{conditionsId}',
       {},
-      [u'projectsId', u'alertPoliciesId', u'conditionsId']
+      [u'projectsId', u'alertPoliciesId', u'conditionsId'],
+      True
   )
   PROJECTS_GROUPS = (
       'projects.groups',
@@ -52,7 +55,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/groups/{groupsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_METRICDESCRIPTORS = (
       'projects.metricDescriptors',
@@ -61,7 +65,8 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/metricDescriptors/{metricDescriptorsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_MONITOREDRESOURCEDESCRIPTORS = (
       'projects.monitoredResourceDescriptors',
@@ -71,7 +76,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/monitoredResourceDescriptors/'
               '{monitoredResourceDescriptorsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_NOTIFICATIONCHANNELDESCRIPTORS = (
       'projects.notificationChannelDescriptors',
@@ -81,7 +87,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/notificationChannelDescriptors/'
               '{notificationChannelDescriptorsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_NOTIFICATIONCHANNELS = (
       'projects.notificationChannels',
@@ -91,7 +98,8 @@ class Collections(enum.Enum):
               'projects/{projectsId}/notificationChannels/'
               '{notificationChannelsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
   PROJECTS_UPTIMECHECKCONFIGS = (
       'projects.uptimeCheckConfigs',
@@ -101,11 +109,14 @@ class Collections(enum.Enum):
               'projects/{projectsId}/uptimeCheckConfigs/'
               '{uptimeCheckConfigsId}',
       },
-      [u'name']
+      [u'name'],
+      True
   )
 
-  def __init__(self, collection_name, path, flat_paths, params):
+  def __init__(self, collection_name, path, flat_paths, params,
+               enable_uri_parsing):
     self.collection_name = collection_name
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing

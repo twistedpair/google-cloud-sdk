@@ -1,0 +1,73 @@
+# Copyright 2018 Google Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+  info_type:
+    api_field: googlePrivacyDlpV2InspectContentRequest.inspectConfig.infoTypes
+    metavar: 'infotype'
+    arg_name: info-types
+    type: googlecloudsdk.command_lib.dlp.hooks:InfoType
+    required: True
+    help_text: |
+      Which infoTypes to look for. The values must correspond to
+      InfoType values found in documentation. For more information about
+      valid infoTypes, see
+      [InfoTypes Reference](https://cloud.google.com/dlp/docs/infotypes-reference)
+
+  min_likelihood:
+    api_field: googlePrivacyDlpV2InspectContentRequest.inspectConfig.minLikelihood
+    arg_name: min-likelihood
+    default: possible
+    help_text: |
+      Only return findings equal to or above this threshold. One of:
+      `very-unlikely`, `unlikely`, `possible`, `likely`, `very-likely`.
+      The default value is `possible`.
+    choices:
+      - arg_value: very-unlikely
+        enum_value: VERY_UNLIKELY
+      - arg_value: unlikely
+        enum_value: UNLIKELY
+      - arg_value: possible
+        enum_value: POSSIBLE
+      - arg_value: likely
+        enum_value: LIKELY
+      - arg_value: very-likely
+        enum_value: VERY_LIKELY
+
+  include_quote:
+    api_field: googlePrivacyDlpV2InspectContentRequest.inspectConfig.includeQuote
+    arg_name: include-quote
+    type: bool
+    default: False
+    help_text: |
+      If True, the server will attempt to filter out profanities, replacing
+      all but the initial character in each filtered word with asterisks,
+      e.g. \"f***\".
+
+  exclude_info_types:
+    api_field: googlePrivacyDlpV2InspectContentRequest.inspectConfig.excludeInfoTypes
+    arg_name: exclude-info-types
+    type: bool
+    default: False
+    help_text: |
+      Whether or not to exclude type information of the findings.
+      Type information is included by default.
+
+  max_findings:
+    api_field: googlePrivacyDlpV2InspectContentRequest.inspectConfig.limits.maxFindingsPerRequest
+    arg_name: max-findings
+    type: int
+    default: 1000
+    help_text: |
+      Maximum number of findings that will be returned per execution.
+
+      If not specified, will return up to the system maximum of 1000 findings.

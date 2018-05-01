@@ -113,6 +113,7 @@ class APICollection(object):
     self.detailed_params = collection_info.GetParams('')
     self.path = collection_info.path
     self.params = collection_info.params
+    self.enable_uri_parsing = collection_info.enable_uri_parsing
 
 
 class APIMethod(object):

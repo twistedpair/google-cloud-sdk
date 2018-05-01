@@ -728,7 +728,7 @@
                     "$ref": "RunJobRequest"
                   },
                   "response": {
-                    "$ref": "Empty"
+                    "$ref": "Job"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"

@@ -307,11 +307,11 @@
           "type": "string"
         },
         "host": {
-          "description": "Output only. Hostname or IP address of the exposed redis endpoint used by\nclients to connect to the service.",
+          "description": "Output only. Hostname or IP address of the exposed Redis endpoint used by\nclients to connect to the service.",
           "type": "string"
         },
         "port": {
-          "description": "Output only. The port number of the exposed redis endpoint.",
+          "description": "Output only. The port number of the exposed Redis endpoint.",
           "type": "integer",
           "format": "int32"
         },

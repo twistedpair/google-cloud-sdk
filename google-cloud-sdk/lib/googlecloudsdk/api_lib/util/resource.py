@@ -40,7 +40,7 @@ class CollectionInfo(object):
   """
 
   def __init__(self, api_name, api_version, base_url, docs_url, name,
-               path, flat_paths, params):
+               path, flat_paths, params, enable_uri_parsing=True):
     self.api_name = api_name
     self.api_version = api_version
     self.base_url = base_url
@@ -49,6 +49,7 @@ class CollectionInfo(object):
     self.path = path
     self.flat_paths = flat_paths
     self.params = params
+    self.enable_uri_parsing = enable_uri_parsing
 
   @property
   def full_name(self):

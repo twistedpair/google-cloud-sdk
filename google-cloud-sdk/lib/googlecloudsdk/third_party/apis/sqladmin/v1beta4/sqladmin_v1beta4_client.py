@@ -55,7 +55,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes the backup taken by a backup run.
+      r"""Deletes the backup taken by a backup run.
 
       Args:
         request: (SqlBackupRunsDeleteRequest) input message
@@ -81,7 +81,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves a resource containing information about a backup run.
+      r"""Retrieves a resource containing information about a backup run.
 
       Args:
         request: (SqlBackupRunsGetRequest) input message
@@ -107,7 +107,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a new backup run on demand. This method is applicable only to Second Generation instances.
+      r"""Creates a new backup run on demand. This method is applicable only to Second Generation instances.
 
       Args:
         request: (SqlBackupRunsInsertRequest) input message
@@ -133,7 +133,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the enqueued time.
+      r"""Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the enqueued time.
 
       Args:
         request: (SqlBackupRunsListRequest) input message
@@ -169,7 +169,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a database from a Cloud SQL instance.
+      r"""Deletes a database from a Cloud SQL instance.
 
       Args:
         request: (SqlDatabasesDeleteRequest) input message
@@ -195,7 +195,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves a resource containing information about a database inside a Cloud SQL instance.
+      r"""Retrieves a resource containing information about a database inside a Cloud SQL instance.
 
       Args:
         request: (SqlDatabasesGetRequest) input message
@@ -221,7 +221,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Inserts a resource containing information about a database inside a Cloud SQL instance.
+      r"""Inserts a resource containing information about a database inside a Cloud SQL instance.
 
       Args:
         request: (Database) input message
@@ -247,7 +247,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists databases in the specified Cloud SQL instance.
+      r"""Lists databases in the specified Cloud SQL instance.
 
       Args:
         request: (SqlDatabasesListRequest) input message
@@ -273,7 +273,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a resource containing information about a database inside a Cloud SQL instance. This method supports patch semantics.
+      r"""Updates a resource containing information about a database inside a Cloud SQL instance. This method supports patch semantics.
 
       Args:
         request: (SqlDatabasesPatchRequest) input message
@@ -299,7 +299,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates a resource containing information about a database inside a Cloud SQL instance.
+      r"""Updates a resource containing information about a database inside a Cloud SQL instance.
 
       Args:
         request: (SqlDatabasesUpdateRequest) input message
@@ -335,7 +335,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """List all available database flags for Google Cloud SQL instances.
+      r"""List all available database flags for Google Cloud SQL instances.
 
       Args:
         request: (SqlFlagsListRequest) input message
@@ -371,7 +371,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def AddServerCa(self, request, global_params=None):
-      """Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There can not be more than one CA version waiting to be rotated in.
+      r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There can not be more than one CA version waiting to be rotated in.
 
       Args:
         request: (SqlInstancesAddServerCaRequest) input message
@@ -397,7 +397,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Clone(self, request, global_params=None):
-      """Creates a Cloud SQL instance as a clone of the source instance. The API is not ready for Second Generation instances yet.
+      r"""Creates a Cloud SQL instance as a clone of the source instance. The API is not ready for Second Generation instances yet.
 
       Args:
         request: (SqlInstancesCloneRequest) input message
@@ -423,7 +423,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a Cloud SQL instance.
+      r"""Deletes a Cloud SQL instance.
 
       Args:
         request: (SqlInstancesDeleteRequest) input message
@@ -449,7 +449,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def DemoteMaster(self, request, global_params=None):
-      """Reserved for future use.
+      r"""Reserved for future use.
 
       Args:
         request: (SqlInstancesDemoteMasterRequest) input message
@@ -475,7 +475,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Export(self, request, global_params=None):
-      """Exports data from a Cloud SQL instance to a Google Cloud Storage bucket as a MySQL dump file.
+      r"""Exports data from a Cloud SQL instance to a Google Cloud Storage bucket as a MySQL dump file.
 
       Args:
         request: (SqlInstancesExportRequest) input message
@@ -501,7 +501,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Failover(self, request, global_params=None):
-      """Failover the instance to its failover replica instance.
+      r"""Failover the instance to its failover replica instance.
 
       Args:
         request: (SqlInstancesFailoverRequest) input message
@@ -527,7 +527,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves a resource containing information about a Cloud SQL instance.
+      r"""Retrieves a resource containing information about a Cloud SQL instance.
 
       Args:
         request: (SqlInstancesGetRequest) input message
@@ -553,7 +553,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      """Imports data into a Cloud SQL instance from a MySQL dump file in Google Cloud Storage.
+      r"""Imports data into a Cloud SQL instance from a MySQL dump file in Google Cloud Storage.
 
       Args:
         request: (SqlInstancesImportRequest) input message
@@ -579,7 +579,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a new Cloud SQL instance.
+      r"""Creates a new Cloud SQL instance.
 
       Args:
         request: (DatabaseInstance) input message
@@ -605,7 +605,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists instances under a given project in the alphabetical order of the instance name.
+      r"""Lists instances under a given project in the alphabetical order of the instance name.
 
       Args:
         request: (SqlInstancesListRequest) input message
@@ -631,7 +631,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def ListServerCas(self, request, global_params=None):
-      """Lists all of the trusted Certificate Authorities (CAs) for the specified instance. There can be up to three CAs listed: the CA that was used to sign the certificate that is currently in use, a CA that has been added but not yet used to sign a certificate, and a CA used to sign a certificate that has previously rotated out.
+      r"""Lists all of the trusted Certificate Authorities (CAs) for the specified instance. There can be up to three CAs listed: the CA that was used to sign the certificate that is currently in use, a CA that has been added but not yet used to sign a certificate, and a CA used to sign a certificate that has previously rotated out.
 
       Args:
         request: (SqlInstancesListServerCasRequest) input message
@@ -657,7 +657,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates settings of a Cloud SQL instance. Caution: This is not a partial update, so you must include values for all the settings that you want to retain. For partial updates, use patch.. This method supports patch semantics.
+      r"""Updates settings of a Cloud SQL instance. Caution: This is not a partial update, so you must include values for all the settings that you want to retain. For partial updates, use patch.. This method supports patch semantics.
 
       Args:
         request: (SqlInstancesPatchRequest) input message
@@ -683,7 +683,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def PromoteReplica(self, request, global_params=None):
-      """Promotes the read replica instance to be a stand-alone Cloud SQL instance.
+      r"""Promotes the read replica instance to be a stand-alone Cloud SQL instance.
 
       Args:
         request: (SqlInstancesPromoteReplicaRequest) input message
@@ -709,7 +709,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def ResetSslConfig(self, request, global_params=None):
-      """Deletes all client certificates and generates a new server SSL certificate for the instance. The changes will not take effect until the instance is restarted. Existing instances without a server certificate will need to call this once to set a server certificate.
+      r"""Deletes all client certificates and generates a new server SSL certificate for the instance. The changes will not take effect until the instance is restarted. Existing instances without a server certificate will need to call this once to set a server certificate.
 
       Args:
         request: (SqlInstancesResetSslConfigRequest) input message
@@ -735,7 +735,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Restart(self, request, global_params=None):
-      """Restarts a Cloud SQL instance.
+      r"""Restarts a Cloud SQL instance.
 
       Args:
         request: (SqlInstancesRestartRequest) input message
@@ -761,7 +761,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def RestoreBackup(self, request, global_params=None):
-      """Restores a backup of a Cloud SQL instance.
+      r"""Restores a backup of a Cloud SQL instance.
 
       Args:
         request: (SqlInstancesRestoreBackupRequest) input message
@@ -787,7 +787,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def RotateServerCa(self, request, global_params=None):
-      """Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method.
+      r"""Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method.
 
       Args:
         request: (SqlInstancesRotateServerCaRequest) input message
@@ -813,7 +813,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def StartReplica(self, request, global_params=None):
-      """Starts the replication in the read replica instance.
+      r"""Starts the replication in the read replica instance.
 
       Args:
         request: (SqlInstancesStartReplicaRequest) input message
@@ -839,7 +839,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def StopReplica(self, request, global_params=None):
-      """Stops the replication in the read replica instance.
+      r"""Stops the replication in the read replica instance.
 
       Args:
         request: (SqlInstancesStopReplicaRequest) input message
@@ -865,7 +865,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def TruncateLog(self, request, global_params=None):
-      """Truncate MySQL general and slow query log tables.
+      r"""Truncate MySQL general and slow query log tables.
 
       Args:
         request: (SqlInstancesTruncateLogRequest) input message
@@ -891,7 +891,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates settings of a Cloud SQL instance. Caution: This is not a partial update, so you must include values for all the settings that you want to retain. For partial updates, use patch.
+      r"""Updates settings of a Cloud SQL instance. Caution: This is not a partial update, so you must include values for all the settings that you want to retain. For partial updates, use patch.
 
       Args:
         request: (SqlInstancesUpdateRequest) input message
@@ -927,7 +927,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Retrieves an instance operation that has been performed on an instance.
+      r"""Retrieves an instance operation that has been performed on an instance.
 
       Args:
         request: (SqlOperationsGetRequest) input message
@@ -953,7 +953,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all instance operations that have been performed on the given Cloud SQL instance in the reverse chronological order of the start time.
+      r"""Lists all instance operations that have been performed on the given Cloud SQL instance in the reverse chronological order of the start time.
 
       Args:
         request: (SqlOperationsListRequest) input message
@@ -989,7 +989,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def CreateEphemeral(self, request, global_params=None):
-      """Generates a short-lived X509 certificate containing the provided public key and signed by a private key specific to the target instance. Users may use the certificate to authenticate as themselves when connecting to the database.
+      r"""Generates a short-lived X509 certificate containing the provided public key and signed by a private key specific to the target instance. Users may use the certificate to authenticate as themselves when connecting to the database.
 
       Args:
         request: (SqlSslCertsCreateEphemeralRequest) input message
@@ -1015,7 +1015,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the SSL certificate. The change will not take effect until the instance is restarted.
+      r"""Deletes the SSL certificate. The change will not take effect until the instance is restarted.
 
       Args:
         request: (SqlSslCertsDeleteRequest) input message
@@ -1041,7 +1041,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Retrieves a particular SSL certificate. Does not include the private key (required for usage). The private key must be saved from the response to initial creation.
+      r"""Retrieves a particular SSL certificate. Does not include the private key (required for usage). The private key must be saved from the response to initial creation.
 
       Args:
         request: (SqlSslCertsGetRequest) input message
@@ -1067,7 +1067,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates an SSL certificate and returns it along with the private key and server certificate authority. The new certificate will not be usable until the instance is restarted.
+      r"""Creates an SSL certificate and returns it along with the private key and server certificate authority. The new certificate will not be usable until the instance is restarted.
 
       Args:
         request: (SqlSslCertsInsertRequest) input message
@@ -1093,7 +1093,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all of the current SSL certificates for the instance.
+      r"""Lists all of the current SSL certificates for the instance.
 
       Args:
         request: (SqlSslCertsListRequest) input message
@@ -1129,7 +1129,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists all available service tiers for Google Cloud SQL, for example D1, D2. For related information, see Pricing.
+      r"""Lists all available service tiers for Google Cloud SQL, for example D1, D2. For related information, see Pricing.
 
       Args:
         request: (SqlTiersListRequest) input message
@@ -1165,7 +1165,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      """Deletes a user from a Cloud SQL instance.
+      r"""Deletes a user from a Cloud SQL instance.
 
       Args:
         request: (SqlUsersDeleteRequest) input message
@@ -1191,7 +1191,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      """Creates a new user in a Cloud SQL instance.
+      r"""Creates a new user in a Cloud SQL instance.
 
       Args:
         request: (User) input message
@@ -1217,7 +1217,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists users in the specified Cloud SQL instance.
+      r"""Lists users in the specified Cloud SQL instance.
 
       Args:
         request: (SqlUsersListRequest) input message
@@ -1243,7 +1243,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      """Updates an existing user in a Cloud SQL instance.
+      r"""Updates an existing user in a Cloud SQL instance.
 
       Args:
         request: (SqlUsersUpdateRequest) input message

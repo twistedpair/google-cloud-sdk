@@ -13,7 +13,7 @@ package = 'ml'
 
 
 class GoogleApiHttpBody(_messages.Message):
-  """Message that represents an arbitrary HTTP body. It should only be used
+  r"""Message that represents an arbitrary HTTP body. It should only be used
   for payload formats that can't be represented as JSON, such as raw binary or
   an HTML page.   This message can be used both in streaming and non-streaming
   API methods in the request as well as the response.  It can be used as a
@@ -45,7 +45,7 @@ class GoogleApiHttpBody(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ExtensionsValueListEntry(_messages.Message):
-    """A ExtensionsValueListEntry object.
+    r"""A ExtensionsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -57,7 +57,7 @@ class GoogleApiHttpBody(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ExtensionsValueListEntry object.
+      r"""An additional property for a ExtensionsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -75,7 +75,7 @@ class GoogleApiHttpBody(_messages.Message):
 
 
 class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
-  """Represents a hardware accelerator request config.
+  r"""Represents a hardware accelerator request config.
 
   Enums:
     TypeValueValuesEnum: The available types of accelerators.
@@ -86,7 +86,7 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    """The available types of accelerators.
+    r"""The available types of accelerators.
 
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: Unspecified accelerator type. Default to
@@ -103,7 +103,7 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
 
 
 class GoogleCloudMlV1AutoScaling(_messages.Message):
-  """Options for automatically scaling a model.
+  r"""Options for automatically scaling a model.
 
   Fields:
     minNodes: Optional. The minimum number of nodes to allocate for this
@@ -126,11 +126,11 @@ class GoogleCloudMlV1AutoScaling(_messages.Message):
 
 
 class GoogleCloudMlV1CancelJobRequest(_messages.Message):
-  """Request message for the CancelJob method."""
+  r"""Request message for the CancelJob method."""
 
 
 class GoogleCloudMlV1Capability(_messages.Message):
-  """A GoogleCloudMlV1Capability object.
+  r"""A GoogleCloudMlV1Capability object.
 
   Enums:
     AvailableAcceleratorsValueListEntryValuesEnum:
@@ -142,7 +142,7 @@ class GoogleCloudMlV1Capability(_messages.Message):
   """
 
   class AvailableAcceleratorsValueListEntryValuesEnum(_messages.Enum):
-    """AvailableAcceleratorsValueListEntryValuesEnum enum type.
+    r"""AvailableAcceleratorsValueListEntryValuesEnum enum type.
 
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: <no description>
@@ -154,7 +154,7 @@ class GoogleCloudMlV1Capability(_messages.Message):
     NVIDIA_TESLA_P100 = 2
 
   class TypeValueValuesEnum(_messages.Enum):
-    """TypeValueValuesEnum enum type.
+    r"""TypeValueValuesEnum enum type.
 
     Values:
       TYPE_UNSPECIFIED: <no description>
@@ -172,7 +172,7 @@ class GoogleCloudMlV1Capability(_messages.Message):
 
 
 class GoogleCloudMlV1Config(_messages.Message):
-  """A GoogleCloudMlV1Config object.
+  r"""A GoogleCloudMlV1Config object.
 
   Fields:
     tpuServiceAccount: The service account Cloud ML uses to run on TPU node.
@@ -182,7 +182,7 @@ class GoogleCloudMlV1Config(_messages.Message):
 
 
 class GoogleCloudMlV1GetConfigResponse(_messages.Message):
-  """Returns service account information associated with a project.
+  r"""Returns service account information associated with a project.
 
   Fields:
     config: A GoogleCloudMlV1Config attribute.
@@ -197,7 +197,7 @@ class GoogleCloudMlV1GetConfigResponse(_messages.Message):
 
 
 class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
-  """Represents the result of a single hyperparameter tuning trial from a
+  r"""Represents the result of a single hyperparameter tuning trial from a
   training job. The TrainingOutput object that is returned on successful
   completion of a training job with hyperparameter tuning includes a list of
   HyperparameterOutput objects, one for each successful trial.
@@ -216,7 +216,7 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HyperparametersValue(_messages.Message):
-    """The hyperparameters given to this trial.
+    r"""The hyperparameters given to this trial.
 
     Messages:
       AdditionalProperty: An additional property for a HyperparametersValue
@@ -227,7 +227,7 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a HyperparametersValue object.
+      r"""An additional property for a HyperparametersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -247,7 +247,7 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
 
 
 class GoogleCloudMlV1HyperparameterOutputHyperparameterMetric(_messages.Message):
-  """An observed value of a metric.
+  r"""An observed value of a metric.
 
   Fields:
     objectiveValue: The objective value at this training step.
@@ -259,7 +259,7 @@ class GoogleCloudMlV1HyperparameterOutputHyperparameterMetric(_messages.Message)
 
 
 class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
-  """Represents a set of hyperparameters to optimize.
+  r"""Represents a set of hyperparameters to optimize.
 
   Enums:
     AlgorithmValueValuesEnum: Optional. The search algorithm specified for the
@@ -298,7 +298,7 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
-    """Optional. The search algorithm specified for the hyperparameter tuning
+    r"""Optional. The search algorithm specified for the hyperparameter tuning
     job. Uses the default CloudML Engine hyperparameter tuning algorithm if
     unspecified.
 
@@ -315,7 +315,7 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
     RANDOM_SEARCH = 2
 
   class GoalValueValuesEnum(_messages.Enum):
-    """Required. The type of goal to use for tuning. Available types are
+    r"""Required. The type of goal to use for tuning. Available types are
     `MAXIMIZE` and `MINIMIZE`.  Defaults to `MAXIMIZE`.
 
     Values:
@@ -338,7 +338,7 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
 
 
 class GoogleCloudMlV1Job(_messages.Message):
-  """Represents a training or prediction job.
+  r"""Represents a training or prediction job.
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a job.
@@ -376,7 +376,7 @@ class GoogleCloudMlV1Job(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. The detailed state of a job.
+    r"""Output only. The detailed state of a job.
 
     Values:
       STATE_UNSPECIFIED: The job state is unspecified.
@@ -402,7 +402,7 @@ class GoogleCloudMlV1Job(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. One or more labels that you can add, to organize your jobs.
+    r"""Optional. One or more labels that you can add, to organize your jobs.
     Each label is a key-value pair, where both the key and the value are
     arbitrary strings that you supply. For more information, see the
     documentation on <a href="/ml-engine/docs/tensorflow/resource-
@@ -416,7 +416,7 @@ class GoogleCloudMlV1Job(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -443,7 +443,7 @@ class GoogleCloudMlV1Job(_messages.Message):
 
 
 class GoogleCloudMlV1ListJobsResponse(_messages.Message):
-  """Response message for the ListJobs method.
+  r"""Response message for the ListJobs method.
 
   Fields:
     jobs: The list of jobs.
@@ -456,7 +456,7 @@ class GoogleCloudMlV1ListJobsResponse(_messages.Message):
 
 
 class GoogleCloudMlV1ListLocationsResponse(_messages.Message):
-  """A GoogleCloudMlV1ListLocationsResponse object.
+  r"""A GoogleCloudMlV1ListLocationsResponse object.
 
   Fields:
     locations: Locations where at least one type of CMLE capability is
@@ -470,7 +470,7 @@ class GoogleCloudMlV1ListLocationsResponse(_messages.Message):
 
 
 class GoogleCloudMlV1ListModelsResponse(_messages.Message):
-  """Response message for the ListModels method.
+  r"""Response message for the ListModels method.
 
   Fields:
     models: The list of models.
@@ -483,7 +483,7 @@ class GoogleCloudMlV1ListModelsResponse(_messages.Message):
 
 
 class GoogleCloudMlV1ListVersionsResponse(_messages.Message):
-  """Response message for the ListVersions method.
+  r"""Response message for the ListVersions method.
 
   Fields:
     nextPageToken: Optional. Pass this token as the `page_token` field of the
@@ -496,7 +496,7 @@ class GoogleCloudMlV1ListVersionsResponse(_messages.Message):
 
 
 class GoogleCloudMlV1Location(_messages.Message):
-  """A GoogleCloudMlV1Location object.
+  r"""A GoogleCloudMlV1Location object.
 
   Fields:
     capabilities: Capabilities available in the location.
@@ -508,7 +508,7 @@ class GoogleCloudMlV1Location(_messages.Message):
 
 
 class GoogleCloudMlV1ManualScaling(_messages.Message):
-  """Options for manually scaling a model.
+  r"""Options for manually scaling a model.
 
   Fields:
     nodes: The number of nodes to allocate for this model. These nodes are
@@ -521,7 +521,7 @@ class GoogleCloudMlV1ManualScaling(_messages.Message):
 
 
 class GoogleCloudMlV1Model(_messages.Message):
-  """Represents a machine learning solution.  A model can have multiple
+  r"""Represents a machine learning solution.  A model can have multiple
   versions, each of which is a deployed, trained model ready to receive
   prediction requests. The model itself is just a container.
 
@@ -569,9 +569,9 @@ class GoogleCloudMlV1Model(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. One or more labels that you can add, to organize your models.
-    Each label is a key-value pair, where both the key and the value are
-    arbitrary strings that you supply. For more information, see the
+    r"""Optional. One or more labels that you can add, to organize your
+    models. Each label is a key-value pair, where both the key and the value
+    are arbitrary strings that you supply. For more information, see the
     documentation on <a href="/ml-engine/docs/tensorflow/resource-
     labels">using labels</a>.
 
@@ -583,7 +583,7 @@ class GoogleCloudMlV1Model(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -605,7 +605,7 @@ class GoogleCloudMlV1Model(_messages.Message):
 
 
 class GoogleCloudMlV1OperationMetadata(_messages.Message):
-  """Represents the metadata of the long-running operation.
+  r"""Represents the metadata of the long-running operation.
 
   Enums:
     OperationTypeValueValuesEnum: The operation type.
@@ -629,7 +629,7 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    """The operation type.
+    r"""The operation type.
 
     Values:
       OPERATION_TYPE_UNSPECIFIED: Unspecified operation type.
@@ -650,7 +650,7 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The user labels, inherited from the model or the model version being
+    r"""The user labels, inherited from the model or the model version being
     operated on.
 
     Messages:
@@ -661,7 +661,7 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -685,7 +685,7 @@ class GoogleCloudMlV1OperationMetadata(_messages.Message):
 
 
 class GoogleCloudMlV1ParameterSpec(_messages.Message):
-  """Represents a single hyperparameter to optimize.
+  r"""Represents a single hyperparameter to optimize.
 
   Enums:
     ScaleTypeValueValuesEnum: Optional. How the parameter should be scaled to
@@ -716,7 +716,7 @@ class GoogleCloudMlV1ParameterSpec(_messages.Message):
   """
 
   class ScaleTypeValueValuesEnum(_messages.Enum):
-    """Optional. How the parameter should be scaled to the hypercube. Leave
+    r"""Optional. How the parameter should be scaled to the hypercube. Leave
     unset for categorical parameters. Some kind of scaling is strongly
     recommended for real or integral parameters (e.g., `UNIT_LINEAR_SCALE`).
 
@@ -736,7 +736,7 @@ class GoogleCloudMlV1ParameterSpec(_messages.Message):
     UNIT_REVERSE_LOG_SCALE = 3
 
   class TypeValueValuesEnum(_messages.Enum):
-    """Required. The type of the parameter.
+    r"""Required. The type of the parameter.
 
     Values:
       PARAMETER_TYPE_UNSPECIFIED: You must specify a valid type. Using this
@@ -765,7 +765,7 @@ class GoogleCloudMlV1ParameterSpec(_messages.Message):
 
 
 class GoogleCloudMlV1PredictRequest(_messages.Message):
-  """Request for predictions to be issued against a trained model.
+  r"""Request for predictions to be issued against a trained model.
 
   Fields:
     httpBody:  Required. The prediction request body.
@@ -775,7 +775,7 @@ class GoogleCloudMlV1PredictRequest(_messages.Message):
 
 
 class GoogleCloudMlV1PredictionInput(_messages.Message):
-  """Represents input parameters for a prediction job.
+  r"""Represents input parameters for a prediction job.
 
   Enums:
     DataFormatValueValuesEnum: Required. The format of the input data files.
@@ -820,7 +820,7 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
   """
 
   class DataFormatValueValuesEnum(_messages.Enum):
-    """Required. The format of the input data files.
+    r"""Required. The format of the input data files.
 
     Values:
       DATA_FORMAT_UNSPECIFIED: Unspecified format.
@@ -852,7 +852,7 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
 
 
 class GoogleCloudMlV1PredictionOutput(_messages.Message):
-  """Represents results of a prediction job.
+  r"""Represents results of a prediction job.
 
   Fields:
     errorCount: The number of data instances which resulted in errors.
@@ -869,11 +869,11 @@ class GoogleCloudMlV1PredictionOutput(_messages.Message):
 
 
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
-  """Request message for the SetDefaultVersion request."""
+  r"""Request message for the SetDefaultVersion request."""
 
 
 class GoogleCloudMlV1TrainingInput(_messages.Message):
-  """Represents input parameters for a training job. When using the gcloud
+  r"""Represents input parameters for a training job. When using the gcloud
   command to submit your training job, you can specify the input parameters as
   command-line arguments and/or in a YAML configuration file referenced from
   the --config command-line argument. For details, see the guide to <a href
@@ -968,7 +968,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   """
 
   class ScaleTierValueValuesEnum(_messages.Enum):
-    """Required. Specifies the machine types, the number of replicas for
+    r"""Required. Specifies the machine types, the number of replicas for
     workers and parameter servers.
 
     Values:
@@ -1024,7 +1024,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):
-  """Represents results of a training job. Output only.
+  r"""Represents results of a training job. Output only.
 
   Fields:
     completedTrialCount: The number of hyperparameter tuning trials that
@@ -1043,7 +1043,7 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
 
 
 class GoogleCloudMlV1Version(_messages.Message):
-  """Represents a version of the model.  Each version is a trained model
+  r"""Represents a version of the model.  Each version is a trained model
   deployed in the cloud, ready to handle prediction requests. A model can have
   multiple versions. You can get information about all of the versions of a
   given model by calling [projects.models.versions.list](/ml-
@@ -1128,7 +1128,7 @@ class GoogleCloudMlV1Version(_messages.Message):
   """
 
   class FrameworkValueValuesEnum(_messages.Enum):
-    """Optional. The machine learning framework Cloud ML Engine uses to train
+    r"""Optional. The machine learning framework Cloud ML Engine uses to train
     this version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,
     and `XGBOOST`. If you do not specify a framework, Cloud ML Engine uses
     TensorFlow. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set
@@ -1146,7 +1146,7 @@ class GoogleCloudMlV1Version(_messages.Message):
     XGBOOST = 3
 
   class StateValueValuesEnum(_messages.Enum):
-    """Output only. The state of a version.
+    r"""Output only. The state of a version.
 
     Values:
       UNKNOWN: The version state is unspecified.
@@ -1172,7 +1172,7 @@ class GoogleCloudMlV1Version(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Optional. One or more labels that you can add, to organize your model
+    r"""Optional. One or more labels that you can add, to organize your model
     versions. Each label is a key-value pair, where both the key and the value
     are arbitrary strings that you supply. For more information, see the
     documentation on <a href="/ml-engine/docs/tensorflow/resource-
@@ -1186,7 +1186,7 @@ class GoogleCloudMlV1Version(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1217,7 +1217,7 @@ class GoogleCloudMlV1Version(_messages.Message):
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
-  """Specifies the audit configuration for a service. The configuration
+  r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
@@ -1250,7 +1250,7 @@ class GoogleIamV1AuditConfig(_messages.Message):
 
 
 class GoogleIamV1AuditLogConfig(_messages.Message):
-  """Provides the configuration for logging a type of permissions. Example:
+  r"""Provides the configuration for logging a type of permissions. Example:
   {       "audit_log_configs": [         {           "log_type": "DATA_READ",
   "exempted_members": [             "user:foo@gmail.com"           ]
   },         {           "log_type": "DATA_WRITE",         }       ]     }
@@ -1267,7 +1267,7 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
   """
 
   class LogTypeValueValuesEnum(_messages.Enum):
-    """The log type that this config enables.
+    r"""The log type that this config enables.
 
     Values:
       LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
@@ -1285,7 +1285,7 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
 
 
 class GoogleIamV1Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -1295,8 +1295,8 @@ class GoogleIamV1Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -1310,19 +1310,24 @@ class GoogleIamV1Binding(_messages.Message):
 
 
 class GoogleIamV1Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -1347,7 +1352,7 @@ class GoogleIamV1Policy(_messages.Message):
 
 
 class GoogleIamV1SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -1365,7 +1370,7 @@ class GoogleIamV1SetIamPolicyRequest(_messages.Message):
 
 
 class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1378,7 +1383,7 @@ class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
 
 
 class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -1389,7 +1394,7 @@ class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):
-  """The response message for Operations.ListOperations.
+  r"""The response message for Operations.ListOperations.
 
   Fields:
     nextPageToken: The standard List next-page token.
@@ -1402,8 +1407,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
 
 
 class GoogleLongrunningOperation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -1444,7 +1449,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -1458,7 +1463,7 @@ class GoogleLongrunningOperation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1472,7 +1477,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -1489,7 +1494,7 @@ class GoogleLongrunningOperation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -1509,7 +1514,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
 
 class GoogleProtobufEmpty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -1519,7 +1524,7 @@ class GoogleProtobufEmpty(_messages.Message):
 
 
 class GoogleRpcStatus(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -1567,7 +1572,7 @@ class GoogleRpcStatus(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -1579,7 +1584,7 @@ class GoogleRpcStatus(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1597,7 +1602,7 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class MlProjectsGetConfigRequest(_messages.Message):
-  """A MlProjectsGetConfigRequest object.
+  r"""A MlProjectsGetConfigRequest object.
 
   Fields:
     name: Required. The project name.
@@ -1607,7 +1612,7 @@ class MlProjectsGetConfigRequest(_messages.Message):
 
 
 class MlProjectsJobsCancelRequest(_messages.Message):
-  """A MlProjectsJobsCancelRequest object.
+  r"""A MlProjectsJobsCancelRequest object.
 
   Fields:
     googleCloudMlV1CancelJobRequest: A GoogleCloudMlV1CancelJobRequest
@@ -1620,7 +1625,7 @@ class MlProjectsJobsCancelRequest(_messages.Message):
 
 
 class MlProjectsJobsCreateRequest(_messages.Message):
-  """A MlProjectsJobsCreateRequest object.
+  r"""A MlProjectsJobsCreateRequest object.
 
   Fields:
     googleCloudMlV1Job: A GoogleCloudMlV1Job resource to be passed as the
@@ -1633,7 +1638,7 @@ class MlProjectsJobsCreateRequest(_messages.Message):
 
 
 class MlProjectsJobsGetIamPolicyRequest(_messages.Message):
-  """A MlProjectsJobsGetIamPolicyRequest object.
+  r"""A MlProjectsJobsGetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -1645,7 +1650,7 @@ class MlProjectsJobsGetIamPolicyRequest(_messages.Message):
 
 
 class MlProjectsJobsGetRequest(_messages.Message):
-  """A MlProjectsJobsGetRequest object.
+  r"""A MlProjectsJobsGetRequest object.
 
   Fields:
     name: Required. The name of the job to get the description of.
@@ -1655,7 +1660,7 @@ class MlProjectsJobsGetRequest(_messages.Message):
 
 
 class MlProjectsJobsListRequest(_messages.Message):
-  """A MlProjectsJobsListRequest object.
+  r"""A MlProjectsJobsListRequest object.
 
   Fields:
     filter: Optional. Specifies the subset of jobs to retrieve. You can filter
@@ -1683,7 +1688,7 @@ class MlProjectsJobsListRequest(_messages.Message):
 
 
 class MlProjectsJobsPatchRequest(_messages.Message):
-  """A MlProjectsJobsPatchRequest object.
+  r"""A MlProjectsJobsPatchRequest object.
 
   Fields:
     googleCloudMlV1Job: A GoogleCloudMlV1Job resource to be passed as the
@@ -1708,7 +1713,7 @@ class MlProjectsJobsPatchRequest(_messages.Message):
 
 
 class MlProjectsJobsSetIamPolicyRequest(_messages.Message):
-  """A MlProjectsJobsSetIamPolicyRequest object.
+  r"""A MlProjectsJobsSetIamPolicyRequest object.
 
   Fields:
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
@@ -1723,7 +1728,7 @@ class MlProjectsJobsSetIamPolicyRequest(_messages.Message):
 
 
 class MlProjectsJobsTestIamPermissionsRequest(_messages.Message):
-  """A MlProjectsJobsTestIamPermissionsRequest object.
+  r"""A MlProjectsJobsTestIamPermissionsRequest object.
 
   Fields:
     googleIamV1TestIamPermissionsRequest: A
@@ -1739,7 +1744,7 @@ class MlProjectsJobsTestIamPermissionsRequest(_messages.Message):
 
 
 class MlProjectsLocationsGetRequest(_messages.Message):
-  """A MlProjectsLocationsGetRequest object.
+  r"""A MlProjectsLocationsGetRequest object.
 
   Fields:
     name: Required. The name of the location.
@@ -1749,7 +1754,7 @@ class MlProjectsLocationsGetRequest(_messages.Message):
 
 
 class MlProjectsLocationsListRequest(_messages.Message):
-  """A MlProjectsLocationsListRequest object.
+  r"""A MlProjectsLocationsListRequest object.
 
   Fields:
     pageSize: Optional. The number of locations to retrieve per "page" of
@@ -1770,7 +1775,7 @@ class MlProjectsLocationsListRequest(_messages.Message):
 
 
 class MlProjectsModelsCreateRequest(_messages.Message):
-  """A MlProjectsModelsCreateRequest object.
+  r"""A MlProjectsModelsCreateRequest object.
 
   Fields:
     googleCloudMlV1Model: A GoogleCloudMlV1Model resource to be passed as the
@@ -1783,7 +1788,7 @@ class MlProjectsModelsCreateRequest(_messages.Message):
 
 
 class MlProjectsModelsDeleteRequest(_messages.Message):
-  """A MlProjectsModelsDeleteRequest object.
+  r"""A MlProjectsModelsDeleteRequest object.
 
   Fields:
     name: Required. The name of the model.
@@ -1793,7 +1798,7 @@ class MlProjectsModelsDeleteRequest(_messages.Message):
 
 
 class MlProjectsModelsGetIamPolicyRequest(_messages.Message):
-  """A MlProjectsModelsGetIamPolicyRequest object.
+  r"""A MlProjectsModelsGetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being requested.
@@ -1805,7 +1810,7 @@ class MlProjectsModelsGetIamPolicyRequest(_messages.Message):
 
 
 class MlProjectsModelsGetRequest(_messages.Message):
-  """A MlProjectsModelsGetRequest object.
+  r"""A MlProjectsModelsGetRequest object.
 
   Fields:
     name: Required. The name of the model.
@@ -1815,7 +1820,7 @@ class MlProjectsModelsGetRequest(_messages.Message):
 
 
 class MlProjectsModelsListRequest(_messages.Message):
-  """A MlProjectsModelsListRequest object.
+  r"""A MlProjectsModelsListRequest object.
 
   Fields:
     filter: Optional. Specifies the subset of models to retrieve.
@@ -1836,7 +1841,7 @@ class MlProjectsModelsListRequest(_messages.Message):
 
 
 class MlProjectsModelsPatchRequest(_messages.Message):
-  """A MlProjectsModelsPatchRequest object.
+  r"""A MlProjectsModelsPatchRequest object.
 
   Fields:
     googleCloudMlV1Model: A GoogleCloudMlV1Model resource to be passed as the
@@ -1858,7 +1863,7 @@ class MlProjectsModelsPatchRequest(_messages.Message):
 
 
 class MlProjectsModelsSetIamPolicyRequest(_messages.Message):
-  """A MlProjectsModelsSetIamPolicyRequest object.
+  r"""A MlProjectsModelsSetIamPolicyRequest object.
 
   Fields:
     googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
@@ -1873,7 +1878,7 @@ class MlProjectsModelsSetIamPolicyRequest(_messages.Message):
 
 
 class MlProjectsModelsTestIamPermissionsRequest(_messages.Message):
-  """A MlProjectsModelsTestIamPermissionsRequest object.
+  r"""A MlProjectsModelsTestIamPermissionsRequest object.
 
   Fields:
     googleIamV1TestIamPermissionsRequest: A
@@ -1889,7 +1894,7 @@ class MlProjectsModelsTestIamPermissionsRequest(_messages.Message):
 
 
 class MlProjectsModelsVersionsCreateRequest(_messages.Message):
-  """A MlProjectsModelsVersionsCreateRequest object.
+  r"""A MlProjectsModelsVersionsCreateRequest object.
 
   Fields:
     googleCloudMlV1Version: A GoogleCloudMlV1Version resource to be passed as
@@ -1902,7 +1907,7 @@ class MlProjectsModelsVersionsCreateRequest(_messages.Message):
 
 
 class MlProjectsModelsVersionsDeleteRequest(_messages.Message):
-  """A MlProjectsModelsVersionsDeleteRequest object.
+  r"""A MlProjectsModelsVersionsDeleteRequest object.
 
   Fields:
     name: Required. The name of the version. You can get the names of all the
@@ -1914,7 +1919,7 @@ class MlProjectsModelsVersionsDeleteRequest(_messages.Message):
 
 
 class MlProjectsModelsVersionsGetRequest(_messages.Message):
-  """A MlProjectsModelsVersionsGetRequest object.
+  r"""A MlProjectsModelsVersionsGetRequest object.
 
   Fields:
     name: Required. The name of the version.
@@ -1924,7 +1929,7 @@ class MlProjectsModelsVersionsGetRequest(_messages.Message):
 
 
 class MlProjectsModelsVersionsListRequest(_messages.Message):
-  """A MlProjectsModelsVersionsListRequest object.
+  r"""A MlProjectsModelsVersionsListRequest object.
 
   Fields:
     filter: Optional. Specifies the subset of versions to retrieve.
@@ -1945,7 +1950,7 @@ class MlProjectsModelsVersionsListRequest(_messages.Message):
 
 
 class MlProjectsModelsVersionsPatchRequest(_messages.Message):
-  """A MlProjectsModelsVersionsPatchRequest object.
+  r"""A MlProjectsModelsVersionsPatchRequest object.
 
   Fields:
     googleCloudMlV1Version: A GoogleCloudMlV1Version resource to be passed as
@@ -1965,7 +1970,7 @@ class MlProjectsModelsVersionsPatchRequest(_messages.Message):
 
 
 class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
-  """A MlProjectsModelsVersionsSetDefaultRequest object.
+  r"""A MlProjectsModelsVersionsSetDefaultRequest object.
 
   Fields:
     googleCloudMlV1SetDefaultVersionRequest: A
@@ -1982,7 +1987,7 @@ class MlProjectsModelsVersionsSetDefaultRequest(_messages.Message):
 
 
 class MlProjectsOperationsCancelRequest(_messages.Message):
-  """A MlProjectsOperationsCancelRequest object.
+  r"""A MlProjectsOperationsCancelRequest object.
 
   Fields:
     name: The name of the operation resource to be cancelled.
@@ -1992,7 +1997,7 @@ class MlProjectsOperationsCancelRequest(_messages.Message):
 
 
 class MlProjectsOperationsDeleteRequest(_messages.Message):
-  """A MlProjectsOperationsDeleteRequest object.
+  r"""A MlProjectsOperationsDeleteRequest object.
 
   Fields:
     name: The name of the operation resource to be deleted.
@@ -2002,7 +2007,7 @@ class MlProjectsOperationsDeleteRequest(_messages.Message):
 
 
 class MlProjectsOperationsGetRequest(_messages.Message):
-  """A MlProjectsOperationsGetRequest object.
+  r"""A MlProjectsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -2012,7 +2017,7 @@ class MlProjectsOperationsGetRequest(_messages.Message):
 
 
 class MlProjectsOperationsListRequest(_messages.Message):
-  """A MlProjectsOperationsListRequest object.
+  r"""A MlProjectsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -2028,7 +2033,7 @@ class MlProjectsOperationsListRequest(_messages.Message):
 
 
 class MlProjectsPredictRequest(_messages.Message):
-  """A MlProjectsPredictRequest object.
+  r"""A MlProjectsPredictRequest object.
 
   Fields:
     googleCloudMlV1PredictRequest: A GoogleCloudMlV1PredictRequest resource to
@@ -2042,7 +2047,7 @@ class MlProjectsPredictRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -2071,7 +2076,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -2083,7 +2088,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format

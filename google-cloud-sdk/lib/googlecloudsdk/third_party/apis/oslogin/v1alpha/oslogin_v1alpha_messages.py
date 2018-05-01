@@ -12,7 +12,7 @@ package = 'oslogin'
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -22,7 +22,7 @@ class Empty(_messages.Message):
 
 
 class ImportSshPublicKeyResponse(_messages.Message):
-  """A response message from importing an SSH public key.
+  r"""A response message from importing an SSH public key.
 
   Fields:
     loginProfile: The login profile information for the user.
@@ -32,7 +32,7 @@ class ImportSshPublicKeyResponse(_messages.Message):
 
 
 class LoginProfile(_messages.Message):
-  """The user profile information used for logging in to a virtual machine on
+  r"""The user profile information used for logging in to a virtual machine on
   Google Compute Engine.
 
   Messages:
@@ -48,7 +48,7 @@ class LoginProfile(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SshPublicKeysValue(_messages.Message):
-    """A map from SSH public key fingerprint to the associated key object.
+    r"""A map from SSH public key fingerprint to the associated key object.
 
     Messages:
       AdditionalProperty: An additional property for a SshPublicKeysValue
@@ -59,7 +59,7 @@ class LoginProfile(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a SshPublicKeysValue object.
+      r"""An additional property for a SshPublicKeysValue object.
 
       Fields:
         key: Name of the additional property.
@@ -77,7 +77,7 @@ class LoginProfile(_messages.Message):
 
 
 class OsloginUsersGetLoginProfileRequest(_messages.Message):
-  """A OsloginUsersGetLoginProfileRequest object.
+  r"""A OsloginUsersGetLoginProfileRequest object.
 
   Fields:
     name: The unique ID for the user in format `users/{user}`.
@@ -87,7 +87,7 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
 
 
 class OsloginUsersImportSshPublicKeyRequest(_messages.Message):
-  """A OsloginUsersImportSshPublicKeyRequest object.
+  r"""A OsloginUsersImportSshPublicKeyRequest object.
 
   Fields:
     parent: The unique ID for the user in format `users/{user}`.
@@ -101,7 +101,7 @@ class OsloginUsersImportSshPublicKeyRequest(_messages.Message):
 
 
 class OsloginUsersProjectsDeleteRequest(_messages.Message):
-  """A OsloginUsersProjectsDeleteRequest object.
+  r"""A OsloginUsersProjectsDeleteRequest object.
 
   Fields:
     name: A reference to the POSIX account to update. POSIX accounts are
@@ -113,7 +113,7 @@ class OsloginUsersProjectsDeleteRequest(_messages.Message):
 
 
 class OsloginUsersSshPublicKeysDeleteRequest(_messages.Message):
-  """A OsloginUsersSshPublicKeysDeleteRequest object.
+  r"""A OsloginUsersSshPublicKeysDeleteRequest object.
 
   Fields:
     name: The fingerprint of the public key to update. Public keys are
@@ -125,7 +125,7 @@ class OsloginUsersSshPublicKeysDeleteRequest(_messages.Message):
 
 
 class OsloginUsersSshPublicKeysGetRequest(_messages.Message):
-  """A OsloginUsersSshPublicKeysGetRequest object.
+  r"""A OsloginUsersSshPublicKeysGetRequest object.
 
   Fields:
     name: The fingerprint of the public key to retrieve. Public keys are
@@ -137,7 +137,7 @@ class OsloginUsersSshPublicKeysGetRequest(_messages.Message):
 
 
 class OsloginUsersSshPublicKeysPatchRequest(_messages.Message):
-  """A OsloginUsersSshPublicKeysPatchRequest object.
+  r"""A OsloginUsersSshPublicKeysPatchRequest object.
 
   Fields:
     name: The fingerprint of the public key to update. Public keys are
@@ -154,7 +154,7 @@ class OsloginUsersSshPublicKeysPatchRequest(_messages.Message):
 
 
 class PosixAccount(_messages.Message):
-  """The POSIX account information associated with a Google account.
+  r"""The POSIX account information associated with a Google account.
 
   Enums:
     OperatingSystemTypeValueValuesEnum: The operating system type where this
@@ -175,7 +175,7 @@ class PosixAccount(_messages.Message):
   """
 
   class OperatingSystemTypeValueValuesEnum(_messages.Enum):
-    """The operating system type where this account applies.
+    r"""The operating system type where this account applies.
 
     Values:
       OPERATING_SYSTEM_TYPE_UNSPECIFIED: The operating system type associated
@@ -200,7 +200,7 @@ class PosixAccount(_messages.Message):
 
 
 class SshPublicKey(_messages.Message):
-  """The SSH public key information associated with a Google account.
+  r"""The SSH public key information associated with a Google account.
 
   Fields:
     expirationTimeUsec: An expiration time in microseconds since epoch.
@@ -216,7 +216,7 @@ class SshPublicKey(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -245,7 +245,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -257,7 +257,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format

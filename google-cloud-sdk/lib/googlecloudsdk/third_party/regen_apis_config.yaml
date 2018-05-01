@@ -52,25 +52,32 @@ apis:
       discovery_doc: appengine_v1.json
       default: true
       resources:
-        projects: projects/{projectId}
+        projects:
+          path: projects/{projectId}
   bigtableadmin:
     v2:
       discovery_doc: bigtableadmin_v2.json
       resources:
-        projects: projects/{projectId}
+        projects:
+          path: projects/{projectId}
   bigtableclusteradmin:
     v1:
       discovery_doc: bigtableclusteradmin_v1.json
       resources:
-        operations: operations/{+operationId}
-        projects: projects/{projectId}
-        projects.zones: projects/{projectId}/zones/{zoneId}
-        projects.zones.clusters: projects/{projectId}/zones/{zoneId}/clusters/{clusterId}
+        operations:
+          path: operations/{+operationId}
+        projects:
+          path: projects/{projectId}
+        projects.zones:
+          path: projects/{projectId}/zones/{zoneId}
+        projects.zones.clusters:
+          path: projects/{projectId}/zones/{zoneId}/clusters/{clusterId}
   binaryauthorization:
     v1alpha1:
       discovery_doc: binaryauthorization_v1alpha1.json
       resources:
-        projects.policy: projects/{projectsId}/policy
+        projects.policy:
+          path: projects/{projectsId}/policy
   bio:
     v1:
       discovery_doc: bio_v1.json
@@ -79,21 +86,26 @@ apis:
     v1alpha1:
       discovery_doc: categorymanager_v1alpha1.json
       resources:
-         assets: "assets/{assetId}"
-         assets.tag: "assets/{assetId}/annotationTag"
+        assets:
+          path: assets/{assetId}
+        assets.tag:
+          path: assets/{assetId}/annotationTag
     v1alpha2:
       default: true
       discovery_doc: categorymanager_v1alpha2.json
       resources:
-         assets: "assets/{assetId}"
-         assets.tag: "assets/{assetId}/annotationTag"
+        assets:
+          path: assets/{assetId}
+        assets.tag:
+          path: assets/{assetId}/annotationTag
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
       unelidable_request_methods:
       - cloudbilling.projects.updateBillingInfo
       resources:
-        projects: projects/{projectsId}
+        projects:
+          path: projects/{projectsId}
   cloudbuild:
     v1:
       discovery_doc: cloudbuild_v1.json
@@ -108,23 +120,26 @@ apis:
     v1beta1:
       discovery_doc: clouderrorreporting_v1beta1.json
       resources:
-        projects: projects/{projectId}
+        projects:
+          path: projects/{projectId}
   cloudfunctions:
     v1:
       discovery_doc: cloudfunctions_v1.json
       default: true
       resources:
-        providers.event_types: providers/{triggerProvider}/eventTypes/{triggerEvent}
-        # For now, we only accept global buckets, but should give them to the
-        # EventTrigger API in the format that it expects (with the underscore).
-        projects.buckets: projects/_/buckets/{bucketId}
+        providers.event_types:
+          path: providers/{triggerProvider}/eventTypes/{triggerEvent}
+        projects.buckets:
+          path: projects/_/buckets/{bucketId}
   cloudiot:
     v1:
       discovery_doc: cloudiot_v1.json
       default: true
       resources:
-        projects.locations.registries.devices.states: "projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/states/{statesId}"
-        projects.locations.registries.devices.configVersions: "projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions/{configVersion}"
+        projects.locations.registries.devices.states:
+          path: projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/states/{statesId}
+        projects.locations.registries.devices.configVersions:
+          path: projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions/{configVersion}
   cloudkms:
     v1:
       discovery_doc: cloudkms_v1.json
@@ -138,7 +153,8 @@ apis:
       # Explicitly specifying the Liens service because it does not expose a
       # Get method.
       resources:
-        liens: liens/{liensId}
+        liens:
+          path: liens/{liensId}
     v2alpha1:
       discovery_doc: cloudresourcemanager_v2alpha1.json
     v2beta1:
@@ -165,34 +181,42 @@ apis:
     alpha:
       discovery_doc: compute_alpha.json
       resources:
-        nextHopGateways: projects/{project}/global/gateways/{nextHopGateway}
-        securityPolicyRules: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
+        nextHopGateways:
+          path: projects/{project}/global/gateways/{nextHopGateway}
+        securityPolicyRules:
+          path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     beta:
       discovery_doc: compute_beta.json
       unelidable_request_methods:
       - compute.disks.resize
       resources:
-        nextHopGateways: projects/{project}/global/gateways/{nextHopGateway}
-        securityPolicyRules: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
+        nextHopGateways:
+          path: projects/{project}/global/gateways/{nextHopGateway}
+        securityPolicyRules:
+          path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
     v1:
       discovery_doc: compute_v1.json
       default: true
       resources:
-        nextHopGateways: projects/{project}/global/gateways/{nextHopGateway}
+        nextHopGateways:
+          path: projects/{project}/global/gateways/{nextHopGateway}
   container:
     v1:
       discovery_doc: container_v1.json
       default: true
       resources:
-        projects.zones: projects/{projectId}/zones/{zoneId}
+        projects.zones:
+          path: projects/{projectId}/zones/{zoneId}
     v1beta1:
       discovery_doc: container_v1beta1.json
       resources:
-        projects.zones: projects/{projectId}/zones/{zoneId}
+        projects.zones:
+          path: projects/{projectId}/zones/{zoneId}
     v1alpha1:
       discovery_doc: container_v1alpha1.json
       resources:
-        projects.zones: projects/{projectId}/zones/{zoneId}
+        projects.zones:
+          path: projects/{projectId}/zones/{zoneId}
   containeranalysis:
     v1alpha1:
       discovery_doc: containeranalysis_v1alpha1.json
@@ -203,14 +227,18 @@ apis:
     v1:
       discovery_doc: dataproc_v1.json
       resources:
-         projects.regions: "projects/{projectId}/regions/{regionId}"
-         projects.regions.operations_list: "projects/{projectId}/regions/{regionId}/operations"
+        projects.regions:
+          path: projects/{projectId}/regions/{regionId}
+        projects.regions.operations_list:
+          path: projects/{projectId}/regions/{regionId}/operations
       default: true
     v1beta2:
       discovery_doc: dataproc_v1beta2.json
       resources:
-         projects.regions: "projects/{projectId}/regions/{regionId}"
-         projects.regions.operations_list: "projects/{projectId}/regions/{regionId}/operations"
+        projects.regions:
+          path: projects/{projectId}/regions/{regionId}
+        projects.regions.operations_list:
+          path: projects/{projectId}/regions/{regionId}/operations
   datastore:
     v1beta1:
       discovery_doc: datastore_v1beta1.json
@@ -230,7 +258,8 @@ apis:
     v1:
       discovery_doc: discovery_v1.json
       resources:
-        apis.versions: '{api}/{version}'
+        apis.versions:
+          path: '{api}/{version}'
   dns:
     v1:
       discovery_doc: dns_v1.json
@@ -255,16 +284,19 @@ apis:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json
       resources:
-        users.projects: 'users/{user}/projects/{project}'
+        users.projects:
+          path: users/{user}/projects/{project}
     v1beta:
       discovery_doc: oslogin_v1beta.json
       resources:
-        users.projects: 'users/{user}/projects/{project}'
+        users.projects:
+          path: users/{user}/projects/{project}
     v1:
       discovery_doc: oslogin_v1.json
       default: true
       resources:
-        users.projects: 'users/{user}/projects/{project}'
+        users.projects:
+          path: users/{user}/projects/{project}
   iam:
     v1:
       discovery_doc: iam_v1.json
@@ -272,12 +304,14 @@ apis:
     v1beta2:
       discovery_doc: language_v1beta2.json
       resources:
-        documents: 'documents'
+        documents:
+          path: documents
     v1:
       discovery_doc: language_v1.json
       default: true
       resources:
-        documents: 'documents'
+        documents:
+          path: documents
   logging:
     v2:
       discovery_doc: logging_v2.json
@@ -289,7 +323,8 @@ apis:
     v3:
       discovery_doc: monitoring_v3.json
       resources:
-        projects.alertPolicies.conditions: "projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/{conditionsId}"
+        projects.alertPolicies.conditions:
+          path: projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/{conditionsId}
       unelidable_request_methods:
       - monitoring.projects.alertPolicies.create
       - monitoring.projects.notificationChannels.create
@@ -297,7 +332,8 @@ apis:
     v1:
       discovery_doc: pubsub_v1.json
       resources:
-        projects.snapshots: "projects/{projectsId}/snapshots/{snapshotsId}"
+        projects.snapshots:
+          path: projects/{projectsId}/snapshots/{snapshotsId}
   redis:
     v1alpha1:
       discovery_doc: redis_v1alpha1.json
@@ -316,6 +352,9 @@ apis:
   servicenetworking:
     v1alpha:
       discovery_doc: servicenetworking_v1alpha.json
+  serviceusage:
+    v1beta1:
+      discovery_doc: serviceusage_v1beta1.json
   serviceuser:
     v1:
       discovery_doc: serviceuser_v1.json
@@ -332,12 +371,14 @@ apis:
     v1:
       discovery_doc: speech_v1.json
       resources:
-        speech: 'speech'
+        speech:
+          path: speech
       default: true
     v1p1beta1:
       discovery_doc: speech_v1p1beta1.json
       resources:
-        speech: 'speech'
+        speech:
+          path: speech
   sqladmin:
     v1beta3:
       discovery_doc: sqladmin_v1beta3.json
@@ -372,24 +413,33 @@ apis:
       discovery_doc: videointelligence_v1.json
       default: true
       resources:
-        videos: 'videos'
+        videos:
+          path: videos
   vision:
     v1:
       discovery_doc: vision_v1.json
       resources:
-         images: 'images'
+        images:
+          path: images
   alpha_vision:
     v1:
       discovery_doc: alpha_vision_v1.json
       default: true
       resources:
-         images: 'images'
+        images:
+          path: images
     v1alpha1:
       discovery_doc: alpha_vision_v1alpha1.json
   dlp:
     v2:
       discovery_doc: dlp_v2.json
       resources:
-        projects.content: 'projects/{projectsId}/content'
-        projects.image: 'projects/{projectsId}/image'
-        infoTypes: 'infoTypes'
+        projects.content:
+          path: projects/{projectsId}
+          enable_uri_parsing: False
+        projects.image:
+          path: projects/{projectsId}
+          enable_uri_parsing: False
+        infoTypes:
+          path: infoTypes
+          enable_uri_parsing: False

@@ -14,6 +14,9 @@
 """Code that's shared between multiple target-*-proxies subcommands."""
 
 
+from __future__ import unicode_literals
+
+
 def AddProxyHeaderRelatedCreateArgs(parser, default='NONE'):
   """Adds parser arguments for creation related to ProxyHeader."""
 

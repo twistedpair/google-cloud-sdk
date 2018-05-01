@@ -14,7 +14,7 @@ package = 'datastore'
 
 
 class DatastoreProjectsExportRequest(_messages.Message):
-  """A DatastoreProjectsExportRequest object.
+  r"""A DatastoreProjectsExportRequest object.
 
   Fields:
     googleDatastoreAdminV1beta1ExportEntitiesRequest: A
@@ -28,7 +28,7 @@ class DatastoreProjectsExportRequest(_messages.Message):
 
 
 class DatastoreProjectsImportRequest(_messages.Message):
-  """A DatastoreProjectsImportRequest object.
+  r"""A DatastoreProjectsImportRequest object.
 
   Fields:
     googleDatastoreAdminV1beta1ImportEntitiesRequest: A
@@ -42,7 +42,7 @@ class DatastoreProjectsImportRequest(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
-  """Metadata common to all Datastore Admin operations.
+  r"""Metadata common to all Datastore Admin operations.
 
   Enums:
     OperationTypeValueValuesEnum: The type of the operation.  Can be used as a
@@ -64,7 +64,7 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    """The type of the operation.  Can be used as a filter in
+    r"""The type of the operation.  Can be used as a filter in
     ListOperationsRequest.
 
     Values:
@@ -81,7 +81,7 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
     CLEAR_INDEX = 4
 
   class StateValueValuesEnum(_messages.Enum):
-    """The current state of the Operation.
+    r"""The current state of the Operation.
 
     Values:
       STATE_UNSPECIFIED: Unspecified.
@@ -106,7 +106,7 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """The client-assigned labels which were provided when the operation was
+    r"""The client-assigned labels which were provided when the operation was
     created.  May also include additional labels.
 
     Messages:
@@ -117,7 +117,7 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -137,7 +137,7 @@ class GoogleDatastoreAdminV1beta1CommonMetadata(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1EntityFilter(_messages.Message):
-  """Identifies a subset of entities in a project.  This is specified as
+  r"""Identifies a subset of entities in a project.  This is specified as
   combinations of kind + namespace (either or both of which may be all, as
   described in the following examples). Example usage:  Entire project:
   kinds=[], namespace_ids=[]  Kinds Foo and Bar in all namespaces:
@@ -161,7 +161,7 @@ class GoogleDatastoreAdminV1beta1EntityFilter(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1ExportEntitiesMetadata(_messages.Message):
-  """Metadata for ExportEntities operations.
+  r"""Metadata for ExportEntities operations.
 
   Fields:
     common: Metadata common to all Datastore Admin operations.
@@ -183,7 +183,7 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesMetadata(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1ExportEntitiesRequest(_messages.Message):
-  """The request for
+  r"""The request for
   google.datastore.admin.v1beta1.DatastoreAdmin.ExportEntities.
 
   Messages:
@@ -211,7 +211,7 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Client-assigned labels.
+    r"""Client-assigned labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -221,7 +221,7 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesRequest(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -239,7 +239,7 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesRequest(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1ExportEntitiesResponse(_messages.Message):
-  """The response for
+  r"""The response for
   google.datastore.admin.v1beta1.DatastoreAdmin.ExportEntities.
 
   Fields:
@@ -253,7 +253,7 @@ class GoogleDatastoreAdminV1beta1ExportEntitiesResponse(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1ImportEntitiesMetadata(_messages.Message):
-  """Metadata for ImportEntities operations.
+  r"""Metadata for ImportEntities operations.
 
   Fields:
     common: Metadata common to all Datastore Admin operations.
@@ -273,7 +273,7 @@ class GoogleDatastoreAdminV1beta1ImportEntitiesMetadata(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1ImportEntitiesRequest(_messages.Message):
-  """The request for
+  r"""The request for
   google.datastore.admin.v1beta1.DatastoreAdmin.ImportEntities.
 
   Messages:
@@ -302,7 +302,7 @@ class GoogleDatastoreAdminV1beta1ImportEntitiesRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Client-assigned labels.
+    r"""Client-assigned labels.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -312,7 +312,7 @@ class GoogleDatastoreAdminV1beta1ImportEntitiesRequest(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -330,7 +330,7 @@ class GoogleDatastoreAdminV1beta1ImportEntitiesRequest(_messages.Message):
 
 
 class GoogleDatastoreAdminV1beta1Progress(_messages.Message):
-  """Measures the progress of a particular metric.
+  r"""Measures the progress of a particular metric.
 
   Fields:
     workCompleted: Note that this may be greater than work_estimated.
@@ -343,8 +343,8 @@ class GoogleDatastoreAdminV1beta1Progress(_messages.Message):
 
 
 class GoogleLongrunningOperation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -385,7 +385,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -399,7 +399,7 @@ class GoogleLongrunningOperation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -413,7 +413,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -430,7 +430,7 @@ class GoogleLongrunningOperation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -450,7 +450,7 @@ class GoogleLongrunningOperation(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -479,7 +479,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -491,7 +491,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -517,7 +517,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -565,7 +565,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -577,7 +577,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.

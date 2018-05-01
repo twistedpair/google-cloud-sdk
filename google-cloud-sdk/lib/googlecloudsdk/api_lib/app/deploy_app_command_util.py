@@ -15,16 +15,14 @@
 """Utility methods used by the deploy_app command."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import datetime
 import hashlib
-import json
 import os
-import shutil
 
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.app import metric_names
-from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.command_lib.app import source_files_util
 from googlecloudsdk.command_lib.storage import storage_parallel
@@ -36,10 +34,6 @@ from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import times
 from googlecloudsdk.third_party.appengine.tools import context_util
 from six.moves import map  # pylint: disable=redefined-builtin
-
-
-# Max App Engine file size; see https://cloud.google.com/appengine/docs/quotas
-_MAX_FILE_SIZE = 32 * 1024 * 1024
 
 
 _DEFAULT_NUM_THREADS = 8
@@ -175,7 +169,8 @@ def _IsTTLSafe(ttl, obj):
   return (now - obj.timeCreated) <= delta
 
 
-def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
+def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir,
+                        max_file_size):
   """Builds a map of files to upload, indexed by their hash.
 
   This skips already-uploaded files.
@@ -187,6 +182,7 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
     tmp_dir: The path to a temporary directory where generated files may be
       stored. If a file in the manifest is not found in the source directory,
       it will be retrieved from this directory instead.
+    max_file_size: int, File size limit per individual file or None if no limit.
 
   Raises:
     LargeFileError: if one of the files to upload exceeds the maximum App Engine
@@ -211,8 +207,8 @@ def _BuildFileUploadMap(manifest, source_dir, bucket_ref, tmp_dir):
     # Perform this check when creating the upload map, so we catch too-large
     # files that have already been uploaded
     size = os.path.getsize(full_path)
-    if size > _MAX_FILE_SIZE:
-      raise LargeFileError(full_path, size, _MAX_FILE_SIZE)
+    if max_file_size and size > max_file_size:
+      raise LargeFileError(full_path, size, max_file_size)
 
     sha1_hash = manifest[rel_path]['sha1Sum']
     total_size += size
@@ -258,7 +254,8 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
                                show_progress_bar=True)
 
 
-def CopyFilesToCodeBucket(service, source_dir, bucket_ref):
+def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
+                          max_file_size=None):
   """Copies application files to the Google Cloud Storage code bucket.
 
   Use the Cloud Storage API using threads.
@@ -294,6 +291,7 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref):
     service: ServiceYamlInfo, The service being deployed.
     source_dir: str, path to the service's source directory
     bucket_ref: The reference to the bucket files will be placed in.
+    max_file_size: int, File size limit per individual file or None if no limit.
 
   Returns:
     A dictionary representing the manifest.
@@ -305,136 +303,12 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref):
     manifest = _BuildDeploymentManifest(service, source_dir, bucket_ref,
                                         tmp_dir)
     files_to_upload = _BuildFileUploadMap(
-        manifest, source_dir, bucket_ref, tmp_dir)
+        manifest, source_dir, bucket_ref, tmp_dir, max_file_size)
     _UploadFilesThreads(files_to_upload, bucket_ref)
   log.status.Print('File upload done.')
   log.info('Manifest: [{0}]'.format(manifest))
   metrics.CustomTimedEvent(metric_names.COPY_APP_FILES)
   return manifest
-
-
-def _BuildStagingDirectory(source_dir, staging_dir, bucket_ref,
-                           excluded_regexes):
-  """Creates a staging directory to be uploaded to Google Cloud Storage.
-
-  The staging directory will contain a symlink for each file in the original
-  directory. The source is a file whose name is the sha1 hash of the original
-  file and points to the original file.
-
-  Consider the following original structure:
-    app/
-      main.py
-      tools/
-        foo.py
-   Assume main.py has SHA1 hash 123 and foo.py has SHA1 hash 456. The resultant
-   staging directory will look like:
-     /tmp/staging/
-       123 -> app/main.py
-       456 -> app/tools/foo.py
-   (Note: "->" denotes a symlink)
-
-   If the staging directory is then copied to a GCS bucket at
-   gs://staging-bucket/ then the resulting manifest will be:
-     {
-       "app/main.py": {
-         "sourceUrl": "https://storage.googleapis.com/staging-bucket/123",
-         "sha1Sum": "123"
-       },
-       "app/tools/foo.py": {
-         "sourceUrl": "https://storage.googleapis.com/staging-bucket/456",
-         "sha1Sum": "456"
-       }
-     }
-
-  Args:
-    source_dir: The original directory containing the application's source
-      code.
-    staging_dir: The directory where the staged files will be created.
-    bucket_ref: A reference to the GCS bucket where the files will be uploaded.
-    excluded_regexes: List of file patterns to skip while building the staging
-      directory.
-
-  Raises:
-    LargeFileError: if one of the files to upload exceeds the maximum App Engine
-    file size.
-
-  Returns:
-    A dictionary which represents the file manifest.
-  """
-  manifest = {}
-  bucket_url = bucket_ref.GetPublicUrl()
-
-  def AddFileToManifest(manifest_path, input_path):
-    """Adds the given file to the current manifest.
-
-    Args:
-      manifest_path: The path to the file as it will be stored in the manifest.
-      input_path: The location of the file to be added to the manifest.
-    Returns:
-      If the target was already in the manifest with different contexts,
-      returns None. In all other cases, returns a target location to which the
-      caller must copy, move, or link the file.
-    """
-    file_ext = os.path.splitext(input_path)[1]
-    sha1_hash = (file_utils.Checksum(algorithm=hashlib.sha1)
-                 .AddFileContents(input_path).HexDigest())
-
-    target_filename = sha1_hash + file_ext
-    target_path = os.path.join(staging_dir, target_filename)
-
-    dest_path = '/'.join([bucket_url, target_filename])
-    old_url = manifest.get(manifest_path, {}).get('sourceUrl', '')
-    if old_url and old_url != dest_path:
-      return None
-    manifest[_FormatForManifest(manifest_path)] = {
-        'sourceUrl': dest_path,
-        'sha1Sum': sha1_hash,
-    }
-    return target_path
-
-  for relative_path in util.FileIterator(source_dir, excluded_regexes):
-    local_path = os.path.join(source_dir, relative_path)
-    size = os.path.getsize(local_path)
-    if size > _MAX_FILE_SIZE:
-      raise LargeFileError(local_path, size, _MAX_FILE_SIZE)
-    target_path = AddFileToManifest(_FormatForManifest(relative_path),
-                                    local_path)
-    if not os.path.exists(target_path):
-      _CopyOrSymlink(local_path, target_path)
-
-  context_files = context_util.CreateContextFiles(
-      staging_dir, None, overwrite=True, source_dir=source_dir)
-  for context_file in context_files:
-    manifest_path = os.path.basename(context_file)
-    target_path = AddFileToManifest(manifest_path, context_file)
-    if not target_path:
-      log.status.Print('Not generating {0} because a user-generated '
-                       'file with the same name exists.'.format(manifest_path))
-    if not target_path or os.path.exists(target_path):
-      # If we get here, it probably means that the user already generated the
-      # context file manually and put it either in the top directory or in some
-      # subdirectory. The new context file is useless and may confuse later
-      # stages of the upload (it is in the staging directory with a
-      # nonconformant name), so delete it. The entry in the manifest will point
-      # at the existing file.
-      os.remove(context_file)
-    else:
-      # Rename the source-context*.json file (which is in the staging directory)
-      # to the hash-based name in the same directory.
-      os.rename(context_file, target_path)
-
-  log.debug('Generated deployment manifest: "{0}"'.format(
-      json.dumps(manifest, indent=2, sort_keys=True)))
-  return manifest
-
-
-def _CopyOrSymlink(source, target):
-  try:
-    # If possible, create a symlink to save time and space.
-    os.symlink(source, target)
-  except AttributeError:
-    # The system does not support symlinks. Do a file copy instead.
-    shutil.copyfile(source, target)
 
 
 def _FormatForManifest(filename):

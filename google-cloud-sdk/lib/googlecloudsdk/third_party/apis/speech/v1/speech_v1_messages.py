@@ -13,7 +13,7 @@ package = 'speech'
 
 
 class LongRunningRecognizeRequest(_messages.Message):
-  """The top-level message sent by the client for the `LongRunningRecognize`
+  r"""The top-level message sent by the client for the `LongRunningRecognize`
   method.
 
   Fields:
@@ -27,8 +27,8 @@ class LongRunningRecognizeRequest(_messages.Message):
 
 
 class Operation(_messages.Message):
-  """This resource represents a long-running operation that is the result of a
-  network API call.
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
 
   Messages:
     MetadataValue: Service-specific metadata associated with the operation.
@@ -69,7 +69,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation.  It typically
     contains progress information and common metadata such as create time.
     Some services might not provide such metadata.  Any method that returns a
     long-running operation should document the metadata type, if any.
@@ -83,7 +83,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -97,7 +97,7 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    """The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success.  If the
     original method returns no data on success, such as `Delete`, the response
     is `google.protobuf.Empty`.  If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource.  For other
@@ -114,7 +114,7 @@ class Operation(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a ResponseValue object.
+      r"""An additional property for a ResponseValue object.
 
       Fields:
         key: Name of the additional property.
@@ -134,9 +134,9 @@ class Operation(_messages.Message):
 
 
 class RecognitionAudio(_messages.Message):
-  """Contains audio data in the encoding specified in the `RecognitionConfig`.
-  Either `content` or `uri` must be supplied. Supplying both or neither
-  returns google.rpc.Code.INVALID_ARGUMENT. See [audio
+  r"""Contains audio data in the encoding specified in the
+  `RecognitionConfig`. Either `content` or `uri` must be supplied. Supplying
+  both or neither returns google.rpc.Code.INVALID_ARGUMENT. See [audio
   limits](https://cloud.google.com/speech/limits#content).
 
   Fields:
@@ -156,7 +156,7 @@ class RecognitionAudio(_messages.Message):
 
 
 class RecognitionConfig(_messages.Message):
-  """Provides information to the recognizer that specifies how to process the
+  r"""Provides information to the recognizer that specifies how to process the
   request.
 
   Enums:
@@ -200,7 +200,7 @@ class RecognitionConfig(_messages.Message):
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
-    """Encoding of audio data sent in all `RecognitionAudio` messages. This
+    r"""Encoding of audio data sent in all `RecognitionAudio` messages. This
     field is optional for `FLAC` and `WAV` audio files and required for all
     other audio formats. For details, see AudioEncoding.
 
@@ -254,7 +254,7 @@ class RecognitionConfig(_messages.Message):
 
 
 class RecognizeRequest(_messages.Message):
-  """The top-level message sent by the client for the `Recognize` method.
+  r"""The top-level message sent by the client for the `Recognize` method.
 
   Fields:
     audio: *Required* The audio data to be recognized.
@@ -267,7 +267,7 @@ class RecognizeRequest(_messages.Message):
 
 
 class RecognizeResponse(_messages.Message):
-  """The only message returned to the client by the `Recognize` method. It
+  r"""The only message returned to the client by the `Recognize` method. It
   contains the result as zero or more sequential `SpeechRecognitionResult`
   messages.
 
@@ -280,7 +280,7 @@ class RecognizeResponse(_messages.Message):
 
 
 class SpeechContext(_messages.Message):
-  """Provides "hints" to the speech recognizer to favor specific words and
+  r"""Provides "hints" to the speech recognizer to favor specific words and
   phrases in the results.
 
   Fields:
@@ -297,7 +297,7 @@ class SpeechContext(_messages.Message):
 
 
 class SpeechOperationsGetRequest(_messages.Message):
-  """A SpeechOperationsGetRequest object.
+  r"""A SpeechOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -307,7 +307,7 @@ class SpeechOperationsGetRequest(_messages.Message):
 
 
 class SpeechRecognitionAlternative(_messages.Message):
-  """Alternative hypotheses (a.k.a. n-best list).
+  r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
     confidence: Output only. The confidence estimate between 0.0 and 1.0. A
@@ -330,7 +330,7 @@ class SpeechRecognitionAlternative(_messages.Message):
 
 
 class SpeechRecognitionResult(_messages.Message):
-  """A speech recognition result corresponding to a portion of the audio.
+  r"""A speech recognition result corresponding to a portion of the audio.
 
   Fields:
     alternatives: Output only. May contain one or more recognition hypotheses
@@ -343,7 +343,7 @@ class SpeechRecognitionResult(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -372,7 +372,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -384,7 +384,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -410,7 +410,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -458,7 +458,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -470,7 +470,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -488,7 +488,7 @@ class Status(_messages.Message):
 
 
 class WordInfo(_messages.Message):
-  """Word-specific information for recognized words.
+  r"""Word-specific information for recognized words.
 
   Fields:
     endTime: Output only. Time offset relative to the beginning of the audio,

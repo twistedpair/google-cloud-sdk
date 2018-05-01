@@ -13,6 +13,8 @@
 # limitations under the License.
 """Facilities for getting a list of Cloud resources."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import itertools
 
 from googlecloudsdk.api_lib.compute import constants
@@ -26,6 +28,7 @@ from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.resource import resource_projector
+import six
 
 
 def _ConvertProtobufsToDicts(resources):
@@ -53,7 +56,7 @@ def ProcessResults(resources, field_selector, sort_key_fn=None,
   if sort_key_fn:
     resources = sorted(resources, key=sort_key_fn, reverse=reverse_sort)
 
-  if limit > 0:
+  if limit:
     resources = itertools.islice(resources, limit)
   for resource in resources:
     if field_selector:
@@ -772,8 +775,8 @@ class ZonalLister(object):
     scope_set = frontend.scope_set
     filter_expr = frontend.filter
     if isinstance(scope_set, ZoneSet):
-      for project, zones in _GroupByProject(
-          sorted(list(scope_set))).iteritems():
+      for project, zones in six.iteritems(
+          _GroupByProject(sorted(list(scope_set)))):
         for item in GetZonalResourcesDicts(
             service=self.service,
             project=project,
@@ -840,8 +843,8 @@ class RegionalLister(object):
     scope_set = frontend.scope_set
     filter_expr = frontend.filter
     if isinstance(scope_set, RegionSet):
-      for project, regions in _GroupByProject(
-          sorted(list(scope_set))).iteritems():
+      for project, regions in six.iteritems(
+          _GroupByProject(sorted(list(scope_set)))):
         for item in GetRegionalResourcesDicts(
             service=self.service,
             project=project,
@@ -997,8 +1000,8 @@ class MultiScopeLister(object):
     scope_set = frontend.scope_set
     requests = []
     if isinstance(scope_set, ZoneSet):
-      for project, zones in _GroupByProject(
-          sorted(list(scope_set))).iteritems():
+      for project, zones in six.iteritems(
+          _GroupByProject(sorted(list(scope_set)))):
         for zone_ref in zones:
           requests.append((self.zonal_service, 'List',
                            self.zonal_service.GetRequestType('List')(
@@ -1007,8 +1010,8 @@ class MultiScopeLister(object):
                                project=project,
                                zone=zone_ref.zone)))
     elif isinstance(scope_set, RegionSet):
-      for project, regions in _GroupByProject(
-          sorted(list(scope_set))).iteritems():
+      for project, regions in six.iteritems(
+          _GroupByProject(sorted(list(scope_set)))):
         for region_ref in regions:
           requests.append((self.regional_service, 'List',
                            self.regional_service.GetRequestType('List')(

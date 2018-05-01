@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""A module for extracting properties from Python dicts.
+r"""A module for extracting properties from Python dicts.
 
 A property is a string that represents a value in a JSON-serializable
 dict. For example, "x.y" matches 1 in {'x': {'y': 1, 'z': 2}, 'y': [1,
@@ -51,10 +51,13 @@ There are three operators in the language of properties:
     '[INDEX]': List access which allows one to select an element of
         a list.
 """
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import collections
 import copy
-
 from googlecloudsdk.core.util import tokenizer
+import six
 
 
 class Error(Exception):
@@ -187,7 +190,7 @@ def _DictToOrderedDict(obj):
   """Recursively converts a JSON-serializable dict to an OrderedDict."""
   if isinstance(obj, dict):
     new_obj = collections.OrderedDict(sorted(obj.items()))
-    for key, value in new_obj.iteritems():
+    for key, value in six.iteritems(new_obj):
       new_obj[key] = _DictToOrderedDict(value)
     return new_obj
   elif isinstance(obj, list):
@@ -214,7 +217,7 @@ def _Filter(obj, properties):
 
   if isinstance(obj, dict):
     filtered_obj = collections.OrderedDict()
-    for key, value in head_to_tail.iteritems():
+    for key, value in six.iteritems(head_to_tail):
       if key in obj:
         # Note that the keys are converted to strings. This is
         # necessary because the keys are of type _Key and we want to

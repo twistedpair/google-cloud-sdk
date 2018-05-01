@@ -16,7 +16,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from collections import OrderedDict
-from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.composer import util as api_util
 
 
@@ -35,7 +34,8 @@ def Create(environment_ref,
            airflow_config_overrides=None,
            service_account=None,
            oauth_scopes=None,
-           tags=None):
+           tags=None,
+           disk_size_gb=None):
   """Calls the Composer Environments.Create method.
 
   Args:
@@ -60,6 +60,7 @@ def Create(environment_ref,
     service_account: str or None, the user-provided service account
     oauth_scopes: [str], the user-provided OAuth scopes
     tags: [str], the user-provided networking tags
+    disk_size_gb: int, the disk size of node VMs, in GB
 
   Returns:
     Operation: the operation corresponding to the creation of the environment
@@ -71,14 +72,15 @@ def Create(environment_ref,
     is_config_empty = False
     config.nodeCount = node_count
   if (location or machine_type or network or subnetwork or service_account
-      or oauth_scopes or tags):
+      or oauth_scopes or tags or disk_size_gb):
     is_config_empty = False
     config.nodeConfig = messages.NodeConfig(
         location=location,
         machineType=machine_type,
         network=network,
         subnetwork=subnetwork,
-        serviceAccount=service_account)
+        serviceAccount=service_account,
+        diskSizeGb=disk_size_gb)
     if oauth_scopes:
       config.nodeConfig.oauthScopes = OrderedDict((s.strip(), None)
                                                   for s in oauth_scopes).keys()
@@ -141,7 +143,7 @@ def Get(environment_ref):
                               name=environment_ref.RelativeName()))
 
 
-def List(location_resource, page_size, limit=None):
+def List(location_refs, page_size, limit=None):
   """Lists Composer Environments across all locations.
 
   Uses a hardcoded list of locations, as there is no way to dynamically
@@ -149,25 +151,24 @@ def List(location_resource, page_size, limit=None):
   will be aligned with Cloud SDK releases.
 
   Args:
-    location_resource: [core.resources.Resource], a lresource reference to a
-        location in which to list environments.
+    location_refs: [core.resources.Resource], a list of resource reference to
+        locations in which to list environments.
     page_size: An integer specifying the maximum number of resources to be
       returned in a single list call.
     limit: An integer specifying the maximum number of environments to list.
         None if all available environments should be returned.
 
   Returns:
-    list: a list containing Environments within the project
+    list: a generator over Environments in the locations in `location_refs`
   """
-  return list_pager.YieldFromList(
+  return api_util.AggregateListResults(
+      api_util.GetMessagesModule()
+      .ComposerProjectsLocationsEnvironmentsListRequest,
       GetService(),
-      request=api_util.GetMessagesModule()
-      .ComposerProjectsLocationsEnvironmentsListRequest(
-          parent=location_resource.RelativeName()),
-      field='environments',
-      limit=limit,
-      batch_size=page_size if page_size else api_util.DEFAULT_PAGE_SIZE,
-      batch_size_attribute='pageSize')
+      location_refs,
+      'environments',
+      page_size,
+      limit=limit)
 
 
 def Patch(environment_ref, environment_patch, update_mask):

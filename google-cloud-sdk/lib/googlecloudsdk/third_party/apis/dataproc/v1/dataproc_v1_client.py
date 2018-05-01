@@ -52,7 +52,7 @@ class DataprocV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a cluster in a project.
+      r"""Creates a cluster in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersCreateRequest) input message
@@ -78,7 +78,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a cluster in a project.
+      r"""Deletes a cluster in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersDeleteRequest) input message
@@ -104,7 +104,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Diagnose(self, request, global_params=None):
-      """Gets cluster diagnostic information. After the operation completes, the Operation.response field contains DiagnoseClusterOutputLocation.
+      r"""Gets cluster diagnostic information. After the operation completes, the Operation.response field contains DiagnoseClusterOutputLocation.
 
       Args:
         request: (DataprocProjectsRegionsClustersDiagnoseRequest) input message
@@ -130,7 +130,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the resource representation for a cluster in a project.
+      r"""Gets the resource representation for a cluster in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersGetRequest) input message
@@ -156,7 +156,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists all regions/{region}/clusters in a project.
+      r"""Lists all regions/{region}/clusters in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersListRequest) input message
@@ -182,7 +182,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a cluster in a project.
+      r"""Updates a cluster in a project.
 
       Args:
         request: (DataprocProjectsRegionsClustersPatchRequest) input message
@@ -218,7 +218,7 @@ class DataprocV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts a job cancellation request. To access the job resource after cancellation, call regions/{region}/jobs.list or regions/{region}/jobs.get.
+      r"""Starts a job cancellation request. To access the job resource after cancellation, call regions/{region}/jobs.list or regions/{region}/jobs.get.
 
       Args:
         request: (DataprocProjectsRegionsJobsCancelRequest) input message
@@ -244,7 +244,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the job from the project. If the job is active, the delete fails, and the response returns FAILED_PRECONDITION.
+      r"""Deletes the job from the project. If the job is active, the delete fails, and the response returns FAILED_PRECONDITION.
 
       Args:
         request: (DataprocProjectsRegionsJobsDeleteRequest) input message
@@ -270,7 +270,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the resource representation for a job in a project.
+      r"""Gets the resource representation for a job in a project.
 
       Args:
         request: (DataprocProjectsRegionsJobsGetRequest) input message
@@ -296,7 +296,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists regions/{region}/jobs in a project.
+      r"""Lists regions/{region}/jobs in a project.
 
       Args:
         request: (DataprocProjectsRegionsJobsListRequest) input message
@@ -322,7 +322,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a job in a project.
+      r"""Updates a job in a project.
 
       Args:
         request: (DataprocProjectsRegionsJobsPatchRequest) input message
@@ -348,7 +348,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Submit(self, request, global_params=None):
-      """Submits a job to a cluster.
+      r"""Submits a job to a cluster.
 
       Args:
         request: (DataprocProjectsRegionsJobsSubmitRequest) input message
@@ -384,7 +384,7 @@ class DataprocV1(base_api.BaseApiClient):
           }
 
     def Cancel(self, request, global_params=None):
-      """Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
 
       Args:
         request: (DataprocProjectsRegionsOperationsCancelRequest) input message
@@ -411,7 +411,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED.
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED.
 
       Args:
         request: (DataprocProjectsRegionsOperationsDeleteRequest) input message
@@ -438,7 +438,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (DataprocProjectsRegionsOperationsGetRequest) input message
@@ -465,7 +465,7 @@ class DataprocV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
 
       Args:
         request: (DataprocProjectsRegionsOperationsListRequest) input message

@@ -13,10 +13,10 @@ package = 'cloudscheduler'
 
 
 class AppEngineHttpTarget(_messages.Message):
-  """App Engine target. The job will be pushed to a job handler by means of an
-  HTTP request via an AppEngineHttpTarget.http_method such as HTTP POST, HTTP
-  GET, etc. The job is acknowledged by means of an HTTP response code in the
-  range [200 - 299]. Error 503 is considered an App Engine system error
+  r"""App Engine target. The job will be pushed to a job handler by means of
+  an HTTP request via an AppEngineHttpTarget.http_method such as HTTP POST,
+  HTTP GET, etc. The job is acknowledged by means of an HTTP response code in
+  the range [200 - 299]. Error 503 is considered an App Engine system error
   instead of an application error. Requests returning error 503 will be
   retried regardless of retry configuration and not counted against retry
   counts. Any other response code, or a failure to receive a response before
@@ -86,7 +86,7 @@ class AppEngineHttpTarget(_messages.Message):
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
-    """The HTTP method to use for the request. The default is POST. PATCH and
+    r"""The HTTP method to use for the request. The default is POST. PATCH and
     OPTIONS are not permitted.
 
     Values:
@@ -110,7 +110,7 @@ class AppEngineHttpTarget(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
-    """HTTP request headers.  This map contains the header field names and
+    r"""HTTP request headers.  This map contains the header field names and
     values. Headers can be set when the job is created.  Cloud Scheduler sets
     some headers to default values:  * `User-Agent`: By default, this header
     is   `"AppEngine-Google; (+http://code.google.com/appengine)"`.   This
@@ -140,7 +140,7 @@ class AppEngineHttpTarget(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a HeadersValue object.
+      r"""An additional property for a HeadersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -160,7 +160,7 @@ class AppEngineHttpTarget(_messages.Message):
 
 
 class AppEngineRouting(_messages.Message):
-  """App Engine Routing.  For more information about services, versions, and
+  r"""App Engine Routing.  For more information about services, versions, and
   instances see [An Overview of App Engine](/appengine/docs/python/an-
   overview-of-app-engine), [Microservices Architecture on Google App
   Engine](/appengine/docs/python/microservices-on-app-engine), [App Engine
@@ -224,7 +224,7 @@ class AppEngineRouting(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsGetRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsGetRequest object.
+  r"""A CloudschedulerProjectsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
@@ -234,7 +234,7 @@ class CloudschedulerProjectsLocationsGetRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsJobsCreateRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsCreateRequest object.
+  r"""A CloudschedulerProjectsLocationsJobsCreateRequest object.
 
   Fields:
     job: A Job resource to be passed as the request body.
@@ -247,7 +247,7 @@ class CloudschedulerProjectsLocationsJobsCreateRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsJobsDeleteRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsDeleteRequest object.
+  r"""A CloudschedulerProjectsLocationsJobsDeleteRequest object.
 
   Fields:
     name: Required.  The job name. For example:
@@ -258,7 +258,7 @@ class CloudschedulerProjectsLocationsJobsDeleteRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsGetRequest object.
+  r"""A CloudschedulerProjectsLocationsJobsGetRequest object.
 
   Fields:
     name: The job name. For example:
@@ -269,7 +269,7 @@ class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsListRequest object.
+  r"""A CloudschedulerProjectsLocationsJobsListRequest object.
 
   Fields:
     pageSize: Requested page size. Fewer jobs than requested might be
@@ -293,7 +293,7 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsJobsRunRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsRunRequest object.
+  r"""A CloudschedulerProjectsLocationsJobsRunRequest object.
 
   Fields:
     name: Required.  The job name. For example:
@@ -306,7 +306,7 @@ class CloudschedulerProjectsLocationsJobsRunRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsListRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsListRequest object.
+  r"""A CloudschedulerProjectsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -322,7 +322,7 @@ class CloudschedulerProjectsLocationsListRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -332,7 +332,7 @@ class Empty(_messages.Message):
 
 
 class HttpTarget(_messages.Message):
-  """Http target. The job will be pushed to the job handler by means of an
+  r"""Http target. The job will be pushed to the job handler by means of an
   HTTP request via an HttpTarget.http_method such as HTTP POST, HTTP GET, etc.
   The job is acknowledged by means of an HTTP response code in the range [200
   - 299]. A failure to receive a response constitutes a failed execution.
@@ -381,7 +381,7 @@ class HttpTarget(_messages.Message):
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
-    """Which HTTP method to use for the request. The default is POST.
+    r"""Which HTTP method to use for the request. The default is POST.
 
     Values:
       HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
@@ -404,7 +404,7 @@ class HttpTarget(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
-    """The user can specify HTTP request headers to send with the Job's HTTP
+    r"""The user can specify HTTP request headers to send with the Job's HTTP
     request. This map contains the header field names and values. Repeated
     headers are not supported, but a header value can contain commas. These
     headers represent a subset of the headers that will accompany the Job's
@@ -424,7 +424,7 @@ class HttpTarget(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a HeadersValue object.
+      r"""An additional property for a HeadersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -443,7 +443,7 @@ class HttpTarget(_messages.Message):
 
 
 class Job(_messages.Message):
-  """Configuration for a job. The maximum allowed size for a job is 100KB.
+  r"""Configuration for a job. The maximum allowed size for a job is 100KB.
 
   Enums:
     JobStateValueValuesEnum: Output only. State of the job. For example:
@@ -479,7 +479,7 @@ class Job(_messages.Message):
   """
 
   class JobStateValueValuesEnum(_messages.Enum):
-    """Output only. State of the job. For example: enabled, paused, or
+    r"""Output only. State of the job. For example: enabled, paused, or
     disabled.
 
     Values:
@@ -511,7 +511,7 @@ class Job(_messages.Message):
 
 
 class ListJobsResponse(_messages.Message):
-  """Response message for listing jobs using CloudScheduler.ListJobs.
+  r"""Response message for listing jobs using CloudScheduler.ListJobs.
 
   Fields:
     jobs: The list of jobs.
@@ -527,7 +527,7 @@ class ListJobsResponse(_messages.Message):
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -540,7 +540,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -563,7 +563,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -574,7 +574,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -588,7 +588,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -600,7 +600,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -620,8 +620,9 @@ class Location(_messages.Message):
 
 
 class PubsubMessage(_messages.Message):
-  """A message data and its attributes. The message payload must not be empty;
-  it must contain either a non-empty data field, or at least one attribute.
+  r"""A message data and its attributes. The message payload must not be
+  empty; it must contain either a non-empty data field, or at least one
+  attribute.
 
   Messages:
     AttributesValue: Optional attributes for this message.
@@ -641,7 +642,7 @@ class PubsubMessage(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    """Optional attributes for this message.
+    r"""Optional attributes for this message.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -651,7 +652,7 @@ class PubsubMessage(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a AttributesValue object.
+      r"""An additional property for a AttributesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -670,7 +671,7 @@ class PubsubMessage(_messages.Message):
 
 
 class PubsubTarget(_messages.Message):
-  """Pub/Sub target. Jobs will be delivered by publishing a message to the
+  r"""Pub/Sub target. Jobs will be delivered by publishing a message to the
   given Pub/Sub topic.
 
   Messages:
@@ -690,7 +691,7 @@ class PubsubTarget(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PubsubMessageValue(_messages.Message):
-    """Required.  This pubsub message is sent when the job is attempted.
+    r"""Required.  This pubsub message is sent when the job is attempted.
     `pubsub_message` should be a google.pubsub.v1.PubsubMessage.
 
     Messages:
@@ -703,7 +704,7 @@ class PubsubTarget(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PubsubMessageValue object.
+      r"""An additional property for a PubsubMessageValue object.
 
       Fields:
         key: Name of the additional property.
@@ -720,7 +721,7 @@ class PubsubTarget(_messages.Message):
 
 
 class RetryConfig(_messages.Message):
-  """Settings that determine the retry behavior.  By default, if a job does
+  r"""Settings that determine the retry behavior.  By default, if a job does
   not complete successfully (meaning that an acknowledgement is not received
   from the handler, then it will be retried with exponential backoff according
   to the settings in RetryConfig.
@@ -765,13 +766,14 @@ class RetryConfig(_messages.Message):
 
 
 class RunJobRequest(_messages.Message):
-  """Request message for forcing a job to run now using CloudScheduler.RunJob.
+  r"""Request message for forcing a job to run now using
+  CloudScheduler.RunJob.
   """
 
 
 
 class Schedule(_messages.Message):
-  """Scheduler schedule in an English-like format.
+  r"""Scheduler schedule in an English-like format.
 
   Fields:
     schedule: Required.  Scheduler schedules are specified using an English-
@@ -791,7 +793,7 @@ class Schedule(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -820,7 +822,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -832,7 +834,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -858,7 +860,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -906,7 +908,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -918,7 +920,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.

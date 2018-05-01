@@ -58,7 +58,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists all annotation tags that are applied on an asset.
+      r"""Lists all annotation tags that are applied on an asset.
 
       Args:
         request: (CategorymanagerAssetsAnnotationTagsListRequest) input message
@@ -95,7 +95,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
           }
 
     def ApplyAnnotationTag(self, request, global_params=None):
-      """Applies an annotation tag on an asset.
+      r"""Applies an annotation tag on an asset.
 
       Args:
         request: (CategorymanagerAssetsApplyAnnotationTagRequest) input message
@@ -122,7 +122,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
     )
 
     def DeleteAnnotationTag(self, request, global_params=None):
-      """Deletes an annotation tag from an asset.
+      r"""Deletes an annotation tag from an asset.
 
       Args:
         request: (CategorymanagerAssetsDeleteAnnotationTagRequest) input message
@@ -149,7 +149,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      """Search all assets with given predicates.
+      r"""Search all assets with given predicates.
 
       Args:
         request: (CategorymanagerAssetsSearchRequest) input message
@@ -185,7 +185,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      """Gets the latest state of a long-running operation.
+      r"""Gets the latest state of a long-running operation.
 
       Args:
         request: (CategorymanagerOperationsGetRequest) input message
@@ -222,7 +222,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
           }
 
     def GetTaxonomyStore(self, request, global_params=None):
-      """Get the organization level taxonomy store for an organization.
+      r"""Get the organization level taxonomy store for an organization.
 
       Args:
         request: (CategorymanagerOrganizationsGetTaxonomyStoreRequest) input message
@@ -259,7 +259,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates an annotation in a taxonomy.
+      r"""Creates an annotation in a taxonomy.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesAnnotationsCreateRequest) input message
@@ -286,7 +286,7 @@ class CategorymanagerV1alpha2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an annotation. Also deletes all member annotations if the given.
+      r"""Deletes an annotation. Also deletes all member annotations if the given.
 annotation is a group annotation.
 
       Args:
@@ -314,7 +314,7 @@ annotation is a group annotation.
     )
 
     def Get(self, request, global_params=None):
-      """Gets definition of an annotation.
+      r"""Gets definition of an annotation.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesAnnotationsGetRequest) input message
@@ -341,7 +341,7 @@ annotation is a group annotation.
     )
 
     def List(self, request, global_params=None):
-      """Lists all annotations in a taxonomy.
+      r"""Lists all annotations in a taxonomy.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesAnnotationsListRequest) input message
@@ -368,7 +368,7 @@ annotation is a group annotation.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an annotation. Currently only support updating descriptions.
+      r"""Updates an annotation. Currently only support updating descriptions.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesAnnotationsPatchRequest) input message
@@ -405,7 +405,7 @@ annotation is a group annotation.
           }
 
     def Copy(self, request, global_params=None):
-      """Copy an annotation to a given taxonomy. Copy will fail if there is an.
+      r"""Copy an annotation to a given taxonomy. Copy will fail if there is an.
 annotation with the same in the taxonomy.
 
       Args:
@@ -433,7 +433,7 @@ annotation with the same in the taxonomy.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a new taxonomy in a given taxonomy store.
+      r"""Creates a new taxonomy in a given taxonomy store.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesCreateRequest) input message
@@ -460,7 +460,7 @@ annotation with the same in the taxonomy.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a taxonomy from a taxonomy store. This operation will also delete.
+      r"""Deletes a taxonomy from a taxonomy store. This operation will also delete.
 all annotations in this taxonomy.
 
       Args:
@@ -488,7 +488,7 @@ all annotations in this taxonomy.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the taxonomy referred by name. Size of a taxonomy is at most 100KB.
+      r"""Returns the taxonomy referred by name. Size of a taxonomy is at most 100KB.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesGetRequest) input message
@@ -515,7 +515,7 @@ all annotations in this taxonomy.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """GetIamPolicy method for the projects_taxonomies service.
+      r"""GetIamPolicy method for the projects_taxonomies service.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesGetIamPolicyRequest) input message
@@ -542,7 +542,7 @@ all annotations in this taxonomy.
     )
 
     def List(self, request, global_params=None):
-      """Lists all taxonomies in a taxonomy store or a project.
+      r"""Lists all taxonomies in a taxonomy store or a project.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesListRequest) input message
@@ -569,7 +569,7 @@ all annotations in this taxonomy.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a taxonomy. Currently only support updating descriptions.
+      r"""Updates a taxonomy. Currently only support updating descriptions.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesPatchRequest) input message
@@ -596,7 +596,7 @@ all annotations in this taxonomy.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """SetIamPolicy method for the projects_taxonomies service.
+      r"""SetIamPolicy method for the projects_taxonomies service.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesSetIamPolicyRequest) input message
@@ -623,7 +623,7 @@ all annotations in this taxonomy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Return permissions that the caller has on the given taxonomy resource.
+      r"""Return permissions that the caller has on the given taxonomy resource.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesTestIamPermissionsRequest) input message
@@ -660,7 +660,7 @@ all annotations in this taxonomy.
           }
 
     def Copy(self, request, global_params=None):
-      """Copy a taxonomy to a given taxonomy store. Copy will fail if there is a.
+      r"""Copy a taxonomy to a given taxonomy store. Copy will fail if there is a.
 taxonomy with the same display name in the taxonomy store.
 
       Args:
@@ -698,7 +698,7 @@ taxonomy with the same display name in the taxonomy store.
           }
 
     def Search(self, request, global_params=None):
-      """Searches for taxonomies by display name in an organization, both in the.
+      r"""Searches for taxonomies by display name in an organization, both in the.
 organization-based taxonomy store and taxonomies in any project in the
 organization.
 
@@ -736,7 +736,7 @@ organization.
           }
 
     def Create(self, request, global_params=None):
-      """Creates an annotation in a taxonomy.
+      r"""Creates an annotation in a taxonomy.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesAnnotationsCreateRequest) input message
@@ -763,7 +763,7 @@ organization.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an annotation. Also deletes all member annotations if the given.
+      r"""Deletes an annotation. Also deletes all member annotations if the given.
 annotation is a group annotation.
 
       Args:
@@ -791,7 +791,7 @@ annotation is a group annotation.
     )
 
     def Get(self, request, global_params=None):
-      """Gets definition of an annotation.
+      r"""Gets definition of an annotation.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesAnnotationsGetRequest) input message
@@ -818,7 +818,7 @@ annotation is a group annotation.
     )
 
     def List(self, request, global_params=None):
-      """Lists all annotations in a taxonomy.
+      r"""Lists all annotations in a taxonomy.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesAnnotationsListRequest) input message
@@ -845,7 +845,7 @@ annotation is a group annotation.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an annotation. Currently only support updating descriptions.
+      r"""Updates an annotation. Currently only support updating descriptions.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesAnnotationsPatchRequest) input message
@@ -882,7 +882,7 @@ annotation is a group annotation.
           }
 
     def Copy(self, request, global_params=None):
-      """Copy an annotation to a given taxonomy. Copy will fail if there is an.
+      r"""Copy an annotation to a given taxonomy. Copy will fail if there is an.
 annotation with the same in the taxonomy.
 
       Args:
@@ -910,7 +910,7 @@ annotation with the same in the taxonomy.
     )
 
     def Create(self, request, global_params=None):
-      """Creates a new taxonomy in a given taxonomy store.
+      r"""Creates a new taxonomy in a given taxonomy store.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesCreateRequest) input message
@@ -937,7 +937,7 @@ annotation with the same in the taxonomy.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a taxonomy from a taxonomy store. This operation will also delete.
+      r"""Deletes a taxonomy from a taxonomy store. This operation will also delete.
 all annotations in this taxonomy.
 
       Args:
@@ -965,7 +965,7 @@ all annotations in this taxonomy.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the taxonomy referred by name. Size of a taxonomy is at most 100KB.
+      r"""Returns the taxonomy referred by name. Size of a taxonomy is at most 100KB.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesGetRequest) input message
@@ -992,7 +992,7 @@ all annotations in this taxonomy.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """GetIamPolicy method for the taxonomyStores_taxonomies service.
+      r"""GetIamPolicy method for the taxonomyStores_taxonomies service.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesGetIamPolicyRequest) input message
@@ -1019,7 +1019,7 @@ all annotations in this taxonomy.
     )
 
     def List(self, request, global_params=None):
-      """Lists all taxonomies in a taxonomy store or a project.
+      r"""Lists all taxonomies in a taxonomy store or a project.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesListRequest) input message
@@ -1046,7 +1046,7 @@ all annotations in this taxonomy.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates a taxonomy. Currently only support updating descriptions.
+      r"""Updates a taxonomy. Currently only support updating descriptions.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesPatchRequest) input message
@@ -1073,7 +1073,7 @@ all annotations in this taxonomy.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """SetIamPolicy method for the taxonomyStores_taxonomies service.
+      r"""SetIamPolicy method for the taxonomyStores_taxonomies service.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesSetIamPolicyRequest) input message
@@ -1100,7 +1100,7 @@ all annotations in this taxonomy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Return permissions that the caller has on the given taxonomy resource.
+      r"""Return permissions that the caller has on the given taxonomy resource.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesTestIamPermissionsRequest) input message
@@ -1137,7 +1137,7 @@ all annotations in this taxonomy.
           }
 
     def Copy(self, request, global_params=None):
-      """Copy a taxonomy to a given taxonomy store. Copy will fail if there is a.
+      r"""Copy a taxonomy to a given taxonomy store. Copy will fail if there is a.
 taxonomy with the same display name in the taxonomy store.
 
       Args:
@@ -1165,7 +1165,7 @@ taxonomy with the same display name in the taxonomy store.
     )
 
     def GetCommon(self, request, global_params=None):
-      """Get the read-only taxonomy store with predefined taxonomies. Taxonomies in.
+      r"""Get the read-only taxonomy store with predefined taxonomies. Taxonomies in.
 this store can only be read or copied out.
 
       Args:
@@ -1192,7 +1192,7 @@ this store can only be read or copied out.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """GetIamPolicy method for the taxonomyStores service.
+      r"""GetIamPolicy method for the taxonomyStores service.
 
       Args:
         request: (CategorymanagerTaxonomyStoresGetIamPolicyRequest) input message
@@ -1219,7 +1219,7 @@ this store can only be read or copied out.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """SetIamPolicy method for the taxonomyStores service.
+      r"""SetIamPolicy method for the taxonomyStores service.
 
       Args:
         request: (CategorymanagerTaxonomyStoresSetIamPolicyRequest) input message
@@ -1246,7 +1246,7 @@ this store can only be read or copied out.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Return permissions that the caller has on the given taxonomy resource.
+      r"""Return permissions that the caller has on the given taxonomy resource.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTestIamPermissionsRequest) input message

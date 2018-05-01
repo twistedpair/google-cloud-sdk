@@ -11,7 +11,7 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
   BASE_URL = u'https://containeranalysis.googleapis.com/'
 
   _PACKAGE = u'containeranalysis'
-  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = u'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -56,7 +56,7 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      """Lists `Occurrences` referencing the specified `Note`. Use this method to.
+      r"""Lists `Occurrences` referencing the specified `Note`. Use this method to.
 get all occurrences referencing your `Note` across all your customer
 projects.
 
@@ -95,7 +95,7 @@ projects.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new `Note`.
+      r"""Creates a new `Note`.
 
       Args:
         request: (ContaineranalysisProjectsNotesCreateRequest) input message
@@ -122,7 +122,7 @@ projects.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the given `Note` from the system.
+      r"""Deletes the given `Note` from the system.
 
       Args:
         request: (ContaineranalysisProjectsNotesDeleteRequest) input message
@@ -149,7 +149,7 @@ projects.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the requested `Note`.
+      r"""Returns the requested `Note`.
 
       Args:
         request: (ContaineranalysisProjectsNotesGetRequest) input message
@@ -176,7 +176,7 @@ projects.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a note or an `Occurrence` resource.
+      r"""Gets the access control policy for a note or an `Occurrence` resource.
 Requires `containeranalysis.notes.setIamPolicy` or
 `containeranalysis.occurrences.setIamPolicy` permission if the resource is
 a note or occurrence, respectively.
@@ -213,7 +213,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def List(self, request, global_params=None):
-      """Lists all `Notes` for a given project.
+      r"""Lists all `Notes` for a given project.
 
       Args:
         request: (ContaineranalysisProjectsNotesListRequest) input message
@@ -240,7 +240,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing `Note`.
+      r"""Updates an existing `Note`.
 
       Args:
         request: (ContaineranalysisProjectsNotesPatchRequest) input message
@@ -267,7 +267,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified `Note` or `Occurrence`.
+      r"""Sets the access control policy on the specified `Note` or `Occurrence`.
 Requires `containeranalysis.notes.setIamPolicy` or
 `containeranalysis.occurrences.setIamPolicy` permission if the resource is
 a `Note` or an `Occurrence`, respectively.
@@ -305,7 +305,7 @@ and projects/{projectid}/notes/{noteid} for notes
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns the permissions that a caller has on the specified note or.
+      r"""Returns the permissions that a caller has on the specified note or.
 occurrence resource. Requires list permission on the project (for example,
 "storage.objects.list" on the containing bucket for testing permission of
 an object). Attempting to call this method on a non-existent resource will
@@ -349,7 +349,7 @@ following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new `Occurrence`. Use this method to create `Occurrences`.
+      r"""Creates a new `Occurrence`. Use this method to create `Occurrences`.
 for a resource.
 
       Args:
@@ -377,7 +377,7 @@ for a resource.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the given `Occurrence` from the system. Use this when.
+      r"""Deletes the given `Occurrence` from the system. Use this when.
 an `Occurrence` is no longer applicable for the given resource.
 
       Args:
@@ -405,7 +405,7 @@ an `Occurrence` is no longer applicable for the given resource.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the requested `Occurrence`.
+      r"""Returns the requested `Occurrence`.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesGetRequest) input message
@@ -432,7 +432,7 @@ an `Occurrence` is no longer applicable for the given resource.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a note or an `Occurrence` resource.
+      r"""Gets the access control policy for a note or an `Occurrence` resource.
 Requires `containeranalysis.notes.setIamPolicy` or
 `containeranalysis.occurrences.setIamPolicy` permission if the resource is
 a note or occurrence, respectively.
@@ -469,7 +469,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def GetNotes(self, request, global_params=None):
-      """Gets the `Note` attached to the given `Occurrence`.
+      r"""Gets the `Note` attached to the given `Occurrence`.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesGetNotesRequest) input message
@@ -496,7 +496,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def GetVulnerabilitySummary(self, request, global_params=None):
-      """Gets a summary of the number and severity of occurrences.
+      r"""Gets a summary of the number and severity of occurrences.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesGetVulnerabilitySummaryRequest) input message
@@ -523,7 +523,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def List(self, request, global_params=None):
-      """Lists active `Occurrences` for a given project matching the filters.
+      r"""Lists active `Occurrences` for a given project matching the filters.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesListRequest) input message
@@ -550,7 +550,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing occurrence.
+      r"""Updates an existing occurrence.
 
       Args:
         request: (ContaineranalysisProjectsOccurrencesPatchRequest) input message
@@ -577,7 +577,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified `Note` or `Occurrence`.
+      r"""Sets the access control policy on the specified `Note` or `Occurrence`.
 Requires `containeranalysis.notes.setIamPolicy` or
 `containeranalysis.occurrences.setIamPolicy` permission if the resource is
 a `Note` or an `Occurrence`, respectively.
@@ -615,7 +615,7 @@ and projects/{projectid}/notes/{noteid} for notes
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns the permissions that a caller has on the specified note or.
+      r"""Returns the permissions that a caller has on the specified note or.
 occurrence resource. Requires list permission on the project (for example,
 "storage.objects.list" on the containing bucket for testing permission of
 an object). Attempting to call this method on a non-existent resource will
@@ -659,7 +659,7 @@ following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new `Operation`.
+      r"""Creates a new `Operation`.
 
       Args:
         request: (ContaineranalysisProjectsOperationsCreateRequest) input message
@@ -686,7 +686,7 @@ following formats: `projects/{PROJECT_ID}/occurrences/{OCCURRENCE_ID}` for
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing operation returns an error if operation.
+      r"""Updates an existing operation returns an error if operation.
  does not exist. The only valid operations are to update mark the done bit
 change the result.
 
@@ -725,7 +725,7 @@ change the result.
           }
 
     def Get(self, request, global_params=None):
-      """Gets a specific scan configuration for a project.
+      r"""Gets a specific scan configuration for a project.
 
       Args:
         request: (ContaineranalysisProjectsScanConfigsGetRequest) input message
@@ -752,7 +752,7 @@ change the result.
     )
 
     def List(self, request, global_params=None):
-      """Lists scan configurations for a project.
+      r"""Lists scan configurations for a project.
 
       Args:
         request: (ContaineranalysisProjectsScanConfigsListRequest) input message
@@ -779,7 +779,7 @@ change the result.
     )
 
     def Patch(self, request, global_params=None):
-      """Updates the scan configuration to a new value.
+      r"""Updates the scan configuration to a new value.
 
       Args:
         request: (ContaineranalysisProjectsScanConfigsPatchRequest) input message
@@ -826,7 +826,7 @@ change the result.
           }
 
     def List(self, request, global_params=None):
-      """Lists `Occurrences` referencing the specified `Note`. Use this method to.
+      r"""Lists `Occurrences` referencing the specified `Note`. Use this method to.
 get all occurrences referencing your `Note` across all your customer
 projects.
 
@@ -865,7 +865,7 @@ projects.
           }
 
     def Create(self, request, global_params=None):
-      """Creates a new `Note`.
+      r"""Creates a new `Note`.
 
       Args:
         request: (ContaineranalysisProvidersNotesCreateRequest) input message
@@ -892,7 +892,7 @@ projects.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes the given `Note` from the system.
+      r"""Deletes the given `Note` from the system.
 
       Args:
         request: (ContaineranalysisProvidersNotesDeleteRequest) input message
@@ -919,7 +919,7 @@ projects.
     )
 
     def Get(self, request, global_params=None):
-      """Returns the requested `Note`.
+      r"""Returns the requested `Note`.
 
       Args:
         request: (ContaineranalysisProvidersNotesGetRequest) input message
@@ -946,7 +946,7 @@ projects.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a note or an `Occurrence` resource.
+      r"""Gets the access control policy for a note or an `Occurrence` resource.
 Requires `containeranalysis.notes.setIamPolicy` or
 `containeranalysis.occurrences.setIamPolicy` permission if the resource is
 a note or occurrence, respectively.
@@ -983,7 +983,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def List(self, request, global_params=None):
-      """Lists all `Notes` for a given project.
+      r"""Lists all `Notes` for a given project.
 
       Args:
         request: (ContaineranalysisProvidersNotesListRequest) input message
@@ -1010,7 +1010,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def Patch(self, request, global_params=None):
-      """Updates an existing `Note`.
+      r"""Updates an existing `Note`.
 
       Args:
         request: (ContaineranalysisProvidersNotesPatchRequest) input message
@@ -1037,7 +1037,7 @@ projects/{PROJECT_ID}/notes/{NOTE_ID} for notes
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified `Note` or `Occurrence`.
+      r"""Sets the access control policy on the specified `Note` or `Occurrence`.
 Requires `containeranalysis.notes.setIamPolicy` or
 `containeranalysis.occurrences.setIamPolicy` permission if the resource is
 a `Note` or an `Occurrence`, respectively.
@@ -1075,7 +1075,7 @@ and projects/{projectid}/notes/{noteid} for notes
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns the permissions that a caller has on the specified note or.
+      r"""Returns the permissions that a caller has on the specified note or.
 occurrence resource. Requires list permission on the project (for example,
 "storage.objects.list" on the containing bucket for testing permission of
 an object). Attempting to call this method on a non-existent resource will

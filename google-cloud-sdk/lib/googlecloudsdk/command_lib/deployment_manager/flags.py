@@ -14,6 +14,8 @@
 
 """Helper methods for configuring deployment manager command flags."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.deployment_manager import dm_api_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util.apis import arg_utils

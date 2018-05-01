@@ -17,7 +17,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 import sys
 
-from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.composer import util as command_util
@@ -57,7 +56,7 @@ def Get(operation_resource):
                               name=operation_resource.RelativeName()))
 
 
-def List(location_resource, page_size, limit=sys.maxsize):
+def List(location_refs, page_size, limit=sys.maxsize):
   """Lists Composer Operations across all locations.
 
   Uses a hardcoded list of locations, as there is way to dynamically
@@ -65,25 +64,25 @@ def List(location_resource, page_size, limit=sys.maxsize):
   will be aligned with Cloud SDK releases.
 
   Args:
-    location_resource: [core.resources.Resource], a resource reference to a
-        location in which to list operations.
+    location_refs: [core.resources.Resource], a list of resource reference to
+        locations in which to list operations.
     page_size: An integer specifying the maximum number of resources to be
       returned in a single list call.
     limit: An integer specifying the maximum number of operations to list.
         None if all available operations should be returned.
 
   Returns:
-    list: a list containing Operations within the project
+    list: a generator over Operations within the locations in `location_refs`.
   """
-  return list_pager.YieldFromList(
+  return api_util.AggregateListResults(
+      api_util.GetMessagesModule()
+      .ComposerProjectsLocationsOperationsListRequest,
       GetService(),
-      request=api_util.GetMessagesModule()
-      .ComposerProjectsLocationsOperationsListRequest(
-          name=location_resource.RelativeName()),
-      field='operations',
+      location_refs,
+      'operations',
+      page_size,
       limit=limit,
-      batch_size=page_size if page_size else api_util.DEFAULT_PAGE_SIZE,
-      batch_size_attribute='pageSize')
+      location_attribute='name')
 
 
 def WaitForOperation(operation, message):

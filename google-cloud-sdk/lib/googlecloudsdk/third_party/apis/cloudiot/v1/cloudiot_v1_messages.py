@@ -14,7 +14,7 @@ package = 'cloudiot'
 
 
 class Binding(_messages.Message):
-  """Associates `members` with a `role`.
+  r"""Associates `members` with a `role`.
 
   Fields:
     members: Specifies the identities requesting access for a Cloud Platform
@@ -24,8 +24,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -39,7 +39,7 @@ class Binding(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesCreateRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesCreateRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesCreateRequest object.
 
   Fields:
     deviceRegistry: A DeviceRegistry resource to be passed as the request
@@ -53,7 +53,7 @@ class CloudiotProjectsLocationsRegistriesCreateRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesDeleteRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDeleteRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDeleteRequest object.
 
   Fields:
     name: The name of the device registry. For example, `projects/example-
@@ -64,7 +64,7 @@ class CloudiotProjectsLocationsRegistriesDeleteRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest
+  r"""A CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest
   object.
 
   Fields:
@@ -82,7 +82,7 @@ class CloudiotProjectsLocationsRegistriesDevicesConfigVersionsListRequest(_messa
 
 
 class CloudiotProjectsLocationsRegistriesDevicesCreateRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesCreateRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesCreateRequest object.
 
   Fields:
     device: A Device resource to be passed as the request body.
@@ -96,7 +96,7 @@ class CloudiotProjectsLocationsRegistriesDevicesCreateRequest(_messages.Message)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesDeleteRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesDeleteRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesDeleteRequest object.
 
   Fields:
     name: The name of the device. For example, `projects/p0/locations/us-
@@ -108,7 +108,7 @@ class CloudiotProjectsLocationsRegistriesDevicesDeleteRequest(_messages.Message)
 
 
 class CloudiotProjectsLocationsRegistriesDevicesGetRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesGetRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesGetRequest object.
 
   Fields:
     fieldMask: The fields of the `Device` resource to be returned in the
@@ -123,7 +123,7 @@ class CloudiotProjectsLocationsRegistriesDevicesGetRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesDevicesListRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesListRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesListRequest object.
 
   Fields:
     deviceIds: A list of device string identifiers. If empty, it will ignore
@@ -154,7 +154,7 @@ class CloudiotProjectsLocationsRegistriesDevicesListRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest(_messages.Message):
-  """A
+  r"""A
   CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest
   object.
 
@@ -171,7 +171,7 @@ class CloudiotProjectsLocationsRegistriesDevicesModifyCloudToDeviceConfigRequest
 
 
 class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesPatchRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesPatchRequest object.
 
   Fields:
     device: A Device resource to be passed as the request body.
@@ -192,7 +192,7 @@ class CloudiotProjectsLocationsRegistriesDevicesPatchRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesDevicesStatesListRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesDevicesStatesListRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesDevicesStatesListRequest object.
 
   Fields:
     name: The name of the device. For example, `projects/p0/locations/us-
@@ -208,7 +208,7 @@ class CloudiotProjectsLocationsRegistriesDevicesStatesListRequest(_messages.Mess
 
 
 class CloudiotProjectsLocationsRegistriesGetIamPolicyRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesGetIamPolicyRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -223,7 +223,7 @@ class CloudiotProjectsLocationsRegistriesGetIamPolicyRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesGetRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesGetRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesGetRequest object.
 
   Fields:
     name: The name of the device registry. For example, `projects/example-
@@ -234,7 +234,7 @@ class CloudiotProjectsLocationsRegistriesGetRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesListRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesListRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesListRequest object.
 
   Fields:
     pageSize: The maximum number of registries to return in the response. If
@@ -254,7 +254,7 @@ class CloudiotProjectsLocationsRegistriesListRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesPatchRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesPatchRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesPatchRequest object.
 
   Fields:
     deviceRegistry: A DeviceRegistry resource to be passed as the request
@@ -274,7 +274,7 @@ class CloudiotProjectsLocationsRegistriesPatchRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesSetIamPolicyRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesSetIamPolicyRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -289,7 +289,7 @@ class CloudiotProjectsLocationsRegistriesSetIamPolicyRequest(_messages.Message):
 
 
 class CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest(_messages.Message):
-  """A CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest object.
+  r"""A CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -304,7 +304,7 @@ class CloudiotProjectsLocationsRegistriesTestIamPermissionsRequest(_messages.Mes
 
 
 class Device(_messages.Message):
-  """The device resource.
+  r"""The device resource.
 
   Messages:
     MetadataValue: The metadata key-value pairs assigned to the device. This
@@ -378,7 +378,7 @@ class Device(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """The metadata key-value pairs assigned to the device. This metadata is
+    r"""The metadata key-value pairs assigned to the device. This metadata is
     not interpreted or indexed by Cloud IoT Core. It can be used to add
     contextual information for the device.  Keys must conform to the regular
     expression a-zA-Z+ and be less than 128 bytes in length.  Values are free-
@@ -394,7 +394,7 @@ class Device(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -424,7 +424,7 @@ class Device(_messages.Message):
 
 
 class DeviceConfig(_messages.Message):
-  """The device configuration. Eventually delivered to devices.
+  r"""The device configuration. Eventually delivered to devices.
 
   Fields:
     binaryData: The device configuration data.
@@ -454,7 +454,7 @@ class DeviceConfig(_messages.Message):
 
 
 class DeviceCredential(_messages.Message):
-  """A server-stored device credential used for authentication.
+  r"""A server-stored device credential used for authentication.
 
   Fields:
     expirationTime: [Optional] The time at which this credential becomes
@@ -479,7 +479,7 @@ class DeviceCredential(_messages.Message):
 
 
 class DeviceRegistry(_messages.Message):
-  """A container for a group of devices.
+  r"""A container for a group of devices.
 
   Fields:
     credentials: The credentials used to verify the device credentials. No
@@ -526,7 +526,7 @@ class DeviceRegistry(_messages.Message):
 
 
 class DeviceState(_messages.Message):
-  """The device state, as reported by the device.
+  r"""The device state, as reported by the device.
 
   Fields:
     binaryData: The device state data.
@@ -539,7 +539,7 @@ class DeviceState(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -549,7 +549,7 @@ class Empty(_messages.Message):
 
 
 class EventNotificationConfig(_messages.Message):
-  """The configuration for forwarding telemetry events.
+  r"""The configuration for forwarding telemetry events.
 
   Fields:
     pubsubTopicName: A Cloud Pub/Sub topic name. For example,
@@ -565,11 +565,11 @@ class EventNotificationConfig(_messages.Message):
 
 
 class GetIamPolicyRequest(_messages.Message):
-  """Request message for `GetIamPolicy` method."""
+  r"""Request message for `GetIamPolicy` method."""
 
 
 class HttpConfig(_messages.Message):
-  """The configuration of the HTTP bridge for a device registry.
+  r"""The configuration of the HTTP bridge for a device registry.
 
   Enums:
     HttpEnabledStateValueValuesEnum: If enabled, allows devices to use
@@ -583,7 +583,7 @@ class HttpConfig(_messages.Message):
   """
 
   class HttpEnabledStateValueValuesEnum(_messages.Enum):
-    """If enabled, allows devices to use DeviceService via the HTTP protocol.
+    r"""If enabled, allows devices to use DeviceService via the HTTP protocol.
     Otherwise, any requests to DeviceService will fail for this registry.
 
     Values:
@@ -600,7 +600,7 @@ class HttpConfig(_messages.Message):
 
 
 class ListDeviceConfigVersionsResponse(_messages.Message):
-  """Response for `ListDeviceConfigVersions`.
+  r"""Response for `ListDeviceConfigVersions`.
 
   Fields:
     deviceConfigs: The device configuration for the last few versions.
@@ -612,7 +612,7 @@ class ListDeviceConfigVersionsResponse(_messages.Message):
 
 
 class ListDeviceRegistriesResponse(_messages.Message):
-  """Response for `ListDeviceRegistries`.
+  r"""Response for `ListDeviceRegistries`.
 
   Fields:
     deviceRegistries: The registries that matched the query.
@@ -626,7 +626,7 @@ class ListDeviceRegistriesResponse(_messages.Message):
 
 
 class ListDeviceStatesResponse(_messages.Message):
-  """Response for `ListDeviceStates`.
+  r"""Response for `ListDeviceStates`.
 
   Fields:
     deviceStates: The last few device states. States are listed in descending
@@ -637,7 +637,7 @@ class ListDeviceStatesResponse(_messages.Message):
 
 
 class ListDevicesResponse(_messages.Message):
-  """Response for `ListDevices`.
+  r"""Response for `ListDevices`.
 
   Fields:
     devices: The devices that match the request.
@@ -651,7 +651,7 @@ class ListDevicesResponse(_messages.Message):
 
 
 class ModifyCloudToDeviceConfigRequest(_messages.Message):
-  """Request for `ModifyCloudToDeviceConfig`.
+  r"""Request for `ModifyCloudToDeviceConfig`.
 
   Fields:
     binaryData: The configuration data for the device.
@@ -667,7 +667,7 @@ class ModifyCloudToDeviceConfigRequest(_messages.Message):
 
 
 class MqttConfig(_messages.Message):
-  """The configuration of MQTT for a device registry.
+  r"""The configuration of MQTT for a device registry.
 
   Enums:
     MqttEnabledStateValueValuesEnum: If enabled, allows connections using the
@@ -679,8 +679,8 @@ class MqttConfig(_messages.Message):
   """
 
   class MqttEnabledStateValueValuesEnum(_messages.Enum):
-    """If enabled, allows connections using the MQTT protocol. Otherwise, MQTT
-    connections to this registry will fail.
+    r"""If enabled, allows connections using the MQTT protocol. Otherwise,
+    MQTT connections to this registry will fail.
 
     Values:
       MQTT_STATE_UNSPECIFIED: No MQTT state specified. If not specified, MQTT
@@ -696,19 +696,24 @@ class MqttConfig(_messages.Message):
 
 
 class Policy(_messages.Message):
-  """Defines an Identity and Access Management (IAM) policy. It is used to
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     bindings: Associates a list of `members` to a `role`. `bindings` with no
@@ -731,7 +736,7 @@ class Policy(_messages.Message):
 
 
 class PublicKeyCertificate(_messages.Message):
-  """A public key certificate format and data.
+  r"""A public key certificate format and data.
 
   Enums:
     FormatValueValuesEnum: The certificate format.
@@ -744,7 +749,7 @@ class PublicKeyCertificate(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    """The certificate format.
+    r"""The certificate format.
 
     Values:
       UNSPECIFIED_PUBLIC_KEY_CERTIFICATE_FORMAT: The format has not been
@@ -763,7 +768,7 @@ class PublicKeyCertificate(_messages.Message):
 
 
 class PublicKeyCredential(_messages.Message):
-  """A public key format and data.
+  r"""A public key format and data.
 
   Enums:
     FormatValueValuesEnum: The format of the key.
@@ -774,7 +779,7 @@ class PublicKeyCredential(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    """The format of the key.
+    r"""The format of the key.
 
     Values:
       UNSPECIFIED_PUBLIC_KEY_FORMAT: The format has not been specified. This
@@ -810,7 +815,7 @@ class PublicKeyCredential(_messages.Message):
 
 
 class RegistryCredential(_messages.Message):
-  """A server-stored registry credential used to validate device credentials.
+  r"""A server-stored registry credential used to validate device credentials.
 
   Fields:
     publicKeyCertificate: A public key certificate used to verify the device
@@ -821,7 +826,7 @@ class RegistryCredential(_messages.Message):
 
 
 class SetIamPolicyRequest(_messages.Message):
-  """Request message for `SetIamPolicy` method.
+  r"""Request message for `SetIamPolicy` method.
 
   Fields:
     policy: REQUIRED: The complete policy to be applied to the `resource`. The
@@ -834,7 +839,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -863,7 +868,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -875,7 +880,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -901,7 +906,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StateNotificationConfig(_messages.Message):
-  """The configuration for notification of new states received from the
+  r"""The configuration for notification of new states received from the
   device.
 
   Fields:
@@ -913,7 +918,7 @@ class StateNotificationConfig(_messages.Message):
 
 
 class Status(_messages.Message):
-  """The `Status` type defines a logical error model that is suitable for
+  r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). The error model is designed to be:
   - Simple to use and understand for most users - Flexible enough to meet
@@ -961,7 +966,7 @@ class Status(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DetailsValueListEntry(_messages.Message):
-    """A DetailsValueListEntry object.
+    r"""A DetailsValueListEntry object.
 
     Messages:
       AdditionalProperty: An additional property for a DetailsValueListEntry
@@ -973,7 +978,7 @@ class Status(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a DetailsValueListEntry object.
+      r"""An additional property for a DetailsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -991,7 +996,7 @@ class Status(_messages.Message):
 
 
 class TestIamPermissionsRequest(_messages.Message):
-  """Request message for `TestIamPermissions` method.
+  r"""Request message for `TestIamPermissions` method.
 
   Fields:
     permissions: The set of permissions to check for the `resource`.
@@ -1004,7 +1009,7 @@ class TestIamPermissionsRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  """Response message for `TestIamPermissions` method.
+  r"""Response message for `TestIamPermissions` method.
 
   Fields:
     permissions: A subset of `TestPermissionsRequest.permissions` that the
@@ -1015,7 +1020,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class X509CertificateDetails(_messages.Message):
-  """Details of an X.509 certificate. For informational purposes only.
+  r"""Details of an X.509 certificate. For informational purposes only.
 
   Fields:
     expiryTime: The time the certificate becomes invalid.

@@ -14,7 +14,9 @@
 
 """Base functions for DM write commands."""
 
-import StringIO
+from __future__ import absolute_import
+from __future__ import unicode_literals
+import io
 import time
 
 from googlecloudsdk.api_lib.deployment_manager import exceptions
@@ -25,7 +27,7 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 
 
-def Execute(client, messages, resources, request, async, call, logger):
+def Execute(client, messages, resources, request, is_async, call, logger):
   """Executes the request, managing asynchronous behavior.
 
   Args:
@@ -33,7 +35,7 @@ def Execute(client, messages, resources, request, async, call, logger):
     messages: The API message to use.
     resources: The API resource to use.
     request: The request to pass call.
-    async: False if this call should poll for the Operation's success.
+    is_async: False if this call should poll for the Operation's success.
     call: Function that calls the appropriate API.
     logger: The log function to use for the operation. Should take the request
         and a boolean arg for async.
@@ -47,7 +49,7 @@ def Execute(client, messages, resources, request, async, call, logger):
     ToolException: Call encountered an error.
   """
   response = call(request)
-  if not async:
+  if not is_async:
     operation_ref = resources.Parse(
         response.name,
         params={'project': properties.VALUES.core.project.GetOrFail},
@@ -56,8 +58,8 @@ def Execute(client, messages, resources, request, async, call, logger):
                      operation_ref.operation, response.operationType,
                      project=request.project)
 
-  logger(request, async)
-  if async:
+  logger(request, is_async)
+  if is_async:
     log.Print('Operation [{0}] running....'.format(response.name))
 
   return response
@@ -72,7 +74,7 @@ def GetOperationError(error):
   Returns:
     A ready-to-print string representation of the error.
   """
-  error_message = StringIO.StringIO()
+  error_message = io.StringIO()
   resource_printer.Print(error, 'yaml', out=error_message)
   return error_message.getvalue()
 

@@ -50,7 +50,7 @@ class BinaryauthorizationV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates an attestation authority, and returns a.
+      r"""Creates an attestation authority, and returns a.
 copy of the new attestation authority.
 Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the
 request is malformed, ALREADY_EXISTS if the attestation
@@ -81,7 +81,7 @@ authority already exists.
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes an attestation authority. Returns NOT_FOUND.
+      r"""Deletes an attestation authority. Returns NOT_FOUND.
 if the attestation authority does not exist.
 
       Args:
@@ -109,7 +109,7 @@ if the attestation authority does not exist.
     )
 
     def Get(self, request, global_params=None):
-      """Gets an [AttestationAuthority].
+      r"""Gets an [AttestationAuthority].
 Returns NOT_FOUND if the [AttestationAuthority] does not exist.
 
       Args:
@@ -137,7 +137,7 @@ Returns NOT_FOUND if the [AttestationAuthority] does not exist.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -166,7 +166,7 @@ set.
     )
 
     def List(self, request, global_params=None):
-      """Lists attestation authorities.
+      r"""Lists attestation authorities.
 Returns INVALID_ARGUMENT if the project does not exist.
 
       Args:
@@ -194,7 +194,7 @@ Returns INVALID_ARGUMENT if the project does not exist.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -222,7 +222,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -255,7 +255,7 @@ may "fail open" without warning.
     )
 
     def Update(self, request, global_params=None):
-      """Updates an [AttestationAuthority].
+      r"""Updates an [AttestationAuthority].
 Returns NOT_FOUND if the [AttestationAuthority] does not exist.
 
       Args:
@@ -293,7 +293,7 @@ Returns NOT_FOUND if the [AttestationAuthority] does not exist.
           }
 
     def GetIamPolicy(self, request, global_params=None):
-      """Gets the access control policy for a resource.
+      r"""Gets the access control policy for a resource.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
@@ -322,7 +322,7 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      """Sets the access control policy on the specified resource. Replaces any.
+      r"""Sets the access control policy on the specified resource. Replaces any.
 existing policy.
 
       Args:
@@ -350,7 +350,7 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      """Returns permissions that a caller has on the specified resource.
+      r"""Returns permissions that a caller has on the specified resource.
 If the resource does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
 
@@ -393,7 +393,7 @@ may "fail open" without warning.
           }
 
     def GetPolicy(self, request, global_params=None):
-      """Gets the policy for this project. Returns a default.
+      r"""Gets the policy for this project. Returns a default.
 policy if the project does not have one.
 
       Args:
@@ -421,7 +421,7 @@ policy if the project does not have one.
     )
 
     def UpdatePolicy(self, request, global_params=None):
-      """Creates or updates a project's policy, and returns a copy of the.
+      r"""Creates or updates a project's policy, and returns a copy of the.
 new policy. A policy is always updated as a whole, to avoid race
 conditions with concurrent policy enforcement (or management!) requests.
 Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the

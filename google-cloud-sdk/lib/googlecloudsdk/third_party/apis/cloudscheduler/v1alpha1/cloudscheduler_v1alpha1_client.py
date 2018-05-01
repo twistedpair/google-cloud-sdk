@@ -50,7 +50,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      """Creates a job.
+      r"""Creates a job.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsCreateRequest) input message
@@ -77,7 +77,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      """Deletes a job.
+      r"""Deletes a job.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsDeleteRequest) input message
@@ -104,7 +104,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      """Gets a job.
+      r"""Gets a job.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsGetRequest) input message
@@ -131,7 +131,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      """Lists jobs.
+      r"""Lists jobs.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsListRequest) input message
@@ -158,7 +158,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
     )
 
     def Run(self, request, global_params=None):
-      """Forces a job to run now.
+      r"""Forces a job to run now.
 
 When this method is called, Cloud Scheduler will immediately attempt the
 job.
@@ -167,7 +167,7 @@ job.
         request: (CloudschedulerProjectsLocationsJobsRunRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Job) The response message.
       """
       config = self.GetMethodConfig('Run')
       return self._RunMethod(
@@ -183,7 +183,7 @@ job.
         relative_path=u'v1alpha1/{+name}:run',
         request_field=u'runJobRequest',
         request_type_name=u'CloudschedulerProjectsLocationsJobsRunRequest',
-        response_type_name=u'Empty',
+        response_type_name=u'Job',
         supports_download=False,
     )
 
@@ -198,7 +198,7 @@ job.
           }
 
     def Get(self, request, global_params=None):
-      """Gets information about a location.
+      r"""Gets information about a location.
 
       Args:
         request: (CloudschedulerProjectsLocationsGetRequest) input message
@@ -225,7 +225,7 @@ job.
     )
 
     def List(self, request, global_params=None):
-      """Lists information about the supported locations for this service.
+      r"""Lists information about the supported locations for this service.
 
       Args:
         request: (CloudschedulerProjectsLocationsListRequest) input message
