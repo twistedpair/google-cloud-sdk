@@ -11,14 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Utilities for the `gcloud feedback` command."""
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import os
 import re
-import urllib
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
+
+from six.moves import map
+from six.moves import range
+from six.moves import urllib
 
 
 NEW_ISSUE_URL = 'https://issuetracker.google.com/issues/new'
@@ -90,7 +97,7 @@ def _FormatNewIssueUrl(comment):
       'description': comment,
       'component': str(ISSUE_TRACKER_COMPONENT)
   }
-  return NEW_ISSUE_URL + '?' + urllib.urlencode(params)
+  return NEW_ISSUE_URL + '?' + urllib.parse.urlencode(params)
 
 
 def OpenInBrowser(url):
@@ -105,7 +112,7 @@ def _UrlEncodeLen(string):
   """Return the length of string when URL-encoded."""
   # urlencode turns a dict into a string of 'key=value' pairs. We use a blank
   # key and don't want to count the '='.
-  encoded = urllib.urlencode({'': string})[1:]
+  encoded = urllib.parse.urlencode({'': string})[1:]
   return len(encoded)
 
 
@@ -298,7 +305,7 @@ def _CommonPrefix(paths):
   Returns:
     str, common prefix
   """
-  prefix = os.path.commonprefix(map(os.path.dirname, paths))
+  prefix = os.path.commonprefix(list(map(os.path.dirname, paths)))
   if not prefix:
     return prefix
   if all([path.startswith(prefix + os.path.sep) for path in paths]):

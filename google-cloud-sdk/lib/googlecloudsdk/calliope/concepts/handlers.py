@@ -163,7 +163,7 @@ class ResourceInfo(object):
   def resource_spec(self):
     return self.concept_spec
 
-  def BuildFullFallthroughsMap(self, parsed_args=None):
+  def BuildFullFallthroughsMap(self):
     """Builds map of all fallthroughs including arg names.
 
     Fallthroughs are a list of objects that, when called, try different ways of
@@ -172,9 +172,6 @@ class ResourceInfo(object):
     its fallthroughs, including the "primary" fallthrough representing its
     corresponding argument value in parsed_args if any, and any fallthroughs
     that were configured for the attribute beyond that.
-
-    Args:
-      parsed_args: the parsed namespace.
 
     Returns:
       {str: [deps_lib._Fallthrough]}, a map from attribute name to its
@@ -189,19 +186,12 @@ class ResourceInfo(object):
       # attribute.
       arg_name = self.attribute_to_args_map.get(attribute_name)
       if arg_name:
-        arg_value = getattr(parsed_args,
-                            util.NamespaceFormat(arg_name),
-                            None)
         # The only args that should be lists are anchor args for plural
         # resources.
         plural = (attribute_name == self.concept_spec.anchor.name
                   and self.plural)
-        if isinstance(arg_value, list) and not plural:
-          arg_value = arg_value[0] if arg_value else None
-        if plural and arg_value is None:
-          arg_value = []
         attribute_fallthroughs.append(
-            deps_lib.ArgFallthrough(arg_name, arg_value))
+            deps_lib.ArgFallthrough(arg_name, plural=plural))
 
       attribute_fallthroughs += self.fallthroughs_map.get(attribute_name, [])
       fallthroughs_map[attribute_name] = attribute_fallthroughs
@@ -248,11 +238,12 @@ class ResourceInfo(object):
       the initialized resource or a list of initialized resources if the
         resource argument was pluralized.
     """
-    fallthroughs_map = self.BuildFullFallthroughsMap(parsed_args)
+    fallthroughs_map = self.BuildFullFallthroughsMap()
 
     if not self.plural:
       try:
-        return self.concept_spec.Initialize(deps_lib.Deps(fallthroughs_map))
+        return self.concept_spec.Initialize(
+            deps_lib.Deps(fallthroughs_map, parsed_args=parsed_args))
       except concepts.InitializationError:
         if self.allow_empty:
           return None
@@ -267,7 +258,7 @@ class ResourceInfo(object):
     for i, fallthrough in enumerate(anchor_fallthroughs):
 
       try:
-        anchor_values = fallthrough.GetValue()
+        anchor_values = fallthrough.GetValue(parsed_args)
       except deps_lib.FallthroughNotFoundError:
         continue
       for arg_value in anchor_values:
@@ -278,12 +269,12 @@ class ResourceInfo(object):
             anchor_fallthroughs[:i] + [fallthrough] +
             anchor_fallthroughs[i:])
         resources.append(self.concept_spec.Initialize(deps_lib.Deps(
-            fallthroughs_map)))
+            fallthroughs_map, parsed_args=parsed_args)))
       return resources
     if self.allow_empty:
       return resources
     return self.concept_spec.Initialize(deps_lib.Deps(
-        fallthroughs_map))
+        fallthroughs_map, parsed_args=parsed_args))
 
   def ClearCache(self):
     self._result = None

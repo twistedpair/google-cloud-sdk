@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20180420",
+ "revision": "20180430",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -373,6 +373,28 @@
     }
    }
   },
+  "GlobalSetPolicyRequest": {
+   "id": "GlobalSetPolicyRequest",
+   "type": "object",
+   "properties": {
+    "bindings": {
+     "type": "array",
+     "description": "Flatten Policy to create a backwacd compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
+     "items": {
+      "$ref": "Binding"
+     }
+    },
+    "etag": {
+     "type": "string",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify the etag.",
+     "format": "byte"
+    },
+    "policy": {
+     "$ref": "Policy",
+     "description": "REQUIRED: The complete policy to be applied to the 'resource'. The size of the policy is limited to a few 10s of KB. An empty policy is in general a valid policy but certain services (like Projects) might reject them."
+    }
+   }
+  },
   "ImportFile": {
    "id": "ImportFile",
    "type": "object",
@@ -516,7 +538,7 @@
    "properties": {
     "clientOperationId": {
      "type": "string",
-     "description": "[Output Only] Reserved for future use."
+     "description": "[Output Only] The value of `requestId` if you provided it in the request. Not present otherwise."
     },
     "creationTimestamp": {
      "type": "string",
@@ -1420,7 +1442,7 @@
       "resource"
      ],
      "request": {
-      "$ref": "Policy"
+      "$ref": "GlobalSetPolicyRequest"
      },
      "response": {
       "$ref": "Policy"

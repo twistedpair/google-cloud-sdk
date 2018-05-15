@@ -19,10 +19,10 @@ Based on the runtime and environment, this can entail generating a new
 
 from __future__ import absolute_import
 import os
-import re
 
+from googlecloudsdk.api_lib.app import env
+from googlecloudsdk.api_lib.app import runtime_registry
 from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.command_lib.app import runtime_registry
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import exceptions as core_exceptions
 
@@ -43,11 +43,9 @@ _PHP_GCLOUDIGNORE = '\n'.join([
 
 _GCLOUDIGNORE_REGISTRY = {
     runtime_registry.RegistryEntry(
-        re.compile(r'nodejs\d*'), {util.Environment.STANDARD}):
-        _NODE_GCLOUDIGNORE,
+        env.NODE_TI_RUNTIME_EXPR, {env.STANDARD}): _NODE_GCLOUDIGNORE,
     runtime_registry.RegistryEntry(
-        re.compile(r'php[789]\d*'), {util.Environment.STANDARD}):
-        _PHP_GCLOUDIGNORE,
+        env.PHP_TI_RUNTIME_EXPR, {env.STANDARD}): _PHP_GCLOUDIGNORE,
 }
 
 
@@ -58,11 +56,11 @@ class SkipFilesError(core_exceptions.Error):
 
 
 def _GetGcloudignoreRegistry():
-  return runtime_registry.Registry(_GCLOUDIGNORE_REGISTRY)
+  return runtime_registry.Registry(_GCLOUDIGNORE_REGISTRY, default=False)
 
 
 def GetSourceFileIterator(source_dir, skip_files_regex, has_explicit_skip_files,
-                          runtime, env):
+                          runtime, environment):
   """Returns an iterator for accessing all source files to be uploaded.
 
   This method uses several implementations based on the provided runtime and
@@ -85,7 +83,7 @@ def GetSourceFileIterator(source_dir, skip_files_regex, has_explicit_skip_files,
     has_explicit_skip_files: bool, indicating whether skip_files_regex was
       explicitly defined by the user
     runtime: str, runtime as defined in app.yaml
-    env: util.Environment enum
+    environment: env.Environment enum
 
   Raises:
     SkipFilesError: if you are using a runtime that no longer supports
@@ -98,7 +96,7 @@ def GetSourceFileIterator(source_dir, skip_files_regex, has_explicit_skip_files,
     should be uploaded for deployment.
   """
   gcloudignore_registry = _GetGcloudignoreRegistry()
-  registry_entry = gcloudignore_registry.Get(runtime, env)
+  registry_entry = gcloudignore_registry.Get(runtime, environment)
 
   if registry_entry:
     if has_explicit_skip_files:

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """'functions deploy' utilities for labels."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.functions import util as api_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.util.args import labels_util as args_labels_util

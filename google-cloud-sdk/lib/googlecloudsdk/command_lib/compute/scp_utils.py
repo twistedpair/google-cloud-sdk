@@ -14,6 +14,8 @@
 
 """Base class for commands copying files from and to virtual machines."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import sys
 from argcomplete.completers import FilesCompleter
 

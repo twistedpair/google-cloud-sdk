@@ -14,6 +14,7 @@
 """Flags and helpers for the compute instance groups commands."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import managed_instance_groups_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers

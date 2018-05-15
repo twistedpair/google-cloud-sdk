@@ -478,6 +478,13 @@ class Collections(enum.Enum):
       [u'project', u'urlMap'],
       True
   )
+  VPNGATEWAYS = (
+      'vpnGateways',
+      'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
+      {},
+      [u'project', u'region', u'vpnGateway'],
+      True
+  )
   VPNTUNNELS = (
       'vpnTunnels',
       'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',

@@ -17,7 +17,9 @@ This module will always be run within a subprocess, and therefore normal
 conventions of Cloud SDK do not apply here.
 """
 
+from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import argparse
 import json
@@ -27,6 +29,8 @@ import sys
 
 def eprint(*args, **kwargs):
   """Print to stderr."""
+  # Print is being over core.log because this is a special case as
+  # this is a script called by gcloud.
   print(*args, file=sys.stderr, **kwargs)
 
 

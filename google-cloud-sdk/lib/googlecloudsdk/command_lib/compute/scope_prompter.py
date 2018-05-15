@@ -14,6 +14,8 @@
 
 """Console Prompter for compute scopes."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import operator
 
 from googlecloudsdk.command_lib.compute import scope as compute_scope
@@ -105,7 +107,7 @@ def _PromptSuggestedScopeChoice(resource_name, underspecified_names, scope_enum,
 def _FormatScopeValueChoices(scope_value_choices):
   """Formats scope value choices for prompting and adds deprecation states."""
   choice_names, choice_mapping = [], []
-  for scope in sorted(scope_value_choices.keys(),
+  for scope in sorted(list(scope_value_choices.keys()),
                       key=operator.attrgetter('flag_name')):
     for choice_resource in sorted(scope_value_choices[scope],
                                   key=operator.attrgetter('name')):

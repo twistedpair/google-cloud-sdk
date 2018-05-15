@@ -216,7 +216,7 @@
           "$ref": "HttpTarget"
         },
         "schedule": {
-          "description": "Specifies a schedule of start times. This can be used to\nspecify complicated and time-zone-aware schedules.\n\nA scheduled start time will be skipped if the previous\nexecution has not ended when its scheduled time occurs.\n\nIf RetryConfig.retry_count > 0 and a job attempt fails,\nthe job will be a total of tried RetryConfig.retry_count\ntimes, with exponential backoff, until the next scheduled start\ntime.",
+          "description": "Specifies a schedule of start times. This can be used to\nspecify complicated and time-zone-aware schedules.\n\nA scheduled start time will be delayed if the previous\nexecution has not ended when its scheduled time occurs.\n\nIf RetryConfig.retry_count > 0 and a job attempt fails,\nthe job will be a total of tried RetryConfig.retry_count\ntimes, with exponential backoff, until the next scheduled start\ntime.",
           "$ref": "Schedule"
         },
         "userUpdateTime": {
@@ -224,19 +224,17 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "jobState": {
+        "state": {
           "description": "Output only. State of the job. For example: enabled, paused, or disabled.",
           "enumDescriptions": [
             "Unspecified state.",
             "The job is executing normally.",
-            "The job is paused by the user. It will not execute. A user can\nintentionally pause the job using\nCloudScheduler.PauseJobRequest.",
             "The job is disabled by the system due to error. The user\ncannot directly set a job to be disabled. The error can be\nviewed in Job.status."
           ],
           "type": "string",
           "enum": [
-            "JOB_STATE_UNSPECIFIED",
+            "STATE_UNSPECIFIED",
             "ENABLED",
-            "PAUSED",
             "DISABLED"
           ]
         },
@@ -245,12 +243,12 @@
           "$ref": "Status"
         },
         "nextScheduleTime": {
-          "description": "Output only. The next time the job is scheduled. Note that this may be a\nretry of a previously failed execution or the next execution time\naccording to the schedule.",
+          "description": "Output only. The next time the job is scheduled. Note that this may be a\nretry of a previously failed attempt or the next execution time\naccording to the schedule.",
           "type": "string",
           "format": "google-datetime"
         },
         "lastAttemptTime": {
-          "description": "Output only. The started time of the last completed job attempt.",
+          "description": "Output only. The time the last job attempt started.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -285,9 +283,9 @@
       "type": "object",
       "properties": {
         "httpMethod": {
-          "description": "The HTTP method to use for the request. The default is POST. PATCH and\nOPTIONS are not permitted.",
+          "description": "The HTTP method to use for the request. PATCH and OPTIONS are not\npermitted.",
           "enumDescriptions": [
-            "HTTP method unspecified",
+            "HTTP method unspecified. Defaults to POST.",
             "HTTP Post",
             "HTTP Get",
             "HTTP Head",
@@ -317,7 +315,7 @@
           "type": "string"
         },
         "headers": {
-          "description": "HTTP request headers.\n\nThis map contains the header field names and values. Headers can be set\nwhen the job is created.\n\nCloud Scheduler sets some headers to default values:\n\n* `User-Agent`: By default, this header is\n  `\"AppEngine-Google; (+http:\/\/code.google.com\/appengine)\"`.\n  This header can be modified, but Cloud Scheduler will append\n  `\"AppEngine-Google; (+http:\/\/code.google.com\/appengine)\"` to the\n  modified `User-Agent`.\n\nIf the job has an AppEngineHttpTarget.payload, Cloud Scheduler sets the\nfollowing headers:\n\n* `Content-Type`: By default, the `Content-Type` header is set to\n  `\"application\/octet-stream\"`. The default can be overridden by explictly\n  setting `Content-Type` to a particular media type when the job is\n  created.\n  For example, `Content-Type` can be set to `\"application\/json\"`.\n* `Content-Length`: This is computed by Cloud Scheduler. This value is\n  output only. It cannot be changed.\n\nThe headers below are output only. They cannot be set or overridden:\n\n* `X-Google-*`: For Google internal use only.\n* `X-AppEngine-*`: For Google internal use only. See\n  [Reading request\n  headers](\/appengine\/docs\/python\/taskqueue\/push\/creating-handlers#reading_request_headers).\n\nIn addition, some App Engine headers, which contain\njob-specific information, are also be sent to the job handler; see\n[request headers](\/appengine\/docs\/python\/taskqueue\/push\/creating-handlers#reading_request_headers).",
+          "description": "HTTP request headers.\n\nThis map contains the header field names and values. Headers can be set\nwhen the job is created.\n\nCloud Scheduler sets some headers to default values:\n\n* `User-Agent`: By default, this header is\n  `\"AppEngine-Google; (+http:\/\/code.google.com\/appengine)\"`.\n  This header can be modified, but Cloud Scheduler will append\n  `\"AppEngine-Google; (+http:\/\/code.google.com\/appengine)\"` to the\n  modified `User-Agent`.\n\nIf the job has an AppEngineHttpTarget.body, Cloud Scheduler sets the\nfollowing headers:\n\n* `Content-Type`: By default, the `Content-Type` header is set to\n  `\"application\/octet-stream\"`. The default can be overridden by explictly\n  setting `Content-Type` to a particular media type when the job is\n  created.\n  For example, `Content-Type` can be set to `\"application\/json\"`.\n* `Content-Length`: This is computed by Cloud Scheduler. This value is\n  output only. It cannot be changed.\n\nThe headers below are output only. They cannot be set or overridden:\n\n* `X-Google-*`: For Google internal use only.\n* `X-AppEngine-*`: For Google internal use only. See\n  [Reading request\n  headers](\/appengine\/docs\/python\/taskqueue\/push\/creating-handlers#reading_request_headers).\n\nIn addition, some App Engine headers, which contain\njob-specific information, are also be sent to the job handler; see\n[request headers](\/appengine\/docs\/python\/taskqueue\/push\/creating-handlers#reading_request_headers).",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -355,7 +353,7 @@
     },
     "HttpTarget": {
       "id": "HttpTarget",
-      "description": "Http target. The job will be pushed to the job handler by means of\nan HTTP request via an HttpTarget.http_method such as HTTP\nPOST, HTTP GET, etc. The job is acknowledged by means of an HTTP\nresponse code in the range [200 - 299]. A failure to receive a response\nconstitutes a failed execution.",
+      "description": "Http target. The job will be pushed to the job handler by means of\nan HTTP request via an HttpTarget.http_method such as HTTP\nPOST, HTTP GET, etc. The job is acknowledged by means of an HTTP\nresponse code in the range [200 - 299]. A failure to receive a response\nconstitutes a failed execution. For a redirected request, the response\nreturned by the redirected request is considered.",
       "type": "object",
       "properties": {
         "url": {
@@ -363,9 +361,9 @@
           "type": "string"
         },
         "httpMethod": {
-          "description": "Which HTTP method to use for the request. The default is POST.",
+          "description": "Which HTTP method to use for the request.",
           "enumDescriptions": [
-            "HTTP method unspecified",
+            "HTTP method unspecified. Defaults to POST.",
             "HTTP Post",
             "HTTP Get",
             "HTTP Head",
@@ -733,7 +731,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Forces a job to run now.\n\nWhen this method is called, Cloud Scheduler will immediately attempt the\njob."
+                  "description": "Forces a job to run now.\n\nWhen this method is called, Cloud Scheduler will dispatch the job, even\nif the job is already running."
                 }
               }
             }

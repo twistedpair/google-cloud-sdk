@@ -445,6 +445,13 @@ used for production workloads."""
       help=help_text)
 
 
+def AddEnableStackdriverKubernetesFlag(parser):
+  """Adds a --enable-stackdriver-kubernetes flag to parser."""
+  help_text = """Enable Stackdriver Kubernetes monitoring and logging."""
+  parser.add_argument(
+      '--enable-stackdriver-kubernetes', action='store_true', help=help_text)
+
+
 def AddNodeLabelsFlag(parser, for_node_pool=False):
   """Adds a --node-labels flag to the given parser."""
   if for_node_pool:

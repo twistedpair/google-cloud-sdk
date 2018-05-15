@@ -14,9 +14,12 @@
 
 """A module container a helper class for generating config report requests."""
 
-from apitools.base.py import encoding
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
+from . import services_util
 
-import services_util
+from apitools.base.py import encoding
 
 
 class ConfigReporterValue(object):

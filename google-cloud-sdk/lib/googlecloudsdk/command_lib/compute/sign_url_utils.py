@@ -13,14 +13,16 @@
 # limitations under the License.
 """Utilities for generating Cloud CDN Signed URLs."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import base64
 import hashlib
 import hmac
 import time
-import urlparse
 
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import http
+import six.moves.urllib.parse
 
 _URL_SCHEME_MUST_BE_HTTP_HTTPS_MESSAGE = (
     'The URL scheme must be either HTTP or HTTPS.')
@@ -75,14 +77,15 @@ def SignUrl(url, key_name, encoded_key_value, validity_seconds):
   """
   stripped_url = url.strip()
 
-  parsed_url = urlparse.urlsplit(stripped_url)
+  parsed_url = six.moves.urllib.parse.urlsplit(stripped_url)
   if parsed_url.scheme != 'https' and parsed_url.scheme != 'http':
     raise InvalidCdnSignedUrlError(_URL_SCHEME_MUST_BE_HTTP_HTTPS_MESSAGE)
 
   if parsed_url.fragment:
     raise InvalidCdnSignedUrlError(_URL_MUST_NOT_HAVE_FRAGMENT_MESSAGE)
 
-  query_params = urlparse.parse_qs(parsed_url.query, keep_blank_values=True)
+  query_params = six.moves.urllib.parse.parse_qs(
+      parsed_url.query, keep_blank_values=True)
 
   for param in _DISALLOWED_QUERY_PARAMETERS:
     if param in query_params:

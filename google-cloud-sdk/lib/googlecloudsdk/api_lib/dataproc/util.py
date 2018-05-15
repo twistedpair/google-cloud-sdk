@@ -204,22 +204,15 @@ def PrintWorkflowMetadata(metadata, status, operations, errors):
     if hasattr(metadata.createCluster,
                'error') and metadata.createCluster.error is not None:
       log.status.Print(metadata.createCluster.error)
+    elif hasattr(metadata.createCluster,
+                 'done') and metadata.createCluster.done is not None:
+      log.status.Print('Created cluster: {0}.'.format(metadata.clusterName))
     elif hasattr(
         metadata.createCluster,
         'operationId') and metadata.createCluster.operationId is not None:
       log.status.Print('Creating cluster: Operation ID [{0}].'.format(
           metadata.createCluster.operationId))
     operations['createCluster'] = metadata.createCluster
-  if metadata.deleteCluster != operations['deleteCluster']:
-    if hasattr(metadata.deleteCluster,
-               'error') and metadata.deleteCluster.error is not None:
-      log.status.Print(metadata.deleteCluster.error)
-    elif hasattr(
-        metadata.deleteCluster,
-        'operationId') and metadata.deleteCluster.operationId is not None:
-      log.status.Print('Deleting cluster: Operation ID [{0}].'.format(
-          metadata.deleteCluster.operationId))
-    operations['deleteCluster'] = metadata.deleteCluster
   if hasattr(metadata.graph, 'nodes'):
     for node in metadata.graph.nodes:
       if not node.jobId:
@@ -231,6 +224,19 @@ def PrintWorkflowMetadata(metadata, status, operations, errors):
                          errors[node.jobId] != node.error):
         log.status.Print('Job ID {0} error: {1}'.format(node.jobId, node.error))
         errors[node.jobId] = node.error
+  if metadata.deleteCluster != operations['deleteCluster']:
+    if hasattr(metadata.deleteCluster,
+               'error') and metadata.deleteCluster.error is not None:
+      log.status.Print(metadata.deleteCluster.error)
+    elif hasattr(metadata.deleteCluster,
+                 'done') and metadata.deleteCluster.done is not None:
+      log.status.Print('Deleted cluster: {0}.'.format(metadata.clusterName))
+    elif hasattr(
+        metadata.deleteCluster,
+        'operationId') and metadata.deleteCluster.operationId is not None:
+      log.status.Print('Deleting cluster: Operation ID [{0}].'.format(
+          metadata.deleteCluster.operationId))
+    operations['deleteCluster'] = metadata.deleteCluster
 
 
 # TODO(b/36056506): Use api_lib.utils.waiter

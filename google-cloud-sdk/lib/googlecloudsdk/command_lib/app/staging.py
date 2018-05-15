@@ -37,8 +37,8 @@ import os
 import re
 import tempfile
 
-from googlecloudsdk.api_lib.app import util
-from googlecloudsdk.command_lib.app import runtime_registry
+from googlecloudsdk.api_lib.app import env
+from googlecloudsdk.api_lib.app import runtime_registry
 from googlecloudsdk.command_lib.util import java
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -324,14 +324,14 @@ _APPENGINE_TOOLS_JAR = os.path.join(
 _STAGING_REGISTRY = {
     runtime_registry.RegistryEntry(
         re.compile(r'(go|go1\..+)$'), {
-            util.Environment.FLEX, util.Environment.STANDARD,
-            util.Environment.MANAGED_VMS
+            env.FLEX, env.STANDARD,
+            env.MANAGED_VMS
         }):
         _BundledCommand(
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager'),
             os.path.join(_GO_APP_STAGER_DIR, 'go-app-stager.exe'),
             component='app-engine-go'),
-    runtime_registry.RegistryEntry('java-xml', {util.Environment.STANDARD}):
+    runtime_registry.RegistryEntry('java-xml', {env.STANDARD}):
         _BundledCommand(
             _APPENGINE_TOOLS_JAR,
             _APPENGINE_TOOLS_JAR,
@@ -357,7 +357,7 @@ class Stager(object):
       descriptor: str, path to the unstaged <service>.yaml or appengine-web.xml
       app_dir: str, path to the unstaged app directory
       runtime: str, the name of the runtime for the application to stage
-      environment: api_lib.app.util.Environment, the environment for the
+      environment: api_lib.app.env.Environment, the environment for the
           application to stage
 
     Returns:

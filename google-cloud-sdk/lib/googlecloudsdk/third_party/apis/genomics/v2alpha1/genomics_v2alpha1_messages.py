@@ -12,6 +12,24 @@ from apitools.base.py import extra_types
 package = 'genomics'
 
 
+class Accelerator(_messages.Message):
+  r"""Carries information about an accelerator that can be attached to a VM.
+
+  Fields:
+    count: How many accelerators of this type to attach.
+    type: The accelerator type string (eg nvidia-tesla-k80).  Only NVIDIA GPU
+      accelerators are currently supported.  If an NVIDIA GPU is attached, the
+      required runtime libraries will be made available to all containers
+      under `/usr/local/nvidia`.  The driver version to install must be
+      specified using the NVIDIA driver version parameter on the virtual
+      machine specification.  Note that attaching a GPU increases the worker
+      VM startup time by a few minutes.
+  """
+
+  count = _messages.IntegerField(1)
+  type = _messages.StringField(2)
+
+
 class Action(_messages.Message):
   r"""Action specifies a single action that runs a docker container.
 
@@ -111,6 +129,7 @@ class Action(_messages.Message):
       ENABLE_FUSE: <no description>
       PUBLISH_EXPOSED_PORTS: <no description>
       DISABLE_IMAGE_PREFETCH: <no description>
+      DISABLE_STANDARD_ERROR_CAPTURE: <no description>
     """
     FLAG_UNSPECIFIED = 0
     IGNORE_EXIT_STATUS = 1
@@ -119,6 +138,7 @@ class Action(_messages.Message):
     ENABLE_FUSE = 4
     PUBLISH_EXPOSED_PORTS = 5
     DISABLE_IMAGE_PREFETCH = 6
+    DISABLE_STANDARD_ERROR_CAPTURE = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvironmentValue(_messages.Message):
@@ -392,10 +412,18 @@ class ContainerStoppedEvent(_messages.Message):
   Fields:
     actionId: The numeric ID of the action that started this container.
     exitStatus: The exit status of the container.
+    stderr: The tail end of any content written to standard error by the
+      container. To prevent this from being recorded if the action is known to
+      emit large amounts of debugging noise or sensitive information, set the
+      DISABLE_STANDARD_ERROR_CAPTURE flag.  Note that only a small amount of
+      the end of the stream is captured here. The entire stream is stored in
+      the /google/logs directory mounted into each action, and may be copied
+      off the machine as described elsewhere.
   """
 
   actionId = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   exitStatus = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  stderr = _messages.StringField(3)
 
 
 class DelayedEvent(_messages.Message):
@@ -729,10 +757,14 @@ class Metadata(_messages.Message):
 
   Fields:
     createTime: The time that the operation was created by the API.
+    endTime: The time at which execution was completed and resources were
+      cleaned up.
     events: The list of events that have happened so far during the execution
       of this operation.
     labels: The user defined labels associated with this operation.
     pipeline: The pipeline this operation represents.
+    startTime: The first time at which resources were allocated to execute the
+      pipeline.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -760,9 +792,11 @@ class Metadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  events = _messages.MessageField('Event', 2, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 3)
-  pipeline = _messages.MessageField('Pipeline', 4)
+  endTime = _messages.StringField(2)
+  events = _messages.MessageField('Event', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  pipeline = _messages.MessageField('Pipeline', 5)
+  startTime = _messages.StringField(6)
 
 
 class Mount(_messages.Message):
@@ -1362,6 +1396,7 @@ class VirtualMachine(_messages.Message):
       basis to attached disk resources shortly after VM creation.
 
   Fields:
+    accelerators: The list of accelerators to attach to the VM.
     bootDiskSizeGb: The size of the boot disk, in gigabytes. The boot disk
       must be large enough to accommodate all of the docker images from each
       action in the pipeline at the same time. If not specified, a small but
@@ -1392,6 +1427,11 @@ class VirtualMachine(_messages.Message):
       the short name of a standard machine type (such as "n1-standard-1") or a
       custom machine type (such as "custom-1-4096").
     network: The VM network configuration.
+    nvidiaDriverVersion: The NVIDIA driver version to use when attaching an
+      NVIDIA GPU accelerator. The version specified here must be compatible
+      with the GPU libraries contained in the container being executed, and
+      must be one of the drivers hosted in the 'nvidia-drivers-us-public'
+      bucket on Google Cloud Storage.
     preemptible: If true, allocate a preemptible VM.
     serviceAccount: The service account to install on the VM.  This account
       does not need any permissions other than those required by the pipeline.
@@ -1425,15 +1465,17 @@ class VirtualMachine(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  bootImage = _messages.StringField(2)
-  cpuPlatform = _messages.StringField(3)
-  disks = _messages.MessageField('Disk', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  machineType = _messages.StringField(6)
-  network = _messages.MessageField('Network', 7)
-  preemptible = _messages.BooleanField(8)
-  serviceAccount = _messages.MessageField('ServiceAccount', 9)
+  accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  bootImage = _messages.StringField(3)
+  cpuPlatform = _messages.StringField(4)
+  disks = _messages.MessageField('Disk', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  machineType = _messages.StringField(7)
+  network = _messages.MessageField('Network', 8)
+  nvidiaDriverVersion = _messages.StringField(9)
+  preemptible = _messages.BooleanField(10)
+  serviceAccount = _messages.MessageField('ServiceAccount', 11)
 
 
 class WorkerAssignedEvent(_messages.Message):

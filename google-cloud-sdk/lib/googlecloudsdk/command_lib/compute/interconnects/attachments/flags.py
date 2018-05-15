@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute interconnects commands."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from collections import OrderedDict
 
 from googlecloudsdk.calliope import arg_parsers

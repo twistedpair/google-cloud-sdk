@@ -66,3 +66,10 @@ def SetIamPolicy(taxonomy_store_resource, policy):
       messages.CategorymanagerTaxonomyStoresSetIamPolicyRequest(
           resource=taxonomy_store_resource.RelativeName(),
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy)))
+
+
+def GetCommonStore():
+  """Gets the common taxonomy store."""
+  messages = utils.GetMessagesModule()
+  return utils.GetClientInstance().taxonomyStores.GetCommon(
+      messages.CategorymanagerTaxonomyStoresGetCommonRequest())

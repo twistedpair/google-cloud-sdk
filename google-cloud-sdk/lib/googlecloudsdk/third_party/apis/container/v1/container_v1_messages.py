@@ -31,11 +31,13 @@ class AckRepairWorkRequest(_messages.Message):
   r"""HostedMaster sends Acknowledgment of repair work once it is received.
 
   Fields:
+    hasFailed: Whether the operation has failed.
     repairId: Repair ID that we are acknowledging to uniquely identify
       repairs.
   """
 
-  repairId = _messages.StringField(1)
+  hasFailed = _messages.BooleanField(1)
+  repairId = _messages.StringField(2)
 
 
 class AckRepairWorkResponse(_messages.Message):
@@ -584,6 +586,19 @@ class CidrBlock(_messages.Message):
   displayName = _messages.StringField(2)
 
 
+class ClearEventEtcdDetails(_messages.Message):
+  r"""ClearEventEtcdDetails describes a parameters to be used to clear event
+  etcd and create a new etcd cluster.
+
+  Fields:
+    token: Required. A string token used by new cluster as --initial-cluster-
+      token to differentiate cluster generations. It must differ from the
+      token used by the previous CLEAR_EVENT_ETCD call.
+  """
+
+  token = _messages.StringField(1)
+
+
 class ClientCertificateConfig(_messages.Message):
   r"""Configuration for client certificates on the cluster.
 
@@ -675,9 +690,8 @@ class Cluster(_messages.Message):
     masterAuthorizedNetworks: The configuration options for master authorized
       networks feature. This field is deprecated, use
       master_authorized_networks_config instead.
-    masterAuthorizedNetworksConfig: Master authorized networks is a Beta
-      feature. The configuration options for master authorized networks
-      feature.
+    masterAuthorizedNetworksConfig: The configuration options for master
+      authorized networks feature.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options:  * `monitoring.googleapis.com` -
       the Google Cloud Monitoring service. * `none` - no metrics will be
@@ -879,9 +893,8 @@ class ClusterUpdate(_messages.Message):
     desiredMasterAuthorizedNetworks: The desired configuration options for
       master authorized networks feature. This field is deprecated, use
       desired_master_authorized_networks_config instead.
-    desiredMasterAuthorizedNetworksConfig: Master authorized networks is a
-      Beta feature. The desired configuration options for master authorized
-      networks feature.
+    desiredMasterAuthorizedNetworksConfig: The desired configuration options
+      for master authorized networks feature.
     desiredMasterId: An id of master replica to be updated. Can be set only
       when desired_master_version is set. If not set, all replicas will be
       updated.
@@ -1896,6 +1909,8 @@ class GetRepairWorkResponse(_messages.Message):
     RepairTypeValueValuesEnum: The type of repair for this master.
 
   Fields:
+    clearEventEtcdDetails: clear_event_etcd_details token to be used when
+      clearing event etcd. Required for CLEAR_EVENT_ETCD repair.
     repairId: Repair ID of the returned repair.
     repairType: The type of repair for this master.
     restoreEtcdDetails: restore_etcd_details describes what backup should be
@@ -1911,16 +1926,19 @@ class GetRepairWorkResponse(_messages.Message):
       IN_PLACE: An in place master repair is required.
       NONE: No Repair is required
       RESTORE_ETCD: Restore etcd from backup.
+      CLEAR_EVENT_ETCD: Clear event etcd.
     """
     UNKNOWN = 0
     REBOOT = 1
     IN_PLACE = 2
     NONE = 3
     RESTORE_ETCD = 4
+    CLEAR_EVENT_ETCD = 5
 
-  repairId = _messages.StringField(1)
-  repairType = _messages.EnumField('RepairTypeValueValuesEnum', 2)
-  restoreEtcdDetails = _messages.MessageField('RestoreEtcdDetails', 3)
+  clearEventEtcdDetails = _messages.MessageField('ClearEventEtcdDetails', 1)
+  repairId = _messages.StringField(2)
+  repairType = _messages.EnumField('RepairTypeValueValuesEnum', 3)
+  restoreEtcdDetails = _messages.MessageField('RestoreEtcdDetails', 4)
 
 
 class HorizontalPodAutoscaling(_messages.Message):
@@ -2281,11 +2299,10 @@ class MasterAuthorizedNetworks(_messages.Message):
 
 
 class MasterAuthorizedNetworksConfig(_messages.Message):
-  r"""Master authorized networks is a Beta feature. Configuration options for
-  the master authorized networks feature. Enabled master authorized networks
-  will disallow all external traffic to access Kubernetes master through HTTPS
-  except traffic from the given CIDR blocks, Google Compute Engine Public IPs
-  and Google Prod IPs.
+  r"""Configuration options for the master authorized networks feature.
+  Enabled master authorized networks will disallow all external traffic to
+  access Kubernetes master through HTTPS except traffic from the given CIDR
+  blocks, Google Compute Engine Public IPs and Google Prod IPs.
 
   Fields:
     cidrBlocks: cidr_blocks define up to 10 external networks that could

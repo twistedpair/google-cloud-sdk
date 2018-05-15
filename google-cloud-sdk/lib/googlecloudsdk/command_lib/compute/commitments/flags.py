@@ -15,6 +15,8 @@
 """Flags and helpers for the compute commitments commands."""
 
 from __future__ import absolute_import
+from __future__ import division
+
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -59,7 +61,7 @@ def TranslateResourcesArg(messages, resources_arg):
       ),
       # Arg is in B API accepts values in MB.
       messages.ResourceCommitment(
-          amount=resources_arg['MEMORY'] / (1024 * 1024),
+          amount=resources_arg['MEMORY'] // (1024 * 1024),
           type=messages.ResourceCommitment.TypeValueValuesEnum.MEMORY,
       ),
   ]

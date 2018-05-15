@@ -143,6 +143,11 @@ def SearchAssets(annotations, show_only_annotatable, match_child_annotations,
     the function's state and prevents resetting the generator to enable the
     function to be called again.
   """
+  asset_limit = limit or _MAX_ASSET_LIMIT
+  # A page size of None will use the default page size set by the server.
+  if page_size is not None:
+    page_size = min(page_size, asset_limit)
+
   query_params = [
       ('query.filter', query_filter),  # pylint: disable=ugly-g4-fix-formatting
       ('query.annotatable_only', show_only_annotatable),
@@ -155,10 +160,12 @@ def SearchAssets(annotations, show_only_annotatable, match_child_annotations,
 
   # Filter away query params which have not been specified.
   query_params = [(k, v) for k, v in query_params if v is not None]
-  base_url = resources.GetApiBaseUrl(utils.API_NAME, utils.API_VERSION)
 
-  asset_limit = limit or _MAX_ASSET_LIMIT
-  page_size = asset_limit if page_size is None else min(page_size, asset_limit)
+  base_url = utils.GetClientInstance().BASE_URL + utils.API_VERSION + '/'
+  endpoint_base_url = resources.GetApiBaseUrl(utils.API_NAME, utils.API_VERSION)
+  # Override the base url if another endpoint is explicitly set.
+  if endpoint_base_url is not None:
+    base_url = endpoint_base_url
 
   search_response_class = utils.GetMessagesModule().SearchAssetsResponse
 
@@ -188,7 +195,6 @@ def SearchAssets(annotations, show_only_annotatable, match_child_annotations,
     _AddPageTokenQueryParam(query_params, next_token)
 
     asset_limit -= len(search_response.assets)
-    page_size = min(page_size, asset_limit)
 
 
 def _AddPageTokenQueryParam(query_params, next_token):

@@ -14,6 +14,9 @@
 """Interconnect."""
 
 
+from __future__ import unicode_literals
+
+
 class Interconnect(object):
   """Abstracts Interconnect resource."""
 

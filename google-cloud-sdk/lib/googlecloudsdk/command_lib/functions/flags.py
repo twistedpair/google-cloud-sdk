@@ -14,6 +14,8 @@
 
 """Helpers for flags in commands working with Google Cloud Functions."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.functions import triggers
 from googlecloudsdk.api_lib.functions import util as api_util
 from googlecloudsdk.calliope import actions
@@ -187,6 +189,24 @@ def AddStageBucketFlag(parser):
             'value is the name of the Google Cloud Storage bucket in which '
             'source code will be stored.'),
       type=api_util.ValidateAndStandarizeBucketUriOrRaise)
+
+
+def AddRuntimeFlag(parser):
+  parser.add_argument(
+      '--runtime',
+      help="""\
+          'The runtime in which to run the function. Defaults to Node.js 6.
+
+          Choices:
+
+          - `nodejs6`: Node.js 6
+          - `nodejs8`: Node.js 8
+          - `python37`: Python 3.7
+          - `go`: Golang
+          - `java`: Java
+          - `csharp`: C#
+          """,
+      hidden=True)
 
 
 def AddEntryPointFlag(parser):

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for running training jobs locally."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import atexit
 import json
 import os
@@ -22,6 +24,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
+from six.moves import range
 
 
 def MakeProcess(module_name,
@@ -111,7 +114,7 @@ def RunDistributed(module_name,
   Returns:
     int. the retval of 'master' subprocess
   """
-  ports = range(start_port, start_port + num_ps + num_workers + 1)
+  ports = list(range(start_port, start_port + num_ps + num_workers + 1))
   cluster = {
       'master': ['localhost:{port}'.format(port=ports[0])],
       'ps': ['localhost:{port}'.format(port=p)

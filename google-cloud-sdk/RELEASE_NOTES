@@ -5,6 +5,52 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 201.0.0 (2018-05-15)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Modified default TPU accelerator type to `v2-8` for `gcloud compute tpus`
+  commands. `tpu-v2` has been deprecated.
+
+
+### Cloud Bigtable
+
+* Added the following commands to the `gcloud beta bigtable instances` command
+  group to help manage IAM policies:
+    * `set-iam-policy`
+    * `get-iam-policy`
+    * `add-iam-policy-binding`
+    * `remove-iam-policy-binding`
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20180503 release.
+  Released changes are documented in its tracking issue at
+      [https://github.com/googledatalab/datalab/issues/1999](https://github.com/googledatalab/datalab/issues/1999).
+
+### Compute Engine
+
+* Promoted `--create-disk` flag of `gcloud compute instances create` to GA.
+  These flags allow creating new disks during instance creation.
+* Added the TYPE column to `gcloud compute interconnects attachments list`
+  table format.
+* Added `--labels` flag to `gcloud beta compute instance-templates create-with-container`.
+
+### Firebase Test Lab
+
+*   Firebase Test Lab now supports mobile app testing for iOS. Please request access here: [https://docs.google.com/forms/d/e/1FAIpQLSf5cx1ot8ndHU9YrFkCn6gPoQZLxgW_6H13e_bot3he90n7Ng/viewform](https://docs.google.com/forms/d/e/1FAIpQLSf5cx1ot8ndHU9YrFkCn6gPoQZLxgW_6H13e_bot3he90n7Ng/viewform). Added the following commands:
+    *   `gcloud beta firebase test ios models <list|describe>`
+    *   `gcloud beta firebase test ios versions <list|describe>`
+    *   `gcloud alpha firebase test ios run`
+
+### Kubernetes Engine
+
+* Promoted `--enable-stackdriver-kubernetes` of `gcloud container clusters create` to beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 200.0.0 (2018-05-01)
 
 ### Breaking Changes

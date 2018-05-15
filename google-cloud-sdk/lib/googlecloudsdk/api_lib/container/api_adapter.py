@@ -1627,6 +1627,20 @@ class V1Adapter(APIAdapter):
 class V1Beta1Adapter(V1Adapter):
   """APIAdapter for v1beta1."""
 
+  def CreateCluster(self, cluster_ref, options):
+    cluster = self.CreateClusterCommon(cluster_ref, options)
+    if options.enable_stackdriver_kubernetes:
+      if options.enable_cloud_logging and options.enable_cloud_monitoring:
+        cluster.loggingService = 'logging.googleapis.com/kubernetes'
+        cluster.monitoringService = 'monitoring.googleapis.com/kubernetes'
+      else:
+        raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
+    req = self.messages.CreateClusterRequest(
+        parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
+        cluster=cluster)
+    operation = self.client.projects_locations_clusters.Create(req)
+    return self.ParseOperation(operation.name, cluster_ref.zone)
+
 
 class V1Alpha1Adapter(V1Beta1Adapter):
   """APIAdapter for v1alpha1."""

@@ -16,7 +16,7 @@
 
 from __future__ import absolute_import
 from apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.command_lib.app import exceptions as command_exceptions
 from googlecloudsdk.command_lib.util.ssh import ssh
@@ -100,8 +100,8 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
     raise command_exceptions.MissingVersionError(
         '{}/{}'.format(service_id, version_id))
   version = version_util.Version.FromVersionResource(version, None)
-  if version.environment is not util.Environment.FLEX:
-    if version.environment is util.Environment.MANAGED_VMS:
+  if version.environment is not env.FLEX:
+    if version.environment is env.MANAGED_VMS:
       environment = 'Managed VMs'
       msg = 'Use `gcloud compute ssh` for Managed VMs instances.'
     else:

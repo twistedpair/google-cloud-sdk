@@ -17,10 +17,12 @@ The main entry point is UploadPythonPackages, which takes in parameters derived
 from the command line arguments and returns a list of URLs to be given to the
 Cloud ML Engine API. See its docstring for details.
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 import collections
 import contextlib
-import cStringIO
+import io
 import os
 import sys
 import textwrap
@@ -32,6 +34,8 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
+import six
+from six.moves import map
 
 
 DEFAULT_SETUP_FILE = """\
@@ -199,7 +203,7 @@ def _TempDirOrBackup(default_dir):
       temp_dir.__exit__(*sys.exc_info())
 
 
-class _SetupPyCommand(object):
+class _SetupPyCommand(six.with_metaclass(abc.ABCMeta, object)):
   """A command to run setup.py in a given environment.
 
   Includes the Python version to use and the arguments with which to run
@@ -211,8 +215,6 @@ class _SetupPyCommand(object):
     package_root: str, path to the directory containing the package to build
       (must be writable, or setuptools will fail)
   """
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, setup_py_path, setup_py_args, package_root):
     self.setup_py_path = setup_py_path
@@ -362,7 +364,7 @@ def _RunSetupTools(package_root, setup_py_path, output_dir):
           setup_py_path, setup_py_args, package_root))
 
     for setup_py_command in setup_py_commands:
-      out = cStringIO.StringIO()
+      out = io.StringIO()
       return_code = setup_py_command.Execute(out)
       if not return_code:
         break
@@ -447,8 +449,8 @@ def _UploadFilesByPath(paths, staging_location):
   """Uploads files after validating and transforming input type."""
   if not staging_location:
     raise NoStagingLocationError()
-  counter = collections.Counter(map(os.path.basename, paths))
-  duplicates = [name for name, count in counter.iteritems() if count > 1]
+  counter = collections.Counter(list(map(os.path.basename, paths)))
+  duplicates = [name for name, count in six.iteritems(counter) if count > 1]
   if duplicates:
     raise DuplicateEntriesError(duplicates)
 
@@ -543,6 +545,6 @@ def GetStagingLocation(job_id=None, staging_bucket=None, job_dir=None):
                                                     job_id)
   elif job_dir:
     staging_location = storage_util.ObjectReference(
-        job_dir.bucket_ref, '/'.join(filter(None, [job_dir.name.rstrip('/'),
-                                                   'packages'])))
+        job_dir.bucket_ref, '/'.join([f for f in [job_dir.name.rstrip('/'),
+                                                  'packages'] if f]))
   return staging_location

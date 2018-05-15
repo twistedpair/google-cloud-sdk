@@ -31,6 +31,14 @@ class BadMatrixError(TestingError):
   """BadMatrixException is for test matrices that fail prematurely."""
 
 
+class RestrictedServiceError(TestingError):
+  """RestrictedServiceError is for bad service request errors.
+
+  This is most likely due to whitelisted API features which are hidden behind a
+  visibility label.
+  """
+
+
 class ModelNotFoundError(TestingError):
   """Failed to find a device model in the test environment catalog."""
 
@@ -86,6 +94,15 @@ class InvalidDimensionNameError(TestingError):
     super(InvalidDimensionNameError, self).__init__(
         "'{d}' is not a valid dimension name. Must be one of: "
         "['model', 'version', 'locale', 'orientation']".format(d=dim_name))
+
+
+class InvalidIosDimensionNameError(TestingError):
+  """An invalid ios test matrix dimension name was encountered."""
+
+  def __init__(self, dim_name):
+    super(InvalidIosDimensionNameError,
+          self).__init__("'{d}' is not a valid dimension name. Must be one of: "
+                         "['model', 'version']".format(d=dim_name))
 
 
 class TestExecutionNotFoundError(TestingError):

@@ -26,6 +26,7 @@ import sys
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import display
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
@@ -39,7 +40,7 @@ MARKDOWN_ITALIC = '_'
 MARKDOWN_CODE = '`'
 
 
-class DeprecationException(Exception):
+class DeprecationException(exceptions.Error):
   """An exception for when a command or group has been deprecated."""
 
 

@@ -692,10 +692,10 @@
           "description": "(`OutputOnly`)\nThe state of replication for the table in this cluster.",
           "enumDescriptions": [
             "The replication state of the table is unknown in this cluster.",
-            "The cluster was recently created, and the table must finish copying\nover pre-existing data from other clusters before it can begin\nreceiving live replication updates and serving\nData API requests.",
-            "The table is temporarily unable to serve\nData API requests from this\ncluster due to planned internal maintenance.",
-            "The table is temporarily unable to serve\nData API requests from this\ncluster due to unplanned or emergency maintenance.",
-            "The table can serve\nData API requests from this\ncluster. Depending on replication delay, reads may not immediately\nreflect the state of the table in other clusters."
+            "The cluster was recently created, and the table must finish copying\nover pre-existing data from other clusters before it can begin\nreceiving live replication updates and serving Data API requests.",
+            "The table is temporarily unable to serve Data API requests from this\ncluster due to planned internal maintenance.",
+            "The table is temporarily unable to serve Data API requests from this\ncluster due to unplanned or emergency maintenance.",
+            "The table can serve Data API requests from this cluster. Depending on\nreplication delay, reads may not immediately reflect the state of the\ntable in other clusters."
           ],
           "type": "string",
           "enum": [
@@ -1413,7 +1413,7 @@
                 "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "This is a private alpha release of Cloud Bigtable instance level\npermissions. This feature is not currently available to most Cloud Bigtable\ncustomers. This feature might be changed in backward-incompatible ways and\nis not recommended for production use. It is not subject to any SLA or\ndeprecation policy.\n\nGets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set."
+              "description": "Gets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set.\n\nNote: This is a private alpha release of Cloud Bigtable instance-level IAM.\nThis feature is not currently available to most Cloud Bigtable customers.\nThis feature might be changed in backward-incompatible ways and is not\nrecommended for production use. It is not subject to any SLA or deprecation\npolicy."
             },
             "setIamPolicy": {
               "id": "bigtableadmin.projects.instances.setIamPolicy",
@@ -1446,7 +1446,7 @@
                 "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "This is a private alpha release of Cloud Bigtable instance level\npermissions. This feature is not currently available to most Cloud Bigtable\ncustomers. This feature might be changed in backward-incompatible ways and\nis not recommended for production use. It is not subject to any SLA or\ndeprecation policy.\n\nSets the access control policy on an instance resource. Replaces any\nexisting policy."
+              "description": "Sets the access control policy on an instance resource. Replaces any\nexisting policy.\n\nNote: This is a private alpha release of Cloud Bigtable instance-level IAM.\nThis feature is not currently available to most Cloud Bigtable customers.\nThis feature might be changed in backward-incompatible ways and is not\nrecommended for production use. It is not subject to any SLA or deprecation\npolicy."
             },
             "testIamPermissions": {
               "id": "bigtableadmin.projects.instances.testIamPermissions",
@@ -1479,7 +1479,7 @@
                 "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "This is a private alpha release of Cloud Bigtable instance level\npermissions. This feature is not currently available to most Cloud Bigtable\ncustomers. This feature might be changed in backward-incompatible ways and\nis not recommended for production use. It is not subject to any SLA or\ndeprecation policy.\n\nReturns permissions that the caller has on the specified instance resource."
+              "description": "Returns permissions that the caller has on the specified instance resource.\n\nNote: This is a private alpha release of Cloud Bigtable instance-level IAM.\nThis feature is not currently available to most Cloud Bigtable customers.\nThis feature might be changed in backward-incompatible ways and is not\nrecommended for production use. It is not subject to any SLA or deprecation\npolicy."
             }
           }
           ,

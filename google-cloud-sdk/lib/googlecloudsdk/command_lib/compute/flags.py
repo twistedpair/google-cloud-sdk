@@ -654,7 +654,7 @@ class ResourceArgument(object):
     elif self._short_help:
       params['help'] = self._short_help
     else:
-      params['help'] = 'The name{} of the {} to {}.'.format(
+      params['help'] = 'Name{} of the {} to {}.'.format(
           's' if self.plural else '',
           text.Pluralize(
               int(self.plural) + 1, self.resource_name or '',

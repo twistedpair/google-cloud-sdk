@@ -13,6 +13,7 @@
 # limitations under the License.
 """Utilities for generating help docs for GCE compute labels commands."""
 
+from __future__ import unicode_literals
 
 _LIST_LABELS_DETAILED_HELP_TEMPLATE = """
     Labels can be used to identify the {resource} and to filter them as in

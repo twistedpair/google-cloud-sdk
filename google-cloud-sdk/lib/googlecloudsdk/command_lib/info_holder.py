@@ -12,12 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 """Contains utilities for holding and formatting install information.
 
 This is useful for the output of 'gcloud info', which in turn is extremely
 useful for debugging issues related to weird installations, out-of-date
 installations, and so on.
 """
+
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import datetime
 import getpass
@@ -39,6 +43,8 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
+
+import six
 
 
 class NoopAnonymizer(object):
@@ -128,13 +134,13 @@ class InfoHolder(object):
 
   def __str__(self):
     out = io.StringIO()
-    out.write(unicode(self.basic) + '\n')
-    out.write(unicode(self.installation) + '\n')
-    out.write(unicode(self.config) + '\n')
-    if unicode(self.env_proxy):
-      out.write(unicode(self.env_proxy) + '\n')
-    out.write(unicode(self.logs) + '\n')
-    out.write(unicode(self.tools) + '\n')
+    out.write(six.text_type(self.basic) + '\n')
+    out.write(six.text_type(self.installation) + '\n')
+    out.write(six.text_type(self.config) + '\n')
+    if six.text_type(self.env_proxy):
+      out.write(six.text_type(self.env_proxy) + '\n')
+    out.write(six.text_type(self.logs) + '\n')
+    out.write(six.text_type(self.tools) + '\n')
     return out.getvalue()
 
 
@@ -153,7 +159,7 @@ class BasicInfo(object):
     self.site_packages = 'site' in sys.modules
 
   def __str__(self):
-    return textwrap.dedent(u"""\
+    return textwrap.dedent("""\
         Google Cloud SDK [{version}]
 
         Platform: [{os}, {arch}] {uname}
@@ -215,32 +221,32 @@ class InstallationInfo(object):
 
   def __str__(self):
     out = io.StringIO()
-    out.write(u'Installation Root: [{0}]\n'.format(
+    out.write('Installation Root: [{0}]\n'.format(
         self.sdk_root if self.sdk_root else 'N/A'))
     if config.INSTALLATION_CONFIG.IsAlternateReleaseChannel():
-      out.write(u'Release Channel: [{0}]\n'.format(self.release_channel))
-      out.write(u'Repository URL: [{0}]\n'.format(self.repo_url))
+      out.write('Release Channel: [{0}]\n'.format(self.release_channel))
+      out.write('Repository URL: [{0}]\n'.format(self.repo_url))
     if self.additional_repos:
-      out.write(u'Additional Repositories:\n  {0}\n'.format(
+      out.write('Additional Repositories:\n  {0}\n'.format(
           '\n  '.join(self.additional_repos)))
 
     if self.components:
-      components = [u'{0}: [{1}]'.format(name, value) for name, value in
-                    self.components.iteritems()]
-      out.write(u'Installed Components:\n  {0}\n'.format(
-          u'\n  '.join(components)))
+      components = ['{0}: [{1}]'.format(name, value) for name, value in
+                    six.iteritems(self.components)]
+      out.write('Installed Components:\n  {0}\n'.format(
+          '\n  '.join(components)))
 
-    out.write(u'System PATH: [{0}]\n'.format(os.pathsep.join(self.path)))
-    out.write(u'Python PATH: [{0}]\n'.format(os.pathsep.join(self.python_path)))
-    out.write(u'Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
-    out.write(u'Kubectl on PATH: [{0}]\n'.format(self.kubectl or False))
+    out.write('System PATH: [{0}]\n'.format(os.pathsep.join(self.path)))
+    out.write('Python PATH: [{0}]\n'.format(os.pathsep.join(self.python_path)))
+    out.write('Cloud SDK on PATH: [{0}]\n'.format(self.on_path))
+    out.write('Kubectl on PATH: [{0}]\n'.format(self.kubectl or False))
 
     if self.old_tool_paths:
-      out.write(u'\nWARNING: There are old versions of the Google Cloud '
-                u'Platform tools on your system PATH.\n  {0}\n'
+      out.write('\nWARNING: There are old versions of the Google Cloud '
+                'Platform tools on your system PATH.\n  {0}\n'
                 .format('\n  '.join(self.old_tool_paths)))
     if self.duplicate_tool_paths:
-      out.write(u'There are alternate versions of the following Google Cloud '
+      out.write('There are alternate versions of the following Google Cloud '
                 'Platform tools on your system PATH.\n  {0}\n'
                 .format('\n  '.join(self.duplicate_tool_paths)))
     return out.getvalue()
@@ -281,23 +287,23 @@ class ConfigInfo(object):
 
   def __str__(self):
     out = io.StringIO()
-    out.write(u'Installation Properties: [{0}]\n'
+    out.write('Installation Properties: [{0}]\n'
               .format(self.paths['installation_properties_path']))
-    out.write(u'User Config Directory: [{0}]\n'
+    out.write('User Config Directory: [{0}]\n'
               .format(self.paths['global_config_dir']))
-    out.write(u'Active Configuration Name: [{0}]\n'
+    out.write('Active Configuration Name: [{0}]\n'
               .format(self.active_config_name))
-    out.write(u'Active Configuration Path: [{0}]\n\n'
+    out.write('Active Configuration Path: [{0}]\n\n'
               .format(self.paths['active_config_path']))
 
-    out.write(u'Account: [{0}]\n'.format(self.account))
-    out.write(u'Project: [{0}]\n\n'.format(self.project))
+    out.write('Account: [{0}]\n'.format(self.account))
+    out.write('Project: [{0}]\n\n'.format(self.project))
 
-    out.write(u'Current Properties:\n')
-    for section, props in self.properties.iteritems():
-      out.write(u'  [{section}]\n'.format(section=section))
-      for name, value in props.iteritems():
-        out.write(u'    {name}: [{value}]\n'.format(
+    out.write('Current Properties:\n')
+    for section, props in six.iteritems(self.properties):
+      out.write('  [{section}]\n'.format(section=section))
+      for name, value in six.iteritems(props):
+        out.write('    {name}: [{value}]\n'.format(
             name=name, value=value))
 
     return out.getvalue()
@@ -333,17 +339,17 @@ class ProxyInfoFromEnvironmentVars(object):
       return ''
 
     out = io.StringIO()
-    out.write(u'Environmental Proxy Settings:\n')
+    out.write('Environmental Proxy Settings:\n')
     if self.type:
-      out.write(u'  type: [{0}]\n'.format(self.type))
+      out.write('  type: [{0}]\n'.format(self.type))
     if self.address:
-      out.write(u'  address: [{0}]\n'.format(self.address))
+      out.write('  address: [{0}]\n'.format(self.address))
     if self.port:
-      out.write(u'  port: [{0}]\n'.format(self.port))
+      out.write('  port: [{0}]\n'.format(self.port))
     if self.username:
-      out.write(u'  username: [{0}]\n'.format(self.username))
+      out.write('  username: [{0}]\n'.format(self.username))
     if self.password:
-      out.write(u'  password: [{0}]\n'.format(self.password))
+      out.write('  password: [{0}]\n'.format(self.password))
     return out.getvalue()
 
 
@@ -427,8 +433,8 @@ class LogData(object):
 
   def __str__(self):
     crash_detected = ' (crash detected)' if self.traceback else ''
-    return u'[{0}]: [{1}]{2}'.format(self.relative_path, self.command,
-                                     crash_detected)
+    return '[{0}]: [{1}]{2}'.format(
+        self.relative_path, self.command, crash_detected)
 
   @property
   def relative_path(self):
@@ -510,7 +516,7 @@ class LogsInfo(object):
     self.logs_dir = anonymizer.ProcessPath(logs_dir)
 
   def __str__(self):
-    return textwrap.dedent(u"""\
+    return textwrap.dedent("""\
         Logs Directory: [{logs_dir}]
         Last Log File: [{log_file}]
         """.format(logs_dir=self.logs_dir, log_file=self.last_log))
@@ -554,14 +560,14 @@ class ToolsInfo(object):
     except OSError:
       return 'NOT AVAILABLE'
     stdoutdata, _ = proc.communicate()
-    data = filter(None, stdoutdata.split('\n'))
+    data = [f for f in stdoutdata.split(b'\n') if f]
     if len(data) != 1:
       return 'NOT AVAILABLE'
     else:
       return data[0]
 
   def __str__(self):
-    return textwrap.dedent(u"""\
+    return textwrap.dedent("""\
         git: [{git}]
         ssh: [{ssh}]
         """.format(git=self.git_version, ssh=self.ssh_version))

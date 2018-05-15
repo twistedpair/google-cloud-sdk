@@ -168,12 +168,9 @@ class ResourcePresentationSpec(PresentationSpec):
   @property
   def title(self):
     """The title of the arg group for the spec, in all caps with spaces."""
-    name = self.name.upper()
-    if not util.IsPositional(name):
-      name = name[len(util.PREFIX):].replace('-', ' ')
-    else:
-      name = name.replace('_', ' ')
-    return '{}'.format(name)
+    name = self.concept_spec.name
+    name = name[0].upper() + name[1:]
+    return name.replace('_', ' ').replace('-', ' ')
 
   @property
   def concept_spec(self):
@@ -323,9 +320,10 @@ class ResourcePresentationSpec(PresentationSpec):
     else:
       generic_help = ('The arguments in this group can be used to specify the '
                       'attributes of this resource.')
-    description = ['{} - {} {}'.format(self.title,
-                                       self.group_help,
-                                       generic_help)]
+    description = ['{} resource - {} {}'.format(
+        self.title,
+        self.group_help,
+        generic_help)]
     if self._skip_flags:
       description.append('(NOTE) Some attributes are not given arguments in '
                          'this group but can be set in other ways.')

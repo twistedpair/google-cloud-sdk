@@ -471,7 +471,8 @@ class ArgumentParser(argparse.ArgumentParser):
     return set([getattr(a, 'dest', a) for a in args])
 
   # pylint: disable=invalid-name, argparse style
-  def validate_specified_args(self, ai, specified_args, top=True):
+  def validate_specified_args(self, ai, specified_args, is_required=True,
+                              top=True):
     """Validate specified args against the arg group constraints.
 
     Each group may be mutually exclusive and/or required. Each argument may be
@@ -481,6 +482,7 @@ class ArgumentParser(argparse.ArgumentParser):
       ai: ArgumentInterceptor, The argument interceptor containing the
         ai.arguments argument group.
       specified_args: set, The dests of the specified args.
+      is_required: bool, True if all containing groups are required.
       top: bool, True if ai.arguments is the top level group.
 
     Raises:
@@ -498,8 +500,11 @@ class ArgumentParser(argparse.ArgumentParser):
     need_required = []  # The required args in group that must be specified.
     for arg in sorted(ai.arguments, key=usage_text.GetArgSortKey):
       if arg.is_group:
-        arg_was_specified = self.validate_specified_args(arg, specified_args,
-                                                         top=False)
+        arg_was_specified = self.validate_specified_args(
+            arg,
+            specified_args,
+            is_required=is_required and arg.is_required,
+            top=False)
       else:
         arg_was_specified = arg.dest in specified_args
       if arg_was_specified:
@@ -538,7 +543,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
     if ai.is_mutex:
       conflict = usage_text.GetArgUsage(ai, value=False, hidden=True, top=top)
-      if ai.is_required:
+      if is_required and ai.is_required:
         if count != 1:
           if count:
             argument = usage_text.GetArgUsage(

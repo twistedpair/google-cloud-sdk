@@ -14,6 +14,7 @@
 """Flags for the compute instance groups unmanaged commands."""
 
 
+from __future__ import unicode_literals
 LIST_FORMAT = """\
     table(
       name,

@@ -13,6 +13,7 @@
 # limitations under the License.
 """CLI Utilities for cloud tpu commands."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from collections import OrderedDict
 import copy
 

@@ -280,7 +280,7 @@
           "type": "string"
         },
         "runtimeVersion": {
-          "description": "Optional. The Google Cloud ML runtime version to use for training.  If not\nset, Google Cloud ML will choose the latest stable version.",
+          "description": "Optional. The Google Cloud ML runtime version to use for training.  If not\nset, Google Cloud ML will choose a stable version, which is defined in the\ndocumentation of runtime version list.",
           "type": "string"
         },
         "pythonVersion": {

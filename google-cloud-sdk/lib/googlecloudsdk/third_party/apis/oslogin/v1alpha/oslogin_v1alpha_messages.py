@@ -103,13 +103,32 @@ class OsloginUsersImportSshPublicKeyRequest(_messages.Message):
 class OsloginUsersProjectsDeleteRequest(_messages.Message):
   r"""A OsloginUsersProjectsDeleteRequest object.
 
+  Enums:
+    OperatingSystemTypeValueValuesEnum: The type of operating system
+      associated with the account.
+
   Fields:
     name: A reference to the POSIX account to update. POSIX accounts are
       identified by the project ID they are associated with. A reference to
       the POSIX account is in format `users/{user}/projects/{project}`.
+    operatingSystemType: The type of operating system associated with the
+      account.
   """
 
+  class OperatingSystemTypeValueValuesEnum(_messages.Enum):
+    r"""The type of operating system associated with the account.
+
+    Values:
+      OPERATING_SYSTEM_TYPE_UNSPECIFIED: <no description>
+      LINUX: <no description>
+      WINDOWS: <no description>
+    """
+    OPERATING_SYSTEM_TYPE_UNSPECIFIED = 0
+    LINUX = 1
+    WINDOWS = 2
+
   name = _messages.StringField(1, required=True)
+  operatingSystemType = _messages.EnumField('OperatingSystemTypeValueValuesEnum', 2)
 
 
 class OsloginUsersSshPublicKeysDeleteRequest(_messages.Message):

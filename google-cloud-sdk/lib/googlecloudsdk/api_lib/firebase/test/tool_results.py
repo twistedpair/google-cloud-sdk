@@ -119,6 +119,8 @@ def _ErrorFromInvalidMatrix(matrix):
           'The test APK is the same as the app APK',
       enum_values.NO_INSTRUMENTATION:
           'The test APK declares no instrumentation tags in the manifest',
+      enum_values.NO_SIGNATURE:
+          'At least one supplied APK file has a missing or invalid signature',
       enum_values.INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE: (
           "The test runner class specified by the user or the test APK's "
           'manifest file is not compatible with Android Test Orchestrator. '
@@ -141,11 +143,25 @@ def _ErrorFromInvalidMatrix(matrix):
           'A scenario-label in the manifest includes invalid numbers or ranges',
       enum_values.SCENARIO_NOT_DECLARED:
           'A scenario-number was not declared in the manifest file',
+      enum_values.DEVICE_ADMIN_RECEIVER:
+          'Device administrator applications are not allowed',
+      enum_values.MALFORMED_XC_TEST_ZIP:
+          'The XCTest zip file was malformed. The zip did not contain a single '
+          '.xctestrun file alongside a Debug-iphoneos directory containing the '
+          'compiled artifacts for the test.',
+      enum_values.BUILT_FOR_IOS_SIMULATOR:
+          'The provided XCTest was built for the iOS simulator rather than for '
+          'a physical device',
+      enum_values.NO_TESTS_IN_XC_TEST_ZIP:
+          'The .xctestrun file did not specify any test targets to run',
+      enum_values.USE_DESTINATION_ARTIFACTS:
+          'One or more of the test targets defined in the .xctestrun file '
+          'specifies "UseDestinationArtifacts", which is not allowed',
       enum_values.NO_CODE_APK:
           '"hasCode" is false in the Manifest. Tested APKs must contain code',
-      enum_values.NO_SIGNATURE:
-          'There is a problem with signature of at least one of the supplied '
-          'APK(s)'
+      enum_values.INVALID_INPUT_APK:
+          'Either the provided input APK path was malformed, the APK file does '
+          'not exist, or the user does not have permission to access the file'
   }
   details_enum = matrix.invalidMatrixDetails
   if details_enum in error_dict:
@@ -155,5 +171,5 @@ def _ErrorFromInvalidMatrix(matrix):
   return (
       '\nMatrix [{m}] unexpectedly reached final status {s} without returning '
       'a URL to any test results in the Firebase console. Please re-check the '
-      'validity of your APK file(s) and test parameters and try again.'.format(
+      'validity of your test files and parameters and try again.'.format(
           m=matrix.testMatrixId, s=matrix.state))

@@ -19,7 +19,14 @@ from __future__ import unicode_literals
 
 
 def Encode(s):
-  """Return text object s encoded for HTTP headers / payload."""
+  """Return bytes objects encoded for HTTP headers / payload."""
   if s is None:
     return s
   return s.encode('utf-8')
+
+
+def Decode(s):
+  """Return text objects decoded from HTTP headers / payload."""
+  if s is None:
+    return s
+  return s.decode('utf-8')

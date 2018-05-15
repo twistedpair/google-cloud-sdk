@@ -71,7 +71,7 @@ def GetNotificationChannelResourceSpec():
 
 def CreateAlertPolicyResourceArg(verb, positional=True):
   if positional:
-    name = 'name'
+    name = 'alert_policy'
   else:
     name = '--policy'
   help_text = 'Name of the Alert Policy ' + verb

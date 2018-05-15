@@ -292,8 +292,12 @@ def RunKubectlCommand(args, out_func=None, err_func=None):
     Error: if kubectl could not be called
     KubectlError: if the invocation of kubectl was unsuccessful
   """
+  # Check for 'kubectl' along Cloud SDK path. This will fail if component
+  # manager is disabled. In this case, check entire path.
   kubectl_path = files.FindExecutableOnPath(_KUBECTL_COMPONENT_NAME,
                                             config.Paths().sdk_bin_path)
+  if kubectl_path is None:
+    kubectl_path = files.FindExecutableOnPath(_KUBECTL_COMPONENT_NAME)
   if kubectl_path is None:
     raise Error(MISSING_KUBECTL_MSG)
 

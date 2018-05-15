@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities for reading instances for prediction."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import codecs
 import json
 
@@ -21,6 +23,8 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
+
+import six
 
 
 class InvalidInstancesFileError(core_exceptions.Error):
@@ -46,7 +50,9 @@ def ReadInstances(input_file, data_format, limit=None):
   instances = []
 
   for line_num, line in enumerate(input_file):
-    line = codecs.decode(line, 'utf-8-sig')  # Handle UTF8-BOM
+    if isinstance(line, six.binary_type):
+      # TODO(b/79095656): Use encoding library instead of codecs.
+      line = codecs.decode(line, 'utf-8-sig')  # Handle UTF8-BOM
     line_content = line.rstrip('\r\n')
     if not line_content:
       raise InvalidInstancesFileError('Empty line is not allowed in the '
@@ -105,7 +111,7 @@ def ReadInstancesFromArgs(json_instances, text_instances, limit=None):
     data_format = 'text'
     input_file = text_instances
 
-  with files.Open(input_file) as f:
+  with files.Open(input_file, 'rb') as f:
     return ReadInstances(f, data_format, limit=limit)
 
 

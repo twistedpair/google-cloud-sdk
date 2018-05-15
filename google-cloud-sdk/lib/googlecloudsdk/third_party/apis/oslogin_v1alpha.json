@@ -334,6 +334,16 @@
                   "required": true,
                   "pattern": "^users\/[^\/]+\/projects\/[^\/]+$",
                   "type": "string"
+                },
+                "operatingSystemType": {
+                  "description": "The type of operating system associated with the account.",
+                  "location": "query",
+                  "type": "string",
+                  "enum": [
+                    "OPERATING_SYSTEM_TYPE_UNSPECIFIED",
+                    "LINUX",
+                    "WINDOWS"
+                  ]
                 }
               },
               "parameterOrder": [

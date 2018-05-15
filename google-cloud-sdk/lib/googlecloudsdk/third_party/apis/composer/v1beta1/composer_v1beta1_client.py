@@ -195,42 +195,6 @@ class ComposerV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation.  The server.
-makes a best effort to cancel the operation, but success is not
-guaranteed.  If the server doesn't support this method, it returns
-`google.rpc.Code.UNIMPLEMENTED`.  Clients can use
-Operations.GetOperation or
-other methods to check whether the cancellation succeeded or whether the
-operation completed despite cancellation. On successful cancellation,
-the operation is not deleted; instead, it becomes an operation with
-an Operation.error value with a google.rpc.Status.code of 1,
-corresponding to `Code.CANCELLED`.
-
-      Args:
-        request: (ComposerProjectsLocationsOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method=u'POST',
-        method_id=u'composer.projects.locations.operations.cancel',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1beta1/{+name}:cancel',
-        request_field='',
-        request_type_name=u'ComposerProjectsLocationsOperationsCancelRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
     def Delete(self, request, global_params=None):
       r"""Deletes a long-running operation. This method indicates that the client is.
 no longer interested in the operation result. It does not cancel the

@@ -12,29 +12,6 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
-class GoogleDataCollectionConfig(_messages.Message):
-  r"""Google data collection opt-in settings.
-
-  Enums:
-    LoggingConsentStateValueValuesEnum:
-
-  Fields:
-    loggingConsentState: A LoggingConsentStateValueValuesEnum attribute.
-  """
-
-  class LoggingConsentStateValueValuesEnum(_messages.Enum):
-    r"""LoggingConsentStateValueValuesEnum enum type.
-
-    Values:
-      ENABLED: <no description>
-      DISABLED: <no description>
-    """
-    ENABLED = 0
-    DISABLED = 1
-
-  loggingConsentState = _messages.EnumField('LoggingConsentStateValueValuesEnum', 1)
-
-
 class LongRunningRecognizeRequest(_messages.Message):
   r"""The top-level message sent by the client for the `LongRunningRecognize`
   method.
@@ -216,9 +193,6 @@ class RecognitionConfig(_messages.Message):
     encoding: Encoding of audio data sent in all `RecognitionAudio` messages.
       This field is optional for `FLAC` and `WAV` audio files and required for
       all other audio formats. For details, see AudioEncoding.
-    googleDataCollectionOptIn: *Optional* Contains settings to opt-in to allow
-      Google to collect and use data from this request to improve Google's
-      products and services.
     languageCode: *Required* The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Example: "en-US". See [Language
@@ -267,13 +241,10 @@ class RecognitionConfig(_messages.Message):
       set, then `use_enhanced` is ignored. If `use_enhanced` is true and an
       enhanced version of the specified model does not exist, then the speech
       is recognized using the standard version of the specified model.
-      Enhanced speech models require that you enable audio logging for your
-      request. To enable audio logging, set the `loggingConsentState` field to
-      ENABLED in the GoogleDataCollectionConfig section of your request. You
-      must also opt-in to the audio logging alpha using the instructions in
-      the [alpha documentation](/speech/data-sharing). If you set
-      `use_enhanced` to true and you have not enabled audio logging, then you
-      will receive an error.
+      Enhanced speech models require that you opt-in to the audio logging
+      using instructions in the [alpha documentation](/speech/data-sharing).
+      If you set `use_enhanced` to true and you have not enabled audio
+      logging, then you will receive an error.
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
@@ -327,15 +298,14 @@ class RecognitionConfig(_messages.Message):
   enableWordConfidence = _messages.BooleanField(4)
   enableWordTimeOffsets = _messages.BooleanField(5)
   encoding = _messages.EnumField('EncodingValueValuesEnum', 6)
-  googleDataCollectionOptIn = _messages.MessageField('GoogleDataCollectionConfig', 7)
-  languageCode = _messages.StringField(8)
-  maxAlternatives = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 10)
-  model = _messages.StringField(11)
-  profanityFilter = _messages.BooleanField(12)
-  sampleRateHertz = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 14, repeated=True)
-  useEnhanced = _messages.BooleanField(15)
+  languageCode = _messages.StringField(7)
+  maxAlternatives = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 9)
+  model = _messages.StringField(10)
+  profanityFilter = _messages.BooleanField(11)
+  sampleRateHertz = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 13, repeated=True)
+  useEnhanced = _messages.BooleanField(14)
 
 
 class RecognitionMetadata(_messages.Message):

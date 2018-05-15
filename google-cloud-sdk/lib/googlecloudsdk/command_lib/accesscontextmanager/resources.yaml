@@ -21,13 +21,13 @@ level:
       attribute_name: level
       help: |
         The ID of the access level.
-zone:
-  name: zone
+perimeter:
+  name: perimeter
   request_id_field: accessZone.name
   collection: accesscontextmanager.accessPolicies.accessZones
   attributes:
     - *policy
     - parameter_name: accessZonesId
-      attribute_name: zone
+      attribute_name: perimeter
       help: |
-        The ID of the access zone.
+        The ID of the service perimeter.

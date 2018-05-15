@@ -144,11 +144,13 @@ class InvalidEndpointException(exceptions.Error):
 def SplitDefaultEndpointUrl(url):
   """Returns api_name, api_version, resource_path tuple for a default api url.
 
-  Supports four formats:
-  http(s)://www.googleapis.com/api/version/resource-path,
-  http(s)://www-googleapis-staging.sandbox.google.com/api/version/resource-path,
-  http(s)://api.googleapis.com/version/resource-path, and
-  http(s)://someotherdoman/api/version/resource-path.
+  Supports five formats:
+  http(s)://www.googleapis.com/api/version/resource-path
+  http(s)://www-googleapis-staging.sandbox.google.com/api/version/resource-path
+  http(s)://api.googleapis.com/version/resource-path
+  http(s)://someotherdoman/api/version/resource-path
+  http(s)://api.googleapis.com/apis/kube-api.name/version/resource-path
+
 
   If there is an api endpoint override defined that maches the url,
   that api name will be returned.
@@ -157,7 +159,9 @@ def SplitDefaultEndpointUrl(url):
     url: str, The resource url.
 
   Returns:
-    (str, str, str): The API name, version, resource_path
+    (str, str, str): The API name, version, resource_path.
+    For a malformed URL, the return value for API name is undefined, version is
+    None, and resource path is ''.
   """
   tokens = _StripUrl(url).split('/')
   domain = tokens[0]
@@ -176,8 +180,16 @@ def SplitDefaultEndpointUrl(url):
   else:
     api_name = tokens[0].split('.')[0]
     if len(tokens) > 1:
-      version = tokens[1]
-      resource_path = '/'.join(tokens[2:])
+      if tokens[1] == 'apis':
+        if len(tokens) > 3:
+          # kubernetes api name is tokens[2]
+          version = tokens[3]
+          resource_path = '/'.join(tokens[4:])
+        else:
+          version = None
+      else:
+        version = tokens[1]
+        resource_path = '/'.join(tokens[2:])
     else:
       version = None
   return api_name, version, resource_path

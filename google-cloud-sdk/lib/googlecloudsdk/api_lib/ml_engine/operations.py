@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for dealing with long-running operations (simple uri)."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis

@@ -551,7 +551,7 @@ def PossiblyEnableFlex(project):
                            '\nDetailed error information:\n{?}}'))
 
 
-def UseSsl(handlers):
+def UseSsl(service_info):
   """Returns whether the root URL for an application is served over HTTPS.
 
   More specifically, returns the 'secure' setting of the handler that will serve
@@ -562,12 +562,14 @@ def UseSsl(handlers):
   HTTPS-only service will result in a redirect).
 
   Args:
-    handlers: List of googlecloudsdk.third_party.appengine.api.appinfo.URLMap,
-    the configured URL handlers for the application
+    service_info: ServiceYamlInfo, the service configuration.
+
   Returns:
     str, the 'secure' setting of the handler for the root URL.
   """
-  for handler in handlers:
+  if service_info.is_ti_runtime and not service_info.parsed.handlers:
+    return appinfo.SECURE_HTTP_OR_HTTPS
+  for handler in service_info.parsed.handlers:
     try:
       if re.match(handler.url + '$', '/'):
         return handler.secure

@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common ML file upload logic."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import hashlib
 import os
 
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files as file_utils
+from six.moves import zip
 
 
 # For ease of mocking in tests without messing up core Python functionality
@@ -143,7 +146,7 @@ def UploadDirectoryIfNecessary(path, staging_bucket=None, gs_prefix=None):
   # We put `path` back in, so that UploadFiles can actually find them.
   full_files = [_PATH_SEP.join([path, f]) for f in files]
 
-  uploaded_paths = UploadFiles(zip(full_files, dests),
+  uploaded_paths = UploadFiles(list(zip(full_files, dests)),
                                staging_bucket,
                                gs_prefix=gs_prefix)
 

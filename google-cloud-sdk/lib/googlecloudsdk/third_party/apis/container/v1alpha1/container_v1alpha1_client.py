@@ -295,7 +295,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetSize(self, request, global_params=None):
-      r"""Sets the size of a specific node pool.
+      r"""Sets the size for a specific node pool.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -460,7 +460,7 @@ at the initial create time.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the details of a specific cluster.
+      r"""Gets the details for a specific cluster.
 
       Args:
         request: (ContainerProjectsLocationsClustersGetRequest) input message
@@ -515,7 +515,7 @@ zones.
     )
 
     def SetAddons(self, request, global_params=None):
-      r"""Sets the addons of a specific cluster.
+      r"""Sets the addons for a specific cluster.
 
       Args:
         request: (SetAddonsConfigRequest) input message
@@ -569,7 +569,7 @@ zones.
     )
 
     def SetLocations(self, request, global_params=None):
-      r"""Sets the locations of a specific cluster.
+      r"""Sets the locations for a specific cluster.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -596,7 +596,7 @@ zones.
     )
 
     def SetLogging(self, request, global_params=None):
-      r"""Sets the logging service of a specific cluster.
+      r"""Sets the logging service for a specific cluster.
 
       Args:
         request: (SetLoggingServiceRequest) input message
@@ -651,7 +651,7 @@ zones.
 
     def SetMasterAuth(self, request, global_params=None):
       r"""Used to set master auth materials. Currently supports :-.
-Changing the admin password of a specific cluster.
+Changing the admin password for a specific cluster.
 This can be either via password generation or explicitly set.
 Modify basic_auth.csv and reset the K8S API server.
 
@@ -680,7 +680,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def SetMonitoring(self, request, global_params=None):
-      r"""Sets the monitoring service of a specific cluster.
+      r"""Sets the monitoring service for a specific cluster.
 
       Args:
         request: (SetMonitoringServiceRequest) input message
@@ -788,7 +788,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the settings of a specific cluster.
+      r"""Updates the settings for a specific cluster.
 
       Args:
         request: (UpdateClusterRequest) input message
@@ -815,7 +815,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def UpdateMaster(self, request, global_params=None):
-      r"""Updates the master of a specific cluster.
+      r"""Updates the master for a specific cluster.
 
       Args:
         request: (UpdateMasterRequest) input message
@@ -1190,7 +1190,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetSize(self, request, global_params=None):
-      r"""Sets the size of a specific node pool.
+      r"""Sets the size for a specific node pool.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -1252,7 +1252,7 @@ This will be an no-op if the last upgrade successfully completed.
           }
 
     def Addons(self, request, global_params=None):
-      r"""Sets the addons of a specific cluster.
+      r"""Sets the addons for a specific cluster.
 
       Args:
         request: (SetAddonsConfigRequest) input message
@@ -1376,7 +1376,7 @@ at the initial create time.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the details of a specific cluster.
+      r"""Gets the details for a specific cluster.
 
       Args:
         request: (ContainerProjectsZonesClustersGetRequest) input message
@@ -1455,7 +1455,7 @@ zones.
     )
 
     def Locations(self, request, global_params=None):
-      r"""Sets the locations of a specific cluster.
+      r"""Sets the locations for a specific cluster.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -1481,7 +1481,7 @@ zones.
     )
 
     def Logging(self, request, global_params=None):
-      r"""Sets the logging service of a specific cluster.
+      r"""Sets the logging service for a specific cluster.
 
       Args:
         request: (SetLoggingServiceRequest) input message
@@ -1507,7 +1507,7 @@ zones.
     )
 
     def Master(self, request, global_params=None):
-      r"""Updates the master of a specific cluster.
+      r"""Updates the master for a specific cluster.
 
       Args:
         request: (UpdateMasterRequest) input message
@@ -1533,7 +1533,7 @@ zones.
     )
 
     def Monitoring(self, request, global_params=None):
-      r"""Sets the monitoring service of a specific cluster.
+      r"""Sets the monitoring service for a specific cluster.
 
       Args:
         request: (SetMonitoringServiceRequest) input message
@@ -1612,7 +1612,7 @@ zones.
 
     def SetMasterAuth(self, request, global_params=None):
       r"""Used to set master auth materials. Currently supports :-.
-Changing the admin password of a specific cluster.
+Changing the admin password for a specific cluster.
 This can be either via password generation or explicitly set.
 Modify basic_auth.csv and reset the K8S API server.
 
@@ -1692,7 +1692,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the settings of a specific cluster.
+      r"""Updates the settings for a specific cluster.
 
       Args:
         request: (UpdateClusterRequest) input message

@@ -160,8 +160,8 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
     def Run(self, request, global_params=None):
       r"""Forces a job to run now.
 
-When this method is called, Cloud Scheduler will immediately attempt the
-job.
+When this method is called, Cloud Scheduler will dispatch the job, even
+if the job is already running.
 
       Args:
         request: (CloudschedulerProjectsLocationsJobsRunRequest) input message

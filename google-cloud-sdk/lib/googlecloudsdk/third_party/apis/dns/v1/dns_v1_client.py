@@ -369,7 +369,7 @@ class DnsV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an existing ManagedZone. This method supports patch semantics.
+      r"""Apply a partial update to an existing ManagedZone.
 
       Args:
         request: (DnsManagedZonesPatchRequest) input message

@@ -952,8 +952,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       in. See the <a href="/ml-engine/docs/tensorflow/regions">available
       regions</a> for ML Engine services.
     runtimeVersion: Optional. The Google Cloud ML runtime version to use for
-      training.  If not set, Google Cloud ML will choose the latest stable
-      version.
+      training.  If not set, Google Cloud ML will choose a stable version,
+      which is defined in the documentation of runtime version list.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
     workerCount: Optional. The number of worker replicas to use for the

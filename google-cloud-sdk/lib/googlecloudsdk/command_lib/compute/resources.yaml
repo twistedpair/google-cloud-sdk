@@ -37,8 +37,8 @@ disk:
     - *zone
     - &disk
       parameter_name: disk
-      attribute_name: disk_name
-      help: The name of Google Compute Engine disk.
+      attribute_name: disk
+      help: The name of the Google Compute Engine disk.
 
 image:
   name: image
@@ -47,8 +47,8 @@ image:
     - *project
     - &image
       parameter_name: image
-      attribute_name: image_name
-      help: The name of Google Compute Engine image.
+      attribute_name: image
+      help: The name of the Google Compute Engine image.
 
 instance:
   name: instance
@@ -58,8 +58,8 @@ instance:
     - *zone
     - &instance
       parameter_name: instance
-      attribute_name: instance_name
-      help: The name of Google Compute Engine instance.
+      attribute_name: instance
+      help: The name of the Google Compute Engine instance.
 
 subnet:
   name: subnetwork
@@ -69,5 +69,5 @@ subnet:
     - *region
     - &subnetwork
       parameter_name: subnetwork
-      attribute_name: name
-      help: The name of Google Compute Engine subnetwork.
+      attribute_name: subnetwork
+      help: The name of the Google Compute Engine subnetwork.

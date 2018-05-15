@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20180420",
+ "revision": "20180430",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2076,12 +2076,14 @@
      "description": "The protocol this BackendService uses to communicate with backends.\n\nPossible values are HTTP, HTTPS, TCP, and SSL. The default is HTTP.\n\nFor internal load balancing, the possible values are TCP and UDP, and the default is TCP.",
      "enum": [
       "HTTP",
+      "HTTP2",
       "HTTPS",
       "SSL",
       "TCP",
       "UDP"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -10582,7 +10584,7 @@
    "properties": {
     "clientOperationId": {
      "type": "string",
-     "description": "[Output Only] Reserved for future use."
+     "description": "[Output Only] The value of `requestId` if you provided it in the request. Not present otherwise."
     },
     "creationTimestamp": {
      "type": "string",
@@ -11379,6 +11381,8 @@
       "INSTANCE_GROUP_MANAGERS",
       "INSTANCE_TEMPLATES",
       "INTERCONNECTS",
+      "INTERCONNECT_ATTACHMENTS_PER_REGION",
+      "INTERCONNECT_ATTACHMENTS_TOTAL_MBPS",
       "INTERNAL_ADDRESSES",
       "IN_USE_ADDRESSES",
       "LOCAL_SSD_TOTAL_GB",
@@ -11390,6 +11394,7 @@
       "PREEMPTIBLE_LOCAL_SSD_GB",
       "PREEMPTIBLE_NVIDIA_K80_GPUS",
       "PREEMPTIBLE_NVIDIA_P100_GPUS",
+      "PREEMPTIBLE_NVIDIA_V100_GPUS",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
       "ROUTERS",
@@ -11412,6 +11417,9 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -12388,6 +12396,28 @@
      "additionalProperties": {
       "type": "string"
      }
+    }
+   }
+  },
+  "RegionSetPolicyRequest": {
+   "id": "RegionSetPolicyRequest",
+   "type": "object",
+   "properties": {
+    "bindings": {
+     "type": "array",
+     "description": "Flatten Policy to create a backwacd compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
+     "items": {
+      "$ref": "Binding"
+     }
+    },
+    "etag": {
+     "type": "string",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify the etag.",
+     "format": "byte"
+    },
+    "policy": {
+     "$ref": "Policy",
+     "description": "REQUIRED: The complete policy to be applied to the 'resource'. The size of the policy is limited to a few 10s of KB. An empty policy is in general a valid policy but certain services (like Projects) might reject them."
     }
    }
   },
@@ -18324,7 +18354,7 @@
      "id": "compute.acceleratorTypes.get",
      "path": "{project}/zones/{zone}/acceleratorTypes/{acceleratorType}",
      "httpMethod": "GET",
-     "description": "Returns the specified accelerator type. Gets a list of available accelerator types by making a list() request.",
+     "description": "Returns the specified accelerator type.",
      "parameters": {
       "acceleratorType": {
        "type": "string",
@@ -26490,7 +26520,7 @@
      "id": "compute.interconnects.get",
      "path": "{project}/global/interconnects/{interconnect}",
      "httpMethod": "GET",
-     "description": "Returns the specified interconnect. Gets a list of available interconnects by making a list() request.",
+     "description": "Returns the specified interconnect. Get a list of available interconnects by making a list() request.",
      "parameters": {
       "interconnect": {
        "type": "string",
@@ -32648,7 +32678,7 @@
       "resource"
      ],
      "request": {
-      "$ref": "Policy"
+      "$ref": "RegionSetPolicyRequest"
      },
      "response": {
       "$ref": "Policy"

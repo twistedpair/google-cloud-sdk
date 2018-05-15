@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags for the `compute sole-tenancy` related commands."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 

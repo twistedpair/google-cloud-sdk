@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Provides common arguments for the ML Engine command surface."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 import functools
 import itertools
@@ -269,7 +271,7 @@ RUNTIME_VERSION = base.Argument(
 
 POLLING_INTERVAL = base.Argument(
     '--polling-interval',
-    type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+    type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
     required=False,
     default=60,
     action=actions.StoreProperty(properties.VALUES.ml_engine.polling_interval),

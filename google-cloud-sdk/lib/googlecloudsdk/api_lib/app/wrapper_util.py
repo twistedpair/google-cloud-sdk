@@ -17,6 +17,7 @@
 Functions for parsing app.yaml files and installing the required components.
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 import os
 

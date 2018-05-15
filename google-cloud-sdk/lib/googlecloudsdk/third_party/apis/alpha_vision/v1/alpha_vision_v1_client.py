@@ -500,7 +500,7 @@ Possible errors:
 
     def Import(self, request, global_params=None):
       r"""Asynchronous API that imports a list of reference images to specified.
-product sets based on a list of image names.
+product sets based on a list of image information.
 
 The google.longrunning.Operation API can be used to keep track of the
 progress and results of the request.
@@ -602,7 +602,7 @@ Possible errors:
     )
 
     def RemoveProduct(self, request, global_params=None):
-      r"""Removes a Product from the specified ProductSet,.
+      r"""Removes a Product from the specified ProductSet.
 
 Possible errors:
 
@@ -643,7 +643,7 @@ Possible errors:
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates and returns a new `ReferenceImage` resource.
+      r"""Creates and returns a new ReferenceImage resource.
 
 The `bounding_poly` field is optional. If `bounding_poly` is not specified,
 the system will try to detect regions of interest in the image that are
@@ -688,7 +688,7 @@ Possible errors:
     )
 
     def Delete(self, request, global_params=None):
-      r"""Marks a reference image for deletion.
+      r"""Permanently deletes a reference image.
 
 The image metadata will be deleted right away, but search queries
 against ProductSets containing the image may still work until all related
@@ -899,7 +899,7 @@ Possible errors:
     )
 
     def List(self, request, global_params=None):
-      r"""Lists products (in an unspecified order).
+      r"""Lists products in an unspecified order.
 
 Possible errors:
 

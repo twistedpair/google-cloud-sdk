@@ -213,6 +213,7 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
   daisy_bucket = daisy_bucket or GetAndCreateDaisyBucket()
 
   daisy_args = ['-gcs_path=gs://{0}/'.format(daisy_bucket),
+                '-default_timeout={0}'.format(timeout_str),
                 '-variables={0}'.format(variables),
                 workflow,
                ]

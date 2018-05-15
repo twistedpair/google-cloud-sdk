@@ -3,5 +3,5 @@ operation:
   collection: videointelligence.operations
   attributes:
     - parameter_name: operationsId
-      attribute_name: operation_id
+      attribute_name: operation
       help: The ID of the operation

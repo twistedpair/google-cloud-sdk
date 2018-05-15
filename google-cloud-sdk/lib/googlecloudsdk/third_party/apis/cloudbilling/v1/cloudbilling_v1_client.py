@@ -95,14 +95,13 @@ permission, which is often given to billing account
       r"""Creates a billing account.
 This method can only be used to create
 [billing subaccounts](https://cloud.google.com/billing/docs/concepts)
-for GCP resellers.
+by GCP resellers.
 When creating a subaccount, the current authenticated user must have the
 `billing.accounts.update` IAM permission on the master account, which is
 typically given to billing account
 [administrators](https://cloud.google.com/billing/docs/how-to/billing-access).
-
-> This method is currently in
-> [Beta](https://cloud.google.com/terms/launch-stages).
+This method will return an error if the master account has not been
+provisioned as a reseller account.
 
       Args:
         request: (BillingAccount) input message
@@ -161,9 +160,6 @@ account](https://cloud.google.com/billing/docs/how-to/billing-access).
 The caller must have the `billing.accounts.getIamPolicy` permission on the
 account, which is often given to billing account
 [viewers](https://cloud.google.com/billing/docs/how-to/billing-access).
-
-> This method is currently in
-> [Beta](https://cloud.google.com/terms/launch-stages).
 
       Args:
         request: (CloudbillingBillingAccountsGetIamPolicyRequest) input message
@@ -224,9 +220,6 @@ IAM permission, which is typically given to the
 [administrator](https://cloud.google.com/billing/docs/how-to/billing-access)
 of the billing account.
 
-> This method is currently in
-> [Beta](https://cloud.google.com/terms/launch-stages).
-
       Args:
         request: (CloudbillingBillingAccountsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -258,9 +251,6 @@ The caller must have the `billing.accounts.setIamPolicy` permission on the
 account, which is often given to billing account
 [administrators](https://cloud.google.com/billing/docs/how-to/billing-access).
 
-> This method is currently in
-> [Beta](https://cloud.google.com/terms/launch-stages).
-
       Args:
         request: (CloudbillingBillingAccountsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -289,9 +279,6 @@ account, which is often given to billing account
       r"""Tests the access control policy for a billing account. This method takes.
 the resource and a set of permissions as input and returns the subset of
 the input permissions that the caller is allowed for that resource.
-
-> This method is currently in
-> [Beta](https://cloud.google.com/terms/launch-stages).
 
       Args:
         request: (CloudbillingBillingAccountsTestIamPermissionsRequest) input message

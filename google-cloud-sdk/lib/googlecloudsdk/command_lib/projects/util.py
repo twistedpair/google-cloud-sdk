@@ -14,6 +14,8 @@
 
 """Common utility functions for all projects commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import datetime
 import re
 from googlecloudsdk.core import resources

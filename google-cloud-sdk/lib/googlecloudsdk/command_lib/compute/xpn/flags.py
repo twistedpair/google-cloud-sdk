@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags for commands dealing with cross-project networking (XPN)."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import base
 
 

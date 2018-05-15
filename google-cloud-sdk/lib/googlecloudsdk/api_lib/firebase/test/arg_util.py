@@ -44,14 +44,16 @@ def AddCommonTestRunArgs(parser):
       'information and examples.')
 
   parser.add_argument(
-      '--app',
-      category=base.COMMONLY_USED_FLAGS,
-      help='The path to the application binary file. The path may be in the '
-      'local filesystem or in Google Cloud Storage using gs:// notation.')
-  parser.add_argument(
       '--async',
       action='store_true',
+      default=None,
       help='Invoke a test asynchronously without waiting for test results.')
+  parser.add_argument(
+      '--record-video',
+      action='store_true',
+      default=None,
+      help='Enable video recording during the test. Enabled by default, use '
+      '--no-record-video to disable.')
   parser.add_argument(
       '--results-bucket',
       help='The name of a Google Cloud Storage bucket where raw test results '
@@ -65,12 +67,6 @@ def AddCommonTestRunArgs(parser):
       'timestamp with a random suffix). Caution: if specified, this argument '
       '*must be unique* for each test matrix you create, otherwise results '
       'from multiple test matrices will be overwritten or intermingled.')
-  parser.add_argument(
-      '--results-history-name',
-      help='The history name for your test results (an arbitrary string label; '
-      'default: the application\'s label from the APK manifest). All tests '
-      'which use the same history name will have their results grouped '
-      'together in the Firebase console in a time-ordered test history list.')
   parser.add_argument(
       '--timeout',
       category=base.COMMONLY_USED_FLAGS,
@@ -94,15 +90,21 @@ def AddAndroidTestArgs(parser):
         the CLI.
   """
   parser.add_argument(
+      '--app',
+      category=base.COMMONLY_USED_FLAGS,
+      help='The path to the application binary file. The path may be in the '
+      'local filesystem or in Google Cloud Storage using gs:// notation.')
+  parser.add_argument(
       '--app-package',
       help='The Java package of the application under test (default: extracted '
       'from the APK manifest).')
   parser.add_argument(
       '--auto-google-login',
       action='store_true',
-      default=True,
+      default=None,
       help='Automatically log into the test device using a preconfigured '
-      'Google account before beginning the test.')
+      'Google account before beginning the test. Enabled by default, use '
+      '--no-auto-google-login to disable.')
   parser.add_argument(
       '--directories-to-pull',
       type=arg_parsers.ArgList(),
@@ -136,16 +138,18 @@ def AddAndroidTestArgs(parser):
       '[main|patch].0300110.com.example.android.obb) and will be installed '
       'into <shared-storage>/Android/obb/<package-name>/ on the test device.')
   parser.add_argument(
-      '--record-video',
-      action='store_true',
-      default=True,
-      help='Enable video recording during the test.')
-  parser.add_argument(
       '--performance-metrics',
       action='store_true',
-      default=True,
+      default=None,
       help='Monitor and record performance metrics: CPU, memory, network usage,'
-           ' and FPS (game-loop only).')
+      ' and FPS (game-loop only). Enabled by default, use '
+      '--no-performance-metrics to disable.')
+  parser.add_argument(
+      '--results-history-name',
+      help='The history name for your test results (an arbitrary string label; '
+      'default: the application\'s label from the APK manifest). All tests '
+      'which use the same history name will have their results grouped '
+      'together in the Firebase console in a time-ordered test history list.')
 
   # The following args are specific to Android instrumentation tests.
 
@@ -154,7 +158,7 @@ def AddAndroidTestArgs(parser):
       category=base.COMMONLY_USED_FLAGS,
       help='The path to the binary file containing instrumentation tests. The '
       'given path may be in the local filesystem or in Google Cloud Storage '
-      'using gs:// notation.')
+      'using a URL beginning with `gs://`.')
   parser.add_argument(
       '--test-package',
       category=ANDROID_INSTRUMENTATION_TEST,
@@ -238,6 +242,56 @@ def AddAndroidTestArgs(parser):
       '\n\n'
       'Caution: You should only use credentials for test accounts that are not '
       'associated with real users.')
+
+
+def AddIosTestArgs(parser):
+  """Register args which are specific to iOS test commands.
+
+  Args:
+    parser: An argparse parser used to add arguments that follow a command in
+        the CLI.
+  """
+  parser.add_argument(
+      '--type',
+      category=base.COMMONLY_USED_FLAGS,
+      hidden=True,
+      choices=['xctest'],
+      help='The type of iOS test to run.')
+  parser.add_argument(
+      '--test',
+      category=base.COMMONLY_USED_FLAGS,
+      metavar='XCTEST_ZIP',
+      help='The path to the test package (a zip file containing the iOS app '
+      'and XCTest files). The given path may be in the local filesystem or in '
+      'Google Cloud Storage using a URL beginning with `gs://`.')
+  parser.add_argument(
+      '--device',
+      category=base.COMMONLY_USED_FLAGS,
+      type=arg_parsers.ArgDict(min_length=1),
+      action='append',
+      metavar='DIMENSION=VALUE',
+      help="""\
+      A list of ``DIMENSION=VALUE'' pairs which specify a target device to test
+      against. This flag may be repeated to specify multiple devices. The device
+      dimensions are: *model* and *version*. If any dimensions are omitted, they
+      will use a default value. The default value for each dimension can be
+      found with the ``list'' command for that dimension, such as
+      `$ {parent_command} models list`. Omitting this flag entirely will run
+      tests against a single device using defaults for every dimension.
+
+      Examples:\n
+      ```
+      --device model=iphone8plus
+      --device version=11.2
+      --device model=ipadmini4,version=11.2
+      ```
+      """)
+  parser.add_argument(
+      '--results-history-name',
+      help='The history name for your test results (an arbitrary string label; '
+      'default: the bundle ID for the iOS application). All tests '
+      'which use the same history name will have their results grouped '
+      'together in the Firebase console in a time-ordered test history list.')
 
 
 def AddGaArgs(parser):
@@ -354,8 +408,8 @@ def AddMatrixArgs(parser):
       against. This flag may be repeated to specify multiple devices. The four
       device dimensions are: *model*, *version*, *locale*, and
       *orientation*. If any dimensions are omitted, they will use a default
-      value. The default value can be found with the list command for each
-      dimension, `$ {parent_command} <dimension> list`.
+      value. The default value for each dimension can be found with the ``list''
+      command for that dimension, such as `$ {parent_command} models list`.
       *--device* is now the preferred way to specify test devices and may not
       be used in conjunction with *--devices-ids*, *--os-version-ids*,
       *--locales*, or *--orientations*. Omitting all of the preceding

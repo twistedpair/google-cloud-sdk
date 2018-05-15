@@ -48,8 +48,8 @@ class ResourceParameterInfo(parameter_info_lib.ParameterInfoByConvention):
     """
     del check_properties  # Unused.
     deps_obj = deps.Deps(
-        self.resource_info.BuildFullFallthroughsMap(
-            parsed_args=self.parsed_args))
+        self.resource_info.BuildFullFallthroughsMap(),
+        parsed_args=self.parsed_args)
     attribute_name = (
         self.resource_info.resource_spec.AttributeName(parameter_name))
     current = properties.VALUES.core.disable_prompts.GetBool()

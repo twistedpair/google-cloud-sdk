@@ -3919,7 +3919,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
-                  "description": "Removes a Product from the specified ProductSet,\n\nPossible errors:\n\n* Returns NOT_FOUND If the Product is not found under the ProductSet."
+                  "description": "Removes a Product from the specified ProductSet.\n\nPossible errors:\n\n* Returns NOT_FOUND If the Product is not found under the ProductSet."
                 },
                 "import": {
                   "id": "alpha_vision.projects.locations.productSets.import",
@@ -3948,7 +3948,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
-                  "description": "Asynchronous API that imports a list of reference images to specified\nproduct sets based on a list of image names.\n\nThe google.longrunning.Operation API can be used to keep track of the\nprogress and results of the request.\n`Operation.metadata` contains `BatchOperationMetadata`. (progress)\n`Operation.response` contains `ImportProductSetsResponse`. (results)\n\nThe input source of this method is a csv file on Google Cloud Storage.\nFor the format of the csv file please see\nImportProductSetsGcsSource.csv_file_uri."
+                  "description": "Asynchronous API that imports a list of reference images to specified\nproduct sets based on a list of image information.\n\nThe google.longrunning.Operation API can be used to keep track of the\nprogress and results of the request.\n`Operation.metadata` contains `BatchOperationMetadata`. (progress)\n`Operation.response` contains `ImportProductSetsResponse`. (results)\n\nThe input source of this method is a csv file on Google Cloud Storage.\nFor the format of the csv file please see\nImportProductSetsGcsSource.csv_file_uri."
                 }
               }
               ,
@@ -4067,7 +4067,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
-                  "description": "Lists products (in an unspecified order).\n\nPossible errors:\n\n* Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1."
+                  "description": "Lists products in an unspecified order.\n\nPossible errors:\n\n* Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1."
                 },
                 "get": {
                   "id": "alpha_vision.projects.locations.products.get",
@@ -4193,7 +4193,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloud-vision"
                       ],
-                      "description": "Creates and returns a new `ReferenceImage` resource.\n\nThe `bounding_poly` field is optional. If `bounding_poly` is not specified,\nthe system will try to detect regions of interest in the image that are\ncompatible with the product_category on the parent product. If it is\nspecified, detection is ALWAYS skipped. The system converts polygons into\nnon-rotated rectangles.\n\nNote that the pipeline will resize the image if the image resolution is too\nlarge to process (above 50MP).\n\nPossible errors:\n\n* Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096\n  characters.\n* Returns INVALID_ARGUMENT if the product does not exist.\n* Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing\n  compatible with the parent product's product_category is detected.\n* Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons."
+                      "description": "Creates and returns a new ReferenceImage resource.\n\nThe `bounding_poly` field is optional. If `bounding_poly` is not specified,\nthe system will try to detect regions of interest in the image that are\ncompatible with the product_category on the parent product. If it is\nspecified, detection is ALWAYS skipped. The system converts polygons into\nnon-rotated rectangles.\n\nNote that the pipeline will resize the image if the image resolution is too\nlarge to process (above 50MP).\n\nPossible errors:\n\n* Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096\n  characters.\n* Returns INVALID_ARGUMENT if the product does not exist.\n* Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing\n  compatible with the parent product's product_category is detected.\n* Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons."
                     },
                     "delete": {
                       "id": "alpha_vision.projects.locations.products.referenceImages.delete",
@@ -4219,7 +4219,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/cloud-vision"
                       ],
-                      "description": "Marks a reference image for deletion.\n\nThe image metadata will be deleted right away, but search queries\nagainst ProductSets containing the image may still work until all related\ncaches are refreshed.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\n* Returns NOT_FOUND if the reference image does not exist."
+                      "description": "Permanently deletes a reference image.\n\nThe image metadata will be deleted right away, but search queries\nagainst ProductSets containing the image may still work until all related\ncaches are refreshed.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\n* Returns NOT_FOUND if the reference image does not exist."
                     },
                     "list": {
                       "id": "alpha_vision.projects.locations.products.referenceImages.list",

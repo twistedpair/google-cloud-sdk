@@ -24,7 +24,7 @@ from googlecloudsdk.core import properties
 def ProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='project',
-      help_text='The Cloud project for the {resource}.',
+      help_text='Cloud project for the {resource}.',
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
 
 
@@ -34,20 +34,20 @@ def LocationAttributeConfig(fallthroughs_enabled=True):
   ] if fallthroughs_enabled else [])
   return concepts.ResourceParameterAttributeConfig(
       name='location',
-      help_text='The Cloud location for the {resource}.',
+      help_text='Compute Engine zone in which to create the {resource}.',
       fallthroughs=fallthroughs)
 
 
 def EnvironmentAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='environment',
-      help_text='The Cloud Composer environment for the {resource}.')
+      help_text='Cloud Composer environment for the {resource}.')
 
 
 def OperationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='operation',
-      help_text='The Cloud Composer operation for the {resource}.')
+      help_text='Cloud Composer operation for the {resource}.')
 
 
 def GetLocationResourceSpec(fallthroughs_enabled=True):

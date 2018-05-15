@@ -97,6 +97,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.targetTcpProxies = self.TargetTcpProxiesService(self)
     self.targetVpnGateways = self.TargetVpnGatewaysService(self)
     self.urlMaps = self.UrlMapsService(self)
+    self.vpnGateways = self.VpnGatewaysService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zones = self.ZonesService(self)
@@ -138,7 +139,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified accelerator type. Gets a list of available accelerator types by making a list() request.
+      r"""Returns the specified accelerator type.
 
       Args:
         request: (ComputeAcceleratorTypesGetRequest) input message
@@ -837,7 +838,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         path_params=[u'project', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/global/backendBuckets/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'globalSetPolicyRequest',
         request_type_name=u'ComputeBackendBucketsSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -1595,7 +1596,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         path_params=[u'project', u'resource', u'zone'],
         query_params=[],
         relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'zoneSetPolicyRequest',
         request_type_name=u'ComputeDisksSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -3105,7 +3106,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         path_params=[u'project', u'resource', u'zone'],
         query_params=[],
         relative_path=u'projects/{project}/zones/{zone}/hosts/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'zoneSetPolicyRequest',
         request_type_name=u'ComputeHostsSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -3735,7 +3736,7 @@ If an empty request body is given, clears the deprecation status instead.
         path_params=[u'project', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/global/images/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'globalSetPolicyRequest',
         request_type_name=u'ComputeImagesSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -5305,7 +5306,7 @@ If the group is part of a backend service that has enabled connection draining, 
         path_params=[u'project', u'resource', u'zone'],
         query_params=[],
         relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'zoneSetPolicyRequest',
         request_type_name=u'ComputeInstancesSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -5991,7 +5992,7 @@ If the group is part of a backend service that has enabled connection draining, 
         path_params=[u'project', u'region', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/regions/{region}/interconnectAttachments/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'regionSetPolicyRequest',
         request_type_name=u'ComputeInterconnectAttachmentsSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -6174,7 +6175,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified interconnect. Gets a list of available interconnects by making a list() request.
+      r"""Returns the specified interconnect. Get a list of available interconnects by making a list() request.
 
       Args:
         request: (ComputeInterconnectsGetRequest) input message
@@ -6323,7 +6324,7 @@ If the group is part of a backend service that has enabled connection draining, 
         path_params=[u'project', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/global/interconnects/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'globalSetPolicyRequest',
         request_type_name=u'ComputeInterconnectsSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -6463,7 +6464,7 @@ If the group is part of a backend service that has enabled connection draining, 
         path_params=[u'project', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/global/licenseCodes/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'globalSetPolicyRequest',
         request_type_name=u'ComputeLicenseCodesSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -6655,7 +6656,7 @@ If the group is part of a backend service that has enabled connection draining, 
         path_params=[u'project', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/global/licenses/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'globalSetPolicyRequest',
         request_type_name=u'ComputeLicensesSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -7527,7 +7528,7 @@ If the group is part of a backend service that has enabled connection draining, 
         path_params=[u'project', u'resource', u'zone'],
         query_params=[],
         relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'zoneSetPolicyRequest',
         request_type_name=u'ComputeNodeGroupsSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -7771,7 +7772,7 @@ If the group is part of a backend service that has enabled connection draining, 
         path_params=[u'project', u'region', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'regionSetPolicyRequest',
         request_type_name=u'ComputeNodeTemplatesSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -10693,7 +10694,7 @@ If the group is part of a backend service that has enabled connection draining, 
         path_params=[u'project', u'region', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/regions/{region}/resourcePolicies/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'regionSetPolicyRequest',
         request_type_name=u'ComputeResourcePoliciesSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -11567,7 +11568,7 @@ For more information, see Deleting snaphots.
         path_params=[u'project', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/global/snapshots/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'globalSetPolicyRequest',
         request_type_name=u'ComputeSnapshotsSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -12221,7 +12222,7 @@ For more information, see Deleting snaphots.
         path_params=[u'project', u'region', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'regionSetPolicyRequest',
         request_type_name=u'ComputeSubnetworksSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
@@ -14072,6 +14073,198 @@ For more information, see Deleting snaphots.
         request_field=u'urlMapsValidateRequest',
         request_type_name=u'ComputeUrlMapsValidateRequest',
         response_type_name=u'UrlMapsValidateResponse',
+        supports_download=False,
+    )
+
+  class VpnGatewaysService(base_api.BaseApiService):
+    """Service class for the vpnGateways resource."""
+
+    _NAME = u'vpnGateways'
+
+    def __init__(self, client):
+      super(ComputeAlpha.VpnGatewaysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of VPN gateways.
+
+      Args:
+        request: (ComputeVpnGatewaysAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpnGatewayAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.vpnGateways.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/vpnGateways',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysAggregatedListRequest',
+        response_type_name=u'VpnGatewayAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified VPN gateway.
+
+      Args:
+        request: (ComputeVpnGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.vpnGateways.delete',
+        ordered_params=[u'project', u'region', u'vpnGateway'],
+        path_params=[u'project', u'region', u'vpnGateway'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request.
+
+      Args:
+        request: (ComputeVpnGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpnGateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.vpnGateways.get',
+        ordered_params=[u'project', u'region', u'vpnGateway'],
+        path_params=[u'project', u'region', u'vpnGateway'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{vpnGateway}',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysGetRequest',
+        response_type_name=u'VpnGateway',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a VPN gateway in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeVpnGatewaysInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.vpnGateways.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways',
+        request_field=u'vpnGateway',
+        request_type_name=u'ComputeVpnGatewaysInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of VPN gateways available to the specified project and region.
+
+      Args:
+        request: (ComputeVpnGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VpnGatewayList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.vpnGateways.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways',
+        request_field='',
+        request_type_name=u'ComputeVpnGatewaysListRequest',
+        response_type_name=u'VpnGatewayList',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeVpnGatewaysSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.vpnGateways.setLabels',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{resource}/setLabels',
+        request_field=u'regionSetLabelsRequest',
+        request_type_name=u'ComputeVpnGatewaysSetLabelsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeVpnGatewaysTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.vpnGateways.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/vpnGateways/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeVpnGatewaysTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 

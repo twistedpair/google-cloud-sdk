@@ -55,19 +55,9 @@ def Http(timeout='unset', response_encoding=None):
     An httplib2.Http client object configured with all the required settings
     for gcloud.
   """
-  # Compared with setting the default timeout in the function signature (i.e.
-  # timeout=300), this lets you test with short default timeouts by mocking
-  # GetDefaultTimeout.
-  effective_timeout = timeout if timeout != 'unset' else GetDefaultTimeout()
-  no_validate = properties.VALUES.auth.disable_ssl_validation.GetBool() or False
-  ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
-  http_client = httplib2.Http(timeout=effective_timeout,
-                              proxy_info=http_proxy.GetHttpProxyInfo(),
-                              ca_certs=ca_certs,
-                              disable_ssl_certificate_validation=no_validate)
-
   # Wrap the request method to put in our own user-agent, and trace reporting.
   gcloud_ua = MakeUserAgentString(properties.VALUES.metrics.command_name.Get())
+  http_client = _CreateRawHttpClient(timeout)
   http_client = _Wrap(
       http_client,
       properties.VALUES.core.trace_token.Get(),
@@ -81,6 +71,19 @@ def Http(timeout='unset', response_encoding=None):
   )
 
   return http_client
+
+
+def _CreateRawHttpClient(timeout='unset'):
+  # Compared with setting the default timeout in the function signature (i.e.
+  # timeout=300), this lets you test with short default timeouts by mocking
+  # GetDefaultTimeout.
+  effective_timeout = timeout if timeout != 'unset' else GetDefaultTimeout()
+  no_validate = properties.VALUES.auth.disable_ssl_validation.GetBool() or False
+  ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
+  return httplib2.Http(timeout=effective_timeout,
+                       proxy_info=http_proxy.GetHttpProxyInfo(),
+                       ca_certs=ca_certs,
+                       disable_ssl_certificate_validation=no_validate)
 
 
 def MakeUserAgentString(cmd_path=None):
@@ -263,7 +266,10 @@ class Modifiers(object):
 
       if not six.PY2:
         # httplib2 needs text under Python 3.
-        modified_args[0] = encoding.Decode(modified_args[0])
+        if modified_args:
+          modified_args[0] = encoding.Decode(modified_args[0])
+        if 'uri' in kwargs:
+          kwargs['uri'] = encoding.Decode(kwargs['uri'])
 
       # We need to make a copy here because if we don't we will be modifying the
       # dictionary that people pass in.

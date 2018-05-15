@@ -354,6 +354,14 @@
         "location": {
           "description": "[Output only] The name of the Google Compute Engine\n[zone](\/compute\/docs\/regions-zones\/regions-zones#available) or\n[region](\/compute\/docs\/regions-zones\/regions-zones#available) in which\nthe cluster resides.",
           "type": "string"
+        },
+        "enableTpu": {
+          "description": "Enable the ability to use Cloud TPUs in this cluster.",
+          "type": "boolean"
+        },
+        "tpuIpv4CidrBlock": {
+          "description": "[Output only] The IP address range of the Cloud TPUs in this cluster, in\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `1.2.3.4\/29`).",
+          "type": "string"
         }
       }
     },
@@ -895,6 +903,10 @@
         "allowRouteOverlap": {
           "description": "If true, allow allocation of cluster CIDR ranges that overlap with certain\nkinds of network routes. By default we do not allow cluster CIDR ranges to\nintersect with any user declared routes. With allow_route_overlap == true,\nwe allow overlapping with CIDR ranges that are larger than the cluster CIDR\nrange.\n\nIf this field is set to true, then cluster and services CIDRs must be\nfully-specified (e.g. `10.96.0.0\/14`, but not `\/14`), which means:\n1) When `use_ip_aliases` is true, `cluster_ipv4_cidr_block` and\n   `services_ipv4_cidr_block` must be fully-specified.\n2) When `use_ip_aliases` is false, `cluster.cluster_ipv4_cidr` muse be\n   fully-specified.",
           "type": "boolean"
+        },
+        "tpuIpv4CidrBlock": {
+          "description": "The IP address range of the Cloud TPUs in this cluster. If unspecified, a\nrange will be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nIf unspecified, the range will use the default size.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "type": "string"
         }
       }
     },
@@ -2302,7 +2314,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the details of a specific cluster."
+                  "description": "Gets the details for a specific cluster."
                 },
                 "create": {
                   "id": "container.projects.locations.clusters.create",
@@ -2358,7 +2370,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the settings of a specific cluster."
+                  "description": "Updates the settings for a specific cluster."
                 },
                 "setLogging": {
                   "id": "container.projects.locations.clusters.setLogging",
@@ -2386,7 +2398,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the logging service of a specific cluster."
+                  "description": "Sets the logging service for a specific cluster."
                 },
                 "setMonitoring": {
                   "id": "container.projects.locations.clusters.setMonitoring",
@@ -2414,7 +2426,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the monitoring service of a specific cluster."
+                  "description": "Sets the monitoring service for a specific cluster."
                 },
                 "setAddons": {
                   "id": "container.projects.locations.clusters.setAddons",
@@ -2442,7 +2454,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the addons of a specific cluster."
+                  "description": "Sets the addons for a specific cluster."
                 },
                 "setLocations": {
                   "id": "container.projects.locations.clusters.setLocations",
@@ -2470,7 +2482,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations of a specific cluster."
+                  "description": "Sets the locations for a specific cluster."
                 },
                 "updateMaster": {
                   "id": "container.projects.locations.clusters.updateMaster",
@@ -2498,7 +2510,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the master of a specific cluster."
+                  "description": "Updates the master for a specific cluster."
                 },
                 "setMasterAuth": {
                   "id": "container.projects.locations.clusters.setMasterAuth",
@@ -2526,7 +2538,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server."
+                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password for a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server."
                 },
                 "delete": {
                   "id": "container.projects.locations.clusters.delete",
@@ -3057,7 +3069,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the size of a specific node pool."
+                      "description": "Sets the size for a specific node pool."
                     }
                   }
                 }
@@ -3317,7 +3329,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets the details of a specific cluster."
+                  "description": "Gets the details for a specific cluster."
                 },
                 "create": {
                   "id": "container.projects.zones.clusters.create",
@@ -3392,7 +3404,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the settings of a specific cluster."
+                  "description": "Updates the settings for a specific cluster."
                 },
                 "logging": {
                   "id": "container.projects.zones.clusters.logging",
@@ -3433,7 +3445,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the logging service of a specific cluster."
+                  "description": "Sets the logging service for a specific cluster."
                 },
                 "monitoring": {
                   "id": "container.projects.zones.clusters.monitoring",
@@ -3474,7 +3486,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the monitoring service of a specific cluster."
+                  "description": "Sets the monitoring service for a specific cluster."
                 },
                 "addons": {
                   "id": "container.projects.zones.clusters.addons",
@@ -3515,7 +3527,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the addons of a specific cluster."
+                  "description": "Sets the addons for a specific cluster."
                 },
                 "locations": {
                   "id": "container.projects.zones.clusters.locations",
@@ -3556,7 +3568,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations of a specific cluster."
+                  "description": "Sets the locations for a specific cluster."
                 },
                 "master": {
                   "id": "container.projects.zones.clusters.master",
@@ -3597,7 +3609,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the master of a specific cluster."
+                  "description": "Updates the master for a specific cluster."
                 },
                 "setMasterAuth": {
                   "id": "container.projects.zones.clusters.setMasterAuth",
@@ -3638,7 +3650,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server."
+                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password for a specific cluster.\nThis can be either via password generation or explicitly set.\nModify basic_auth.csv and reset the K8S API server."
                 },
                 "delete": {
                   "id": "container.projects.zones.clusters.delete",
@@ -4376,7 +4388,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the size of a specific node pool."
+                      "description": "Sets the size for a specific node pool."
                     }
                   }
                 }

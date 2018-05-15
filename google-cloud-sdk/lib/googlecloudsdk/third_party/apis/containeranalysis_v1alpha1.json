@@ -966,8 +966,7 @@
             "Resource is known but no action has been taken yet.",
             "Resource is being analyzed.",
             "Analysis has finished successfully.",
-            "Analysis has finished unsuccessfully, the analysis itself is in a bad\nstate.",
-            "Analysis will not happen, the resource is not supported."
+            "Analysis has finished unsuccessfully, the analysis itself is in a bad\nstate."
           ],
           "type": "string",
           "enum": [
@@ -975,8 +974,7 @@
             "PENDING",
             "SCANNING",
             "FINISHED_SUCCESS",
-            "FINISHED_FAILED",
-            "UNSUPPORTED_RESOURCE"
+            "FINISHED_FAILED"
           ]
         },
         "analysisStatusError": {

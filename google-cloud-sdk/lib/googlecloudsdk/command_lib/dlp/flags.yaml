@@ -18,10 +18,10 @@
     type: googlecloudsdk.command_lib.dlp.hooks:InfoType
     required: True
     help_text: |
-      Which infoTypes to look for. The values must correspond to
-      InfoType values found in documentation. For more information about
+      Which infoTypes to scan input for. The values must correspond to
+      infoType values found in documentation. For more information about
       valid infoTypes, see
-      [InfoTypes Reference](https://cloud.google.com/dlp/docs/infotypes-reference)
+      [infoTypes Reference](https://cloud.google.com/dlp/docs/infotypes-reference)
 
   min_likelihood:
     api_field: googlePrivacyDlpV2InspectContentRequest.inspectConfig.minLikelihood
@@ -71,3 +71,32 @@
       Maximum number of findings that will be returned per execution.
 
       If not specified, will return up to the system maximum of 1000 findings.
+
+  datastore_kind:
+    arg_name: datastore-kind
+    api_field: googlePrivacyDlpV2CreateJobTriggerRequest.jobTrigger.inspectJob.storageConfig.datastoreOptions
+    type: googlecloudsdk.command_lib.dlp.hooks:DatastoreInputOptions
+    is_positional: True
+    help_text: |
+       The Cloud Datastore kind or table to scan. The kind can optionally be
+       prefixed with the Cloud Datastore namespace ID - for example
+       `namespace:example-kind` or simply `example-kind`
+
+  gcs_path:
+    arg_name: path
+    api_field: googlePrivacyDlpV2CreateJobTriggerRequest.jobTrigger.inspectJob.storageConfig.cloudStorageOptions
+    type: googlecloudsdk.command_lib.dlp.hooks:GcsInputOptions
+    is_positional: True
+    help_text: |
+        Google Cloud Storage URL to scan for files with optional wildcard
+        character ('***') -- for example, `gs://my-bucket/***`.
+
+  big_query_table:
+    arg_name: input-table
+    api_field: googlePrivacyDlpV2CreateJobTriggerRequest.jobTrigger.inspectJob.storageConfig.bigQueryOptions
+    type: googlecloudsdk.command_lib.dlp.hooks:BigQueryInputOptions
+    is_positional: True
+    help_text: |
+        BigQuery table to scan. BigQuery tables are uniquely identified by
+        their project_id, dataset_id, and table_id in the format
+        `<project_id>.<dataset_id>.<table_id>`.

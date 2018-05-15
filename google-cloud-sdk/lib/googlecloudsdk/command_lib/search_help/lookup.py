@@ -14,6 +14,9 @@
 
 """Stores lookup keys for help search table."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import cli_tree
 
 

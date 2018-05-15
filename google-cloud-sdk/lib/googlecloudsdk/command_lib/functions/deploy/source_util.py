@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """'functions deploy' utilities for function source code."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 import random
 import re
@@ -30,6 +32,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import archive
 from googlecloudsdk.core.util import files as file_utils
+from six.moves import range
 
 
 def _GcloudIgnoreCreationPredicate(directory):

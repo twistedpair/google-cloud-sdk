@@ -51,7 +51,7 @@ def GetCatalogResourceSpec():
 def GetReferenceImageResourceSpec():
   return concepts.ResourceSpec(
       'alpha_vision.productSearch.catalogs.referenceImages',
-      resource_name='referenceImage',
+      resource_name='reference_image',
       api_version='v1alpha1',
       catalogsId=CatalogAttributeConfig(),
       referenceImagesId=ReferenceImageAttributeConfig())

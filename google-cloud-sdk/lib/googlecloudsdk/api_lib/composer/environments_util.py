@@ -82,11 +82,11 @@ def Create(environment_ref,
         serviceAccount=service_account,
         diskSizeGb=disk_size_gb)
     if oauth_scopes:
-      config.nodeConfig.oauthScopes = OrderedDict((s.strip(), None)
-                                                  for s in oauth_scopes).keys()
+      config.nodeConfig.oauthScopes = list(
+          OrderedDict((s.strip(), None) for s in oauth_scopes).keys())
     if tags:
-      config.nodeConfig.tags = OrderedDict((t.strip(), None)
-                                           for t in tags).keys()
+      config.nodeConfig.tags = list(
+          OrderedDict((t.strip(), None) for t in tags).keys())
   if env_variables or airflow_config_overrides:
     is_config_empty = False
     config.softwareConfig = messages.SoftwareConfig()

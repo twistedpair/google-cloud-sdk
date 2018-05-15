@@ -22,9 +22,9 @@ from googlecloudsdk.core import properties
 
 
 def AddOrganizationIdArg(parser):
-  """Adds 'organization_id' argument as a required CLI input."""
+  """Adds 'organization' resource argument as a required CLI input."""
   concept_parsers.ConceptParser.ForResource(
-      name='organization_id',
+      name='organization',
       resource_spec=concepts.ResourceSpec(
           'cloudresourcemanager.organizations',
           resource_name='organization'),

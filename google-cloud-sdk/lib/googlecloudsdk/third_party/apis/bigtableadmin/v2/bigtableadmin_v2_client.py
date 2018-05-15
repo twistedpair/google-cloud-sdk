@@ -825,14 +825,14 @@ where only some modifications have taken effect.
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""This is a private alpha release of Cloud Bigtable instance level.
-permissions. This feature is not currently available to most Cloud Bigtable
-customers. This feature might be changed in backward-incompatible ways and
-is not recommended for production use. It is not subject to any SLA or
-deprecation policy.
-
-Gets the access control policy for an instance resource. Returns an empty
+      r"""Gets the access control policy for an instance resource. Returns an empty.
 policy if an instance exists but does not have a policy set.
+
+Note: This is a private alpha release of Cloud Bigtable instance-level IAM.
+This feature is not currently available to most Cloud Bigtable customers.
+This feature might be changed in backward-incompatible ways and is not
+recommended for production use. It is not subject to any SLA or deprecation
+policy.
 
       Args:
         request: (BigtableadminProjectsInstancesGetIamPolicyRequest) input message
@@ -913,14 +913,14 @@ policy if an instance exists but does not have a policy set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""This is a private alpha release of Cloud Bigtable instance level.
-permissions. This feature is not currently available to most Cloud Bigtable
-customers. This feature might be changed in backward-incompatible ways and
-is not recommended for production use. It is not subject to any SLA or
-deprecation policy.
-
-Sets the access control policy on an instance resource. Replaces any
+      r"""Sets the access control policy on an instance resource. Replaces any.
 existing policy.
+
+Note: This is a private alpha release of Cloud Bigtable instance-level IAM.
+This feature is not currently available to most Cloud Bigtable customers.
+This feature might be changed in backward-incompatible ways and is not
+recommended for production use. It is not subject to any SLA or deprecation
+policy.
 
       Args:
         request: (BigtableadminProjectsInstancesSetIamPolicyRequest) input message
@@ -947,13 +947,13 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""This is a private alpha release of Cloud Bigtable instance level.
-permissions. This feature is not currently available to most Cloud Bigtable
-customers. This feature might be changed in backward-incompatible ways and
-is not recommended for production use. It is not subject to any SLA or
-deprecation policy.
+      r"""Returns permissions that the caller has on the specified instance resource.
 
-Returns permissions that the caller has on the specified instance resource.
+Note: This is a private alpha release of Cloud Bigtable instance-level IAM.
+This feature is not currently available to most Cloud Bigtable customers.
+This feature might be changed in backward-incompatible ways and is not
+recommended for production use. It is not subject to any SLA or deprecation
+policy.
 
       Args:
         request: (BigtableadminProjectsInstancesTestIamPermissionsRequest) input message

@@ -14,9 +14,11 @@
 
 """Common helper methods for Service Management commands."""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 import json
 import re
-import urllib2
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -31,6 +33,10 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
+
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
 
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
@@ -160,8 +166,8 @@ def PushAdvisorConfigChangeToString(config_change):
   Returns:
     An easily readable string representing the ConfigChange message.
   """
-  result = (u'Element [{element}] (old value = {old_value}, '
-            u'new value = {new_value}) was {change_type}. Advice:\n').format(
+  result = ('Element [{element}] (old value = {old_value}, '
+            'new value = {new_value}) was {change_type}. Advice:\n').format(
                 element=config_change.element,
                 old_value=config_change.oldValue,
                 new_value=config_change.newValue,
@@ -169,7 +175,7 @@ def PushAdvisorConfigChangeToString(config_change):
                     config_change.changeType))
 
   for advice in config_change.advices:
-    result += u'\t* {0}'.format(advice.description)
+    result += '\t* {0}'.format(advice.description)
 
   return result
 
@@ -596,5 +602,5 @@ def LoadJsonOrYaml(input_string):
 def GenerateManagementUrl(service, project):
   return ('https://console.cloud.google.com/endpoints/api/'
           '{service}/overview?project={project}'.format(
-              service=urllib2.quote(service),  # pytype: disable=module-attr
-              project=urllib2.quote(project)))  # pytype: disable=module-attr
+              service=six.moves.urllib.parse.quote(service),
+              project=six.moves.urllib.parse.quote(project)))

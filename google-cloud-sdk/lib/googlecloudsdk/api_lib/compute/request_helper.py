@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Module for making API requests."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import copy
 import json
 
@@ -19,6 +21,8 @@ from googlecloudsdk.api_lib.compute import batch_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute import waiters
 from googlecloudsdk.core import log
+import six
+from six.moves import zip  # pylint: disable=redefined-builtin
 
 
 def _RequestsAreListRequests(requests):
@@ -63,7 +67,7 @@ def _HandleJsonList(response, service, method, errors):
   elif method == 'AggregatedList':
     items_field_name = service.GetMethodConfig(
         'AggregatedList').relative_path.split('/')[-1]
-    for scope_result in response['items'].itervalues():
+    for scope_result in six.itervalues(response['items']):
       # If the given scope is unreachable, record the warning
       # message in the errors list.
       warning = scope_result.get('warning', None)

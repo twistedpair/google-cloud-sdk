@@ -303,7 +303,8 @@
             "Normally, once an action fails no further actions are run.  This flag\nindicates that this action must be run even if the pipeline has already\nfailed.  This is useful for actions that copy output files off of the VM\nor for debugging.",
             "Enable access to the FUSE device for this action.  Filesystems can then\nbe mounted into disks shared with other actions.  The other actions do\nnot need the ENABLE_FUSE flag to access the mounted filesystem.\n\nThis has the effect of causing the container to be executed with\nCAP_SYS_ADMIN and exposes \/dev\/fuse to the container, so it should only\nbe used for containers you trust.",
             "Expose all ports specified by EXPOSE statements in the container.  To\ndiscover the host side port numbers, consult the ACTION_STARTED event in\nthe operation metadata.",
-            "Normally, all container images are downloaded before any actions are\nexecuted.  This helps prevent typos in URIs or issues like lack of disk\nspace from wasting large amounts of compute resources.\n\nIf set, this flag prevents the worker from downloading the image until\njust before the action is executed.\n\nThis is useful for two reasons: first, if the image is large and a step\nearlier in the pipeline can fail, it can save time to avoid fetching the\nimage until it is needed.\n\nSecond, if the image is private (that is, it requires running `docker\nlogin` to access) this flag **must** be set so that a preceding action\ncan establish the credentials required to fetch it."
+            "Normally, all container images are downloaded before any actions are\nexecuted.  This helps prevent typos in URIs or issues like lack of disk\nspace from wasting large amounts of compute resources.\n\nIf set, this flag prevents the worker from downloading the image until\njust before the action is executed.\n\nThis is useful for two reasons: first, if the image is large and a step\nearlier in the pipeline can fail, it can save time to avoid fetching the\nimage until it is needed.\n\nSecond, if the image is private (that is, it requires running `docker\nlogin` to access) this flag **must** be set so that a preceding action\ncan establish the credentials required to fetch it.",
+            "Normally, a small portion of the container's standard error stream is\ncaptured and returned inside the ContainerStoppedEvent.  Setting this\nflag disables this functionality."
           ],
           "type": "array",
           "items": {
@@ -315,7 +316,8 @@
               "ALWAYS_RUN",
               "ENABLE_FUSE",
               "PUBLISH_EXPOSED_PORTS",
-              "DISABLE_IMAGE_PREFETCH"
+              "DISABLE_IMAGE_PREFETCH",
+              "DISABLE_STANDARD_ERROR_CAPTURE"
             ]
           }
         },
@@ -422,6 +424,13 @@
           "description": "The VM network configuration.",
           "$ref": "Network"
         },
+        "accelerators": {
+          "description": "The list of accelerators to attach to the VM.",
+          "type": "array",
+          "items": {
+            "$ref": "Accelerator"
+          }
+        },
         "serviceAccount": {
           "description": "The service account to install on the VM.  This account does not need\nany permissions other than those required by the pipeline.",
           "$ref": "ServiceAccount"
@@ -437,6 +446,10 @@
         },
         "bootImage": {
           "description": "The host operating system image to use.\n\nAt present, only Container Optimized OS images may be used.\n\nThe default value is \"projects\/cos-cloud\/global\/images\/family\/cos-stable\"\nwhich selects the latest stable release of Container Optimized OS.\n\nThis option is provided to allow testing against the beta release of the\noperating system to ensure that the new version does not interact\nnegatively with production pipelines.\n\nTo test a pipeline against the beta release of COS, use the value\n\"projects\/cos-cloud\/global\/images\/family\/cos-beta\".",
+          "type": "string"
+        },
+        "nvidiaDriverVersion": {
+          "description": "The NVIDIA driver version to use when attaching an NVIDIA GPU accelerator.\nThe version specified here must be compatible with the GPU libraries\ncontained in the container being executed, and must be one of the drivers\nhosted in the 'nvidia-drivers-us-public' bucket on Google Cloud Storage.",
           "type": "string"
         }
       }
@@ -477,6 +490,22 @@
         "usePrivateAddress": {
           "description": "If set to true, do not attach a public IP address to the VM.  Note that\nwithout an public IP address, additional configuration is required to\nallow the VM to access Google services.\n\nSee https:\/\/cloud.google.com\/vpc\/docs\/configure-private-google-access\nfor more information.",
           "type": "boolean"
+        }
+      }
+    },
+    "Accelerator": {
+      "id": "Accelerator",
+      "description": "Carries information about an accelerator that can be attached to a VM.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The accelerator type string (eg nvidia-tesla-k80).\n\nOnly NVIDIA GPU accelerators are currently supported.  If an NVIDIA GPU is\nattached, the required runtime libraries will be made available to all\ncontainers under `\/usr\/local\/nvidia`.  The driver version to install must\nbe specified using the NVIDIA driver version parameter on the virtual\nmachine specification.  Note that attaching a GPU increases the worker VM\nstartup time by a few minutes.",
+          "type": "string"
+        },
+        "count": {
+          "description": "How many accelerators of this type to attach.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -725,6 +754,10 @@
           "description": "The exit status of the container.",
           "type": "integer",
           "format": "int32"
+        },
+        "stderr": {
+          "description": "The tail end of any content written to standard error by the container.\nTo prevent this from being recorded if the action is known to emit\nlarge amounts of debugging noise or sensitive information, set the\nDISABLE_STANDARD_ERROR_CAPTURE flag.\n\nNote that only a small amount of the end of the stream is captured here.\nThe entire stream is stored in the \/google\/logs directory mounted into\neach action, and may be copied off the machine as described elsewhere.",
+          "type": "string"
         }
       }
     },
@@ -848,6 +881,16 @@
         },
         "createTime": {
           "description": "The time that the operation was created by the API.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startTime": {
+          "description": "The first time at which resources were allocated to execute the pipeline.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The time at which execution was completed and resources were cleaned up.",
           "type": "string",
           "format": "google-datetime"
         }

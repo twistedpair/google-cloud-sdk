@@ -197,8 +197,8 @@ def GetUseV1APIProperty():
     return old_val
   # both use_v1_api and use_v1_api_client are not set
   elif not new_set and not old_set:
-    # default behavior is using v1 api
-    return True
+    # default behavior is using non-v1 api
+    return False
   # both use_v1_api and use_v1_api_client are set
   else:
     # if the values of use_v1_api and use_v1_api match, return either one

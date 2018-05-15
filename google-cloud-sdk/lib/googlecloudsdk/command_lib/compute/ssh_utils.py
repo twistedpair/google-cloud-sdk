@@ -25,6 +25,8 @@ This module provides the following things:
       common flags needed by the various SSH-based commands.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
@@ -224,7 +226,7 @@ def _AddSSHKeyToMetadataMessage(message_classes, user, public_key, metadata,
   Returns:
     An updated metadata API message.
   """
-  entry = u'{user}:{public_key}'.format(
+  entry = '{user}:{public_key}'.format(
       user=user, public_key=public_key)
 
   ssh_keys, ssh_legacy_keys = _GetSSHKeysFromMetadata(metadata)

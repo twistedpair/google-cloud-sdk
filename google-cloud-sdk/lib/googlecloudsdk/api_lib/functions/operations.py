@@ -14,6 +14,8 @@
 """A library used to interact with Operations objects."""
 # TODO(b/73491568) Refactor to use api_lib.util.waiter
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.core.console import progress_tracker as console_progress_tracker
 from googlecloudsdk.core.util import encoding
@@ -33,7 +35,7 @@ def OperationErrorToString(error):
   Returns:
     A human readable string representation of the error.
   """
-  return u'OperationError: code={0}, message={1}'.format(
+  return 'OperationError: code={0}, message={1}'.format(
       error.code, encoding.Decode(error.message))
 
 

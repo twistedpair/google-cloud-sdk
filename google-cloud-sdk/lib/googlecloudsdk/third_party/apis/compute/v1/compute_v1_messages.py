@@ -6601,6 +6601,8 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
 
   Fields:
     attachedDisk: A AttachedDisk resource to be passed as the request body.
+    forceAttach: Whether to force attach the disk even if it's currently
+      attached to another instance. This is only available for regional disks.
     instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -6617,10 +6619,11 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
   """
 
   attachedDisk = _messages.MessageField('AttachedDisk', 1)
-  instance = _messages.StringField(2, required=True)
-  project = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  zone = _messages.StringField(5, required=True)
+  forceAttach = _messages.BooleanField(2)
+  instance = _messages.StringField(3, required=True)
+  project = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  zone = _messages.StringField(6, required=True)
 
 
 class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
@@ -7471,6 +7474,34 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeInterconnectAttachmentsPatchRequest(_messages.Message):
+  r"""A ComputeInterconnectAttachmentsPatchRequest object.
+
+  Fields:
+    interconnectAttachment: Name of the interconnect attachment to patch.
+    interconnectAttachmentResource: A InterconnectAttachment resource to be
+      passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  interconnectAttachment = _messages.StringField(1, required=True)
+  interconnectAttachmentResource = _messages.MessageField('InterconnectAttachment', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeInterconnectLocationsGetRequest(_messages.Message):
@@ -8849,6 +8880,282 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionDiskTypesGetRequest(_messages.Message):
+  r"""A ComputeRegionDiskTypesGetRequest object.
+
+  Fields:
+    diskType: Name of the disk type to return.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+  """
+
+  diskType = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionDiskTypesListRequest(_messages.Message):
+  r"""A ComputeRegionDiskTypesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
+  r"""A ComputeRegionDisksCreateSnapshotRequest object.
+
+  Fields:
+    disk: Name of the regional persistent disk to snapshot.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    snapshot: A Snapshot resource to be passed as the request body.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  snapshot = _messages.MessageField('Snapshot', 5)
+
+
+class ComputeRegionDisksDeleteRequest(_messages.Message):
+  r"""A ComputeRegionDisksDeleteRequest object.
+
+  Fields:
+    disk: Name of the regional persistent disk to delete.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class ComputeRegionDisksGetRequest(_messages.Message):
+  r"""A ComputeRegionDisksGetRequest object.
+
+  Fields:
+    disk: Name of the regional persistent disk to return.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+
+
+class ComputeRegionDisksInsertRequest(_messages.Message):
+  r"""A ComputeRegionDisksInsertRequest object.
+
+  Fields:
+    disk: A Disk resource to be passed as the request body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    sourceImage: Optional. Source image to restore onto a disk.
+  """
+
+  disk = _messages.MessageField('Disk', 1)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  sourceImage = _messages.StringField(5)
+
+
+class ComputeRegionDisksListRequest(_messages.Message):
+  r"""A ComputeRegionDisksListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionDisksResizeRequest(_messages.Message):
+  r"""A ComputeRegionDisksResizeRequest object.
+
+  Fields:
+    disk: Name of the regional persistent disk.
+    project: The project ID for this request.
+    region: Name of the region for this request.
+    regionDisksResizeRequest: A RegionDisksResizeRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  disk = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionDisksResizeRequest = _messages.MessageField('RegionDisksResizeRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionDisksSetLabelsRequest(_messages.Message):
+  r"""A ComputeRegionDisksSetLabelsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The region for this request.
+    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
+  requestId = _messages.StringField(4)
+  resource = _messages.StringField(5, required=True)
+
+
+class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionDisksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -12386,6 +12693,12 @@ class Disk(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     options: Internal use only.
+    region: [Output Only] URL of the region where the disk resides. Only
+      applicable for regional resources. You must specify this field as part
+      of the HTTP request URL. It is not settable as a field in the request
+      body.
+    replicaZones: URLs of the zones where the disk should be replicated to.
+      Only applicable for regional resources.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     sizeGb: Size of the persistent disk, specified in GB. You can specify this
@@ -12494,18 +12807,20 @@ class Disk(_messages.Message):
   licenses = _messages.StringField(12, repeated=True)
   name = _messages.StringField(13)
   options = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  sizeGb = _messages.IntegerField(16)
-  sourceImage = _messages.StringField(17)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
-  sourceImageId = _messages.StringField(19)
-  sourceSnapshot = _messages.StringField(20)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  sourceSnapshotId = _messages.StringField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  type = _messages.StringField(24)
-  users = _messages.StringField(25, repeated=True)
-  zone = _messages.StringField(26)
+  region = _messages.StringField(15)
+  replicaZones = _messages.StringField(16, repeated=True)
+  selfLink = _messages.StringField(17)
+  sizeGb = _messages.IntegerField(18)
+  sourceImage = _messages.StringField(19)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
+  sourceImageId = _messages.StringField(21)
+  sourceSnapshot = _messages.StringField(22)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
+  sourceSnapshotId = _messages.StringField(24)
+  status = _messages.EnumField('StatusValueValuesEnum', 25)
+  type = _messages.StringField(26)
+  users = _messages.StringField(27, repeated=True)
+  zone = _messages.StringField(28)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -12820,6 +13135,10 @@ class DiskType(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#diskType for disk
       types.
     name: [Output Only] Name of the resource.
+    region: [Output Only] URL of the region where the disk type resides. Only
+      applicable for regional resources. You must specify this field as part
+      of the HTTP request URL. It is not settable as a field in the request
+      body.
     selfLink: [Output Only] Server-defined URL for the resource.
     validDiskSize: [Output Only] An optional textual description of the valid
       disk size, such as "10GB-10TB".
@@ -12835,9 +13154,10 @@ class DiskType(_messages.Message):
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default=u'compute#diskType')
   name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  validDiskSize = _messages.StringField(9)
-  zone = _messages.StringField(10)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  validDiskSize = _messages.StringField(10)
+  zone = _messages.StringField(11)
 
 
 class DiskTypeAggregatedList(_messages.Message):
@@ -17695,6 +18015,8 @@ class Interconnect(_messages.Message):
       Ethernet_10G_LR
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this Interconnect is functional.
+    StateValueValuesEnum: [Output Only] The current state of whether or not
+      this Interconnect is functional.
 
   Fields:
     adminEnabled: Administrative status of the interconnect. When this is set
@@ -17751,6 +18073,8 @@ class Interconnect(_messages.Message):
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
     selfLink: [Output Only] Server-defined URL for the resource.
+    state: [Output Only] The current state of whether or not this Interconnect
+      is functional.
   """
 
   class InterconnectTypeValueValuesEnum(_messages.Enum):
@@ -17760,9 +18084,11 @@ class Interconnect(_messages.Message):
     Values:
       DEDICATED: <no description>
       IT_PRIVATE: <no description>
+      PARTNER: <no description>
     """
     DEDICATED = 0
     IT_PRIVATE = 1
+    PARTNER = 2
 
   class LinkTypeValueValuesEnum(_messages.Enum):
     r"""Type of link requested. This field indicates speed of each of the
@@ -17785,6 +18111,17 @@ class Interconnect(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The current state of whether or not this Interconnect is
+    functional.
+
+    Values:
+      ACTIVE: <no description>
+      UNPROVISIONED: <no description>
+    """
+    ACTIVE = 0
+    UNPROVISIONED = 1
+
   adminEnabled = _messages.BooleanField(1)
   circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 2, repeated=True)
   creationTimestamp = _messages.StringField(3)
@@ -17806,6 +18143,7 @@ class Interconnect(_messages.Message):
   provisionedLinkCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
   requestedLinkCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
   selfLink = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -17815,10 +18153,38 @@ class InterconnectAttachment(_messages.Message):
   ==)
 
   Enums:
+    BandwidthValueValuesEnum: Provisioned bandwidth capacity for the
+      interconnectAttachment. Can be set by the partner to update the
+      customer's provisioned bandwidth. Output only for for PARTNER type,
+      mutable for PARTNER_PROVIDER, not available for DEDICATED.
+    EdgeAvailabilityDomainValueValuesEnum: Desired availability domain for the
+      attachment. Only available for type PARTNER, at creation time. For
+      improved reliability, customers should configure a pair of attachments
+      with one per availability domain. The selected availability domain will
+      be provided to the Partner via the pairing key so that the provisioned
+      circuit will lie in the specified domain. If not specified, the value
+      will default to AVAILABILITY_DOMAIN_ANY.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this interconnect attachment is functional.
+    StateValueValuesEnum: [Output Only] The current state of this attachment's
+      functionality.
+    TypeValueValuesEnum:
 
   Fields:
+    adminEnabled: Determines whether this Attachment will carry packets. Not
+      present for PARTNER_PROVIDER.
+    bandwidth: Provisioned bandwidth capacity for the interconnectAttachment.
+      Can be set by the partner to update the customer's provisioned
+      bandwidth. Output only for for PARTNER type, mutable for
+      PARTNER_PROVIDER, not available for DEDICATED.
+    candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
+      the allocation of cloudRouterIpAddress and customerRouterIpAddress for
+      this attachment. All prefixes must be within link-local address space
+      (169.254.0.0/16) and must be /29 or shorter (/28, /27, etc). Google will
+      attempt to select an unused /29 from the supplied candidate prefix(es).
+      The request will fail if all possible /29s are in use on Google?s edge.
+      If not supplied, Google will randomly select an unused /29 from all of
+      link-local space.
     cloudRouterIpAddress: [Output Only] IPv4 address + prefix length to be
       configured on Cloud Router Interface for this interconnect attachment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -17827,6 +18193,13 @@ class InterconnectAttachment(_messages.Message):
       configured on the customer router subinterface for this interconnect
       attachment.
     description: An optional description of this resource.
+    edgeAvailabilityDomain: Desired availability domain for the attachment.
+      Only available for type PARTNER, at creation time. For improved
+      reliability, customers should configure a pair of attachments with one
+      per availability domain. The selected availability domain will be
+      provided to the Partner via the pairing key so that the provisioned
+      circuit will lie in the specified domain. If not specified, the value
+      will default to AVAILABILITY_DOMAIN_ANY.
     googleReferenceId: [Output Only] Google reference ID, to be used when
       raising support tickets with Google or otherwise to debug backend
       connectivity issues.
@@ -17845,6 +18218,17 @@ class InterconnectAttachment(_messages.Message):
       cannot be a dash.
     operationalStatus: [Output Only] The current status of whether or not this
       interconnect attachment is functional.
+    pairingKey: [Output only for type PARTNER. Input only for
+      PARTNER_PROVIDER. Not present for DEDICATED]. The opaque identifier of
+      an PARTNER attachment used to initiate provisioning with a selected
+      partner. Of the form "XXXXX/region/domain"
+    partnerAsn: Optional BGP ASN for the router that should be supplied by a
+      layer 3 Partner if they configured BGP on behalf of the customer. Output
+      only for PARTNER type, input only for PARTNER_PROVIDER, not available
+      for DEDICATED.
+    partnerMetadata: Informational metadata about Partner attachments from
+      Partners to display to customers. Output only for for PARTNER type,
+      mutable for PARTNER_PROVIDER, not available for DEDICATED.
     privateInterconnectInfo: [Output Only] Information specific to an
       InterconnectAttachment. This property is populated if the interconnect
       that this is attached to is of type DEDICATED.
@@ -17856,7 +18240,60 @@ class InterconnectAttachment(_messages.Message):
       InterconnectAttachment will automatically connect the Interconnect to
       the network & region within which the Cloud Router is configured.
     selfLink: [Output Only] Server-defined URL for the resource.
+    state: [Output Only] The current state of this attachment's functionality.
+    type: A TypeValueValuesEnum attribute.
+    vlanTag8021q: Available only for DEDICATED and PARTNER_PROVIDER. Desired
+      VLAN tag for this attachment, in the range 2-4094. This field refers to
+      802.1q VLAN tag, also known as IEEE 802.1Q Only specified at creation
+      time.
   """
+
+  class BandwidthValueValuesEnum(_messages.Enum):
+    r"""Provisioned bandwidth capacity for the interconnectAttachment. Can be
+    set by the partner to update the customer's provisioned bandwidth. Output
+    only for for PARTNER type, mutable for PARTNER_PROVIDER, not available for
+    DEDICATED.
+
+    Values:
+      BPS_100M: <no description>
+      BPS_10G: <no description>
+      BPS_1G: <no description>
+      BPS_200M: <no description>
+      BPS_2G: <no description>
+      BPS_300M: <no description>
+      BPS_400M: <no description>
+      BPS_500M: <no description>
+      BPS_50M: <no description>
+      BPS_5G: <no description>
+    """
+    BPS_100M = 0
+    BPS_10G = 1
+    BPS_1G = 2
+    BPS_200M = 3
+    BPS_2G = 4
+    BPS_300M = 5
+    BPS_400M = 6
+    BPS_500M = 7
+    BPS_50M = 8
+    BPS_5G = 9
+
+  class EdgeAvailabilityDomainValueValuesEnum(_messages.Enum):
+    r"""Desired availability domain for the attachment. Only available for
+    type PARTNER, at creation time. For improved reliability, customers should
+    configure a pair of attachments with one per availability domain. The
+    selected availability domain will be provided to the Partner via the
+    pairing key so that the provisioned circuit will lie in the specified
+    domain. If not specified, the value will default to
+    AVAILABILITY_DOMAIN_ANY.
+
+    Values:
+      AVAILABILITY_DOMAIN_1: <no description>
+      AVAILABILITY_DOMAIN_2: <no description>
+      AVAILABILITY_DOMAIN_ANY: <no description>
+    """
+    AVAILABILITY_DOMAIN_1 = 0
+    AVAILABILITY_DOMAIN_2 = 1
+    AVAILABILITY_DOMAIN_ANY = 2
 
   class OperationalStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current status of whether or not this interconnect
@@ -17869,20 +18306,62 @@ class InterconnectAttachment(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
-  cloudRouterIpAddress = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  customerRouterIpAddress = _messages.StringField(3)
-  description = _messages.StringField(4)
-  googleReferenceId = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(7)
-  kind = _messages.StringField(8, default=u'compute#interconnectAttachment')
-  name = _messages.StringField(9)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 10)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 11)
-  region = _messages.StringField(12)
-  router = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
+  class StateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The current state of this attachment's functionality.
+
+    Values:
+      ACTIVE: <no description>
+      DEFUNCT: <no description>
+      PARTNER_REQUEST_RECEIVED: <no description>
+      PENDING_CUSTOMER: <no description>
+      PENDING_PARTNER: <no description>
+      STATE_UNSPECIFIED: <no description>
+      UNPROVISIONED: <no description>
+    """
+    ACTIVE = 0
+    DEFUNCT = 1
+    PARTNER_REQUEST_RECEIVED = 2
+    PENDING_CUSTOMER = 3
+    PENDING_PARTNER = 4
+    STATE_UNSPECIFIED = 5
+    UNPROVISIONED = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""TypeValueValuesEnum enum type.
+
+    Values:
+      DEDICATED: <no description>
+      PARTNER: <no description>
+      PARTNER_PROVIDER: <no description>
+    """
+    DEDICATED = 0
+    PARTNER = 1
+    PARTNER_PROVIDER = 2
+
+  adminEnabled = _messages.BooleanField(1)
+  bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 2)
+  candidateSubnets = _messages.StringField(3, repeated=True)
+  cloudRouterIpAddress = _messages.StringField(4)
+  creationTimestamp = _messages.StringField(5)
+  customerRouterIpAddress = _messages.StringField(6)
+  description = _messages.StringField(7)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 8)
+  googleReferenceId = _messages.StringField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(11)
+  kind = _messages.StringField(12, default=u'compute#interconnectAttachment')
+  name = _messages.StringField(13)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 14)
+  pairingKey = _messages.StringField(15)
+  partnerAsn = _messages.IntegerField(16)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 17)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 18)
+  region = _messages.StringField(19)
+  router = _messages.StringField(20)
+  selfLink = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  type = _messages.EnumField('TypeValueValuesEnum', 23)
+  vlanTag8021q = _messages.IntegerField(24, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -18162,6 +18641,28 @@ class InterconnectAttachmentList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class InterconnectAttachmentPartnerMetadata(_messages.Message):
+  r"""Informational metadata about Partner attachments from Partners to
+  display to customers. These fields are propagated from PARTNER_PROVIDER
+  attachments to their corresponding PARTNER attachments.
+
+  Fields:
+    interconnectName: Plain text name of the Interconnect this attachment is
+      connected to, as displayed in the Partner?s portal. For instance
+      ?Chicago 1?. This value may be validated to match approved Partner
+      values.
+    partnerName: Plain text name of the Partner providing this attachment.
+      This value may be validated to match approved Partner values.
+    portalUrl: URL of the Partner?s portal for this Attachment. Partners may
+      customise this to be a deep-link to the specific resource on the Partner
+      portal. This value may be validated to match approved Partner values.
+  """
+
+  interconnectName = _messages.StringField(1)
+  partnerName = _messages.StringField(2)
+  portalUrl = _messages.StringField(3)
 
 
 class InterconnectAttachmentPrivateInfo(_messages.Message):
@@ -20036,7 +20537,8 @@ class Operation(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
-    clientOperationId: [Output Only] Reserved for future use.
+    clientOperationId: [Output Only] The value of `requestId` if you provided
+      it in the request. Not present otherwise.
     creationTimestamp: [Deprecated] This field is deprecated.
     description: [Output Only] A textual description of the operation, which
       is set when the operation is created.
@@ -20838,6 +21340,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
@@ -20886,26 +21389,27 @@ class Quota(_messages.Message):
     PREEMPTIBLE_LOCAL_SSD_GB = 24
     PREEMPTIBLE_NVIDIA_K80_GPUS = 25
     PREEMPTIBLE_NVIDIA_P100_GPUS = 26
-    REGIONAL_AUTOSCALERS = 27
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 28
-    ROUTERS = 29
-    ROUTES = 30
-    SECURITY_POLICIES = 31
-    SECURITY_POLICY_RULES = 32
-    SNAPSHOTS = 33
-    SSD_TOTAL_GB = 34
-    SSL_CERTIFICATES = 35
-    STATIC_ADDRESSES = 36
-    SUBNETWORKS = 37
-    TARGET_HTTPS_PROXIES = 38
-    TARGET_HTTP_PROXIES = 39
-    TARGET_INSTANCES = 40
-    TARGET_POOLS = 41
-    TARGET_SSL_PROXIES = 42
-    TARGET_TCP_PROXIES = 43
-    TARGET_VPN_GATEWAYS = 44
-    URL_MAPS = 45
-    VPN_TUNNELS = 46
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 27
+    REGIONAL_AUTOSCALERS = 28
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 29
+    ROUTERS = 30
+    ROUTES = 31
+    SECURITY_POLICIES = 32
+    SECURITY_POLICY_RULES = 33
+    SNAPSHOTS = 34
+    SSD_TOTAL_GB = 35
+    SSL_CERTIFICATES = 36
+    STATIC_ADDRESSES = 37
+    SUBNETWORKS = 38
+    TARGET_HTTPS_PROXIES = 39
+    TARGET_HTTP_PROXIES = 40
+    TARGET_INSTANCES = 41
+    TARGET_POOLS = 42
+    TARGET_SSL_PROXIES = 43
+    TARGET_TCP_PROXIES = 44
+    TARGET_VPN_GATEWAYS = 45
+    URL_MAPS = 46
+    VPN_TUNNELS = 47
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -21100,6 +21604,142 @@ class RegionAutoscalerList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class RegionDiskTypeList(_messages.Message):
+  r"""A RegionDiskTypeList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of DiskType resources.
+    kind: [Output Only] Type of resource. Always compute#regionDiskTypeList
+      for region disk types.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('DiskType', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#regionDiskTypeList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
+class RegionDisksResizeRequest(_messages.Message):
+  r"""A RegionDisksResizeRequest object.
+
+  Fields:
+    sizeGb: The new size of the regional persistent disk, which is specified
+      in GB.
+  """
+
+  sizeGb = _messages.IntegerField(1)
 
 
 class RegionInstanceGroupList(_messages.Message):
@@ -21720,6 +22360,50 @@ class RegionList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RegionSetLabelsRequest(_messages.Message):
+  r"""A RegionSetLabelsRequest object.
+
+  Messages:
+    LabelsValue: The labels to set for this resource.
+
+  Fields:
+    labelFingerprint: The fingerprint of the previous set of labels for this
+      resource, used to detect conflicts. The fingerprint is initially
+      generated by Compute Engine and changes after every request to modify or
+      update labels. You must always provide an up-to-date fingerprint hash in
+      order to update or change labels. Make a get() request to the resource
+      to get the latest fingerprint.
+    labels: The labels to set for this resource.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels to set for this resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labelFingerprint = _messages.BytesField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+
+
 class ResourceCommitment(_messages.Message):
   r"""Commitment for a particular resource (a Commitment is composed of one or
   more of these).
@@ -22334,6 +23018,12 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
+    ManagementTypeValueValuesEnum: [Output Only] Type of how the
+      resource/configuration of the BGP peer is managed. MANAGED_BY_USER is
+      the default value; MANAGED_BY_ATTACHMENT represents an BGP peer that is
+      automatically created for PARTNER interconnectAttachment, Google will
+      automatically create/delete this type of BGP peer when the PARTNER
+      interconnectAttachment is created/deleted.
 
   Fields:
     advertiseMode: User-specified flag to indicate which mode to use for
@@ -22355,6 +23045,12 @@ class RouterBgpPeer(_messages.Message):
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
+    managementType: [Output Only] Type of how the resource/configuration of
+      the BGP peer is managed. MANAGED_BY_USER is the default value;
+      MANAGED_BY_ATTACHMENT represents an BGP peer that is automatically
+      created for PARTNER interconnectAttachment, Google will automatically
+      create/delete this type of BGP peer when the PARTNER
+      interconnectAttachment is created/deleted.
     name: Name of this BGP peer. The name must be 1-63 characters long and
       comply with RFC1035.
     peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
@@ -22381,19 +23077,42 @@ class RouterBgpPeer(_messages.Message):
     """
     ALL_SUBNETS = 0
 
+  class ManagementTypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Type of how the resource/configuration of the BGP peer
+    is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
+    represents an BGP peer that is automatically created for PARTNER
+    interconnectAttachment, Google will automatically create/delete this type
+    of BGP peer when the PARTNER interconnectAttachment is created/deleted.
+
+    Values:
+      MANAGED_BY_ATTACHMENT: <no description>
+      MANAGED_BY_USER: <no description>
+    """
+    MANAGED_BY_ATTACHMENT = 0
+    MANAGED_BY_USER = 1
+
   advertiseMode = _messages.EnumField('AdvertiseModeValueValuesEnum', 1)
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
   interfaceName = _messages.StringField(5)
   ipAddress = _messages.StringField(6)
-  name = _messages.StringField(7)
-  peerAsn = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(9)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  peerAsn = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(10)
 
 
 class RouterInterface(_messages.Message):
   r"""A RouterInterface object.
+
+  Enums:
+    ManagementTypeValueValuesEnum: [Output Only] Type of how the
+      resource/configuration of the interface is managed. MANAGED_BY_USER is
+      the default value; MANAGED_BY_ATTACHMENT represents an interface that is
+      automatically created for PARTNER type interconnectAttachment, Google
+      will automatically create/update/delete this type of interface when the
+      PARTNER interconnectAttachment is created/provisioned/deleted.
 
   Fields:
     ipRange: IP address and range of the interface. The IP range must be in
@@ -22408,14 +23127,36 @@ class RouterInterface(_messages.Message):
       region as the router. Each interface can have at most one linked
       resource and it could either be a VPN Tunnel or an interconnect
       attachment.
+    managementType: [Output Only] Type of how the resource/configuration of
+      the interface is managed. MANAGED_BY_USER is the default value;
+      MANAGED_BY_ATTACHMENT represents an interface that is automatically
+      created for PARTNER type interconnectAttachment, Google will
+      automatically create/update/delete this type of interface when the
+      PARTNER interconnectAttachment is created/provisioned/deleted.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
   """
 
+  class ManagementTypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] Type of how the resource/configuration of the interface
+    is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
+    represents an interface that is automatically created for PARTNER type
+    interconnectAttachment, Google will automatically create/update/delete
+    this type of interface when the PARTNER interconnectAttachment is
+    created/provisioned/deleted.
+
+    Values:
+      MANAGED_BY_ATTACHMENT: <no description>
+      MANAGED_BY_USER: <no description>
+    """
+    MANAGED_BY_ATTACHMENT = 0
+    MANAGED_BY_USER = 1
+
   ipRange = _messages.StringField(1)
   linkedInterconnectAttachment = _messages.StringField(2)
   linkedVpnTunnel = _messages.StringField(3)
-  name = _messages.StringField(4)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
+  name = _messages.StringField(5)
 
 
 class RouterList(_messages.Message):
@@ -23691,6 +24432,7 @@ class Subnetwork(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource. This field can be set only at
       resource creation time.
+    enableFlowLogs: Whether to enable flow logging for this subnetwork.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
@@ -23732,17 +24474,18 @@ class Subnetwork(_messages.Message):
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
-  fingerprint = _messages.BytesField(3)
-  gatewayAddress = _messages.StringField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(6)
-  kind = _messages.StringField(7, default=u'compute#subnetwork')
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  privateIpGoogleAccess = _messages.BooleanField(10)
-  region = _messages.StringField(11)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 12, repeated=True)
-  selfLink = _messages.StringField(13)
+  enableFlowLogs = _messages.BooleanField(3)
+  fingerprint = _messages.BytesField(4)
+  gatewayAddress = _messages.StringField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(7)
+  kind = _messages.StringField(8, default=u'compute#subnetwork')
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  privateIpGoogleAccess = _messages.BooleanField(11)
+  region = _messages.StringField(12)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 13, repeated=True)
+  selfLink = _messages.StringField(14)
 
 
 class SubnetworkAggregatedList(_messages.Message):

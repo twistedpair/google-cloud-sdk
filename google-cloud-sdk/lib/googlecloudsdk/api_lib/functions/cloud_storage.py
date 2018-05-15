@@ -14,6 +14,8 @@
 
 """Utilities for interacting with Google Cloud Storage."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.core import config

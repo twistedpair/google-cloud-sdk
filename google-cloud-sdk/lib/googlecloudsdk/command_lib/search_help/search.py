@@ -14,9 +14,14 @@
 
 """gcloud search-help command resources."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.command_lib.search_help import lookup
 from googlecloudsdk.command_lib.search_help import search_util
+
+from six.moves import zip
 
 
 def RunSearch(terms, cli):

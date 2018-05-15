@@ -526,9 +526,11 @@ class Environment(_messages.Message):
 
   Fields:
     androidDevice: An Android device which must be used with an Android test.
+    iosDevice: An iOS device which must be used with an iOS test.
   """
 
   androidDevice = _messages.MessageField('AndroidDevice', 1)
+  iosDevice = _messages.MessageField('IosDevice', 2)
 
 
 class EnvironmentMatrix(_messages.Message):
@@ -538,10 +540,12 @@ class EnvironmentMatrix(_messages.Message):
     androidDeviceList: A list of Android devices; the test will be run only on
       the specified devices.
     androidMatrix: A matrix of Android devices.
+    iosDeviceList: A list of iOS devices.
   """
 
   androidDeviceList = _messages.MessageField('AndroidDeviceList', 1)
   androidMatrix = _messages.MessageField('AndroidMatrix', 2)
+  iosDeviceList = _messages.MessageField('IosDeviceList', 3)
 
 
 class EnvironmentVariable(_messages.Message):
@@ -615,6 +619,122 @@ class IntentFilter(_messages.Message):
   actionNames = _messages.StringField(1, repeated=True)
   categoryNames = _messages.StringField(2, repeated=True)
   mimeType = _messages.StringField(3)
+
+
+class IosDevice(_messages.Message):
+  r"""A single iOS device.
+
+  Fields:
+    iosModelId: The id of the iOS device to be used. Use the
+      EnvironmentDiscoveryService to get supported options. Required
+    iosVersionId: The id of the iOS major software version to be used. Use the
+      EnvironmentDiscoveryService to get supported options. Required
+    locale: The locale the test device used for testing. Use the
+      EnvironmentDiscoveryService to get supported options. Required
+    orientation: How the device is oriented during the test. Use the
+      EnvironmentDiscoveryService to get supported options. Required
+  """
+
+  iosModelId = _messages.StringField(1)
+  iosVersionId = _messages.StringField(2)
+  locale = _messages.StringField(3)
+  orientation = _messages.StringField(4)
+
+
+class IosDeviceCatalog(_messages.Message):
+  r"""The currently supported iOS devices.
+
+  Fields:
+    models: The set of supported iOS device models. @OutputOnly
+    versions: The set of supported iOS software versions. @OutputOnly
+  """
+
+  models = _messages.MessageField('IosModel', 1, repeated=True)
+  versions = _messages.MessageField('IosVersion', 2, repeated=True)
+
+
+class IosDeviceList(_messages.Message):
+  r"""A list of iOS device configurations in which the test is to be executed.
+
+  Fields:
+    iosDevices: A list of iOS devices Required
+  """
+
+  iosDevices = _messages.MessageField('IosDevice', 1, repeated=True)
+
+
+class IosModel(_messages.Message):
+  r"""A description of an iOS device tests may be run on.
+
+  Fields:
+    id: The unique opaque id for this model. Use this for invoking the
+      TestExecutionService. @OutputOnly
+    name: The human-readable name for this device model. Examples: "iPhone
+      4s", "iPad Mini 2" @OutputOnly
+    supportedVersionIds: The set of iOS major software versions this device
+      supports. @OutputOnly
+    tags: Tags for this dimension. Examples: "default", "preview",
+      "deprecated" @OutputOnly
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+  supportedVersionIds = _messages.StringField(3, repeated=True)
+  tags = _messages.StringField(4, repeated=True)
+
+
+class IosTestSetup(_messages.Message):
+  r"""A description of how to set up an iOS device prior to a test.
+
+  Fields:
+    networkProfile: The network traffic profile used for running the test.
+      Optional
+  """
+
+  networkProfile = _messages.StringField(1)
+
+
+class IosVersion(_messages.Message):
+  r"""An iOS version
+
+  Fields:
+    id: An opaque id for this iOS version. Use this id to invoke the
+      TestExecutionService. @OutputOnly
+    majorVersion: A integer representing the major iOS version. Examples: "8",
+      "9" @OutputOnly
+    minorVersion: A integer representing the minor iOS version. Examples: "1",
+      "2" @OutputOnly
+    tags: Tags for this dimension. Examples: "default", "preview",
+      "deprecated" @OutputOnly
+  """
+
+  id = _messages.StringField(1)
+  majorVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minorVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  tags = _messages.StringField(4, repeated=True)
+
+
+class IosXcTest(_messages.Message):
+  r"""A test of an iOS application that uses the XCTest framework. Xcode
+  supports the option to "build for testing", which generates an .xctestrun
+  file that contains a test specification (arguments, test methods, etc). This
+  test type accepts a zip file containing the .xctestrun file and its
+  corresponding Debug-iphoneos directory that contains all of the binaries
+  needed to run the tests.
+
+  Fields:
+    testsZip: The .zip containing the .xctestrun file and the Debug-iphoneos
+      directory from DerivedData/Build/Products. The .xctestrun file in this
+      zip is ignored if the xctestrun field is specified. Required
+    xctestrun: An .xctestrun file that will override the .xctestrun file in
+      the tests zip. Because the .xctestrun file contains environment
+      variables along with test methods to run and/or ignore, this can be
+      useful for sharding tests. Optional, default is taken from the tests
+      zip.
+  """
+
+  testsZip = _messages.MessageField('FileReference', 1)
+  xctestrun = _messages.MessageField('FileReference', 2)
 
 
 class LauncherActivityIntent(_messages.Message):
@@ -897,11 +1017,13 @@ class TestEnvironmentCatalog(_messages.Message):
   Fields:
     androidDeviceCatalog: Android devices suitable for running Android
       Instrumentation Tests.
+    iosDeviceCatalog: Supported iOS devices
     networkConfigurationCatalog: Supported network configurations
   """
 
   androidDeviceCatalog = _messages.MessageField('AndroidDeviceCatalog', 1)
-  networkConfigurationCatalog = _messages.MessageField('NetworkConfigurationCatalog', 2)
+  iosDeviceCatalog = _messages.MessageField('IosDeviceCatalog', 2)
+  networkConfigurationCatalog = _messages.MessageField('NetworkConfigurationCatalog', 3)
 
 
 class TestExecution(_messages.Message):
@@ -1049,10 +1171,24 @@ class TestMatrix(_messages.Message):
         not declared in the manifest.
       DEVICE_ADMIN_RECEIVER: Device administrator applications are not
         allowed.
+      MALFORMED_XC_TEST_ZIP: The zipped XCTest was malformed. The zip did not
+        contain a single .xctestrun file alongside a Debug-iphoneos directory
+        containing the compiled artifacts for the test.
+      BUILT_FOR_IOS_SIMULATOR: The zipped XCTest was built for the iOS
+        simulator rather than for a physical device.
+      NO_TESTS_IN_XC_TEST_ZIP: The .xctestrun file did not specify any test
+        targets.
+      USE_DESTINATION_ARTIFACTS: One or more of the test targets defined in
+        the .xctestrun file specifies "UseDestinationArtifacts", which is
+        disallowed.
       TEST_ONLY_APK: The APK is marked as "testOnly". NOT USED
+      MALFORMED_IPA: The input IPA could not be parsed.
       NO_CODE_APK: APK contains no code. See also
         https://developer.android.com/guide/topics/manifest/application-
         element.html#code
+      INVALID_INPUT_APK: Either the provided input APK path was malformed, the
+        APK file does not exist, or the user does not have permission to
+        access the APK file.
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -1073,8 +1209,14 @@ class TestMatrix(_messages.Message):
     SCENARIO_LABEL_MALFORMED = 16
     SCENARIO_NOT_DECLARED = 17
     DEVICE_ADMIN_RECEIVER = 18
-    TEST_ONLY_APK = 19
-    NO_CODE_APK = 20
+    MALFORMED_XC_TEST_ZIP = 19
+    BUILT_FOR_IOS_SIMULATOR = 20
+    NO_TESTS_IN_XC_TEST_ZIP = 21
+    USE_DESTINATION_ARTIFACTS = 22
+    TEST_ONLY_APK = 23
+    MALFORMED_IPA = 24
+    NO_CODE_APK = 25
+    INVALID_INPUT_APK = 26
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Indicates the current progress of the test matrix (e.g., FINISHED)
@@ -1182,6 +1324,8 @@ class TestSpecification(_messages.Message):
     disablePerformanceMetrics: Disables performance metrics recording; may
       reduce test latency.
     disableVideoRecording: Disables video recording; may reduce test latency.
+    iosTestSetup: Test setup requirements for iOS. Optional
+    iosXcTest: An iOS XCTest, via an .xctestrun file
     testSetup: Test setup requirements for Android e.g. files to install,
       bootstrap scripts. Optional
     testTimeout: Max time a test execution is allowed to run before it is
@@ -1194,8 +1338,10 @@ class TestSpecification(_messages.Message):
   autoGoogleLogin = _messages.BooleanField(4)
   disablePerformanceMetrics = _messages.BooleanField(5)
   disableVideoRecording = _messages.BooleanField(6)
-  testSetup = _messages.MessageField('TestSetup', 7)
-  testTimeout = _messages.StringField(8)
+  iosTestSetup = _messages.MessageField('IosTestSetup', 7)
+  iosXcTest = _messages.MessageField('IosXcTest', 8)
+  testSetup = _messages.MessageField('TestSetup', 9)
+  testTimeout = _messages.StringField(10)
 
 
 class TestingProjectsTestMatricesCancelRequest(_messages.Message):
@@ -1258,11 +1404,13 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
     Values:
       ENVIRONMENT_TYPE_UNSPECIFIED: <no description>
       ANDROID: <no description>
+      IOS: <no description>
       NETWORK_CONFIGURATION: <no description>
     """
     ENVIRONMENT_TYPE_UNSPECIFIED = 0
     ANDROID = 1
-    NETWORK_CONFIGURATION = 2
+    IOS = 2
+    NETWORK_CONFIGURATION = 3
 
   environmentType = _messages.EnumField('EnvironmentTypeValueValuesEnum', 1, required=True)
   projectId = _messages.StringField(2)

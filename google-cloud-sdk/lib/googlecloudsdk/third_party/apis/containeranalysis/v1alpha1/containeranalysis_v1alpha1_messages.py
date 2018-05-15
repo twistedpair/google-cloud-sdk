@@ -1037,15 +1037,12 @@ class Discovered(_messages.Message):
       FINISHED_SUCCESS: Analysis has finished successfully.
       FINISHED_FAILED: Analysis has finished unsuccessfully, the analysis
         itself is in a bad state.
-      UNSUPPORTED_RESOURCE: Analysis will not happen, the resource is not
-        supported.
     """
     ANALYSIS_STATUS_UNSPECIFIED = 0
     PENDING = 1
     SCANNING = 2
     FINISHED_SUCCESS = 3
     FINISHED_FAILED = 4
-    UNSUPPORTED_RESOURCE = 5
 
   analysisStatus = _messages.EnumField('AnalysisStatusValueValuesEnum', 1)
   analysisStatusError = _messages.MessageField('Status', 2)

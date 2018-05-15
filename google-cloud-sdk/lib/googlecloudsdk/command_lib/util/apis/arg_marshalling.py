@@ -162,9 +162,14 @@ class DeclarativeArgumentGenerator(object):
     # the parent resource collection is being used).
     anchor_arg_is_flag = (
         not self.resource_arg.is_positional or self.method.IsList())
+    if self.resource_arg.name_override:
+      flag_name = self.resource_arg.name_override
+    else:
+      flag_name = self.resource_spec.anchor.name
+
     anchor_arg_name = (
-        '--' + self.resource_spec.anchor.name if anchor_arg_is_flag
-        else self.resource_spec.anchor.name)
+        '--' + flag_name if anchor_arg_is_flag
+        else flag_name)
     no_gen = {n: '' for n in resource_arg_schema.IGNORED_FIELDS}
     no_gen.update({n: '' for n in self.resource_arg.removed_flags})
 
@@ -250,6 +255,7 @@ class AutoArgumentGenerator(object):
     args = []
 
     def _UpdateArgs(arguments):
+      """Update args."""
       for arg in arguments:
         try:
           name = arg.name

@@ -11,9 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Contains utilities to support the `gcloud init` command."""
+
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.calliope import usage_text

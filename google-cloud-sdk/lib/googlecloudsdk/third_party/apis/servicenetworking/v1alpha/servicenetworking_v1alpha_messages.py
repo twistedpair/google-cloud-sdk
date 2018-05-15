@@ -950,6 +950,17 @@ class LabelDescriptor(_messages.Message):
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 3)
 
 
+class ListPeeringStatesResponse(_messages.Message):
+  r"""ListPeeringStatesResponse is the response to list peering states for the
+  given service and consumer project.
+
+  Fields:
+    peeringStates: The list of peerings.
+  """
+
+  peeringStates = _messages.MessageField('PeeringState', 1, repeated=True)
+
+
 class LogDescriptor(_messages.Message):
   r"""A description of a log type. Example in YAML format:      - name:
   library.googleapis.com/activity_history       description: The history of
@@ -1658,14 +1669,32 @@ class PeerSharedNetworkRequest(_messages.Message):
       provider. Must be in a form
       'projects/{project}/global/networks/{network}'. {project} is a project
       number, as in '12345' {network} is network name.
-    reservedPeeringRange: Named IP address range(s) of PEERING type reserved
+    reservedPeeringRanges: Named IP address range(s) of PEERING type reserved
       for this service provider. Note that invoking this method with a
       different range when connection is already established will not
       reallocate already provisioned service producer subnetworks.
   """
 
   network = _messages.StringField(1)
-  reservedPeeringRange = _messages.StringField(2, repeated=True)
+  reservedPeeringRanges = _messages.StringField(2, repeated=True)
+
+
+class PeeringState(_messages.Message):
+  r"""The state of existing peerings.
+
+  Fields:
+    network: consumer network name.
+    peering: The name of peering from GCE network.
+    reservedPeeringRanges: Named IP address range(s) of PEERING type reserved
+      for this service provider.
+    service: The name of the service, for example
+      'servicenetworking.googleapis.com'.
+  """
+
+  network = _messages.StringField(1)
+  peering = _messages.StringField(2)
+  reservedPeeringRanges = _messages.StringField(3, repeated=True)
+  service = _messages.StringField(4)
 
 
 class Quota(_messages.Message):
@@ -1950,6 +1979,23 @@ class ServicenetworkingServicesPeerRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   peerSharedNetworkRequest = _messages.MessageField('PeerSharedNetworkRequest', 2)
+
+
+class ServicenetworkingServicesPeeringStatesListRequest(_messages.Message):
+  r"""A ServicenetworkingServicesPeeringStatesListRequest object.
+
+  Fields:
+    parent: Provider that needs to be listed. services/{peering
+      service}/{collection id}/{resource id} {peering service} is the service
+      managing peering connectivity for service provider organization. For
+      Google services that support this functionality it is
+      'servicenetworking.googleapis.com'. {collection id} is the cloud
+      resource collection type representing the service consumer, for example
+      'projects', or 'organizations'. {resource id} is the consumer numeric
+      id, such as project number: '123456'.
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class SourceContext(_messages.Message):

@@ -137,22 +137,8 @@ def AddCreateAttestationFlags(parser):
         Path to file containing the signature to store, or `-` to read signature
         from stdin."""))
 
-  attestation_types_group = parser.add_group(
-      mutex=True, help='Attestation parameters.')
-
-  v1_attestation_group = attestation_types_group.add_group(
-      help='v1 (BUILD_DETAILS) attestation parameters.')
-  v1_attestation_group.add_argument(
-      '--public-key-file',
-      type=str,
-      required=True,
-      help='Path to file containing the public key to store.')
-
-  v2_attestation_group = attestation_types_group.add_group(
-      help='v2 (ATTESTATION_AUTHORITY) attestation parameters.')
-
   AddConcepts(
-      v2_attestation_group,
+      parser,
       GetAuthorityNotePresentationSpec(
           base_name='attestation-authority-note',
           positional=False,
@@ -166,7 +152,7 @@ def AddCreateAttestationFlags(parser):
       )
   )
 
-  v2_attestation_group.add_argument(
+  parser.add_argument(
       '--pgp-key-fingerprint',
       type=str,
       required=True,
@@ -174,6 +160,4 @@ def AddCreateAttestationFlags(parser):
         The cryptographic ID of the key used to generate the signature.  For
         Binary Authorization, this must be the version 4, full 160-bit
         fingerprint, expressed as a 40 character hexidecimal string.  See
-        https://tools.ietf.org/html/rfc4880#section-12.2 for details.  When
-        using this argument, --attestation-authority-note must also be
-        passed, while --public-key-file must not be passed."""))
+        https://tools.ietf.org/html/rfc4880#section-12.2 for details."""))

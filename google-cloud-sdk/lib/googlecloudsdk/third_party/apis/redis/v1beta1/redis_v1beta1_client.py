@@ -53,7 +53,7 @@ class RedisV1beta1(base_api.BaseApiClient):
     def Create(self, request, global_params=None):
       r"""Creates a Redis instance based on the specified tier and memory size.
 
-By default, the instance is peered to the project's
+By default, the instance is accessible from the project's
 [default network](/compute/docs/networks-and-firewalls#networks).
 
 The creation is executed asynchronously and callers may check the returned

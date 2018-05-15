@@ -26,9 +26,9 @@ INSTALLATION_FLAG = base.Argument(
     required=False,
     action='store_true',
     help="""\
-        Typically properties are updated only in the currently active
-        configuration, but when `--installation` is given the property is
-        updated for the entire gcloud installation."""
+        If set, the property is updated for the entire Cloud SDK installation.
+        Otherwise, by default, the property is updated only in the currently
+        active configuration."""
     )
 
 

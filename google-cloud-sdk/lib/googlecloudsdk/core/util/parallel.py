@@ -197,9 +197,10 @@ class MultiError(Exception):
 
   def __init__(self, errors):
     self.errors = errors
+    fn = lambda e: '{}: {}'.format(type(e).__name__, six.text_type(e))
     super(MultiError, self).__init__(
         'One or more errors occurred:\n' +
-        '\n\n'.join(map(six.text_type, errors)))
+        '\n\n'.join(map(fn, errors)))
 
 
 class _MultiFuture(BaseFuture):

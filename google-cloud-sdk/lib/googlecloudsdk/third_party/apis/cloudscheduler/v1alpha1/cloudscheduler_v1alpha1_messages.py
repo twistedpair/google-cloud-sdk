@@ -23,8 +23,8 @@ class AppEngineHttpTarget(_messages.Message):
   the deadline, constitutes a failed execution.
 
   Enums:
-    HttpMethodValueValuesEnum: The HTTP method to use for the request. The
-      default is POST. PATCH and OPTIONS are not permitted.
+    HttpMethodValueValuesEnum: The HTTP method to use for the request. PATCH
+      and OPTIONS are not permitted.
 
   Messages:
     HeadersValue: HTTP request headers.  This map contains the header field
@@ -34,7 +34,7 @@ class AppEngineHttpTarget(_messages.Message):
       (+http://code.google.com/appengine)"`.   This header can be modified,
       but Cloud Scheduler will append   `"AppEngine-Google;
       (+http://code.google.com/appengine)"` to the   modified `User-Agent`.
-      If the job has an AppEngineHttpTarget.payload, Cloud Scheduler sets the
+      If the job has an AppEngineHttpTarget.body, Cloud Scheduler sets the
       following headers:  * `Content-Type`: By default, the `Content-Type`
       header is set to   `"application/octet-stream"`. The default can be
       overridden by explictly   setting `Content-Type` to a particular media
@@ -61,7 +61,7 @@ class AppEngineHttpTarget(_messages.Message):
       header is   `"AppEngine-Google; (+http://code.google.com/appengine)"`.
       This header can be modified, but Cloud Scheduler will append
       `"AppEngine-Google; (+http://code.google.com/appengine)"` to the
-      modified `User-Agent`.  If the job has an AppEngineHttpTarget.payload,
+      modified `User-Agent`.  If the job has an AppEngineHttpTarget.body,
       Cloud Scheduler sets the following headers:  * `Content-Type`: By
       default, the `Content-Type` header is set to   `"application/octet-
       stream"`. The default can be overridden by explictly   setting `Content-
@@ -76,8 +76,8 @@ class AppEngineHttpTarget(_messages.Message):
       headers, which contain job-specific information, are also be sent to the
       job handler; see [request headers](/appengine/docs/python/taskqueue/push
       /creating-handlers#reading_request_headers).
-    httpMethod: The HTTP method to use for the request. The default is POST.
-      PATCH and OPTIONS are not permitted.
+    httpMethod: The HTTP method to use for the request. PATCH and OPTIONS are
+      not permitted.
     relativeUrl: The relative URL.  The relative URL must begin with "/" and
       must be a valid HTTP relative URL. It can contain a path, query string
       arguments, and `#` fragments. If the relative URL is empty, then the
@@ -86,11 +86,11 @@ class AppEngineHttpTarget(_messages.Message):
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
-    r"""The HTTP method to use for the request. The default is POST. PATCH and
-    OPTIONS are not permitted.
+    r"""The HTTP method to use for the request. PATCH and OPTIONS are not
+    permitted.
 
     Values:
-      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
+      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified. Defaults to POST.
       POST: HTTP Post
       GET: HTTP Get
       HEAD: HTTP Head
@@ -116,9 +116,9 @@ class AppEngineHttpTarget(_messages.Message):
     is   `"AppEngine-Google; (+http://code.google.com/appengine)"`.   This
     header can be modified, but Cloud Scheduler will append   `"AppEngine-
     Google; (+http://code.google.com/appengine)"` to the   modified `User-
-    Agent`.  If the job has an AppEngineHttpTarget.payload, Cloud Scheduler
-    sets the following headers:  * `Content-Type`: By default, the `Content-
-    Type` header is set to   `"application/octet-stream"`. The default can be
+    Agent`.  If the job has an AppEngineHttpTarget.body, Cloud Scheduler sets
+    the following headers:  * `Content-Type`: By default, the `Content-Type`
+    header is set to   `"application/octet-stream"`. The default can be
     overridden by explictly   setting `Content-Type` to a particular media
     type when the job is   created.   For example, `Content-Type` can be set
     to `"application/json"`. * `Content-Length`: This is computed by Cloud
@@ -335,11 +335,12 @@ class HttpTarget(_messages.Message):
   r"""Http target. The job will be pushed to the job handler by means of an
   HTTP request via an HttpTarget.http_method such as HTTP POST, HTTP GET, etc.
   The job is acknowledged by means of an HTTP response code in the range [200
-  - 299]. A failure to receive a response constitutes a failed execution.
+  - 299]. A failure to receive a response constitutes a failed execution. For
+  a redirected request, the response returned by the redirected request is
+  considered.
 
   Enums:
-    HttpMethodValueValuesEnum: Which HTTP method to use for the request. The
-      default is POST.
+    HttpMethodValueValuesEnum: Which HTTP method to use for the request.
 
   Messages:
     HeadersValue: The user can specify HTTP request headers to send with the
@@ -371,7 +372,7 @@ class HttpTarget(_messages.Message):
       Scheduler. - X-Google-*: Google internal use only. - X-AppEngine-*:
       Google internal use only.  The total size of headers must be less than
       80KB.
-    httpMethod: Which HTTP method to use for the request. The default is POST.
+    httpMethod: Which HTTP method to use for the request.
     url: Required.  The full url path that the request will be sent to. This
       string must begin with either "http://" or "https://". Some examples of
       valid values for HttpTarget.url are: `http://acme.com` and
@@ -381,10 +382,10 @@ class HttpTarget(_messages.Message):
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
-    r"""Which HTTP method to use for the request. The default is POST.
+    r"""Which HTTP method to use for the request.
 
     Values:
-      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
+      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified. Defaults to POST.
       POST: HTTP Post
       GET: HTTP Get
       HEAD: HTTP Head
@@ -446,66 +447,62 @@ class Job(_messages.Message):
   r"""Configuration for a job. The maximum allowed size for a job is 100KB.
 
   Enums:
-    JobStateValueValuesEnum: Output only. State of the job. For example:
-      enabled, paused, or disabled.
+    StateValueValuesEnum: Output only. State of the job. For example: enabled,
+      paused, or disabled.
 
   Fields:
     appEngineHttpTarget: App Engine Http target.
     description: A human-readable description for the job. This string must
       not contain more than 500 characters.
     httpTarget: Http target.
-    jobState: Output only. State of the job. For example: enabled, paused, or
-      disabled.
-    lastAttemptTime: Output only. The started time of the last completed job
-      attempt.
+    lastAttemptTime: Output only. The time the last job attempt started.
     name: The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  Caller-
       specified in CreateJobRequest, after which it becomes output only.
     nextScheduleTime: Output only. The next time the job is scheduled. Note
-      that this may be a retry of a previously failed execution or the next
+      that this may be a retry of a previously failed attempt or the next
       execution time according to the schedule.
     pubsubTarget: Pub/Sub target.
     retryConfig: Settings that determine the retry behavior.
     schedule: Specifies a schedule of start times. This can be used to specify
       complicated and time-zone-aware schedules.  A scheduled start time will
-      be skipped if the previous execution has not ended when its scheduled
+      be delayed if the previous execution has not ended when its scheduled
       time occurs.  If RetryConfig.retry_count > 0 and a job attempt fails,
       the job will be a total of tried RetryConfig.retry_count times, with
       exponential backoff, until the next scheduled start time.
+    state: Output only. State of the job. For example: enabled, paused, or
+      disabled.
     status: Output only. The response from the target of the last attempted
       execution.
     userUpdateTime: Output only. The time of the last user update to the job,
       or the creation time if there have been no updates.
   """
 
-  class JobStateValueValuesEnum(_messages.Enum):
+  class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the job. For example: enabled, paused, or
     disabled.
 
     Values:
-      JOB_STATE_UNSPECIFIED: Unspecified state.
+      STATE_UNSPECIFIED: Unspecified state.
       ENABLED: The job is executing normally.
-      PAUSED: The job is paused by the user. It will not execute. A user can
-        intentionally pause the job using CloudScheduler.PauseJobRequest.
       DISABLED: The job is disabled by the system due to error. The user
         cannot directly set a job to be disabled. The error can be viewed in
         Job.status.
     """
-    JOB_STATE_UNSPECIFIED = 0
+    STATE_UNSPECIFIED = 0
     ENABLED = 1
-    PAUSED = 2
-    DISABLED = 3
+    DISABLED = 2
 
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
   description = _messages.StringField(2)
   httpTarget = _messages.MessageField('HttpTarget', 3)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 4)
-  lastAttemptTime = _messages.StringField(5)
-  name = _messages.StringField(6)
-  nextScheduleTime = _messages.StringField(7)
-  pubsubTarget = _messages.MessageField('PubsubTarget', 8)
-  retryConfig = _messages.MessageField('RetryConfig', 9)
-  schedule = _messages.MessageField('Schedule', 10)
+  lastAttemptTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  nextScheduleTime = _messages.StringField(6)
+  pubsubTarget = _messages.MessageField('PubsubTarget', 7)
+  retryConfig = _messages.MessageField('RetryConfig', 8)
+  schedule = _messages.MessageField('Schedule', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
   status = _messages.MessageField('Status', 11)
   userUpdateTime = _messages.StringField(12)
 

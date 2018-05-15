@@ -186,6 +186,7 @@ class Cluster(_messages.Message):
       nodes. The cluster has no SLA for uptime and master/node upgrades are
       disabled. Alpha enabled clusters are automatically deleted thirty days
       after creation.
+    enableTpu: Enable the ability to use Cloud TPUs in this cluster.
     endpoint: [Output only] The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`.  See the `masterAuth` property of
@@ -282,6 +283,9 @@ class Cluster(_messages.Message):
     subnetwork: The name of the Google Compute Engine
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
       connected. On output this shows the subnetwork ID instead of the name.
+    tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
+      this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
+      Domain_Routing) notation (e.g. `1.2.3.4/29`).
     zone: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field is deprecated, use location instead.
@@ -350,39 +354,41 @@ class Cluster(_messages.Message):
   currentNodeVersion = _messages.StringField(8)
   description = _messages.StringField(9)
   enableKubernetesAlpha = _messages.BooleanField(10)
-  endpoint = _messages.StringField(11)
-  expireTime = _messages.StringField(12)
-  initialClusterVersion = _messages.StringField(13)
-  initialNodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(15, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 16)
-  labelFingerprint = _messages.StringField(17)
-  legacyAbac = _messages.MessageField('LegacyAbac', 18)
-  location = _messages.StringField(19)
-  locations = _messages.StringField(20, repeated=True)
-  loggingService = _messages.StringField(21)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 22)
-  masterAuth = _messages.MessageField('MasterAuth', 23)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 24)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 25)
-  masterIpv4CidrBlock = _messages.StringField(26)
-  monitoringService = _messages.StringField(27)
-  name = _messages.StringField(28)
-  network = _messages.StringField(29)
-  networkConfig = _messages.MessageField('NetworkConfig', 30)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 31)
-  nodeConfig = _messages.MessageField('NodeConfig', 32)
-  nodeIpv4CidrSize = _messages.IntegerField(33, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 34, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 35)
-  privateCluster = _messages.BooleanField(36)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 37)
-  selfLink = _messages.StringField(38)
-  servicesIpv4Cidr = _messages.StringField(39)
-  status = _messages.EnumField('StatusValueValuesEnum', 40)
-  statusMessage = _messages.StringField(41)
-  subnetwork = _messages.StringField(42)
-  zone = _messages.StringField(43)
+  enableTpu = _messages.BooleanField(11)
+  endpoint = _messages.StringField(12)
+  expireTime = _messages.StringField(13)
+  initialClusterVersion = _messages.StringField(14)
+  initialNodeCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(16, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 17)
+  labelFingerprint = _messages.StringField(18)
+  legacyAbac = _messages.MessageField('LegacyAbac', 19)
+  location = _messages.StringField(20)
+  locations = _messages.StringField(21, repeated=True)
+  loggingService = _messages.StringField(22)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 23)
+  masterAuth = _messages.MessageField('MasterAuth', 24)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 25)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 26)
+  masterIpv4CidrBlock = _messages.StringField(27)
+  monitoringService = _messages.StringField(28)
+  name = _messages.StringField(29)
+  network = _messages.StringField(30)
+  networkConfig = _messages.MessageField('NetworkConfig', 31)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 32)
+  nodeConfig = _messages.MessageField('NodeConfig', 33)
+  nodeIpv4CidrSize = _messages.IntegerField(34, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 35, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 36)
+  privateCluster = _messages.BooleanField(37)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 38)
+  selfLink = _messages.StringField(39)
+  servicesIpv4Cidr = _messages.StringField(40)
+  status = _messages.EnumField('StatusValueValuesEnum', 41)
+  statusMessage = _messages.StringField(42)
+  subnetwork = _messages.StringField(43)
+  tpuIpv4CidrBlock = _messages.StringField(44)
+  zone = _messages.StringField(45)
 
 
 class ClusterStatus(_messages.Message):
@@ -1232,6 +1238,15 @@ class IPAllocationPolicy(_messages.Message):
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true.  If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
+    tpuIpv4CidrBlock: The IP address range of the Cloud TPUs in this cluster.
+      If unspecified, a range will be automatically chosen with the default
+      size.  This field is only applicable when `use_ip_aliases` is true.  If
+      unspecified, the range will use the default size.  Set to /netmask (e.g.
+      `/14`) to have a range chosen with a specific netmask.  Set to a
+      [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
+      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
+      range to use.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
   """
 
@@ -1246,7 +1261,8 @@ class IPAllocationPolicy(_messages.Message):
   servicesIpv4CidrBlock = _messages.StringField(9)
   servicesSecondaryRangeName = _messages.StringField(10)
   subnetworkName = _messages.StringField(11)
-  useIpAliases = _messages.BooleanField(12)
+  tpuIpv4CidrBlock = _messages.StringField(12)
+  useIpAliases = _messages.BooleanField(13)
 
 
 class KubernetesDashboard(_messages.Message):

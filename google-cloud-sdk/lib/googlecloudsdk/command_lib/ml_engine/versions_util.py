@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for ml versions commands."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.ml_engine import versions_api
 from googlecloudsdk.command_lib.ml_engine import models_util
 from googlecloudsdk.command_lib.ml_engine import uploads

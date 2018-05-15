@@ -194,7 +194,7 @@
           "description": "Name of an existing VPC network that will be peered with\nservice provider.\nMust be in a form 'projects\/{project}\/global\/networks\/{network}'.\n{project} is a project number, as in '12345'\n{network} is network name.",
           "type": "string"
         },
-        "reservedPeeringRange": {
+        "reservedPeeringRanges": {
           "description": "Named IP address range(s) of PEERING type reserved for this service\nprovider.\nNote that invoking this method with a different range when connection is\nalready established will not reallocate already provisioned service\nproducer subnetworks.",
           "type": "array",
           "items": {
@@ -238,6 +238,46 @@
         },
         "consumer": {
           "description": "Resource representing service consumer. It may be different from\nthe project number in consumer network parameter in case of that network\nbeing a shared VPC network. In that case, Service Networking will validate\nthat this resource belongs to that shared VPC.  Required.\nFor example 'projects\/123456'.",
+          "type": "string"
+        }
+      }
+    },
+    "ListPeeringStatesResponse": {
+      "id": "ListPeeringStatesResponse",
+      "description": "ListPeeringStatesResponse is the response to list peering states for the\ngiven service and consumer project.",
+      "type": "object",
+      "properties": {
+        "peeringStates": {
+          "description": "The list of peerings.",
+          "type": "array",
+          "items": {
+            "$ref": "PeeringState"
+          }
+        }
+      }
+    },
+    "PeeringState": {
+      "id": "PeeringState",
+      "description": "The state of existing peerings.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "The name of the service, for example 'servicenetworking.googleapis.com'.",
+          "type": "string"
+        },
+        "network": {
+          "description": "consumer network name.",
+          "type": "string"
+        },
+        "reservedPeeringRanges": {
+          "description": "Named IP address range(s) of PEERING type reserved for this service\nprovider.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "peering": {
+          "description": "The name of peering from GCE network.",
           "type": "string"
         }
       }
@@ -1902,6 +1942,39 @@
             "https://www.googleapis.com/auth/service.management"
           ],
           "description": "Service provider use this method to provision a new subnet in a\npeered service shared VPC network.\nIt will validate previously provided reserved ranges, find non-conflicting\nsub-range of requested size (expressed in\nnumber of leading bits of ipv4 network mask, as in CIDR range notation).\nIt will then create a subnetwork in the request region.\nOperation<response: AddSubnetworkResponse>"
+        }
+      }
+      ,
+      "resources": {
+        "peeringStates": {
+          "methods": {
+            "list": {
+              "id": "servicenetworking.services.peeringStates.list",
+              "path": "v1alpha/{+parent}/peeringStates",
+              "flatPath": "v1alpha/services/{servicesId}/{servicesId1}/{servicesId2}/peeringStates",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Provider that needs to be listed.\nservices\/{peering service}\/{collection id}\/{resource id}\n{peering service} is the service managing peering connectivity for\nservice provider organization.\nFor Google services that support this functionality it is\n'servicenetworking.googleapis.com'.\n{collection id} is the cloud resource collection type representing the\nservice consumer, for example 'projects', or 'organizations'.\n{resource id} is the consumer numeric id, such as project number: '123456'.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^services\/[^\/]+\/[^\/]+\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListPeeringStatesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/service.management"
+              ],
+              "description": "Service provider or consumer use this method to lists peering states for\nthe given service and consumer project."
+            }
+          }
         }
       }
     }

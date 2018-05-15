@@ -8,7 +8,7 @@ project:
       help: The project ID.
 
 project_scoped_taxonomy:
-  name: projectTaxonomy
+  name: project_taxonomy
   collection: categorymanager.projects.taxonomies
   attributes:
     - &project_scoped_taxonomy
@@ -17,7 +17,7 @@ project_scoped_taxonomy:
       help: The ID of the project taxonomy.
 
 project_scoped_annotation:
-  name: projectAnnotation
+  name: project_annotation
   collection: categorymanager.projects.taxonomies.annotations
   attributes:
     - *project_scoped_taxonomy

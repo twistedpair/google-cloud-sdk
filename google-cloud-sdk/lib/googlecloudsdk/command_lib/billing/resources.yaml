@@ -1,10 +1,10 @@
 account:
-  name: account_id
+  name: account
   collection: cloudbilling.billingAccounts
   attributes:
     - &account
       parameter_name: billingAccountsId
-      attribute_name: account_id
+      attribute_name: account
       help: |
         The billing account ID. Billing account IDs are of the form
         *0X0X0X-0X0X0X-0X0X0X*. To see available IDs, run

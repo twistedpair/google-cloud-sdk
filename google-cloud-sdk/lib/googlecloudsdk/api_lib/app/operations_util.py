@@ -16,6 +16,7 @@
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import json
 
 from apitools.base.py import encoding
@@ -204,7 +205,7 @@ class AppEngineOperationPoller(waiter.OperationPoller):
       new_warnings = GetWarningsFromOperation(
           operation, self.operation_metadata_type) - self.warnings_seen
       for warning in new_warnings:
-        log.warning(warning + u'\n')
+        log.warning(warning + '\n')
         self.warnings_seen.add(warning)
 
   def GetResult(self, operation):

@@ -17,7 +17,7 @@
 from __future__ import absolute_import
 import os
 
-from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.third_party.appengine.api import appinfo
@@ -228,17 +228,17 @@ class ServiceYamlInfo(_YamlInfo):
     super(ServiceYamlInfo, self).__init__(file_path, parsed)
     self.module = parsed.service or ServiceYamlInfo.DEFAULT_SERVICE_NAME
 
-    if util.IsFlex(parsed.env):
-      self.env = util.Environment.FLEX
+    if parsed.env in ['2', 'flex', 'flexible']:
+      self.env = env.FLEX
     elif parsed.vm or parsed.runtime == 'vm':
-      self.env = util.Environment.MANAGED_VMS
+      self.env = env.MANAGED_VMS
     else:
-      self.env = util.Environment.STANDARD
+      self.env = env.STANDARD
 
     # All `env: flex` apps are hermetic. All `env: standard` apps are not
     # hermetic. All `vm: true` apps are hermetic IFF they don't use static
     # files.
-    if self.env is util.Environment.FLEX:
+    if self.env is env.FLEX:
       self.is_hermetic = True
     elif parsed.vm:
       for urlmap in parsed.handlers:
@@ -253,11 +253,14 @@ class ServiceYamlInfo(_YamlInfo):
     self._InitializeHasExplicitSkipFiles(file_path, parsed)
     self._UpdateSkipFiles(parsed)
 
-    if (self.env is util.Environment.MANAGED_VMS) or self.is_hermetic:
+    if (self.env is env.MANAGED_VMS) or self.is_hermetic:
       self.runtime = parsed.GetEffectiveRuntime()
       self._UpdateVMSettings()
     else:
       self.runtime = parsed.runtime
+
+    # New "Ti" style runtimes
+    self.is_ti_runtime = env.GetTiRuntimeRegistry().Get(self.runtime, self.env)
 
   @staticmethod
   def FromFile(file_path):
@@ -278,71 +281,80 @@ class ServiceYamlInfo(_YamlInfo):
     except (yaml_errors.Error, appinfo_errors.Error) as e:
       raise YamlParseError(file_path, e)
 
-    if parsed.runtime == 'vm':
-      vm_runtime = parsed.GetEffectiveRuntime()
+    info = ServiceYamlInfo(file_path, parsed)
+    info.Validate()
+    return info
+
+  def Validate(self):
+    """Displays warnings and raises exceptions for non-schema errors.
+
+    Raises:
+      YamlValidationError: If validation of parsed info fails.
+    """
+    if self.parsed.runtime == 'vm':
+      vm_runtime = self.parsed.GetEffectiveRuntime()
     else:
       vm_runtime = None
-      if parsed.runtime == 'python':
+      if self.parsed.runtime == 'python':
         raise YamlValidationError(
             'Service [{service}] uses unsupported Python 2.5 runtime. '
             'Please use [runtime: python27] instead.'.format(
-                service=(
-                    parsed.service or ServiceYamlInfo.DEFAULT_SERVICE_NAME)))
-      elif parsed.runtime == 'python-compat':
+                service=(self.parsed.service or
+                         ServiceYamlInfo.DEFAULT_SERVICE_NAME)))
+      elif self.parsed.runtime == 'python-compat':
         raise YamlValidationError(
             '"python-compat" is not a supported runtime.')
-      elif parsed.runtime == 'custom' and not parsed.env:
+      elif self.parsed.runtime == 'custom' and not self.parsed.env:
         raise YamlValidationError(
             'runtime "custom" requires that env be explicitly specified.')
 
-    if parsed.vm:
+    if self.env is env.MANAGED_VMS:
       log.warning(MANAGED_VMS_DEPRECATION_WARNING)
 
-    if (util.IsFlex(parsed.env) and parsed.beta_settings and
-        parsed.beta_settings.get('enable_app_engine_apis')):
+    if (self.env is env.FLEX and self.parsed.beta_settings and
+        self.parsed.beta_settings.get('enable_app_engine_apis')):
       log.warning(APP_ENGINE_APIS_DEPRECATION_WARNING)
 
-    if util.IsFlex(parsed.env) and vm_runtime == 'python27':
+    if self.env is env.FLEX and vm_runtime == 'python27':
       raise YamlValidationError(
           'The "python27" is not a valid runtime in env: flex.  '
           'Please use [python] instead.')
 
-    if util.IsFlex(parsed.env) and vm_runtime == 'python-compat':
+    if self.env is env.FLEX and vm_runtime == 'python-compat':
       log.warning('[runtime: {}] is deprecated.  Please use [runtime: python] '
                   'instead.  See {} for more info.'
                   .format(vm_runtime, UPGRADE_FLEX_PYTHON_URL))
 
-    for warn_text in parsed.GetWarnings():
-      log.warning('In file [{0}]: {1}'.format(file_path, warn_text))
+    for warn_text in self.parsed.GetWarnings():
+      log.warning('In file [{0}]: {1}'.format(self.file, warn_text))
 
-    if (util.IsStandard(parsed.env) and parsed.runtime == 'python27' and
-        HasLib(parsed, 'ssl', '2.7')):
+    if (self.env is env.STANDARD and
+        self.parsed.runtime == 'python27' and
+        HasLib(self.parsed, 'ssl', '2.7')):
       log.warning(PYTHON_SSL_WARNING)
 
-    if (util.IsFlex(parsed.env) and
+    if (self.env is env.FLEX and
         vm_runtime == 'python' and
-        GetRuntimeConfigAttr(parsed, 'python_version') == '3.4'):
+        GetRuntimeConfigAttr(self.parsed, 'python_version') == '3.4'):
       log.warning(FLEX_PY34_WARNING)
 
     _CheckIllegalAttribute(
         name='application',
-        yaml_info=parsed,
+        yaml_info=self.parsed,
         extractor_func=lambda yaml: yaml.application,
-        file_path=file_path,
+        file_path=self.file,
         msg=HINT_PROJECT)
 
     _CheckIllegalAttribute(
         name='version',
-        yaml_info=parsed,
+        yaml_info=self.parsed,
         extractor_func=lambda yaml: yaml.version,
-        file_path=file_path,
+        file_path=self.file,
         msg=HINT_VERSION)
-
-    return ServiceYamlInfo(file_path, parsed)
 
   def RequiresImage(self):
     """Returns True if we'll need to build a docker image."""
-    return self.env is util.Environment.MANAGED_VMS or self.is_hermetic
+    return self.env is env.MANAGED_VMS or self.is_hermetic
 
   def _UpdateVMSettings(self):
     """Overwrites vm_settings for App Engine services with VMs.
@@ -352,7 +364,7 @@ class ServiceYamlInfo(_YamlInfo):
     Raises:
       AppConfigError: if the function was called for a standard service
     """
-    if self.env not in [util.Environment.MANAGED_VMS, util.Environment.FLEX]:
+    if self.env not in [env.MANAGED_VMS, env.FLEX]:
       raise AppConfigError(
           'This is not an App Engine Flexible service. Please set `env` '
           'field to `flex`.')

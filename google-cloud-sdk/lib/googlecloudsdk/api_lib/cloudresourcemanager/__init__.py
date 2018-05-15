@@ -13,3 +13,5 @@
 # limitations under the License.
 
 """Cloudresourcemanager API lib helper files."""
+
+from __future__ import unicode_literals

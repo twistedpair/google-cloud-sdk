@@ -421,7 +421,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
         path_params=[u'project', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/global/deployments/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'globalSetPolicyRequest',
         request_type_name=u'DeploymentmanagerDeploymentsSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,

@@ -20,7 +20,6 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.core import log
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import retry
@@ -39,7 +38,15 @@ def GetMessagesModule():
 
 def GetClientInstance():
   # pylint:disable=protected-access
-  return apis_internal._GetClientInstance('servicemanagement', 'v1')
+  # Specifically disable resource quota in all cases for service management.
+  # We need to use this API to turn on APIs and sometimes the user doesn't have
+  # this API turned on. We should always used the shared project to do this
+  # so we can bootstrap users getting the appropriate APIs enabled. If the user
+  # has explicitly set the quota project, then respect that.
+  enable_resource_quota = (
+      properties.VALUES.billing.quota_project.IsExplicitlySet())
+  return apis_internal._GetClientInstance(
+      'servicemanagement', 'v1', enable_resource_quota=enable_resource_quota)
 
 
 def GetEndpointsServiceName():

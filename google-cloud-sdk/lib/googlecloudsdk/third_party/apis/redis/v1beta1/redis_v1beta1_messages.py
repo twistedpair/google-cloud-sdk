@@ -108,7 +108,7 @@ class Instance(_messages.Message):
     LabelsValue: Resource labels to represent user provided metadata
     RedisConfigsValue: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
-      are:  * maxmemory-policy  * notify-keyspace-events
+      are:   *   maxmemory-policy  *   notify-keyspace-events
 
   Fields:
     alternativeLocationId: Optional. Only applicable to STANDARD_HA tier which
@@ -121,11 +121,10 @@ class Instance(_messages.Message):
       be used.
     createTime: Output only. The time the instance was created.
     currentLocationId: Output only. The current zone where the Redis endpoint
-      is placed. In single zone deployments, this will always be the same as
-      [location_id] provided by the user at creation time. In cross-zone
-      instances (only applicable in STANDARD_HA tier), this can be either
-      [location_id] or [alternative_location_id] and can change on a failover
-      event.
+      is placed. For Basic Tier instances, this will always be the same as the
+      [location_id] provided by the user at creation time. For Standard Tier
+      instances, this can be either [location_id] or [alternative_location_id]
+      and can change after a failover event.
     displayName: An arbitrary and optional user-provided name for the
       instance.
     host: Output only. Hostname or IP address of the exposed Redis endpoint
@@ -134,21 +133,21 @@ class Instance(_messages.Message):
     locationId: Optional. The zone where the instance will be provisioned. If
       not provided, the service will choose a zone for the instance. For
       STANDARD_HA tier, instances will be created across two zones for
-      protection against zonal failures. if [alternative_location_id] is also
+      protection against zonal failures. If [alternative_location_id] is also
       provided, it must be different from [location_id].
-    memorySizeGb: Required. Redis memory size in GB, up to 200GB.
+    memorySizeGb: Required. Redis memory size in GiB.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
       Note: Redis instances are managed and addressed at regional level so
-      location_id here refers to a GCP region; however, users get to choose
-      which specific zone (or collection of zones for cross-zone instances) an
+      location_id here refers to a GCP region; however, users may choose which
+      specific zone (or collection of zones for cross-zone instances) an
       instance should be provisioned in. Refer to [location_id] and
       [alternative_location_id] fields for more details.
     port: Output only. The port number of the exposed Redis endpoint.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
-      are:  * maxmemory-policy  * notify-keyspace-events
+      are:   *   maxmemory-policy  *   notify-keyspace-events
     redisVersion: Optional. The version of Redis software. If not provided,
       latest supported version will be used. Updating the version will perform
       an upgrade/downgrade to the new version. Currently, the supported values
@@ -156,7 +155,8 @@ class Instance(_messages.Message):
     reservedIpRange: Optional. The CIDR range of internal addresses that are
       reserved for this instance. If not provided, the service will choose an
       unused /29 block, for example, 10.0.0.0/29 or 192.168.0.0/29. Ranges
-      must be unique and non-overlapping with existing subnets in a network.
+      must be unique and non-overlapping with existing subnets in an
+      authorized network.
     state: Output only. The current state of this instance.
     statusMessage: Output only. Additional information about the current
       status of this instance, if available.
@@ -232,7 +232,7 @@ class Instance(_messages.Message):
   class RedisConfigsValue(_messages.Message):
     r"""Optional. Redis configuration parameters, according to
     http://redis.io/topics/config. Currently, the only supported parameters
-    are:  * maxmemory-policy  * notify-keyspace-events
+    are:   *   maxmemory-policy  *   notify-keyspace-events
 
     Messages:
       AdditionalProperty: An additional property for a RedisConfigsValue
@@ -718,14 +718,14 @@ class RedisProjectsLocationsInstancesPatchRequest(_messages.Message):
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
       Note: Redis instances are managed and addressed at regional level so
-      location_id here refers to a GCP region; however, users get to choose
-      which specific zone (or collection of zones for cross-zone instances) an
+      location_id here refers to a GCP region; however, users may choose which
+      specific zone (or collection of zones for cross-zone instances) an
       instance should be provisioned in. Refer to [location_id] and
       [alternative_location_id] fields for more details.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
-      only include these fields from Instance: * `display_name` * `labels` *
-      `redis_config` * `redis_version`
+      only include these fields from Instance:   *   `displayName`  *
+      `labels`  *   `memorySizeGb`  *   `redisConfig`
   """
 
   instance = _messages.MessageField('Instance', 1)

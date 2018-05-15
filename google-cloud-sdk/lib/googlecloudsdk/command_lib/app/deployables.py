@@ -21,7 +21,7 @@ import collections
 import os
 
 from googlecloudsdk.api_lib.app import deploy_command_util
-from googlecloudsdk.api_lib.app import util
+from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.command_lib.app import exceptions
 from googlecloudsdk.core import log
@@ -160,8 +160,7 @@ def AppengineWebMatcher(path, stager):
   descriptor = os.path.join(app_dir, 'WEB-INF', 'appengine-web.xml')
   if not os.path.isfile(descriptor):
     return None
-  staging_dir = stager.Stage(descriptor, app_dir, 'java-xml',
-                             util.Environment.STANDARD)
+  staging_dir = stager.Stage(descriptor, app_dir, 'java-xml', env.STANDARD)
   if not staging_dir:
     # After GA launch of appengine-web.xml support, this should never occur.
     return None

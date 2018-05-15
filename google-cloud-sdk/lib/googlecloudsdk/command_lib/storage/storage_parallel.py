@@ -35,7 +35,6 @@ current process). Afterwards, there will be objects at
 
 This removes the objects uploaded in the last code snippet.
 """
-import contextlib
 import itertools
 
 from googlecloudsdk.api_lib.storage import storage_api
@@ -117,12 +116,11 @@ def _DoParallelOperation(num_threads, tasks, method, label, show_progress_bar):
   pool = parallel.GetPool(num_threads)
   if show_progress_bar:
     progress_bar = console_io.TickableProgressBar(len(tasks), label)
-    context_mgr = contextlib.nested(progress_bar, pool)  # pytype: disable=wrong-arg-types
     callback = progress_bar.Tick
   else:
-    context_mgr = pool
+    progress_bar = console_io.NoOpProgressBar()
     callback = None
-  with context_mgr:
+  with progress_bar, pool:
     pool.Map(method, zip(tasks, itertools.cycle((callback,))))
 
 

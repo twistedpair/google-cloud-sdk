@@ -20,6 +20,8 @@ It also prevents use of unsafe loading and dumping.
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
+
 import collections
 
 from googlecloudsdk.core import exceptions
@@ -75,7 +77,7 @@ class FileLoadError(Error):
     super(FileLoadError, self).__init__(e, verb='load', f=f)
 
 
-def load(stream, file_hint=None):
+def load(stream, file_hint=None, round_trip=False):
   # type: (Union[str, IO[AnyStr]], Optional[str]) -> Any
   """Loads YAML from the given steam.
 
@@ -86,6 +88,8 @@ def load(stream, file_hint=None):
       you should use load_file() instead. Sometimes the file cannot be read
       directly so you can use a stream here and hint as to where the data is
       coming from.
+    round_trip: bool, True to use the RoundTripLoader which preserves ordering
+      and line numbers.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -94,7 +98,8 @@ def load(stream, file_hint=None):
     The parsed YAML data.
   """
   try:
-    return yaml.load(stream, yaml.SafeLoader, version='1.1')
+    loader = yaml.RoundTripLoader if round_trip else yaml.SafeLoader
+    return yaml.load(stream, loader, version='1.1')
   except yaml.YAMLError as e:
     raise YAMLParseError(e, f=file_hint)
 
@@ -121,12 +126,14 @@ def load_all(stream, file_hint=None):
     raise YAMLParseError(e, f=file_hint)
 
 
-def load_path(path):
+def load_path(path, round_trip=False):
   # type: (str) -> Any
   """Loads YAML from the given file path.
 
   Args:
     path: str, A file path to open and read from.
+    round_trip: bool, True to use the RoundTripLoader which preserves ordering
+      and line numbers.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -137,7 +144,7 @@ def load_path(path):
   """
   try:
     with open(path, 'r') as fp:
-      return load(fp, file_hint=path)
+      return load(fp, file_hint=path, round_trip=round_trip)
   except EnvironmentError as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
@@ -168,20 +175,23 @@ def load_all_path(path):
     raise FileLoadError(e, f=path)
 
 
-def dump(data, stream=None, **kwargs):
+def dump(data, stream=None, round_trip=False, **kwargs):
   # type: (Any, Optional[IO[AnyStr]], Any) -> str
   """Dumps the given YAML data to the stream.
 
   Args:
     data: The YAML serializable Python object to dump.
     stream: The stream to write the data to or None to return it as a string.
+    round_trip: bool, True to use the RoundTripDumper which preserves ordering
+      and line numbers if the yaml was loaded in round trip mode.
     **kwargs: Other arguments to the dump method.
 
   Returns:
     The string representation of the YAML data if stream is None.
   """
-  return yaml.safe_dump(
-      data, stream=stream, default_flow_style=False, indent=2, **kwargs)
+  method = yaml.round_trip_dump if round_trip else yaml.safe_dump
+  return method(data, stream=stream, default_flow_style=False, indent=2,
+                **kwargs)
 
 
 def dump_all(documents, stream=None, **kwargs):

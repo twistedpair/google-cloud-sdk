@@ -45,7 +45,7 @@ def PeerApiCall(project_number, service, network, reserved_ranges):
       name='services/' + service,
       peerSharedNetworkRequest=messages.PeerSharedNetworkRequest(
           network='projects/%s/global/networks/%s' % (project_number, network),
-          reservedPeeringRange=reserved_ranges))
+          reservedPeeringRanges=reserved_ranges))
   try:
     return client.services.Peer(request)
   except (apitools_exceptions.HttpForbiddenError,

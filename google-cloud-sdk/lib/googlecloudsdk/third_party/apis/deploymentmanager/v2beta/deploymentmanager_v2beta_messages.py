@@ -693,12 +693,13 @@ class DeploymentmanagerDeploymentsSetIamPolicyRequest(_messages.Message):
   r"""A DeploymentmanagerDeploymentsSetIamPolicyRequest object.
 
   Fields:
-    policy: A Policy resource to be passed as the request body.
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
     project: Project ID for this request.
     resource: Name of the resource for this request.
   """
 
-  policy = _messages.MessageField('Policy', 1)
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
   project = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
 
@@ -1280,6 +1281,25 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GlobalSetPolicyRequest(_messages.Message):
+  r"""A GlobalSetPolicyRequest object.
+
+  Fields:
+    bindings: Flatten Policy to create a backwacd compatible wire-format.
+      Deprecated. Use 'policy' to specify bindings.
+    etag: Flatten Policy to create a backward compatible wire-format.
+      Deprecated. Use 'policy' to specify the etag.
+    policy: REQUIRED: The complete policy to be applied to the 'resource'. The
+      size of the policy is limited to a few 10s of KB. An empty policy is in
+      general a valid policy but certain services (like Projects) might reject
+      them.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  policy = _messages.MessageField('Policy', 3)
+
+
 class ImportFile(_messages.Message):
   r"""ImportFile message type.
 
@@ -1425,7 +1445,8 @@ class Operation(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
-    clientOperationId: [Output Only] Reserved for future use.
+    clientOperationId: [Output Only] The value of `requestId` if you provided
+      it in the request. Not present otherwise.
     creationTimestamp: [Deprecated] This field is deprecated.
     description: [Output Only] A textual description of the operation, which
       is set when the operation is created.

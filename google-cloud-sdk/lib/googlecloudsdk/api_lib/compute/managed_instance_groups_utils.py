@@ -237,27 +237,31 @@ Mutually exclusive with `--update-stackdriver-metric`.
               '`--custom-metric-utilization`.'))
 
   if mode_enabled:
-    # Can't use a ChoiceEnumMapper because we don't have access to the
-    # "messages" module for the right API version.
-    base.ChoiceArgument(
-        '--mode',
-        {
-            'on': ('to permit autoscaling to scale up and down (default for '
-                   'new autoscalers).'),
-            'only-up': 'to permit autoscaling to scale only up and not down.',
-            'only-down': 'to permit autoscaling to scale only down and not up.',
-            'off': ('to turn off autoscaling, while keeping the new '
-                    'configuration.')
-        },
-        help_str="""\
-            Set the mode of an autoscaler for a managed instance group.
+    GetModeFlag().AddToParser(parser)
 
-            You can turn off or restrict MIG activities without changing MIG
-            configuration and then having to restore it later. MIG configuration
-            persists while the activities are turned off or restricted, and the
-            activities pick it up when they are turned on again or when the
-            restrictions are lifted.
-        """).AddToParser(parser)
+
+def GetModeFlag():
+  # Can't use a ChoiceEnumMapper because we don't have access to the "messages"
+  # module for the right API version.
+  return base.ChoiceArgument(
+      '--mode',
+      {
+          'on': ('to permit autoscaling to scale up and down (default for '
+                 'new autoscalers).'),
+          'only-up': 'to permit autoscaling to scale only up and not down.',
+          'only-down': 'to permit autoscaling to scale only down and not up.',
+          'off': ('to turn off autoscaling, while keeping the new '
+                  'configuration.')
+      },
+      help_str="""\
+          Set the mode of an autoscaler for a managed instance group.
+
+          You can turn off or restrict MIG activities without changing MIG
+          configuration and then having to restore it later. MIG configuration
+          persists while the activities are turned off or restricted, and the
+          activities pick it up when they are turned on again or when the
+          restrictions are lifted.
+      """)
 
 
 def _ValidateCloudPubSubResource(pubsub_spec_dict, expected_resource_type):
@@ -836,11 +840,15 @@ def _BuildQueueBasedScaling(args, messages):
   return messages.AutoscalingPolicyQueueBasedScaling(**queue_policy_dict)
 
 
+def ParseModeString(mode, messages):
+  return messages.AutoscalingPolicy.ModeValueValuesEnum(
+      mode.upper().replace('-', '_'))
+
+
 def _BuildMode(args, messages, original):
   if not args.mode:
     return original.autoscalingPolicy.mode if original else None
-  return messages.AutoscalingPolicy.ModeValueValuesEnum(
-      args.mode.upper().replace('-', '_'))
+  return ParseModeString(args.mode, messages)
 
 
 def _BuildAutoscalerPolicy(args, messages, original, mode_enabled=False):
@@ -890,7 +898,7 @@ def AdjustAutoscalerNameForCreation(autoscaler_resource, igm_ref):
   trimmed_name = autoscaler_resource.name[
       0:(_MAX_AUTOSCALER_NAME_LENGTH - _NUM_RANDOM_CHARACTERS_IN_AS_NAME - 1)]
   random_characters = [
-      random.choice(string.lowercase + string.digits)
+      random.choice(string.ascii_lowercase + string.digits)
       for _ in range(_NUM_RANDOM_CHARACTERS_IN_AS_NAME)
   ]
   random_suffix = ''.join(random_characters)
@@ -1128,3 +1136,7 @@ def GetDeviceNamesFromStatefulPolicy(stateful_policy):
   if not stateful_policy or not stateful_policy.preservedResources:
     return []
   return [disk.deviceName for disk in stateful_policy.preservedResources.disks]
+
+
+def IsAutoscalerNew(autoscaler):
+  return getattr(autoscaler, 'name', None) is None

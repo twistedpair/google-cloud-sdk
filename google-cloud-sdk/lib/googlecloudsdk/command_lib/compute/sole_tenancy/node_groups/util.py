@@ -13,6 +13,9 @@
 # limitations under the License.
 """Utility methods for the `compute sole-tenancy node-groups` commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 
 def ParseNodeTemplate(resources, name, project=None, region=None):
   """Parses a node template resource and returns a resource reference.

@@ -128,7 +128,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified accelerator type. Gets a list of available accelerator types by making a list() request.
+      r"""Returns the specified accelerator type.
 
       Args:
         request: (ComputeAcceleratorTypesGetRequest) input message
@@ -5104,7 +5104,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified interconnect. Gets a list of available interconnects by making a list() request.
+      r"""Returns the specified interconnect. Get a list of available interconnects by making a list() request.
 
       Args:
         request: (ComputeInterconnectsGetRequest) input message
@@ -9017,7 +9017,7 @@ For more information, see Deleting snaphots.
         path_params=[u'project', u'region', u'resource'],
         query_params=[],
         relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/setIamPolicy',
-        request_field=u'policy',
+        request_field=u'regionSetPolicyRequest',
         request_type_name=u'ComputeSubnetworksSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,

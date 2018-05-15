@@ -254,7 +254,16 @@ properties:
 
   # The type of command to generate. This is inferred based on the name
   # of the command.
-  command_type: { enum: [ DESCRIBE, LIST, DELETE, GENERIC ] }
+  command_type:
+    enum:
+      - DESCRIBE
+      - LIST
+      - DELETE
+      - CREATE
+      - WAIT
+      - GET_IAM_POLICY
+      - SET_IAM_POLICY
+      - GENERIC
 
   # Corresponds to the detailed_help attribute on command classes.
   help_text:
@@ -459,6 +468,10 @@ properties:
           # collection instead of for the collection itself.  This allows for
           # create commands that do not require a name for the new resource.
           is_parent_resource: { type: boolean }
+          # The name to use for the resource arg. If set this is the name that
+          # will be used for the resource arg in the command. If not set,
+          # command will use the name from the spec.
+          arg_name: { type: string }
           # List of resource arg attributes to not generate flags for.
           removed_flags:
             type: array

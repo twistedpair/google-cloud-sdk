@@ -92,9 +92,9 @@ class CLILoader(object):
   PATH_RE = re.compile(r'(?:([\w\.]+)\.)?([^\.]+)')
 
   def __init__(self, name, command_root_directory,
-               allow_non_existing_modules=False,
-               logs_dir=config.Paths().logs_dir, version_func=None,
-               known_error_handler=None, yaml_command_translator=None):
+               allow_non_existing_modules=False, logs_dir=None,
+               version_func=None, known_error_handler=None,
+               yaml_command_translator=None):
     """Initialize Calliope.
 
     Args:
@@ -124,7 +124,7 @@ class CLILoader(object):
 
     self.__allow_non_existing_modules = allow_non_existing_modules
 
-    self.__logs_dir = logs_dir
+    self.__logs_dir = logs_dir or config.Paths().logs_dir
     self.__version_func = version_func
     self.__known_error_handler = known_error_handler
     self.__yaml_command_translator = yaml_command_translator

@@ -135,8 +135,7 @@ class BillingAccount(_messages.Message):
     masterBillingAccount: If this account is a
       [subaccount](https://cloud.google.com/billing/docs/concepts), then this
       will be the resource name of the master billing account that it is being
-      resold through. Otherwise this will be empty.  > This field is currently
-      in > [Beta](https://cloud.google.com/terms/launch-stages).
+      resold through. Otherwise this will be empty.
     name: The resource name of the billing account. The resource name has the
       form `billingAccounts/{billing_account_id}`. For example,
       `billingAccounts/012345-567890-ABCDEF` would be the resource name for
@@ -229,8 +228,7 @@ class CloudbillingBillingAccountsListRequest(_messages.Message):
       [subaccounts](https://cloud.google.com/billing/docs/concepts) under a
       single provided reseller billing account. (e.g.
       "master_billing_account=billingAccounts/012345-678901-ABCDEF"). Boolean
-      algebra and other fields are not currently supported.  > This field is
-      currently in > [Beta](https://cloud.google.com/terms/launch-stages).
+      algebra and other fields are not currently supported.
     pageSize: Requested page size. The maximum page size is 100; this is also
       the default.
     pageToken: A token identifying a page of results to return. This should be

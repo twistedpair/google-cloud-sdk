@@ -2599,7 +2599,7 @@
     },
     "GooglePrivacyDlpV2KMapEstimationConfig": {
       "id": "GooglePrivacyDlpV2KMapEstimationConfig",
-      "description": "Reidentifiability metric. This corresponds to a risk model similar to what\nis called \"journalist risk\" in the literature, except the attack dataset is\nstatistically modeled instead of being perfectly known. This can be done\nusing publicly available data (like the US Census), or using a custom\nstatistical model (indicated as one or several BigQuery tables), or by\nextrapolating from the distribution of values in the input dataset.",
+      "description": "Reidentifiability metric. This corresponds to a risk model similar to what\nis called \"journalist risk\" in the literature, except the attack dataset is\nstatistically modeled instead of being perfectly known. This can be done\nusing publicly available data (like the US Census), or using a custom\nstatistical model (indicated as one or several BigQuery tables), or by\nextrapolating from the distribution of values in the input dataset.\nA column with a semantic tag attached.",
       "type": "object",
       "properties": {
         "quasiIds": {
@@ -2624,7 +2624,6 @@
     },
     "GooglePrivacyDlpV2TaggedField": {
       "id": "GooglePrivacyDlpV2TaggedField",
-      "description": "A column with a semantic tag attached.",
       "type": "object",
       "properties": {
         "field": {
@@ -2647,7 +2646,6 @@
     },
     "GooglePrivacyDlpV2AuxiliaryTable": {
       "id": "GooglePrivacyDlpV2AuxiliaryTable",
-      "description": "An auxiliary table contains statistical information on the relative\nfrequency of different quasi-identifiers values. It has one or several\nquasi-identifiers columns, and one column that indicates the relative\nfrequency of each quasi-identifier tuple.\nIf a tuple is present in the data but not in the auxiliary table, the\ncorresponding relative frequency is assumed to be zero (and thus, the\ntuple is highly reidentifiable).",
       "type": "object",
       "properties": {
         "table": {

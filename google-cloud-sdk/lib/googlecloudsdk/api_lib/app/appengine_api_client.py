@@ -22,12 +22,12 @@ import operator
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.app import build as app_cloud_build
+from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import instances_util
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.app import service_util
-from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
@@ -167,7 +167,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
                                     extra_config_settings)
 
     message = 'Updating service [{service}]'.format(service=service_name)
-    if util.Environment.IsFlexible(service_config.env):
+    if service_config.env in [env.FLEX, env.MANAGED_VMS]:
       message += ' (this may take several minutes)'
 
     operation_metadata_type = self._ResolveMetadataType()

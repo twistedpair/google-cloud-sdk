@@ -2475,16 +2475,18 @@ class BackendService(_messages.Message):
 
     Values:
       HTTP: <no description>
+      HTTP2: <no description>
       HTTPS: <no description>
       SSL: <no description>
       TCP: <no description>
       UDP: <no description>
     """
     HTTP = 0
-    HTTPS = 1
-    SSL = 2
-    TCP = 3
-    UDP = 4
+    HTTP2 = 1
+    HTTPS = 2
+    SSL = 3
+    TCP = 4
+    UDP = 5
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
     r"""Type of session affinity to use. The default is NONE.  When the load
@@ -12187,15 +12189,16 @@ class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
   r"""A ComputeSubnetworksSetIamPolicyRequest object.
 
   Fields:
-    policy: A Policy resource to be passed as the request body.
     project: Project ID for this request.
     region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
     resource: Name of the resource for this request.
   """
 
-  policy = _messages.MessageField('Policy', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
   resource = _messages.StringField(4, required=True)
 
 
@@ -23101,7 +23104,8 @@ class Operation(_messages.Message):
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
-    clientOperationId: [Output Only] Reserved for future use.
+    clientOperationId: [Output Only] The value of `requestId` if you provided
+      it in the request. Not present otherwise.
     creationTimestamp: [Deprecated] This field is deprecated.
     description: [Output Only] A textual description of the operation, which
       is set when the operation is created.
@@ -23985,6 +23989,8 @@ class Quota(_messages.Message):
       INSTANCE_GROUP_MANAGERS: <no description>
       INSTANCE_TEMPLATES: <no description>
       INTERCONNECTS: <no description>
+      INTERCONNECT_ATTACHMENTS_PER_REGION: <no description>
+      INTERCONNECT_ATTACHMENTS_TOTAL_MBPS: <no description>
       INTERNAL_ADDRESSES: <no description>
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
@@ -23996,6 +24002,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
       ROUTERS: <no description>
@@ -24033,37 +24040,40 @@ class Quota(_messages.Message):
     INSTANCE_GROUP_MANAGERS = 13
     INSTANCE_TEMPLATES = 14
     INTERCONNECTS = 15
-    INTERNAL_ADDRESSES = 16
-    IN_USE_ADDRESSES = 17
-    LOCAL_SSD_TOTAL_GB = 18
-    NETWORKS = 19
-    NVIDIA_K80_GPUS = 20
-    NVIDIA_P100_GPUS = 21
-    NVIDIA_V100_GPUS = 22
-    PREEMPTIBLE_CPUS = 23
-    PREEMPTIBLE_LOCAL_SSD_GB = 24
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 25
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 26
-    REGIONAL_AUTOSCALERS = 27
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 28
-    ROUTERS = 29
-    ROUTES = 30
-    SECURITY_POLICIES = 31
-    SECURITY_POLICY_RULES = 32
-    SNAPSHOTS = 33
-    SSD_TOTAL_GB = 34
-    SSL_CERTIFICATES = 35
-    STATIC_ADDRESSES = 36
-    SUBNETWORKS = 37
-    TARGET_HTTPS_PROXIES = 38
-    TARGET_HTTP_PROXIES = 39
-    TARGET_INSTANCES = 40
-    TARGET_POOLS = 41
-    TARGET_SSL_PROXIES = 42
-    TARGET_TCP_PROXIES = 43
-    TARGET_VPN_GATEWAYS = 44
-    URL_MAPS = 45
-    VPN_TUNNELS = 46
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 16
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 17
+    INTERNAL_ADDRESSES = 18
+    IN_USE_ADDRESSES = 19
+    LOCAL_SSD_TOTAL_GB = 20
+    NETWORKS = 21
+    NVIDIA_K80_GPUS = 22
+    NVIDIA_P100_GPUS = 23
+    NVIDIA_V100_GPUS = 24
+    PREEMPTIBLE_CPUS = 25
+    PREEMPTIBLE_LOCAL_SSD_GB = 26
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 27
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 28
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 29
+    REGIONAL_AUTOSCALERS = 30
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 31
+    ROUTERS = 32
+    ROUTES = 33
+    SECURITY_POLICIES = 34
+    SECURITY_POLICY_RULES = 35
+    SNAPSHOTS = 36
+    SSD_TOTAL_GB = 37
+    SSL_CERTIFICATES = 38
+    STATIC_ADDRESSES = 39
+    SUBNETWORKS = 40
+    TARGET_HTTPS_PROXIES = 41
+    TARGET_HTTP_PROXIES = 42
+    TARGET_INSTANCES = 43
+    TARGET_POOLS = 44
+    TARGET_SSL_PROXIES = 45
+    TARGET_TCP_PROXIES = 46
+    TARGET_VPN_GATEWAYS = 47
+    URL_MAPS = 48
+    VPN_TUNNELS = 49
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -25072,6 +25082,25 @@ class RegionSetLabelsRequest(_messages.Message):
 
   labelFingerprint = _messages.BytesField(1)
   labels = _messages.MessageField('LabelsValue', 2)
+
+
+class RegionSetPolicyRequest(_messages.Message):
+  r"""A RegionSetPolicyRequest object.
+
+  Fields:
+    bindings: Flatten Policy to create a backwacd compatible wire-format.
+      Deprecated. Use 'policy' to specify bindings.
+    etag: Flatten Policy to create a backward compatible wire-format.
+      Deprecated. Use 'policy' to specify the etag.
+    policy: REQUIRED: The complete policy to be applied to the 'resource'. The
+      size of the policy is limited to a few 10s of KB. An empty policy is in
+      general a valid policy but certain services (like Projects) might reject
+      them.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  policy = _messages.MessageField('Policy', 3)
 
 
 class ResourceCommitment(_messages.Message):

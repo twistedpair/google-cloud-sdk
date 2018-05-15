@@ -14,6 +14,7 @@
 """Code that's shared between multiple networks subcommands."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.calliope import parser_errors
 

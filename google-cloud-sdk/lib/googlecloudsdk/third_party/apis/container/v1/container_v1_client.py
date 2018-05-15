@@ -804,7 +804,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetAutoscaling(self, request, global_params=None):
-      r"""Sets the autoscaling settings of a specific node pool.
+      r"""Sets the autoscaling settings for a specific node pool.
 
       Args:
         request: (SetNodePoolAutoscalingRequest) input message
@@ -858,7 +858,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetSize(self, request, global_params=None):
-      r"""Sets the size of a specific node pool.
+      r"""Sets the size for a specific node pool.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -885,7 +885,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the version and/or image type of a specific node pool.
+      r"""Updates the version and/or image type for a specific node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message
@@ -1078,7 +1078,7 @@ zones.
     )
 
     def SetAddons(self, request, global_params=None):
-      r"""Sets the addons of a specific cluster.
+      r"""Sets the addons for a specific cluster.
 
       Args:
         request: (SetAddonsConfigRequest) input message
@@ -1132,7 +1132,7 @@ zones.
     )
 
     def SetLocations(self, request, global_params=None):
-      r"""Sets the locations of a specific cluster.
+      r"""Sets the locations for a specific cluster.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -1159,7 +1159,7 @@ zones.
     )
 
     def SetLogging(self, request, global_params=None):
-      r"""Sets the logging service of a specific cluster.
+      r"""Sets the logging service for a specific cluster.
 
       Args:
         request: (SetLoggingServiceRequest) input message
@@ -1214,7 +1214,7 @@ zones.
 
     def SetMasterAuth(self, request, global_params=None):
       r"""Used to set master auth materials. Currently supports :-.
-Changing the admin password of a specific cluster.
+Changing the admin password for a specific cluster.
 This can be either via password generation or explicitly set the password.
 
       Args:
@@ -1242,7 +1242,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def SetMonitoring(self, request, global_params=None):
-      r"""Sets the monitoring service of a specific cluster.
+      r"""Sets the monitoring service for a specific cluster.
 
       Args:
         request: (SetMonitoringServiceRequest) input message
@@ -1377,7 +1377,7 @@ This can be either via password generation or explicitly set the password.
     )
 
     def UpdateMaster(self, request, global_params=None):
-      r"""Updates the master of a specific cluster.
+      r"""Updates the master for a specific cluster.
 
       Args:
         request: (UpdateMasterRequest) input message
@@ -1542,7 +1542,7 @@ This can be either via password generation or explicitly set the password.
           }
 
     def Autoscaling(self, request, global_params=None):
-      r"""Sets the autoscaling settings of a specific node pool.
+      r"""Sets the autoscaling settings for a specific node pool.
 
       Args:
         request: (SetNodePoolAutoscalingRequest) input message
@@ -1725,7 +1725,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def SetSize(self, request, global_params=None):
-      r"""Sets the size of a specific node pool.
+      r"""Sets the size for a specific node pool.
 
       Args:
         request: (SetNodePoolSizeRequest) input message
@@ -1751,7 +1751,7 @@ This will be an no-op if the last upgrade successfully completed.
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the version and/or image type of a specific node pool.
+      r"""Updates the version and/or image type for a specific node pool.
 
       Args:
         request: (UpdateNodePoolRequest) input message
@@ -1787,7 +1787,7 @@ This will be an no-op if the last upgrade successfully completed.
           }
 
     def Addons(self, request, global_params=None):
-      r"""Sets the addons of a specific cluster.
+      r"""Sets the addons for a specific cluster.
 
       Args:
         request: (SetAddonsConfigRequest) input message
@@ -1990,7 +1990,7 @@ zones.
     )
 
     def Locations(self, request, global_params=None):
-      r"""Sets the locations of a specific cluster.
+      r"""Sets the locations for a specific cluster.
 
       Args:
         request: (SetLocationsRequest) input message
@@ -2016,7 +2016,7 @@ zones.
     )
 
     def Logging(self, request, global_params=None):
-      r"""Sets the logging service of a specific cluster.
+      r"""Sets the logging service for a specific cluster.
 
       Args:
         request: (SetLoggingServiceRequest) input message
@@ -2042,7 +2042,7 @@ zones.
     )
 
     def Master(self, request, global_params=None):
-      r"""Updates the master of a specific cluster.
+      r"""Updates the master for a specific cluster.
 
       Args:
         request: (UpdateMasterRequest) input message
@@ -2068,7 +2068,7 @@ zones.
     )
 
     def Monitoring(self, request, global_params=None):
-      r"""Sets the monitoring service of a specific cluster.
+      r"""Sets the monitoring service for a specific cluster.
 
       Args:
         request: (SetMonitoringServiceRequest) input message
@@ -2147,7 +2147,7 @@ zones.
 
     def SetMasterAuth(self, request, global_params=None):
       r"""Used to set master auth materials. Currently supports :-.
-Changing the admin password of a specific cluster.
+Changing the admin password for a specific cluster.
 This can be either via password generation or explicitly set the password.
 
       Args:

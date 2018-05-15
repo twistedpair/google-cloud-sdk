@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities for dealing with ML predict API."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import json
 
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -49,7 +51,8 @@ def Predict(model_or_version_ref, instances):
   headers = {'Content-Type': 'application/json'}
   try:
     body = json.dumps({'instances': instances}, sort_keys=True)
-  except UnicodeDecodeError:
+  except (UnicodeDecodeError, TypeError):
+    # Python 2: UnicodeDecode Error, Python 3: TypeError
     raise InstancesEncodeError('Instances cannot be JSON encoded, probably '
                                'because the input is not utf-8 encoded.')
 

@@ -586,12 +586,7 @@ class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
 
 
 class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
-  r"""An auxiliary table contains statistical information on the relative
-  frequency of different quasi-identifiers values. It has one or several
-  quasi-identifiers columns, and one column that indicates the relative
-  frequency of each quasi-identifier tuple. If a tuple is present in the data
-  but not in the auxiliary table, the corresponding relative frequency is
-  assumed to be zero (and thus, the tuple is highly reidentifiable).
+  r"""A GooglePrivacyDlpV2AuxiliaryTable object.
 
   Fields:
     quasiIds: Quasi-identifier columns. [required]
@@ -2191,7 +2186,8 @@ class GooglePrivacyDlpV2KMapEstimationConfig(_messages.Message):
   dataset is statistically modeled instead of being perfectly known. This can
   be done using publicly available data (like the US Census), or using a
   custom statistical model (indicated as one or several BigQuery tables), or
-  by extrapolating from the distribution of values in the input dataset.
+  by extrapolating from the distribution of values in the input dataset. A
+  column with a semantic tag attached.
 
   Fields:
     auxiliaryTables: Several auxiliary tables can be used in the analysis.
@@ -3087,7 +3083,7 @@ class GooglePrivacyDlpV2TableLocation(_messages.Message):
 
 
 class GooglePrivacyDlpV2TaggedField(_messages.Message):
-  r"""A column with a semantic tag attached.
+  r"""A GooglePrivacyDlpV2TaggedField object.
 
   Fields:
     customTag: A column can be tagged with a custom tag. In this case, the

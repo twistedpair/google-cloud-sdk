@@ -249,6 +249,20 @@ class Collections(enum.Enum):
       [u'project', u'region', u'commitment'],
       True
   )
+  REGIONDISKTYPES = (
+      'regionDiskTypes',
+      'projects/{project}/regions/{region}/diskTypes/{diskType}',
+      {},
+      [u'project', u'region', u'diskType'],
+      True
+  )
+  REGIONDISKS = (
+      'regionDisks',
+      'projects/{project}/regions/{region}/disks/{disk}',
+      {},
+      [u'project', u'region', u'disk'],
+      True
+  )
   REGIONINSTANCEGROUPMANAGERS = (
       'regionInstanceGroupManagers',
       'projects/{project}/regions/{region}/instanceGroupManagers/'

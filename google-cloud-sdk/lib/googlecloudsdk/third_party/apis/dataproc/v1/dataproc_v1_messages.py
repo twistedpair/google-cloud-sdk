@@ -1056,10 +1056,9 @@ class InstanceGroupConfig(_messages.Message):
     diskConfig: Optional. Disk option config settings.
     imageUri: Output only. The Compute Engine image resource used for cluster
       instances. Inferred from SoftwareConfig.image_version.
-    instanceNames: Optional. The list of instance names. Cloud Dataproc
+    instanceNames: Output only. The list of instance names. Cloud Dataproc
       derives the names from cluster_name, num_instances, and the instance
-      group if not set by user (recommended practice is to let Cloud Dataproc
-      derive the name).
+      group.
     isPreemptible: Optional. Specifies that this instance group contains
       preemptible instances.
     machineTypeUri: Optional. The Compute Engine machine type used for cluster

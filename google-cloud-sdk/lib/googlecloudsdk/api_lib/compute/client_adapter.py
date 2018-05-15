@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
 from apitools.base.py import batch
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.compute import request_helper
@@ -23,7 +24,9 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
-import six.moves.urllib.parse
+
+from six.moves.urllib import parse
+
 
 # Upper bound on batch size
 # https://cloud.google.com/compute/docs/api/how-tos/batch
@@ -36,8 +39,8 @@ class Error(core_exceptions.Error):
 
 def _GetBatchUrl(endpoint_url, api_version):
   """Return a batch URL for the given endpoint URL."""
-  parsed_endpoint = six.moves.urllib.parse.urlparse(endpoint_url)
-  return six.moves.urllib.parse.urljoin(
+  parsed_endpoint = parse.urlparse(endpoint_url)
+  return parse.urljoin(
       '{0}://{1}'.format(parsed_endpoint.scheme, parsed_endpoint.netloc),
       'batch/compute/' + api_version)
 

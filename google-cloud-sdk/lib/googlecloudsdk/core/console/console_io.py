@@ -23,6 +23,7 @@ import re
 import subprocess
 import sys
 import textwrap
+import threading
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -106,7 +107,10 @@ def _RawInput(prompt=None):
   """
   if prompt:
     sys.stderr.write(_DoWrap(prompt))
+  return _GetInput()
 
+
+def _GetInput():
   try:
     return input()
   except EOFError:
@@ -647,7 +651,7 @@ def ProgressBar(label, stream=log.status, total_ticks=60, first=True,
   """
   style = properties.VALUES.core.interactive_ux_style.Get()
   if style == properties.VALUES.core.InteractiveUXStyles.OFF.name:
-    return _NoOpProgressBar()
+    return NoOpProgressBar()
   elif style == properties.VALUES.core.InteractiveUXStyles.TESTING.name:
     return _StubProgressBar(label, stream)
   else:
@@ -801,7 +805,7 @@ class _NormalProgressBar(object):
     self.Finish()
 
 
-class _NoOpProgressBar(object):
+class NoOpProgressBar(object):
   """A progress bar that outputs nothing at all."""
 
   def __init__(self):
@@ -901,12 +905,13 @@ def More(contents, out=None, prompt=None, check_pager=True):
 
 
 class TickableProgressBar(object):
-  """A progress bar with a discrete number of tasks."""
+  """A thread safe progress bar with a discrete number of tasks."""
 
   def __init__(self, total, *args, **kwargs):
     self.completed = 0
     self.total = total
     self._progress_bar = ProgressBar(*args, **kwargs)
+    self._lock = threading.Lock()
 
   def __enter__(self):
     self._progress_bar.__enter__()
@@ -916,5 +921,6 @@ class TickableProgressBar(object):
     self._progress_bar.__exit__(exc_type, exc_value, traceback)
 
   def Tick(self):
-    self.completed += 1
-    self._progress_bar.SetProgress(self.completed / self.total)
+    with self._lock:
+      self.completed += 1
+      self._progress_bar.SetProgress(self.completed / self.total)

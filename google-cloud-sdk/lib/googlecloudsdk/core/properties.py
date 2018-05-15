@@ -568,8 +568,8 @@ class _SectionSpanner(_Section):
     super(_SectionSpanner, self).__init__('spanner')
     self.instance = self._Add(
         'instance',
-        help_text='The default instance to use when working with Cloud Spanner '
-        'resources. When an `instance` is required but not provided by a flag, '
+        help_text='Default instance to use when working with Cloud Spanner '
+        'resources. When an instance is required but not provided by a flag, '
         'the command will fall back to this value, if set.',
         completer='googlecloudsdk.command_lib.spanner.flags:InstanceCompleter')
 
@@ -581,7 +581,7 @@ class _SectionCompute(_Section):
     super(_SectionCompute, self).__init__('compute')
     self.zone = self._Add(
         'zone',
-        help_text='The default zone to use when working with zonal Compute '
+        help_text='Default zone to use when working with zonal Compute '
         'Engine resources. When a `--zone` flag is required but not provided, '
         'the command will fall back to this value, if set. To see valid '
         'choices, run `gcloud compute zones list`.',
@@ -589,7 +589,7 @@ class _SectionCompute(_Section):
                    'ZonesCompleter'))
     self.region = self._Add(
         'region',
-        help_text='The default region to use when working with regional Compute'
+        help_text='Default region to use when working with regional Compute'
         ' Engine resources. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set. To see '
         'valid choices, run `gcloud compute regions list`.',
@@ -615,10 +615,10 @@ class _SectionFunctions(_Section):
     self.region = self._Add(
         'region',
         default='us-central1',
-        help_text='The default region to use when working with Google Compute '
-        'functions resources. When a `--region` flag is required but not '
+        help_text='Default region to use when working with Cloud '
+        'Functions resources. When a `--region` flag is required but not '
         'provided, the command will fall back to this value, if set. To see '
-        'valid choices, run `gcloud functions regions list`.',
+        'valid choices, run `gcloud beta functions regions list`.',
         completer=('googlecloudsdk.command_lib.functions.flags:'
                    'LocationsCompleter'))
 
@@ -632,8 +632,8 @@ class _SectionGcloudignore(_Section):
         'enabled',
         default=True,
         help_text=(
-            'Whether to enable .gcloudignore files (see `$ gcloud topic '
-            'gcloudignore`). If false, turn off the gcloudignore mechanism '
+            'If True, do not upload `.gcloudignore` files (see `$ gcloud topic '
+            'gcloudignore`). If False, turn off the gcloudignore mechanism '
             'entirely and upload all files.'))
 
 
@@ -646,7 +646,7 @@ class _SectionApp(_Section):
         'promote_by_default',
         help_text='If True, when deploying a new version of a service, that '
         'version will be promoted to receive all traffic for the service. '
-        'The flag can be overridden via the `--promote-by-default` or '
+        'This property can be overridden via the `--promote-by-default` or '
         '`--no-promote-by-default` flags.',
         default=True)
     self.stop_previous_version = self._AddBool(
@@ -671,7 +671,7 @@ class _SectionApp(_Section):
     self.cloud_build_timeout = self._Add(
         'cloud_build_timeout',
         validator=CloudBuildTimeoutValidator,
-        help_text='The timeout, in seconds, to wait for Docker builds to '
+        help_text='Timeout, in seconds, to wait for Docker builds to '
                   'complete during deployments. All Docker builds now use the '
                   'Container Builder API.')
     self.container_builder_image = self._Add(
@@ -715,8 +715,8 @@ class _SectionApp(_Section):
         default=None,
         help_text=('If set, opt in/out to a new code path for building '
                    'applications using pre-fabricated runtimes that can be '
-                   'updated independently of client tooling. (If not set, will '
-                   'use the default path for each runtime.)'))
+                   'updated independently of client tooling. If not set, '
+                   'the default path for each runtime is used.'))
     # The Cloud Storage path prefix for the Flex Runtime Builder configuration
     # files. The configuration files will live at
     # "<PREFIX>/<runtime>-<version>.yaml", with an additional
@@ -742,51 +742,52 @@ class _SectionContainer(_Section):
   def __init__(self):
     super(_SectionContainer, self).__init__('container')
     self.cluster = self._Add(
-        'cluster', help_text='The name of the cluster to use by default when '
+        'cluster', help_text='Name of the cluster to use by default when '
         'working with Kubernetes Engine.')
     self.use_client_certificate = self._AddBool(
         'use_client_certificate',
         default=False,
-        help_text='Use the cluster\'s client certificate to authenticate to '
-        'the cluster API server.')
+        help_text='If True, use the cluster\'s client certificate to '
+        'authenticate to the cluster API server.')
     self.use_app_default_credentials = self._AddBool(
         'use_application_default_credentials',
         default=False,
-        help_text='Use application default credentials to authenticate to '
-        'the cluster API server.')
+        help_text='If True, use application default credentials to authenticate'
+        ' to the cluster API server.')
     self.use_v1_api = self._AddBool(
         'use_v1_api',
         default=False,
         help_text='This property is DEPRECATED. '
-        'If true, all gcloud Kubernetes Engine commands (regardless '
-        'of release track) will use the v1 API; otherwise, gcloud beta track '
-        'commands will use v1beta1 API and gcloud alpha track commands will '
-        'use v1alpha1 API. By default, it is set to false. The Kubernetes '
-        'Engine v1alpha1 API is whitelist-only at this time. '
+        'If True, all `gcloud` Kubernetes Engine commands (regardless '
+        'of release track) will use the v1 API; otherwise, `gcloud beta` track '
+        'commands will use v1beta1 API and `gcloud alpha` track commands will '
+        'use v1alpha1 API. By default, this property is set to false. The '
+        'Kubernetes Engine v1alpha1 API is whitelist-only at this time. '
         'Note: use_v1_api is an alias of use_v1_api_client.')
     self.use_v1_api_client = self._AddBool(
         'use_v1_api_client',
         default=False,
         help_text='This property is DEPRECATED. '
-        'If true, all gcloud Kubernetes Engine commands (regardless '
-        'of release track) will use the v1 API; otherwise, gcloud beta track '
-        'commands will use v1beta1 API and gcloud alpha track commands will '
-        'use v1alpha1 API. By default, it is set to false. The Kubernetes '
-        'Engine v1alpha1 API is whitelist-only at this time. '
+        'If True, all `gcloud` Kubernetes Engine commands (regardless '
+        'of release track) will use the v1 API; otherwise, `gcloud beta` track '
+        'commands will use v1beta1 API and `gcloud alpha` track commands will '
+        'use v1alpha1 API. By default, this property is set to false. The '
+        'Kubernetes Engine v1alpha1 API is whitelist-only at this time. '
         'Note: use_v1_api_client is an alias of use_v1_api.')
     self.new_scopes_behavior = self._AddBool(
         'new_scopes_behavior',
         default=False,
-        help_text='Use new scopes behavior: if true, do not add compute-rw, '
-        'storage-ro, service-control, or service-management scopes. The '
-        'former two (compute-rw and storage-ro) only applies to clusters at '
-        'Kubernetes v1.9 and below; starting in v1.10, compute-rw and '
-        'storage-ro are not added by default regardless. Any of these scopes '
-        'may be added explicitly using --scopes. If true, '
-        '--[no-]enable-cloud-endpoints is not allowed. This will be the '
-        'default behavior in a future release. This property is ignored in '
-        'alpha and beta, which always use the new behavior. See --scopes help '
-        'for more info.')
+        help_text='If True, use new scopes behavior and do not add `compute-rw`'
+        ', `storage-ro`, `service-control`, or `service-management` scopes. The'
+        ' former two (`compute-rw` and `storage-ro`) only apply to clusters '
+        'at Kubernetes v1.9 and below; starting v1.10, `compute-rw` and '
+        '`storage-ro` are not added by default. Any of these scopes '
+        'may be added explicitly using `--scopes`. Using new scopes behavior '
+        'will be the default in a future release. Additionally, if '
+        'this property is set to True, using `--[no-]enable-cloud-endpoints` '
+        'is not allowed. This property is ignored in alpha and beta, since '
+        'these tracks always use the new behavior. See `--scopes` help for '
+        'more info.')
 
     def BuildTimeoutValidator(build_timeout):
       if build_timeout is None:
@@ -800,7 +801,7 @@ class _SectionContainer(_Section):
     self.build_timeout = self._Add(
         'build_timeout',
         validator=BuildTimeoutValidator,
-        help_text='The timeout, in seconds, to wait for container builds to '
+        help_text='Timeout, in seconds, to wait for container builds to '
         'complete.')
     self.build_check_tag = self._AddBool(
         'build_check_tag',
@@ -822,9 +823,8 @@ class _SectionCore(_Section):
     super(_SectionCore, self).__init__('core')
     self.account = self._Add(
         'account',
-        help_text='The account gcloud should use for authentication.  You can '
-        'run `gcloud auth list` to see the accounts you currently have '
-        'available.')
+        help_text='Account `gcloud` should use for authentication. '
+        'Run `gcloud auth list` to see your currently available accounts.')
     self.disable_collection_path_deprecation_warning = self._AddBool(
         'disable_collection_path_deprecation_warning',
         hidden=True,
@@ -833,8 +833,8 @@ class _SectionCore(_Section):
     self.default_regional_backend_service = self._AddBool(
         'default_regional_backend_service',
         help_text='If True, backend services in `gcloud compute '
-        'backend-services` will be regional by default. The `--global` flag '
-        'will be required for global backend services.')
+        'backend-services` will be regional by default. Setting the `--global` '
+        'flag is required for global backend services.')
     self.disable_color = self._AddBool(
         'disable_color',
         help_text='If True, color will not be used when printing messages in '
@@ -845,14 +845,15 @@ class _SectionCore(_Section):
     self.disable_prompts = self._AddBool(
         'disable_prompts',
         help_text='If True, the default answer will be assumed for all user '
-        'prompts.  For any prompts that require user input, an error will be '
-        'raised. This is equivalent to either using the global `--quiet` flag '
-        'or setting the environment variable `CLOUDSDK_CORE_DISABLE_PROMPTS` '
-        'to 1.')
+        'prompts. However, for any prompts that require user input, an error '
+        'will be raised. This is equivalent to either using the global '
+        '`--quiet` flag or setting the environment variable '
+        '`CLOUDSDK_CORE_DISABLE_PROMPTS` to 1. Setting this property is '
+        'useful when scripting with `gcloud`.')
     self.disable_usage_reporting = self._AddBool(
         'disable_usage_reporting',
         help_text='If True, anonymous statistics on SDK usage will not be '
-        'collected.  This is value is set based on your choices during '
+        'collected.  This value is set by default based on your choices during '
         'installation, but can be changed at any time.  For more information, '
         'see: https://cloud.google.com/sdk/usage-statistics')
     self.enable_gri = self._AddBool(
@@ -895,12 +896,14 @@ class _SectionCore(_Section):
         default='https://www.googleapis.com')
     self.verbosity = self._Add(
         'verbosity',
-        help_text='The default logging verbosity for gcloud commands.  This is '
-        'the equivalent of using the global `--verbosity` flag.')
+        help_text='Default logging verbosity for `gcloud` commands.  This is '
+        'the equivalent of using the global `--verbosity` flag. Supported '
+        'verbosity levels: `debug`, `info`, `warning`, `error`, and `none`.')
     self.user_output_enabled = self._AddBool(
         'user_output_enabled',
-        help_text='If False, messages to the user and command output on both '
-        'standard output and standard error will be suppressed.',
+        help_text='True, by default. If False, messages to the user and command'
+        ' output on both standard output and standard error will be'
+        ' suppressed.',
         default=True)
     self.interactive_ux_style = self._Add(
         'interactive_ux_style',
@@ -912,8 +915,8 @@ class _SectionCore(_Section):
     self.log_http = self._AddBool(
         'log_http',
         help_text='If True, log HTTP requests and responses to the logs.  '
-        'You may need to adjust your `verbosity` setting if you want to see '
-        'in the terminal, otherwise it is available in the log files.',
+        'To see logs in the terminal, adjust `verbosity` settings. '
+        'Otherwise, logs are available in their respective log files.',
         default=False)
     self.log_http_redact_token = self._AddBool(
         'log_http_redact_token',
@@ -1013,14 +1016,19 @@ class _SectionCore(_Section):
         default='never',
         hidden=False,
         validator=ShowStructuredLogsValidator,
-        help_text='Controls when JSON structured log messages for the current '
-        'verbosity and above will be written to standard error. The default is '
-        'text format when disabled. Valid values are: '
-        '`never` - Log messages as text, '
-        '`always` - Always log messages as JSON, '
-        '`log` - Only log messages as JSON if stderr is a file, '
-        '`terminal` - Only log messages as JSON if stderr is a terminal.'
-        ' If unset default is `never`.')
+        help_text="""\
+        Control when JSON-structured log messages for the current verbosity
+        level (and above) will be written to standard error. If this property
+        is disabled, logs are formatted as `text` by default.
+
+        Valid values are:
+            *   `never` - Log messages as text
+            *   `always` - Always log messages as JSON
+            *   `log` - Only log messages as JSON if stderr is a file
+            *    `terminal` - Only log messages as JSON if stderr is a terminal
+
+        If unset, default is `never`."""
+    )
 
     def MaxLogDaysValidator(max_log_days):
       if max_log_days is None:
@@ -1037,7 +1045,7 @@ class _SectionCore(_Section):
         validator=MaxLogDaysValidator,
         help_text='Maximum number of days to retain log files before deleting.'
         ' If set to 0, turns off log garbage collection and does not delete log'
-        ' files. If unset, defaults to 30.',
+        ' files. If unset, the default is 30 days.',
         default='30')
 
     def ExistingAbsoluteFilepathValidator(file_path):
@@ -1082,7 +1090,7 @@ class _SectionCore(_Section):
 
     self.project = self._Add(
         'project',
-        help_text='The project id of the Cloud Platform project to operate on '
+        help_text='Project ID of the Cloud Platform project to operate on '
         'by default.  This can be overridden by using the global `--project` '
         'flag.',
         validator=ProjectValidator,
@@ -1103,9 +1111,9 @@ class _SectionAuth(_Section):
         default=b'https://accounts.google.com/o/oauth2/auth')
     self.disable_credentials = self._AddBool(
         'disable_credentials', default=False,
-        help_text='If true, gcloud will not attempt to load any credentials or '
-        'authenticate any requests. This is useful if you are behind a proxy '
-        'that adds authentication to your requests.')
+        help_text='If True, `gcloud` will not attempt to load any credentials '
+        'or authenticate any requests. This is useful when behind a proxy '
+        'that adds authentication to requests.')
     self.token_host = self._Add(
         'token_host', hidden=True,
         default=b'https://www.googleapis.com/oauth2/v4/token')
@@ -1136,14 +1144,18 @@ class _SectionBilling(_Section):
 
     self.quota_project = self._Add(
         'quota_project', default=_SectionBilling.CURRENT_PROJECT,
-        help_text='This is the project that will be charged quota for the '
-        'operations performed in gcloud. When unset, the default is '
-        'CURRENT_PROJECT, which will charge quota against your currently set '
-        'project for the operations you perform on it. Some existing APIs '
-        'will continue to use a shared project for quota by default when this '
-        'property is unset. If you need to operate on one project, but charge '
-        'quota against a different project, you can use this property to '
-        'specify the alternate project.')
+        help_text="""\
+        Project that will be charged quota for the
+        operations performed in `gcloud`. When unset, the default is
+        [CURRENT_PROJECT]; this will charge quota against the currently set
+        project for operations performed on it. Additionally, some existing
+        APIs will continue to use a shared project for quota by default, when
+        this property is unset.
+
+        If you need to operate on one project, but
+        need quota against a different project, you can use this property to
+        specify the alternate project."""
+    )
 
 
 class _SectionMetrics(_Section):
@@ -1163,12 +1175,12 @@ class _SectionComponentManager(_Section):
     super(_SectionComponentManager, self).__init__('component_manager')
     self.additional_repositories = self._Add(
         'additional_repositories',
-        help_text='A comma separated list of additional repositories to check '
+        help_text='Comma separated list of additional repositories to check '
         'for components.  This property is automatically managed by the '
         '`gcloud components repositories` commands.')
     self.disable_update_check = self._AddBool(
         'disable_update_check',
-        help_text='If True, the Cloud SDK will not automatically check for '
+        help_text='If True, Cloud SDK will not automatically check for '
         'updates.')
     self.fixed_sdk_version = self._Add('fixed_sdk_version', hidden=True)
     self.snapshot_url = self._Add('snapshot_url', hidden=True)
@@ -1201,15 +1213,15 @@ class _SectionMlEngine(_Section):
     super(_SectionMlEngine, self).__init__('ml_engine')
     self.polling_interval = self._Add(
         'polling_interval', default=60,
-        help_text=('The interval (in seconds) at which to poll logs from your '
+        help_text=('Interval (in seconds) at which to poll logs from your '
                    'Cloud ML Engine jobs. Note that making it much faster than '
                    'the default (60) will quickly use all of your quota.'))
     self.local_python = self._Add(
         'local_python', default=None,
-        help_text=('The full path to the Python interpreter to use for '
+        help_text=('Full path to the Python interpreter to use for '
                    'Cloud ML Engine local predict/train jobs. If not '
-                   'specified, will default to using the Python interpreter '
-                   'found on system PATH.'))
+                   'specified, the default path is the one to the Python '
+                   'interpreter found on system `PATH`.'))
 
 
 class _SectionPubsub(_Section):
@@ -1232,10 +1244,10 @@ class _SectionComposer(_Section):
     self.location = self._Add(
         'location',
         help_text=(
-            'Specifies the Composer location to use. Each Composer location'
+            'Composer location to use. Each Composer location '
             'constitutes an independent resource namespace constrained to '
-            'deploying environments into Compute Engine regions inside the '
-            'location. This location parameter corresponds to the '
+            'deploying environments into Compute Engine regions inside this '
+            'location. This parameter corresponds to the '
             '/locations/<location> segment of the Composer resource URIs being '
             'referenced.'))
 
@@ -1249,12 +1261,12 @@ class _SectionDataproc(_Section):
         'region',
         default='global',
         help_text=(
-            'Specifies the Cloud Dataproc region to use. Each Cloud Dataproc '
+            'Cloud Dataproc region to use. Each Cloud Dataproc '
             'region constitutes an independent resource namespace constrained '
-            'to deploying instances into Google Compute Engine zones inside '
-            'the region. The default value of "global" is a special '
+            'to deploying instances into Compute Engine zones inside '
+            'the region. The default value of `global` is a special '
             'multi-region namespace which is capable of deploying instances '
-            'into all Google Compute Engine zones globally, and is disjoint '
+            'into all Compute Engine zones globally, and is disjoint '
             'from other Cloud Dataproc regions.'))
 
 
@@ -1265,10 +1277,10 @@ class _SectionInteractive(_Section):
     super(_SectionInteractive, self).__init__('interactive')
     self.bottom_bindings_line = self._AddBool(
         'bottom_bindings_line', default=True,
-        help_text='Display the bottom key bindings line, if true.')
+        help_text='If True, display the bottom key bindings line.')
     self.bottom_status_line = self._AddBool(
         'bottom_status_line', default=False,
-        help_text='Display the bottom status line, if true.')
+        help_text='If True, display the bottom status line.')
     self.completion_menu_lines = self._Add(
         'completion_menu_lines', default=4,
         help_text='Number of lines in the completion menu.')
@@ -1277,32 +1289,32 @@ class _SectionInteractive(_Section):
         help_text='Command context string.')
     self.fixed_prompt_position = self._Add(
         'fixed_prompt_position', default=False,
-        help_text='Display the prompt at the same position, if true.')
+        help_text='If True, display the prompt at the same position.')
     self.help_lines = self._Add(
         'help_lines', default=10,
         help_text='Maximum number of help snippet lines.')
     self.hidden = self._AddBool(
         'hidden', default=False,
-        help_text='Expose hidden commands/flags, if true.')
+        help_text='If True, expose hidden commands/flags.')
     self.justify_bottom_lines = self._AddBool(
         'justify_bottom_lines', default=False,
-        help_text='Left- and right-justify bottom toolbar lines, if true.')
+        help_text='If True, left- and right-justify bottom toolbar lines.')
     self.manpage_generator = self._Add(
         'manpage_generator', default=True,
-        help_text=('Use the manpage CLI tree generator for unsupported '
-                   'commands, if true.'))
+        help_text=('If True, use the manpage CLI tree generator for '
+                   'unsupported commands.'))
     self.multi_column_completion_menu = self._AddBool(
         'multi_column_completion_menu', default=False,
-        help_text='Display the completions as a multi-column menu, if true.')
+        help_text='If True, display the completions as a multi-column menu.')
     self.prompt = self._Add(
         'prompt', default='$ ',
         help_text='Command prompt string.')
     self.show_help = self._AddBool(
         'show_help', default=True,
-        help_text='Show help as command args are entered, if true.')
+        help_text='If True, show help as command args are being entered.')
     self.suggest = self._AddBool(
         'suggest', default=False,
-        help_text='Add command line suggestions based on history, if true.')
+        help_text='If True, add command line suggestions based on history.')
 
 
 class _SectionProxy(_Section):
@@ -1312,23 +1324,24 @@ class _SectionProxy(_Section):
     super(_SectionProxy, self).__init__('proxy')
     self.address = self._Add(
         'address',
-        help_text='The hostname or IP address of your proxy server.')
+        help_text='Hostname or IP address of proxy server.')
     self.port = self._Add(
         'port',
-        help_text='The port to use when connected to your proxy server.')
+        help_text='Port to use when connected to the proxy server.')
     self.rdns = self._Add(
         'rdns',
         default=True,
-        help_text='If True (default), DNS queries will not be performed '
-        'locally, and instead, handed to the proxy to resolve.')
+        help_text='If True, DNS queries will not be performed '
+        'locally, and instead, handed to the proxy to resolve. This is default'
+        ' behavior.')
     self.username = self._Add(
         'username',
-        help_text='If your proxy requires authentication, the username to use '
-        'when connecting.')
+        help_text='Username to use when connecting, if the proxy '
+        'requires authentication.')
     self.password = self._Add(
         'password',
-        help_text='If your proxy requires authentication, the password to use '
-        'when connecting.')
+        help_text='Password to use when connecting, if the proxy '
+        'requires authentication.')
 
     valid_proxy_types = sorted(http_proxy_types.PROXY_TYPE_MAP.keys())
     def ProxyTypeValidator(proxy_type):
@@ -1339,7 +1352,7 @@ class _SectionProxy(_Section):
                 proxy_type, ', '.join(valid_proxy_types)))
     self.proxy_type = self._Add(
         'type',
-        help_text='The type of proxy you are using.  Supported proxy types are:'
+        help_text='Type of proxy being used.  Supported proxy types are:'
         ' [{0}].'.format(', '.join(valid_proxy_types)),
         validator=ProxyTypeValidator,
         choices=valid_proxy_types)
@@ -1485,7 +1498,7 @@ class _SectionRedis(_Section):
   """Contains the properties for the 'redis' section."""
 
   def __init__(self):
-    super(_SectionRedis, self).__init__('redis', hidden=True)
+    super(_SectionRedis, self).__init__('redis')
     self.region = self._Add(
         'region',
         help_text='The default region to use when working with Cloud '

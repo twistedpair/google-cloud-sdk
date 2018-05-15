@@ -13,6 +13,8 @@
 # limitations under the License.
 """Flags for compute groups command group."""
 
+from __future__ import unicode_literals
+
 DEFAULT_LIST_FORMAT = """\
     table(
       name,

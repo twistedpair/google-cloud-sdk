@@ -30,6 +30,8 @@ Pythonicness of the Transform*() methods:
       including ones that would raise exceptions.
 """
 
+from __future__ import unicode_literals
+
 # The DEADLINE_EXCEEDED error code.
 DEADLINE_EXCEEDED = 4
 

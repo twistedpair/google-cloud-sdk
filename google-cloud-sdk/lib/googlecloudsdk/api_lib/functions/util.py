@@ -13,9 +13,10 @@
 # limitations under the License.
 
 """A library that is used to support Functions commands."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 import functools
-import httplib
 import json
 import os
 import re
@@ -32,6 +33,8 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import encoding
+
+import six.moves.http_client
 
 _DEPLOY_WAIT_NOTICE = 'Deploying function (may take a while - up to 2 minutes)'
 
@@ -125,7 +128,7 @@ def GetHttpErrorMessage(error):
         message += '\nProblems:\n' + violations
   except (ValueError, TypeError):
     message = error.content
-  return u'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
+  return 'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
       status, code, encoding.Decode(message))
 
 
@@ -306,7 +309,7 @@ def GetFunction(function_name):
         messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
             name=function_name))
   except apitools_exceptions.HttpError as error:
-    if error.status_code == httplib.NOT_FOUND:
+    if error.status_code == six.moves.http_client.NOT_FOUND:
       # The function has not been found.
       return None
     raise

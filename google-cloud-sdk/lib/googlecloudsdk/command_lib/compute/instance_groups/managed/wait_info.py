@@ -14,6 +14,7 @@
 """Wait messages for the compute instance groups managed commands."""
 
 
+from __future__ import unicode_literals
 _CURRENT_ACTION_TYPES = ['abandoning', 'creating', 'creatingWithoutRetries',
                          'deleting', 'recreating', 'refreshing', 'restarting',
                          'verifying']
@@ -97,7 +98,7 @@ def _CreateActionsText(text, igm_field, action_types):
   """
   actions = []
   for action in action_types:
-    action_count = getattr(igm_field, action, 0)
+    action_count = getattr(igm_field, action, None) or 0
     if action_count > 0:
       actions.append('{0}: {1}'.format(action, action_count))
   return text + ', '.join(actions) if actions else ''

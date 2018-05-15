@@ -13,7 +13,7 @@ location:
   attributes:
     - &location
       parameter_name: locationsId
-      attribute_name: location_id
+      attribute_name: location
       help: The name of the Google Cloud ML Engine location.
 
 model:

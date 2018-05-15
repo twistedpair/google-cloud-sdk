@@ -68,7 +68,7 @@ class OsloginV1alpha(base_api.BaseApiClient):
         method_id=u'oslogin.users.projects.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'operatingSystemType'],
         relative_path=u'v1alpha/{+name}',
         request_field='',
         request_type_name=u'OsloginUsersProjectsDeleteRequest',

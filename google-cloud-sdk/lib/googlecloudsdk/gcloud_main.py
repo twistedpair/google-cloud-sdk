@@ -16,6 +16,9 @@
 
 """gcloud command line tool."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import time
 START_TIME = time.time()
 

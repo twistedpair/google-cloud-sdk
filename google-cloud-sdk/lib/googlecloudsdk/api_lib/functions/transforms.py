@@ -41,6 +41,9 @@ Pythonicness of the Transform*() methods:
 """
 
 
+from __future__ import unicode_literals
+
+
 def TransformTrigger(r, undefined=''):
   """Returns textual information about functions trigger.
 

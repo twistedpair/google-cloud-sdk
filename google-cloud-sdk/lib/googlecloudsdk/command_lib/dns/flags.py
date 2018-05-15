@@ -27,13 +27,9 @@ class KeyCompleter(completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(KeyCompleter, self).__init__(
-        # TODO(b/63443157): dnsKeys not found on server.
-        # Uncomment the next 3 lines when b/63443157 is fixed.
-        # collection='dns.dnsKeys',
-        # api_version='v2beta1',
-        # list_command=('beta dns dnskeys list --flatten=value(keyTag)'),
-        # Delete the next line (a workaround hack) when b/63443157 is fixed.
-        list_command='beta dns dnskeys list --format=value(keyTag)',
+        collection='dns.dnsKeys',
+        api_version='v2beta1',
+        list_command=('beta dns dns-keys list --format=value(keyTag)'),
         parse_output=True,
         flags=['zone'],
         **kwargs)

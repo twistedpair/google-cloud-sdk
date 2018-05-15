@@ -247,7 +247,7 @@
           "$ref": "AuditConfig"
         },
         "masterAuthorizedNetworksConfig": {
-          "description": "Master authorized networks is a Beta feature.\nThe configuration options for master authorized networks feature.",
+          "description": "The configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
         },
         "maintenancePolicy": {
@@ -860,7 +860,7 @@
     },
     "MasterAuthorizedNetworksConfig": {
       "id": "MasterAuthorizedNetworksConfig",
-      "description": "Master authorized networks is a Beta feature.\nConfiguration options for the master authorized networks feature. Enabled\nmaster authorized networks will disallow all external traffic to access\nKubernetes master through HTTPS except traffic from the given CIDR blocks,\nGoogle Compute Engine Public IPs and Google Prod IPs.",
+      "description": "Configuration options for the master authorized networks feature. Enabled\nmaster authorized networks will disallow all external traffic to access\nKubernetes master through HTTPS except traffic from the given CIDR blocks,\nGoogle Compute Engine Public IPs and Google Prod IPs.",
       "type": "object",
       "properties": {
         "enabled": {
@@ -1147,7 +1147,7 @@
           "$ref": "MasterAuthorizedNetworks"
         },
         "desiredMasterAuthorizedNetworksConfig": {
-          "description": "Master authorized networks is a Beta feature.\nThe desired configuration options for master authorized networks feature.",
+          "description": "The desired configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
         },
         "desiredAuditConfig": {
@@ -2726,7 +2726,8 @@
             "A VM Reboot is required.",
             "An in place master repair is required.",
             "No Repair is required",
-            "Restore etcd from backup."
+            "Restore etcd from backup.",
+            "Clear event etcd."
           ],
           "type": "string",
           "enum": [
@@ -2734,7 +2735,8 @@
             "REBOOT",
             "IN_PLACE",
             "NONE",
-            "RESTORE_ETCD"
+            "RESTORE_ETCD",
+            "CLEAR_EVENT_ETCD"
           ]
         },
         "repairId": {
@@ -2744,6 +2746,10 @@
         "restoreEtcdDetails": {
           "description": "restore_etcd_details describes what backup should be used in RESTORE_ETCD.\nRequired for repair_type = RESTORE_ETCD.",
           "$ref": "RestoreEtcdDetails"
+        },
+        "clearEventEtcdDetails": {
+          "description": "clear_event_etcd_details token to be used when clearing event etcd.\nRequired for CLEAR_EVENT_ETCD repair.",
+          "$ref": "ClearEventEtcdDetails"
         }
       }
     },
@@ -2766,6 +2772,17 @@
         }
       }
     },
+    "ClearEventEtcdDetails": {
+      "id": "ClearEventEtcdDetails",
+      "description": "ClearEventEtcdDetails describes a parameters to be used to clear event etcd\nand create a new etcd cluster.",
+      "type": "object",
+      "properties": {
+        "token": {
+          "description": "Required. A string token used by new cluster as --initial-cluster-token\nto differentiate cluster generations. It must differ from the token used by\nthe previous CLEAR_EVENT_ETCD call.",
+          "type": "string"
+        }
+      }
+    },
     "AckRepairWorkRequest": {
       "id": "AckRepairWorkRequest",
       "description": "HostedMaster sends Acknowledgment of repair work once it is received.",
@@ -2774,6 +2791,10 @@
         "repairId": {
           "description": "Repair ID that we are acknowledging to uniquely identify repairs.",
           "type": "string"
+        },
+        "hasFailed": {
+          "description": "Whether the operation has failed.",
+          "type": "boolean"
         }
       }
     },
@@ -3002,7 +3023,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the logging service of a specific cluster."
+                  "description": "Sets the logging service for a specific cluster."
                 },
                 "setMonitoring": {
                   "id": "container.projects.locations.clusters.setMonitoring",
@@ -3030,7 +3051,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the monitoring service of a specific cluster."
+                  "description": "Sets the monitoring service for a specific cluster."
                 },
                 "setAddons": {
                   "id": "container.projects.locations.clusters.setAddons",
@@ -3058,7 +3079,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the addons of a specific cluster."
+                  "description": "Sets the addons for a specific cluster."
                 },
                 "setLocations": {
                   "id": "container.projects.locations.clusters.setLocations",
@@ -3086,7 +3107,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations of a specific cluster."
+                  "description": "Sets the locations for a specific cluster."
                 },
                 "updateMaster": {
                   "id": "container.projects.locations.clusters.updateMaster",
@@ -3114,7 +3135,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the master of a specific cluster."
+                  "description": "Updates the master for a specific cluster."
                 },
                 "setMasterAuth": {
                   "id": "container.projects.locations.clusters.setMasterAuth",
@@ -3142,7 +3163,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set the password."
+                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password for a specific cluster.\nThis can be either via password generation or explicitly set the password."
                 },
                 "delete": {
                   "id": "container.projects.locations.clusters.delete",
@@ -3388,7 +3409,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the version and\/or image type of a specific node pool."
+                      "description": "Updates the version and\/or image type for a specific node pool."
                     },
                     "setAutoscaling": {
                       "id": "container.projects.locations.clusters.nodePools.setAutoscaling",
@@ -3416,7 +3437,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the autoscaling settings of a specific node pool."
+                      "description": "Sets the autoscaling settings for a specific node pool."
                     },
                     "list": {
                       "id": "container.projects.locations.clusters.nodePools.list",
@@ -3673,7 +3694,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the size of a specific node pool."
+                      "description": "Sets the size for a specific node pool."
                     }
                   }
                 }
@@ -4049,7 +4070,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the logging service of a specific cluster."
+                  "description": "Sets the logging service for a specific cluster."
                 },
                 "monitoring": {
                   "id": "container.projects.zones.clusters.monitoring",
@@ -4090,7 +4111,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the monitoring service of a specific cluster."
+                  "description": "Sets the monitoring service for a specific cluster."
                 },
                 "addons": {
                   "id": "container.projects.zones.clusters.addons",
@@ -4131,7 +4152,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the addons of a specific cluster."
+                  "description": "Sets the addons for a specific cluster."
                 },
                 "locations": {
                   "id": "container.projects.zones.clusters.locations",
@@ -4172,7 +4193,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Sets the locations of a specific cluster."
+                  "description": "Sets the locations for a specific cluster."
                 },
                 "master": {
                   "id": "container.projects.zones.clusters.master",
@@ -4213,7 +4234,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the master of a specific cluster."
+                  "description": "Updates the master for a specific cluster."
                 },
                 "setMasterAuth": {
                   "id": "container.projects.zones.clusters.setMasterAuth",
@@ -4254,7 +4275,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password of a specific cluster.\nThis can be either via password generation or explicitly set the password."
+                  "description": "Used to set master auth materials. Currently supports :-\nChanging the admin password for a specific cluster.\nThis can be either via password generation or explicitly set the password."
                 },
                 "delete": {
                   "id": "container.projects.zones.clusters.delete",
@@ -4601,7 +4622,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the version and\/or image type of a specific node pool."
+                      "description": "Updates the version and\/or image type for a specific node pool."
                     },
                     "autoscaling": {
                       "id": "container.projects.zones.clusters.nodePools.autoscaling",
@@ -4649,7 +4670,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the autoscaling settings of a specific node pool."
+                      "description": "Sets the autoscaling settings for a specific node pool."
                     },
                     "list": {
                       "id": "container.projects.zones.clusters.nodePools.list",
@@ -4992,7 +5013,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Sets the size of a specific node pool."
+                      "description": "Sets the size for a specific node pool."
                     }
                   }
                 }

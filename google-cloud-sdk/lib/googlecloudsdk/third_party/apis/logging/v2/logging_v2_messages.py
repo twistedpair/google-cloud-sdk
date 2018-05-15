@@ -377,6 +377,9 @@ class LogEntry(_messages.Message):
       but the forward-slash is removed. Listing the log entry will not show
       the leading slash and filtering for a log name with a leading slash will
       never return any results.
+    metadata: Output only. Additional metadata about the monitored resource.
+      Only k8s_container, k8s_pod, and k8s_node MonitoredResources have this
+      field populated.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
@@ -523,16 +526,17 @@ class LogEntry(_messages.Message):
   jsonPayload = _messages.MessageField('JsonPayloadValue', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   logName = _messages.StringField(5)
-  operation = _messages.MessageField('LogEntryOperation', 6)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 7)
-  receiveTimestamp = _messages.StringField(8)
-  resource = _messages.MessageField('MonitoredResource', 9)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 11)
-  spanId = _messages.StringField(12)
-  textPayload = _messages.StringField(13)
-  timestamp = _messages.StringField(14)
-  trace = _messages.StringField(15)
+  metadata = _messages.MessageField('MonitoredResourceMetadata', 6)
+  operation = _messages.MessageField('LogEntryOperation', 7)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 8)
+  receiveTimestamp = _messages.StringField(9)
+  resource = _messages.MessageField('MonitoredResource', 10)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 11)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 12)
+  spanId = _messages.StringField(13)
+  textPayload = _messages.StringField(14)
+  timestamp = _messages.StringField(15)
+  trace = _messages.StringField(16)
 
 
 class LogEntryOperation(_messages.Message):
@@ -2556,6 +2560,96 @@ class MonitoredResourceDescriptor(_messages.Message):
   labels = _messages.MessageField('LabelDescriptor', 3, repeated=True)
   name = _messages.StringField(4)
   type = _messages.StringField(5)
+
+
+class MonitoredResourceMetadata(_messages.Message):
+  r"""Auxiliary metadata for a MonitoredResource object. MonitoredResource
+  objects contain the minimum set of information to uniquely identify a
+  monitored resource instance. There is some other useful auxiliary metadata.
+  Google Stackdriver Monitoring & Logging uses an ingestion pipeline to
+  extract metadata for cloud resources of all types , and stores the metadata
+  in this message.
+
+  Messages:
+    SystemLabelsValue: Output only. Values for predefined system metadata
+      labels. System labels are a kind of metadata extracted by Google
+      Stackdriver. Stackdriver determines what system labels are useful and
+      how to obtain their values. Some examples: "machine_image", "vpc",
+      "subnet_id", "security_group", "name", etc. System label values can be
+      only strings, Boolean values, or a list of strings. For example: {
+      "name": "my-test-instance",   "security_group": ["a", "b", "c"],
+      "spot_instance": false }
+    UserLabelsValue: Output only. A map of user-defined metadata labels.
+
+  Fields:
+    systemLabels: Output only. Values for predefined system metadata labels.
+      System labels are a kind of metadata extracted by Google Stackdriver.
+      Stackdriver determines what system labels are useful and how to obtain
+      their values. Some examples: "machine_image", "vpc", "subnet_id",
+      "security_group", "name", etc. System label values can be only strings,
+      Boolean values, or a list of strings. For example: { "name": "my-test-
+      instance",   "security_group": ["a", "b", "c"],   "spot_instance": false
+      }
+    userLabels: Output only. A map of user-defined metadata labels.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SystemLabelsValue(_messages.Message):
+    r"""Output only. Values for predefined system metadata labels. System
+    labels are a kind of metadata extracted by Google Stackdriver. Stackdriver
+    determines what system labels are useful and how to obtain their values.
+    Some examples: "machine_image", "vpc", "subnet_id", "security_group",
+    "name", etc. System label values can be only strings, Boolean values, or a
+    list of strings. For example: { "name": "my-test-instance",
+    "security_group": ["a", "b", "c"],   "spot_instance": false }
+
+    Messages:
+      AdditionalProperty: An additional property for a SystemLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SystemLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserLabelsValue(_messages.Message):
+    r"""Output only. A map of user-defined metadata labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a UserLabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type UserLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  systemLabels = _messages.MessageField('SystemLabelsValue', 1)
+  userLabels = _messages.MessageField('UserLabelsValue', 2)
 
 
 class RequestLog(_messages.Message):

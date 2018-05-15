@@ -506,10 +506,18 @@ class ContainerStoppedEvent(_messages.Message):
   Fields:
     actionId: The numeric ID of the action that started this container.
     exitStatus: The exit status of the container.
+    stderr: The tail end of any content written to standard error by the
+      container. To prevent this from being recorded if the action is known to
+      emit large amounts of debugging noise or sensitive information, set the
+      DISABLE_STANDARD_ERROR_CAPTURE flag.  Note that only a small amount of
+      the end of the stream is captured here. The entire stream is stored in
+      the /google/logs directory mounted into each action, and may be copied
+      off the machine as described elsewhere.
   """
 
   actionId = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   exitStatus = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  stderr = _messages.StringField(3)
 
 
 class CoverageBucket(_messages.Message):

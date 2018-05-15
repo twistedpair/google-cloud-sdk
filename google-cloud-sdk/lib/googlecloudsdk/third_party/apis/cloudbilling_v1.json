@@ -137,7 +137,7 @@
           "type": "string"
         },
         "masterBillingAccount": {
-          "description": "If this account is a\n[subaccount](https:\/\/cloud.google.com\/billing\/docs\/concepts), then this\nwill be the resource name of the master billing account that it is being\nresold through.\nOtherwise this will be empty.\n\n> This field is currently in\n> [Beta](https:\/\/cloud.google.com\/terms\/launch-stages).",
+          "description": "If this account is a\n[subaccount](https:\/\/cloud.google.com\/billing\/docs\/concepts), then this\nwill be the resource name of the master billing account that it is being\nresold through.\nOtherwise this will be empty.",
           "type": "string"
         }
       }
@@ -652,7 +652,7 @@
               "type": "string"
             },
             "filter": {
-              "description": "Options for how to filter the returned billing accounts.\nCurrently this only supports filtering for\n[subaccounts](https:\/\/cloud.google.com\/billing\/docs\/concepts) under a\nsingle provided reseller billing account.\n(e.g. \"master_billing_account=billingAccounts\/012345-678901-ABCDEF\").\nBoolean algebra and other fields are not currently supported.\n\n> This field is currently in\n> [Beta](https:\/\/cloud.google.com\/terms\/launch-stages).",
+              "description": "Options for how to filter the returned billing accounts.\nCurrently this only supports filtering for\n[subaccounts](https:\/\/cloud.google.com\/billing\/docs\/concepts) under a\nsingle provided reseller billing account.\n(e.g. \"master_billing_account=billingAccounts\/012345-678901-ABCDEF\").\nBoolean algebra and other fields are not currently supported.",
               "location": "query",
               "type": "string"
             }
@@ -699,7 +699,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Updates a billing account's fields.\nCurrently the only field that can be edited is `display_name`.\nThe current authenticated user must have the `billing.accounts.update`\nIAM permission, which is typically given to the\n[administrator](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)\nof the billing account.\n\n> This method is currently in\n> [Beta](https:\/\/cloud.google.com\/terms\/launch-stages)."
+          "description": "Updates a billing account's fields.\nCurrently the only field that can be edited is `display_name`.\nThe current authenticated user must have the `billing.accounts.update`\nIAM permission, which is typically given to the\n[administrator](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)\nof the billing account."
         },
         "create": {
           "id": "cloudbilling.billingAccounts.create",
@@ -719,7 +719,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Creates a billing account.\nThis method can only be used to create\n[billing subaccounts](https:\/\/cloud.google.com\/billing\/docs\/concepts)\nfor GCP resellers.\nWhen creating a subaccount, the current authenticated user must have the\n`billing.accounts.update` IAM permission on the master account, which is\ntypically given to billing account\n[administrators](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access).\n\n> This method is currently in\n> [Beta](https:\/\/cloud.google.com\/terms\/launch-stages)."
+          "description": "Creates a billing account.\nThis method can only be used to create\n[billing subaccounts](https:\/\/cloud.google.com\/billing\/docs\/concepts)\nby GCP resellers.\nWhen creating a subaccount, the current authenticated user must have the\n`billing.accounts.update` IAM permission on the master account, which is\ntypically given to billing account\n[administrators](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access).\nThis method will return an error if the master account has not been\nprovisioned as a reseller account."
         },
         "getIamPolicy": {
           "id": "cloudbilling.billingAccounts.getIamPolicy",
@@ -744,7 +744,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Gets the access control policy for a billing account.\nThe caller must have the `billing.accounts.getIamPolicy` permission on the\naccount, which is often given to billing account\n[viewers](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access).\n\n> This method is currently in\n> [Beta](https:\/\/cloud.google.com\/terms\/launch-stages)."
+          "description": "Gets the access control policy for a billing account.\nThe caller must have the `billing.accounts.getIamPolicy` permission on the\naccount, which is often given to billing account\n[viewers](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
         },
         "setIamPolicy": {
           "id": "cloudbilling.billingAccounts.setIamPolicy",
@@ -772,7 +772,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Sets the access control policy for a billing account. Replaces any existing\npolicy.\nThe caller must have the `billing.accounts.setIamPolicy` permission on the\naccount, which is often given to billing account\n[administrators](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access).\n\n> This method is currently in\n> [Beta](https:\/\/cloud.google.com\/terms\/launch-stages)."
+          "description": "Sets the access control policy for a billing account. Replaces any existing\npolicy.\nThe caller must have the `billing.accounts.setIamPolicy` permission on the\naccount, which is often given to billing account\n[administrators](https:\/\/cloud.google.com\/billing\/docs\/how-to\/billing-access)."
         },
         "testIamPermissions": {
           "id": "cloudbilling.billingAccounts.testIamPermissions",
@@ -800,7 +800,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Tests the access control policy for a billing account. This method takes\nthe resource and a set of permissions as input and returns the subset of\nthe input permissions that the caller is allowed for that resource.\n\n> This method is currently in\n> [Beta](https:\/\/cloud.google.com\/terms\/launch-stages)."
+          "description": "Tests the access control policy for a billing account. This method takes\nthe resource and a set of permissions as input and returns the subset of\nthe input permissions that the caller is allowed for that resource."
         }
       }
       ,
