@@ -14,6 +14,8 @@
 
 """A library to build a test results summary."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import collections
 
 from apitools.base.py import exceptions as apitools_exceptions

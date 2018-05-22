@@ -55,10 +55,10 @@ class NodeGroupsClient(object):
         zone=node_group_ref.zone)
     return self._service.AddNodes(request)
 
-  def DeleteNodes(self, node_group_ref, node_indexes):
+  def DeleteNodes(self, node_group_ref, nodes):
     request = self.messages.ComputeNodeGroupsDeleteNodesRequest(
         nodeGroupsDeleteNodesRequest=self.messages.NodeGroupsDeleteNodesRequest(
-            nodeIndexes=node_indexes),
+            nodes=nodes),
         nodeGroup=node_group_ref.Name(),
         project=node_group_ref.project,
         zone=node_group_ref.zone)
@@ -73,8 +73,11 @@ class NodeGroupsClient(object):
       return waiter.WaitFor(operation_poller, operation_ref, message)
     return None
 
-  def Update(self, node_group_ref, node_template=None,
-             additional_node_count=None, delete_node_indexes=None):
+  def Update(self,
+             node_group_ref,
+             node_template=None,
+             additional_node_count=None,
+             delete_nodes=None):
     """Updates a Compute Node Group."""
     set_node_template_ref = None
     add_nodes_ref = None
@@ -88,8 +91,8 @@ class NodeGroupsClient(object):
       operation = self.AddNodes(node_group_ref, additional_node_count)
       add_nodes_ref = self._GetOperationsRef(operation)
 
-    if delete_node_indexes:
-      operation = self.DeleteNodes(node_group_ref, delete_node_indexes)
+    if delete_nodes:
+      operation = self.DeleteNodes(node_group_ref, delete_nodes)
       delete_nodes_ref = self._GetOperationsRef(operation)
 
     node_group_name = node_group_ref.Name()
@@ -103,7 +106,7 @@ class NodeGroupsClient(object):
         operation_poller, add_nodes_ref,
         'Adding [{0}] nodes to [{1}].'.format(
             additional_node_count, node_group_name)) or result
-    deleted_nodes_str = ','.join(map(str, delete_node_indexes or []))
+    deleted_nodes_str = ','.join(map(str, delete_nodes or []))
     result = self._WaitForResult(
         operation_poller, delete_nodes_ref,
         'Deleting nodes [{0}] in [{1}].'.format(

@@ -983,6 +983,10 @@
           "description": "If present, results will be restricted to the specified partition\npreviously created using PartitionQuery().  There must be an exact\nmatch for the values of fields common to this message and the\nPartitionQueryRequest message used to create this partition_token.",
           "type": "string",
           "format": "byte"
+        },
+        "seqno": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

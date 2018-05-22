@@ -13,6 +13,9 @@
 # limitations under the License.
 """Utility functions for gcloud emulators datastore group."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import abc
 import contextlib
 import errno
@@ -34,6 +37,7 @@ from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import portpicker
+import six
 
 
 _IPV6_RE = re.compile(r'\[(.*)\]:(\d*)')
@@ -150,7 +154,7 @@ def PrintEnvExport(env):
   export_command = 'export'
   if current_os is platforms.OperatingSystem.WINDOWS:
     export_command = 'set'
-  for var, value in env.iteritems():
+  for var, value in six.iteritems(env):
     if ' ' in value:
       value = '"{value}"'.format(value=value)
     log.Print('{export_command} {var}={value}'.format(
@@ -169,7 +173,7 @@ def PrintEnvUnset(env):
   export_command = 'unset {var}'
   if current_os is platforms.OperatingSystem.WINDOWS:
     export_command = 'set {var}='
-  for var in env.iterkeys():
+  for var in six.iterkeys(env):
     log.Print(export_command.format(var=var))
 
 
@@ -347,7 +351,7 @@ class AttrDict(object):
     """
     if recurse:
       dict_copy = {}
-      for key, value in _dict.iteritems():
+      for key, value in six.iteritems(_dict):
         toset = value
         if isinstance(value, dict):
           toset = AttrDict(value, recurse)
@@ -367,9 +371,8 @@ class AttrDict(object):
       self._dict[attr] = value
 
 
-class Emulator:
+class Emulator(six.with_metaclass(abc.ABCMeta)):
   """This organizes the information to expose an emulator."""
-  __metaclass__ = abc.ABCMeta
 
   # TODO(b/35871640) Right now, there is no error handling contract with the
   #   subclasses. This means that if the subclass process fails, there is no

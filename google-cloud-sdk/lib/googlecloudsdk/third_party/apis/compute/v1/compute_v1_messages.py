@@ -16354,7 +16354,7 @@ class InstanceGroupManager(_messages.Message):
     fingerprint: Fingerprint of this resource. This field may be used in
       optimistic locking. It will be ignored when inserting an
       InstanceGroupManager. An up-to-date fingerprint must be provided in
-      order to update the InstanceGroupManager or the field need to be unset.
+      order to update the InstanceGroupManager.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
@@ -21329,6 +21329,8 @@ class Quota(_messages.Message):
       INSTANCE_GROUP_MANAGERS: <no description>
       INSTANCE_TEMPLATES: <no description>
       INTERCONNECTS: <no description>
+      INTERCONNECT_ATTACHMENTS_PER_REGION: <no description>
+      INTERCONNECT_ATTACHMENTS_TOTAL_MBPS: <no description>
       INTERNAL_ADDRESSES: <no description>
       IN_USE_ADDRESSES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
@@ -21378,38 +21380,40 @@ class Quota(_messages.Message):
     INSTANCE_GROUP_MANAGERS = 13
     INSTANCE_TEMPLATES = 14
     INTERCONNECTS = 15
-    INTERNAL_ADDRESSES = 16
-    IN_USE_ADDRESSES = 17
-    LOCAL_SSD_TOTAL_GB = 18
-    NETWORKS = 19
-    NVIDIA_K80_GPUS = 20
-    NVIDIA_P100_GPUS = 21
-    NVIDIA_V100_GPUS = 22
-    PREEMPTIBLE_CPUS = 23
-    PREEMPTIBLE_LOCAL_SSD_GB = 24
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 25
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 26
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 27
-    REGIONAL_AUTOSCALERS = 28
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 29
-    ROUTERS = 30
-    ROUTES = 31
-    SECURITY_POLICIES = 32
-    SECURITY_POLICY_RULES = 33
-    SNAPSHOTS = 34
-    SSD_TOTAL_GB = 35
-    SSL_CERTIFICATES = 36
-    STATIC_ADDRESSES = 37
-    SUBNETWORKS = 38
-    TARGET_HTTPS_PROXIES = 39
-    TARGET_HTTP_PROXIES = 40
-    TARGET_INSTANCES = 41
-    TARGET_POOLS = 42
-    TARGET_SSL_PROXIES = 43
-    TARGET_TCP_PROXIES = 44
-    TARGET_VPN_GATEWAYS = 45
-    URL_MAPS = 46
-    VPN_TUNNELS = 47
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 16
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 17
+    INTERNAL_ADDRESSES = 18
+    IN_USE_ADDRESSES = 19
+    LOCAL_SSD_TOTAL_GB = 20
+    NETWORKS = 21
+    NVIDIA_K80_GPUS = 22
+    NVIDIA_P100_GPUS = 23
+    NVIDIA_V100_GPUS = 24
+    PREEMPTIBLE_CPUS = 25
+    PREEMPTIBLE_LOCAL_SSD_GB = 26
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 27
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 28
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 29
+    REGIONAL_AUTOSCALERS = 30
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 31
+    ROUTERS = 32
+    ROUTES = 33
+    SECURITY_POLICIES = 34
+    SECURITY_POLICY_RULES = 35
+    SNAPSHOTS = 36
+    SSD_TOTAL_GB = 37
+    SSL_CERTIFICATES = 38
+    STATIC_ADDRESSES = 39
+    SUBNETWORKS = 40
+    TARGET_HTTPS_PROXIES = 41
+    TARGET_HTTP_PROXIES = 42
+    TARGET_INSTANCES = 43
+    TARGET_POOLS = 44
+    TARGET_SSL_PROXIES = 45
+    TARGET_TCP_PROXIES = 46
+    TARGET_VPN_GATEWAYS = 47
+    URL_MAPS = 48
+    VPN_TUNNELS = 49
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -23637,8 +23641,8 @@ class Snapshot(_messages.Message):
       retrieve a snapshot.
     labels: Labels to apply to this snapshot. These can be later modified by
       the setLabels method. Label values may be empty.
-    licenseCodes: Integer license codes indicating which licenses are attached
-      to this snapshot.
+    licenseCodes: [Output Only] Integer license codes indicating which
+      licenses are attached to this snapshot.
     licenses: [Output Only] A list of public visible licenses that apply to
       this snapshot. This can be because the original image had licenses
       attached (such as a Windows image).

@@ -13,6 +13,9 @@
 # limitations under the License.
 """Utility functions for gcloud bigtable emulator."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import os
 from googlecloudsdk.command_lib.emulators import util
 from googlecloudsdk.core import execution_utils

@@ -1179,7 +1179,7 @@ class EndpointsApiService(_messages.Message):
   r"""Cloud Endpoints (https://cloud.google.com/endpoints) configuration. The
   Endpoints API Service provides tooling for serving Open API and gRPC
   endpoints via an NGINX proxy. Only valid for App Engine Flexible environment
-  deployments.The fields here refer to the name and configuration id of a
+  deployments.The fields here refer to the name and configuration ID of a
   "service" resource in the Service Management API (https://cloud.google.com
   /service-management/overview).
 
@@ -1188,11 +1188,16 @@ class EndpointsApiService(_messages.Message):
       config_id must be specified. If MANAGED, config_id must be omitted.
 
   Fields:
-    configId: Endpoints service configuration id as specified by the Service
-      Management API. For example "2016-09-19r1"By default, the Endpoints
-      service configuration id is fixed and config_id must be specified. To
-      keep the Endpoints service configuration id updated with each rollout,
-      specify RolloutStrategy.MANAGED and omit config_id.
+    configId: Endpoints service configuration ID as specified by the Service
+      Management API. For example "2016-09-19r1".By default, the rollout
+      strategy for Endpoints is RolloutStrategy.FIXED. This means that
+      Endpoints starts up with a particular configuration ID. When a new
+      configuration is rolled out, Endpoints must be given the new
+      configuration ID. The config_id field is used to give the configuration
+      ID and is required in this case.Endpoints also has a rollout strategy
+      called RolloutStrategy.MANAGED. When using this, Endpoints fetches the
+      latest configuration and does not need to be told the configuration ID.
+      In this case, config_id must be omitted.
     name: Endpoints service name which is the name of the "service" resource
       in the Service Management API. For example
       "myapi.endpoints.myproject.cloud.goog"
@@ -1206,9 +1211,9 @@ class EndpointsApiService(_messages.Message):
 
     Values:
       UNSPECIFIED_ROLLOUT_STRATEGY: Not specified. Defaults to FIXED.
-      FIXED: Endpoints service configuration id will be fixed to the
-        configuration id specified by config_id.
-      MANAGED: Endpoints service configuration id will be updated with each
+      FIXED: Endpoints service configuration ID will be fixed to the
+        configuration ID specified by config_id.
+      MANAGED: Endpoints service configuration ID will be updated with each
         rollout.
     """
     UNSPECIFIED_ROLLOUT_STRATEGY = 0

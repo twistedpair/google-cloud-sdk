@@ -715,7 +715,7 @@ class ContaineranalysisProjectsScanConfigsGetRequest(_messages.Message):
 
   Fields:
     name: The name of the ScanConfig in the form
-      projects/{project_id}/scan_configs/{ScanConfig_id} instead.
+      projects/{project_id}/scanConfigs/{scan_config_id} instead.
   """
 
   name = _messages.StringField(1, required=True)
@@ -743,7 +743,7 @@ class ContaineranalysisProjectsScanConfigsPatchRequest(_messages.Message):
 
   Fields:
     name: The scan config to update of the form
-      projects/{project_id}/scan_configs/{ScanConfig_id} instead.
+      projects/{project_id}/scanConfigs/{scan_config_id}. instead.
     scanConfig: A ScanConfig resource to be passed as the request body.
     updateMask: A string attribute.
   """
@@ -1501,11 +1501,11 @@ class ListOccurrencesResponse(_messages.Message):
 
 
 class ListScanConfigsResponse(_messages.Message):
-  r"""A list of ScanConfigs for the project.
+  r"""A list of scan configs for the project.
 
   Fields:
-    nextPageToken: A page token to pass in order to get more scans.
-    scanConfigs: The set of scan configs
+    nextPageToken: A page token to pass in order to get more scan configs.
+    scanConfigs: The set of scan configs.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1977,16 +1977,20 @@ class ScanConfig(_messages.Message):
   r"""Indicates various scans and whether they are turned on or off.
 
   Fields:
+    createTime: Output only. The time this scan config was created.
     description: Output only. A human-readable description of what the
       `ScanConfig` does.
     enabled: Indicates whether the Scan is enabled.
     name: Output only. The name of the ScanConfig in the form
-      \u201cprojects/{project_id}/ScanConfigs/{ScanConfig_id}".
+      \u201cprojects/{project_id}/scanConfigs/{scan_config_id}".
+    updateTime: Output only. The time this scan config was last updated.
   """
 
-  description = _messages.StringField(1)
-  enabled = _messages.BooleanField(2)
-  name = _messages.StringField(3)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  enabled = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class SetIamPolicyRequest(_messages.Message):

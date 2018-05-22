@@ -1297,7 +1297,8 @@ class Queue(_messages.Message):
 class RateLimits(_messages.Message):
   r"""Rate limits.  This message determines the maximum rate that tasks can be
   dispatched by a queue, regardless of whether the dispatch is a first task
-  attempt or a retry.
+  attempt or a retry.  Note: The debugging command, RunTask, will run a task
+  even if the queue has reached its RateLimits.
 
   Fields:
     maxBurstSize: Output only. The max burst size.  Max burst size limits how
@@ -1325,10 +1326,12 @@ class RateLimits(_messages.Message):
       been reached, Cloud Tasks stops dispatching tasks until the number of
       concurrent requests decreases.  If unspecified when the queue is
       created, Cloud Tasks will pick the default.   The maximum allowed value
-      is 5,000. -1 indicates no limit.  This field is output only for [pull
-      queues](google.cloud.tasks.v2beta2.PullTarget).   This field has the
-      same meaning as [max_concurrent_requests in queue.yaml/xml](/appengine/d
-      ocs/standard/python/config/queueref#max_concurrent_requests).
+      is 5,000.  This field is output only for [pull
+      queues](google.cloud.tasks.v2beta2.PullTarget) and always -1, which
+      indicates no limit. No other queue types can have `max_concurrent_tasks`
+      set to -1.   This field has the same meaning as [max_concurrent_requests
+      in queue.yaml/xml](/appengine/docs/standard/python/config/queueref#max_c
+      oncurrent_requests).
     maxTasksDispatchedPerSecond: The maximum rate at which tasks are
       dispatched from this queue.  If unspecified when the queue is created,
       Cloud Tasks will pick the default.  * For App Engine queues, the maximum

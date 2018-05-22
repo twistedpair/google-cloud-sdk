@@ -13,6 +13,9 @@
 # limitations under the License.
 """Utility functions for gcloud pubsub emulator."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import os
 from googlecloudsdk.command_lib.emulators import util
 from googlecloudsdk.core import exceptions
@@ -26,8 +29,7 @@ PUBSUB_TITLE = 'Google Cloud Pub/Sub emulator'
 
 class InvalidArgumentError(exceptions.Error):
 
-  def __init__(self, msg):
-    super(InvalidArgumentError, self).__init__(msg)
+  pass
 
 
 def GetDataDir():

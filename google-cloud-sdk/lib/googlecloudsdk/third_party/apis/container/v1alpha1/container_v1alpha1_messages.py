@@ -218,6 +218,12 @@ class Cluster(_messages.Message):
       components. If they are currently at multiple versions because they're
       in the process of being upgraded, this reflects the minimum version of
       all nodes.
+    databaseEncryptionKeyId: ResourceID of a CloudKMS key to be used for the
+      encryption of secrets in etcd. Ex. projects/kms-
+      project/locations/global/keyRings/ring-1/cryptoKeys/key-1
+    defaultMaxPodsPerNode: The default maximum number of pods that can be run
+      simultaneously on a node in the node pool of this cluster. Only honored
+      if cluster created with IP Alias support.
     description: An optional description of this cluster.
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
       cluster. This includes alpha API groups (e.g. v1alpha1) and features
@@ -225,6 +231,9 @@ class Cluster(_messages.Message):
       and nodes. The cluster has no SLA for uptime and master/node upgrades
       are disabled. Alpha enabled clusters are automatically deleted thirty
       days after creation.
+    enableNamespaceLevelIam: If this cluster supports namespace-level IAM
+      policies. Clusters that support namespace-level IAM may have IAM
+      policies set on their namespaces using SetIamPolicy.
     enableTpu: Enable the ability to use Cloud TPUs in this cluster.
     endpoint: [Output only] The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
@@ -391,43 +400,46 @@ class Cluster(_messages.Message):
   currentMasterVersion = _messages.StringField(7)
   currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   currentNodeVersion = _messages.StringField(9)
-  description = _messages.StringField(10)
-  enableKubernetesAlpha = _messages.BooleanField(11)
-  enableTpu = _messages.BooleanField(12)
-  endpoint = _messages.StringField(13)
-  expireTime = _messages.StringField(14)
-  initialClusterVersion = _messages.StringField(15)
-  initialNodeCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(17, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 18)
-  labelFingerprint = _messages.StringField(19)
-  legacyAbac = _messages.MessageField('LegacyAbac', 20)
-  location = _messages.StringField(21)
-  locations = _messages.StringField(22, repeated=True)
-  loggingService = _messages.StringField(23)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 24)
-  masterAuth = _messages.MessageField('MasterAuth', 25)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 26)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 27)
-  masterIpv4CidrBlock = _messages.StringField(28)
-  monitoringService = _messages.StringField(29)
-  name = _messages.StringField(30)
-  network = _messages.StringField(31)
-  networkConfig = _messages.MessageField('NetworkConfig', 32)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 33)
-  nodeConfig = _messages.MessageField('NodeConfig', 34)
-  nodeIpv4CidrSize = _messages.IntegerField(35, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 36, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 37)
-  privateCluster = _messages.BooleanField(38)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 39)
-  selfLink = _messages.StringField(40)
-  servicesIpv4Cidr = _messages.StringField(41)
-  status = _messages.EnumField('StatusValueValuesEnum', 42)
-  statusMessage = _messages.StringField(43)
-  subnetwork = _messages.StringField(44)
-  tpuIpv4CidrBlock = _messages.StringField(45)
-  zone = _messages.StringField(46)
+  databaseEncryptionKeyId = _messages.StringField(10)
+  defaultMaxPodsPerNode = _messages.MessageField('MaxPodsConstraint', 11)
+  description = _messages.StringField(12)
+  enableKubernetesAlpha = _messages.BooleanField(13)
+  enableNamespaceLevelIam = _messages.BooleanField(14)
+  enableTpu = _messages.BooleanField(15)
+  endpoint = _messages.StringField(16)
+  expireTime = _messages.StringField(17)
+  initialClusterVersion = _messages.StringField(18)
+  initialNodeCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(20, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 21)
+  labelFingerprint = _messages.StringField(22)
+  legacyAbac = _messages.MessageField('LegacyAbac', 23)
+  location = _messages.StringField(24)
+  locations = _messages.StringField(25, repeated=True)
+  loggingService = _messages.StringField(26)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 27)
+  masterAuth = _messages.MessageField('MasterAuth', 28)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 29)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 30)
+  masterIpv4CidrBlock = _messages.StringField(31)
+  monitoringService = _messages.StringField(32)
+  name = _messages.StringField(33)
+  network = _messages.StringField(34)
+  networkConfig = _messages.MessageField('NetworkConfig', 35)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 36)
+  nodeConfig = _messages.MessageField('NodeConfig', 37)
+  nodeIpv4CidrSize = _messages.IntegerField(38, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 39, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 40)
+  privateCluster = _messages.BooleanField(41)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 42)
+  selfLink = _messages.StringField(43)
+  servicesIpv4Cidr = _messages.StringField(44)
+  status = _messages.EnumField('StatusValueValuesEnum', 45)
+  statusMessage = _messages.StringField(46)
+  subnetwork = _messages.StringField(47)
+  tpuIpv4CidrBlock = _messages.StringField(48)
+  zone = _messages.StringField(49)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -2160,6 +2172,16 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class MaxPodsConstraint(_messages.Message):
+  r"""Constraints applied to pods.
+
+  Fields:
+    maxPodsPerNode: Constraint enforced on the max num of pods per node.
+  """
+
+  maxPodsPerNode = _messages.IntegerField(1)
+
+
 class Metric(_messages.Message):
   r"""Progress metric is (string, int|float|string) pair.
 
@@ -2266,7 +2288,6 @@ class NodeConfig(_messages.Message):
       size is 100GB.
     diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
       'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
-      Currently restricted because of b/36071127#comment27
     enableAuditLogging: Whether to enable execve audit logging on the nodes.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
@@ -2461,6 +2482,8 @@ class NodePool(_messages.Message):
       instance groups](/compute/docs/instance-groups/creating-groups-of-
       managed-instances) associated with this node pool.
     management: NodeManagement configuration for this NodePool.
+    maxPodsPerNode: The maximum number of pods that can be run simultaneously
+      on a node in the node pool.
     name: The name of the node pool.
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
@@ -2502,11 +2525,12 @@ class NodePool(_messages.Message):
   initialNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(4, repeated=True)
   management = _messages.MessageField('NodeManagement', 5)
-  name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  statusMessage = _messages.StringField(9)
-  version = _messages.StringField(10)
+  maxPodsPerNode = _messages.MessageField('MaxPodsConstraint', 6)
+  name = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  version = _messages.StringField(11)
 
 
 class NodePoolAutoscaling(_messages.Message):

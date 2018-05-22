@@ -13,9 +13,12 @@
 # limitations under the License.
 """A shared library for processing and validating test arguments."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.firebase.test import arg_file
 from googlecloudsdk.api_lib.firebase.test import arg_validate
 from googlecloudsdk.api_lib.firebase.test import exceptions
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
@@ -197,23 +200,38 @@ def AddAndroidTestArgs(parser):
 
   parser.add_argument(
       '--max-steps',
+      action=actions.DeprecationAction(
+          '--max-steps',
+          warn=('The `--max-steps` flag is deprecated and no longer has any '
+                'effect on the Robo crawler. The `--timeout` flag may be '
+                'optionally used to limit the maximum length of a Robo test.')),
       metavar='int',
       category=ANDROID_ROBO_TEST,
       type=arg_validate.NONNEGATIVE_INT_PARSER,
-      help='The maximum number of steps/actions a robo test can execute '
+      help='The maximum number of steps/actions a Robo test can execute '
       '(default: no limit).')
   parser.add_argument(
       '--max-depth',
+      action=actions.DeprecationAction(
+          '--max-depth',
+          warn=('The `--max-depth` flag is deprecated and no longer has any '
+                'effect on the actions of the Robo crawler.')),
       metavar='int',
       category=ANDROID_ROBO_TEST,
       type=arg_validate.POSITIVE_INT_PARSER,
-      help='The maximum depth of the traversal stack a robo test can explore. '
+      help='The maximum depth of the traversal stack a Robo test can explore. '
       'Needs to be at least 2 to make Robo explore the app beyond the first '
       'activity (default: 50).')
   parser.add_argument(
       '--app-initial-activity',
+      action=actions.DeprecationAction(
+          '--app-initial-activity',
+          warn=('The `--app-initial-activity` flag is deprecated and no longer '
+                'has any effect on the Robo crawler. Alternatively, the '
+                '`--robo-script` flag (in beta) can be used to guide Robo to a '
+                'specific part of your app before the Robo test begins.')),
       category=ANDROID_ROBO_TEST,
-      help='The initial activity used to start the app during a robo test.')
+      help='The initial activity used to start the app during a Robo test.')
   parser.add_argument(
       '--robo-directives',
       metavar='TYPE:RESOURCE_NAME=INPUT',
@@ -481,13 +499,13 @@ def GetSetOfAllTestArgs(type_rules, shared_rules):
   Returns:
     A set of strings for every gcloud-test argument.
   """
-  all_test_args_list = (shared_rules['required'] +
-                        shared_rules['optional'] +
-                        shared_rules['defaults'].keys())
+  all_test_args_list = (
+      shared_rules['required'] + shared_rules['optional'] + list(
+          shared_rules['defaults'].keys()))
   for type_dict in type_rules.values():
-    all_test_args_list += (type_dict['required'] +
-                           type_dict['optional'] +
-                           type_dict['defaults'].keys())
+    all_test_args_list += (
+        type_dict['required'] + type_dict['optional'] + list(
+            type_dict['defaults'].keys()))
   return set(all_test_args_list)
 
 

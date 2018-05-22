@@ -2284,7 +2284,7 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The name of the user. This should be the email address associated with the\nGAIA identity of the user.",
+          "description": "The name of the user. This should be the email address associated with the\nGAIA identity of the user or a Kubernetes username.",
           "type": "string"
         },
         "uid": {
@@ -2292,7 +2292,7 @@
           "type": "string"
         },
         "groups": {
-          "description": "Groups that this user is a part of. This is not currently filled in for\nGKE.",
+          "description": "Groups that this user is a part of. This is currently only filled in for\nVMID-based Authenticate calls.",
           "type": "array",
           "items": {
             "type": "string"

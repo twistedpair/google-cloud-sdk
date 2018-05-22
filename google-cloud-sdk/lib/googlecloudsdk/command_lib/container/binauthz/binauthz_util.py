@@ -13,42 +13,14 @@
 # limitations under the License.
 """Utilities for Binary Authorization commands."""
 
-import base64
-import md5
 import urlparse
 
 from containerregistry.client import docker_name  # pytype: disable=import-error
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.exceptions import Error
 
 
 class BadImageUrlError(Error):
   """Raised when a container image URL cannot be parsed successfully."""
-
-
-def CreateProviderRefFromProjectRef(project_ref):
-  """Given a project ref, create a Container Analysis `providers` ref."""
-  provider_name = project_ref.Name()
-  return resources.REGISTRY.Create(
-      'containeranalysis.providers', providersId=provider_name)
-
-
-def ParseProviderNote(note_id, provider_ref):
-  """Create a provider Note ref, suitable for attaching an Occurrence to."""
-  provider_name = provider_ref.Name()
-  return resources.REGISTRY.Parse(
-      note_id, {'providersId': provider_name},
-      collection='containeranalysis.providers.notes')
-
-
-def NoteId(artifact_url, public_key, signature):
-  """Returns Note id determined by supplied arguments."""
-  digest = md5.new()
-  digest.update(artifact_url)
-  digest.update(public_key)
-  digest.update(signature)
-  artifact_url_md5 = base64.urlsafe_b64encode(digest.digest())
-  return 'signature_test_{}'.format(artifact_url_md5)
 
 
 def ReplaceImageUrlScheme(image_url, scheme):

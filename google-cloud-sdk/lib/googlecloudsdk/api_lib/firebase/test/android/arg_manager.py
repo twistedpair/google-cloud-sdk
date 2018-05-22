@@ -13,6 +13,8 @@
 # limitations under the License.
 """A shared library for processing and validating Android test arguments."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.firebase.test import arg_file
 from googlecloudsdk.api_lib.firebase.test import arg_util
 from googlecloudsdk.api_lib.firebase.test import arg_validate
@@ -189,7 +191,7 @@ class AndroidArgsManager(object):
     """
     if not args.type:
       args.type = 'instrumentation' if args.test else 'robo'
-    if not self._typed_arg_rules.has_key(args.type):
+    if args.type not in self._typed_arg_rules:
       raise exceptions.InvalidArgumentException(
           'type', "'{0}' is not a valid test type.".format(args.type))
     return args.type

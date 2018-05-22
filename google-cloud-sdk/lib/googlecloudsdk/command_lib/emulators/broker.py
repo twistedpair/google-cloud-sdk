@@ -13,8 +13,10 @@
 # limitations under the License.
 """Library for controlling instances of cloud-testenv-broker processes."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import errno
-import httplib
 import json
 import os
 import os.path
@@ -22,7 +24,6 @@ import socket
 import subprocess
 import threading
 import time
-import urllib
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.emulators import util
@@ -31,6 +32,11 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 import httplib2
+
+import six.moves.http_client
+import six.moves.urllib.error
+import six.moves.urllib.parse
+import six.moves.urllib.request
 
 
 class BrokerError(exceptions.Error):
@@ -55,7 +61,7 @@ class RequestSocketError(RequestError):
   """A socket error. Check the errno field."""
 
   def __init__(self, *args, **kwargs):
-    super(RequestError, self).__init__(*args)
+    super(RequestSocketError, self).__init__(*args)
     self.errno = None
 
 
@@ -90,9 +96,9 @@ def _EmulatorPath(emulator_id=None, verb=None):
   """Builds a broker request path for operating on the specified emulator."""
   path = '/v1/emulators'
   if emulator_id:
-    path += '/' + urllib.quote(emulator_id)
+    path += '/' + six.moves.urllib.parse.quote(emulator_id)
     if verb:
-      path += ':' + urllib.quote(verb)
+      path += ':' + six.moves.urllib.parse.quote(verb)  # pytype: disable=wrong-arg-types
   return path
 
 
@@ -192,7 +198,7 @@ class Broker(object):
     try:
       response, _ = self._SendJsonRequest('GET', _EmulatorPath(),
                                           timeout_secs=1.0)
-      return response.status == httplib.OK
+      return response.status == six.moves.http_client.OK
     except RequestError:
       return False
 
@@ -274,7 +280,7 @@ class Broker(object):
     url = _EmulatorPath()
     body = json.dumps(emulator)
     response, data = self._SendJsonRequest('POST', url, body=body)
-    if response.status != httplib.OK:
+    if response.status != six.moves.http_client.OK:
       log.warning('Failed to create emulator: {0} ({1})'.format(
           response.reason, response.status))
       raise BrokerError('Failed to create emulator: %s' % data)
@@ -296,7 +302,7 @@ class Broker(object):
       raise BrokerNotRunningError('Failed to get emulator: %s' % emulator_id)
 
     response, data = self._SendJsonRequest('GET', _EmulatorPath(emulator_id))
-    if response.status != httplib.OK:
+    if response.status != six.moves.http_client.OK:
       raise BrokerError('Failed to get emulator: %s' % data)
 
     return json.loads(data)
@@ -316,7 +322,7 @@ class Broker(object):
 
     try:
       response, data = self._SendJsonRequest('GET', _EmulatorPath())
-      if response.status != httplib.OK:
+      if response.status != six.moves.http_client.OK:
         log.warning('Failed to list emulators: {0} ({1})'
                     .format(response.reason, response.status))
         return
@@ -349,7 +355,7 @@ class Broker(object):
 
     url = _EmulatorPath(emulator_id, verb='start')
     response, data = self._SendJsonRequest('POST', url)
-    if response.status != httplib.OK:
+    if response.status != six.moves.http_client.OK:
       log.warning('Failed to start emulator {0}: {1} ({2})'.format(
           emulator_id, response.reason, response.status))
       raise BrokerError('Failed to start emulator: %s' % data)
@@ -373,7 +379,7 @@ class Broker(object):
 
     url = _EmulatorPath(emulator_id, verb='stop')
     response, data = self._SendJsonRequest('POST', url)
-    if response.status != httplib.OK:
+    if response.status != six.moves.http_client.OK:
       log.warning('Failed to stop emulator {0}: {1} ({2})'.format(
           emulator_id, response.reason, response.status))
       raise BrokerError('Failed to stop emulator: %s' % data)
@@ -414,8 +420,8 @@ class Broker(object):
       if e.errno:
         error.errno = e.errno
       raise error
-    except httplib.HTTPException as e:
-      if isinstance(e, httplib.ResponseNotReady):
+    except six.moves.http_client.HTTPException as e:
+      if isinstance(e, six.moves.http_client.ResponseNotReady):
         raise RequestTimeoutError(e)
       raise RequestError(e)
     except httplib2.HttpLib2Error as e:

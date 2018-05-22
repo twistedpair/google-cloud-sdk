@@ -14,6 +14,8 @@
 
 """A library that is used to support logging commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import encoding
 from apitools.base.py import extra_types
 
@@ -78,7 +80,7 @@ def ConvertToJsonObject(json_string):
   try:
     return extra_types.JsonProtoDecoder(json_string)
   except Exception as e:
-    raise InvalidJSONValueError('Invalid JSON value: %s' % e.message)
+    raise InvalidJSONValueError('Invalid JSON value: %s' % e)
 
 
 def AddNonProjectArgs(parser, help_string):

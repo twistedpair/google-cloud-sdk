@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20180502",
+ "revision": "20180511",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -6036,7 +6036,7 @@
     },
     "fingerprint": {
      "type": "string",
-     "description": "Fingerprint of this resource. This field may be used in optimistic locking. It will be ignored when inserting an InstanceGroupManager. An up-to-date fingerprint must be provided in order to update the InstanceGroupManager or the field need to be unset.",
+     "description": "Fingerprint of this resource. This field may be used in optimistic locking. It will be ignored when inserting an InstanceGroupManager. An up-to-date fingerprint must be provided in order to update the InstanceGroupManager.",
      "format": "byte"
     },
     "id": {
@@ -10503,6 +10503,8 @@
       "INSTANCE_GROUP_MANAGERS",
       "INSTANCE_TEMPLATES",
       "INTERCONNECTS",
+      "INTERCONNECT_ATTACHMENTS_PER_REGION",
+      "INTERCONNECT_ATTACHMENTS_TOTAL_MBPS",
       "INTERNAL_ADDRESSES",
       "IN_USE_ADDRESSES",
       "LOCAL_SSD_TOTAL_GB",
@@ -10537,6 +10539,8 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -12661,7 +12665,7 @@
     },
     "licenseCodes": {
      "type": "array",
-     "description": "Integer license codes indicating which licenses are attached to this snapshot.",
+     "description": "[Output Only] Integer license codes indicating which licenses are attached to this snapshot.",
      "items": {
       "type": "string",
       "format": "int64"

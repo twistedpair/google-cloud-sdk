@@ -14,6 +14,8 @@
 
 """Utility methods to aid in interacting with a GCS results bucket."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 
 from apitools.base.py import exceptions as apitools_exceptions

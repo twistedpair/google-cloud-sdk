@@ -330,7 +330,7 @@
     },
     "AppEngineRouting": {
       "id": "AppEngineRouting",
-      "description": "App Engine Routing.\n\nFor more information about services, versions, and instances see\n[An Overview of App\nEngine](\/appengine\/docs\/python\/an-overview-of-app-engine), [Microservices\nArchitecture on Google App\nEngine](\/appengine\/docs\/python\/microservices-on-app-engine), [App Engine\nStandard request\nrouting](\/appengine\/docs\/standard\/python\/how-requests-are-routed), and [App\nEngine Flex request\nrouting](\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
+      "description": "App Engine Routing.\n\nFor more information about services, versions, and instances see\n[An Overview of App Engine](\/appengine\/docs\/python\/an-overview-of-app-engine),\n[Microservices Architecture on Google App Engine](\/appengine\/docs\/python\/microservices-on-app-engine),\n[App Engine Standard request routing](\/appengine\/docs\/standard\/python\/how-requests-are-routed), and\n[App Engine Flex request routing] (\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
       "type": "object",
       "properties": {
         "service": {
@@ -342,7 +342,7 @@
           "type": "string"
         },
         "instance": {
-          "description": "App instance.\n\nBy default, the job is sent to an instance which is available when\nthe job is attempted.\n\nRequests can only be sent to a specific instance if\n[manual scaling is used in App Engine\nStandard](\/appengine\/docs\/python\/an-overview-of-app-engine?hl=en_US#scaling_types_and_instance_classes).\nApp Engine Flex does not support instances. For more information, see\n[App Engine Standard request\nrouting](\/appengine\/docs\/standard\/python\/how-requests-are-routed) and [App\nEngine Flex request\nrouting](\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
+          "description": "App instance.\n\nBy default, the job is sent to an instance which is available when\nthe job is attempted.\n\nRequests can only be sent to a specific instance if\n[manual scaling is used in App Engine Standard](\/appengine\/docs\/python\/an-overview-of-app-engine?hl=en_US#scaling_types_and_instance_classes).\nApp Engine Flex does not support instances. For more information, see\n[App Engine Standard request routing](\/appengine\/docs\/standard\/python\/how-requests-are-routed) and\n[App Engine Flex request routing](\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
           "type": "string"
         },
         "host": {
@@ -392,7 +392,7 @@
           }
         },
         "body": {
-          "description": "HTTP request body. A request body is allowed only if the HTTP\nmethod is POST, PUT, or PATCH. It will result in  an error to set\nbody on a job with an incompatible HttpMethod.",
+          "description": "HTTP request body. A request body is allowed only if the HTTP\nmethod is POST, PUT, or PATCH. It is an error to set body on a job with an\nincompatible HttpMethod.",
           "type": "string",
           "format": "byte"
         }
@@ -408,7 +408,7 @@
           "type": "string"
         },
         "schedule": {
-          "description": "Required.\n\nScheduler schedules are specified using an English-like\nformat. See\nhttps:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/config\/cronref#schedule_format",
+          "description": "Required.\n\nScheduler schedules are specified using an English-like\nformat. See\nhttps:\/\/cloud.google.com\/cloud-scheduler\/docs\/running-cron-jobs-with-cloud-scheduler#defining_the_job_schedule",
           "type": "string"
         }
       }

@@ -24,6 +24,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_property
+from googlecloudsdk.core.util import http_encoding
 
 import six
 
@@ -395,11 +396,11 @@ TYPES = {
     messages.Variant.UINT32: int,
     messages.Variant.SINT32: int,
 
-    messages.Variant.STRING: str,
+    messages.Variant.STRING: six.text_type,
     messages.Variant.BOOL: bool,
 
     # TODO(b/70980549): Do something better with bytes.
-    messages.Variant.BYTES: str,
+    messages.Variant.BYTES: http_encoding.Encode,
     # For enums, we want to accept upper and lower case from the user, but
     # always compare against lowercase enum choices.
     messages.Variant.ENUM: EnumNameToChoice,

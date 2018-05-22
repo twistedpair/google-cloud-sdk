@@ -14,6 +14,9 @@
 """Common utility functions for sql instances using v1beta3 API."""
 
 
+from __future__ import unicode_literals
+
+
 def GetCertRefFromName(sql_client, sql_messages, resources, instance_ref,
                        common_name):
   """Get a cert reference for a particular instance, given its common name.

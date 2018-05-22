@@ -172,15 +172,13 @@ class DeclarativeArgumentGenerator(object):
         else flag_name)
     no_gen = {n: '' for n in resource_arg_schema.IGNORED_FIELDS}
     no_gen.update({n: '' for n in self.resource_arg.removed_flags})
-
-    concept = concept_parsers.ConceptParser([
-        concept_parsers.ResourcePresentationSpec(
-            anchor_arg_name,
-            self.resource_spec,
-            self.resource_arg.group_help,
-            prefixes=False,
-            required=True,
-            flag_name_overrides=no_gen)])
+    concept = concept_parsers.ConceptParser.ForResource(
+        anchor_arg_name,
+        self.resource_spec,
+        self.resource_arg.group_help,
+        prefixes=False,
+        required=True,
+        flag_name_overrides=no_gen)
     return [concept]
 
   def _ParseArguments(self, message, namespace):

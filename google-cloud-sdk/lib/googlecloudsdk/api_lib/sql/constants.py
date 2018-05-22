@@ -17,6 +17,7 @@ from __future__ import division
 from __future__ import print_function
 
 # Defaults for instance creation.
+from __future__ import unicode_literals
 DEFAULT_MACHINE_TYPE = 'db-n1-standard-1'
 
 # Determining what executables, flags, and defaults to use for sql connect.

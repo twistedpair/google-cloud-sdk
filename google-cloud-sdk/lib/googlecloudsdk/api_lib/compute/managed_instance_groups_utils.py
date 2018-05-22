@@ -29,6 +29,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
 
@@ -929,6 +930,23 @@ def CreateAutohealingPolicies(messages, health_check, initial_delay):
   if initial_delay:
     policy.initialDelaySec = initial_delay
   return [policy]
+
+
+def ValidateAutohealingPolicies(auto_healing_policies):
+  """Validates autohealing policies.
+
+  Args:
+    auto_healing_policies: list of AutoHealingPolicies to validate
+  """
+  if not auto_healing_policies:
+    return
+  # Only a single auto_healing_policy is allowed. Displaying warnings for any
+  # additional entries is unnecessary as an error will be returned.
+  policy = auto_healing_policies[0]
+  if not policy.healthCheck and policy.initialDelaySec:
+    message = ('WARNING: Health check should be provided when specifying '
+               'initial delay.')
+    console_io.PromptContinue(message=message, cancel_on_no=True)
 
 
 def _GetInstanceTemplatesSet(*versions_lists):

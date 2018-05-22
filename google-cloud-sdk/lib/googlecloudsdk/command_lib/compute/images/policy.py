@@ -17,6 +17,7 @@ AugmentImagesStatus function in this module call OrgPolicy and augment images
 status if the policy requires it.
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import copy
 
 from apitools.base.py import exceptions as apitools_exceptions

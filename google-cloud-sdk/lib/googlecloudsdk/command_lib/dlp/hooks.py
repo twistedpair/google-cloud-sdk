@@ -18,12 +18,15 @@ from __future__ import unicode_literals
 import io
 import os
 
+
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-
+from googlecloudsdk.core.util import times
 
 _DLP_API = 'dlp'
 _DLP_API_VERSION = 'v2'
@@ -113,6 +116,12 @@ def InfoType(value):  # Defines elment type for infoTypes collection on request
   """Return GooglePrivacyDlpV2InfoType message for a parsed value."""
   infotype = _GetMessageClass('GooglePrivacyDlpV2InfoType')
   return infotype(name=value)
+
+
+def PrivacyField(value):
+  """Create a GooglePrivacyDlpV2FieldId for value."""
+  field_id = _GetMessageClass('GooglePrivacyDlpV2FieldId')
+  return field_id(name=value)
 
 
 def BigQueryInputOptions(table_name):
@@ -210,6 +219,11 @@ def BigQueryTableAction(table_name):
           outputConfig=output_config(table=table)))
 
 
+def DlpTimeStamp(value):
+  return times.FormatDateTime(
+      value, tzinfo=times.UTC)
+
+
 # Request Hooks
 def SetRequestParent(ref, args, request):
   """Set parent value for a DlpXXXRequest."""
@@ -240,6 +254,21 @@ def UpdateDataStoreOptions(ref, args, request):
   return request
 
 
+# Required since bigQueryOptions are create by a separate flag so
+# identifyingFields can't be set until before requests is sent.
+def UpdateIdentifyingFields(ref, args, request):
+  """Update bigQueryOptions.identifyingFields with parsed fields."""
+  del ref
+  big_query_options = (request.googlePrivacyDlpV2CreateDlpJobRequest.inspectJob.
+                       storageConfig.bigQueryOptions)
+  if big_query_options and args.identifying_fields:
+    field_id = _GetMessageClass('GooglePrivacyDlpV2FieldId')
+    big_query_options.identifyingFields = [
+        field_id(name=field) for field in args.identifying_fields
+    ]
+  return request
+
+
 def SetOrderByFromSortBy(ref, args, request):
   """Set orderBy attribute on message from common --sort-by flag."""
   del ref
@@ -257,6 +286,11 @@ def SetOrderByFromSortBy(ref, args, request):
 
 
 # Argument Processors
+def ExtractBqTableFromInputConfig(value):
+  """Extracts and returns BigQueryTable from parsed BigQueryOptions message."""
+  return value.tableReference
+
+
 def GetReplaceTextTransform(value):
   replace_config = _GetMessageClass('GooglePrivacyDlpV2ReplaceValueConfig')
   value_holder = _GetMessageClass('GooglePrivacyDlpV2Value')
@@ -333,3 +367,17 @@ def GetRedactColorFromString(color_string):
 def GetJobScheduleDurationString(value):
   """Return API required format for duration specified by value."""
   return '{}s'.format(str(value))
+
+
+# Additional Arguments Hook
+def GetIdentifyingFieldsArg():
+  """Capture identifying fields for BigQuery table."""
+  help_text = ('Comma separated list of references to field names uniquely '
+               'identifying rows within the BigQuery table. Nested fields in '
+               'the format `person.birthdate.year` are allowed.')
+  return [
+      base.Argument('--identifying-fields',
+                    metavar='IDENTIFYING_FIELDS',
+                    type=arg_parsers.ArgList(),
+                    help=help_text)
+  ]

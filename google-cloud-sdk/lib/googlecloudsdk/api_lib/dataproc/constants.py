@@ -16,6 +16,7 @@
 # TODO(b/36055865): Move defaults to the server
 
 # Path inside of GCS bucket, where Dataproc stores metadata.
+from __future__ import unicode_literals
 GCS_METADATA_PREFIX = 'google-cloud-dataproc-metainfo'
 
 # Beginning of driver output files.

@@ -218,7 +218,7 @@
             "The .xctestrun file did not specify any test targets.",
             "One or more of the test targets defined in the .xctestrun file specifies\n\"UseDestinationArtifacts\", which is disallowed.",
             "The APK is marked as \"testOnly\".\nNOT USED",
-            "The input IPA could not be parsed.",
+            "The input IPA could not be parsed.\nNOT USED",
             "APK contains no code.\nSee also\nhttps:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code",
             "Either the provided input APK path was malformed,\nthe APK file does not exist, or the user does not have permission to\naccess the APK file."
           ],

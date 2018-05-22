@@ -37,3 +37,33 @@ def UpdateAnnotation(annotation_resource, description):
       annotation=messages.Annotation(description=description))
   return utils.GetClientInstance().projects_taxonomies_annotations.Patch(
       request=req)
+
+
+def CreateAnnotation(taxonomy_resource,
+                     display_name,
+                     description=None,
+                     parent_annotation_id=None):
+  """Creates an annotation in the specified taxonomy.
+
+  Dy default the annotation is created as a root annotation, but an annotation
+  can also be created as a child of another annotation by specifying a
+  parent_annotation.
+
+  Args:
+    taxonomy_resource: The taxonomy container for the new annotation.
+    display_name: The display name given to the annotation.
+    description: The annotation description.
+    parent_annotation_id: The parent annotation, if any.
+
+  Returns:
+    The created Annotation message.
+  """
+  messages = utils.GetMessagesModule()
+  req = messages.CategorymanagerProjectsTaxonomiesAnnotationsCreateRequest(
+      parent=taxonomy_resource.RelativeName(),
+      annotation=messages.Annotation(
+          displayName=display_name,
+          description=description,
+          parentAnnotationId=parent_annotation_id))
+  return utils.GetClientInstance().projects_taxonomies_annotations.Create(
+      request=req)

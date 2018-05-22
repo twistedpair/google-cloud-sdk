@@ -55,13 +55,11 @@ def SubnetworkResolver():
       'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})
 
 
-def AddUpdateArgs(parser,
-                  include_enable_flow_logs=False):
+def AddUpdateArgs(parser):
   """Add args to the parser for subnet update.
 
   Args:
     parser: The argparse parser.
-    include_enable_flow_logs: Whether to include the --enable-flow-logs flag.
   """
   updated_field = parser.add_mutually_exclusive_group()
 
@@ -98,8 +96,7 @@ def AddUpdateArgs(parser,
       secondary ranges with names range2 and range3.
       """)
 
-  if include_enable_flow_logs:
-    updated_field.add_argument(
-        '--enable-flow-logs',
-        action=arg_parsers.StoreTrueFalseAction,
-        help=('Enable/disable flow logging for this subnet.'))
+  updated_field.add_argument(
+      '--enable-flow-logs',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=('Enable/disable flow logging for this subnet.'))

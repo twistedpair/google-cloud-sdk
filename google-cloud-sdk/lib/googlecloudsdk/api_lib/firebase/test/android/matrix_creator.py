@@ -14,6 +14,8 @@
 
 """Create Android test matrices in Firebase Test Lab."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 import uuid
 
@@ -24,6 +26,7 @@ from googlecloudsdk.api_lib.firebase.test import util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
+import six
 
 
 def CreateMatrix(args, context, history_id, gcs_results_root, release_track):
@@ -94,7 +97,7 @@ class MatrixCreator(object):
         'click': action_types.SINGLE_CLICK,
         'text': action_types.ENTER_TEXT
     }
-    for key, value in (robo_directives_dict or {}).iteritems():
+    for key, value in six.iteritems((robo_directives_dict or {})):
       (action_type, resource_name) = util.ParseRoboDirectiveKey(key)
       robo_directives.append(
           self._messages.RoboDirective(
@@ -161,7 +164,7 @@ class MatrixCreator(object):
 
     environment_variables = []
     if self._args.environment_variables:
-      for key, value in self._args.environment_variables.iteritems():
+      for key, value in six.iteritems(self._args.environment_variables):
         environment_variables.append(
             self._messages.EnvironmentVariable(key=key, value=value))
 

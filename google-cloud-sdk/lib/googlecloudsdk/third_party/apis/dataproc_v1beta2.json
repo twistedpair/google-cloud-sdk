@@ -1235,6 +1235,13 @@
           "items": {
             "$ref": "OrderedJob"
           }
+        },
+        "parameters": {
+          "description": "Optional. Template parameters whose values are substituted into the template. Values for these parameters must be provided when the template is instantiated.",
+          "type": "array",
+          "items": {
+            "$ref": "TemplateParameter"
+          }
         }
       }
     },
@@ -1346,6 +1353,75 @@
         }
       }
     },
+    "TemplateParameter": {
+      "id": "TemplateParameter",
+      "description": "A configurable parameter that replaces one or more fields in the template.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. User-friendly parameter name. This name is used as a key when providing a value for this parameter when the template is instantiated. Must contain only capital letters (A-Z), numbers (0-9), and underscores (_), and must not start with a number. The maximum length is 40 characters.",
+          "type": "string"
+        },
+        "fields": {
+          "description": "Required. Paths to all fields that this parameter replaces. Each field may appear in at most one Parameter's fields list.Field path syntax:A field path is similar to a FieldMask. For example, a field path that references the zone field of the template's cluster selector would look like:placement.clusterSelector.zoneThe only differences between field paths and standard field masks are that:\nValues in maps can be referenced by key.Example: placement.clusterSelector.clusterLabels'key'\nJobs in the jobs list can be referenced by step id.Example: jobs'step-id'.hadoopJob.mainJarFileUri\nItems in repeated fields can be referenced by zero-based index.Example: jobs'step-id'.sparkJob.args0NOTE: Maps and repeated fields may not be parameterized in their entirety. Only individual map values and items in repeated fields may be referenced. For example, the following field paths are invalid: - placement.clusterSelector.clusterLabels - jobs'step-id'.sparkJob.argsParameterizable fields:Only certain types of fields may be parameterized, specifically: - Labels - File uris - Job properties - Job arguments - Script variables - Main class (in HadoopJob and SparkJob) - Zone (in ClusterSelector)Examples of parameterizable fields:Labels:labels'key' placement.managedCluster.labels'key' placement.clusterSelector.clusterLabels'key' jobs'step-id'.labels'key'File uris:jobs'step-id'.hadoopJob.mainJarFileUri jobs'step-id'.hiveJob.queryFileUri jobs'step-id'.pySparkJob.mainPythonFileUri jobs'step-id'.hadoopJob.jarFileUris0 jobs'step-id'.hadoopJob.archiveUris0 jobs'step-id'.hadoopJob.fileUris0 jobs'step-id'.pySparkJob.pythonFileUris0Other:jobs'step-id'.hadoopJob.properties'key' jobs'step-id'.hadoopJob.args0 jobs'step-id'.hiveJob.scriptVariables'key' jobs'step-id'.hadoopJob.mainJarFileUri placement.clusterSelector.zone",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "description": "Optional. User-friendly description of the parameter. Must not exceed 1024 characters.",
+          "type": "string"
+        },
+        "validation": {
+          "description": "Optional. Validation rules to be applied to this parameter's value.",
+          "$ref": "ParameterValidation"
+        }
+      }
+    },
+    "ParameterValidation": {
+      "id": "ParameterValidation",
+      "description": "Configuration for parameter validation.",
+      "type": "object",
+      "properties": {
+        "regex": {
+          "description": "Validation based on regular expressions.",
+          "$ref": "RegexValidation"
+        },
+        "values": {
+          "description": "Validation based on a list of allowed values.",
+          "$ref": "ValueValidation"
+        }
+      }
+    },
+    "RegexValidation": {
+      "id": "RegexValidation",
+      "description": "Validation based on regular expressions.",
+      "type": "object",
+      "properties": {
+        "regexes": {
+          "description": "Required. RE2 regular expressions used to validate the parameter's value. The provided value must match the regexes in its entirety, e.g. substring matches are not enough.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ValueValidation": {
+      "id": "ValueValidation",
+      "description": "Validation based on a list of allowed values.",
+      "type": "object",
+      "properties": {
+        "values": {
+          "description": "Required. List of allowed values for this parameter.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "InstantiateWorkflowTemplateRequest": {
       "id": "InstantiateWorkflowTemplateRequest",
       "description": "A request to instantiate a workflow template.",
@@ -1359,6 +1435,13 @@
         "instanceId": {
           "description": "Optional. A tag that prevents multiple concurrent workflow instances with the same tag from running. This mitigates risk of concurrent instances started due to retries.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The tag must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
+        },
+        "parameters": {
+          "description": "Optional. Map from parameter names to values that should be used for those parameters.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

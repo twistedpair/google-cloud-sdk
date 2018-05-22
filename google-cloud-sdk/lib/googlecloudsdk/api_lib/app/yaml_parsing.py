@@ -32,13 +32,18 @@ from googlecloudsdk.third_party.appengine.api import yaml_errors
 from googlecloudsdk.third_party.appengine.datastore import datastore_index
 
 
-HINT_PROJECT = ('Project name should instead be specified either by '
+HINT_PROJECT = ('This field is not used by gcloud and must be removed. '
+                'Project name should instead be specified either by '
                 '`gcloud config set project MY_PROJECT` or by setting the '
                 '`--project` flag on individual command executions.')
 
-HINT_VERSION = ('Versions are generated automatically by default but can also '
+HINT_VERSION = ('This field is not used by gcloud and must be removed. '
+                'Versions are generated automatically by default but can also '
                 'be manually specified by setting the `--version` flag on '
                 'individual command executions.')
+
+HINT_THREADSAFE = ('This field is not supported with runtime [{}] and can '
+                   'safely be removed.')
 
 MANAGED_VMS_DEPRECATION_WARNING = """\
 Deployments using `vm: true` have been deprecated.  Please update your \
@@ -338,6 +343,14 @@ class ServiceYamlInfo(_YamlInfo):
         GetRuntimeConfigAttr(self.parsed, 'python_version') == '3.4'):
       log.warning(FLEX_PY34_WARNING)
 
+    if self.is_ti_runtime:
+      _CheckIllegalAttribute(
+          name='threadsafe',
+          yaml_info=self.parsed,
+          extractor_func=lambda yaml: yaml.threadsafe,
+          file_path=self.file,
+          msg=HINT_THREADSAFE.format(self.runtime))
+
     _CheckIllegalAttribute(
         name='application',
         yaml_info=self.parsed,
@@ -455,5 +468,5 @@ def _CheckIllegalAttribute(name, yaml_info, extractor_func, file_path, msg=''):
   if attribute is not None:
     # Disallow use of the given attribute.
     raise YamlValidationError(
-        'The [{0}] field is specified in file [{1}]. This field is not used '
-        'by gcloud and must be removed. '.format(name, file_path) + msg)
+        'The [{0}] field is specified in file [{1}]. '.format(name, file_path)
+        + msg)

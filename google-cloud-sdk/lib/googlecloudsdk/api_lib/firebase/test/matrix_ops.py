@@ -14,6 +14,8 @@
 
 """Common test matrix operations used by Firebase Test Lab commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import collections
 import datetime
 import time
@@ -26,6 +28,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
+import six
 
 
 _DEFAULT_STATUS_INTERVAL_SECS = 6.0
@@ -265,7 +268,7 @@ class MatrixMonitor(object):
     """
     status = []
     timestamp = self._clock().strftime(_TIMESTAMP_FORMAT)
-    for state, count in state_counts.iteritems():
+    for state, count in six.iteritems(state_counts):
       if count > 0:
         status.append('{s}:{c}'.format(s=self._state_names[state], c=count))
     status.sort()

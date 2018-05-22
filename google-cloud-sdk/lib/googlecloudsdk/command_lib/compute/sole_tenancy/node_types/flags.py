@@ -31,6 +31,6 @@ class NodeTypesCompleter(compute_completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(NodeTypesCompleter, self).__init__(
         collection='compute.nodeTypes',
-        api_version='alpha',
-        list_command='alpha compute sole-tenancy node-types list --uri',
+        api_version='beta',
+        list_command='beta compute sole-tenancy node-types list --uri',
         **kwargs)

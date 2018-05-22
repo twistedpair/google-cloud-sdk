@@ -35,3 +35,53 @@ def UpdateTaxonomy(taxonomy_resource, description):
       name=taxonomy_resource.RelativeName(),
       taxonomy=messages.Taxonomy(description=description))
   return utils.GetClientInstance().projects_taxonomies.Patch(request=req)
+
+
+def ListTaxonomies(project_resource):
+  """Lists all taxonomies in a project resource.
+
+  Args:
+    project_resource: The project resource container of the taxonomies to list.
+
+  Returns:
+    A list of taxonomy messages.
+  """
+  messages = utils.GetMessagesModule()
+  req = messages.CategorymanagerProjectsTaxonomiesListRequest(
+      parent=project_resource.RelativeName())
+  return utils.GetClientInstance().projects_taxonomies.List(request=req)
+
+
+def CreateTaxonomy(project_resource, display_name, description=None):
+  """Creates a taxonomy in the project resource container.
+
+  Args:
+    project_resource: The project resource representing the project to create
+      the taxonomy in.
+    display_name: The display name given to the taxonomy.
+    description: The taxonomy description.
+
+  Returns:
+    The created Taxonomy message.
+  """
+  messages = utils.GetMessagesModule()
+  req = messages.CategorymanagerProjectsTaxonomiesCreateRequest(
+      parent=project_resource.RelativeName(),
+      taxonomy=messages.Taxonomy(
+          displayName=display_name, description=description))
+  return utils.GetClientInstance().projects_taxonomies.Create(request=req)
+
+
+def DeleteTaxonomy(taxonomy_resource):
+  """Deletes a taxonomy resource.
+
+  Args:
+    taxonomy_resource: The resource path of the taxonomy to delete.
+
+  Returns:
+    An empty message.
+  """
+  messages = utils.GetMessagesModule()
+  req = messages.CategorymanagerProjectsTaxonomiesDeleteRequest(
+      name=taxonomy_resource.RelativeName())
+  return utils.GetClientInstance().projects_taxonomies.Delete(request=req)

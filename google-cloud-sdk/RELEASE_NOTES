@@ -5,6 +5,63 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 202.0.0 (2018-05-22)
+
+### Breaking Changes
+
+*   **(Cloud Composer)** Increased minimum `--disk-size` of `gcloud beta composer environments create`
+    to 20GB.
+*   **(Compute Engine)** Deprecated `gcloud compute interconnects attachments create`. Use `gcloud
+  compute interconnects attachments dedicated create` instead.
+*   **(Firebase Test Lab)** Deprecated the following Robo test crawler-related flags:
+    *   `--max-depth`
+    *   `--max-steps`: Use the `--timeout` option instead to limit the test
+        length.
+    *   `--app-initial-activity`: Use the `--robo-script` option (in beta) to
+        guide Robo to a specific part of the app under test.
+
+
+### App Engine
+
+
+* Updated the Python SDK to version 1.9.70.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+### Cloud Datastore Emulator
+
+* Released Cloud Datastore Emulator version 2.0.0.
+  * Java 8 (or later) is now required to run the emulator.
+  * When the emulator is run in an App Engine local development server,
+    index.yaml parsing errors are bubbled up. Previously the emulator would
+    throw a AppEngineConfigException without responding to the development
+    server requests.
+
+### Cloud Tools For PowerShell
+
+*   Updated Cloud Tools for PowerShell to version 1.0.1.8.
+    *   Fixed a bug where `Get-GcpProject` did not enumerate collection.
+    *   Fixed a bug where local SSD option for attach disk cmdlet did not work.
+
+### Compute Engine
+
+* Added help text output upon creating interconnects/interconnect attachments.
+  To hide this output, append the `--no-user-output-enabled` flag.
+* Promoted `--enable-flow-logs` flag of
+  `gcloud compute networks subnets <create|update>` to GA.
+* Promoted `gcloud compute sole-tenancy` commands to beta.
+* Modified `--delete-nodes` of `gcloud beta compute sole-tenancy node-groups`
+  to accept node names instead of node indexes.
+
+### Kubernetes Engine
+
+* Added `--disk-type` to `gcloud beta container <clusters|node-pools> create` to allow setting of the node VM boot disk type.
+* Updated Google Kubernetes Engine's kubectl from version 1.8.6 to 1.9.7.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 201.0.0 (2018-05-15)
 
 ### Breaking Changes

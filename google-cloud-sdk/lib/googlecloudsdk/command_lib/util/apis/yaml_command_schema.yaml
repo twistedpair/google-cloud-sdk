@@ -76,6 +76,15 @@ definitions:
       # imperative, to follow "The attribute can be set in the following ways").
       hint: { type: string }
 
+  arg_fallthrough:
+    required: [arg_name]
+    additionalProperties: false
+    properties:
+      # Name of a flag or positional whose value can be used as a default.
+      arg_name: { type: string }
+      # Whether the other arg is positional. Defaults to False.
+      is_positional: { type: boolean }
+
   resource_attribute:
     # An individual resource arg attribute.
     required: [ parameter_name, attribute_name, help ]
@@ -476,6 +485,16 @@ properties:
           removed_flags:
             type: array
             items: { type: string }
+          # a map of attribute names to a list of fallthroughs *specific to
+          # this command* that will be used if the attribute is not directly
+          # provided on the command line. Anything in this map takes precedence
+          # over what's specified in the resource spec by default.
+          command_level_fallthroughs:
+            type: object
+            patternProperties:
+              .*:
+                type: array
+                items: { $ref: "#/definitions/arg_fallthrough" }
           # The resource arg specification itself. This corresponds to the
           # ResourceSpec and ResourceParameterAttributeConfig objects and does
           # not include anything that would go in a presentation spec. It is

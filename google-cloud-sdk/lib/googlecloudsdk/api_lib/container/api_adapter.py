@@ -24,7 +24,6 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as cloud_resources
@@ -610,7 +609,9 @@ class APIAdapter(object):
     Returns:
       Cluster message.
     Raises:
-      Error: if cluster cannot be found.
+      Error: if cluster cannot be found or caller is missing permissions. Will
+        attempt to find similar clusters in other zones for a more useful error
+        if the user has list permissions.
     """
     try:
       return self.client.projects_locations_clusters.Get(
@@ -620,15 +621,31 @@ class APIAdapter(object):
                                           cluster_ref.clusterId)))
     except apitools_exceptions.HttpNotFoundError as error:
       api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
-      # Cluster couldn't be found, maybe user got location wrong?
-      self.TryToGetCluster(cluster_ref, api_error)
+      # Cluster couldn't be found, maybe user got the location wrong?
+      self.CheckClusterOtherZones(cluster_ref, api_error)
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
-  def TryToGetCluster(self, cluster_ref, api_error):
-    """Try to get cluster in all locations to see if there is a match."""
+  def CheckClusterOtherZones(self, cluster_ref, api_error):
+    """Searches for similar cluster in other zones and reports via error.
+
+    Args:
+      cluster_ref: cluster Resource to look for others with the same id.
+      api_error: current error from original request.
+    Raises:
+      Error: wrong zone error if another similar cluster found, otherwise not
+      found error.
+    """
+    not_found_error = util.Error(NO_SUCH_CLUSTER_ERROR_MSG.format(
+        error=api_error,
+        name=cluster_ref.clusterId,
+        project=cluster_ref.projectId))
     try:
       clusters = self.ListClusters(cluster_ref.projectId).clusters
+    except apitools_exceptions.HttpForbiddenError as error:
+      # Raise the default 404 Not Found error.
+      # 403 Forbidden error shouldn't be raised for this unrequested list.
+      raise not_found_error
     except apitools_exceptions.HttpError as error:
       raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
     for cluster in clusters:
@@ -640,10 +657,7 @@ class APIAdapter(object):
             wrong_zone=self.Zone(cluster_ref),
             zone=cluster.zone))
     # Couldn't find a cluster with that name.
-    raise util.Error(NO_SUCH_CLUSTER_ERROR_MSG.format(
-        error=api_error,
-        name=cluster_ref.clusterId,
-        project=cluster_ref.projectId))
+    raise not_found_error
 
   def FindNodePool(self, cluster, pool_name=None):
     """Find the node pool with the given name in the cluster."""
@@ -1276,12 +1290,28 @@ class APIAdapter(object):
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
   def DeleteCluster(self, cluster_ref):
-    operation = self.client.projects_locations_clusters.Delete(
-        self.messages.ContainerProjectsLocationsClustersDeleteRequest(
-            name=ProjectLocationCluster(cluster_ref.projectId,
-                                        cluster_ref.zone,
-                                        cluster_ref.clusterId)))
-    return self.ParseOperation(operation.name, cluster_ref.zone)
+    """Delete a running cluster.
+
+    Args:
+      cluster_ref: cluster Resource to describe
+    Returns:
+      Cluster message.
+    Raises:
+      Error: if cluster cannot be found or caller is missing permissions. Will
+        attempt to find similar clusters in other zones for a more useful error
+        if the user has list permissions.
+    """
+    try:
+      operation = self.client.projects_locations_clusters.Delete(
+          self.messages.ContainerProjectsLocationsClustersDeleteRequest(
+              name=ProjectLocationCluster(cluster_ref.projectId,
+                                          cluster_ref.zone,
+                                          cluster_ref.clusterId)))
+      return self.ParseOperation(operation.name, cluster_ref.zone)
+    except apitools_exceptions.HttpNotFoundError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      # Cluster couldn't be found, maybe user got the location wrong?
+      self.CheckClusterOtherZones(cluster_ref, api_error)
 
   def ListClusters(self, project, location=None):
     if not location:
@@ -1784,9 +1814,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             resource=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.
                                             zone, cluster_ref.clusterId)))
 
-  def SetIamPolicy(self, cluster_ref, policy_file):
-    policy = iam_util.ParsePolicyFile(policy_file,
-                                      self.messages.GoogleIamV1Policy)
+  def SetIamPolicy(self, cluster_ref, policy):
     return self.client.projects.SetIamPolicy(
         self.messages.ContainerProjectsSetIamPolicyRequest(
             googleIamV1SetIamPolicyRequest=self.messages.

@@ -398,11 +398,12 @@ def ProcessUpdateArgsLazy(args, labels_cls, orig_labels_thunk):
   return diff.Apply(labels_cls, orig_labels)
 
 
-def ParseCreateArgs(args, labels_cls):
+def ParseCreateArgs(args, labels_cls, labels_dest='labels'):
   """Initializes labels based on args and the given class."""
-  if args.labels is None:
+  labels = getattr(args, labels_dest)
+  if labels is None:
     return None
-  return _PackageLabels(labels_cls, args.labels)
+  return _PackageLabels(labels_cls, labels)
 
 
 class ExplicitNullificationDiff(Diff):

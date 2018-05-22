@@ -50,12 +50,12 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  PROJECTS_SCAN_CONFIGS = (
-      'projects.scan_configs',
+  PROJECTS_SCANCONFIGS = (
+      'projects.scanConfigs',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/scan_configs/{scan_configsId}',
+              'projects/{projectsId}/scanConfigs/{scanConfigsId}',
       },
       [u'name'],
       True

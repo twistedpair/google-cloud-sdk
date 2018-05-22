@@ -1581,7 +1581,6 @@ class NodeConfig(_messages.Message):
       size is 100GB.
     diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
       'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
-      Currently restricted because of b/36071127#comment27
     enableAuditLogging: Whether to enable execve audit logging on the nodes.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.

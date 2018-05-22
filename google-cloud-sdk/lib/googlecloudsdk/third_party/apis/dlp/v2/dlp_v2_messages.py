@@ -617,6 +617,9 @@ class GooglePrivacyDlpV2BigQueryKey(_messages.Message):
 class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
   r"""Options defining BigQuery table and row identifiers.
 
+  Enums:
+    SampleMethodValueValuesEnum:
+
   Fields:
     identifyingFields: References to fields uniquely identifying rows within
       the table. Nested fields in the format, like `person.birthdate.year`,
@@ -625,12 +628,27 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
       this value, the rest of the rows are omitted. If not set, or if set to
       0, all rows will be scanned. Cannot be used in conjunction with
       TimespanConfig.
+    sampleMethod: A SampleMethodValueValuesEnum attribute.
     tableReference: Complete BigQuery table reference.
   """
 
+  class SampleMethodValueValuesEnum(_messages.Enum):
+    r"""SampleMethodValueValuesEnum enum type.
+
+    Values:
+      SAMPLE_METHOD_UNSPECIFIED: <no description>
+      TOP: Scan from the top (default).
+      RANDOM_START: Randomly pick the row to start scanning. The scanned rows
+        are contiguous.
+    """
+    SAMPLE_METHOD_UNSPECIFIED = 0
+    TOP = 1
+    RANDOM_START = 2
+
   identifyingFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
   rowsLimit = _messages.IntegerField(2)
-  tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 3)
+  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 3)
+  tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 4)
 
 
 class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
@@ -861,6 +879,7 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
 
   Enums:
     FileTypesValueListEntryValuesEnum:
+    SampleMethodValueValuesEnum:
 
   Fields:
     bytesLimitPerFile: Max number of bytes to scan from a file. If a scanned
@@ -869,6 +888,11 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
     fileSet: A GooglePrivacyDlpV2FileSet attribute.
     fileTypes: List of file type groups to include in the scan. If empty, all
       files are scanned and available data format processors are applied.
+    filesLimitPercent: Limits the number of files to scan to this percentage
+      of the input FileSet. Number of files scanned is rounded down. Must be
+      between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults
+      to 0.
+    sampleMethod: A SampleMethodValueValuesEnum attribute.
   """
 
   class FileTypesValueListEntryValuesEnum(_messages.Enum):
@@ -883,13 +907,28 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
     BINARY_FILE = 1
     TEXT_FILE = 2
 
+  class SampleMethodValueValuesEnum(_messages.Enum):
+    r"""SampleMethodValueValuesEnum enum type.
+
+    Values:
+      SAMPLE_METHOD_UNSPECIFIED: <no description>
+      TOP: Scan from the top (default).
+      RANDOM_START: For each file larger than bytes_limit_per_file, randomly
+        pick the offset to start scanning. The scanned bytes are contiguous.
+    """
+    SAMPLE_METHOD_UNSPECIFIED = 0
+    TOP = 1
+    RANDOM_START = 2
+
   bytesLimitPerFile = _messages.IntegerField(1)
   fileSet = _messages.MessageField('GooglePrivacyDlpV2FileSet', 2)
   fileTypes = _messages.EnumField('FileTypesValueListEntryValuesEnum', 3, repeated=True)
+  filesLimitPercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 5)
 
 
 class GooglePrivacyDlpV2CloudStoragePath(_messages.Message):
-  r"""Message representing a path in Cloud Storage.
+  r"""Message representing a single file or path in Cloud Storage.
 
   Fields:
     path: A url representing a file or path (no wildcards) in Cloud Storage.
@@ -1136,7 +1175,7 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
       value type integer or string.  The tweak is constructed as a sequence of
       bytes in big endian byte order such that:  - a 64 bit integer is encoded
       followed by a single byte of value 1 - a string is encoded in UTF-8
-      format followed by a single byte of value  \xe5 2
+      format followed by a single byte of value 2
     cryptoKey: The key used by the encryption algorithm. [required]
     customAlphabet: This is supported by mapping these to the alphanumeric
       characters that the FFX mode natively supports. This happens
@@ -3354,817 +3393,6 @@ class GooglePrivacyDlpV2ValueFrequency(_messages.Message):
 
 
 class GooglePrivacyDlpV2WordList(_messages.Message):
-  r"""Message defining a list of words or phrases to search for in the data.
-
-  Fields:
-    words: Words or phrases defining the dictionary. The dictionary must
-      contain at least one phrase and every phrase must contain at least 2
-      characters that are letters or digits. [required]
-  """
-
-  words = _messages.StringField(1, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1AuxiliaryTable(_messages.Message):
-  r"""An auxiliary table contains statistical information on the relative
-  frequency of different quasi-identifiers values. It has one or several
-  quasi-identifiers columns, and one column that indicates the relative
-  frequency of each quasi-identifier tuple. If a tuple is present in the data
-  but not in the auxiliary table, the corresponding relative frequency is
-  assumed to be zero (and thus, the tuple is highly reidentifiable).
-
-  Fields:
-    quasiIds: Quasi-identifier columns. [required]
-    relativeFrequency: The relative frequency column must contain a floating-
-      point number between 0 and 1 (inclusive). Null values are assumed to be
-      zero. [required]
-    table: Auxiliary table location. [required]
-  """
-
-  quasiIds = _messages.MessageField('GooglePrivacyDlpV2beta1QuasiIdField', 1, repeated=True)
-  relativeFrequency = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 2)
-  table = _messages.MessageField('GooglePrivacyDlpV2beta1BigQueryTable', 3)
-
-
-class GooglePrivacyDlpV2beta1BigQueryOptions(_messages.Message):
-  r"""Options defining BigQuery table and row identifiers.
-
-  Fields:
-    identifyingFields: References to fields uniquely identifying rows within
-      the table. Nested fields in the format, like `person.birthdate.year`,
-      are allowed.
-    tableReference: Complete BigQuery table reference.
-  """
-
-  identifyingFields = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 1, repeated=True)
-  tableReference = _messages.MessageField('GooglePrivacyDlpV2beta1BigQueryTable', 2)
-
-
-class GooglePrivacyDlpV2beta1BigQueryTable(_messages.Message):
-  r"""Message defining the location of a BigQuery table. A table is uniquely
-  identified  by its project_id, dataset_id, and table_name. Within a query a
-  table is often referenced with a string in the format of:
-  `<project_id>:<dataset_id>.<table_id>` or
-  `<project_id>.<dataset_id>.<table_id>`.
-
-  Fields:
-    datasetId: Dataset ID of the table.
-    projectId: The Google Cloud Platform project ID of the project containing
-      the table. If omitted, project ID is inferred from the API call.
-    tableId: Name of the table.
-  """
-
-  datasetId = _messages.StringField(1)
-  projectId = _messages.StringField(2)
-  tableId = _messages.StringField(3)
-
-
-class GooglePrivacyDlpV2beta1CategoricalStatsConfig(_messages.Message):
-  r"""Compute numerical stats over an individual column, including number of
-  distinct values and value count distribution.
-
-  Fields:
-    field: Field to compute categorical stats on. All column types are
-      supported except for arrays and structs. However, it may be more
-      informative to use NumericalStats when the field type is supported,
-      depending on the data.
-  """
-
-  field = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 1)
-
-
-class GooglePrivacyDlpV2beta1CategoricalStatsHistogramBucket(_messages.Message):
-  r"""Histogram bucket of value frequencies in the column.
-
-  Fields:
-    bucketSize: Total number of records in this bucket.
-    bucketValues: Sample of value frequencies in this bucket. The total number
-      of values returned per bucket is capped at 20.
-    valueFrequencyLowerBound: Lower bound on the value frequency of the values
-      in this bucket.
-    valueFrequencyUpperBound: Upper bound on the value frequency of the values
-      in this bucket.
-  """
-
-  bucketSize = _messages.IntegerField(1)
-  bucketValues = _messages.MessageField('GooglePrivacyDlpV2beta1ValueFrequency', 2, repeated=True)
-  valueFrequencyLowerBound = _messages.IntegerField(3)
-  valueFrequencyUpperBound = _messages.IntegerField(4)
-
-
-class GooglePrivacyDlpV2beta1CategoricalStatsResult(_messages.Message):
-  r"""Result of the categorical stats computation.
-
-  Fields:
-    valueFrequencyHistogramBuckets: Histogram of value frequencies in the
-      column.
-  """
-
-  valueFrequencyHistogramBuckets = _messages.MessageField('GooglePrivacyDlpV2beta1CategoricalStatsHistogramBucket', 1, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1CloudStorageOptions(_messages.Message):
-  r"""Options defining a file or a set of files (path ending with *) within a
-  Google Cloud Storage bucket.
-
-  Fields:
-    fileSet: A GooglePrivacyDlpV2beta1FileSet attribute.
-  """
-
-  fileSet = _messages.MessageField('GooglePrivacyDlpV2beta1FileSet', 1)
-
-
-class GooglePrivacyDlpV2beta1CloudStoragePath(_messages.Message):
-  r"""A location in Cloud Storage.
-
-  Fields:
-    path: The url, in the format of `gs://bucket/<path>`.
-  """
-
-  path = _messages.StringField(1)
-
-
-class GooglePrivacyDlpV2beta1CustomInfoType(_messages.Message):
-  r"""Custom information type provided by the user. Used to find domain-
-  specific sensitive information configurable to the data in question.
-
-  Fields:
-    dictionary: Dictionary-based custom info type.
-    infoType: Info type configuration. All custom info types must have
-      configurations that do not conflict with built-in info types or other
-      custom info types.
-    surrogateType: Surrogate info type.
-  """
-
-  dictionary = _messages.MessageField('GooglePrivacyDlpV2beta1Dictionary', 1)
-  infoType = _messages.MessageField('GooglePrivacyDlpV2beta1InfoType', 2)
-  surrogateType = _messages.MessageField('GooglePrivacyDlpV2beta1SurrogateType', 3)
-
-
-class GooglePrivacyDlpV2beta1DatastoreOptions(_messages.Message):
-  r"""Options defining a data set within Google Cloud Datastore.
-
-  Fields:
-    kind: The kind to process.
-    partitionId: A partition ID identifies a grouping of entities. The
-      grouping is always by project and namespace, however the namespace ID
-      may be empty.
-    projection: Properties to scan. If none are specified, all properties will
-      be scanned by default.
-  """
-
-  kind = _messages.MessageField('GooglePrivacyDlpV2beta1KindExpression', 1)
-  partitionId = _messages.MessageField('GooglePrivacyDlpV2beta1PartitionId', 2)
-  projection = _messages.MessageField('GooglePrivacyDlpV2beta1Projection', 3, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1Dictionary(_messages.Message):
-  r"""Custom information type based on a dictionary of words or phrases. This
-  can be used to match sensitive information specific to the data, such as a
-  list of employee IDs or job titles.  Dictionary words are case-insensitive
-  and all characters other than letters and digits in the unicode [Basic
-  Multilingual Plane](https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_
-  Multilingual_Plane) will be replaced with whitespace when scanning for
-  matches, so the dictionary phrase "Sam Johnson" will match all three phrases
-  "sam johnson", "Sam, Johnson", and "Sam (Johnson)". Additionally, the
-  characters surrounding any match must be of a different type than the
-  adjacent characters within the word, so letters must be next to non-letters
-  and digits next to non-digits. For example, the dictionary word "jen" will
-  match the first three letters of the text "jen123" but will return no
-  matches for "jennifer".  Dictionary words containing a large number of
-  characters that are not letters or digits may result in unexpected findings
-  because such characters are treated as whitespace.
-
-  Fields:
-    wordList: List of words or phrases to search for.
-  """
-
-  wordList = _messages.MessageField('GooglePrivacyDlpV2beta1WordList', 1)
-
-
-class GooglePrivacyDlpV2beta1EntityId(_messages.Message):
-  r"""An entity in a dataset is a field or set of fields that correspond to a
-  single person. For example, in medical records the `EntityId` might be a
-  patient identifier, or for financial records it might be an account
-  identifier. This message is used when generalizations or analysis must be
-  consistent across multiple rows pertaining to the same entity.
-
-  Fields:
-    field: Composite key indicating which field contains the entity
-      identifier.
-  """
-
-  field = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 1)
-
-
-class GooglePrivacyDlpV2beta1FieldId(_messages.Message):
-  r"""General identifier of a data field in a storage service.
-
-  Fields:
-    columnName: Name describing the field.
-  """
-
-  columnName = _messages.StringField(1)
-
-
-class GooglePrivacyDlpV2beta1FileSet(_messages.Message):
-  r"""Set of files to scan.
-
-  Fields:
-    url: The url, in the format `gs://<bucket>/<path>`. Trailing wildcard in
-      the path is allowed.
-  """
-
-  url = _messages.StringField(1)
-
-
-class GooglePrivacyDlpV2beta1InfoType(_messages.Message):
-  r"""Type of information detected by the API.
-
-  Fields:
-    name: Name of the information type.
-  """
-
-  name = _messages.StringField(1)
-
-
-class GooglePrivacyDlpV2beta1InfoTypeLimit(_messages.Message):
-  r"""Max findings configuration per info type, per content item or long
-  running operation.
-
-  Fields:
-    infoType: Type of information the findings limit applies to. Only one
-      limit per info_type should be provided. If InfoTypeLimit does not have
-      an info_type, the DLP API applies the limit against all info_types that
-      are found but not specified in another InfoTypeLimit.
-    maxFindings: Max findings limit for the given infoType.
-  """
-
-  infoType = _messages.MessageField('GooglePrivacyDlpV2beta1InfoType', 1)
-  maxFindings = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class GooglePrivacyDlpV2beta1InfoTypeStatistics(_messages.Message):
-  r"""Statistics regarding a specific InfoType.
-
-  Fields:
-    count: Number of findings for this info type.
-    infoType: The type of finding this stat is for.
-  """
-
-  count = _messages.IntegerField(1)
-  infoType = _messages.MessageField('GooglePrivacyDlpV2beta1InfoType', 2)
-
-
-class GooglePrivacyDlpV2beta1InspectConfig(_messages.Message):
-  r"""Configuration description of the scanning process. When used with
-  redactContent only info_types and min_likelihood are currently used.
-
-  Enums:
-    MinLikelihoodValueValuesEnum: Only returns findings equal or above this
-      threshold.
-
-  Fields:
-    customInfoTypes: Custom info types provided by the user.
-    excludeTypes: When true, excludes type information of the findings.
-    includeQuote: When true, a contextual quote from the data that triggered a
-      finding is included in the response; see Finding.quote.
-    infoTypeLimits: Configuration of findings limit given for specified info
-      types.
-    infoTypes: Restricts what info_types to look for. The values must
-      correspond to InfoType values returned by ListInfoTypes or found in
-      documentation. Empty info_types runs all enabled detectors.
-    maxFindings: Limits the number of findings per content item or long
-      running operation.
-    minLikelihood: Only returns findings equal or above this threshold.
-  """
-
-  class MinLikelihoodValueValuesEnum(_messages.Enum):
-    r"""Only returns findings equal or above this threshold.
-
-    Values:
-      LIKELIHOOD_UNSPECIFIED: Default value; information with all likelihoods
-        is included.
-      VERY_UNLIKELY: Few matching elements.
-      UNLIKELY: <no description>
-      POSSIBLE: Some matching elements.
-      LIKELY: <no description>
-      VERY_LIKELY: Many matching elements.
-    """
-    LIKELIHOOD_UNSPECIFIED = 0
-    VERY_UNLIKELY = 1
-    UNLIKELY = 2
-    POSSIBLE = 3
-    LIKELY = 4
-    VERY_LIKELY = 5
-
-  customInfoTypes = _messages.MessageField('GooglePrivacyDlpV2beta1CustomInfoType', 1, repeated=True)
-  excludeTypes = _messages.BooleanField(2)
-  includeQuote = _messages.BooleanField(3)
-  infoTypeLimits = _messages.MessageField('GooglePrivacyDlpV2beta1InfoTypeLimit', 4, repeated=True)
-  infoTypes = _messages.MessageField('GooglePrivacyDlpV2beta1InfoType', 5, repeated=True)
-  maxFindings = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  minLikelihood = _messages.EnumField('MinLikelihoodValueValuesEnum', 7)
-
-
-class GooglePrivacyDlpV2beta1InspectOperationMetadata(_messages.Message):
-  r"""Metadata returned within GetOperation for an inspect request.
-
-  Fields:
-    createTime: The time which this request was started.
-    infoTypeStats: A GooglePrivacyDlpV2beta1InfoTypeStatistics attribute.
-    processedBytes: Total size in bytes that were processed.
-    requestInspectConfig: The inspect config used to create the Operation.
-    requestOutputConfig: Optional location to store findings.
-    requestStorageConfig: The storage config used to create the Operation.
-    totalEstimatedBytes: Estimate of the number of bytes to process.
-  """
-
-  createTime = _messages.StringField(1)
-  infoTypeStats = _messages.MessageField('GooglePrivacyDlpV2beta1InfoTypeStatistics', 2, repeated=True)
-  processedBytes = _messages.IntegerField(3)
-  requestInspectConfig = _messages.MessageField('GooglePrivacyDlpV2beta1InspectConfig', 4)
-  requestOutputConfig = _messages.MessageField('GooglePrivacyDlpV2beta1OutputStorageConfig', 5)
-  requestStorageConfig = _messages.MessageField('GooglePrivacyDlpV2beta1StorageConfig', 6)
-  totalEstimatedBytes = _messages.IntegerField(7)
-
-
-class GooglePrivacyDlpV2beta1InspectOperationResult(_messages.Message):
-  r"""The operational data.
-
-  Fields:
-    name: The server-assigned name, which is only unique within the same
-      service that originally returns it. If you use the default HTTP mapping,
-      the `name` should have the format of `inspect/results/{id}`.
-  """
-
-  name = _messages.StringField(1)
-
-
-class GooglePrivacyDlpV2beta1KAnonymityConfig(_messages.Message):
-  r"""k-anonymity metric, used for analysis of reidentification risk.
-
-  Fields:
-    entityId: Optional message indicating that each distinct entity_id should
-      not contribute to the k-anonymity count more than once per equivalence
-      class. If an entity_id appears on several rows with different quasi-
-      identifier tuples, it will contribute to each count exactly once.  This
-      can lead to unexpected results. Consider a table where ID 1 is
-      associated to quasi-identifier "foo", ID 2 to "bar", and ID 3 to *both*
-      quasi-identifiers "foo" and "bar" (on separate rows), and where this ID
-      is used as entity_id. Then, the anonymity value associated to ID 3 will
-      be 2, even if it is the only ID to be associated to both values "foo"
-      and "bar".
-    quasiIds: Set of fields to compute k-anonymity over. When multiple fields
-      are specified, they are considered a single composite key. Structs and
-      repeated data types are not supported; however, nested fields are
-      supported so long as they are not structs themselves or nested within a
-      repeated field.
-  """
-
-  entityId = _messages.MessageField('GooglePrivacyDlpV2beta1EntityId', 1)
-  quasiIds = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 2, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1KAnonymityEquivalenceClass(_messages.Message):
-  r"""The set of columns' values that share the same k-anonymity value.
-
-  Fields:
-    equivalenceClassSize: Size of the equivalence class, for example number of
-      rows with the above set of values.
-    quasiIdsValues: Set of values defining the equivalence class. One value
-      per quasi-identifier column in the original KAnonymity metric message.
-      The order is always the same as the original request.
-  """
-
-  equivalenceClassSize = _messages.IntegerField(1)
-  quasiIdsValues = _messages.MessageField('GooglePrivacyDlpV2beta1Value', 2, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1KAnonymityHistogramBucket(_messages.Message):
-  r"""Histogram bucket of equivalence class sizes in the table.
-
-  Fields:
-    bucketSize: Total number of records in this bucket.
-    bucketValues: Sample of equivalence classes in this bucket. The total
-      number of classes returned per bucket is capped at 20.
-    equivalenceClassSizeLowerBound: Lower bound on the size of the equivalence
-      classes in this bucket.
-    equivalenceClassSizeUpperBound: Upper bound on the size of the equivalence
-      classes in this bucket.
-  """
-
-  bucketSize = _messages.IntegerField(1)
-  bucketValues = _messages.MessageField('GooglePrivacyDlpV2beta1KAnonymityEquivalenceClass', 2, repeated=True)
-  equivalenceClassSizeLowerBound = _messages.IntegerField(3)
-  equivalenceClassSizeUpperBound = _messages.IntegerField(4)
-
-
-class GooglePrivacyDlpV2beta1KAnonymityResult(_messages.Message):
-  r"""Result of the k-anonymity computation.
-
-  Fields:
-    equivalenceClassHistogramBuckets: Histogram of k-anonymity equivalence
-      classes.
-  """
-
-  equivalenceClassHistogramBuckets = _messages.MessageField('GooglePrivacyDlpV2beta1KAnonymityHistogramBucket', 1, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1KMapEstimationConfig(_messages.Message):
-  r"""Reidentifiability metric. This corresponds to a risk model similar to
-  what is called "journalist risk" in the literature, except the attack
-  dataset is statistically modeled instead of being perfectly known. This can
-  be done using publicly available data (like the US Census), or using a
-  custom statistical model (indicated as one or several BigQuery tables), or
-  by extrapolating from the distribution of values in the input dataset.
-
-  Fields:
-    auxiliaryTables: Several auxiliary tables can be used in the analysis.
-      Each custom_tag used to tag a quasi-identifiers column must appear in
-      exactly one column of one auxiliary table.
-    quasiIds: Fields considered to be quasi-identifiers. No two columns can
-      have the same tag. [required]
-    regionCode: ISO 3166-1 alpha-2 region code to use in the statistical
-      modeling. Required if no column is tagged with a region-specific
-      InfoType (like US_ZIP_5) or a region code.
-  """
-
-  auxiliaryTables = _messages.MessageField('GooglePrivacyDlpV2beta1AuxiliaryTable', 1, repeated=True)
-  quasiIds = _messages.MessageField('GooglePrivacyDlpV2beta1TaggedField', 2, repeated=True)
-  regionCode = _messages.StringField(3)
-
-
-class GooglePrivacyDlpV2beta1KMapEstimationHistogramBucket(_messages.Message):
-  r"""A KMapEstimationHistogramBucket message with the following values:
-  min_anonymity: 3   max_anonymity: 5   frequency: 42 means that there are 42
-  records whose quasi-identifier values correspond to 3, 4 or 5 people in the
-  overlying population. An important particular case is when min_anonymity =
-  max_anonymity = 1: the frequency field then corresponds to the number of
-  uniquely identifiable records.
-
-  Fields:
-    bucketSize: Number of records within these anonymity bounds.
-    bucketValues: Sample of quasi-identifier tuple values in this bucket. The
-      total number of classes returned per bucket is capped at 20.
-    maxAnonymity: Always greater than or equal to min_anonymity.
-    minAnonymity: Always positive.
-  """
-
-  bucketSize = _messages.IntegerField(1)
-  bucketValues = _messages.MessageField('GooglePrivacyDlpV2beta1KMapEstimationQuasiIdValues', 2, repeated=True)
-  maxAnonymity = _messages.IntegerField(3)
-  minAnonymity = _messages.IntegerField(4)
-
-
-class GooglePrivacyDlpV2beta1KMapEstimationQuasiIdValues(_messages.Message):
-  r"""A tuple of values for the quasi-identifier columns.
-
-  Fields:
-    estimatedAnonymity: The estimated anonymity for these quasi-identifier
-      values.
-    quasiIdsValues: The quasi-identifier values.
-  """
-
-  estimatedAnonymity = _messages.IntegerField(1)
-  quasiIdsValues = _messages.MessageField('GooglePrivacyDlpV2beta1Value', 2, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1KMapEstimationResult(_messages.Message):
-  r"""Result of the reidentifiability analysis. Note that these results are an
-  estimation, not exact values.
-
-  Fields:
-    kMapEstimationHistogram: The intervals [min_anonymity, max_anonymity] do
-      not overlap. If a value doesn't correspond to any such interval, the
-      associated frequency is zero. For example, the following records:
-      {min_anonymity: 1, max_anonymity: 1, frequency: 17}   {min_anonymity: 2,
-      max_anonymity: 3, frequency: 42}   {min_anonymity: 5, max_anonymity: 10,
-      frequency: 99} mean that there are no record with an estimated anonymity
-      of 4, 5, or larger than 10.
-  """
-
-  kMapEstimationHistogram = _messages.MessageField('GooglePrivacyDlpV2beta1KMapEstimationHistogramBucket', 1, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1KindExpression(_messages.Message):
-  r"""A representation of a Datastore kind.
-
-  Fields:
-    name: The name of the kind.
-  """
-
-  name = _messages.StringField(1)
-
-
-class GooglePrivacyDlpV2beta1LDiversityConfig(_messages.Message):
-  r"""l-diversity metric, used for analysis of reidentification risk.
-
-  Fields:
-    quasiIds: Set of quasi-identifiers indicating how equivalence classes are
-      defined for the l-diversity computation. When multiple fields are
-      specified, they are considered a single composite key.
-    sensitiveAttribute: Sensitive field for computing the l-value.
-  """
-
-  quasiIds = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 1, repeated=True)
-  sensitiveAttribute = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 2)
-
-
-class GooglePrivacyDlpV2beta1LDiversityEquivalenceClass(_messages.Message):
-  r"""The set of columns' values that share the same l-diversity value.
-
-  Fields:
-    equivalenceClassSize: Size of the k-anonymity equivalence class.
-    numDistinctSensitiveValues: Number of distinct sensitive values in this
-      equivalence class.
-    quasiIdsValues: Quasi-identifier values defining the k-anonymity
-      equivalence class. The order is always the same as the original request.
-    topSensitiveValues: Estimated frequencies of top sensitive values.
-  """
-
-  equivalenceClassSize = _messages.IntegerField(1)
-  numDistinctSensitiveValues = _messages.IntegerField(2)
-  quasiIdsValues = _messages.MessageField('GooglePrivacyDlpV2beta1Value', 3, repeated=True)
-  topSensitiveValues = _messages.MessageField('GooglePrivacyDlpV2beta1ValueFrequency', 4, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1LDiversityHistogramBucket(_messages.Message):
-  r"""Histogram bucket of sensitive value frequencies in the table.
-
-  Fields:
-    bucketSize: Total number of records in this bucket.
-    bucketValues: Sample of equivalence classes in this bucket. The total
-      number of classes returned per bucket is capped at 20.
-    sensitiveValueFrequencyLowerBound: Lower bound on the sensitive value
-      frequencies of the equivalence classes in this bucket.
-    sensitiveValueFrequencyUpperBound: Upper bound on the sensitive value
-      frequencies of the equivalence classes in this bucket.
-  """
-
-  bucketSize = _messages.IntegerField(1)
-  bucketValues = _messages.MessageField('GooglePrivacyDlpV2beta1LDiversityEquivalenceClass', 2, repeated=True)
-  sensitiveValueFrequencyLowerBound = _messages.IntegerField(3)
-  sensitiveValueFrequencyUpperBound = _messages.IntegerField(4)
-
-
-class GooglePrivacyDlpV2beta1LDiversityResult(_messages.Message):
-  r"""Result of the l-diversity computation.
-
-  Fields:
-    sensitiveValueFrequencyHistogramBuckets: Histogram of l-diversity
-      equivalence class sensitive value frequencies.
-  """
-
-  sensitiveValueFrequencyHistogramBuckets = _messages.MessageField('GooglePrivacyDlpV2beta1LDiversityHistogramBucket', 1, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1NumericalStatsConfig(_messages.Message):
-  r"""Compute numerical stats over an individual column, including min, max,
-  and quantiles.
-
-  Fields:
-    field: Field to compute numerical stats on. Supported types are integer,
-      float, date, datetime, timestamp, time.
-  """
-
-  field = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 1)
-
-
-class GooglePrivacyDlpV2beta1NumericalStatsResult(_messages.Message):
-  r"""Result of the numerical stats computation.
-
-  Fields:
-    maxValue: Maximum value appearing in the column.
-    minValue: Minimum value appearing in the column.
-    quantileValues: List of 99 values that partition the set of field values
-      into 100 equal sized buckets.
-  """
-
-  maxValue = _messages.MessageField('GooglePrivacyDlpV2beta1Value', 1)
-  minValue = _messages.MessageField('GooglePrivacyDlpV2beta1Value', 2)
-  quantileValues = _messages.MessageField('GooglePrivacyDlpV2beta1Value', 3, repeated=True)
-
-
-class GooglePrivacyDlpV2beta1OutputStorageConfig(_messages.Message):
-  r"""Cloud repository for storing output.
-
-  Fields:
-    storagePath: The path to a Google Cloud Storage location to store output.
-      The bucket must already exist and the Google APIs service account for
-      DLP must have write permission to write to the given bucket. Results are
-      split over multiple csv files with each file name matching the pattern
-      "[operation_id]_[count].csv", for example `3094877188788974909_1.csv`.
-      The `operation_id` matches the identifier for the Operation, and the
-      `count` is a counter used for tracking the number of files written.  The
-      CSV file(s) contain the following columns regardless of storage type
-      scanned: - id - info_type - likelihood - byte size of finding - quote -
-      timestamp  For Cloud Storage the next columns are:  - file_path -
-      start_offset  For Cloud Datastore the next columns are:  - project_id -
-      namespace_id - path - column_name - offset  For BigQuery the next
-      columns are:  - row_number - project_id - dataset_id - table_id
-    table: Store findings in a new table in the dataset.
-  """
-
-  storagePath = _messages.MessageField('GooglePrivacyDlpV2beta1CloudStoragePath', 1)
-  table = _messages.MessageField('GooglePrivacyDlpV2beta1BigQueryTable', 2)
-
-
-class GooglePrivacyDlpV2beta1PartitionId(_messages.Message):
-  r"""Datastore partition ID. A partition ID identifies a grouping of
-  entities. The grouping is always by project and namespace, however the
-  namespace ID may be empty.  A partition ID contains several dimensions:
-  project ID and namespace ID.
-
-  Fields:
-    namespaceId: If not empty, the ID of the namespace to which the entities
-      belong.
-    projectId: The ID of the project to which the entities belong.
-  """
-
-  namespaceId = _messages.StringField(1)
-  projectId = _messages.StringField(2)
-
-
-class GooglePrivacyDlpV2beta1PrivacyMetric(_messages.Message):
-  r"""Privacy metric to compute for reidentification risk analysis.
-
-  Fields:
-    categoricalStatsConfig: A GooglePrivacyDlpV2beta1CategoricalStatsConfig
-      attribute.
-    kAnonymityConfig: A GooglePrivacyDlpV2beta1KAnonymityConfig attribute.
-    kMapEstimationConfig: A GooglePrivacyDlpV2beta1KMapEstimationConfig
-      attribute.
-    lDiversityConfig: A GooglePrivacyDlpV2beta1LDiversityConfig attribute.
-    numericalStatsConfig: A GooglePrivacyDlpV2beta1NumericalStatsConfig
-      attribute.
-  """
-
-  categoricalStatsConfig = _messages.MessageField('GooglePrivacyDlpV2beta1CategoricalStatsConfig', 1)
-  kAnonymityConfig = _messages.MessageField('GooglePrivacyDlpV2beta1KAnonymityConfig', 2)
-  kMapEstimationConfig = _messages.MessageField('GooglePrivacyDlpV2beta1KMapEstimationConfig', 3)
-  lDiversityConfig = _messages.MessageField('GooglePrivacyDlpV2beta1LDiversityConfig', 4)
-  numericalStatsConfig = _messages.MessageField('GooglePrivacyDlpV2beta1NumericalStatsConfig', 5)
-
-
-class GooglePrivacyDlpV2beta1Projection(_messages.Message):
-  r"""A representation of a Datastore property in a projection.
-
-  Fields:
-    property: The property to project.
-  """
-
-  property = _messages.MessageField('GooglePrivacyDlpV2beta1PropertyReference', 1)
-
-
-class GooglePrivacyDlpV2beta1PropertyReference(_messages.Message):
-  r"""A reference to a property relative to the Datastore kind expressions.
-
-  Fields:
-    name: The name of the property. If name includes "."s, it may be
-      interpreted as a property name path.
-  """
-
-  name = _messages.StringField(1)
-
-
-class GooglePrivacyDlpV2beta1QuasiIdField(_messages.Message):
-  r"""A quasi-identifier column has a custom_tag, used to know which column in
-  the data corresponds to which column in the statistical model.
-
-  Fields:
-    customTag: A string attribute.
-    field: A GooglePrivacyDlpV2beta1FieldId attribute.
-  """
-
-  customTag = _messages.StringField(1)
-  field = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 2)
-
-
-class GooglePrivacyDlpV2beta1RiskAnalysisOperationMetadata(_messages.Message):
-  r"""Metadata returned within the [`riskAnalysis.operations.get`](/dlp/docs/r
-  eference/rest/v2beta1/riskAnalysis.operations/get) for risk analysis.
-
-  Fields:
-    createTime: The time which this request was started.
-    requestedPrivacyMetric: Privacy metric to compute.
-    requestedSourceTable: Input dataset to compute metrics over.
-  """
-
-  createTime = _messages.StringField(1)
-  requestedPrivacyMetric = _messages.MessageField('GooglePrivacyDlpV2beta1PrivacyMetric', 2)
-  requestedSourceTable = _messages.MessageField('GooglePrivacyDlpV2beta1BigQueryTable', 3)
-
-
-class GooglePrivacyDlpV2beta1RiskAnalysisOperationResult(_messages.Message):
-  r"""Result of a risk analysis
-  [`Operation`](/dlp/docs/reference/rest/v2beta1/inspect.operations) request.
-
-  Fields:
-    categoricalStatsResult: A GooglePrivacyDlpV2beta1CategoricalStatsResult
-      attribute.
-    kAnonymityResult: A GooglePrivacyDlpV2beta1KAnonymityResult attribute.
-    kMapEstimationResult: A GooglePrivacyDlpV2beta1KMapEstimationResult
-      attribute.
-    lDiversityResult: A GooglePrivacyDlpV2beta1LDiversityResult attribute.
-    numericalStatsResult: A GooglePrivacyDlpV2beta1NumericalStatsResult
-      attribute.
-  """
-
-  categoricalStatsResult = _messages.MessageField('GooglePrivacyDlpV2beta1CategoricalStatsResult', 1)
-  kAnonymityResult = _messages.MessageField('GooglePrivacyDlpV2beta1KAnonymityResult', 2)
-  kMapEstimationResult = _messages.MessageField('GooglePrivacyDlpV2beta1KMapEstimationResult', 3)
-  lDiversityResult = _messages.MessageField('GooglePrivacyDlpV2beta1LDiversityResult', 4)
-  numericalStatsResult = _messages.MessageField('GooglePrivacyDlpV2beta1NumericalStatsResult', 5)
-
-
-class GooglePrivacyDlpV2beta1StorageConfig(_messages.Message):
-  r"""Shared message indicating Cloud storage type.
-
-  Fields:
-    bigQueryOptions: BigQuery options specification.
-    cloudStorageOptions: Google Cloud Storage options specification.
-    datastoreOptions: Google Cloud Datastore options specification.
-  """
-
-  bigQueryOptions = _messages.MessageField('GooglePrivacyDlpV2beta1BigQueryOptions', 1)
-  cloudStorageOptions = _messages.MessageField('GooglePrivacyDlpV2beta1CloudStorageOptions', 2)
-  datastoreOptions = _messages.MessageField('GooglePrivacyDlpV2beta1DatastoreOptions', 3)
-
-
-class GooglePrivacyDlpV2beta1SurrogateType(_messages.Message):
-  r"""Message for detecting output from deidentification transformations such
-  as [`CryptoReplaceFfxFpeConfig`](/dlp/docs/reference/rest/v2beta1/content/de
-  identify#CryptoReplaceFfxFpeConfig). These types of transformations are
-  those that perform pseudonymization, thereby producing a "surrogate" as
-  output. This should be used in conjunction with a field on the
-  transformation such as `surrogate_info_type`. This custom info type does not
-  support the use of `detection_rules`.
-  """
-
-
-
-class GooglePrivacyDlpV2beta1TaggedField(_messages.Message):
-  r"""A column with a semantic tag attached.
-
-  Fields:
-    customTag: A column can be tagged with a custom tag. In this case, the
-      user must indicate an auxiliary table that contains statistical
-      information on the possible values of this column (below).
-    field: Identifies the column. [required]
-    inferred: If no semantic tag is indicated, we infer the statistical model
-      from the distribution of values in the input data
-    infoType: A column can be tagged with a InfoType to use the relevant
-      public dataset as a statistical model of population, if available. We
-      currently support US ZIP codes, region codes, ages and genders.
-  """
-
-  customTag = _messages.StringField(1)
-  field = _messages.MessageField('GooglePrivacyDlpV2beta1FieldId', 2)
-  inferred = _messages.MessageField('GoogleProtobufEmpty', 3)
-  infoType = _messages.MessageField('GooglePrivacyDlpV2beta1InfoType', 4)
-
-
-class GooglePrivacyDlpV2beta1Value(_messages.Message):
-  r"""Set of primitive values supported by the system. Note that for the
-  purposes of inspection or transformation, the number of bytes considered to
-  comprise a 'Value' is based on its representation as a UTF-8 encoded string.
-  For example, if 'integer_value' is set to 123456789, the number of bytes
-  would be counted as 9, even though an int64 only holds up to 8 bytes of
-  data.
-
-  Fields:
-    booleanValue: A boolean attribute.
-    dateValue: A GoogleTypeDate attribute.
-    floatValue: A number attribute.
-    integerValue: A string attribute.
-    stringValue: A string attribute.
-    timeValue: A GoogleTypeTimeOfDay attribute.
-    timestampValue: A string attribute.
-  """
-
-  booleanValue = _messages.BooleanField(1)
-  dateValue = _messages.MessageField('GoogleTypeDate', 2)
-  floatValue = _messages.FloatField(3)
-  integerValue = _messages.IntegerField(4)
-  stringValue = _messages.StringField(5)
-  timeValue = _messages.MessageField('GoogleTypeTimeOfDay', 6)
-  timestampValue = _messages.StringField(7)
-
-
-class GooglePrivacyDlpV2beta1ValueFrequency(_messages.Message):
-  r"""A value of a field, including its frequency.
-
-  Fields:
-    count: How many times the value is contained in the field.
-    value: A value contained in the field in question.
-  """
-
-  count = _messages.IntegerField(1)
-  value = _messages.MessageField('GooglePrivacyDlpV2beta1Value', 2)
-
-
-class GooglePrivacyDlpV2beta1WordList(_messages.Message):
   r"""Message defining a list of words or phrases to search for in the data.
 
   Fields:

@@ -35,8 +35,6 @@ class CloudiotV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_groups_devices = self.ProjectsLocationsGroupsDevicesService(self)
-    self.projects_locations_groups = self.ProjectsLocationsGroupsService(self)
     self.projects_locations_registries_devices_configVersions = self.ProjectsLocationsRegistriesDevicesConfigVersionsService(self)
     self.projects_locations_registries_devices_states = self.ProjectsLocationsRegistriesDevicesStatesService(self)
     self.projects_locations_registries_devices = self.ProjectsLocationsRegistriesDevicesService(self)
@@ -47,53 +45,6 @@ class CloudiotV1(base_api.BaseApiClient):
     self.projects_locations_registries = self.ProjectsLocationsRegistriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class ProjectsLocationsGroupsDevicesService(base_api.BaseApiService):
-    """Service class for the projects_locations_groups_devices resource."""
-
-    _NAME = u'projects_locations_groups_devices'
-
-    def __init__(self, client):
-      super(CloudiotV1.ProjectsLocationsGroupsDevicesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""List devices in a device registry.
-
-      Args:
-        request: (CloudiotProjectsLocationsGroupsDevicesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListDevicesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/groups/{groupsId}/devices',
-        http_method=u'GET',
-        method_id=u'cloudiot.projects.locations.groups.devices.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'deviceIds', u'deviceNumIds', u'fieldMask', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/devices',
-        request_field='',
-        request_type_name=u'CloudiotProjectsLocationsGroupsDevicesListRequest',
-        response_type_name=u'ListDevicesResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsGroupsService(base_api.BaseApiService):
-    """Service class for the projects_locations_groups resource."""
-
-    _NAME = u'projects_locations_groups'
-
-    def __init__(self, client):
-      super(CloudiotV1.ProjectsLocationsGroupsService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ProjectsLocationsRegistriesDevicesConfigVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_devices_configVersions resource."""

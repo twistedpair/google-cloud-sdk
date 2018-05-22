@@ -1611,6 +1611,10 @@ class InstanceGroupConfig(_messages.Message):
 class InstantiateWorkflowTemplateRequest(_messages.Message):
   r"""A request to instantiate a workflow template.
 
+  Messages:
+    ParametersValue: Optional. Map from parameter names to values that should
+      be used for those parameters.
+
   Fields:
     instanceId: Optional. A tag that prevents multiple concurrent workflow
       instances with the same tag from running. This mitigates risk of
@@ -1619,14 +1623,42 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
       (https://en.wikipedia.org/wiki/Universally_unique_identifier).The tag
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
+    parameters: Optional. Map from parameter names to values that should be
+      used for those parameters.
     version: Optional. The version of workflow template to instantiate. If
       specified, the workflow will be instantiated only if the current version
       of the workflow template has the supplied version.This option cannot be
       used to instantiate a previous version of workflow template.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. Map from parameter names to values that should be used for
+    those parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   instanceId = _messages.StringField(1)
-  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  parameters = _messages.MessageField('ParametersValue', 2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Job(_messages.Message):
@@ -2260,6 +2292,18 @@ class OrderedJob(_messages.Message):
   stepId = _messages.StringField(10)
 
 
+class ParameterValidation(_messages.Message):
+  r"""Configuration for parameter validation.
+
+  Fields:
+    regex: Validation based on regular expressions.
+    values: Validation based on a list of allowed values.
+  """
+
+  regex = _messages.MessageField('RegexValidation', 1)
+  values = _messages.MessageField('ValueValidation', 2)
+
+
 class PigJob(_messages.Message):
   r"""A Cloud Dataproc job for running Apache Pig (https://pig.apache.org/)
   queries on YARN.
@@ -2474,6 +2518,18 @@ class QueryList(_messages.Message):
   """
 
   queries = _messages.StringField(1, repeated=True)
+
+
+class RegexValidation(_messages.Message):
+  r"""Validation based on regular expressions.
+
+  Fields:
+    regexes: Required. RE2 regular expressions used to validate the
+      parameter's value. The provided value must match the regexes in its
+      entirety, e.g. substring matches are not enough.
+  """
+
+  regexes = _messages.StringField(1, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2865,6 +2921,56 @@ class SubmitJobRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class TemplateParameter(_messages.Message):
+  r"""A configurable parameter that replaces one or more fields in the
+  template.
+
+  Fields:
+    description: Optional. User-friendly description of the parameter. Must
+      not exceed 1024 characters.
+    fields: Required. Paths to all fields that this parameter replaces. Each
+      field may appear in at most one Parameter's fields list.Field path
+      syntax:A field path is similar to a FieldMask. For example, a field path
+      that references the zone field of the template's cluster selector would
+      look like:placement.clusterSelector.zoneThe only differences between
+      field paths and standard field masks are that: Values in maps can be
+      referenced by key.Example: placement.clusterSelector.clusterLabels'key'
+      Jobs in the jobs list can be referenced by step id.Example: jobs'step-
+      id'.hadoopJob.mainJarFileUri Items in repeated fields can be referenced
+      by zero-based index.Example: jobs'step-id'.sparkJob.args0NOTE: Maps and
+      repeated fields may not be parameterized in their entirety. Only
+      individual map values and items in repeated fields may be referenced.
+      For example, the following field paths are invalid: -
+      placement.clusterSelector.clusterLabels - jobs'step-
+      id'.sparkJob.argsParameterizable fields:Only certain types of fields may
+      be parameterized, specifically: - Labels - File uris - Job properties -
+      Job arguments - Script variables - Main class (in HadoopJob and
+      SparkJob) - Zone (in ClusterSelector)Examples of parameterizable
+      fields:Labels:labels'key' placement.managedCluster.labels'key'
+      placement.clusterSelector.clusterLabels'key' jobs'step-
+      id'.labels'key'File uris:jobs'step-id'.hadoopJob.mainJarFileUri jobs
+      'step-id'.hiveJob.queryFileUri jobs'step-
+      id'.pySparkJob.mainPythonFileUri jobs'step-id'.hadoopJob.jarFileUris0
+      jobs'step-id'.hadoopJob.archiveUris0 jobs'step-id'.hadoopJob.fileUris0
+      jobs'step-id'.pySparkJob.pythonFileUris0Other:jobs'step-
+      id'.hadoopJob.properties'key' jobs'step-id'.hadoopJob.args0 jobs'step-
+      id'.hiveJob.scriptVariables'key' jobs'step-id'.hadoopJob.mainJarFileUri
+      placement.clusterSelector.zone
+    name: Required. User-friendly parameter name. This name is used as a key
+      when providing a value for this parameter when the template is
+      instantiated. Must contain only capital letters (A-Z), numbers (0-9),
+      and underscores (_), and must not start with a number. The maximum
+      length is 40 characters.
+    validation: Optional. Validation rules to be applied to this parameter's
+      value.
+  """
+
+  description = _messages.StringField(1)
+  fields = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  validation = _messages.MessageField('ParameterValidation', 4)
+
+
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for TestIamPermissions method.
 
@@ -2887,6 +2993,16 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class ValueValidation(_messages.Message):
+  r"""Validation based on a list of allowed values.
+
+  Fields:
+    values: Required. List of allowed values for this parameter.
+  """
+
+  values = _messages.StringField(1, repeated=True)
 
 
 class WorkflowGraph(_messages.Message):
@@ -3040,6 +3156,9 @@ class WorkflowTemplate(_messages.Message):
     name: Output only. The "resource name" of the template, as described in
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
+    parameters: Optional. Template parameters whose values are substituted
+      into the template. Values for these parameters must be provided when the
+      template is instantiated.
     placement: Required. WorkflowTemplate scheduling information.
     updateTime: Output only. The time template was last updated.
     version: Optional. Used to perform a consistent read-modify-write.This
@@ -3087,9 +3206,10 @@ class WorkflowTemplate(_messages.Message):
   jobs = _messages.MessageField('OrderedJob', 3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  placement = _messages.MessageField('WorkflowTemplatePlacement', 6)
-  updateTime = _messages.StringField(7)
-  version = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  parameters = _messages.MessageField('TemplateParameter', 6, repeated=True)
+  placement = _messages.MessageField('WorkflowTemplatePlacement', 7)
+  updateTime = _messages.StringField(8)
+  version = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class WorkflowTemplatePlacement(_messages.Message):

@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utility functions for managing customer supplied encryption keys."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 import base64
 import json
@@ -22,6 +24,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+import six
 
 CSEK_HELP_URL = ('https://cloud.google.com/compute/docs/disks/'
                  'customer-supplied-encryption')
@@ -105,7 +108,7 @@ def ValidateKey(base64_encoded_string, expected_key_length):
         base64_encoded_string,
         'Key contains non-ascii characters.')
 
-  if not re.match(r'^[a-zA-Z0-9+/=]*$', base64_encoded_string_as_str):
+  if not re.match(r'^[a-zA-Z0-9+/=]*$', base64_encoded_string):
     raise InvalidKeyExceptionNoContext(
         base64_encoded_string_as_str,
         'Key contains unexpected characters. Base64 encoded strings '
@@ -120,10 +123,8 @@ def ValidateKey(base64_encoded_string, expected_key_length):
         'Key is not valid base64: [{0}].'.format(t.message))
 
 
-class CsekKeyBase(object):
+class CsekKeyBase(six.with_metaclass(abc.ABCMeta, object)):
   """A class representing for CSEK keys."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, key_material):
     ValidateKey(key_material, expected_key_length=self.GetKeyLength())
@@ -324,7 +325,7 @@ class CsekKeyStore(object):
       InvalidKeyFileException: if the input doesn't parse or is not well-formed.
     """
 
-    assert isinstance(s, basestring)
+    assert isinstance(s, six.string_types)
     state = {}
 
     try:
@@ -383,7 +384,7 @@ class CsekKeyStore(object):
     assert isinstance(self.state, dict)
     search_state = (None, None)
 
-    for pat, key in self.state.iteritems():
+    for pat, key in six.iteritems(self.state):
       if pat.Matches(resource):
         if search_state[0]:
           raise InvalidKeyFileException(

@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.args import labels_util
 
 
 def MakeResourcePolicyArg():
@@ -29,20 +30,22 @@ def MakeResourcePolicyArg():
 
 
 def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
-                          cadence_help, supports_hourly=False):
+                          cadence_help, supports_hourly=False,
+                          has_restricted_start_times=False):
   """Add Cycle Frequency args for Resource Policies."""
   freq_group = parser.add_argument_group('Cycle Frequency Group.',
                                          required=True, mutex=True)
+  if has_restricted_start_times:
+    start_time_help += """\
+        Valid choices are 00:00, 04:00, 08:00,12:00,
+        16:00 and 20:00 UTC. See $ gcloud topic datetimes for information on
+        time formats. For example, `--start-time="03:00-05"`
+        (which gets converted to 08:00 UTC)."""
   freq_flags_group = freq_group.add_group('From flags')
   freq_flags_group.add_argument(
       '--start-time', required=True,
       type=arg_parsers.Datetime.Parse,
-      help="""\
-      {}. Valid choices are 00:00, 04:00, 08:00,12:00,
-      16:00 and 20:00 UTC. See $ gcloud topic datetimes for information on
-      time formats. For example, `--start-time="03:00-05"`
-      (which gets converted to 08:00 UTC).
-      """.format(start_time_help))
+      help=start_time_help)
   cadence_group = freq_flags_group.add_group(mutex=True, required=True)
   cadence_group.add_argument(
       '--daily-{}'.format(flag_suffix),
@@ -54,8 +57,8 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
       dest='weekly_cycle',
       choices=['monday', 'tuesday', 'wednesday', 'thursday', 'friday',
                'saturday', 'sunday'],
-      help_str='{} occurs weekly on WEEKLY_WINDOW at START_TIME.'.format(
-          cadence_help)).AddToParser(cadence_group)
+      help_str='{} occurs weekly on WEEKLY_{} at START_TIME.'.format(
+          cadence_help, flag_suffix.upper())).AddToParser(cadence_group)
   if supports_hourly:
     cadence_group.add_argument(
         '--hourly-{}'.format(flag_suffix),
@@ -75,10 +78,10 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
       The format is a JSON/YAML file containing a list of objects with the
       following fields:
 
-      day: Day of the week with the same choices as --weekly-window.
+      day: Day of the week with the same choices as --weekly-{}.
       startTime: Start time of the snapshot schedule with the same format
           as --start-time.
-      """)
+      """.format(flag_suffix))
 
 
 def AddCommonArgs(parser):
@@ -88,11 +91,21 @@ def AddCommonArgs(parser):
 
 
 def AddBackupScheduleArgs(parser):
+  """Adds flags specific to backup schedule resource policies."""
   parser.add_argument(
       '--max-retention-days',
       required=True,
       type=arg_parsers.BoundedInt(lower_bound=1),
       help='Maximum number of days snapshot can be retained.')
+  snapshot_properties_group = parser.add_group('Snapshot properties')
+  labels_util.GetCreateLabelsFlag(
+      extra_message=' These will be added to the disk snapshots on creation.',
+      labels_name='snapshot-labels').AddToParser(snapshot_properties_group)
+  snapshot_properties_group.add_argument(
+      '--guest-flush',
+      action='store_true',
+      help='Create an application consistent snapshot by informing the OS to '
+           'prepare for the snapshot process.')
 
 
 def AddResourcePoliciesArgs(parser, action, required=False):

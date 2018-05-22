@@ -18,8 +18,9 @@ Bulk object uploads and downloads use methods that shell out to gsutil.
 Lightweight metadata / streaming operations use the StorageClient class.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import sys
-import urlparse
 
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import transfer
@@ -29,6 +30,7 @@ from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
+import six.moves.urllib.parse
 
 
 # URI scheme for GCS.
@@ -39,8 +41,8 @@ HTTP_TIMEOUT = 60
 
 # Fix urlparse for storage paths.
 # This allows using urljoin in other files (that import this).
-urlparse.uses_relative.append(STORAGE_SCHEME)
-urlparse.uses_netloc.append(STORAGE_SCHEME)
+six.moves.urllib.parse.uses_relative.append(STORAGE_SCHEME)
+six.moves.urllib.parse.uses_netloc.append(STORAGE_SCHEME)
 
 
 def Upload(files, destination):
@@ -55,8 +57,8 @@ def Upload(files, destination):
   exit_code = storage_util.RunGsutilCommand('cp', args)
   if exit_code != 0:
     raise exceptions.ToolException(
-        "Failed to upload files {0} to '{1}' using gsutil.".format(
-            files, destination))
+        "Failed to upload files ['{0}'] to '{1}' using gsutil.".format(
+            "', '".join(files), destination))
 
 
 def GetObjectRef(path, messages):

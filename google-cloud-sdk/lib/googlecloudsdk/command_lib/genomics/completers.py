@@ -14,6 +14,8 @@
 
 """Genomics resource completers."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.command_lib.iam import completers
 
 

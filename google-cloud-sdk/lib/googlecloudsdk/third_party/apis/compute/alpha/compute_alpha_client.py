@@ -7405,7 +7405,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified NodeGroup. Gets a list of available NodeGroups by making a list() request.
+      r"""Returns the specified NodeGroup. Get a list of available NodeGroups by making a list() request.
 
       Args:
         request: (ComputeNodeGroupsGetRequest) input message

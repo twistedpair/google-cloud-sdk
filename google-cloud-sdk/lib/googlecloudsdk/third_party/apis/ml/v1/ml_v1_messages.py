@@ -93,10 +93,12 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
         no GPU.
       NVIDIA_TESLA_K80: Nvidia tesla k80 GPU.
       NVIDIA_TESLA_P100: Nvidia tesla P100 GPU.
+      NVIDIA_TESLA_V100: Nvidia tesla V100 GPU.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
     NVIDIA_TESLA_P100 = 2
+    NVIDIA_TESLA_V100 = 3
 
   count = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -148,10 +150,12 @@ class GoogleCloudMlV1Capability(_messages.Message):
       ACCELERATOR_TYPE_UNSPECIFIED: <no description>
       NVIDIA_TESLA_K80: <no description>
       NVIDIA_TESLA_P100: <no description>
+      NVIDIA_TESLA_V100: <no description>
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
     NVIDIA_TESLA_P100 = 2
+    NVIDIA_TESLA_V100 = 3
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""TypeValueValuesEnum enum type.
@@ -902,33 +906,28 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       workers of the cluster when your   model requires more computation than
       the standard machine can handle   satisfactorily.   </dd>
       <dt>complex_model_m</dt>   <dd>   A machine with roughly twice the
-      number of cores and roughly double the   memory of <code
-      suppresswarning="true">complex_model_s</code>.   </dd>
-      <dt>complex_model_l</dt>   <dd>   A machine with roughly twice the
-      number of cores and roughly double the   memory of <code
-      suppresswarning="true">complex_model_m</code>.   </dd>
-      <dt>standard_gpu</dt>   <dd>   A machine equivalent to <code
-      suppresswarning="true">standard</code> that   also includes a single
+      number of cores and roughly double the   memory of
+      <i>complex_model_s</i>.   </dd>   <dt>complex_model_l</dt>   <dd>   A
+      machine with roughly twice the number of cores and roughly double the
+      memory of <i>complex_model_m</i>.   </dd>   <dt>standard_gpu</dt>   <dd>
+      A machine equivalent to <i>standard</i> that   also includes a single
       NVIDIA Tesla K80 GPU. See more about   <a href="/ml-
       engine/docs/tensorflow/using-gpus">using GPUs to   train your model</a>.
       </dd>   <dt>complex_model_m_gpu</dt>   <dd>   A machine equivalent to
-      <code suppresswarning="true">complex_model_m</code> that also includes
-      four NVIDIA Tesla K80 GPUs.   </dd>   <dt>complex_model_l_gpu</dt>
-      <dd>   A machine equivalent to   <code
-      suppresswarning="true">complex_model_l</code> that also includes   eight
-      NVIDIA Tesla K80 GPUs.   </dd>   <dt>standard_p100</dt>   <dd>   A
-      machine equivalent to <code suppresswarning="true">standard</code> that
-      also includes a single NVIDIA Tesla P100 GPU. The availability of these
-      GPUs is in the Beta launch stage.   </dd>
-      <dt>complex_model_m_p100</dt>   <dd>   A machine equivalent to   <code
-      suppresswarning="true">complex_model_m</code> that also includes   four
-      NVIDIA Tesla P100 GPUs. The availability of these GPUs is in   the Beta
-      launch stage.   </dd>   <dt>standard_tpu</dt>   <dd>   A TPU VM
-      including one Cloud TPU. The availability of Cloud TPU is in
-      <i>Beta</i> launch stage. See more about   <a href="/ml-
-      engine/docs/tensorflow/using-tpus">using TPUs to train   your model</a>.
-      </dd> </dl>  You must set this value when `scaleTier` is set to
-      `CUSTOM`.
+      <i>complex_model_m</i> that also includes   four NVIDIA Tesla K80 GPUs.
+      </dd>   <dt>complex_model_l_gpu</dt>   <dd>   A machine equivalent to
+      <i>complex_model_l</i> that also includes   eight NVIDIA Tesla K80 GPUs.
+      </dd>   <dt>standard_p100</dt>   <dd>   A machine equivalent to
+      <i>standard</i> that   also includes a single NVIDIA Tesla P100 GPU. The
+      availability of these   GPUs is in the <i>Beta</i> launch stage.   </dd>
+      <dt>complex_model_m_p100</dt>   <dd>   A machine equivalent to
+      <i>complex_model_m</i> that also includes   four NVIDIA Tesla P100 GPUs.
+      The availability of these GPUs is in   the <i>Beta</i> launch stage.
+      </dd>   <dt>cloud_tpu</dt>   <dd>   A TPU VM including one Cloud TPU.
+      The availability of Cloud TPU is in   <i>Beta</i> launch stage. See more
+      about   <a href="/ml-engine/docs/tensorflow/using-tpus">using TPUs to
+      train   your model</a>.   </dd> </dl>  You must set this value when
+      `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.

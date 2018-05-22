@@ -18,7 +18,7 @@ class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   Fields:
     environment: A Environment resource to be passed as the request body.
     parent: The parent must be of the form
-      `projects/{projectId}/locations/{locationId}`.
+      "projects/{projectId}/locations/{locationId}".
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -30,8 +30,8 @@ class ComposerProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
 
   Fields:
     name: The environment to delete, in the form:
-      `projects/{projectId}/locations/{locationId}/environments/{environmentId
-      }`
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
   """
 
   name = _messages.StringField(1, required=True)
@@ -42,8 +42,8 @@ class ComposerProjectsLocationsEnvironmentsGetRequest(_messages.Message):
 
   Fields:
     name: The resource name of the environment to get, in the form:
-      `projects/{projectId}/locations/{locationId}/environments/{environmentId
-      }`
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
   """
 
   name = _messages.StringField(1, required=True)
@@ -57,7 +57,7 @@ class ComposerProjectsLocationsEnvironmentsListRequest(_messages.Message):
     pageToken: The next_page_token value returned from a previous List
       request, if any.
     parent: List environments in the given project and location, in the form:
-      `projects/{projectId}/locations/{locationId}`
+      "projects/{projectId}/locations/{locationId}"
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -71,8 +71,8 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   Fields:
     environment: A Environment resource to be passed as the request body.
     name: The relative resource name of the environment to update, in the
-      form: `projects/{projectId}/locations/{locationId}/environments/{environ
-      mentId}`
+      form: "projects/{projectId}/locations/{locationId}/environments/{environ
+      mentId}"
     updateMask: Required. A comma-separated list of paths, relative to
       `Environment`, of fields to update. For example, to set the version of
       scikit-learn to install in the environment to 0.19.0 and to remove an
@@ -224,8 +224,8 @@ class Environment(_messages.Message):
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
     name: The resource name of the environment, in the form:
-      `projects/{projectId}/locations/{locationId}/environments/{environmentId
-      }`
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
     state: The current state of the environment.
     updateTime: Output only. The time at which this environment was last
       modified.
@@ -306,10 +306,11 @@ class EnvironmentConfig(_messages.Message):
       directory with the given prefix.
     gkeCluster: Output only. The Kubernetes Engine cluster used to run this
       environment.
-    nodeConfig: The configuration used for the Container Engine cluster.
-    nodeCount: The number of nodes in the Container Engine cluster that will
+    nodeConfig: The configuration used for the Kubernetes Engine cluster.
+    nodeCount: The number of nodes in the Kubernetes Engine cluster that will
       be used to run this environment.
-    softwareConfig: The config settings for software inside the environment.
+    softwareConfig: The configuration settings for software inside the
+      environment.
   """
 
   airflowUri = _messages.StringField(1)
@@ -348,59 +349,58 @@ class ListOperationsResponse(_messages.Message):
 
 
 class NodeConfig(_messages.Message):
-  r"""The configuration information for the Container Engine nodes running the
-  Apache Airflow software.
+  r"""The configuration information for the Kubernetes Engine nodes running
+  the Apache Airflow software.
 
   Fields:
-    diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum is
-      10GB. If unspecified, defaults to 100GB. Cannot be updated.
+    diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
+      is 10GB. If unspecified, defaults to 100GB. Cannot be updated.
     location: Optional. The Compute Engine [zone](/compute/docs/regions-zones)
       in which to deploy the VMs used to run the Apache Airflow software,
-      specified as a relative resource name](https://cloud.google.com/apis/des
-      ign/resource_names#relative_resource_name). For example:
-      `projects/{projectId}/zones/{zoneId}`.  This `location` must belong to
+      specified as a [relative resource
+      name](/apis/design/resource_names#relative_resource_name). For example:
+      "projects/{projectId}/zones/{zoneId}".  This `location` must belong to
       the enclosing environment's project and location. If both this field and
       `nodeConfig.machineType` are specified, `nodeConfig.machineType` must
       belong to this `location`; if both are unspecified, the service will
       pick a zone in the Compute Engine region corresponding to the Cloud
-      Composer location and propagate that choice to both fields. If exactly
-      one of this field and `nodeConfig.machineType` is specified, the
+      Composer location, and propagate that choice to both fields. If only one
+      field (`location` or `nodeConfig.machineType`) is specified, the
       location information from the specified field will be propagated to the
       unspecified field.
-    machineType: Optional. The Google Compute Engine [machine type](
-      /compute/docs/machine-types) used for cluster instances, specified as a
-      [relative resource name]( https://cloud.google.com/apis/design/resource_
-      names#relative_resource_name). For example:
-      `projects/{projectId}/zones/{zoneId}/machineTypes/{machineTypeId}`.  The
+    machineType: Optional. The Compute Engine [machine type](/compute/docs
+      /machine-types) used for cluster instances, specified as a [relative
+      resource name](/apis/design/resource_names#relative_resource_name). For
+      example:
+      "projects/{projectId}/zones/{zoneId}/machineTypes/{machineTypeId}".  The
       `machineType` must belong to the enclosing environment's project and
       location. If both this field and `nodeConfig.location` are specified,
       this `machineType` must belong to the `nodeConfig.location`; if both are
       unspecified, the service will pick a zone in the Compute Engine region
-      corresponding to the Cloud Composer location and propagate that choice
+      corresponding to the Cloud Composer location, and propagate that choice
       to both fields. If exactly one of this field and `nodeConfig.location`
       is specified, the location information from the specified field will be
-      propagated to the unspecified field.  Furthermore, if this field is
-      unspecified, the `machineTypeId` defaults to `n1-standard-1`.
+      propagated to the unspecified field.  If this field is unspecified, the
+      `machineTypeId` defaults to "n1-standard-1".
     network: Optional. The Compute Engine network to be used for machine
-      communications, specified as a [relative resource name]( https://cloud.g
-      oogle.com/apis/design/resource_names#relative_resource_name). For
-      example: `projects/{projectId}/global/networks/{networkId}`.  [Shared
+      communications, specified as a [relative resource
+      name](/apis/design/resource_names#relative_resource_name). For example:
+      "projects/{projectId}/global/networks/{networkId}".  [Shared
       VPC](/vpc/docs/shared-vpc) is not currently supported. The network must
       belong to the environment's project. If unspecified, the "default"
-      network ID in the environment's project is used.  If a "Custom Subnet
-      Network" (see [Using Subnetworks](/compute/docs/subnetworks) for more
-      information) is provided, `nodeConfig.subnetwork` must also be provided.
+      network ID in the environment's project is used.  If a [Custom Subnet
+      Network]((/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
+      `nodeConfig.subnetwork` must also be provided.
     oauthScopes: Optional. The set of Google API scopes to be made available
-      on all of the node VMs. If `oauth_scopes` is empty, defaults to
+      on all node VMs. If `oauth_scopes` is empty, defaults to
       ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.
     serviceAccount: Optional. The Google Cloud Platform Service Account to be
       used by the node VMs. If a service account is not specified, the
       "default" Compute Engine service account is used. Cannot be updated.
     subnetwork: Optional. The Compute Engine subnetwork to be used for machine
-      communications, specified as a [relative resource name]( https://cloud.g
-      oogle.com/apis/design/resource_names#relative_resource_name). For
-      example:
-      `projects/{projectId}/regions/{regionId}/subnetworks/{subnetworkId}`  If
+      communications, specified as a [relative resource
+      name](/apis/design/resource_names#relative_resource_name). For example:
+      "projects/{projectId}/regions/{regionId}/subnetworks/{subnetworkId}"  If
       a subnetwork is provided, `nodeConfig.network` must also be provided,
       and the subnetwork must belong to the enclosing environment's project
       and location.
@@ -586,66 +586,65 @@ class OperationMetadata(_messages.Message):
 
 
 class SoftwareConfig(_messages.Message):
-  r"""Specifies the selection and config of software inside the environment.
+  r"""Specifies the selection and configuration of software inside the
+  environment.
 
   Messages:
     AirflowConfigOverridesValue: Optional. Apache Airflow configuration
       properties to override.  Property keys contain the section and property
-      name, separated by a hyphen, for example `core-
-      dags_are_paused_at_creation`. Sections must not contain hyphens ("-"),
-      opening square brackets ("["),  or closing square brackets ("]"). The
-      name must be non-empty and must not contain an equals sign ("=") or
-      semicolon (";"). The section as well as the name must not contain a
+      names, separated by a hyphen, for example "core-
+      dags_are_paused_at_creation". Section names must not contain hyphens
+      ("-"), opening square brackets ("["),  or closing square brackets ("]").
+      The property name must not be empty and must not contain an equals sign
+      ("=") or semicolon (";"). Section and property names must not contain a
       period ("."). Apache Airflow configuration property names must be
-      written in [snake_case](https://www.google.com/url?sa=D&q=https%3A%2F%2F
-      en.wikipedia.org%2Fwiki%2FSnake_case). Property values can contain any
-      character and be written in any lower/upper case format.  Certain Apache
-      Airflow configuration property values are [blacklisted](/composer/docs
-      /how-to/managing/setting-airflow-
-      configurations#airflow_configuration_blacklists) and cannot be
+      written in [snake_case](https://en.wikipedia.org/wiki/Snake_case).
+      Property values can contain any character, and can be written in any
+      lower/upper case format.  Certain Apache Airflow configuration property
+      values are [blacklisted](/composer/docs/how-to/managing/setting-airflow-
+      configurations#airflow_configuration_blacklists), and cannot be
       overridden.
     EnvVariablesValue: Optional. Additional environment variables to provide
       to the Apache Airflow scheduler, worker, and webserver processes.
       Environment variable names must match the regular expression `a-zA-Z_*`.
-      Furthermore, they cannot specify Apache Airflow software configuration
-      overrides (i.e., match the regular expression
-      `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`); nor can they take any of the
-      following reserved values:  * `AIRFLOW_HOME` * `C_FORCE_ROOT` *
+      They cannot specify Apache Airflow software configuration overrides
+      (they cannot match the regular expression
+      `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`), and they cannot match any of the
+      following reserved names:  * `AIRFLOW_HOME` * `C_FORCE_ROOT` *
       `CONTAINER_NAME` * `DAGS_FOLDER` * `GCP_PROJECT` * `GCS_BUCKET` *
       `GKE_CLUSTER_NAME` * `SQL_DATABASE` * `SQL_INSTANCE` * `SQL_PASSWORD` *
       `SQL_PROJECT` * `SQL_REGION` * `SQL_USER`
     PypiPackagesValue: Optional. Custom Python Package Index (PyPI) packages
       to be installed in the environment.  Keys refer to the lowercase package
-      name such as `numpy` and values are the lowercase extras and version
-      specifier such as `==1.12.0`, `[devel,gcp_api]`, or `[devel]>=1.8.2,
-      <1.9.2`. To specify a package without pinning it to a version specifier,
+      name such as "numpy" and values are the lowercase extras and version
+      specifier such as "==1.12.0", "[devel,gcp_api]", or "[devel]>=1.8.2,
+      <1.9.2". To specify a package without pinning it to a version specifier,
       use the empty string as the value.
 
   Fields:
     airflowConfigOverrides: Optional. Apache Airflow configuration properties
-      to override.  Property keys contain the section and property name,
-      separated by a hyphen, for example `core-dags_are_paused_at_creation`.
-      Sections must not contain hyphens ("-"), opening square brackets ("["),
-      or closing square brackets ("]"). The name must be non-empty and must
-      not contain an equals sign ("=") or semicolon (";"). The section as well
-      as the name must not contain a period ("."). Apache Airflow
-      configuration property names must be written in [snake_case](https://www
-      .google.com/url?sa=D&q=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FSnake_cas
-      e). Property values can contain any character and be written in any
-      lower/upper case format.  Certain Apache Airflow configuration property
-      values are [blacklisted](/composer/docs/how-to/managing/setting-airflow-
-      configurations#airflow_configuration_blacklists) and cannot be
+      to override.  Property keys contain the section and property names,
+      separated by a hyphen, for example "core-dags_are_paused_at_creation".
+      Section names must not contain hyphens ("-"), opening square brackets
+      ("["),  or closing square brackets ("]"). The property name must not be
+      empty and must not contain an equals sign ("=") or semicolon (";").
+      Section and property names must not contain a period ("."). Apache
+      Airflow configuration property names must be written in
+      [snake_case](https://en.wikipedia.org/wiki/Snake_case). Property values
+      can contain any character, and can be written in any lower/upper case
+      format.  Certain Apache Airflow configuration property values are
+      [blacklisted](/composer/docs/how-to/managing/setting-airflow-
+      configurations#airflow_configuration_blacklists), and cannot be
       overridden.
     envVariables: Optional. Additional environment variables to provide to the
       Apache Airflow scheduler, worker, and webserver processes.  Environment
-      variable names must match the regular expression `a-zA-Z_*`.
-      Furthermore, they cannot specify Apache Airflow software configuration
-      overrides (i.e., match the regular expression
-      `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`); nor can they take any of the
-      following reserved values:  * `AIRFLOW_HOME` * `C_FORCE_ROOT` *
-      `CONTAINER_NAME` * `DAGS_FOLDER` * `GCP_PROJECT` * `GCS_BUCKET` *
-      `GKE_CLUSTER_NAME` * `SQL_DATABASE` * `SQL_INSTANCE` * `SQL_PASSWORD` *
-      `SQL_PROJECT` * `SQL_REGION` * `SQL_USER`
+      variable names must match the regular expression `a-zA-Z_*`. They cannot
+      specify Apache Airflow software configuration overrides (they cannot
+      match the regular expression `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`), and
+      they cannot match any of the following reserved names:  * `AIRFLOW_HOME`
+      * `C_FORCE_ROOT` * `CONTAINER_NAME` * `DAGS_FOLDER` * `GCP_PROJECT` *
+      `GCS_BUCKET` * `GKE_CLUSTER_NAME` * `SQL_DATABASE` * `SQL_INSTANCE` *
+      `SQL_PASSWORD` * `SQL_PROJECT` * `SQL_REGION` * `SQL_USER`
     imageVersion: Output only. The version of the software running in the
       environment. This encapsulates both the version of Cloud Composer
       functionality and the version of Apache Airflow. It must match the
@@ -657,27 +656,28 @@ class SoftwareConfig(_messages.Message):
       See also [Release Notes](/composer/docs/release-notes).
     pypiPackages: Optional. Custom Python Package Index (PyPI) packages to be
       installed in the environment.  Keys refer to the lowercase package name
-      such as `numpy` and values are the lowercase extras and version
-      specifier such as `==1.12.0`, `[devel,gcp_api]`, or `[devel]>=1.8.2,
-      <1.9.2`. To specify a package without pinning it to a version specifier,
+      such as "numpy" and values are the lowercase extras and version
+      specifier such as "==1.12.0", "[devel,gcp_api]", or "[devel]>=1.8.2,
+      <1.9.2". To specify a package without pinning it to a version specifier,
       use the empty string as the value.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AirflowConfigOverridesValue(_messages.Message):
     r"""Optional. Apache Airflow configuration properties to override.
-    Property keys contain the section and property name, separated by a
-    hyphen, for example `core-dags_are_paused_at_creation`. Sections must not
-    contain hyphens ("-"), opening square brackets ("["),  or closing square
-    brackets ("]"). The name must be non-empty and must not contain an equals
-    sign ("=") or semicolon (";"). The section as well as the name must not
-    contain a period ("."). Apache Airflow configuration property names must
-    be written in [snake_case](https://www.google.com/url?sa=D&q=https%3A%2F%2
-    Fen.wikipedia.org%2Fwiki%2FSnake_case). Property values can contain any
-    character and be written in any lower/upper case format.  Certain Apache
-    Airflow configuration property values are [blacklisted](/composer/docs
-    /how-to/managing/setting-airflow-
-    configurations#airflow_configuration_blacklists) and cannot be overridden.
+    Property keys contain the section and property names, separated by a
+    hyphen, for example "core-dags_are_paused_at_creation". Section names must
+    not contain hyphens ("-"), opening square brackets ("["),  or closing
+    square brackets ("]"). The property name must not be empty and must not
+    contain an equals sign ("=") or semicolon (";"). Section and property
+    names must not contain a period ("."). Apache Airflow configuration
+    property names must be written in
+    [snake_case](https://en.wikipedia.org/wiki/Snake_case). Property values
+    can contain any character, and can be written in any lower/upper case
+    format.  Certain Apache Airflow configuration property values are
+    [blacklisted](/composer/docs/how-to/managing/setting-airflow-
+    configurations#airflow_configuration_blacklists), and cannot be
+    overridden.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -705,10 +705,10 @@ class SoftwareConfig(_messages.Message):
   class EnvVariablesValue(_messages.Message):
     r"""Optional. Additional environment variables to provide to the Apache
     Airflow scheduler, worker, and webserver processes.  Environment variable
-    names must match the regular expression `a-zA-Z_*`. Furthermore, they
-    cannot specify Apache Airflow software configuration overrides (i.e.,
-    match the regular expression `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`); nor can
-    they take any of the following reserved values:  * `AIRFLOW_HOME` *
+    names must match the regular expression `a-zA-Z_*`. They cannot specify
+    Apache Airflow software configuration overrides (they cannot match the
+    regular expression `AIRFLOW__[A-Z0-9_]+__[A-Z0-9_]+`), and they cannot
+    match any of the following reserved names:  * `AIRFLOW_HOME` *
     `C_FORCE_ROOT` * `CONTAINER_NAME` * `DAGS_FOLDER` * `GCP_PROJECT` *
     `GCS_BUCKET` * `GKE_CLUSTER_NAME` * `SQL_DATABASE` * `SQL_INSTANCE` *
     `SQL_PASSWORD` * `SQL_PROJECT` * `SQL_REGION` * `SQL_USER`
@@ -738,8 +738,8 @@ class SoftwareConfig(_messages.Message):
   class PypiPackagesValue(_messages.Message):
     r"""Optional. Custom Python Package Index (PyPI) packages to be installed
     in the environment.  Keys refer to the lowercase package name such as
-    `numpy` and values are the lowercase extras and version specifier such as
-    `==1.12.0`, `[devel,gcp_api]`, or `[devel]>=1.8.2, <1.9.2`. To specify a
+    "numpy" and values are the lowercase extras and version specifier such as
+    "==1.12.0", "[devel,gcp_api]", or "[devel]>=1.8.2, <1.9.2". To specify a
     package without pinning it to a version specifier, use the empty string as
     the value.
 

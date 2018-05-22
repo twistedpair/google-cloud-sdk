@@ -74,6 +74,8 @@
     locales: [de, en_US, en_GB, es, fr, it, ru, zh]
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.api_lib.firebase.test import arg_validate
@@ -112,7 +114,7 @@ def GetArgsFromArgFile(argspec, all_test_args_set):
 
   arg_file, group_name = _SplitArgFileAndGroup(argspec)
   all_arg_groups = _ReadArgGroupsFromFile(arg_file)
-  _ValidateArgGroupNames(all_arg_groups.keys())
+  _ValidateArgGroupNames(list(all_arg_groups.keys()))
 
   args_from_file = {}
   _MergeArgGroupIntoArgs(args_from_file, group_name, all_arg_groups,
@@ -250,7 +252,7 @@ def ArgSpecCompleter(prefix, parsed_args, **kwargs):
   except exceptions.InvalidArgException:
     return []
   try:
-    groups = _ReadArgGroupsFromFile(arg_file).keys()
+    groups = list(_ReadArgGroupsFromFile(arg_file).keys())
   except yaml.FileLoadError:
     return []
   return [(arg_file + ':' + g) for g in groups if g.startswith(group_prefix)]

@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import times
 
@@ -45,6 +46,17 @@ def MakeDiskBackupSchedulePolicy(policy_ref, args, messages):
   """Creates a Disk Snapshot Schedule Resource Policy message from args."""
   hourly_cycle, daily_cycle, weekly_cycle = _ParseCycleFrequencyArgs(
       args, messages, supports_hourly=True)
+
+  snapshot_properties = None
+  snapshot_labels = labels_util.ParseCreateArgs(
+      args,
+      messages.ResourcePolicyBackupSchedulePolicySnapshotProperties.LabelsValue,
+      labels_dest='snapshot_labels')
+  if args.IsSpecified('guest_flush') or snapshot_labels:
+    snapshot_properties = (
+        messages.ResourcePolicyBackupSchedulePolicySnapshotProperties(
+            guestFlush=args.guest_flush,
+            labels=snapshot_labels))
   backup_policy = messages.ResourcePolicyBackupSchedulePolicy(
       retentionPolicy=
       messages.ResourcePolicyBackupSchedulePolicyRetentionPolicy(
@@ -52,7 +64,8 @@ def MakeDiskBackupSchedulePolicy(policy_ref, args, messages):
       schedule=messages.ResourcePolicyBackupSchedulePolicySchedule(
           hourlySchedule=hourly_cycle,
           dailySchedule=daily_cycle,
-          weeklySchedule=weekly_cycle))
+          weeklySchedule=weekly_cycle),
+      snapshotProperties=snapshot_properties)
   return messages.ResourcePolicy(
       name=policy_ref.Name(),
       description=args.description,

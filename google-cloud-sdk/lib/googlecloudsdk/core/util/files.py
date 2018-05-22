@@ -734,7 +734,7 @@ def OpenForWritingPrivate(path, binary=False):
       flags |= os.O_BINARY
 
   fd = os.open(path, flags, 0o600)
-  return os.fdopen(fd, 'w')
+  return os.fdopen(fd, 'wb' if binary else 'w')
 
 
 class ChDir(object):

@@ -970,7 +970,7 @@ def AddDiskTypeFlag(parser, suppressed=False):
     suppressed: Whether or not to suppress help text.
   """
   help_text = """\
-Type of the node VM boot disk.
+Type of the node VM boot disk. Defaults to pd-standard.
 """
   parser.add_argument(
       '--disk-type',
@@ -1548,8 +1548,6 @@ your cluster size.'
   parser.add_argument(
       '--concurrent-node-count',
       type=arg_parsers.BoundedInt(1, api_adapter.MAX_CONCURRENT_NODE_COUNT),
-      # TODO(b/76150055): Un-hide once this is ready for release.
-      hidden=True,
       help=help_text)
 
 

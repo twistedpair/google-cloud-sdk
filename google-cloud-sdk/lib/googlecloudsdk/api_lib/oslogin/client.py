@@ -71,16 +71,26 @@ class OsloginClient(object):
     res = self.client.users.GetLoginProfile(message)
     return res
 
-  def DeletePosixAccounts(self, project_ref):
+  def DeletePosixAccounts(self, project_ref, operating_system=None):
     """Delete the posix accounts for an account in the current project.
 
     Args:
       project_ref: The oslogin.users.projects resource.
+      operating_system: str, 'linux' or 'windows' (case insensitive).
     Returns:
       None
     """
-    message = self.messages.OsloginUsersProjectsDeleteRequest(
-        name=project_ref.RelativeName())
+    if operating_system:
+      os_value = operating_system.upper()
+      os_message = (self.messages.OsloginUsersProjectsDeleteRequest
+                    .OperatingSystemTypeValueValuesEnum(os_value))
+      message = self.messages.OsloginUsersProjectsDeleteRequest(
+          name=project_ref.RelativeName(),
+          operatingSystemType=os_message)
+    else:
+      message = self.messages.OsloginUsersProjectsDeleteRequest(
+          name=project_ref.RelativeName())
+
     self.client.users_projects.Delete(message)
 
   def ImportSshPublicKey(self, user, public_key, expiration_time=None):

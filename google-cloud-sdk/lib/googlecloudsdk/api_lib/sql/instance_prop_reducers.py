@@ -13,6 +13,8 @@
 # limitations under the License.
 """Reducer functions to generate instance props from prior state and flags."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import argparse
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.api_lib.sql import instances as api_util

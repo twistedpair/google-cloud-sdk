@@ -46,6 +46,9 @@ _GCLOUDIGNORE_REGISTRY = {
         env.NODE_TI_RUNTIME_EXPR, {env.STANDARD}): _NODE_GCLOUDIGNORE,
     runtime_registry.RegistryEntry(
         env.PHP_TI_RUNTIME_EXPR, {env.STANDARD}): _PHP_GCLOUDIGNORE,
+    runtime_registry.RegistryEntry(
+        env.PYTHON_TI_RUNTIME_EXPR, {env.STANDARD}):
+    gcloudignore.DEFAULT_IGNORE_FILE,
 }
 
 

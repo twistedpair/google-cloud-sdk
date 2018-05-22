@@ -19,6 +19,8 @@ bad filename, etc. Gcloud command surfaces are free to use exit codes 10..20.
 Gaps in exit_code numbering are left in case future expansion is needed.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 

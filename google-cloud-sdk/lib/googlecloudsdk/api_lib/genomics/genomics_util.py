@@ -14,6 +14,8 @@
 
 """Common helper methods for Genomics commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import re
 import tempfile
 
@@ -31,6 +33,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import files
+import six
 
 GCS_PREFIX = 'gs://'
 
@@ -161,7 +164,7 @@ def ArgDictToAdditionalPropertiesList(argdict, message):
     return result
   # For consistent results (especially for deterministic testing), make
   # the return list ordered by key
-  for k, v in sorted(argdict.iteritems()):
+  for k, v in sorted(six.iteritems(argdict)):
     result.append(message(key=k, value=v))
   return result
 

@@ -3665,12 +3665,12 @@ class UserInfo(_messages.Message):
       passed to the authorizer. This value in Kubernetes is a map<string,
       ExtraValue>, where ExtraValue is a typedef to []string. Proto3 doesn't
       support that way, so we use ListValue here.
-    groups: Groups that this user is a part of. This is not currently filled
-      in for GKE.
+    groups: Groups that this user is a part of. This is currently only filled
+      in for VMID-based Authenticate calls.
     uid: A unique identifier (across time) for the user. This is not currently
       filled in for GKE.
     username: The name of the user. This should be the email address
-      associated with the GAIA identity of the user.
+      associated with the GAIA identity of the user or a Kubernetes username.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

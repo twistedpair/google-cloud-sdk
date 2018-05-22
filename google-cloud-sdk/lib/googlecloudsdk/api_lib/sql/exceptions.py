@@ -13,6 +13,8 @@
 # limitations under the License.
 """Common utility functions for sql errors and exceptions."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.core import exceptions
 
 

@@ -592,6 +592,7 @@ class ExecuteSqlRequest(_messages.Message):
       new SQL statement execution to resume where the last one left off. The
       rest of the request parameters must exactly match the request that
       yielded this token.
+    seqno: A string attribute.
     sql: Required. The SQL string.
     transaction: The transaction to use. If none is provided, the default is a
       temporary read-only transaction with strong concurrency.
@@ -679,8 +680,9 @@ class ExecuteSqlRequest(_messages.Message):
   partitionToken = _messages.BytesField(3)
   queryMode = _messages.EnumField('QueryModeValueValuesEnum', 4)
   resumeToken = _messages.BytesField(5)
-  sql = _messages.StringField(6)
-  transaction = _messages.MessageField('TransactionSelector', 7)
+  seqno = _messages.IntegerField(6)
+  sql = _messages.StringField(7)
+  transaction = _messages.MessageField('TransactionSelector', 8)
 
 
 class Expr(_messages.Message):

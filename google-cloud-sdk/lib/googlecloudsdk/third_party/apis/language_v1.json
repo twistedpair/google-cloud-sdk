@@ -169,7 +169,7 @@
           ]
         },
         "content": {
-          "description": "The content of the input in string format.",
+          "description": "The content of the input in string format.\nCloud audit logging exempt since it is based on user data.",
           "type": "string"
         },
         "gcsContentUri": {

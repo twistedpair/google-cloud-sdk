@@ -531,7 +531,8 @@ class Document(_messages.Message):
       `TYPE_UNSPECIFIED`, returns an `INVALID_ARGUMENT` error.
 
   Fields:
-    content: The content of the input in string format.
+    content: The content of the input in string format. Cloud audit logging
+      exempt since it is based on user data.
     gcsContentUri: The Google Cloud Storage URI where the file content is
       located. This URI must be of the form: gs://bucket_name/object_name. For
       more details, see https://cloud.google.com/storage/docs/reference-uris.

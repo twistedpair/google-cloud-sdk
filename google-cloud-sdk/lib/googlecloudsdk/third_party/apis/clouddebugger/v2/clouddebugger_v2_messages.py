@@ -92,7 +92,8 @@ class Breakpoint(_messages.Message):
       referenced in `log_message_format` are not logged.  Example: `Message
       received, id = $0, count = $1` with `expressions` = `[ message.id,
       message.count ]`.
-    stackFrames: The stack at breakpoint time.
+    stackFrames: The stack at breakpoint time, where stack_frames[0]
+      represents the most recently entered function.
     status: Breakpoint status.  The status includes an error flag and a human
       readable message. This field is usually unset. The message can be either
       informational or an error message. Regardless, clients should always

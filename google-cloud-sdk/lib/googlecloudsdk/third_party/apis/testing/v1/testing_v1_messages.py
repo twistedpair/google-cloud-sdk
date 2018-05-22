@@ -1182,7 +1182,7 @@ class TestMatrix(_messages.Message):
         the .xctestrun file specifies "UseDestinationArtifacts", which is
         disallowed.
       TEST_ONLY_APK: The APK is marked as "testOnly". NOT USED
-      MALFORMED_IPA: The input IPA could not be parsed.
+      MALFORMED_IPA: The input IPA could not be parsed. NOT USED
       NO_CODE_APK: APK contains no code. See also
         https://developer.android.com/guide/topics/manifest/application-
         element.html#code

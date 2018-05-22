@@ -33,17 +33,16 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
 
   Fields:
     features: Requested video annotation features.
-    inputContent: The video data bytes. If unset, the input video(s) should be
-      specified via `input_uri`. If set, `input_uri` should be unset.
-    inputUri: Input video location. Currently, only [Google Cloud
-      Storage](https://cloud.google.com/storage/) URIs are supported, which
-      must be specified in the following format: `gs://bucket-id/object-id`
+    inputContent: The video data bytes. Note: as with all bytes fields,
+      protobuffers use a pure binary representation, whereas JSON
+      representations use base64.
+    inputUri: Input video location. Only GCS URIs are currently supported,
+      which must be specified in the format of `gs://bucket-id/object-id`
       (other URI formats return google.rpc.Code.INVALID_ARGUMENT). For more
       information, see [Request URIs](/storage/docs/reference-uris). A video
-      URI may include wildcards in `object-id`, and thus identify multiple
-      videos. Supported wildcards: '*' to match 0 or more characters; '?' to
-      match 1 character. If unset, the input video should be embedded in the
-      request as `input_content`. If set, `input_content` should be unset.
+      URI may include wildcards in `object-id` to identify multiple videos.
+      Supported wildcards: '*' to match 0 or more characters; '?' to match 1
+      character.
     locationId: Optional cloud region where annotation should take place.
       Supported cloud regions: `us-east1`, `us-west1`, `europe-west1`, `asia-
       east1`. If no region is specified, a region will be determined based on

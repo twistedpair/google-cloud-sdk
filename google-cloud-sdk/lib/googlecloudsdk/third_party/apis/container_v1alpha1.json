@@ -276,6 +276,14 @@
           "description": "The IP prefix in CIDR notation to use for the hosted master network.\nThis prefix will be used for assigning private IP addresses to the\nmaster or set of masters, as well as the ILB VIP.",
           "type": "string"
         },
+        "defaultMaxPodsPerNode": {
+          "description": "The default maximum number of pods that can be run simultaneously on a\nnode in the node pool of this cluster. Only honored if cluster created\nwith IP Alias support.",
+          "$ref": "MaxPodsConstraint"
+        },
+        "enableNamespaceLevelIam": {
+          "description": "If this cluster supports namespace-level IAM policies. Clusters that\nsupport namespace-level IAM may have IAM policies set on their namespaces\nusing SetIamPolicy.",
+          "type": "boolean"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -366,6 +374,10 @@
         "tpuIpv4CidrBlock": {
           "description": "[Output only] The IP address range of the Cloud TPUs in this cluster, in\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `1.2.3.4\/29`).",
           "type": "string"
+        },
+        "databaseEncryptionKeyId": {
+          "description": "ResourceID of a CloudKMS key to be used for the encryption of secrets in\netcd. Ex.\nprojects\/kms-project\/locations\/global\/keyRings\/ring-1\/cryptoKeys\/key-1",
+          "type": "string"
         }
       }
     },
@@ -440,7 +452,7 @@
           }
         },
         "diskType": {
-          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'\nCurrently restricted because of b\/36071127#comment27",
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'",
           "type": "string"
         },
         "minCpuPlatform": {
@@ -765,6 +777,10 @@
           "description": "NodeManagement configuration for this NodePool.",
           "$ref": "NodeManagement"
         },
+        "maxPodsPerNode": {
+          "description": "The maximum number of pods that can be run simultaneously on a node in the\nnode pool.",
+          "$ref": "MaxPodsConstraint"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -868,6 +884,18 @@
         "requestedUpgradeStartTime": {
           "description": "User requested start time, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string"
+        }
+      }
+    },
+    "MaxPodsConstraint": {
+      "id": "MaxPodsConstraint",
+      "description": "Constraints applied to pods.",
+      "type": "object",
+      "properties": {
+        "maxPodsPerNode": {
+          "description": "Constraint enforced on the max num of pods per node.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

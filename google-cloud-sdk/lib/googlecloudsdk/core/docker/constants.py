@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 DEFAULT_REGISTRY = 'gcr.io'
 REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
-LAUNCHER_REGISTRIES = ['l.gcr.io', 'launcher.gcr.io']
+LAUNCHER_REGISTRIES = ['l.gcr.io', 'launcher.gcr.io', 'marketplace.gcr.io']
 LAUNCHER_PROJECT = 'cloud-marketplace'
 KUBERNETES_PUSH = 'staging-k8s.gcr.io'
 KUBERNETES_READ_ONLY = 'k8s.gcr.io'

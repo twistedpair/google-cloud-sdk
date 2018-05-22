@@ -110,6 +110,19 @@ def ForwardingRuleArgumentPlural(required=True):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
+def ForwardingRuleArgumentForRoute(required=True):
+  return compute_flags.ResourceArgument(
+      resource_name='forwarding rule',
+      name='--next-hop-ilb',
+      completer=ForwardingRulesCompleter,
+      plural=False,
+      required=required,
+      regional_collection='compute.forwardingRules',
+      short_help=
+      'The target forwarding rule that will receive forwarded traffic.',
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+
+
 BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='--backend-service',
     required=False,

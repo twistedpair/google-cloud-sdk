@@ -14,6 +14,8 @@
 
 """Common utilities for the gcloud dataproc tool."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import time
 import uuid
 
@@ -27,6 +29,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+import six
 
 
 def FormatRpcError(error):
@@ -39,12 +42,7 @@ def FormatRpcError(error):
     A ready-to-print string representation of the error.
   """
   log.debug('Error:\n' + encoding.MessageToJson(error))
-  formatted_error = error.message
-  # Only display details if the log level is INFO or finer.
-  if error.details and log.GetVerbosity() <= log.info:
-    formatted_error += (
-        '\nDetails:\n' + encoding.MessageToJson(error.details))
-  return formatted_error
+  return error.message
 
 
 def WaitForResourceDeletion(
@@ -85,7 +83,7 @@ class Bunch(object):
   """
 
   def __init__(self, dictionary):
-    for key, value in dictionary.iteritems():
+    for key, value in six.iteritems(dictionary):
       if isinstance(value, dict):
         value = Bunch(value)
       self.__dict__[key] = value

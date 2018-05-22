@@ -165,8 +165,8 @@ class AppEngineRouting(_messages.Message):
   overview-of-app-engine), [Microservices Architecture on Google App
   Engine](/appengine/docs/python/microservices-on-app-engine), [App Engine
   Standard request routing](/appengine/docs/standard/python/how-requests-are-
-  routed), and [App Engine Flex request
-  routing](/appengine/docs/flexible/python/how-requests-are-routed).
+  routed), and [App Engine Flex request routing]
+  (/appengine/docs/flexible/python/how-requests-are-routed).
 
   Fields:
     host: Output only. The host that the job is sent to.  For more information
@@ -358,8 +358,8 @@ class HttpTarget(_messages.Message):
 
   Fields:
     body: HTTP request body. A request body is allowed only if the HTTP method
-      is POST, PUT, or PATCH. It will result in  an error to set body on a job
-      with an incompatible HttpMethod.
+      is POST, PUT, or PATCH. It is an error to set body on a job with an
+      incompatible HttpMethod.
     headers: The user can specify HTTP request headers to send with the Job's
       HTTP request. This map contains the header field names and values.
       Repeated headers are not supported, but a header value can contain
@@ -774,8 +774,8 @@ class Schedule(_messages.Message):
 
   Fields:
     schedule: Required.  Scheduler schedules are specified using an English-
-      like format. See https://cloud.google.com/appengine/docs/standard/python
-      /config/cronref#schedule_format
+      like format. See https://cloud.google.com/cloud-scheduler/docs/running-
+      cron-jobs-with-cloud-scheduler#defining_the_job_schedule
     timeZone: Specifies the time zone to be used in interpreting
       Schedule.schedule. The value of this field must be a time zone name from
       the tz database: http://en.wikipedia.org/wiki/Tz_database.  Note that

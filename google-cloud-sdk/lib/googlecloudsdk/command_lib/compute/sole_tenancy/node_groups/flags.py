@@ -55,7 +55,7 @@ def AddUpdateArgsToParser(parser):
       help='The number of nodes to add to the node group.')
   update_node_count_group.add_argument(
       '--delete-nodes',
-      metavar='NODE_INDEX',
-      type=arg_parsers.ArgList(element_type=int),
-      help='The indexes of the nodes to remove from the group.')
+      metavar='NODE',
+      type=arg_parsers.ArgList(),
+      help='The names of the nodes to remove from the group.')
   AddNoteTemplateFlagToParser(parser, required=False)

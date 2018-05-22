@@ -14,6 +14,8 @@
 
 """A shared library to validate 'gcloud test' CLI argument values."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import datetime
 import os
 import posixpath
@@ -27,6 +29,8 @@ from googlecloudsdk.api_lib.firebase.test import util as util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+
+import six
 
 
 def ValidateArgFromFile(arg_internal_name, arg_value):
@@ -66,8 +70,8 @@ def ValidateArgFromFile(arg_internal_name, arg_value):
 
 
 # Constants shared between arg-file validation and CLI flag validation.
-POSITIVE_INT_PARSER = arg_parsers.BoundedInt(1, sys.maxint)
-NONNEGATIVE_INT_PARSER = arg_parsers.BoundedInt(0, sys.maxint)
+POSITIVE_INT_PARSER = arg_parsers.BoundedInt(1, sys.maxsize)
+NONNEGATIVE_INT_PARSER = arg_parsers.BoundedInt(0, sys.maxsize)
 TIMEOUT_PARSER = arg_parsers.Duration(lower_bound='1m', upper_bound='6h')
 ORIENTATION_LIST = ['portrait', 'landscape', 'default']
 
@@ -85,7 +89,8 @@ def ValidateStringList(arg_internal_name, arg_value):
   Raises:
     InvalidArgException: the argument's value is not valid.
   """
-  if isinstance(arg_value, basestring):  # convert single str to a str list
+  # convert single str to a str list
+  if isinstance(arg_value, six.string_types):
     return [arg_value]
   if isinstance(arg_value, int):  # convert single int to a str list
     return [str(arg_value)]
@@ -96,7 +101,7 @@ def ValidateStringList(arg_internal_name, arg_value):
 
 def _ValidateString(arg_internal_name, arg_value):
   """Validates an arg whose value should be a simple string."""
-  if isinstance(arg_value, basestring):
+  if isinstance(arg_value, six.string_types):
     return arg_value
   if isinstance(arg_value, int):  # convert int->str if str is really expected
     return str(arg_value)
@@ -115,7 +120,7 @@ def _ValidateBool(arg_internal_name, arg_value):
 def _ValidateDuration(arg_internal_name, arg_value):
   """Validates an argument which should have a Duration value."""
   try:
-    if isinstance(arg_value, basestring):
+    if isinstance(arg_value, six.string_types):
       return TIMEOUT_PARSER(arg_value)
     elif isinstance(arg_value, int):
       return TIMEOUT_PARSER(str(arg_value))
@@ -372,8 +377,8 @@ def _GenerateUniqueGcsObjectName():
   Returns:
     A string with the unique GCS object name.
   """
-  return '{0}_{1}'.format(datetime.datetime.now().isoformat('_'),
-                          ''.join(random.sample(string.letters, 4)))
+  return '{0}_{1}'.format(datetime.datetime.now().isoformat(b'_'), ''.join(
+      random.sample(string.letters, 4)))
 
 
 def ValidateOsVersions(args, catalog_mgr):
@@ -429,7 +434,7 @@ def ValidateRoboDirectivesList(args):
   """Validates key-value pairs for 'robo_directives' flag."""
   resource_names = set()
   duplicates = set()
-  for key, value in (args.robo_directives or {}).iteritems():
+  for key, value in six.iteritems((args.robo_directives or {})):
     (action_type, resource_name) = util.ParseRoboDirectiveKey(key)
     if action_type == 'click' and value:
       raise test_exceptions.InvalidArgException(

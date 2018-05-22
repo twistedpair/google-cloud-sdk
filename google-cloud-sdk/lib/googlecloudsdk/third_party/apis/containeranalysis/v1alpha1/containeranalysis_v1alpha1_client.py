@@ -39,7 +39,7 @@ class ContaineranalysisV1alpha1(base_api.BaseApiClient):
     self.projects_notes = self.ProjectsNotesService(self)
     self.projects_occurrences = self.ProjectsOccurrencesService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
-    self.projects_scan_configs = self.ProjectsScanConfigsService(self)
+    self.projects_scanConfigs = self.ProjectsScanConfigsService(self)
     self.projects = self.ProjectsService(self)
     self.providers_notes_occurrences = self.ProvidersNotesOccurrencesService(self)
     self.providers_notes = self.ProvidersNotesService(self)
@@ -715,9 +715,9 @@ change the result.
     )
 
   class ProjectsScanConfigsService(base_api.BaseApiService):
-    """Service class for the projects_scan_configs resource."""
+    """Service class for the projects_scanConfigs resource."""
 
-    _NAME = u'projects_scan_configs'
+    _NAME = u'projects_scanConfigs'
 
     def __init__(self, client):
       super(ContaineranalysisV1alpha1.ProjectsScanConfigsService, self).__init__(client)
@@ -738,9 +738,9 @@ change the result.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/scan_configs/{scan_configsId}',
+        flat_path=u'v1alpha1/projects/{projectsId}/scanConfigs/{scanConfigsId}',
         http_method=u'GET',
-        method_id=u'containeranalysis.projects.scan_configs.get',
+        method_id=u'containeranalysis.projects.scanConfigs.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[],
@@ -765,13 +765,13 @@ change the result.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/scan_configs',
+        flat_path=u'v1alpha1/projects/{projectsId}/scanConfigs',
         http_method=u'GET',
-        method_id=u'containeranalysis.projects.scan_configs.list',
+        method_id=u'containeranalysis.projects.scanConfigs.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1alpha1/{+parent}/scan_configs',
+        relative_path=u'v1alpha1/{+parent}/scanConfigs',
         request_field='',
         request_type_name=u'ContaineranalysisProjectsScanConfigsListRequest',
         response_type_name=u'ListScanConfigsResponse',
@@ -792,9 +792,9 @@ change the result.
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/scan_configs/{scan_configsId}',
+        flat_path=u'v1alpha1/projects/{projectsId}/scanConfigs/{scanConfigsId}',
         http_method=u'PATCH',
-        method_id=u'containeranalysis.projects.scan_configs.patch',
+        method_id=u'containeranalysis.projects.scanConfigs.patch',
         ordered_params=[u'name'],
         path_params=[u'name'],
         query_params=[u'updateMask'],
