@@ -292,10 +292,6 @@ class _StubProgressTracker(_NoOpProgressTracker):
     self._message = message or ''
     self._stream = sys.stderr
 
-  def __enter__(self):
-    self._stream.write('<START PROGRESS TRACKER>' + self._message + '\n')
-    return super(_StubProgressTracker, self).__enter__()
-
   def __exit__(self, exc_type, exc_val, exc_tb):
     if not exc_val:
       status = 'SUCCESS'
@@ -304,8 +300,9 @@ class _StubProgressTracker(_NoOpProgressTracker):
     else:
       status = 'FAILURE'
 
-    self._stream.write(
-        '<END PROGRESS TRACKER>' + status + '\n')
+    self._stream.write(console_io.JsonUXStub(
+        console_io.UXElementType.PROGRESS_TRACKER,
+        message=self._message, status=status) + '\n')
     return super(_StubProgressTracker, self).__exit__(exc_type, exc_val, exc_tb)
 
 

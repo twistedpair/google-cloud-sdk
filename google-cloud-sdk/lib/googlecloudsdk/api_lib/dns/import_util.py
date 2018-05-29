@@ -14,6 +14,8 @@
 
 """Helper methods for importing record-sets."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import re
 
 from dns import rdatatype
@@ -21,6 +23,7 @@ from dns import zone
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import encoding
 
 
 def _AddressTranslation(rdata, unused_origin):
@@ -46,7 +49,8 @@ def _CAATranslation(rdata, unused_origin):
   Returns:
     str, The translation of the given CAA rdata. See RFC 6844.
   """
-  return '{0} {1} {2}'.format(rdata.flags, rdata.tag, QuotedText(rdata.value))
+  return '{0} {1} {2}'.format(rdata.flags, encoding.Decode(rdata.tag),
+                              QuotedText(rdata.value))
 
 
 def _MXTranslation(rdata, origin):
@@ -129,6 +133,7 @@ def QuotedText(text):
     necessary, please look at the TXT section at:
     https://cloud.google.com/dns/what-is-cloud-dns#supported_record_types.
   """
+  text = encoding.Decode(text)
   if text.startswith('"') and text.endswith('"'):
     # Nothing to do if already escaped.
     return text
@@ -417,8 +422,8 @@ def NextSOARecordSet(soa_record_set, api_version='v1'):
   next_soa_record_set = _RecordSetCopy(soa_record_set, api_version=api_version)
   rdata_parts = soa_record_set.rrdatas[0].split()
   # Increment the 32 bit serial number by one and wrap around if needed.
-  rdata_parts[2] = str((long(rdata_parts[2]) + 1) % (1 << 32))
-  next_soa_record_set.rrdatas[0] = u' '.join(rdata_parts)
+  rdata_parts[2] = str((int(rdata_parts[2]) + 1) % (1 << 32))
+  next_soa_record_set.rrdatas[0] = ' '.join(rdata_parts)
   return next_soa_record_set
 
 
@@ -439,7 +444,7 @@ def IsOnlySOAIncrement(change, api_version='v1'):
 
 
 def _NameAndType(record):
-  return u'{0} {1}'.format(record.name, record.type)
+  return '{0} {1}'.format(record.name, record.type)
 
 
 def ComputeChange(current, to_be_imported, replace_all=False,

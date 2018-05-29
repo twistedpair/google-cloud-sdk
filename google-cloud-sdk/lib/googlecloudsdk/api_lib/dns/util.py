@@ -13,6 +13,8 @@
 # limitations under the License.
 """Common utility functions for the dns tool."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.core import resources
 
 

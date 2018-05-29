@@ -54,7 +54,6 @@ class PubsubV1(base_api.BaseApiClient):
 
     def Create(self, request, global_params=None):
       r"""Creates a snapshot from the requested subscription.<br><br>.
-Lists the names of the snapshots on this topic.<br><br>
 <b>ALPHA:</b> This feature is part of an alpha release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
@@ -96,7 +95,6 @@ requests, you must specify a name in the request.
 
     def Delete(self, request, global_params=None):
       r"""Removes an existing snapshot. <br><br>.
-Lists the names of the snapshots on this topic.<br><br>
 <b>ALPHA:</b> This feature is part of an alpha release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
@@ -131,7 +129,6 @@ snapshot or its subscription, unless the same subscription is specified.
 
     def Get(self, request, global_params=None):
       r"""Gets the configuration details of a snapshot.<br><br>.
-Lists the names of the snapshots on this topic.<br><br>
 <b>ALPHA:</b> This feature is part of an alpha release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
@@ -191,7 +188,6 @@ set.
 
     def List(self, request, global_params=None):
       r"""Lists the existing snapshots.<br><br>.
-Lists the names of the snapshots on this topic.<br><br>
 <b>ALPHA:</b> This feature is part of an alpha release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
@@ -222,7 +218,6 @@ use. It is not subject to any SLA or deprecation policy.
 
     def Patch(self, request, global_params=None):
       r"""Updates an existing snapshot.<br><br>.
-Lists the names of the snapshots on this topic.<br><br>
 <b>ALPHA:</b> This feature is part of an alpha release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
@@ -357,7 +352,8 @@ than once will not result in an error.
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a subscription to a given topic.
+      r"""Creates a subscription to a given topic. See the.
+<a href="/pubsub/docs/admin#resource_names"> resource name rules</a>.
 If the subscription already exists, returns `ALREADY_EXISTS`.
 If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 
@@ -630,7 +626,6 @@ subscription.
     def Seek(self, request, global_params=None):
       r"""Seeks an existing subscription to a point in time or to a given snapshot,.
 whichever is provided in the request.<br><br>
-Lists the names of the snapshots on this topic.<br><br>
 <b>ALPHA:</b> This feature is part of an alpha release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
@@ -808,7 +803,8 @@ use. It is not subject to any SLA or deprecation policy.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates the given topic with the given name.
+      r"""Creates the given topic with the given name. See the.
+<a href="/pubsub/docs/admin#resource_names"> resource name rules</a>.
 
       Args:
         request: (Topic) input message

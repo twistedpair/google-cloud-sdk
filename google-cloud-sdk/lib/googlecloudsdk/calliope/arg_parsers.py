@@ -51,11 +51,12 @@ from __future__ import unicode_literals
 import argparse
 import copy
 import re
-import sys
 
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
 import six
@@ -107,10 +108,10 @@ def _GenerateErrorMessage(error, user_input=None, error_idx=None):
 
 
 _VALUE_PATTERN = r"""
-    ^                       # Beginning of input marker.
-    (?P<amount>\d+)         # Amount.
-    ((?P<unit>[a-zA-Z]+))?  # Optional unit.
-    $                       # End of input marker.
+    ^                           # Beginning of input marker.
+    (?P<amount>\d+)             # Amount.
+    ((?P<suffix>[-/a-zA-Z]+))?  # Optional scale and type abbr.
+    $                           # End of input marker.
 """
 
 _RANGE_PATTERN = r'^(?P<start>[0-9]+)(-(?P<end>[0-9]+))?$'
@@ -130,17 +131,17 @@ _DURATION_SCALES = {
 }
 
 _BINARY_SIZE_SCALES = {
-    'B': 1,
-    'KB': 1 << 10,
-    'MB': 1 << 20,
-    'GB': 1 << 30,
-    'TB': 1 << 40,
-    'PB': 1 << 50,
-    'KiB': 1 << 10,
-    'MiB': 1 << 20,
-    'GiB': 1 << 30,
-    'TiB': 1 << 40,
-    'PiB': 1 << 50,
+    '': 1,
+    'K': 1 << 10,
+    'M': 1 << 20,
+    'G': 1 << 30,
+    'T': 1 << 40,
+    'P': 1 << 50,
+    'Ki': 1 << 10,
+    'Mi': 1 << 20,
+    'Gi': 1 << 30,
+    'Ti': 1 << 40,
+    'Pi': 1 << 50,
 }
 
 
@@ -164,8 +165,42 @@ def GetMultiCompleter(individual_completer):
   return MultiCompleter
 
 
+def _DeleteTypeAbbr(suffix, type_abbr='B'):
+  """Returns suffix with trailing type abbreviation deleted."""
+  if not suffix:
+    return suffix
+  s = suffix.upper()
+  i = len(s)
+  for c in reversed(type_abbr.upper()):
+    if not i:
+      break
+    if s[i - 1] == c:
+      i -= 1
+  return suffix[:i]
+
+
+def GetBinarySizePerUnit(suffix, type_abbr='B'):
+  """Returns the binary size per unit for binary suffix string.
+
+  Args:
+    suffix: str, A case insensitive unit suffix string with optional type
+      abbreviation.
+    type_abbr: str, The optional case insensitive type abbreviation following
+      the suffix.
+
+  Raises:
+    ValueError for unknown units.
+
+  Returns:
+    The binary size per unit for a unit+type_abbr suffix.
+  """
+  unit = _DeleteTypeAbbr(suffix.upper(), type_abbr)
+  return _BINARY_SIZE_SCALES.get(unit)
+
+
 def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
-                 strict_case=True, suggested_binary_size_scales=None):
+                 strict_case=True, type_abbr='B',
+                 suggested_binary_size_scales=None):
   """A helper that returns a function that can parse values with units.
 
   Casing for all units matters.
@@ -178,6 +213,8 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
     lower_bound: str, An inclusive lower bound.
     upper_bound: str, An inclusive upper bound.
     strict_case: bool, whether to be strict on case-checking
+    type_abbr: str, the type suffix abbreviation, e.g., B for bytes, b/s for
+      bits/sec.
     suggested_binary_size_scales: list, A list of strings with units that will
                                     be recommended to user.
 
@@ -190,12 +227,12 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
     scale_items = sorted(six.iteritems(scales),
                          key=lambda value: (value[1], value[0]))
     if suggested_binary_size_scales is None:
-      return [key for key, _ in scale_items]
-    return [key for key, _ in scale_items
-            if key in suggested_binary_size_scales]
+      return [key + type_abbr for key, _ in scale_items]
+    return [key + type_abbr for key, _ in scale_items
+            if key + type_abbr in suggested_binary_size_scales]
 
   def Parse(value):
-    """Parses value that can contain a unit."""
+    """Parses value that can contain a unit and type avvreviation."""
     match = re.match(_VALUE_PATTERN, value, re.VERBOSE)
     if not match:
       raise ArgumentTypeError(_GenerateErrorMessage(
@@ -205,17 +242,18 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
           user_input=value))
 
     amount = int(match.group('amount'))
-    unit = match.group('unit')
+    suffix = match.group('suffix') or ''
+    unit = _DeleteTypeAbbr(suffix, type_abbr)
     if strict_case:
       unit_case = unit
-      default_unit_case = default_unit
+      default_unit_case = _DeleteTypeAbbr(default_unit, type_abbr)
       scales_case = scales
     else:
-      unit_case = unit and unit.upper()
-      default_unit_case = default_unit.upper()
+      unit_case = unit.upper()
+      default_unit_case = _DeleteTypeAbbr(default_unit.upper(), type_abbr)
       scales_case = dict([(k.upper(), v) for k, v in scales.items()])
 
-    if unit_case is None:
+    if not unit and unit == suffix:
       return amount * scales_case[default_unit_case]
     elif unit_case in scales_case:
       return amount * scales_case[unit_case]
@@ -354,12 +392,13 @@ def Duration(lower_bound=None, upper_bound=None):
     A function that accepts a single time duration as input to be
       parsed.
   """
-  return _ValueParser(_DURATION_SCALES, default_unit='s',
+  return _ValueParser(_DURATION_SCALES, type_abbr='', default_unit='s',
                       lower_bound=lower_bound, upper_bound=upper_bound)
 
 
 def BinarySize(lower_bound=None, upper_bound=None,
-               suggested_binary_size_scales=None, default_unit='GB'):
+               suggested_binary_size_scales=None, default_unit='G',
+               type_abbr='B'):
   """Returns a function that can parse binary sizes.
 
   Binary sizes are defined as base-2 values representing number of
@@ -371,7 +410,7 @@ def BinarySize(lower_bound=None, upper_bound=None,
 
   The integer must be non-negative. Valid units are "B", "KB", "MB",
   "GB", "TB", "KiB", "MiB", "GiB", "TiB", "PiB".  If the unit is
-  omitted, GB is assumed.
+  omitted then default_unit is assumed.
 
   The result is parsed in bytes. For example:
 
@@ -384,6 +423,8 @@ def BinarySize(lower_bound=None, upper_bound=None,
     suggested_binary_size_scales: list, A list of strings with units that will
                                     be recommended to user.
     default_unit: str, unit used when user did not specify unit.
+    type_abbr: str, the type suffix abbreviation, e.g., B for bytes, b/s for
+      bits/sec.
 
   Raises:
     ArgumentTypeError: If either the lower_bound or upper_bound
@@ -397,9 +438,8 @@ def BinarySize(lower_bound=None, upper_bound=None,
       parsed.
   """
   return _ValueParser(
-      _BINARY_SIZE_SCALES, default_unit=default_unit,
-      lower_bound=lower_bound, upper_bound=upper_bound,
-      strict_case=False,
+      _BINARY_SIZE_SCALES, default_unit=default_unit, lower_bound=lower_bound,
+      upper_bound=upper_bound, strict_case=False, type_abbr=type_abbr,
       suggested_binary_size_scales=suggested_binary_size_scales)
 
 
@@ -1301,36 +1341,15 @@ class BufferedFileInput(object):
         maximum.
     chunk_size: int, When max_bytes is not None, the buffer size to use when
         reading chunks from the input file.
+    binary: bool, If True, the contents of the file will be returned as bytes.
 
   Returns:
     A function that accepts a filename, or "-" representing that stdin should be
     used as input.
   """
 
-  def __init__(self, max_bytes=None, chunk_size=16*1024):
-    self.max_bytes = max_bytes
-    self.chunk_size = chunk_size
-
-  def _ReadFile(self, f):
-    # Unbounded
-    if self.max_bytes is None:
-      return f.read()
-    else:
-      contents = ''
-      while True:
-        chunk = f.read(self.chunk_size)
-
-        # Check for EOF
-        if not chunk:
-          return contents
-        # Fail if the file is too large.
-        if len(contents) + len(chunk) > self.max_bytes:
-          if hasattr(f, 'name'):
-            raise ArgumentTypeError("File '{0}' is too large.".format(f.name))
-          else:
-            raise ArgumentTypeError('File is too large.')
-
-        contents += chunk
+  def __init__(self, binary=False):
+    self.binary = binary
 
   def __call__(self, name):
     """Return the contents of the file with the specified name.
@@ -1348,16 +1367,10 @@ class BufferedFileInput(object):
     Raises:
       ArgumentTypeError: If the file cannot be read or is too large.
     """
-    # Handle stdin
-    if name == '-':
-      return self._ReadFile(sys.stdin)
-
     try:
-      with open(name, 'r') as f:
-        return self._ReadFile(f)
-    except (IOError, OSError) as e:
-      raise ArgumentTypeError(
-          "Can't open '{0}': {1}".format(name, e))
+      return console_io.ReadFromFileOrStdin(name, binary=self.binary)
+    except files.Error as e:
+      raise ArgumentTypeError(e)
 
 
 class StoreTrueFalseAction(argparse._StoreTrueAction):  # pylint: disable=protected-access

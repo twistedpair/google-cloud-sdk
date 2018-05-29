@@ -6,7 +6,7 @@ region:
       parameter_name: locationsId
       attribute_name: region
       help: The name of the Cloud IoT region.
-  disable_auto_completers: False
+  disable_auto_completers: false
 
 registry:
   name: registry
@@ -18,7 +18,7 @@ registry:
       parameter_name: registriesId
       attribute_name: registry
       help: The name of the Cloud IoT registry.
-  disable_auto_completers: False
+  disable_auto_completers: false
 
 device:
   name: device
@@ -35,4 +35,4 @@ device:
         - fieldName: fieldMask
           value: name
       completion_id_field: id
-  disable_auto_completers: False
+  disable_auto_completers: false

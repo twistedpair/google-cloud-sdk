@@ -349,7 +349,7 @@
           "type": "string"
         },
         "diskSizeGb": {
-          "description": "Optional. The disk size in GB used for node VMs. Minimum size is 10GB.\nIf unspecified, defaults to 100GB. Cannot be updated.",
+          "description": "Optional. The disk size in GB used for node VMs. Minimum size is 20GB.\nIf unspecified, defaults to 100GB. Cannot be updated.",
           "type": "integer",
           "format": "int32"
         },

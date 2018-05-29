@@ -14,6 +14,8 @@
 
 """Helper methods for record-set transactions."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 from dns import rdatatype
 from googlecloudsdk.api_lib.dns import import_util

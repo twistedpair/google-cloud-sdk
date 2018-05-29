@@ -1220,10 +1220,6 @@
           "description": "The requirements for OAuth credentials.",
           "$ref": "OAuthRequirements"
         },
-        "customAuth": {
-          "description": "Configuration for custom authentication.",
-          "$ref": "CustomAuthRequirements"
-        },
         "allowWithoutCredential": {
           "description": "If true, the service accepts API keys without any other credential.",
           "type": "boolean"
@@ -1244,17 +1240,6 @@
       "properties": {
         "canonicalScopes": {
           "description": "The list of publicly documented OAuth scopes that are allowed access. An\nOAuth token containing any of these scopes will be accepted.\n\nExample:\n\n     canonical_scopes: https:\/\/www.googleapis.com\/auth\/calendar,\n                       https:\/\/www.googleapis.com\/auth\/calendar.read",
-          "type": "string"
-        }
-      }
-    },
-    "CustomAuthRequirements": {
-      "id": "CustomAuthRequirements",
-      "description": "Configuration for a custom authentication provider.",
-      "type": "object",
-      "properties": {
-        "provider": {
-          "description": "A configuration string containing connection information for the\nauthentication provider, typically formatted as a SmartService string\n(go\/smartservice).",
           "type": "string"
         }
       }

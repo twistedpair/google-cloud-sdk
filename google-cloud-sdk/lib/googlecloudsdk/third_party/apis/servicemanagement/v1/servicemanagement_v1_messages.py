@@ -251,7 +251,6 @@ class AuthenticationRule(_messages.Message):
   Fields:
     allowWithoutCredential: If true, the service accepts API keys without any
       other credential.
-    customAuth: Configuration for custom authentication.
     oauth: The requirements for OAuth credentials.
     requirements: Requirements for additional authentication providers.
     selector: Selects the methods to which this rule applies.  Refer to
@@ -259,10 +258,9 @@ class AuthenticationRule(_messages.Message):
   """
 
   allowWithoutCredential = _messages.BooleanField(1)
-  customAuth = _messages.MessageField('CustomAuthRequirements', 2)
-  oauth = _messages.MessageField('OAuthRequirements', 3)
-  requirements = _messages.MessageField('AuthRequirement', 4, repeated=True)
-  selector = _messages.StringField(5)
+  oauth = _messages.MessageField('OAuthRequirements', 2)
+  requirements = _messages.MessageField('AuthRequirement', 3, repeated=True)
+  selector = _messages.StringField(4)
 
 
 class AuthorizationConfig(_messages.Message):
@@ -722,18 +720,6 @@ class ConvertConfigResponse(_messages.Message):
 
   diagnostics = _messages.MessageField('Diagnostic', 1, repeated=True)
   serviceConfig = _messages.MessageField('Service', 2)
-
-
-class CustomAuthRequirements(_messages.Message):
-  r"""Configuration for a custom authentication provider.
-
-  Fields:
-    provider: A configuration string containing connection information for the
-      authentication provider, typically formatted as a SmartService string
-      (go/smartservice).
-  """
-
-  provider = _messages.StringField(1)
 
 
 class CustomError(_messages.Message):
@@ -3590,11 +3576,6 @@ class ServicemanagementServicesListRequest(_messages.Message):
       project_settings is expanded, then this field controls which project
       project_settings is populated for. This field is deprecated. See details
       go/deprecate-listservices-expand.
-    expand: Fields to expand in any results. By default, the following fields
-      are not fully included in list results, but they will if you specify
-      them in this field: - `project_settings` - `quota_usage` (It requires
-      `project_settings`) This field is deprecated. See details go/deprecate-
-      listservices-expand.
     pageSize: Requested size of the next page of data.
     pageToken: Token identifying which result to start with; returned by a
       previous list call.
@@ -3604,10 +3585,9 @@ class ServicemanagementServicesListRequest(_messages.Message):
   category = _messages.StringField(1)
   consumerId = _messages.StringField(2)
   consumerProjectId = _messages.StringField(3)
-  expand = _messages.StringField(4)
-  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(6)
-  producerProjectId = _messages.StringField(7)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  producerProjectId = _messages.StringField(6)
 
 
 class ServicemanagementServicesPatchRequest(_messages.Message):

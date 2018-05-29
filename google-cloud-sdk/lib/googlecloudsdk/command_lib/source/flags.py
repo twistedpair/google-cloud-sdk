@@ -20,3 +20,24 @@ REPO_NAME_VALIDATOR = arg_parsers.RegexpValidator(
     '[A-Za-z0-9_][-_A-Za-z0-9/]{0,127}',
     'repostory name may contain between 1 and 128 (inclusive) letters, digits, '
     'hyphens, underscores and slashes.')
+
+
+def AddPushblockFlagsToParser(parser):
+  """Add pushblock enabled/disabled flags to the parser."""
+  pushblocks = parser.add_mutually_exclusive_group(required=True)
+
+  pushblocks.add_argument(
+      '--enable-pushblock',
+      action='store_true',
+      help="""\
+Enable PushBlock for all repositories under current project.
+PushBlock allows repository owners to block git push transactions containing
+private key data.""")
+
+  pushblocks.add_argument(
+      '--disable-pushblock',
+      action='store_true',
+      help="""\
+Disable PushBlock for all repositories under current project.
+PushBlock allows repository owners to block git push transactions containing
+private key data.""")

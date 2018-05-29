@@ -10955,6 +10955,34 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeTargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
+  r"""A ComputeTargetHttpsProxiesSetQuicOverrideRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    targetHttpsProxiesSetQuicOverrideRequest: A
+      TargetHttpsProxiesSetQuicOverrideRequest resource to be passed as the
+      request body.
+    targetHttpsProxy: Name of the TargetHttpsProxy resource to set the QUIC
+      override policy for. The name should conform to RFC1035.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetHttpsProxiesSetQuicOverrideRequest = _messages.MessageField('TargetHttpsProxiesSetQuicOverrideRequest', 3)
+  targetHttpsProxy = _messages.StringField(4, required=True)
+
+
 class ComputeTargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   r"""A ComputeTargetHttpsProxiesSetSslCertificatesRequest object.
 
@@ -25144,6 +25172,32 @@ class TargetHttpProxyList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class TargetHttpsProxiesSetQuicOverrideRequest(_messages.Message):
+  r"""A TargetHttpsProxiesSetQuicOverrideRequest object.
+
+  Enums:
+    QuicOverrideValueValuesEnum: QUIC policy for the TargetHttpsProxy
+      resource.
+
+  Fields:
+    quicOverride: QUIC policy for the TargetHttpsProxy resource.
+  """
+
+  class QuicOverrideValueValuesEnum(_messages.Enum):
+    r"""QUIC policy for the TargetHttpsProxy resource.
+
+    Values:
+      DISABLE: <no description>
+      ENABLE: <no description>
+      NONE: <no description>
+    """
+    DISABLE = 0
+    ENABLE = 1
+    NONE = 2
+
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 1)
+
+
 class TargetHttpsProxiesSetSslCertificatesRequest(_messages.Message):
   r"""A TargetHttpsProxiesSetSslCertificatesRequest object.
 
@@ -25161,6 +25215,16 @@ class TargetHttpsProxy(_messages.Message):
   resource_for beta.targetHttpsProxies ==) (== resource_for
   v1.targetHttpsProxies ==)
 
+  Enums:
+    QuicOverrideValueValuesEnum: Specifies the QUIC override policy for this
+      TargetHttpsProxy resource. This determines whether the load balancer
+      will attempt to negotiate QUIC with clients or not. Can specify one of
+      NONE, ENABLE, or DISABLE. Specify ENABLE to always enable QUIC, Enables
+      QUIC when set to ENABLE, and disables QUIC when set to DISABLE. If NONE
+      is specified, uses the QUIC policy with no user overrides, which is
+      equivalent to DISABLE. Not specifying this field is equivalent to
+      specifying NONE.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -25177,6 +25241,13 @@ class TargetHttpsProxy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    quicOverride: Specifies the QUIC override policy for this TargetHttpsProxy
+      resource. This determines whether the load balancer will attempt to
+      negotiate QUIC with clients or not. Can specify one of NONE, ENABLE, or
+      DISABLE. Specify ENABLE to always enable QUIC, Enables QUIC when set to
+      ENABLE, and disables QUIC when set to DISABLE. If NONE is specified,
+      uses the QUIC policy with no user overrides, which is equivalent to
+      DISABLE. Not specifying this field is equivalent to specifying NONE.
     selfLink: [Output Only] Server-defined URL for the resource.
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. Currently,
@@ -25191,15 +25262,34 @@ class TargetHttpsProxy(_messages.Message):
       map  - projects/project/global/urlMaps/url-map  - global/urlMaps/url-map
   """
 
+  class QuicOverrideValueValuesEnum(_messages.Enum):
+    r"""Specifies the QUIC override policy for this TargetHttpsProxy resource.
+    This determines whether the load balancer will attempt to negotiate QUIC
+    with clients or not. Can specify one of NONE, ENABLE, or DISABLE. Specify
+    ENABLE to always enable QUIC, Enables QUIC when set to ENABLE, and
+    disables QUIC when set to DISABLE. If NONE is specified, uses the QUIC
+    policy with no user overrides, which is equivalent to DISABLE. Not
+    specifying this field is equivalent to specifying NONE.
+
+    Values:
+      DISABLE: <no description>
+      ENABLE: <no description>
+      NONE: <no description>
+    """
+    DISABLE = 0
+    ENABLE = 1
+    NONE = 2
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(4, default=u'compute#targetHttpsProxy')
   name = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  sslCertificates = _messages.StringField(7, repeated=True)
-  sslPolicy = _messages.StringField(8)
-  urlMap = _messages.StringField(9)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 6)
+  selfLink = _messages.StringField(7)
+  sslCertificates = _messages.StringField(8, repeated=True)
+  sslPolicy = _messages.StringField(9)
+  urlMap = _messages.StringField(10)
 
 
 class TargetHttpsProxyList(_messages.Message):

@@ -1160,6 +1160,78 @@
         "endTime": {
           "description": "[Output only] The time the operation completed, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string"
+        },
+        "progress": {
+          "description": "[Output only] Progress information for an operation.",
+          "$ref": "OperationProgress"
+        }
+      }
+    },
+    "OperationProgress": {
+      "id": "OperationProgress",
+      "description": "Information about operation (or operation stage) progress.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "A non-parameterized string describing an operation stage.\nUnset for single-stage operations.",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status of an operation stage.\nUnset for single-stage operations.",
+          "enumDescriptions": [
+            "Not set.",
+            "The operation has been created.",
+            "The operation is currently running.",
+            "The operation is done, either cancelled or completed.",
+            "The operation is aborting."
+          ],
+          "type": "string",
+          "enum": [
+            "STATUS_UNSPECIFIED",
+            "PENDING",
+            "RUNNING",
+            "DONE",
+            "ABORTING"
+          ]
+        },
+        "metrics": {
+          "description": "Progress metric bundle, for example:\n  metrics: [{name: \"nodes done\",     int_value: 15},\n            {name: \"nodes total\",    int_value: 32}]\nor\n  metrics: [{name: \"progress\",       double_value: 0.56},\n            {name: \"progress scale\", double_value: 1.0}]",
+          "type": "array",
+          "items": {
+            "$ref": "Metric"
+          }
+        },
+        "stages": {
+          "description": "Substages of an operation or a stage.",
+          "type": "array",
+          "items": {
+            "$ref": "OperationProgress"
+          }
+        }
+      }
+    },
+    "Metric": {
+      "id": "Metric",
+      "description": "Progress metric is (string, int|float|string) pair.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Metric name, required.\ne.g., \"nodes total\", \"percent done\"",
+          "type": "string"
+        },
+        "intValue": {
+          "description": "For metrics with integer value.",
+          "type": "string",
+          "format": "int64"
+        },
+        "doubleValue": {
+          "description": "For metrics with floating point value.",
+          "type": "number",
+          "format": "double"
+        },
+        "stringValue": {
+          "description": "For metrics with custom values (ratios, visual progress, etc.).",
+          "type": "string"
         }
       }
     },

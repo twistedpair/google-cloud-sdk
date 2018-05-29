@@ -22,11 +22,13 @@ from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.compute import utils as api_utils
 from googlecloudsdk.api_lib.dataproc import compute_helpers
 from googlecloudsdk.api_lib.dataproc import constants
+from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
 from googlecloudsdk.command_lib.dataproc import flags
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import times
 
@@ -530,3 +532,60 @@ def GetDiskConfig(dataproc,
 
   return dataproc.messages.DiskConfig(
       bootDiskSizeGb=boot_disk_size, numLocalSsds=num_local_ssds)
+
+
+def CreateCluster(dataproc, cluster, is_async, timeout):
+  """Create a cluster.
+
+  Args:
+    dataproc: Dataproc object that contains client, messages, and resources
+    cluster: Cluster to create
+    is_async: Whether to wait for the operation to complete
+    timeout: Timeout used when waiting for the operation to complete
+
+  Returns:
+    Created cluster, or None if async
+  """
+  # Get project id and region.
+  cluster_ref = util.ParseCluster(cluster.clusterName, dataproc)
+  request_id = util.GetUniqueId()
+  request = dataproc.messages.DataprocProjectsRegionsClustersCreateRequest(
+      cluster=cluster,
+      projectId=cluster_ref.projectId,
+      region=cluster_ref.region,
+      requestId=request_id)
+  operation = dataproc.client.projects_regions_clusters.Create(request)
+
+  if is_async:
+    log.status.write('Creating [{0}] with operation [{1}].'.format(
+        cluster_ref, operation.name))
+    return
+
+  operation = util.WaitForOperation(
+      dataproc,
+      operation,
+      message='Waiting for cluster creation operation',
+      timeout_s=timeout)
+
+  get_request = dataproc.messages.DataprocProjectsRegionsClustersGetRequest(
+      projectId=cluster_ref.projectId,
+      region=cluster_ref.region,
+      clusterName=cluster_ref.clusterName)
+  cluster = dataproc.client.projects_regions_clusters.Get(get_request)
+  if cluster.status.state == (
+      dataproc.messages.ClusterStatus.StateValueValuesEnum.RUNNING):
+
+    zone_uri = cluster.config.gceClusterConfig.zoneUri
+    zone_short_name = zone_uri.split('/')[-1]
+
+    # Log the URL of the cluster
+    log.CreatedResource(
+        cluster_ref,
+        # Also indicate which zone the cluster was placed in. This is helpful
+        # if the server picked a zone (auto zone)
+        details='Cluster placed in zone [{0}]'.format(zone_short_name))
+  else:
+    log.error('Create cluster failed!')
+    if operation.details:
+      log.error('Details:\n' + operation.details)
+  return cluster

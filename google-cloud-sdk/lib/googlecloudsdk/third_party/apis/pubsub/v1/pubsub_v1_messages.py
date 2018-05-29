@@ -109,11 +109,10 @@ class Empty(_messages.Message):
 
 
 class ListSnapshotsResponse(_messages.Message):
-  r"""Response for the `ListSnapshots` method.<br><br> Lists the names of the
-  snapshots on this topic.<br><br> <b>ALPHA:</b> This feature is part of an
-  alpha release. This API might be changed in backward-incompatible ways and
-  is not recommended for production use. It is not subject to any SLA or
-  deprecation policy.
+  r"""Response for the `ListSnapshots` method.<br><br> <b>ALPHA:</b> This
+  feature is part of an alpha release. This API might be changed in backward-
+  incompatible ways and is not recommended for production use. It is not
+  subject to any SLA or deprecation policy.
 
   Fields:
     nextPageToken: If not empty, indicates that there may be more snapshot
@@ -141,11 +140,10 @@ class ListSubscriptionsResponse(_messages.Message):
 
 
 class ListTopicSnapshotsResponse(_messages.Message):
-  r"""Response for the `ListTopicSnapshots` method.<br><br> Lists the names of
-  the snapshots on this topic.<br><br> <b>ALPHA:</b> This feature is part of
-  an alpha release. This API might be changed in backward-incompatible ways
-  and is not recommended for production use. It is not subject to any SLA or
-  deprecation policy.
+  r"""Response for the `ListTopicSnapshots` method.<br><br> <b>ALPHA:</b> This
+  feature is part of an alpha release. This API might be changed in backward-
+  incompatible ways and is not recommended for production use. It is not
+  subject to any SLA or deprecation policy.
 
   Fields:
     nextPageToken: If not empty, indicates that there may be more snapshots
@@ -898,11 +896,10 @@ class ReceivedMessage(_messages.Message):
 
 
 class SeekRequest(_messages.Message):
-  r"""Request for the `Seek` method.<br><br> Lists the names of the snapshots
-  on this topic.<br><br> <b>ALPHA:</b> This feature is part of an alpha
-  release. This API might be changed in backward-incompatible ways and is not
-  recommended for production use. It is not subject to any SLA or deprecation
-  policy.
+  r"""Request for the `Seek` method.<br><br> <b>ALPHA:</b> This feature is
+  part of an alpha release. This API might be changed in backward-incompatible
+  ways and is not recommended for production use. It is not subject to any SLA
+  or deprecation policy.
 
   Fields:
     snapshot: The snapshot to seek to. The snapshot's topic must be the same
@@ -942,10 +939,10 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  r"""A snapshot resource.<br><br> Lists the names of the snapshots on this
-  topic.<br><br> <b>ALPHA:</b> This feature is part of an alpha release. This
-  API might be changed in backward-incompatible ways and is not recommended
-  for production use. It is not subject to any SLA or deprecation policy.
+  r"""A snapshot resource.<br><br> <b>ALPHA:</b> This feature is part of an
+  alpha release. This API might be changed in backward-incompatible ways and
+  is not recommended for production use. It is not subject to any SLA or
+  deprecation policy.
 
   Messages:
     LabelsValue: User labels.
@@ -1094,11 +1091,10 @@ class Subscription(_messages.Message):
       `retain_acked_messages` is true, then this also configures the retention
       of acknowledged messages, and thus configures how far back in time a
       `Seek` can be done. Defaults to 7 days. Cannot be more than 7 days or
-      less than 10 minutes.<br><br> Lists the names of the snapshots on this
-      topic.<br><br> <b>ALPHA:</b> This feature is part of an alpha release.
-      This API might be changed in backward-incompatible ways and is not
-      recommended for production use. It is not subject to any SLA or
-      deprecation policy.
+      less than 10 minutes.<br><br> <b>ALPHA:</b> This feature is part of an
+      alpha release. This API might be changed in backward-incompatible ways
+      and is not recommended for production use. It is not subject to any SLA
+      or deprecation policy.
     name: The name of the subscription. It must have the format
       `"projects/{project}/subscriptions/{subscription}"`. `{subscription}`
       must start with a letter, and contain only letters (`[A-Za-z]`), numbers
@@ -1111,11 +1107,10 @@ class Subscription(_messages.Message):
     retainAckedMessages: Indicates whether to retain acknowledged messages. If
       true, then messages are not expunged from the subscription's backlog,
       even if they are acknowledged, until they fall out of the
-      `message_retention_duration` window.<br><br> Lists the names of the
-      snapshots on this topic.<br><br> <b>ALPHA:</b> This feature is part of
-      an alpha release. This API might be changed in backward-incompatible
-      ways and is not recommended for production use. It is not subject to any
-      SLA or deprecation policy.
+      `message_retention_duration` window.<br><br> <b>ALPHA:</b> This feature
+      is part of an alpha release. This API might be changed in backward-
+      incompatible ways and is not recommended for production use. It is not
+      subject to any SLA or deprecation policy.
     topic: The name of the topic from which this subscription is receiving
       messages. Format is `projects/{project}/topics/{topic}`. The value of
       this field will be `_deleted-topic_` if the topic has been deleted.
@@ -1231,11 +1226,10 @@ class Topic(_messages.Message):
 
 
 class UpdateSnapshotRequest(_messages.Message):
-  r"""Request for the UpdateSnapshot method.<br><br> Lists the names of the
-  snapshots on this topic.<br><br> <b>ALPHA:</b> This feature is part of an
-  alpha release. This API might be changed in backward-incompatible ways and
-  is not recommended for production use. It is not subject to any SLA or
-  deprecation policy.
+  r"""Request for the UpdateSnapshot method.<br><br> <b>ALPHA:</b> This
+  feature is part of an alpha release. This API might be changed in backward-
+  incompatible ways and is not recommended for production use. It is not
+  subject to any SLA or deprecation policy.
 
   Fields:
     snapshot: The updated snapshot object.

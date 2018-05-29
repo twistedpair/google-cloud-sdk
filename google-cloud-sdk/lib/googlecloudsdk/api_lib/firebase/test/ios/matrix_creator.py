@@ -74,6 +74,8 @@ class MatrixCreator(object):
 
   def _BuildFileReference(self, filename):
     """Build a FileReference pointing to a file in GCS."""
+    if not filename:
+      return None
     path = os.path.join(self._gcs_results_root, os.path.basename(filename))
     return self._messages.FileReference(gcsPath=path)
 
@@ -86,7 +88,8 @@ class MatrixCreator(object):
         iosTestSetup=setup,
         testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
         iosXcTest=self._messages.IosXcTest(
-            testsZip=self._BuildFileReference(self._args.test)))
+            testsZip=self._BuildFileReference(self._args.test),
+            xctestrun=self._BuildFileReference(self._args.xctestrun_file)))
     return spec
 
   def _TestSpecFromType(self, test_type):

@@ -221,9 +221,9 @@ class Cluster(_messages.Message):
     databaseEncryptionKeyId: ResourceID of a CloudKMS key to be used for the
       encryption of secrets in etcd. Ex. projects/kms-
       project/locations/global/keyRings/ring-1/cryptoKeys/key-1
-    defaultMaxPodsPerNode: The default maximum number of pods that can be run
-      simultaneously on a node in the node pool of this cluster. Only honored
-      if cluster created with IP Alias support.
+    defaultMaxPodsConstraint: The default constraint on the maximum number of
+      pods that can be run simultaneously on a node in the node pool of this
+      cluster. Only honored if cluster created with IP Alias support.
     description: An optional description of this cluster.
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
       cluster. This includes alpha API groups (e.g. v1alpha1) and features
@@ -401,7 +401,7 @@ class Cluster(_messages.Message):
   currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   currentNodeVersion = _messages.StringField(9)
   databaseEncryptionKeyId = _messages.StringField(10)
-  defaultMaxPodsPerNode = _messages.MessageField('MaxPodsConstraint', 11)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 11)
   description = _messages.StringField(12)
   enableKubernetesAlpha = _messages.BooleanField(13)
   enableNamespaceLevelIam = _messages.BooleanField(14)
@@ -2482,8 +2482,8 @@ class NodePool(_messages.Message):
       instance groups](/compute/docs/instance-groups/creating-groups-of-
       managed-instances) associated with this node pool.
     management: NodeManagement configuration for this NodePool.
-    maxPodsPerNode: The maximum number of pods that can be run simultaneously
-      on a node in the node pool.
+    maxPodsConstraint: The constraint on the maximum number of pods that can
+      be run simultaneously on a node in the node pool.
     name: The name of the node pool.
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
@@ -2525,7 +2525,7 @@ class NodePool(_messages.Message):
   initialNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(4, repeated=True)
   management = _messages.MessageField('NodeManagement', 5)
-  maxPodsPerNode = _messages.MessageField('MaxPodsConstraint', 6)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 6)
   name = _messages.StringField(7)
   selfLink = _messages.StringField(8)
   status = _messages.EnumField('StatusValueValuesEnum', 9)

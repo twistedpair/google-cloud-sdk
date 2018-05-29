@@ -119,9 +119,20 @@ def AddSubAssetFlag(parser, hidden=False):
   parser.add_argument('--sub-asset', help=help_text, hidden=hidden)
 
 
-def AddDescriptionFlag(parser, required=True):
-  help_text = 'A human-readable description of the taxonomy.'
+def AddDisplayNameFlag(parser, resource, required=True):
+  help_text = 'A human-readable name for the {}.'.format(resource)
+  parser.add_argument('--display-name', help=help_text, required=required)
+
+
+def AddDescriptionFlag(parser, resource, required=True):
+  help_text = 'A human-readable description of the {}.'.format(resource)
   parser.add_argument('--description', help=help_text, required=required)
+
+
+def AddParentAnnotationFlag(parser):
+  help_text = ('The ID of the parent annotation for this annotation. If not '
+               'given, this annotation will be at the root of the hierarchy.')
+  parser.add_argument('--parent-annotation', help=help_text, required=False)
 
 
 def AddMatchChildAnnotationsFlag(parser, hidden=False):

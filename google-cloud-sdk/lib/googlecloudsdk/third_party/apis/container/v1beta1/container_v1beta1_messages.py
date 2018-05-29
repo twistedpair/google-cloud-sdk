@@ -1493,6 +1493,23 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   enabled = _messages.BooleanField(2)
 
 
+class Metric(_messages.Message):
+  r"""Progress metric is (string, int|float|string) pair.
+
+  Fields:
+    doubleValue: For metrics with floating point value.
+    intValue: For metrics with integer value.
+    name: Metric name, required. e.g., "nodes total", "percent done"
+    stringValue: For metrics with custom values (ratios, visual progress,
+      etc.).
+  """
+
+  doubleValue = _messages.FloatField(1)
+  intValue = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  stringValue = _messages.StringField(4)
+
+
 class NetworkConfig(_messages.Message):
   r"""NetworkConfig reports the relative names of network & subnetwork.
 
@@ -1889,6 +1906,7 @@ class Operation(_messages.Message):
       the cluster resides.
     name: The server-assigned ID for the operation.
     operationType: The operation type.
+    progress: [Output only] Progress information for an operation.
     selfLink: Server-defined URL for the resource.
     startTime: [Output only] The time the operation started, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
@@ -1962,12 +1980,53 @@ class Operation(_messages.Message):
   location = _messages.StringField(3)
   name = _messages.StringField(4)
   operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  selfLink = _messages.StringField(6)
-  startTime = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  statusMessage = _messages.StringField(9)
-  targetLink = _messages.StringField(10)
-  zone = _messages.StringField(11)
+  progress = _messages.MessageField('OperationProgress', 6)
+  selfLink = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  targetLink = _messages.StringField(11)
+  zone = _messages.StringField(12)
+
+
+class OperationProgress(_messages.Message):
+  r"""Information about operation (or operation stage) progress.
+
+  Enums:
+    StatusValueValuesEnum: Status of an operation stage. Unset for single-
+      stage operations.
+
+  Fields:
+    metrics: Progress metric bundle, for example:   metrics: [{name: "nodes
+      done",     int_value: 15},             {name: "nodes total",
+      int_value: 32}] or   metrics: [{name: "progress",       double_value:
+      0.56},             {name: "progress scale", double_value: 1.0}]
+    name: A non-parameterized string describing an operation stage. Unset for
+      single-stage operations.
+    stages: Substages of an operation or a stage.
+    status: Status of an operation stage. Unset for single-stage operations.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Status of an operation stage. Unset for single-stage operations.
+
+    Values:
+      STATUS_UNSPECIFIED: Not set.
+      PENDING: The operation has been created.
+      RUNNING: The operation is currently running.
+      DONE: The operation is done, either cancelled or completed.
+      ABORTING: The operation is aborting.
+    """
+    STATUS_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    DONE = 3
+    ABORTING = 4
+
+  metrics = _messages.MessageField('Metric', 1, repeated=True)
+  name = _messages.StringField(2)
+  stages = _messages.MessageField('OperationProgress', 3, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
 class PodSecurityPolicyConfig(_messages.Message):

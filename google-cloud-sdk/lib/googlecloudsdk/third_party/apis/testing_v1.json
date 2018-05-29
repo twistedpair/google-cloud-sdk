@@ -1157,6 +1157,10 @@
         "networkConfigurationCatalog": {
           "description": "Supported network configurations",
           "$ref": "NetworkConfigurationCatalog"
+        },
+        "softwareCatalog": {
+          "description": "The software test environment provided by TestExecutionService.",
+          "$ref": "ProvidedSoftwareCatalog"
         }
       }
     },
@@ -1552,6 +1556,17 @@
           "format": "float"
         }
       }
+    },
+    "ProvidedSoftwareCatalog": {
+      "id": "ProvidedSoftwareCatalog",
+      "description": "The currently provided software environment on the devices under test.",
+      "type": "object",
+      "properties": {
+        "orchestratorVersion": {
+          "description": "A string representing the current version of Android Test Orchestrator that\nis provided by TestExecutionService. Example: \"1.0.2 beta\"",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -1699,7 +1714,8 @@
                 "ENVIRONMENT_TYPE_UNSPECIFIED",
                 "ANDROID",
                 "IOS",
-                "NETWORK_CONFIGURATION"
+                "NETWORK_CONFIGURATION",
+                "PROVIDED_SOFTWARE"
               ]
             },
             "projectId": {

@@ -209,7 +209,7 @@ move between other states.
 
     def Restore(self, request, global_params=None):
       r"""Restore a CryptoKeyVersion in the.
-DESTROY_SCHEDULED,
+DESTROY_SCHEDULED
 state.
 
 Upon restoration of the CryptoKeyVersion, state

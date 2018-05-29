@@ -47,3 +47,10 @@ def FlagNameFormat(arg_name):
   """Format a string as a flag name."""
   prefix = '' if arg_name.startswith(PREFIX) else PREFIX
   return prefix + arg_name.lower().replace('_', '-')
+
+
+def PositionalFormat(arg_name):
+  """Format a string as a positional."""
+  if arg_name.startswith(PREFIX):
+    arg_name = arg_name[len(PREFIX):]
+  return arg_name.upper().replace('-', '_')

@@ -25,3 +25,12 @@ project_scoped_annotation:
       parameter_name: annotationsId
       attribute_name: annotation
       help: The ID of the project annotation.
+
+organization:
+  name: organization
+  collection: categorymanager.organizations
+  attributes:
+    - parameter_name: organizationId
+      attribute_name: organization
+      help: |
+        The ID of the organization.

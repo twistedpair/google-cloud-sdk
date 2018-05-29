@@ -17,7 +17,10 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+from collections import OrderedDict
 import contextlib
+
+import json
 import os
 import re
 import subprocess
@@ -25,6 +28,7 @@ import sys
 import textwrap
 import threading
 
+import enum
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -263,6 +267,7 @@ def PromptContinue(message=None, prompt_string=None, default=True,
   sys.stderr.write(_DoWrap(prompt_string))
 
   def GetAnswer():
+    """Get answer to input prompt."""
     while True:
       answer = _RawInput()
       # pylint:disable=g-explicit-bool-comparison, We explicitly want to
@@ -841,7 +846,8 @@ class _StubProgressBar(object):
     self._stream = stream
 
   def Start(self):
-    self._stream.write('<START PROGRESS BAR>' + self._raw_label + '\n')
+    self._stream.write(JsonUXStub(UXElementType.PROGRESS_BAR,
+                                  message=self._raw_label))
 
   def SetProgress(self, progress_factor):
     pass
@@ -849,7 +855,7 @@ class _StubProgressBar(object):
   def Finish(self):
     """Mark the progress as done."""
     self.SetProgress(1)
-    self._stream.write('<END PROGRESS BAR>\n')
+    self._stream.write('\n')
 
   def __enter__(self):
     self.Start()
@@ -924,3 +930,34 @@ class TickableProgressBar(object):
     with self._lock:
       self.completed += 1
       self._progress_bar.SetProgress(self.completed / self.total)
+
+
+def JsonUXStub(ux_type, **kwargs):
+  """Generates a stub message for UX console output."""
+  output = OrderedDict()
+  output['ux'] = ux_type.name
+  extra_args = list(set(kwargs) - set(ux_type.GetDataFields()))
+  if extra_args:
+    raise ValueError('Extraneous args for Ux Element {}: {}'.format(
+        ux_type.name, extra_args))
+  for field in ux_type.GetDataFields():
+    val = kwargs.get(field, None)
+    if val:
+      output[field] = val
+  return json.dumps(output)
+
+
+class UXElementType(enum.Enum):
+  """Describes the type of a ux element."""
+  PROGRESS_BAR = (['message'])
+  PROGRESS_TRACKER = (['message', 'aborted_message', 'status'])
+  PROMPT_CONTINUE = (['message', 'prompt_string', 'cancel_string'])
+  PROMPT_RESPONSE = (['choices'])
+  PROMPT_CHOICE = (['choices', 'prompt_string'])
+
+  def __init__(self, data_fields):
+    self._data_fields = data_fields
+
+  def GetDataFields(self):
+    """Returns the ordered list of additional fields in the UX Element."""
+    return self._data_fields

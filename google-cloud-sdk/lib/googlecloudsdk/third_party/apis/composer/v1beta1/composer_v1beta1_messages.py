@@ -354,7 +354,7 @@ class NodeConfig(_messages.Message):
 
   Fields:
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
-      is 10GB. If unspecified, defaults to 100GB. Cannot be updated.
+      is 20GB. If unspecified, defaults to 100GB. Cannot be updated.
     location: Optional. The Compute Engine [zone](/compute/docs/regions-zones)
       in which to deploy the VMs used to run the Apache Airflow software,
       specified as a [relative resource

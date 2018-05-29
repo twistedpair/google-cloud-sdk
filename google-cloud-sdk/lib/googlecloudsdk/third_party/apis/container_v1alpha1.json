@@ -276,8 +276,8 @@
           "description": "The IP prefix in CIDR notation to use for the hosted master network.\nThis prefix will be used for assigning private IP addresses to the\nmaster or set of masters, as well as the ILB VIP.",
           "type": "string"
         },
-        "defaultMaxPodsPerNode": {
-          "description": "The default maximum number of pods that can be run simultaneously on a\nnode in the node pool of this cluster. Only honored if cluster created\nwith IP Alias support.",
+        "defaultMaxPodsConstraint": {
+          "description": "The default constraint on the maximum number of pods that can be run\nsimultaneously on a node in the node pool of this cluster. Only honored\nif cluster created with IP Alias support.",
           "$ref": "MaxPodsConstraint"
         },
         "enableNamespaceLevelIam": {
@@ -777,8 +777,8 @@
           "description": "NodeManagement configuration for this NodePool.",
           "$ref": "NodeManagement"
         },
-        "maxPodsPerNode": {
-          "description": "The maximum number of pods that can be run simultaneously on a node in the\nnode pool.",
+        "maxPodsConstraint": {
+          "description": "The constraint on the maximum number of pods that can be run\nsimultaneously on a node in the node pool.",
           "$ref": "MaxPodsConstraint"
         },
         "selfLink": {

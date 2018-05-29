@@ -29,7 +29,6 @@ from googlecloudsdk.api_lib.firebase.test import util as util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
-
 import six
 
 
@@ -125,7 +124,8 @@ def _ValidateDuration(arg_internal_name, arg_value):
     elif isinstance(arg_value, int):
       return TIMEOUT_PARSER(str(arg_value))
   except arg_parsers.ArgumentTypeError as e:
-    raise test_exceptions.InvalidArgException(arg_internal_name, e.message)
+    raise test_exceptions.InvalidArgException(arg_internal_name,
+                                              six.text_type(e))
   raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
 
 
@@ -142,7 +142,8 @@ def _ValidatePositiveInteger(arg_internal_name, arg_value):
     if isinstance(arg_value, int):
       return POSITIVE_INT_PARSER(str(arg_value))
   except arg_parsers.ArgumentTypeError as e:
-    raise test_exceptions.InvalidArgException(arg_internal_name, e.message)
+    raise test_exceptions.InvalidArgException(arg_internal_name,
+                                              six.text_type(e))
   raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
 
 
@@ -152,7 +153,8 @@ def _ValidateNonNegativeInteger(arg_internal_name, arg_value):
     if isinstance(arg_value, int):
       return NONNEGATIVE_INT_PARSER(str(arg_value))
   except arg_parsers.ArgumentTypeError as e:
-    raise test_exceptions.InvalidArgException(arg_internal_name, e.message)
+    raise test_exceptions.InvalidArgException(arg_internal_name,
+                                              six.text_type(e))
   raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
 
 
@@ -377,8 +379,10 @@ def _GenerateUniqueGcsObjectName():
   Returns:
     A string with the unique GCS object name.
   """
-  return '{0}_{1}'.format(datetime.datetime.now().isoformat(b'_'), ''.join(
-      random.sample(string.letters, 4)))
+  # In PY2, isoformat() argument 1 needs a char. But in PY3 it needs unicode.
+  return '{0}_{1}'.format(
+      datetime.datetime.now().isoformat(b'_' if six.PY2 else '_'), ''.join(
+          random.sample(string.ascii_letters, 4)))
 
 
 def ValidateOsVersions(args, catalog_mgr):

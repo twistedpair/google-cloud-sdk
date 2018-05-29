@@ -696,7 +696,7 @@
           "type": "string"
         },
         "filter": {
-          "description": "Required. An advanced logs filter that matches the log entries to be excluded. By using the sample function, you can exclude less than 100% of the matching log entries. For example, the following filter matches 99% of low-severity log entries from load balancers:\n\"resource.type=http_load_balancer severity<ERROR sample(insertId, 0.99)\"\n",
+          "description": "Required. An advanced logs filter that matches the log entries to be excluded. By using the sample function, you can exclude less than 100% of the matching log entries. For example, the following filter matches 99% of low-severity log entries from load balancers:\"resource.type=http_load_balancer severity<ERROR sample(insertId, 0.99)\"",
           "type": "string"
         },
         "disabled": {

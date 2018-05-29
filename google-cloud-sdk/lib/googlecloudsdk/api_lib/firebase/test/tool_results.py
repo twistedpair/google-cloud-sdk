@@ -149,8 +149,8 @@ def _ErrorFromInvalidMatrix(matrix):
           'Device administrator applications are not allowed',
       enum_values.MALFORMED_XC_TEST_ZIP:
           'The XCTest zip file was malformed. The zip did not contain a single '
-          '.xctestrun file alongside a Debug-iphoneos directory containing the '
-          'compiled artifacts for the test.',
+          '.xctestrun file and the contents of the DerivedData/Build/Products '
+          'directory.',
       enum_values.BUILT_FOR_IOS_SIMULATOR:
           'The provided XCTest was built for the iOS simulator rather than for '
           'a physical device',

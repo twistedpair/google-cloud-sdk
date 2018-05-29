@@ -1169,10 +1169,6 @@
           "description": "The requirements for OAuth credentials.",
           "$ref": "OAuthRequirements"
         },
-        "customAuth": {
-          "description": "Configuration for custom authentication.",
-          "$ref": "CustomAuthRequirements"
-        },
         "allowWithoutCredential": {
           "description": "If true, the service accepts API keys without any other credential.",
           "type": "boolean"
@@ -1193,17 +1189,6 @@
       "properties": {
         "canonicalScopes": {
           "description": "The list of publicly documented OAuth scopes that are allowed access. An\nOAuth token containing any of these scopes will be accepted.\n\nExample:\n\n     canonical_scopes: https:\/\/www.googleapis.com\/auth\/calendar,\n                       https:\/\/www.googleapis.com\/auth\/calendar.read",
-          "type": "string"
-        }
-      }
-    },
-    "CustomAuthRequirements": {
-      "id": "CustomAuthRequirements",
-      "description": "Configuration for a custom authentication provider.",
-      "type": "object",
-      "properties": {
-        "provider": {
-          "description": "A configuration string containing connection information for the\nauthentication provider, typically formatted as a SmartService string\n(go\/smartservice).",
           "type": "string"
         }
       }
@@ -3089,12 +3074,6 @@
               "description": "Include services consumed by the specified project.\n\nIf project_settings is expanded, then this field controls which project\nproject_settings is populated for.\nThis field is deprecated.\nSee details go\/deprecate-listservices-expand.",
               "location": "query",
               "type": "string"
-            },
-            "expand": {
-              "description": "Fields to expand in any results. By default, the following fields\nare not fully included in list results, but they will if you specify them\nin this field:\n- `project_settings`\n- `quota_usage` (It requires `project_settings`)\nThis field is deprecated.\nSee details go\/deprecate-listservices-expand.",
-              "location": "query",
-              "type": "string",
-              "format": "google-fieldmask"
             },
             "pageSize": {
               "description": "Requested size of the next page of data.",

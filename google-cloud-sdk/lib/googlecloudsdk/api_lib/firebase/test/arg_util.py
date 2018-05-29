@@ -281,7 +281,19 @@ def AddIosTestArgs(parser):
       metavar='XCTEST_ZIP',
       help='The path to the test package (a zip file containing the iOS app '
       'and XCTest files). The given path may be in the local filesystem or in '
-      'Google Cloud Storage using a URL beginning with `gs://`.')
+      'Google Cloud Storage using a URL beginning with `gs://`. Note: any '
+      '.xctestrun file in this zip file will be ignored if *--xctestrun-file* '
+      'is specified.')
+  parser.add_argument(
+      '--xctestrun-file',
+      category=base.COMMONLY_USED_FLAGS,
+      metavar='XCTESTRUN_FILE',
+      help='The path to an .xctestrun file that will override any .xctestrun '
+      'file contained in the *--test* package. Because the .xctestrun file '
+      'contains environment variables along with test methods to run and/or '
+      'ignore, this can be useful for customizing or sharding test suites. The '
+      'given path may be in the local filesystem or in Google Cloud Storage '
+      'using a URL beginning with `gs://`.')
   parser.add_argument(
       '--device',
       category=base.COMMONLY_USED_FLAGS,

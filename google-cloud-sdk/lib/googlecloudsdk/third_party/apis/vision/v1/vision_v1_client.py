@@ -35,10 +35,52 @@ class VisionV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.files = self.FilesService(self)
     self.images = self.ImagesService(self)
     self.locations_operations = self.LocationsOperationsService(self)
     self.locations = self.LocationsService(self)
     self.operations = self.OperationsService(self)
+
+  class FilesService(base_api.BaseApiService):
+    """Service class for the files resource."""
+
+    _NAME = u'files'
+
+    def __init__(self, client):
+      super(VisionV1.FilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AsyncBatchAnnotate(self, request, global_params=None):
+      r"""Run asynchronous image detection and annotation for a list of generic.
+files, such as PDF files, which may contain multiple pages and multiple
+images per page. Progress and results can be retrieved through the
+`google.longrunning.Operations` interface.
+`Operation.metadata` contains `OperationMetadata` (metadata).
+`Operation.response` contains `AsyncBatchAnnotateFilesResponse` (results).
+
+      Args:
+        request: (AsyncBatchAnnotateFilesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AsyncBatchAnnotate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AsyncBatchAnnotate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'vision.files.asyncBatchAnnotate',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path=u'v1/files:asyncBatchAnnotate',
+        request_field='<request>',
+        request_type_name=u'AsyncBatchAnnotateFilesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class ImagesService(base_api.BaseApiService):
     """Service class for the images resource."""

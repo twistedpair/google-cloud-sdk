@@ -14,14 +14,15 @@
 
 """A module to get an unauthenticated http object."""
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 import platform
 import re
 import time
 import uuid
+import enum
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import http_proxy
@@ -266,17 +267,22 @@ class Modifiers(object):
 
       if not six.PY2:
         # httplib2 needs text under Python 3.
-        if modified_args:
-          modified_args[0] = encoding.Decode(modified_args[0])
-        if 'uri' in kwargs:
-          kwargs['uri'] = encoding.Decode(kwargs['uri'])
+        RequestParam.URI.Set(
+            modified_args, kwargs,
+            encoding.Decode(RequestParam.URI.Get(modified_args, kwargs)))
 
       # We need to make a copy here because if we don't we will be modifying the
       # dictionary that people pass in.
       # TODO(b/37281703): Copy the entire dictionary. This is blocked on making
       # sure anything that comes through is actually copyable.
-      if 'headers' in kwargs:
-        kwargs['headers'] = Modifiers._EncodeHeaders(kwargs['headers'])
+      headers = RequestParam.HEADERS.Get(modified_args, kwargs) or {}
+      # httplib2 adds headers and body together to POST messages. If headers are
+      # text, it prevents POSTing bytes because you will get a decode error when
+      # it combines them. Normalize everything to bytes here so we call request
+      # consistently.
+      headers = Modifiers._EncodeHeaders(headers)
+      RequestParam.HEADERS.Set(modified_args, kwargs, headers)
+
       modifier_data = []
 
       for handler in handlers:
@@ -346,9 +352,12 @@ class Modifiers(object):
     header, value = Modifiers._EncodeHeader(header, value)
     def _AppendToHeader(args, kwargs):
       """Replacement http.request() method."""
-      current_value = Modifiers._GetHeader(args, kwargs, header, b'')
-      new_value = (current_value + b' ' + value).strip()
-      modified_args = Modifiers._SetHeader(args, kwargs, header, new_value)
+      modified_args = list(args)
+      headers = RequestParam.HEADERS.Get(args, kwargs) or {}
+      current_value = headers.get(header, b'')
+      headers[header] = (
+          (current_value + b' ' + value).strip() if current_value else value)
+      RequestParam.HEADERS.Set(modified_args, kwargs, headers)
       return Modifiers.Result(args=modified_args)
     return _AppendToHeader
 
@@ -366,7 +375,10 @@ class Modifiers(object):
     header, value = Modifiers._EncodeHeader(header, value)
     def _SetHeader(args, kwargs):
       """Replacement http.request() method."""
-      modified_args = Modifiers._SetHeader(args, kwargs, header, value)
+      modified_args = list(args)
+      headers = RequestParam.HEADERS.Get(args, kwargs) or {}
+      headers[header] = value
+      RequestParam.HEADERS.Set(modified_args, kwargs, headers)
       return Modifiers.Result(args=modified_args)
     return _SetHeader
 
@@ -381,17 +393,21 @@ class Modifiers(object):
     Returns:
       A function that can be used in a Handler.request.
     """
-    def _AddQueryParam(args, unused_kwargs):
+    def _AddQueryParam(args, kwargs):
       """Replacement http.request() method."""
-      url_parts = urllib.parse.urlsplit(args[0])
+      url_parts = urllib.parse.urlsplit(
+          RequestParam.URI.Get(args, kwargs))
       query_params = urllib.parse.parse_qs(url_parts.query)
       query_params[param] = value
       # Need to do this to convert a SplitResult into a list so it can be
       # modified.
       url_parts = list(url_parts)
       url_parts[3] = urllib.parse.urlencode(query_params, doseq=True)
+
       modified_args = list(args)
-      modified_args[0] = urllib.parse.urlunsplit(url_parts)
+      # pylint:disable=too-many-function-args, This is just bogus.
+      new_url = urllib.parse.urlunsplit(url_parts)
+      RequestParam.URI.Set(modified_args, kwargs, new_url)
       return Modifiers.Result(args=modified_args)
     return _AddQueryParam
 
@@ -544,65 +560,43 @@ class Modifiers(object):
     return _ReportDuration
 
   @classmethod
-  def _GetHeader(cls, args, kwargs, header, default=None):
-    """Get a header given the args and kwargs of an Http Request call."""
-
-    if 'headers' in kwargs:
-      return kwargs['headers'].get(header, default)
-    elif len(args) > 3 and args[3]:
-      return args[3].get(header, default)
-    else:
-      return default
-
-  @classmethod
-  def _SetHeader(cls, args, kwargs, header, value):
-    """Set a header given the args and kwargs of an Http Request call."""
-
-    modified_args = list(args)
-
-    if 'headers' in kwargs:
-      # Headers was given to request() as a kwarg, we can just update it.
-      kwargs['headers'][header] = value
-    elif len(modified_args) > 3:
-      # Headers was given as a positional, we need to update that arg.
-      if modified_args[3] is not None:
-        # Headers were actually provided, update that dictionary.
-        modified_args[3][header] = value
-      else:
-        # Headers were explicitly provided as a positional but None, copy the
-        # args because the tuple is immutable and insert the header.
-        modified_args[3] = {header: value}
-    else:
-      kwargs['headers'] = {header: value}
-
-    return modified_args
-
-  @classmethod
   def _GetRequest(cls, args, kwargs):
     """Parse args and kwargs to get uri, method, body, headers."""
     # http.request has the following signature:
     # request(self, uri, method="GET", body=None, headers=None,
     #         redirections=DEFAULT_MAX_REDIRECTS, connection_type=None)
 
-    uri = args[0]
-    method = 'GET'
-    body = ''
-    headers = {}
-
-    if len(args) > 1:
-      method = args[1]
-    elif 'method' in kwargs:
-      method = kwargs['method']
-    if len(args) > 2:
-      body = args[2]
-      if len(args) > 3:
-        headers = args[3]
-    if 'body' in kwargs:
-      body = kwargs['body']
-    if 'headers' in kwargs:
-      headers = kwargs['headers']
-
+    uri = RequestParam.URI.Get(args, kwargs)
+    method = RequestParam.METHOD.Get(args, kwargs) or 'GET'
+    body = RequestParam.BODY.Get(args, kwargs) or ''
+    headers = RequestParam.HEADERS.Get(args, kwargs) or {}
     return uri, method, body, headers
+
+
+class RequestParam(enum.Enum):
+  """Encapsulates the parameters to a request() call and how to extract them.
+  """
+  URI = ('uri', 0)
+  METHOD = ('method', 1)
+  BODY = ('body', 2)
+  HEADERS = ('headers', 3)
+
+  def __init__(self, arg_name, index):
+    self.arg_name = arg_name
+    self.index = index
+
+  def Get(self, args, kwargs):
+    if len(args) > self.index:
+      return args[self.index]
+    if self.arg_name in kwargs:
+      return kwargs[self.arg_name]
+    return None
+
+  def Set(self, args, kwargs, value):
+    if len(args) > self.index:
+      args[self.index] = value
+    else:
+      kwargs[self.arg_name] = value
 
 
 def IsTokenUri(uri):

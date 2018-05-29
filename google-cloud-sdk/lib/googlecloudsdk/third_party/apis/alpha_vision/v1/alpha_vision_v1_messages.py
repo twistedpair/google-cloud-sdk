@@ -354,6 +354,20 @@ class AlphaVisionProjectsLocationsProductsReferenceImagesListRequest(_messages.M
   parent = _messages.StringField(3, required=True)
 
 
+class AnnotateFileResponse(_messages.Message):
+  r"""Response to a single file annotation request. A file may contain one or
+  more images, which individually have their own responses.
+
+  Fields:
+    inputConfig: Information about the file for which this response is
+      generated.
+    responses: Individual responses to images found within the file.
+  """
+
+  inputConfig = _messages.MessageField('InputConfig', 1)
+  responses = _messages.MessageField('AnnotateImageResponse', 2, repeated=True)
+
+
 class AnnotateImageRequest(_messages.Message):
   r"""Request for performing Google Cloud Vision API tasks over a user-
   provided image, with user-requested features.
@@ -2434,6 +2448,126 @@ class GoogleCloudVisionV1p2beta1Word(_messages.Message):
   confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   property = _messages.MessageField('GoogleCloudVisionV1p2beta1TextAnnotationTextProperty', 3)
   symbols = _messages.MessageField('GoogleCloudVisionV1p2beta1Symbol', 4, repeated=True)
+
+
+class GoogleCloudVisionV1p3beta1BatchOperationMetadata(_messages.Message):
+  r"""Metadata for the batch operations such as the current state.  This is
+  included in the `metadata` field of the `Operation` returned by the
+  `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Enums:
+    StateValueValuesEnum: The current state of the batch operation.
+
+  Fields:
+    endTime: The time when the batch request is finished and
+      google.longrunning.Operation.done is set to true.
+    state: The current state of the batch operation.
+    submitTime: The time when the batch request was submitted to the server.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of the batch operation.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid.
+      PROCESSING: Request is actively being processed.
+      SUCCESSFUL: The request is done and at least one item has been
+        successfully processed.
+      FAILED: The request is done and no item has been successfully processed.
+      CANCELLED: The request is done after the
+        longrunning.Operations.CancelOperation has been called by the user.
+        Any records that were processed before the cancel command are output
+        as specified in the request.
+    """
+    STATE_UNSPECIFIED = 0
+    PROCESSING = 1
+    SUCCESSFUL = 2
+    FAILED = 3
+    CANCELLED = 4
+
+  endTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  submitTime = _messages.StringField(3)
+
+
+class GoogleCloudVisionV1p3beta1BoundingPoly(_messages.Message):
+  r"""A bounding polygon for the detected image annotation.
+
+  Fields:
+    normalizedVertices: The bounding polygon normalized vertices.
+    vertices: The bounding polygon vertices.
+  """
+
+  normalizedVertices = _messages.MessageField('GoogleCloudVisionV1p3beta1NormalizedVertex', 1, repeated=True)
+  vertices = _messages.MessageField('GoogleCloudVisionV1p3beta1Vertex', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p3beta1ImportProductSetsResponse(_messages.Message):
+  r"""Response message for the `ImportProductSets` method.  This message is
+  returned by the google.longrunning.Operations.GetOperation method in the
+  returned google.longrunning.Operation.response field.
+
+  Fields:
+    referenceImages: The list of reference_images that are imported
+      successfully.
+    statuses: The rpc status for each ImportProductSet request, including both
+      successes and errors.  The number of statuses here matches the number of
+      lines in the csv file, and statuses[i] stores the success or failure
+      status of processing the i-th line of the csv, starting from line 0.
+  """
+
+  referenceImages = _messages.MessageField('GoogleCloudVisionV1p3beta1ReferenceImage', 1, repeated=True)
+  statuses = _messages.MessageField('Status', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p3beta1NormalizedVertex(_messages.Message):
+  r"""A vertex represents a 2D point in the image. NOTE: the normalized vertex
+  coordinates are relative to the original image and range from 0 to 1.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p3beta1ReferenceImage(_messages.Message):
+  r"""A `ReferenceImage` represents a product image and its associated
+  metadata, such as bounding boxes.
+
+  Fields:
+    boundingPolys: Bounding polygons around the areas of interest in the
+      reference image. Optional. If this field is empty, the system will try
+      to detect regions of interest. At most 10 bounding polygons will be
+      used.  The provided shape is converted into a non-rotated rectangle.
+      Once converted, the small edge of the rectangle must be greater than or
+      equal to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is
+      ok; 1:5 is not).
+    name: The resource name of the reference image.  Format is:  `projects/PRO
+      JECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
+      This field is ignored when creating a reference image.
+    uri: The Google Cloud Storage URI of the reference image.  The URI must
+      start with `gs://`.  Required.
+  """
+
+  boundingPolys = _messages.MessageField('GoogleCloudVisionV1p3beta1BoundingPoly', 1, repeated=True)
+  name = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class GoogleCloudVisionV1p3beta1Vertex(_messages.Message):
+  r"""A vertex represents a 2D point in the image. NOTE: the vertex
+  coordinates are in the same scale as the original image.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  y = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Image(_messages.Message):

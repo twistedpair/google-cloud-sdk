@@ -42,6 +42,14 @@ def AddTemplateFlag(parser, action):
       'template', help='The ID of the workflow template to {0}.'.format(action))
 
 
+def AddFileFlag(parser, input_type, action):
+  # Examples: workflow template to run/export/import, cluster to create.
+  parser.add_argument(
+      '--file',
+      help='The YAML file containing the {0} to {1}'.format(input_type, action),
+      required=True)
+
+
 def AddJobFlag(parser, action):
   parser.add_argument(
       'job', help='The ID of the job to {0}.'.format(action))

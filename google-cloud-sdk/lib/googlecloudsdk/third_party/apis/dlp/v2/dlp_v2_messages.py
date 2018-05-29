@@ -586,7 +586,12 @@ class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
 
 
 class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
-  r"""A GooglePrivacyDlpV2AuxiliaryTable object.
+  r"""An auxiliary table contains statistical information on the relative
+  frequency of different quasi-identifiers values. It has one or several
+  quasi-identifiers columns, and one column that indicates the relative
+  frequency of each quasi-identifier tuple. If a tuple is present in the data
+  but not in the auxiliary table, the corresponding relative frequency is
+  assumed to be zero (and thus, the tuple is highly reidentifiable).
 
   Fields:
     quasiIds: Quasi-identifier columns. [required]
@@ -1235,35 +1240,33 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   specific sensitive information configurable to the data in question.
 
   Enums:
-    LikelihoodValueValuesEnum: Likelihood to return for this custom info type.
+    LikelihoodValueValuesEnum: Likelihood to return for this CustomInfoType.
       This base value can be altered by a detection rule if the finding meets
       the criteria specified by the rule. Defaults to `VERY_LIKELY` if not
       specified.
 
   Fields:
     detectionRules: Set of detection rules to apply to all findings of this
-      custom info type. Rules are applied in order that they are specified.
-      Not supported for the `surrogate_type` custom info type.
-    dictionary: Dictionary-based custom info type.
-    infoType: Info type configuration. All custom info types must have
-      configurations that do not conflict with built-in info types or other
-      custom info types.
-    likelihood: Likelihood to return for this custom info type. This base
-      value can be altered by a detection rule if the finding meets the
-      criteria specified by the rule. Defaults to `VERY_LIKELY` if not
-      specified.
-    regex: Regex-based custom info type.
-    surrogateType: Surrogate info type.
+      CustomInfoType. Rules are applied in order that they are specified. Not
+      supported for the `surrogate_type` CustomInfoType.
+    dictionary: A list of phrases to detect as a CustomInfoType.
+    infoType: All CustomInfoTypes must have a name that does not conflict with
+      built-in InfoTypes or other CustomInfoTypes.
+    likelihood: Likelihood to return for this CustomInfoType. This base value
+      can be altered by a detection rule if the finding meets the criteria
+      specified by the rule. Defaults to `VERY_LIKELY` if not specified.
+    regex: Regular expression based CustomInfoType.
+    surrogateType: Message for detecting output from deidentification
+      transformations that support reversing.
   """
 
   class LikelihoodValueValuesEnum(_messages.Enum):
-    r"""Likelihood to return for this custom info type. This base value can be
+    r"""Likelihood to return for this CustomInfoType. This base value can be
     altered by a detection rule if the finding meets the criteria specified by
     the rule. Defaults to `VERY_LIKELY` if not specified.
 
     Values:
-      LIKELIHOOD_UNSPECIFIED: Default value; information with all likelihoods
-        is included.
+      LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
       VERY_UNLIKELY: Few matching elements.
       UNLIKELY: <no description>
       POSSIBLE: Some matching elements.
@@ -1460,7 +1463,7 @@ class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
 
 
 class GooglePrivacyDlpV2DetectionRule(_messages.Message):
-  r"""Rule for modifying a custom info type to alter behavior under certain
+  r"""Rule for modifying a CustomInfoType to alter behavior under certain
   circumstances, depending on the specific details of the rule. Not supported
   for the `surrogate_type` custom info type.
 
@@ -1700,8 +1703,7 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
     r"""Estimate of how likely it is that the `info_type` is correct.
 
     Values:
-      LIKELIHOOD_UNSPECIFIED: Default value; information with all likelihoods
-        is included.
+      LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
       VERY_UNLIKELY: Few matching elements.
       UNLIKELY: <no description>
       POSSIBLE: Some matching elements.
@@ -1781,7 +1783,8 @@ class GooglePrivacyDlpV2HotwordRule(_messages.Message):
   proximity of hotwords.
 
   Fields:
-    hotwordRegex: Regex pattern defining what qualifies as a hotword.
+    hotwordRegex: Regular expression pattern defining what qualifies as a
+      hotword.
     likelihoodAdjustment: Likelihood adjustment to apply to all matching
       findings.
     proximity: Proximity of the finding within which the entire hotword must
@@ -1833,7 +1836,10 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
   r"""Type of information detected by the API.
 
   Fields:
-    name: Name of the information type.
+    name: Name of the information type. Either a name of your choosing when
+      creating a CustomInfoType, or one of the names listed at
+      https://cloud.google.com/dlp/docs/infotypes-reference when specifying a
+      built-in type.
   """
 
   name = _messages.StringField(1)
@@ -1941,8 +1947,8 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
     includeQuote: When true, a contextual quote from the data that triggered a
       finding is included in the response; see Finding.quote.
     infoTypes: Restricts what info_types to look for. The values must
-      correspond to InfoType values returned by ListInfoTypes or found in
-      documentation.
+      correspond to InfoType values returned by ListInfoTypes or listed at
+      https://cloud.google.com/dlp/docs/infotypes-reference.
     limits: A GooglePrivacyDlpV2FindingLimits attribute.
     minLikelihood: Only returns findings equal or above this threshold. The
       default is POSSIBLE.
@@ -1965,8 +1971,7 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
     POSSIBLE.
 
     Values:
-      LIKELIHOOD_UNSPECIFIED: Default value; information with all likelihoods
-        is included.
+      LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
       VERY_UNLIKELY: Few matching elements.
       UNLIKELY: <no description>
       POSSIBLE: Some matching elements.
@@ -2437,8 +2442,7 @@ class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
     r"""Set the likelihood of a finding to a fixed value.
 
     Values:
-      LIKELIHOOD_UNSPECIFIED: Default value; information with all likelihoods
-        is included.
+      LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
       VERY_UNLIKELY: Few matching elements.
       UNLIKELY: <no description>
       POSSIBLE: Some matching elements.
@@ -3092,7 +3096,7 @@ class GooglePrivacyDlpV2SurrogateType(_messages.Message):
   eidentifyTemplates#cryptoreplaceffxfpeconfig). These types of
   transformations are those that perform pseudonymization, thereby producing a
   "surrogate" as output. This should be used in conjunction with a field on
-  the transformation such as `surrogate_info_type`. This custom info type does
+  the transformation such as `surrogate_info_type`. This CustomInfoType does
   not support the use of `detection_rules`.
   """
 

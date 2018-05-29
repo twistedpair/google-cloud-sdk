@@ -133,7 +133,9 @@ def AddFilterLeasedTasksFlag(parser):
 
 def AddCreatePullTaskFlags(parser):
   """Add flags needed for creating a pull task to the parser."""
-  AddQueueResourceFlag(parser, required=False)
+  group = parser.add_group(required=True)
+  AddQueueResourceFlag(group, required=False)
+  _GetTaskIdFlag().AddToParser(group)
   for flag in _PullTaskFlags():
     flag.AddToParser(parser)
   _AddPayloadFlags(parser)
@@ -141,7 +143,9 @@ def AddCreatePullTaskFlags(parser):
 
 def AddCreateAppEngineTaskFlags(parser):
   """Add flags needed for creating a App Engine task to the parser."""
-  AddQueueResourceFlag(parser, required=False)
+  group = parser.add_group(required=True)
+  AddQueueResourceFlag(group, required=False)
+  _GetTaskIdFlag().AddToParser(group)
   for flag in _AppEngineTaskFlags():
     flag.AddToParser(parser)
   _AddPayloadFlags(parser)
@@ -266,23 +270,26 @@ def _AppEngineTaskFlags():
   ]
 
 
+def _GetTaskIdFlag():
+  return base.Argument(
+      '--id', required=False, metavar='TASK_ID',
+      help="""\
+      The ID of the task to create.
+
+      If not specified then the system will generate a random unique task
+      ID. Explicitly specifying a task ID enables task de-duplication. If a
+      task's ID is identical to that of an existing task or a task that was
+      deleted or completed recently then the call will fail.
+
+      Because there is an extra lookup cost to identify duplicate task
+      names, tasks created with IDs have significantly increased latency.
+      Using hashed strings for the task ID or for the prefix of the task ID
+      is recommended.
+      """)
+
+
 def _CommonTaskFlags():
   return [
-      base.Argument(
-          '--id', required=False, metavar='TASK_ID',
-          help="""\
-          The ID of the task to create.
-
-          If not specified then the system will generate a random unique task
-          ID. Explicitly specifying a task ID enables task de-duplication. If a
-          task's ID is identical to that of an existing task or a task that was
-          deleted or completed recently then the call will fail.
-
-          Because there is an extra lookup cost to identify duplicate task
-          names, tasks created with IDs have significantly increased latency.
-          Using hashed strings for the task ID or for the prefix of the task ID
-          is recommended.
-          """),
       base.Argument('--schedule-time', help="""\
           The time when the task is scheduled to be first attempted. Defaults to
           "now" if not specified.

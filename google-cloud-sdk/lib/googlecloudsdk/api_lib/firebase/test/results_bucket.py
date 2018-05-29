@@ -82,7 +82,7 @@ class ResultsBucketOps(object):
         projectId=self._project)
     try:
       response = tr_client.projects.InitializeSettings(request)
-      return response.defaultBucket.decode('utf8')
+      return response.defaultBucket
     except apitools_exceptions.HttpError as error:
       code, err_msg = util.GetErrorCodeAndMessage(error)
       if code == HTTP_FORBIDDEN:

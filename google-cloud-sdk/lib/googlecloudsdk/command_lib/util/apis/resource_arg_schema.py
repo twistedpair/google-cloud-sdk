@@ -18,9 +18,11 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.calliope.concepts import util as resource_util
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.core import properties
+import six
 
 
 class Error(Exception):
@@ -64,12 +66,13 @@ class YAMLResourceArgument(object):
         removed_flags=data.get('removed_flags'),
         disable_auto_completers=data['spec'].get(
             'disable_auto_completers', True),
-        arg_name=data.get('arg_name')
+        arg_name=data.get('arg_name'),
+        command_level_fallthroughs=data.get('command_level_fallthroughs', {})
     )
 
   def __init__(self, data, group_help, is_positional=True, removed_flags=None,
                is_parent_resource=False, disable_auto_completers=True,
-               arg_name=None):
+               arg_name=None, command_level_fallthroughs=None):
     self.name = data['name'] if arg_name is None else arg_name
     self.name_override = arg_name
     self.request_id_field = data.get('request_id_field')
@@ -78,6 +81,8 @@ class YAMLResourceArgument(object):
     self.is_positional = is_positional
     self.is_parent_resource = is_parent_resource
     self.removed_flags = removed_flags or []
+    self.command_level_fallthroughs = _GenerateFallthroughsMap(
+        command_level_fallthroughs)
 
     self._full_collection_name = data['collection']
     self._api_version = data.get('api_version')
@@ -199,6 +204,25 @@ def _GenerateAttributes(expected_param_names, attribute_data):
         expected_param_names, registered_param_names)
 
   return final_attributes
+
+
+def _GenerateFallthroughsMap(command_level_fallthroughs_data):
+  """Generate a map of command-level fallthroughs."""
+  command_level_fallthroughs_data = command_level_fallthroughs_data or {}
+  command_level_fallthroughs = {}
+
+  def _FallthroughStringFromData(fallthrough_data):
+    if fallthrough_data.get('is_positional', False):
+      return resource_util.PositionalFormat(fallthrough_data['arg_name'])
+    return resource_util.FlagNameFormat(fallthrough_data['arg_name'])
+
+  for attribute_name, fallthroughs_data in six.iteritems(
+      command_level_fallthroughs_data):
+    fallthroughs_list = [_FallthroughStringFromData(fallthrough)
+                         for fallthrough in fallthroughs_data]
+    command_level_fallthroughs[attribute_name] = fallthroughs_list
+
+  return command_level_fallthroughs
 
 
 def _CreateAttribute(data):

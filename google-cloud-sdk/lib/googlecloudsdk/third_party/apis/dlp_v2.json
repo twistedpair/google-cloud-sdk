@@ -145,7 +145,7 @@
       "type": "object",
       "properties": {
         "infoTypes": {
-          "description": "Restricts what info_types to look for. The values must correspond to\nInfoType values returned by ListInfoTypes or found in documentation.",
+          "description": "Restricts what info_types to look for. The values must correspond to\nInfoType values returned by ListInfoTypes or listed at\nhttps:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2InfoType"
@@ -154,7 +154,7 @@
         "minLikelihood": {
           "description": "Only returns findings equal or above this threshold. The default is\nPOSSIBLE.",
           "enumDescriptions": [
-            "Default value; information with all likelihoods is included.",
+            "Default value; same as POSSIBLE.",
             "Few matching elements.",
             "",
             "Some matching elements.",
@@ -214,7 +214,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the information type.",
+          "description": "Name of the information type. Either a name of your choosing when\ncreating a CustomInfoType, or one of the names listed\nat https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference when specifying\na built-in type.",
           "type": "string"
         }
       }
@@ -264,13 +264,13 @@
       "type": "object",
       "properties": {
         "infoType": {
-          "description": "Info type configuration. All custom info types must have configurations\nthat do not conflict with built-in info types or other custom info types.",
+          "description": "All CustomInfoTypes must have a name\nthat does not conflict with built-in InfoTypes or other CustomInfoTypes.",
           "$ref": "GooglePrivacyDlpV2InfoType"
         },
         "likelihood": {
-          "description": "Likelihood to return for this custom info type. This base value can be\naltered by a detection rule if the finding meets the criteria specified by\nthe rule. Defaults to `VERY_LIKELY` if not specified.",
+          "description": "Likelihood to return for this CustomInfoType. This base value can be\naltered by a detection rule if the finding meets the criteria specified by\nthe rule. Defaults to `VERY_LIKELY` if not specified.",
           "enumDescriptions": [
-            "Default value; information with all likelihoods is included.",
+            "Default value; same as POSSIBLE.",
             "Few matching elements.",
             "",
             "Some matching elements.",
@@ -288,19 +288,19 @@
           ]
         },
         "dictionary": {
-          "description": "Dictionary-based custom info type.",
+          "description": "A list of phrases to detect as a CustomInfoType.",
           "$ref": "GooglePrivacyDlpV2Dictionary"
         },
         "regex": {
-          "description": "Regex-based custom info type.",
+          "description": "Regular expression based CustomInfoType.",
           "$ref": "GooglePrivacyDlpV2Regex"
         },
         "surrogateType": {
-          "description": "Surrogate info type.",
+          "description": "Message for detecting output from deidentification transformations that\nsupport reversing.",
           "$ref": "GooglePrivacyDlpV2SurrogateType"
         },
         "detectionRules": {
-          "description": "Set of detection rules to apply to all findings of this custom info type.\nRules are applied in order that they are specified. Not supported for the\n`surrogate_type` custom info type.",
+          "description": "Set of detection rules to apply to all findings of this CustomInfoType.\nRules are applied in order that they are specified. Not supported for the\n`surrogate_type` CustomInfoType.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2DetectionRule"
@@ -361,14 +361,14 @@
     },
     "GooglePrivacyDlpV2SurrogateType": {
       "id": "GooglePrivacyDlpV2SurrogateType",
-      "description": "Message for detecting output from deidentification transformations\nsuch as\n[`CryptoReplaceFfxFpeConfig`](\/dlp\/docs\/reference\/rest\/v2\/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).\nThese types of transformations are\nthose that perform pseudonymization, thereby producing a \"surrogate\" as\noutput. This should be used in conjunction with a field on the\ntransformation such as `surrogate_info_type`. This custom info type does\nnot support the use of `detection_rules`.",
+      "description": "Message for detecting output from deidentification transformations\nsuch as\n[`CryptoReplaceFfxFpeConfig`](\/dlp\/docs\/reference\/rest\/v2\/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).\nThese types of transformations are\nthose that perform pseudonymization, thereby producing a \"surrogate\" as\noutput. This should be used in conjunction with a field on the\ntransformation such as `surrogate_info_type`. This CustomInfoType does\nnot support the use of `detection_rules`.",
       "type": "object",
       "properties": {
       }
     },
     "GooglePrivacyDlpV2DetectionRule": {
       "id": "GooglePrivacyDlpV2DetectionRule",
-      "description": "Rule for modifying a custom info type to alter behavior under certain\ncircumstances, depending on the specific details of the rule. Not supported\nfor the `surrogate_type` custom info type.",
+      "description": "Rule for modifying a CustomInfoType to alter behavior under certain\ncircumstances, depending on the specific details of the rule. Not supported\nfor the `surrogate_type` custom info type.",
       "type": "object",
       "properties": {
         "hotwordRule": {
@@ -383,7 +383,7 @@
       "type": "object",
       "properties": {
         "hotwordRegex": {
-          "description": "Regex pattern defining what qualifies as a hotword.",
+          "description": "Regular expression pattern defining what qualifies as a hotword.",
           "$ref": "GooglePrivacyDlpV2Regex"
         },
         "proximity": {
@@ -421,7 +421,7 @@
         "fixedLikelihood": {
           "description": "Set the likelihood of a finding to a fixed value.",
           "enumDescriptions": [
-            "Default value; information with all likelihoods is included.",
+            "Default value; same as POSSIBLE.",
             "Few matching elements.",
             "",
             "Some matching elements.",
@@ -688,7 +688,7 @@
         "likelihood": {
           "description": "Estimate of how likely it is that the `info_type` is correct.",
           "enumDescriptions": [
-            "Default value; information with all likelihoods is included.",
+            "Default value; same as POSSIBLE.",
             "Few matching elements.",
             "",
             "Some matching elements.",
@@ -2677,6 +2677,7 @@
     },
     "GooglePrivacyDlpV2AuxiliaryTable": {
       "id": "GooglePrivacyDlpV2AuxiliaryTable",
+      "description": "An auxiliary table contains statistical information on the relative\nfrequency of different quasi-identifiers values. It has one or several\nquasi-identifiers columns, and one column that indicates the relative\nfrequency of each quasi-identifier tuple.\nIf a tuple is present in the data but not in the auxiliary table, the\ncorresponding relative frequency is assumed to be zero (and thus, the\ntuple is highly reidentifiable).",
       "type": "object",
       "properties": {
         "table": {

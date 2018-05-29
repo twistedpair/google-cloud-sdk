@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
@@ -240,7 +241,7 @@ def PrintWorkflowMetadata(metadata, status, operations, errors):
 # TODO(b/36056506): Use api_lib.utils.waiter
 def WaitForWorkflowTemplateOperation(dataproc,
                                      operation,
-                                     timeout_s,
+                                     timeout_s=None,
                                      poll_period_s=5):
   """Poll dataproc Operation until its status is done or timeout reached.
 
@@ -265,7 +266,8 @@ def WaitForWorkflowTemplateOperation(dataproc,
   status = {}
   errors = {}
 
-  while timeout_s > (time.time() - start_time):
+  # If no timeout is specified, poll forever.
+  while timeout_s is None or timeout_s > (time.time() - start_time):
     try:
       operation = dataproc.client.projects_regions_operations.Get(request)
       metadata = ParseOperationJsonMetadata(operation.metadata,
@@ -491,3 +493,19 @@ def ParseRegion(dataproc):
       },
       collection='dataproc.projects.regions')
   return ref
+
+
+def ReadYaml(file_path, message_type):
+  parsed_yaml = yaml.load_path(file_path)
+  try:
+    message = encoding.PyValueToMessage(message_type, parsed_yaml)
+  except Exception as e:
+    raise exceptions.ParseError('Cannot parse YAML from file {0}: [{1}]'.format(
+        file_path, e))
+  return message
+
+
+def WriteYaml(file_path, message):
+  py_value = encoding.MessageToPyValue(message)
+  with open(file_path, 'w') as f:
+    yaml.dump(py_value, stream=f)

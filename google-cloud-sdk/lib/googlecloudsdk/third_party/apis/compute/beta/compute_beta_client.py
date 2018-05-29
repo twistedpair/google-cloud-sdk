@@ -4582,6 +4582,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetShieldedVmIntegrityPolicy(self, request, global_params=None):
+      r"""Sets the Shielded VM integrity policy for an instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInstancesSetShieldedVmIntegrityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetShieldedVmIntegrityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetShieldedVmIntegrityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.instances.setShieldedVmIntegrityPolicy',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/setShieldedVmIntegrityPolicy',
+        request_field=u'shieldedVmIntegrityPolicy',
+        request_type_name=u'ComputeInstancesSetShieldedVmIntegrityPolicyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetTags(self, request, global_params=None):
       r"""Sets tags for the specified instance to the data included in the request.
 
@@ -4786,6 +4812,32 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateNetworkInterface',
         request_field=u'networkInterfaceResource',
         request_type_name=u'ComputeInstancesUpdateNetworkInterfaceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def UpdateShieldedVmConfig(self, request, global_params=None):
+      r"""Updates the Shielded VM config for an instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInstancesUpdateShieldedVmConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateShieldedVmConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateShieldedVmConfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.instances.updateShieldedVmConfig',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateShieldedVmConfig',
+        request_field=u'shieldedVmConfig',
+        request_type_name=u'ComputeInstancesUpdateShieldedVmConfigRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

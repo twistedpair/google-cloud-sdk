@@ -815,6 +815,18 @@ class Orientation(_messages.Message):
   tags = _messages.StringField(3, repeated=True)
 
 
+class ProvidedSoftwareCatalog(_messages.Message):
+  r"""The currently provided software environment on the devices under test.
+
+  Fields:
+    orchestratorVersion: A string representing the current version of Android
+      Test Orchestrator that is provided by TestExecutionService. Example:
+      "1.0.2 beta"
+  """
+
+  orchestratorVersion = _messages.StringField(1)
+
+
 class RegularFile(_messages.Message):
   r"""A file or directory to install on the device before the test starts
 
@@ -1019,11 +1031,14 @@ class TestEnvironmentCatalog(_messages.Message):
       Instrumentation Tests.
     iosDeviceCatalog: Supported iOS devices
     networkConfigurationCatalog: Supported network configurations
+    softwareCatalog: The software test environment provided by
+      TestExecutionService.
   """
 
   androidDeviceCatalog = _messages.MessageField('AndroidDeviceCatalog', 1)
   iosDeviceCatalog = _messages.MessageField('IosDeviceCatalog', 2)
   networkConfigurationCatalog = _messages.MessageField('NetworkConfigurationCatalog', 3)
+  softwareCatalog = _messages.MessageField('ProvidedSoftwareCatalog', 4)
 
 
 class TestExecution(_messages.Message):
@@ -1406,11 +1421,13 @@ class TestingTestEnvironmentCatalogGetRequest(_messages.Message):
       ANDROID: <no description>
       IOS: <no description>
       NETWORK_CONFIGURATION: <no description>
+      PROVIDED_SOFTWARE: <no description>
     """
     ENVIRONMENT_TYPE_UNSPECIFIED = 0
     ANDROID = 1
     IOS = 2
     NETWORK_CONFIGURATION = 3
+    PROVIDED_SOFTWARE = 4
 
   environmentType = _messages.EnumField('EnvironmentTypeValueValuesEnum', 1, required=True)
   projectId = _messages.StringField(2)

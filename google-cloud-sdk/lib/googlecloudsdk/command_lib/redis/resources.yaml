@@ -20,7 +20,7 @@ region:
         The name of the Redis region of the {resource}. Overrides the default
         redis/region property value for this command invocation.
       property: redis/region
-  disable_auto_completers: False
+  disable_auto_completers: false
 
 region_without_property:
   name: region
@@ -30,7 +30,7 @@ region_without_property:
       attribute_name: region
       help: |
         The name of the Redis region.
-  disable_auto_completers: False
+  disable_auto_completers: false
 
 operation:
   name: operation
@@ -41,7 +41,7 @@ operation:
       parameter_name: operationsId
       attribute_name: operation
       help: The name of the Redis operation.
-  disable_auto_completers: False
+  disable_auto_completers: false
 
 instance:
   name: instance
@@ -53,4 +53,4 @@ instance:
       parameter_name: instancesId
       attribute_name: instance
       help: The name of the Redis instance.
-  disable_auto_completers: False
+  disable_auto_completers: false

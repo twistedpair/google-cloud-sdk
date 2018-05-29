@@ -8032,6 +8032,34 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesSetShieldedVmIntegrityPolicyRequest(_messages.Message):
+  r"""A ComputeInstancesSetShieldedVmIntegrityPolicyRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    shieldedVmIntegrityPolicy: A ShieldedVmIntegrityPolicy resource to be
+      passed as the request body.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetTagsRequest(_messages.Message):
   r"""A ComputeInstancesSetTagsRequest object.
 
@@ -8227,6 +8255,34 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstancesUpdateShieldedVmConfigRequest(_messages.Message):
+  r"""A ComputeInstancesUpdateShieldedVmConfigRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    shieldedVmConfig: A ShieldedVmConfig resource to be passed as the request
+      body.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
@@ -16287,6 +16343,9 @@ class Firewall(_messages.Message):
       to the network it is associated with. When set to true, the firewall
       rule is not enforced and the network behaves as if it did not exist. If
       this is unspecified, the firewall rule will be enabled.
+    enableLogging: This field denotes whether to enable logging for a
+      particular firewall rule. If logging is enabled, logs will be exported
+      to Stackdriver.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#firewall for
@@ -16413,17 +16472,18 @@ class Firewall(_messages.Message):
   destinationRanges = _messages.StringField(5, repeated=True)
   direction = _messages.EnumField('DirectionValueValuesEnum', 6)
   disabled = _messages.BooleanField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#firewall')
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  priority = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(13)
-  sourceRanges = _messages.StringField(14, repeated=True)
-  sourceServiceAccounts = _messages.StringField(15, repeated=True)
-  sourceTags = _messages.StringField(16, repeated=True)
-  targetServiceAccounts = _messages.StringField(17, repeated=True)
-  targetTags = _messages.StringField(18, repeated=True)
+  enableLogging = _messages.BooleanField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#firewall')
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  priority = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(14)
+  sourceRanges = _messages.StringField(15, repeated=True)
+  sourceServiceAccounts = _messages.StringField(16, repeated=True)
+  sourceTags = _messages.StringField(17, repeated=True)
+  targetServiceAccounts = _messages.StringField(18, repeated=True)
+  targetTags = _messages.StringField(19, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -18512,6 +18572,8 @@ class Instance(_messages.Message):
       is supported.  Service accounts generate access tokens that can be
       accessed through the metadata server and used to authenticate
       applications on the instance. See Service Accounts for more information.
+    shieldedVmConfig: A ShieldedVmConfig attribute.
+    shieldedVmIntegrityPolicy: A ShieldedVmIntegrityPolicy attribute.
     startRestricted: [Output Only] Whether a VM has been restricted for start
       because Compute Engine has detected suspicious activity.
     status: [Output Only] The status of the instance. One of the following
@@ -18596,11 +18658,13 @@ class Instance(_messages.Message):
   scheduling = _messages.MessageField('Scheduling', 17)
   selfLink = _messages.StringField(18)
   serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
-  startRestricted = _messages.BooleanField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  statusMessage = _messages.StringField(22)
-  tags = _messages.MessageField('Tags', 23)
-  zone = _messages.StringField(24)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 20)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 21)
+  startRestricted = _messages.BooleanField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  statusMessage = _messages.StringField(24)
+  tags = _messages.MessageField('Tags', 25)
+  zone = _messages.StringField(26)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -20517,6 +20581,8 @@ class InstanceProperties(_messages.Message):
       tokens for these service accounts are available to the instances that
       are created from this template. Use metadata queries to obtain the
       access tokens for these instances.
+    shieldedVmConfig: Specifies the Shielded VM options for the instances that
+      are created from this template.
     tags: A list of tags to apply to the instances that are created from this
       template. The tags identify valid sources or targets for network
       firewalls. The setTags method can modify this list of tags. Each tag
@@ -20558,7 +20624,8 @@ class InstanceProperties(_messages.Message):
   networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
   scheduling = _messages.MessageField('Scheduling', 10)
   serviceAccounts = _messages.MessageField('ServiceAccount', 11, repeated=True)
-  tags = _messages.MessageField('Tags', 12)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 12)
+  tags = _messages.MessageField('Tags', 13)
 
 
 class InstanceReference(_messages.Message):
@@ -28383,7 +28450,7 @@ class SchedulingNodeAffinity(_messages.Message):
 
 class SecurityPolicy(_messages.Message):
   r"""A security policy is comprised of one or more rules. It can also be
-  associated with one or more 'targets'.
+  associated with one or more 'targets'. Next available tag: 11
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -28673,6 +28740,33 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scopes = _messages.StringField(2, repeated=True)
+
+
+class ShieldedVmConfig(_messages.Message):
+  r"""A set of Shielded VM options.
+
+  Fields:
+    enableIntegrityMonitoring: Defines whether the instance should have
+      integrity monitoring enabled.
+    enableSecureBoot: Defines whether the instance should have secure boot
+      enabled.
+    enableVtpm: Defines whether the instance should have the TPM enabled.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+  enableVtpm = _messages.BooleanField(3)
+
+
+class ShieldedVmIntegrityPolicy(_messages.Message):
+  r"""The policy describes how boot integrity measurements are evaluated.
+
+  Fields:
+    updateAutoLearnPolicy: Triggers an auto relearn event: the integrity
+      monitoring module copies existing guest measurements to the baseline.
+  """
+
+  updateAutoLearnPolicy = _messages.BooleanField(1)
 
 
 class SignedUrlKey(_messages.Message):

@@ -40,3 +40,7 @@ class OperationError(Error):
 
 class OperationTimeoutError(OperationError):
   """Operation timed out."""
+
+
+class ParseError(Error):
+  """File parsing error."""

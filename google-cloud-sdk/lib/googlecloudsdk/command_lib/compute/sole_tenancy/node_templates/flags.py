@@ -29,7 +29,7 @@ def MakeNodeTemplateArg():
 def _BinarySizeOrAny(default_unit):
   """Parses the value 'any' or a binary size converted to the default unit."""
   # pylint: disable=protected-access
-  bytes_per_unit = arg_parsers._BINARY_SIZE_SCALES[default_unit]
+  bytes_per_unit = arg_parsers.GetBinarySizePerUnit(default_unit)
   def _Parse(value):
     value = value.lower()
     if value == 'any':

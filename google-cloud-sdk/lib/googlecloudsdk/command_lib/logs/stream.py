@@ -21,6 +21,7 @@ we want to generate an ordered list of logs.  So, we choose to not fetch logs
 in the most recent N seconds.  We also decided to skip logs that are returned
 too late (their timestamp is more than N seconds old).
 """
+from __future__ import absolute_import
 import datetime
 import time
 

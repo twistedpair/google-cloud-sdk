@@ -105,7 +105,33 @@ class NetworkIssueError(Error):
         'reach.'.format(message=message))
 
 
-def reraise(exc_value, tb=None):
+class ExceptionContext(object):
+  """An exception context that can be re-raised outside of try-except.
+
+  Usage:
+    exception_context = None
+    ...
+    try:
+      ...
+    except ... e:
+      # This MUST be called in the except: clause.
+      exception_context = exceptions.ExceptionContext(e)
+    ...
+    if exception_context:
+      exception_context.Reraise()
+  """
+
+  def __init__(self, e):
+    self._exception = e
+    self._traceback = sys.exc_info()[2]
+    if not self._traceback:
+      raise ValueError('Must set ExceptionContext within an except clause.')
+
+  def Reraise(self):
+    six.reraise(type(self._exception), self._exception, self._traceback)
+
+
+def reraise(exc_value, tb=None):  # pylint: disable=invalid-name
   """Adds tb or the most recent traceback to exc_value and reraises."""
   tb = tb or sys.exc_info()[2]
   six.reraise(type(exc_value), exc_value, tb)

@@ -13,10 +13,12 @@
 # limitations under the License.
 """Utilities for Binary Authorization commands."""
 
-import urlparse
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from containerregistry.client import docker_name  # pytype: disable=import-error
 from googlecloudsdk.core.exceptions import Error
+import six.moves.urllib.parse
 
 
 class BadImageUrlError(Error):
@@ -35,7 +37,7 @@ def ReplaceImageUrlScheme(image_url, scheme):
     BadImageUrlError: `image_url` isn't valid.
   """
   scheme = scheme or ''
-  parsed_url = urlparse.urlparse(image_url)
+  parsed_url = six.moves.urllib.parse.urlparse(image_url)
 
   # If the URL has a scheme but not a netloc, then it must have looked like
   # 'scheme:///foo/bar', which is invalid for the purpose of attestation.
@@ -49,7 +51,7 @@ def ReplaceImageUrlScheme(image_url, scheme):
   # by prefixing '//', which will cause urlparse to correctly pick up the
   # netloc.
   if not parsed_url.netloc:
-    parsed_url = urlparse.urlparse('//{}'.format(image_url))
+    parsed_url = six.moves.urllib.parse.urlparse('//{}'.format(image_url))
 
   # Finally, we replace the scheme and generate the URL.  If we were stripping
   # the scheme, the result will be prefixed with '//', which we strip off.  If

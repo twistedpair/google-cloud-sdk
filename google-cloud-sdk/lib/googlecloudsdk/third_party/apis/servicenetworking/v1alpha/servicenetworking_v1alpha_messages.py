@@ -218,7 +218,6 @@ class AuthenticationRule(_messages.Message):
   Fields:
     allowWithoutCredential: If true, the service accepts API keys without any
       other credential.
-    customAuth: Configuration for custom authentication.
     oauth: The requirements for OAuth credentials.
     requirements: Requirements for additional authentication providers.
     selector: Selects the methods to which this rule applies.  Refer to
@@ -226,10 +225,9 @@ class AuthenticationRule(_messages.Message):
   """
 
   allowWithoutCredential = _messages.BooleanField(1)
-  customAuth = _messages.MessageField('CustomAuthRequirements', 2)
-  oauth = _messages.MessageField('OAuthRequirements', 3)
-  requirements = _messages.MessageField('AuthRequirement', 4, repeated=True)
-  selector = _messages.StringField(5)
+  oauth = _messages.MessageField('OAuthRequirements', 2)
+  requirements = _messages.MessageField('AuthRequirement', 3, repeated=True)
+  selector = _messages.StringField(4)
 
 
 class AuthorizationConfig(_messages.Message):
@@ -397,18 +395,6 @@ class Control(_messages.Message):
   """
 
   environment = _messages.StringField(1)
-
-
-class CustomAuthRequirements(_messages.Message):
-  r"""Configuration for a custom authentication provider.
-
-  Fields:
-    provider: A configuration string containing connection information for the
-      authentication provider, typically formatted as a SmartService string
-      (go/smartservice).
-  """
-
-  provider = _messages.StringField(1)
 
 
 class CustomError(_messages.Message):

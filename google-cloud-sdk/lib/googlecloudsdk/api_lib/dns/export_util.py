@@ -14,6 +14,8 @@
 
 """Helper methods for exporting record-sets."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from dns import name
 from dns import rdata
 from dns import rdataclass

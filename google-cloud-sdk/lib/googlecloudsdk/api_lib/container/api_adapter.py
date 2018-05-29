@@ -112,6 +112,10 @@ CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG = """\
 Flag --enable-stackdriver-kubernetes requires Cloud Logging and Cloud Monitoring enabled with --enable-cloud-logging and --enable-cloud-monitoring.
 """
 
+DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
+Cannot use --default-max-pods-per-node without --enable-ip-alias.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_CONCURRENT_NODE_COUNT = 20
@@ -345,7 +349,8 @@ class CreateClusterOptions(object):
                private_cluster=None,
                master_ipv4_cidr=None,
                tpu_ipv4_cidr=None,
-               enable_tpu=None):
+               enable_tpu=None,
+               default_max_pods_per_node=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -408,6 +413,7 @@ class CreateClusterOptions(object):
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
     self.enable_tpu = enable_tpu
     self.issue_client_certificate = issue_client_certificate
+    self.default_max_pods_per_node = default_max_pods_per_node
 
 
 class UpdateClusterOptions(object):
@@ -504,7 +510,8 @@ class CreateNodePoolOptions(object):
                disk_type=None,
                accelerators=None,
                min_cpu_platform=None,
-               workload_metadata_from_node=None):
+               workload_metadata_from_node=None,
+               max_pods_per_node=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -533,6 +540,7 @@ class CreateNodePoolOptions(object):
     self.accelerators = accelerators
     self.min_cpu_platform = min_cpu_platform
     self.workload_metadata_from_node = workload_metadata_from_node
+    self.max_pods_per_node = max_pods_per_node
 
 
 class UpdateNodePoolOptions(object):
@@ -861,6 +869,12 @@ class APIAdapter(object):
 
     if options.enable_kubernetes_alpha:
       cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
+
+    if options.default_max_pods_per_node is not None:
+      if not options.enable_ip_alias:
+        raise util.Error(DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
+      cluster.defaultMaxPodsConstraint = self.messages.MaxPodsConstraint(
+          maxPodsPerNode=options.default_max_pods_per_node)
 
     if options.enable_legacy_authorization is not None:
       cluster.legacyAbac = self.messages.LegacyAbac(
@@ -1388,10 +1402,16 @@ class APIAdapter(object):
           enabled=options.enable_autoscaling,
           minNodeCount=options.min_nodes,
           maxNodeCount=options.max_nodes)
+
+    if options.max_pods_per_node is not None:
+      pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
+          maxPodsPerNode=options.max_pods_per_node)
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
+    """CreateNodePool creates a node pool and returns the operation."""
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
+
     req = self.messages.CreateNodePoolRequest(
         nodePool=pool,
         parent=ProjectLocationCluster(node_pool_ref.projectId,

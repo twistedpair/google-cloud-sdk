@@ -55,7 +55,7 @@ class ContainerAnalysisClient(object):
 
     Args:
       note_ref: The Note reference that will be queried for attached
-        occurrences. (containeranalysis.providers.notes Resource)
+        occurrences. (containeranalysis.projects.notes Resource)
       artifact_url: URL of the artifact for which to fetch occurrences.
         If None, then all occurrences attached to the AA Note are returned.
 
@@ -91,7 +91,7 @@ class ContainerAnalysisClient(object):
 
     Args:
       note_ref: The Note reference that will be queried for attached
-        occurrences. (containeranalysis.providers.notes Resource)
+        occurrences. (containeranalysis.projects.notes Resource)
       artifact_url: URL of artifact to which the signatures are associated
 
     Yields:
@@ -111,7 +111,7 @@ class ContainerAnalysisClient(object):
 
     Args:
       note_ref: The Note reference that will be queried for attached
-        occurrences. (containeranalysis.providers.notes Resource)
+        occurrences. (containeranalysis.projects.notes Resource)
 
     Yields:
       Generator of URLs (strings).
@@ -130,7 +130,7 @@ class ContainerAnalysisClient(object):
 
     Args:
       note_ref: The Note reference that the created Occurrence will be
-        bound to. (containeranalysis.providers.notes Resource)
+        bound to. (containeranalysis.projects.notes Resource)
       project_ref: The project ref where the Occurrence will be
         created. (cloudresourcemanager.projects Resource)
       artifact_url: URL of artifact to which the signature is associated

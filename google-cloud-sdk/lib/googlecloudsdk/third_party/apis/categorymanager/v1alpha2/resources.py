@@ -47,6 +47,13 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  ORGANIZATIONS = (
+      'organizations',
+      'organizations/{organizationId}',
+      {},
+      [u'organizationId'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

@@ -5,6 +5,61 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 203.0.0 (2018-05-29)
+
+### Breaking Changes
+
+*   **(Cloud SQL)** Deprecated `gcloud sql ssl-certs`. Use `gcloud sql ssl client-certs` instead.
+
+
+### App Engine
+
+* Fixed issue where attempting to deploy non-yaml config files would report
+  success, but silently update configuration incorrectly, e.g. `gcloud app
+  deploy cron.xml`. Note that xml-files are not supported with `gcloud app`,
+  with the exception of `appengine-web.xml`.
+
+
+### App Engine Flexible Environment
+
+* Fixed an issue where `gcloud beta app deploy` failed to respect the
+  `--image-url` argument during Flex deployments. This issue was introduced in
+  Cloud SDK version 195.0.0.
+
+### Cloud Dataproc
+
+*   Added `gcloud beta dataproc workflow-templates instantiate-from-file` to
+    enable instantiation of workflow templates directly from a YAML file.
+*   Added `gcloud beta dataproc clusters create-from-file` to enable creation
+    of clusters directly from a YAML file.
+
+### Cloud SQL
+
+* Added the `gcloud beta sql ssl server-ca-certs` group to support certificate rotation, which includes the following commands:
+  * `gcloud beta sql ssl server-ca-certs list`
+  * `gcloud beta sql ssl server-ca-certs create`
+  * `gcloud beta sql ssl server-ca-certs rotate`
+  * `gcloud beta sql ssl server-ca-certs rollback`
+
+### Cloud Source Repositories
+
+*   Added the following commands to beta:
+    *   `gcloud source project-configs describe`
+    *   `gcloud source project-configs update`
+
+### Compute Engine
+
+* Promoted `--service-label` flag of `gcloud compute forwarding-rules` create
+    to beta.
+* Promoted `--shielded-vm-*` flags to beta in `gcloud compute instances create`,
+  `gcloud compute instances update` and
+  `gcloud compute instance-templates create`.
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 202.0.0 (2018-05-22)
 
 ### Breaking Changes

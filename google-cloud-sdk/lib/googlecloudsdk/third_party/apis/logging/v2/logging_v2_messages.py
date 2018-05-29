@@ -599,8 +599,9 @@ class LogExclusion(_messages.Message):
     filter: Required. An advanced logs filter that matches the log entries to
       be excluded. By using the sample function, you can exclude less than
       100% of the matching log entries. For example, the following filter
-      matches 99% of low-severity log entries from load balancers:
-      "resource.type=http_load_balancer severity<ERROR sample(insertId, 0.99)"
+      matches 99% of low-severity log entries from load
+      balancers:"resource.type=http_load_balancer severity<ERROR
+      sample(insertId, 0.99)"
     name: Required. A client-assigned identifier, such as "load-balancer-
       exclusion". Identifiers are limited to 100 characters and can include
       only letters, digits, underscores, hyphens, and periods.

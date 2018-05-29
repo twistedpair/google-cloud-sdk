@@ -7754,6 +7754,32 @@ For more information, see Deleting snaphots.
         supports_download=False,
     )
 
+    def SetQuicOverride(self, request, global_params=None):
+      r"""Sets the QUIC override policy for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetQuicOverrideRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetQuicOverride')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetQuicOverride.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.targetHttpsProxies.setQuicOverride',
+        ordered_params=[u'project', u'targetHttpsProxy'],
+        path_params=[u'project', u'targetHttpsProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setQuicOverride',
+        request_field=u'targetHttpsProxiesSetQuicOverrideRequest',
+        request_type_name=u'ComputeTargetHttpsProxiesSetQuicOverrideRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetSslCertificates(self, request, global_params=None):
       r"""Replaces SslCertificates for TargetHttpsProxy.
 

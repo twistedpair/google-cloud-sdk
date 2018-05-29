@@ -253,27 +253,34 @@ class TopicsClient(object):
     iam_util.RemoveBindingFromIamPolicy(policy, member, role)
     return self.SetIamPolicy(topic_ref, policy)
 
-  def Patch(self, topic_ref, labels=None):
+  def Patch(self, topic_ref, labels=None,
+            recompute_message_storage_policy=False):
     """Updates a Topic.
 
     Args:
       topic_ref (Resource): Resource reference for the topic to be updated.
       labels (LabelsValue): The Cloud labels for the topic.
+      recompute_message_storage_policy (bool): True to have the API recalculate
+        the policy.
     Returns:
       Topic: The updated topic.
     Raises:
       NoFieldsSpecifiedError: if no fields were specified.
     """
-    update_settings = [_TopicUpdateSetting('labels', labels)]
-    topic = self.messages.Topic(
-        name=topic_ref.RelativeName())
+    update_settings = []
+    if labels is not None:
+      update_settings.append(_TopicUpdateSetting('labels', labels))
+    if recompute_message_storage_policy:
+      update_settings.append(_TopicUpdateSetting('messageStoragePolicy', None))
+    topic = self.messages.Topic(name=topic_ref.RelativeName())
+
     update_mask = []
     for update_setting in update_settings:
-      if update_setting.value is not None:
-        setattr(topic, update_setting.field_name, update_setting.value)
-        update_mask.append(update_setting.field_name)
+      setattr(topic, update_setting.field_name, update_setting.value)
+      update_mask.append(update_setting.field_name)
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+
     patch_req = self.messages.PubsubProjectsTopicsPatchRequest(
         updateTopicRequest=self.messages.UpdateTopicRequest(
             topic=topic,

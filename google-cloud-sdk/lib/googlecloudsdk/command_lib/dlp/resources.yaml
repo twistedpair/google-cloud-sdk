@@ -28,7 +28,7 @@ project_image:
 job:
   name: job
   collection: dlp.projects.dlpJobs
-  disable_auto_completers: False
+  disable_auto_completers: false
   attributes:
     - &job
       parameter_name: dlpJobsId
@@ -38,7 +38,7 @@ job:
 job_trigger:
   name: job_trigger
   collection: dlp.projects.jobTriggers
-  disable_auto_completers: False
+  disable_auto_completers: false
   attributes:
     - &job_trigger
       parameter_name: jobTriggersId

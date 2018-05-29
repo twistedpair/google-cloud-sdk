@@ -98,6 +98,8 @@ apis:
           path: assets/{assetId}
         assets.tag:
           path: assets/{assetId}/annotationTag
+        organizations:
+          path: organizations/{organizationId}
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json
@@ -436,10 +438,10 @@ apis:
       resources:
         projects.content:
           path: projects/{projectsId}
-          enable_uri_parsing: False
+          enable_uri_parsing: false
         projects.image:
           path: projects/{projectsId}
-          enable_uri_parsing: False
+          enable_uri_parsing: false
         infoTypes:
           path: infoTypes
-          enable_uri_parsing: False
+          enable_uri_parsing: false

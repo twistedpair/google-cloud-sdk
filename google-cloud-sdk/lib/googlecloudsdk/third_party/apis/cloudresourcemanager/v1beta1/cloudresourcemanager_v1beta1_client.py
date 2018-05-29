@@ -234,6 +234,11 @@ Google Cloud Storage. The parent is identified by a specified
 ResourceId, which must include both an ID and a type, such as
 project, folder, or organization.
 
+This method does not associate the new project with a billing account.
+You can set or update the billing account associated with a project using
+the [`projects.updateBillingInfo`]
+(/billing/reference/rest/v1/projects/updateBillingInfo) method.
+
       Args:
         request: (CloudresourcemanagerProjectsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments

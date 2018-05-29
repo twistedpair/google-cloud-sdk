@@ -62,6 +62,7 @@ def ClusterUpgradeMessage(name, cluster=None, master=False, node_pool_name=None,
     str, a message about which nodes in the cluster will be upgraded and
         to which version.
   """
+  current_version = None
   if new_version:
     new_version_message = 'version [{}]'.format(new_version)
   else:

@@ -984,7 +984,7 @@ of "project:{PROJECT-ID}".
         method_id=u'servicemanagement.services.list',
         ordered_params=[],
         path_params=[],
-        query_params=[u'category', u'consumerId', u'consumerProjectId', u'expand', u'pageSize', u'pageToken', u'producerProjectId'],
+        query_params=[u'category', u'consumerId', u'consumerProjectId', u'pageSize', u'pageToken', u'producerProjectId'],
         relative_path=u'v1/services',
         request_field='',
         request_type_name=u'ServicemanagementServicesListRequest',

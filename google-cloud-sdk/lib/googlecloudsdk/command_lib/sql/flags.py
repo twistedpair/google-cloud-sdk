@@ -453,9 +453,16 @@ OPERATION_FORMAT_BETA = """
   )
 """
 
-SSL_CERTS_FORMAT = """
+CLIENT_CERTS_FORMAT = """
   table(
     commonName:label=NAME,
+    sha1Fingerprint,
+    expirationTime.yesno(no="-"):label=EXPIRATION
+  )
+"""
+
+SERVER_CA_CERTS_FORMAT = """
+  table(
     sha1Fingerprint,
     expirationTime.yesno(no="-"):label=EXPIRATION
   )

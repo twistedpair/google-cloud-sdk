@@ -469,7 +469,12 @@ Applies the given kubernetes labels on all nodes in the new node-pool. Example:
   help_text += """
 New nodes, including ones created by resize or recreate, will have these labels
 on the kubernetes API node object and can be used in nodeSelectors.
-See http://kubernetes.io/docs/user-guide/node-selection/ for examples."""
+See [](http://kubernetes.io/docs/user-guide/node-selection/) for examples.
+
+Note that kubernetes labels, intended to associate cluster components
+and resources with one another and manage resource lifecycles, are different
+from Kubernetes Engine labels that are used for the purpose of tracking billing
+and usage information."""
 
   parser.add_argument(
       '--node-labels',
@@ -1070,6 +1075,48 @@ subnetwork.
 Must be used in conjunction with '--enable-ip-alias'. Cannot be used
 with --create-subnetwork.
 """)
+
+
+def AddMaxPodsPerNodeFlag(parser, for_node_pool=False, hidden=False):
+  """Adds max pod number constraints flags to the parser.
+
+  Args:
+    parser: A given parser.
+    for_node_pool: True if it's applied to a node pool.
+                   False if it's applied to a cluster.
+    hidden: Whether or not to hide the help text.
+  """
+
+  if for_node_pool:
+    parser.add_argument(
+        '--max-pods-per-node',
+        default=None,
+        help="""\
+The max number of pods per node for this node pool.
+
+This flag sets the maximum number of pods that can be run at the same time on a
+node. This will override the value given with --default-max-pods-per-node flag
+set at the cluster level.
+
+Must be used in conjunction with '--enable-ip-alias'.
+""",
+        hidden=hidden,
+        type=int)
+  else:
+    parser.add_argument(
+        '--default-max-pods-per-node',
+        default=None,
+        help="""\
+The default max number of pods per node for node pools in the cluster.
+
+This flag sets the default max-pods-per-node for node pools in the cluster. If
+--max-pods-per-node is not specified explicitly for a node pool, this flag
+value will be used.
+
+Must be used in conjunction with '--enable-ip-alias'.
+""",
+        hidden=hidden,
+        type=int)
 
 
 def AddMinCpuPlatformFlag(parser, for_node_pool=False, hidden=False):

@@ -35,7 +35,7 @@ def TypedArgRules():
   return {
       'xctest': {
           'required': [],
-          'optional': [],
+          'optional': ['xctestrun_file'],
           'defaults': {}
       },
   }

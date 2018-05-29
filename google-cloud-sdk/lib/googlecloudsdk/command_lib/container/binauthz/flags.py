@@ -27,12 +27,12 @@ from googlecloudsdk.core import properties
 
 def _GetNoteResourceSpec():
   return concepts.ResourceSpec(
-      'containeranalysis.providers.notes',
+      'containeranalysis.projects.notes',
       resource_name='note',
-      providersId=concepts.ResourceParameterAttributeConfig(
+      projectsId=concepts.ResourceParameterAttributeConfig(
           name='project',
           help_text=(
-              'The Container Analysis provider project for the {resource}.'),
+              'The Container Analysis project for the {resource}.'),
       ),
       notesId=concepts.ResourceParameterAttributeConfig(
           name='note',
