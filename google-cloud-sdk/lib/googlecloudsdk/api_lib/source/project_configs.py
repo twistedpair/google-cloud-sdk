@@ -31,8 +31,14 @@ class ProjectConfig(object):
     self._client = apis.GetClientInstance(_API_NAME, _API_VERSION)
     self.messages = apis.GetMessagesModule(_API_NAME, _API_VERSION)
 
+  def Get(self, project_ref):
+    """Get a project configuration."""
+    req = self.messages.SourcerepoProjectsGetConfigRequest(
+        name=project_ref.RelativeName())
+    return self._client.projects.GetConfig(req)
+
   def Update(self, project_config, update_mask):
-    """Updates a repo's configuration."""
+    """Update a project configuration."""
     req = self.messages.SourcerepoProjectsUpdateConfigRequest(
         name=project_config.name,
         updateProjectConfigRequest=self.messages.UpdateProjectConfigRequest(

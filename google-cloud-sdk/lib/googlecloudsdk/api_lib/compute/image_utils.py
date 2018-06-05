@@ -260,7 +260,7 @@ class ImageExpander(object):
       parts = image.name.rsplit('v', 1)
       if len(parts) != 2:
         log.debug('Skipping image with malformed name [%s].', image.name)
-        return None
+        return ''
       return parts[1]
 
     public_candidate = max(public_images, key=GetVersion)

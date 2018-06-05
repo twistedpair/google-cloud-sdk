@@ -14,7 +14,12 @@
 
 """gcloud interactive shell configurable styles."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.core import properties
+
+import six
 
 
 class Config(object):
@@ -71,7 +76,7 @@ class Config(object):
 
     if context is None:
       context = interactive.context.Get()
-    self.context = unicode(context)
+    self.context = six.text_type(context)
 
     if fixed_prompt_position is None:
       fixed_prompt_position = interactive.fixed_prompt_position.GetBool()
@@ -100,7 +105,7 @@ class Config(object):
 
     if prompt is None:
       prompt = interactive.prompt.Get()
-    self.prompt = unicode(prompt)
+    self.prompt = six.text_type(prompt)
 
     if show_help is None:
       show_help = interactive.show_help.GetBool()

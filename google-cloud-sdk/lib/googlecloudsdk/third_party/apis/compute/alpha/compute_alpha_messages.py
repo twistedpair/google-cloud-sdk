@@ -687,9 +687,11 @@ class Address(_messages.Message):
     Values:
       IN_USE: <no description>
       RESERVED: <no description>
+      RESERVING: <no description>
     """
     IN_USE = 0
     RESERVED = 1
+    RESERVING = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -19643,6 +19645,12 @@ class ForwardingRule(_messages.Message):
     IPProtocol: The IP protocol to which this rule applies. Valid options are
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
       INTERNAL, only TCP and UDP are valid.
+    allPorts: This field is used along with the backend_service field for
+      internal load balancing or with the target field for internal
+      TargetInstance. This field cannot be used with port or portRange fields.
+      When the load balancing scheme is INTERNAL and protocol is TCP/UDP,
+      specify this field to allow packets addressed to any ports will be
+      forwarded to the backends configured with this forwarding rule.
     backendService: This field is not used for external load balancing.  For
       internal load balancing, this field identifies the BackendService
       resource to receive the matched traffic.
@@ -19839,27 +19847,28 @@ class ForwardingRule(_messages.Message):
 
   IPAddress = _messages.StringField(1)
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
-  backendService = _messages.StringField(3)
-  creationTimestamp = _messages.StringField(4)
-  description = _messages.StringField(5)
-  fingerprint = _messages.BytesField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
-  kind = _messages.StringField(9, default=u'compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
-  name = _messages.StringField(13)
-  network = _messages.StringField(14)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 15)
-  portRange = _messages.StringField(16)
-  ports = _messages.StringField(17, repeated=True)
-  region = _messages.StringField(18)
-  selfLink = _messages.StringField(19)
-  serviceLabel = _messages.StringField(20)
-  serviceName = _messages.StringField(21)
-  subnetwork = _messages.StringField(22)
-  target = _messages.StringField(23)
+  allPorts = _messages.BooleanField(3)
+  backendService = _messages.StringField(4)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  fingerprint = _messages.BytesField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 9)
+  kind = _messages.StringField(10, default=u'compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 13)
+  name = _messages.StringField(14)
+  network = _messages.StringField(15)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 16)
+  portRange = _messages.StringField(17)
+  ports = _messages.StringField(18, repeated=True)
+  region = _messages.StringField(19)
+  selfLink = _messages.StringField(20)
+  serviceLabel = _messages.StringField(21)
+  serviceName = _messages.StringField(22)
+  subnetwork = _messages.StringField(23)
+  target = _messages.StringField(24)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -34777,6 +34786,12 @@ class RouterNat(_messages.Message):
       "179.12.26.133". They are ephemeral IPs allocated from the IP blocks
       managed by the NAT manager. This list can grow and shrink based on the
       number of VMs configured to use NAT.
+    icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
+      30s if not set.
+    minPortsPerVm: Minimum number of ports allocated to a VM from this NAT
+      config. If not set, a default number of ports is allocated to a VM. This
+      gets rounded up to the nearest power of 2. Eg. if the value of this
+      field is 50, at least 64 ports will be allocated to a VM.
     name: Unique name of this Nat service. The name must be 1-63 characters
       long and comply with RFC1035.
     natIpAllocateOption: Specify the NatIpAllocateOption. If it is AUTO_ONLY,
@@ -34791,6 +34806,12 @@ class RouterNat(_messages.Message):
     subnetworks: A list of Subnetwork resources whose traffic should be
       translated by NAT Gateway. It is used only when LIST_OF_SUBNETWORKS is
       selected for the SubnetworkIpRangeToNatOption above.
+    tcpEstablishedIdleTimeoutSec: Timeout (in seconds) for TCP established
+      connections. Defaults to 1200s if not set.
+    tcpTransitoryIdleTimeoutSec: Timeout (in seconds) for TCP transitory
+      connections. Defaults to 30s if not set.
+    udpIdleTimeoutSec: Timeout (in seconds) for UDP connections. Defaults to
+      30s if not set.
   """
 
   class NatIpAllocateOptionValueValuesEnum(_messages.Enum):
@@ -34820,11 +34841,16 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS = 2
 
   autoAllocatedNatIps = _messages.StringField(1, repeated=True)
-  name = _messages.StringField(2)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 3)
-  natIps = _messages.StringField(4, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 5)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 6, repeated=True)
+  icmpIdleTimeoutSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 5)
+  natIps = _messages.StringField(6, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 7)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 8, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):

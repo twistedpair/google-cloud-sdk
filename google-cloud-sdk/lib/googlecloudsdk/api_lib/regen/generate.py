@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utility wrappers around apitools generator."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import logging
 import os
 
@@ -21,6 +23,7 @@ from googlecloudsdk.api_lib.regen import api_def
 from googlecloudsdk.api_lib.regen import resource_generator
 from mako import runtime
 from mako import template
+import six
 
 
 _INIT_FILE_CONTENT = """\
@@ -107,10 +110,10 @@ def _MakeApiMap(root_package, api_config):
   """
   apis_map = {}
   apis_with_default = set()
-  for api_name, api_version_config in api_config.iteritems():
+  for api_name, api_version_config in six.iteritems(api_config):
     api_versions_map = apis_map.setdefault(api_name, {})
     has_default = False
-    for api_version, api_config in api_version_config.iteritems():
+    for api_version, api_config in six.iteritems(api_version_config):
       default = api_config.get('default', len(api_version_config) == 1)
       if has_default and default:
         raise NoDefaultApiError(
@@ -196,7 +199,7 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
         custom_path = custom_resources[collection.name]['path']
         if isinstance(custom_path, dict):
           collection.flat_paths.update(custom_path)
-        elif isinstance(custom_path, basestring):
+        elif isinstance(custom_path, six.string_types):
           collection.flat_paths[
               resource_generator.DEFAULT_PATH_NAME] = custom_path
     # Remaining must be new custom resources.

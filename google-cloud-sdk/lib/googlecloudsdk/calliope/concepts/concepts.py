@@ -35,14 +35,12 @@ attribute configs).
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
+
 import six
-
-
-ANCHOR_HELP = ('The ID of the {resource} or a fully qualified identifier for '
-               'the {resource}.')
 
 
 class Error(exceptions.Error):
@@ -126,7 +124,7 @@ class _Attribute(object):
     self.required = required
     self.fallthroughs = fallthroughs or []
     self.completer = completer
-    self.value_type = value_type or str
+    self.value_type = value_type or six.text_type
 
   def __eq__(self, other):
     """Overrides."""
@@ -223,14 +221,13 @@ class ResourceSpec(ConceptSpec):
                                     ResourceParameterAttributeConfig())
       attribute_name = self._AttributeName(param_name, attribute_config,
                                            anchor=anchor)
-      help_text = attribute_config.help_text if not anchor else ANCHOR_HELP
       new_attribute = Attribute(
           name=attribute_name,
-          help_text=help_text,
+          help_text=attribute_config.help_text,
           required=True,
           fallthroughs=attribute_config.fallthroughs,
           completer=attribute_config.completer,
-          value_type=str,
+          value_type=attribute_config.value_type,
           completion_request_params=attribute_config.completion_request_params,
           completion_id_field=attribute_config.completion_id_field)
       self._attributes.append(new_attribute)
@@ -355,7 +352,7 @@ class ResourceParameterAttributeConfig(object):
 
   def __init__(self, name=None, help_text=None, fallthroughs=None,
                completer=None, completion_request_params=None,
-               completion_id_field=None):
+               completion_id_field=None, value_type=None):
     """Create a resource attribute.
 
     Args:
@@ -372,6 +369,7 @@ class ResourceParameterAttributeConfig(object):
         values to fill in for the completion request.
       completion_id_field: str, the ID field of the return value in the
         response for completion commands.
+      value_type: the type to be accepted by the attribute arg. Defaults to str.
     """
     self.attribute_name = name
     self.help_text = help_text
@@ -379,3 +377,4 @@ class ResourceParameterAttributeConfig(object):
     self.completer = completer
     self.completion_request_params = completion_request_params
     self.completion_id_field = completion_id_field
+    self.value_type = value_type or six.text_type

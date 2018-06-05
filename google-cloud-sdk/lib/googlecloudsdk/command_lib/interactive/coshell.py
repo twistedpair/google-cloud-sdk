@@ -42,13 +42,16 @@ On the first instantiation Coshell.__init__() determines what implementation to
 use.  All subsequent instantiations will use the same implementation.
 """
 
+from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import abc
+import locale
 import os
 import re
 import signal
 import subprocess
+import six
 
 
 _GET_COMPLETIONS_SHELL_FUNCTION = r"""
@@ -127,7 +130,7 @@ class CoshellExitException(Exception):
     self.status = status
 
 
-class _CoshellBase(object):
+class _CoshellBase(six.with_metaclass(abc.ABCMeta, object)):
   """The local coshell base class.
 
   Attributes:
@@ -136,10 +139,9 @@ class _CoshellBase(object):
     _state_is_preserved: True if shell process state is preserved across Run().
   """
 
-  __metaclass__ = abc.ABCMeta
-
   def __init__(self, state_is_preserved=True):
     # Immutable coshell object properties.
+    self._encoding = locale.getpreferredencoding()
     self._state_is_preserved = state_is_preserved
     # Mutable shell modes controlled by `set -o ...` and `set +o ...`.
     self._edit_mode = 'emacs'
@@ -209,14 +211,12 @@ class _CoshellBase(object):
     return []
 
 
-class _UnixCoshellBase(_CoshellBase):
+class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
   """The unix local coshell base class.
 
   Attributes:
     _shell: The coshell subprocess object.
   """
-
-  __metaclass__ = abc.ABCMeta
 
   SHELL_STATUS_EXIT = 'x'
   SHELL_STATUS_FD = 9
@@ -236,7 +236,7 @@ class _UnixCoshellBase(_CoshellBase):
   def _Exited(self):
     """Raises the coshell exit exception."""
     try:
-      self._shell.communicate(':')
+      self._shell.communicate(b':')
     except (IOError, OSError, ValueError):
       # Yeah, ValueError for IO on a closed file.
       pass
@@ -248,19 +248,21 @@ class _UnixCoshellBase(_CoshellBase):
   def _SendCommand(self, command):
     """Sends command to the coshell for execution."""
     try:
-      self._shell.stdin.write(command + '\n')
+      self._shell.stdin.write((command + '\n').encode(self._encoding))
+      self._shell.stdin.flush()
     except (IOError, OSError, ValueError):
       # Yeah, ValueError for IO on a closed file.
       self._Exited()
 
   def _GetStatus(self):
     """Gets the status of the last command sent to the coshell."""
-    status_string = ''
+    line = []
     while True:
       c = os.read(self._status_fd, 1)
-      if c in (None, '\n', self.SHELL_STATUS_EXIT):
+      if c in (None, b'\n', self.SHELL_STATUS_EXIT.encode('ascii')):
         break
-      status_string += c
+      line.append(c)
+    status_string = b''.join(line).decode(self._encoding)
     if not status_string.isdigit() or c == self.SHELL_STATUS_EXIT:
       self._Exited()
     return int(status_string)
@@ -341,7 +343,7 @@ class _UnixCoshell(_UnixCoshellBase):
 
   SHELL_PATH = '/bin/bash'
 
-  def __init__(self):
+  def __init__(self, stdout=1, stderr=2):
     super(_UnixCoshell, self).__init__()
 
     # The dup/close/dup dance preserves caller fds that collide with SHELL_*_FD.
@@ -363,7 +365,11 @@ class _UnixCoshell(_UnixCoshellBase):
     os.close(w)
 
     self._shell = subprocess.Popen(
-        [self.SHELL_PATH], stdin=subprocess.PIPE, close_fds=False)
+        [self.SHELL_PATH],
+        stdin=subprocess.PIPE,
+        stdout=stdout,
+        stderr=stderr,
+        close_fds=False)
 
     if caller_shell_status_fd >= 0:
       os.dup2(caller_shell_status_fd, self.SHELL_STATUS_FD)
@@ -385,7 +391,7 @@ class _UnixCoshell(_UnixCoshellBase):
       os.close(self._status_fd)
       self._status_fd = -1
     try:
-      self._shell.communicate('exit')  # This closes internal fds.
+      self._shell.communicate(b'exit')  # This closes internal fds.
     except (IOError, ValueError):
       # Yeah, ValueError for IO on a closed file.
       pass
@@ -427,10 +433,10 @@ class _UnixCoshell(_UnixCoshellBase):
       except (IOError, OSError, ValueError):
         # Yeah, ValueError for IO on a closed file.
         self._Exited()
-      if c in (None, '\n'):
+      if c in (None, b'\n'):
         if not line:
           break
-        lines.append(''.join(line).rstrip())
+        lines.append(b''.join(line).decode(self._encoding).rstrip())
         line = []
       else:
         line.append(c)
@@ -482,7 +488,7 @@ class _MinGWCoshell(_UnixCoshellBase):
   def Close(self):
     """Closes the coshell connection and release any resources."""
     try:
-      self._shell.communicate('exit')  # This closes internal fds.
+      self._shell.communicate(b'exit')  # This closes internal fds.
     except (IOError, ValueError):
       # Yeah, ValueError for IO on a closed file.
       pass

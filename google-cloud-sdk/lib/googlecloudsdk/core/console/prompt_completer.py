@@ -128,7 +128,7 @@ class PromptCompleter(object):
   """
 
   _CONTROL_C = '\x03'
-  _DELETE = '\7f'
+  _DELETE = '\x7f'
 
   def __init__(self, prompt, choices=None, out=None, width=None, height=None,
                pad='  '):
@@ -241,5 +241,3 @@ class PromptCompleter(object):
       row_data.append(self._prompt)
     row_data.append(prefix)
     self._out.write(''.join(row_data))
-
-

@@ -2556,6 +2556,9 @@
         },
         "kMapEstimationConfig": {
           "$ref": "GooglePrivacyDlpV2KMapEstimationConfig"
+        },
+        "deltaPresenceEstimationConfig": {
+          "$ref": "GooglePrivacyDlpV2DeltaPresenceEstimationConfig"
         }
       }
     },
@@ -2710,6 +2713,89 @@
         }
       }
     },
+    "GooglePrivacyDlpV2DeltaPresenceEstimationConfig": {
+      "id": "GooglePrivacyDlpV2DeltaPresenceEstimationConfig",
+      "description": "\u03B4-presence metric, used to estimate how likely it is for an attacker to\nfigure out that one given individual appears in a de-identified dataset.\nSimilarly to the k-map metric, we cannot compute \u03B4-presence exactly without\nknowing the attack dataset, so we use a statistical model instead.",
+      "type": "object",
+      "properties": {
+        "quasiIds": {
+          "description": "Fields considered to be quasi-identifiers. No two fields can have the\nsame tag. [required]",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2QuasiId"
+          }
+        },
+        "regionCode": {
+          "description": "ISO 3166-1 alpha-2 region code to use in the statistical modeling.\nRequired if no column is tagged with a region-specific InfoType (like\nUS_ZIP_5) or a region code.",
+          "type": "string"
+        },
+        "auxiliaryTables": {
+          "description": "Several auxiliary tables can be used in the analysis. Each custom_tag\nused to tag a quasi-identifiers field must appear in exactly one\nfield of one auxiliary table.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2StatisticalTable"
+          }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2QuasiId": {
+      "id": "GooglePrivacyDlpV2QuasiId",
+      "description": "A column with a semantic tag attached.",
+      "type": "object",
+      "properties": {
+        "field": {
+          "description": "Identifies the column. [required]",
+          "$ref": "GooglePrivacyDlpV2FieldId"
+        },
+        "infoType": {
+          "description": "A column can be tagged with a InfoType to use the relevant public\ndataset as a statistical model of population, if available. We\ncurrently support US ZIP codes, region codes, ages and genders.\nTo programmatically obtain the list of supported InfoTypes, use\nListInfoTypes with the supported_by=RISK_ANALYSIS filter.",
+          "$ref": "GooglePrivacyDlpV2InfoType"
+        },
+        "customTag": {
+          "description": "A column can be tagged with a custom tag. In this case, the user must\nindicate an auxiliary table that contains statistical information on\nthe possible values of this column (below).",
+          "type": "string"
+        },
+        "inferred": {
+          "description": "If no semantic tag is indicated, we infer the statistical model from\nthe distribution of values in the input data",
+          "$ref": "GoogleProtobufEmpty"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2StatisticalTable": {
+      "id": "GooglePrivacyDlpV2StatisticalTable",
+      "description": "An auxiliary table containing statistical information on the relative\nfrequency of different quasi-identifiers values. It has one or several\nquasi-identifiers columns, and one column that indicates the relative\nfrequency of each quasi-identifier tuple.\nIf a tuple is present in the data but not in the auxiliary table, the\ncorresponding relative frequency is assumed to be zero (and thus, the\ntuple is highly reidentifiable).",
+      "type": "object",
+      "properties": {
+        "table": {
+          "description": "Auxiliary table location. [required]",
+          "$ref": "GooglePrivacyDlpV2BigQueryTable"
+        },
+        "quasiIds": {
+          "description": "Quasi-identifier columns. [required]",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2QuasiIdentifierField"
+          }
+        },
+        "relativeFrequency": {
+          "description": "The relative frequency column must contain a floating-point number\nbetween 0 and 1 (inclusive). Null values are assumed to be zero.\n[required]",
+          "$ref": "GooglePrivacyDlpV2FieldId"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2QuasiIdentifierField": {
+      "id": "GooglePrivacyDlpV2QuasiIdentifierField",
+      "description": "A quasi-identifier column has a custom_tag, used to know which column\nin the data corresponds to which column in the statistical model.",
+      "type": "object",
+      "properties": {
+        "field": {
+          "$ref": "GooglePrivacyDlpV2FieldId"
+        },
+        "customTag": {
+          "type": "string"
+        }
+      }
+    },
     "GooglePrivacyDlpV2DlpJob": {
       "id": "GooglePrivacyDlpV2DlpJob",
       "description": "Combines all of the information about a DLP job.",
@@ -2816,6 +2902,9 @@
         },
         "kMapEstimationResult": {
           "$ref": "GooglePrivacyDlpV2KMapEstimationResult"
+        },
+        "deltaPresenceEstimationResult": {
+          "$ref": "GooglePrivacyDlpV2DeltaPresenceEstimationResult"
         }
       }
     },
@@ -3112,6 +3201,73 @@
           "description": "The estimated anonymity for these quasi-identifier values.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DeltaPresenceEstimationResult": {
+      "id": "GooglePrivacyDlpV2DeltaPresenceEstimationResult",
+      "description": "Result of the \u03B4-presence computation. Note that these results are an\nestimation, not exact values.",
+      "type": "object",
+      "properties": {
+        "deltaPresenceEstimationHistogram": {
+          "description": "The intervals [min_probability, max_probability) do not overlap. If a\nvalue doesn't correspond to any such interval, the associated frequency\nis zero. For example, the following records:\n  {min_probability: 0, max_probability: 0.1, frequency: 17}\n  {min_probability: 0.2, max_probability: 0.3, frequency: 42}\n  {min_probability: 0.3, max_probability: 0.4, frequency: 99}\nmean that there are no record with an estimated probability in [0.1, 0.2)\nnor larger or equal to 0.4.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2DeltaPresenceEstimationHistogramBucket"
+          }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DeltaPresenceEstimationHistogramBucket": {
+      "id": "GooglePrivacyDlpV2DeltaPresenceEstimationHistogramBucket",
+      "description": "A DeltaPresenceEstimationHistogramBucket message with the following\nvalues:\n  min_probability: 0.1\n  max_probability: 0.2\n  frequency: 42\nmeans that there are 42 records for which \u03B4 is in [0.1, 0.2). An\nimportant particular case is when min_probability = max_probability = 1:\nthen, every individual who shares this quasi-identifier combination is in\nthe dataset.",
+      "type": "object",
+      "properties": {
+        "minProbability": {
+          "description": "Between 0 and 1.",
+          "type": "number",
+          "format": "double"
+        },
+        "maxProbability": {
+          "description": "Always greater than or equal to min_probability.",
+          "type": "number",
+          "format": "double"
+        },
+        "bucketSize": {
+          "description": "Number of records within these probability bounds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "bucketValues": {
+          "description": "Sample of quasi-identifier tuple values in this bucket. The total\nnumber of classes returned per bucket is capped at 20.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues"
+          }
+        },
+        "bucketValueCount": {
+          "description": "Total number of distinct quasi-identifier tuple values in this bucket.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues": {
+      "id": "GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues",
+      "description": "A tuple of values for the quasi-identifier columns.",
+      "type": "object",
+      "properties": {
+        "quasiIdsValues": {
+          "description": "The quasi-identifier values.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2Value"
+          }
+        },
+        "estimatedProbability": {
+          "description": "The estimated probability that a given individual sharing these\nquasi-identifier values is in the dataset. This value, typically called\n\u03B4, is the ratio between the number of records in the dataset with these\nquasi-identifier values, and the total number of individuals (inside\n*and* outside the dataset) with these quasi-identifier values.\nFor example, if there are 15 individuals in the dataset who share the\nsame quasi-identifier values, and an estimated 100 people in the entire\npopulation with these values, then \u03B4 is 0.15.",
+          "type": "number",
+          "format": "double"
         }
       }
     },

@@ -14,6 +14,9 @@
 
 """Tools for launching a browser."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import abc
 import os
 import subprocess
@@ -23,6 +26,7 @@ import webbrowser
 from googlecloudsdk.command_lib.interactive import parser
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
+import six
 
 
 # TODO(b/35395811): Remove subprocess monkeypatch.
@@ -34,10 +38,8 @@ class FakeSubprocessModule(object):
       return subprocess.Popen(args, **kwargs)
 
 
-class CommandReferenceMapper(object):
+class CommandReferenceMapper(six.with_metaclass(abc.ABCMeta, object)):
   """Command to URL or man page reference mapper base class."""
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, cli, args):
     self.cli = cli

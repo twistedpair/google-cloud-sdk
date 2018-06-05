@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities to access containeranalysis for binary authorization."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 

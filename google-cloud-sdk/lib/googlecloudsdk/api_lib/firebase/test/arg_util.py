@@ -153,6 +153,11 @@ def AddAndroidTestArgs(parser):
       'default: the application\'s label from the APK manifest). All tests '
       'which use the same history name will have their results grouped '
       'together in the Firebase console in a time-ordered test history list.')
+  parser.add_argument(
+      '--type',
+      category=base.COMMONLY_USED_FLAGS,
+      choices=['instrumentation', 'robo', 'game-loop'],
+      help='The type of test to run.')
 
   # The following args are specific to Android instrumentation tests.
 
@@ -261,6 +266,32 @@ def AddAndroidTestArgs(parser):
       'Caution: You should only use credentials for test accounts that are not '
       'associated with real users.')
 
+  # The following args are specific to Android game-loop tests.
+
+  parser.add_argument(
+      '--scenario-numbers',
+      metavar='int',
+      type=arg_parsers.ArgList(element_type=int, min_length=1, max_length=1024),
+      category=ANDROID_GAME_LOOP_TEST,
+      help='A list of game-loop scenario numbers which will be run as part of '
+      'the test (default: all scenarios). A maximum of 1024 scenarios may be '
+      'specified in one test matrix, but the maximum number may also be '
+      'limited by the overall test *--timeout* setting.')
+
+  parser.add_argument(
+      '--scenario-labels',
+      metavar='LABEL',
+      type=arg_parsers.ArgList(min_length=1),
+      category=ANDROID_GAME_LOOP_TEST,
+      help='A list of game-loop scenario labels (default: None). '
+      'Each game-loop scenario may be labeled in the APK manifest file with '
+      'one or more arbitrary strings, creating logical groupings (e.g. '
+      'GPU_COMPATIBILITY_TESTS). If *--scenario-numbers* and '
+      '*--scenario-labels* are specified together, Firebase Test Lab will '
+      'first execute each scenario from *--scenario-numbers*. It will then '
+      'expand each given scenario label into a list of scenario numbers marked '
+      'with that label, and execute those scenarios.')
+
 
 def AddIosTestArgs(parser):
   """Register args which are specific to iOS test commands.
@@ -330,11 +361,7 @@ def AddGaArgs(parser):
   Args:
     parser: An argparse parser used to add args that follow a command.
   """
-  parser.add_argument(
-      '--type',
-      category=base.COMMONLY_USED_FLAGS,
-      choices=['instrumentation', 'robo'],
-      help='The type of test to run.')
+  del parser  # Unused by AddGaArgs
 
 
 def AddBetaArgs(parser):
@@ -344,39 +371,9 @@ def AddBetaArgs(parser):
     parser: An argparse parser used to add args that follow a command.
   """
   parser.add_argument(
-      '--type',
-      category=base.COMMONLY_USED_FLAGS,
-      choices=['instrumentation', 'robo', 'game-loop'],
-      help='The type of test to run.')
-
-  parser.add_argument(
-      '--scenario-numbers',
-      metavar='int',
-      type=arg_parsers.ArgList(element_type=int, min_length=1, max_length=1024),
-      category=ANDROID_GAME_LOOP_TEST,
-      help='A list of game-loop scenario numbers which will be run as part of '
-      'the test (default: all scenarios). A maximum of 1024 scenarios may be '
-      'specified in one test matrix, but the maximum number may also be '
-      'limited by the overall test *--timeout* setting.')
-
-  parser.add_argument(
-      '--scenario-labels',
-      metavar='LABEL',
-      type=arg_parsers.ArgList(min_length=1),
-      category=ANDROID_GAME_LOOP_TEST,
-      help='A list of game-loop scenario labels (default: None). '
-      'Each game-loop scenario may be labeled in the APK manifest file with '
-      'one or more arbitrary strings, creating logical groupings (e.g. '
-      'GPU_COMPATIBILITY_TESTS). If *--scenario-numbers* and '
-      '*--scenario-labels* are specified together, Firebase Test Lab will '
-      'first execute each scenario from *--scenario-numbers*. It will then '
-      'expand each given scenario label into a list of scenario numbers marked '
-      'with that label, and execute those scenarios.')
-
-  # TODO(b/36366322): use {grandparent_command} once available
-  parser.add_argument(
       '--network-profile',
       metavar='PROFILE_ID',
+      # TODO(b/36366322): use {grandparent_command} once available
       help='The name of the network traffic profile, for example '
       '--network-profile=LTE, which consists of a set of parameters to emulate '
       'network conditions when running the test (default: no network shaping; '

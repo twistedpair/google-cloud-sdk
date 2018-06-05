@@ -1016,12 +1016,6 @@ class APIAdapter(object):
 
   def ParseTpuOptions(self, options, cluster):
     """Parses the options for TPUs."""
-    if options.enable_tpu and not options.enable_kubernetes_alpha:
-      # Raises error if use --enable-tpu without --enable-kubernetes-alpha.
-      raise util.Error(
-          PREREQUISITE_OPTION_ERROR_MSG.format(
-              prerequisite='enable-kubernetes-alpha', opt='enable-tpu'))
-
     if options.enable_tpu and not options.enable_ip_alias:
       # Raises error if use --enable-tpu without --enable-ip-alias.
       raise util.Error(

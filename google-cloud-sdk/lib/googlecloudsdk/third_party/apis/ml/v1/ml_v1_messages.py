@@ -1169,10 +1169,10 @@ class GoogleCloudMlV1Version(_messages.Message):
     the runtime version of the model to 1.4 or greater.
 
     Values:
-      FRAMEWORK_UNSPECIFIED: <no description>
-      TENSORFLOW: <no description>
-      SCIKIT_LEARN: <no description>
-      XGBOOST: <no description>
+      FRAMEWORK_UNSPECIFIED: Unspecified framework. Defaults to TensorFlow.
+      TENSORFLOW: Tensorflow framework.
+      SCIKIT_LEARN: Scikit-learn framework.
+      XGBOOST: XGBoost framework.
     """
     FRAMEWORK_UNSPECIFIED = 0
     TENSORFLOW = 1

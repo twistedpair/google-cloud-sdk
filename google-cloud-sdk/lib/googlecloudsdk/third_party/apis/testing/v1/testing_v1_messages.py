@@ -629,10 +629,12 @@ class IosDevice(_messages.Message):
       EnvironmentDiscoveryService to get supported options. Required
     iosVersionId: The id of the iOS major software version to be used. Use the
       EnvironmentDiscoveryService to get supported options. Required
-    locale: The locale the test device used for testing. Use the
-      EnvironmentDiscoveryService to get supported options. Required
-    orientation: How the device is oriented during the test. Use the
-      EnvironmentDiscoveryService to get supported options. Required
+    locale: The locale the test device used for testing (only "en" is
+      currently supported). Use the EnvironmentDiscoveryService to get
+      supported options (not yet implemented). Required
+    orientation: How the device is oriented during the test (only "portrait"
+      is currently supported). Use the EnvironmentDiscoveryService to get
+      supported options. (not yet implemented). Required
   """
 
   iosModelId = _messages.StringField(1)
@@ -718,14 +720,14 @@ class IosXcTest(_messages.Message):
   r"""A test of an iOS application that uses the XCTest framework. Xcode
   supports the option to "build for testing", which generates an .xctestrun
   file that contains a test specification (arguments, test methods, etc). This
-  test type accepts a zip file containing the .xctestrun file and its
-  corresponding Debug-iphoneos directory that contains all of the binaries
-  needed to run the tests.
+  test type accepts a zip file containing the .xctestrun file and the
+  corresponding contents of the Build/Products directory that contains all the
+  binaries needed to run the tests.
 
   Fields:
-    testsZip: The .zip containing the .xctestrun file and the Debug-iphoneos
-      directory from DerivedData/Build/Products. The .xctestrun file in this
-      zip is ignored if the xctestrun field is specified. Required
+    testsZip: The .zip containing the .xctestrun file and the contents of the
+      DerivedData/Build/Products directory. The .xctestrun file in this zip is
+      ignored if the xctestrun field is specified. Required
     xctestrun: An .xctestrun file that will override the .xctestrun file in
       the tests zip. Because the .xctestrun file contains environment
       variables along with test methods to run and/or ignore, this can be
@@ -1187,8 +1189,8 @@ class TestMatrix(_messages.Message):
       DEVICE_ADMIN_RECEIVER: Device administrator applications are not
         allowed.
       MALFORMED_XC_TEST_ZIP: The zipped XCTest was malformed. The zip did not
-        contain a single .xctestrun file alongside a Debug-iphoneos directory
-        containing the compiled artifacts for the test.
+        contain a single .xctestrun file and the contents of the
+        DerivedData/Build/Products directory.
       BUILT_FOR_IOS_SIMULATOR: The zipped XCTest was built for the iOS
         simulator rather than for a physical device.
       NO_TESTS_IN_XC_TEST_ZIP: The .xctestrun file did not specify any test

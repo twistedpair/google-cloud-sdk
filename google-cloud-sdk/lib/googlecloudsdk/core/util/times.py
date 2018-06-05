@@ -51,6 +51,7 @@ import re
 from dateutil import parser
 from dateutil import tz
 from dateutil.tz import _common as tz_common
+import enum
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
@@ -562,3 +563,41 @@ def TzOffset(offset, name=None):
     A tzinfo for offset seconds east of UTC.
   """
   return tz.tzoffset(name, offset * 60)  # tz.tzoffset needs seconds east of UTC
+
+
+class Weekday(enum.Enum):
+  """Represents a day of the week."""
+
+  MONDAY = 0
+  TUESDAY = 1
+  WEDNESDAY = 2
+  THURSDAY = 3
+  FRIDAY = 4
+  SATURDAY = 5
+  SUNDAY = 6
+
+  @classmethod
+  def Get(cls, day):
+    day = day.upper()
+    value = getattr(cls, day, None)
+    if not value:
+      raise KeyError('[{}] is not a valid Weekday'.format(day))
+    return value
+
+
+def GetWeekdayInTimezone(dt, weekday, tzinfo=LOCAL):
+  """Returns the Weekday for dt in the timezone specified by tzinfo.
+
+  Args:
+    dt: The datetime object that represents the time on weekday.
+    weekday: The day of the week specified as a Weekday enum.
+    tzinfo: The timezone in which to get the new day of the week in.
+
+  Returns:
+    A Weekday that corresponds to dt and weekday pair localized to the timezone
+    specified by dt.
+  """
+  localized_dt = LocalizeDateTime(dt, tzinfo)
+  localized_weekday_offset = dt.weekday() - localized_dt.weekday()
+  localized_weekday_index = (weekday.value - localized_weekday_offset) % 7
+  return Weekday(localized_weekday_index)

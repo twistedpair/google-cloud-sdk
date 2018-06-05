@@ -568,6 +568,8 @@ class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
   Fields:
     categoricalStatsResult: A GooglePrivacyDlpV2CategoricalStatsResult
       attribute.
+    deltaPresenceEstimationResult: A
+      GooglePrivacyDlpV2DeltaPresenceEstimationResult attribute.
     kAnonymityResult: A GooglePrivacyDlpV2KAnonymityResult attribute.
     kMapEstimationResult: A GooglePrivacyDlpV2KMapEstimationResult attribute.
     lDiversityResult: A GooglePrivacyDlpV2LDiversityResult attribute.
@@ -577,12 +579,13 @@ class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
   """
 
   categoricalStatsResult = _messages.MessageField('GooglePrivacyDlpV2CategoricalStatsResult', 1)
-  kAnonymityResult = _messages.MessageField('GooglePrivacyDlpV2KAnonymityResult', 2)
-  kMapEstimationResult = _messages.MessageField('GooglePrivacyDlpV2KMapEstimationResult', 3)
-  lDiversityResult = _messages.MessageField('GooglePrivacyDlpV2LDiversityResult', 4)
-  numericalStatsResult = _messages.MessageField('GooglePrivacyDlpV2NumericalStatsResult', 5)
-  requestedPrivacyMetric = _messages.MessageField('GooglePrivacyDlpV2PrivacyMetric', 6)
-  requestedSourceTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 7)
+  deltaPresenceEstimationResult = _messages.MessageField('GooglePrivacyDlpV2DeltaPresenceEstimationResult', 2)
+  kAnonymityResult = _messages.MessageField('GooglePrivacyDlpV2KAnonymityResult', 3)
+  kMapEstimationResult = _messages.MessageField('GooglePrivacyDlpV2KMapEstimationResult', 4)
+  lDiversityResult = _messages.MessageField('GooglePrivacyDlpV2LDiversityResult', 5)
+  numericalStatsResult = _messages.MessageField('GooglePrivacyDlpV2NumericalStatsResult', 6)
+  requestedPrivacyMetric = _messages.MessageField('GooglePrivacyDlpV2PrivacyMetric', 7)
+  requestedSourceTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 8)
 
 
 class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
@@ -1460,6 +1463,89 @@ class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
   displayName = _messages.StringField(4)
   name = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class GooglePrivacyDlpV2DeltaPresenceEstimationConfig(_messages.Message):
+  r"""\u03b4-presence metric, used to estimate how likely it is for an attacker to
+  figure out that one given individual appears in a de-identified dataset.
+  Similarly to the k-map metric, we cannot compute \u03b4-presence exactly without
+  knowing the attack dataset, so we use a statistical model instead.
+
+  Fields:
+    auxiliaryTables: Several auxiliary tables can be used in the analysis.
+      Each custom_tag used to tag a quasi-identifiers field must appear in
+      exactly one field of one auxiliary table.
+    quasiIds: Fields considered to be quasi-identifiers. No two fields can
+      have the same tag. [required]
+    regionCode: ISO 3166-1 alpha-2 region code to use in the statistical
+      modeling. Required if no column is tagged with a region-specific
+      InfoType (like US_ZIP_5) or a region code.
+  """
+
+  auxiliaryTables = _messages.MessageField('GooglePrivacyDlpV2StatisticalTable', 1, repeated=True)
+  quasiIds = _messages.MessageField('GooglePrivacyDlpV2QuasiId', 2, repeated=True)
+  regionCode = _messages.StringField(3)
+
+
+class GooglePrivacyDlpV2DeltaPresenceEstimationHistogramBucket(_messages.Message):
+  r"""A DeltaPresenceEstimationHistogramBucket message with the following
+  values:   min_probability: 0.1   max_probability: 0.2   frequency: 42 means
+  that there are 42 records for which \u03b4 is in [0.1, 0.2). An important
+  particular case is when min_probability = max_probability = 1: then, every
+  individual who shares this quasi-identifier combination is in the dataset.
+
+  Fields:
+    bucketSize: Number of records within these probability bounds.
+    bucketValueCount: Total number of distinct quasi-identifier tuple values
+      in this bucket.
+    bucketValues: Sample of quasi-identifier tuple values in this bucket. The
+      total number of classes returned per bucket is capped at 20.
+    maxProbability: Always greater than or equal to min_probability.
+    minProbability: Between 0 and 1.
+  """
+
+  bucketSize = _messages.IntegerField(1)
+  bucketValueCount = _messages.IntegerField(2)
+  bucketValues = _messages.MessageField('GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues', 3, repeated=True)
+  maxProbability = _messages.FloatField(4)
+  minProbability = _messages.FloatField(5)
+
+
+class GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues(_messages.Message):
+  r"""A tuple of values for the quasi-identifier columns.
+
+  Fields:
+    estimatedProbability: The estimated probability that a given individual
+      sharing these quasi-identifier values is in the dataset. This value,
+      typically called \u03b4, is the ratio between the number of records in the
+      dataset with these quasi-identifier values, and the total number of
+      individuals (inside *and* outside the dataset) with these quasi-
+      identifier values. For example, if there are 15 individuals in the
+      dataset who share the same quasi-identifier values, and an estimated 100
+      people in the entire population with these values, then \u03b4 is 0.15.
+    quasiIdsValues: The quasi-identifier values.
+  """
+
+  estimatedProbability = _messages.FloatField(1)
+  quasiIdsValues = _messages.MessageField('GooglePrivacyDlpV2Value', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2DeltaPresenceEstimationResult(_messages.Message):
+  r"""Result of the \u03b4-presence computation. Note that these results are an
+  estimation, not exact values.
+
+  Fields:
+    deltaPresenceEstimationHistogram: The intervals [min_probability,
+      max_probability) do not overlap. If a value doesn't correspond to any
+      such interval, the associated frequency is zero. For example, the
+      following records:   {min_probability: 0, max_probability: 0.1,
+      frequency: 17}   {min_probability: 0.2, max_probability: 0.3, frequency:
+      42}   {min_probability: 0.3, max_probability: 0.4, frequency: 99} mean
+      that there are no record with an estimated probability in [0.1, 0.2) nor
+      larger or equal to 0.4.
+  """
+
+  deltaPresenceEstimationHistogram = _messages.MessageField('GooglePrivacyDlpV2DeltaPresenceEstimationHistogramBucket', 1, repeated=True)
 
 
 class GooglePrivacyDlpV2DetectionRule(_messages.Message):
@@ -2702,6 +2788,8 @@ class GooglePrivacyDlpV2PrivacyMetric(_messages.Message):
   Fields:
     categoricalStatsConfig: A GooglePrivacyDlpV2CategoricalStatsConfig
       attribute.
+    deltaPresenceEstimationConfig: A
+      GooglePrivacyDlpV2DeltaPresenceEstimationConfig attribute.
     kAnonymityConfig: A GooglePrivacyDlpV2KAnonymityConfig attribute.
     kMapEstimationConfig: A GooglePrivacyDlpV2KMapEstimationConfig attribute.
     lDiversityConfig: A GooglePrivacyDlpV2LDiversityConfig attribute.
@@ -2709,10 +2797,11 @@ class GooglePrivacyDlpV2PrivacyMetric(_messages.Message):
   """
 
   categoricalStatsConfig = _messages.MessageField('GooglePrivacyDlpV2CategoricalStatsConfig', 1)
-  kAnonymityConfig = _messages.MessageField('GooglePrivacyDlpV2KAnonymityConfig', 2)
-  kMapEstimationConfig = _messages.MessageField('GooglePrivacyDlpV2KMapEstimationConfig', 3)
-  lDiversityConfig = _messages.MessageField('GooglePrivacyDlpV2LDiversityConfig', 4)
-  numericalStatsConfig = _messages.MessageField('GooglePrivacyDlpV2NumericalStatsConfig', 5)
+  deltaPresenceEstimationConfig = _messages.MessageField('GooglePrivacyDlpV2DeltaPresenceEstimationConfig', 2)
+  kAnonymityConfig = _messages.MessageField('GooglePrivacyDlpV2KAnonymityConfig', 3)
+  kMapEstimationConfig = _messages.MessageField('GooglePrivacyDlpV2KMapEstimationConfig', 4)
+  lDiversityConfig = _messages.MessageField('GooglePrivacyDlpV2LDiversityConfig', 5)
+  numericalStatsConfig = _messages.MessageField('GooglePrivacyDlpV2NumericalStatsConfig', 6)
 
 
 class GooglePrivacyDlpV2Proximity(_messages.Message):
@@ -2755,7 +2844,43 @@ class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
   topic = _messages.StringField(1)
 
 
+class GooglePrivacyDlpV2QuasiId(_messages.Message):
+  r"""A column with a semantic tag attached.
+
+  Fields:
+    customTag: A column can be tagged with a custom tag. In this case, the
+      user must indicate an auxiliary table that contains statistical
+      information on the possible values of this column (below).
+    field: Identifies the column. [required]
+    inferred: If no semantic tag is indicated, we infer the statistical model
+      from the distribution of values in the input data
+    infoType: A column can be tagged with a InfoType to use the relevant
+      public dataset as a statistical model of population, if available. We
+      currently support US ZIP codes, region codes, ages and genders. To
+      programmatically obtain the list of supported InfoTypes, use
+      ListInfoTypes with the supported_by=RISK_ANALYSIS filter.
+  """
+
+  customTag = _messages.StringField(1)
+  field = _messages.MessageField('GooglePrivacyDlpV2FieldId', 2)
+  inferred = _messages.MessageField('GoogleProtobufEmpty', 3)
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 4)
+
+
 class GooglePrivacyDlpV2QuasiIdField(_messages.Message):
+  r"""A quasi-identifier column has a custom_tag, used to know which column in
+  the data corresponds to which column in the statistical model.
+
+  Fields:
+    customTag: A string attribute.
+    field: A GooglePrivacyDlpV2FieldId attribute.
+  """
+
+  customTag = _messages.StringField(1)
+  field = _messages.MessageField('GooglePrivacyDlpV2FieldId', 2)
+
+
+class GooglePrivacyDlpV2QuasiIdentifierField(_messages.Message):
   r"""A quasi-identifier column has a custom_tag, used to know which column in
   the data corresponds to which column in the statistical model.
 
@@ -3041,6 +3166,27 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
   """
 
   recurrencePeriodDuration = _messages.StringField(1)
+
+
+class GooglePrivacyDlpV2StatisticalTable(_messages.Message):
+  r"""An auxiliary table containing statistical information on the relative
+  frequency of different quasi-identifiers values. It has one or several
+  quasi-identifiers columns, and one column that indicates the relative
+  frequency of each quasi-identifier tuple. If a tuple is present in the data
+  but not in the auxiliary table, the corresponding relative frequency is
+  assumed to be zero (and thus, the tuple is highly reidentifiable).
+
+  Fields:
+    quasiIds: Quasi-identifier columns. [required]
+    relativeFrequency: The relative frequency column must contain a floating-
+      point number between 0 and 1 (inclusive). Null values are assumed to be
+      zero. [required]
+    table: Auxiliary table location. [required]
+  """
+
+  quasiIds = _messages.MessageField('GooglePrivacyDlpV2QuasiIdentifierField', 1, repeated=True)
+  relativeFrequency = _messages.MessageField('GooglePrivacyDlpV2FieldId', 2)
+  table = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 3)
 
 
 class GooglePrivacyDlpV2StorageConfig(_messages.Message):

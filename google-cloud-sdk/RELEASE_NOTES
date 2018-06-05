@@ -5,7 +5,61 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 203.0.0 (2018-05-29)
+## 204.0.0 (2018-06-05)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Replaced `--node-index` with `--node` for `gcloud alpha compute <instance|instance_templates> create`. Node name will replace node index in the API, and nodes can now be targeted directly by node name (as opposed to node index, which was only unique within a group).
+
+
+### App Engine
+
+
+* Updated the Java SDK to version 1.9.64.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### Cloud Endpoints
+
+* Fixed an issue where attempting to deploy normalized service configuration
+  files in yaml format would error out.
+
+### Cloud Machine Learning Engine
+
+* Added `--framework` flag to `ml-engine local predict`.
+
+### Cloud Source Repositories
+
+*    Added the `gcloud source repos update` command to beta with the following flags:
+     *   `--add-topic`
+     *   `--remove-topic`
+     *   `--update-topic`
+*    Added the following flags to `gcloud source project-configs update` in beta:
+     *   `--add-topic`
+     *   `--remove-topic`
+     *   `--update-topic`
+
+### Compute Engine
+
+* Promoted `--response` flag of `gcloud compute health-checks` commands to beta.
+* Promoted the following flags to beta to support using KMS keys to protect disks, images, and snapshots:
+  *    `--kms-key-*` flags of `gcloud compute <disks|images>`
+  *    `--boot-disk-kms-*` flags of `gcloud compute instances`.
+* Promoted node affinities in instance and instance template creation to beta.
+
+### Firebase Test Lab
+
+*   Promoted `--type=game-loop` tests for Android from beta to GA.
+
+### Kubernetes Engine
+
+* Promoted `--region` flag of `gcloud container` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 203.0.0 (2018-05-30)
 
 ### Breaking Changes
 
@@ -35,11 +89,12 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud SQL
 
-* Added the `gcloud beta sql ssl server-ca-certs` group to support certificate rotation, which includes the following commands:
-  * `gcloud beta sql ssl server-ca-certs list`
-  * `gcloud beta sql ssl server-ca-certs create`
-  * `gcloud beta sql ssl server-ca-certs rotate`
-  * `gcloud beta sql ssl server-ca-certs rollback`
+*   Added the `gcloud beta sql ssl server-ca-certs` group to support certificate
+    rotation, which includes the following commands:
+    *   `gcloud beta sql ssl server-ca-certs list`
+    *   `gcloud beta sql ssl server-ca-certs create`
+    *   `gcloud beta sql ssl server-ca-certs rotate`
+    *   `gcloud beta sql ssl server-ca-certs rollback`
 
 ### Cloud Source Repositories
 
@@ -49,8 +104,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Compute Engine
 
-* Promoted `--service-label` flag of `gcloud compute forwarding-rules` create
-    to beta.
+* Promoted `--service-label` flag of `gcloud compute forwarding-rules create`
+  to beta.
 * Promoted `--shielded-vm-*` flags to beta in `gcloud compute instances create`,
   `gcloud compute instances update` and
   `gcloud compute instance-templates create`.

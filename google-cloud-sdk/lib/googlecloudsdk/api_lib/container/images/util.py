@@ -98,7 +98,7 @@ def ValidateRepositoryPath(repository_path):
     return repository
   except docker_name.BadNameException as e:
     # Reraise with the proper base class so the message gets shown.
-    raise InvalidImageNameError(e.message)
+    raise InvalidImageNameError(six.text_type(e))
 
 
 class CredentialProvider(docker_creds.Basic):

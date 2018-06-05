@@ -14,6 +14,7 @@
 
 """The gcloud interactive shell completion."""
 
+from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import time
@@ -25,6 +26,7 @@ from googlecloudsdk.core import module_util
 from prompt_toolkit import completion
 from prompt_toolkit import document
 from prompt_toolkit.contrib import completers
+import six
 
 
 def _NameSpaceDict(args):
@@ -174,7 +176,7 @@ class InteractiveCliCompleter(completion.Completer):
     else:
       return None, 0
 
-    return [k for k, v in node[parser.LOOKUP_COMMANDS].iteritems()
+    return [k for k, v in six.iteritems(node[parser.LOOKUP_COMMANDS])
             if k.startswith(prefix) and not self.IsSuppressed(v)], -len(prefix)
 
   def ArgCompleter(self, args, arg, value):
@@ -251,7 +253,7 @@ class InteractiveCliCompleter(completion.Completer):
         return self.ArgCompleter(args, flag, '')
 
     elif arg.value.startswith('-'):
-      return [k for k, v in arg.tree[parser.LOOKUP_FLAGS].iteritems()
+      return [k for k, v in six.iteritems(arg.tree[parser.LOOKUP_FLAGS])
               if k.startswith(arg.value) and
               not self.IsSuppressed(v)], -len(arg.value)
 

@@ -119,6 +119,10 @@ class Pager(object):
     for line in contents.splitlines():
       self._lines += self._attr.SplitLine(line, self._width)
 
+  def _Write(self, s):
+    """Mockable helper that writes s to self._out."""
+    self._out.write(s)
+
   def _GetSearchCommand(self, c):
     """Consumes a search command and returns the equivalent pager command.
 
@@ -131,15 +135,15 @@ class Pager(object):
     Returns:
       The pager command char.
     """
-    self._out.write(c)
+    self._Write(c)
     buf = ''
     while True:
       p = self._attr.GetRawKey()
       if p in (None, '\n', '\r') or len(p) != 1:
         break
-      self._out.write(p)
+      self._Write(p)
       buf += p
-    self._out.write('\r' + ' ' * len(buf) + '\r')
+    self._Write('\r' + ' ' * len(buf) + '\r')
     if buf:
       try:
         self._search_pattern = re.compile(buf)
@@ -155,16 +159,16 @@ class Pager(object):
     clear = self._height - (len(self.HELP_TEXT) -
                             len(self.HELP_TEXT.replace('\n', '')))
     if clear > 0:
-      self._out.write('\n' * clear)
-    self._out.write(self.HELP_TEXT)
+      self._Write('\n' * clear)
+    self._Write(self.HELP_TEXT)
     self._attr.GetRawKey()
-    self._out.write('\n')
+    self._Write('\n')
 
   def Run(self):
     """Run the pager."""
     # No paging if the contents are small enough.
     if len(self._lines) <= self._height:
-      self._out.write(self._contents)
+      self._Write(self._contents)
       return
 
     # We will not always reset previous values.
@@ -184,9 +188,9 @@ class Pager(object):
       # so we don't need to reprint all the lines.
       if self.prev_pos < pos < self.prev_nxt:
         # we start where the previous page ended.
-        self._out.write('\n'.join(self._lines[self.prev_nxt:nxt]) + '\n')
+        self._Write('\n'.join(self._lines[self.prev_nxt:nxt]) + '\n')
       elif pos != self.prev_pos and nxt != self.prev_nxt:
-        self._out.write('\n'.join(self._lines[pos:nxt]) + '\n')
+        self._Write('\n'.join(self._lines[pos:nxt]) + '\n')
 
       # Handle the prompt response.
       percent = self._prompt.format(percent=100 * nxt // len(self._lines))
@@ -196,9 +200,9 @@ class Pager(object):
         if reset_prev_values:
           self.prev_pos, self.prev_nxt = pos, nxt
           reset_prev_values = False
-        self._out.write(percent)
+        self._Write(percent)
         c = self._attr.GetRawKey()
-        self._out.write(self._clear)
+        self._Write(self._clear)
 
         # Parse the command.
         if c in (None,    # EOF.

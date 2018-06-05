@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import exceptions
 
 

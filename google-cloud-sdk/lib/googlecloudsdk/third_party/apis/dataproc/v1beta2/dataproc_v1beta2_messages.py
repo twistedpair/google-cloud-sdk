@@ -146,6 +146,7 @@ class ClusterConfig(_messages.Message):
       ASIA, or EU) for your cluster's staging bucket according to the Google
       Compute Engine zone where your cluster is deployed, and then it will
       create and manage this project-level, per-location bucket for you.
+    encryptionConfig: Optional. Encryption settings for the cluster.
     gceClusterConfig: Required. The shared Compute Engine config settings for
       all instances in a cluster.
     initializationActions: Optional. Commands to execute on each node after
@@ -169,13 +170,14 @@ class ClusterConfig(_messages.Message):
   """
 
   configBucket = _messages.StringField(1)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 2)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 3, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 4)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 5)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 6)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 7)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 8)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 3)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 4, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 5)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 6)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 7)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 8)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 9)
 
 
 class ClusterMetrics(_messages.Message):
@@ -1288,6 +1290,17 @@ class Empty(_messages.Message):
   representation for Empty is empty JSON object {}.
   """
 
+
+
+class EncryptionConfig(_messages.Message):
+  r"""Encryption settings for the cluster.
+
+  Fields:
+    gcePdKmsKeyName: Optional. The Cloud KMS key name to use for PD disk
+      encryption for all instances in the cluster.
+  """
+
+  gcePdKmsKeyName = _messages.StringField(1)
 
 
 class GceClusterConfig(_messages.Message):
@@ -2770,14 +2783,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -2813,17 +2824,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):

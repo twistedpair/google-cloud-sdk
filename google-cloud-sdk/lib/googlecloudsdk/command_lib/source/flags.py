@@ -15,6 +15,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.source import resource_args
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 REPO_NAME_VALIDATOR = arg_parsers.RegexpValidator(
     '[A-Za-z0-9_][-_A-Za-z0-9/]{0,127}',
@@ -22,11 +24,10 @@ REPO_NAME_VALIDATOR = arg_parsers.RegexpValidator(
     'hyphens, underscores and slashes.')
 
 
-def AddPushblockFlagsToParser(parser):
-  """Add pushblock enabled/disabled flags to the parser."""
-  pushblocks = parser.add_mutually_exclusive_group(required=True)
+def AddPushblockFlags(group):
+  """Add pushblock enabled/disabled flags to the given group."""
 
-  pushblocks.add_argument(
+  group.add_argument(
       '--enable-pushblock',
       action='store_true',
       help="""\
@@ -34,10 +35,87 @@ Enable PushBlock for all repositories under current project.
 PushBlock allows repository owners to block git push transactions containing
 private key data.""")
 
-  pushblocks.add_argument(
+  group.add_argument(
       '--disable-pushblock',
       action='store_true',
       help="""\
 Disable PushBlock for all repositories under current project.
 PushBlock allows repository owners to block git push transactions containing
 private key data.""")
+
+
+def AddOptionalTopicFlags(group, resource_name='repo'):
+  """Add message_format and service_account flags to the topic arg group."""
+  group.add_argument(
+      '--message-format',
+      choices=['json', 'protobuf'],
+      default='json',
+      help="""\
+The format of the message to publish to the topic.""")
+
+  group.add_argument(
+      '--service-account',
+      help="""\
+Email address of the service account used for publishing Cloud Pub/Sub messages.
+This service account needs to be in the same project as the {}. When added, the
+caller needs to have iam.serviceAccounts.actAs permission on this service
+account. If unspecified, it defaults to the Compute Engine default service
+account.""".format(resource_name))
+
+  group.add_argument(
+      '--topic-project',
+      help="""\
+Cloud project for the topic. If not set, the currently set project will be
+used.""")
+
+
+def AddRepoUpdateArgs(parser, verb='to update'):
+  """Add the arg groups for `source repos update` command."""
+  topic_group = parser.add_group(
+      'Manages Cloud Pub/Sub topics associated with the repository.',
+      required=True)
+  topic_resource_group = topic_group.add_argument_group(
+      mutex=True, required=True)
+
+  concept_parsers.ConceptParser(
+      [
+          resource_args.CreateTopicResourcePresentationSpec(
+              'add', topic_resource_group),
+          resource_args.CreateTopicResourcePresentationSpec(
+              'remove', topic_resource_group),
+          resource_args.CreateTopicResourcePresentationSpec(
+              'update', topic_resource_group),
+          resource_args.CreateRepoResourcePresentationSpec(verb)
+      ],
+      command_level_fallthroughs={
+          '--add-topic.project': ['--topic-project'],
+          '--remove-topic.project': ['--topic-project'],
+          '--update-topic.project': ['--topic-project'],
+      }).AddToParser(parser)
+
+  AddOptionalTopicFlags(topic_group)
+
+
+def AddProjectConfigUpdateArgs(parser):
+  """Add the arg groups for `source project-configs update` command."""
+  update_group = parser.add_group(required=True, mutex=True)
+  AddPushblockFlags(update_group)
+  topic_group = update_group.add_group(
+      'Manage Cloud Pub/Sub topics associated with the Cloud project.')
+  topic_resource_group = topic_group.add_argument_group(mutex=True)
+
+  concept_parsers.ConceptParser(
+      [
+          resource_args.CreateTopicResourcePresentationSpec(
+              'add', topic_resource_group),
+          resource_args.CreateTopicResourcePresentationSpec(
+              'remove', topic_resource_group),
+          resource_args.CreateTopicResourcePresentationSpec(
+              'update', topic_resource_group),
+      ],
+      command_level_fallthroughs={
+          '--add-topic.project': ['--topic-project'],
+          '--remove-topic.project': ['--topic-project'],
+          '--update-topic.project': ['--topic-project'],
+      }).AddToParser(parser)
+  AddOptionalTopicFlags(topic_group, 'project')

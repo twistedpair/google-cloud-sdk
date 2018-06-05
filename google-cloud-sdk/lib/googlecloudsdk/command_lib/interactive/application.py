@@ -14,6 +14,8 @@
 
 """The gcloud interactive application."""
 
+from __future__ import absolute_import
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
@@ -301,7 +303,7 @@ class Application(object):
     status = self.coshell.Run(text)
     if status > 128:
       # command interrupted - print an empty line to clear partial output
-      print
+      print()
     return status  # currently ignored but returned for completeness
 
   def Loop(self):

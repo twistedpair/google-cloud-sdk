@@ -14,10 +14,14 @@
 
 """Methods for looking up completions from the static CLI tree."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 import shlex
 
 from googlecloudsdk.calliope import cli_tree
+import six
+from six.moves import range
 
 
 LINE_ENV_VAR = 'COMP_LINE'
@@ -26,7 +30,7 @@ IFS_ENV_VAR = '_ARGCOMPLETE_IFS'
 IFS_ENV_DEFAULT = '\013'
 COMPLETIONS_OUTPUT_FD = 8
 
-FLAG_BOOLEAN, FLAG_CANNOT_BE_COMPLETED, FLAG_DYNAMIC = range(3)
+FLAG_BOOLEAN, FLAG_CANNOT_BE_COMPLETED, FLAG_DYNAMIC = list(range(3))
 
 LOOKUP_CHOICES = 'choices'
 LOOKUP_COMMANDS = 'commands'
@@ -161,7 +165,7 @@ def _FindCompletions(root, cmd_line):
         raise CannotHandleCompletionError(
             'Positional completions are not handled by this module')
       else:  # Command/flag completion
-        for child, value in child_nodes.iteritems():
+        for child, value in six.iteritems(child_nodes):
           if not child.startswith(word):
             continue
           if value.get(LOOKUP_IS_HIDDEN, False):

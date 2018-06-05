@@ -19,8 +19,11 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 import os
 import sys
+
+from googlecloudsdk.core.util import encoding
 
 
 def GetTermSize():
@@ -178,20 +181,29 @@ def _GetRawKeyFunctionPosix():
         'S': '<PAGE-UP>',
         'T': '<PAGE-DOWN>',
     }
+
+    # Flush pending output. sys.stdin.read() would do this, but it's explicitly
+    # bypassed in _GetKeyChar().
+    sys.stdout.flush()
+
     fd = sys.stdin.fileno()
+
+    def _GetKeyChar():
+      return encoding.Decode(os.read(fd, 1))
+
     old_settings = termios.tcgetattr(fd)
     try:
       tty.setraw(fd)
-      c = sys.stdin.read(1)
+      c = _GetKeyChar()
       if c == _ANSI_CSI:
-        c = sys.stdin.read(1)
+        c = _GetKeyChar()
         while True:
           if c == _ANSI_CSI:
             return c
           if c.isalpha():
             break
           prev_c = c
-          c = sys.stdin.read(1)
+          c = _GetKeyChar()
           if c == '~':
             c = prev_c
             break
@@ -227,10 +239,18 @@ def _GetRawKeyFunctionWindows():
         'G': '<HOME>',
         'O': '<END>',
     }
-    c = msvcrt.getch()
+
+    # Flush pending output. sys.stdin.read() would do this it's explicitly
+    # bypassed in _GetKeyChar().
+    sys.stdout.flush()
+
+    def _GetKeyChar():
+      return encoding.Decode(msvcrt.getch())
+
+    c = _GetKeyChar()
     # Special function key is a two character sequence; return the second char.
     if c in (_WINDOWS_CSI_1, _WINDOWS_CSI_2):
-      return windows_to_key.get(msvcrt.getch(), '')
+      return windows_to_key.get(_GetKeyChar(), '')
     return None if c in (_CONTROL_D, _CONTROL_Z) else c
 
   return _GetRawKeyWindows

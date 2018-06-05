@@ -220,11 +220,11 @@
       "type": "object",
       "properties": {
         "inputUri": {
-          "description": "Input video location. Only GCS URIs are currently supported, which must\nbe specified in the format of `gs:\/\/bucket-id\/object-id` (other URI\nformats return google.rpc.Code.INVALID_ARGUMENT). For more\ninformation, see [Request URIs](\/storage\/docs\/reference-uris). A video\nURI may include wildcards in `object-id` to identify multiple videos.\nSupported wildcards: '*' to match 0 or more characters; '?' to match 1\ncharacter.",
+          "description": "Input video location. Currently, only\n[Google Cloud Storage](https:\/\/cloud.google.com\/storage\/) URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket-id\/object-id` (other URI formats return\ngoogle.rpc.Code.INVALID_ARGUMENT). For more information, see\n[Request URIs](\/storage\/docs\/reference-uris).\nA video URI may include wildcards in `object-id`, and thus identify\nmultiple videos. Supported wildcards: '*' to match 0 or more characters;\n'?' to match 1 character. If unset, the input video should be embedded\nin the request as `input_content`. If set, `input_content` should be unset.",
           "type": "string"
         },
         "inputContent": {
-          "description": "The video data bytes. Note: as with all bytes fields, protobuffers use a\npure binary representation, whereas JSON representations use base64.",
+          "description": "The video data bytes.\nIf unset, the input video(s) should be specified via `input_uri`.\nIf set, `input_uri` should be unset.",
           "type": "string",
           "format": "byte"
         },
@@ -880,13 +880,6 @@
             "$ref": "GoogleCloudVideointelligenceV1p1beta1_LabelAnnotation"
           }
         },
-        "faceDetectionAnnotations": {
-          "description": "Face detection annotations.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAnnotation"
-          }
-        },
         "shotAnnotations": {
           "description": "Shot annotations. Each shot is represented as a video segment.",
           "type": "array",
@@ -1007,150 +1000,6 @@
         },
         "confidence": {
           "description": "Confidence that the label is accurate. Range: [0, 1].",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAnnotation": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAnnotation",
-      "description": "Face detection annotation.",
-      "type": "object",
-      "properties": {
-        "segments": {
-          "description": "All video segments where a face was detected.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceSegment"
-          }
-        },
-        "frames": {
-          "description": "All video frames where a face was detected.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionFrame"
-          }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_FaceSegment": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceSegment",
-      "description": "Video segment level annotation results for face detection.",
-      "type": "object",
-      "properties": {
-        "segment": {
-          "description": "Video segment where a face was detected.",
-          "$ref": "GoogleCloudVideointelligenceV1p1beta1_VideoSegment"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionFrame": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionFrame",
-      "description": "Video frame level annotation results for face detection.",
-      "type": "object",
-      "properties": {
-        "attributes": {
-          "description": "Face attributes in a frame.\nThere can be more than one attributes if the same face is detected in\nmultiple locations within the current frame.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAttribute"
-          }
-        },
-        "timeOffset": {
-          "description": "Time-offset, relative to the beginning of the video,\ncorresponding to the video frame for this location.",
-          "type": "string",
-          "format": "google-duration"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAttribute": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_FaceDetectionAttribute",
-      "description": "Face detection attribute.",
-      "type": "object",
-      "properties": {
-        "normalizedBoundingBox": {
-          "description": "Normalized Bounding box.",
-          "$ref": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox"
-        },
-        "emotions": {
-          "description": "Emotion attributes.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p1beta1_EmotionAttribute"
-          }
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_NormalizedBoundingBox",
-      "description": "Normalized bounding box.\nThe normalized vertex coordinates are relative to the original image.\nRange: [0, 1].",
-      "type": "object",
-      "properties": {
-        "left": {
-          "description": "Left X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "top": {
-          "description": "Top Y coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "right": {
-          "description": "Right X coordinate.",
-          "type": "number",
-          "format": "float"
-        },
-        "bottom": {
-          "description": "Bottom Y coordinate.",
-          "type": "number",
-          "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p1beta1_EmotionAttribute": {
-      "id": "GoogleCloudVideointelligenceV1p1beta1_EmotionAttribute",
-      "description": "Emotion attribute.",
-      "type": "object",
-      "properties": {
-        "emotion": {
-          "description": "Emotion entry.",
-          "enumDescriptions": [
-            "Unspecified emotion.",
-            "Amusement.",
-            "Anger.",
-            "Concentration.",
-            "Contentment.",
-            "Desire.",
-            "Disappointment.",
-            "Disgust.",
-            "Elation.",
-            "Embarrassment.",
-            "Interest.",
-            "Pride.",
-            "Sadness.",
-            "Surprise."
-          ],
-          "type": "string",
-          "enum": [
-            "EMOTION_UNSPECIFIED",
-            "AMUSEMENT",
-            "ANGER",
-            "CONCENTRATION",
-            "CONTENTMENT",
-            "DESIRE",
-            "DISAPPOINTMENT",
-            "DISGUST",
-            "ELATION",
-            "EMBARRASSMENT",
-            "INTEREST",
-            "PRIDE",
-            "SADNESS",
-            "SURPRISE"
-          ]
-        },
-        "score": {
-          "description": "Confidence score.",
           "type": "number",
           "format": "float"
         }

@@ -590,7 +590,7 @@ class _CompletionFinder(argcomplete.CompletionFinder):
     # argcomplete original. We drop { '!', ' ', '\n' } from _NO_QUOTE_SPECIAL
     # and { '!' } from _DOUBLE_QUOTE_SPECIAL. argcomplete should make these
     # settable properties.
-    no_quote_special = '\\();<>|&$*\t`"\''
+    no_quote_special = '\\();<>|&$* \t\n`"\''
     double_quote_special = '\\`"$'
     single_quote_special = '\\'
     continuation_special = '=/:'

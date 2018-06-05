@@ -13,6 +13,8 @@
 # limitations under the License.
 """Provides common arguments for the Spanner command surface."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import itertools
 
 from googlecloudsdk.calliope import base

@@ -33,16 +33,17 @@ class GoogleCloudVideointelligenceV1AnnotateVideoRequest(_messages.Message):
 
   Fields:
     features: Requested video annotation features.
-    inputContent: The video data bytes. Note: as with all bytes fields,
-      protobuffers use a pure binary representation, whereas JSON
-      representations use base64.
-    inputUri: Input video location. Only GCS URIs are currently supported,
-      which must be specified in the format of `gs://bucket-id/object-id`
+    inputContent: The video data bytes. If unset, the input video(s) should be
+      specified via `input_uri`. If set, `input_uri` should be unset.
+    inputUri: Input video location. Currently, only [Google Cloud
+      Storage](https://cloud.google.com/storage/) URIs are supported, which
+      must be specified in the following format: `gs://bucket-id/object-id`
       (other URI formats return google.rpc.Code.INVALID_ARGUMENT). For more
       information, see [Request URIs](/storage/docs/reference-uris). A video
-      URI may include wildcards in `object-id` to identify multiple videos.
-      Supported wildcards: '*' to match 0 or more characters; '?' to match 1
-      character.
+      URI may include wildcards in `object-id`, and thus identify multiple
+      videos. Supported wildcards: '*' to match 0 or more characters; '?' to
+      match 1 character. If unset, the input video should be embedded in the
+      request as `input_content`. If set, `input_content` should be unset.
     locationId: Optional cloud region where annotation should take place.
       Supported cloud regions: `us-east1`, `us-west1`, `europe-west1`, `asia-
       east1`. If no region is specified, a region will be determined based on
@@ -557,55 +558,6 @@ class GoogleCloudVideointelligenceV1p1beta1AnnotateVideoResponse(_messages.Messa
   annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults', 1, repeated=True)
 
 
-class GoogleCloudVideointelligenceV1p1beta1EmotionAttribute(_messages.Message):
-  r"""Emotion attribute.
-
-  Enums:
-    EmotionValueValuesEnum: Emotion entry.
-
-  Fields:
-    emotion: Emotion entry.
-    score: Confidence score.
-  """
-
-  class EmotionValueValuesEnum(_messages.Enum):
-    r"""Emotion entry.
-
-    Values:
-      EMOTION_UNSPECIFIED: Unspecified emotion.
-      AMUSEMENT: Amusement.
-      ANGER: Anger.
-      CONCENTRATION: Concentration.
-      CONTENTMENT: Contentment.
-      DESIRE: Desire.
-      DISAPPOINTMENT: Disappointment.
-      DISGUST: Disgust.
-      ELATION: Elation.
-      EMBARRASSMENT: Embarrassment.
-      INTEREST: Interest.
-      PRIDE: Pride.
-      SADNESS: Sadness.
-      SURPRISE: Surprise.
-    """
-    EMOTION_UNSPECIFIED = 0
-    AMUSEMENT = 1
-    ANGER = 2
-    CONCENTRATION = 3
-    CONTENTMENT = 4
-    DESIRE = 5
-    DISAPPOINTMENT = 6
-    DISGUST = 7
-    ELATION = 8
-    EMBARRASSMENT = 9
-    INTEREST = 10
-    PRIDE = 11
-    SADNESS = 12
-    SURPRISE = 13
-
-  emotion = _messages.EnumField('EmotionValueValuesEnum', 1)
-  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-
-
 class GoogleCloudVideointelligenceV1p1beta1Entity(_messages.Message):
   r"""Detected entity from video analysis.
 
@@ -668,55 +620,6 @@ class GoogleCloudVideointelligenceV1p1beta1ExplicitContentFrame(_messages.Messag
   timeOffset = _messages.StringField(2)
 
 
-class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation(_messages.Message):
-  r"""Face detection annotation.
-
-  Fields:
-    frames: All video frames where a face was detected.
-    segments: All video segments where a face was detected.
-  """
-
-  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceDetectionFrame', 1, repeated=True)
-  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceSegment', 2, repeated=True)
-
-
-class GoogleCloudVideointelligenceV1p1beta1FaceDetectionAttribute(_messages.Message):
-  r"""Face detection attribute.
-
-  Fields:
-    emotions: Emotion attributes.
-    normalizedBoundingBox: Normalized Bounding box.
-  """
-
-  emotions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1EmotionAttribute', 1, repeated=True)
-  normalizedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingBox', 2)
-
-
-class GoogleCloudVideointelligenceV1p1beta1FaceDetectionFrame(_messages.Message):
-  r"""Video frame level annotation results for face detection.
-
-  Fields:
-    attributes: Face attributes in a frame. There can be more than one
-      attributes if the same face is detected in multiple locations within the
-      current frame.
-    timeOffset: Time-offset, relative to the beginning of the video,
-      corresponding to the video frame for this location.
-  """
-
-  attributes = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceDetectionAttribute', 1, repeated=True)
-  timeOffset = _messages.StringField(2)
-
-
-class GoogleCloudVideointelligenceV1p1beta1FaceSegment(_messages.Message):
-  r"""Video segment level annotation results for face detection.
-
-  Fields:
-    segment: Video segment where a face was detected.
-  """
-
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 1)
-
-
 class GoogleCloudVideointelligenceV1p1beta1LabelAnnotation(_messages.Message):
   r"""Label annotation.
 
@@ -758,23 +661,6 @@ class GoogleCloudVideointelligenceV1p1beta1LabelSegment(_messages.Message):
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   segment = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 2)
-
-
-class GoogleCloudVideointelligenceV1p1beta1NormalizedBoundingBox(_messages.Message):
-  r"""Normalized bounding box. The normalized vertex coordinates are relative
-  to the original image. Range: [0, 1].
-
-  Fields:
-    bottom: Bottom Y coordinate.
-    left: Left X coordinate.
-    right: Right X coordinate.
-    top: Top Y coordinate.
-  """
-
-  bottom = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  left = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  right = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-  top = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative(_messages.Message):
@@ -838,7 +724,6 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
       Note that for a single `AnnotateVideoRequest` some videos may succeed
       and some may fail.
     explicitAnnotation: Explicit content annotation.
-    faceDetectionAnnotations: Face detection annotations.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
     inputUri: Output only. Video file location in [Google Cloud
@@ -855,13 +740,12 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
 
   error = _messages.MessageField('GoogleRpcStatus', 1)
   explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1ExplicitContentAnnotation', 2)
-  faceDetectionAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1FaceDetectionAnnotation', 3, repeated=True)
-  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 4, repeated=True)
-  inputUri = _messages.StringField(5)
-  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 6, repeated=True)
-  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 7, repeated=True)
-  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 8, repeated=True)
-  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 9, repeated=True)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 3, repeated=True)
+  inputUri = _messages.StringField(4)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 5, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1VideoSegment', 6, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1LabelAnnotation', 7, repeated=True)
+  speechTranscriptions = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechTranscription', 8, repeated=True)
 
 
 class GoogleCloudVideointelligenceV1p1beta1VideoSegment(_messages.Message):

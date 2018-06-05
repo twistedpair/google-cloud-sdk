@@ -65,11 +65,6 @@ by a later LeaseTasks,
 GetTask, or
 ListTasks.
 
-To acknowledge multiple tasks at the same time, use
-[HTTP batching](/storage/docs/json_api/v1/how-tos/batch)
-or the batching documentation for your client library, for example
-https://developers.google.com/api-client-library/python/guide/batch.
-
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -128,11 +123,6 @@ LeaseTasks.
 
     def Create(self, request, global_params=None):
       r"""Creates a task and adds it to a queue.
-
-To add multiple tasks at the same time, use
-[HTTP batching](/storage/docs/json_api/v1/how-tos/batch)
-or the batching documentation for your client library, for example
-https://developers.google.com/api-client-library/python/guide/batch.
 
 Tasks cannot be updated after creation; there is no UpdateTask command.
 

@@ -46,7 +46,8 @@ class InvalidReturnValueError(core_exceptions.Error):
   pass
 
 
-def RunPredict(model_dir, json_instances=None, text_instances=None):
+def RunPredict(model_dir, json_instances=None, text_instances=None,
+               framework='tensorflow'):
   """Run ML Engine local prediction."""
   instances = predict_utilities.ReadInstancesFromArgs(json_instances,
                                                       text_instances)
@@ -64,6 +65,11 @@ def RunPredict(model_dir, json_instances=None, text_instances=None):
   # We want to use whatever the user's Python was, before the Cloud SDK started
   # changing the PATH. That's where Tensorflow is installed.
   python_executables = files.SearchForExecutableOnPath('python')
+  # Need to ensure that ml_sdk is in PYTHONPATH for the import in
+  # local_predict to succeed.
+  orig_py_path = ':' + env.get('PYTHONPATH') if env.get('PYTHONPATH') else ''
+  env['PYTHONPATH'] = (os.path.join(sdk_root, 'lib', 'third_party', 'ml_sdk') +
+                       orig_py_path)
   if not python_executables:
     # This doesn't have to be actionable because things are probably beyond help
     # at this point.
@@ -76,7 +82,7 @@ def RunPredict(model_dir, json_instances=None, text_instances=None):
   # Start local prediction in a subprocess.
   proc = subprocess.Popen(
       [python_executable, local_predict.__file__,
-       '--model-dir', model_dir],
+       '--model-dir', model_dir, '--framework', framework],
       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
       env=env)
 

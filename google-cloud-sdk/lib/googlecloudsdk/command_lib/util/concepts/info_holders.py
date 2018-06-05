@@ -27,6 +27,10 @@ import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 
 
+ANCHOR_HELP = ('The ID of the {resource} or a fully qualified identifier for '
+               'the {resource}.')
+
+
 class ConceptInfo(six.with_metaclass(abc.ABCMeta, object)):
   """Holds information for a concept argument.
 
@@ -270,7 +274,8 @@ class ResourceInfo(ConceptInfo):
     # method.
     required = is_anchor and not self.fallthroughs_map.get(attribute.name, [])
     # Expand the help text.
-    help_text = attribute.help_text.format(resource=self.resource_spec.name)
+    help_text = ANCHOR_HELP if is_anchor else attribute.help_text
+    final_help_text = help_text.format(resource=self.resource_spec.name)
     plural = attribute == self.resource_spec.anchor and self.plural
     if attribute.completer:
       completer = attribute.completer
@@ -281,7 +286,7 @@ class ResourceInfo(ConceptInfo):
     else:
       completer = None
     kwargs_dict = {
-        'help': help_text,
+        'help': final_help_text,
         'type': attribute.value_type,
         'completer': completer}
     if util.IsPositional(name):

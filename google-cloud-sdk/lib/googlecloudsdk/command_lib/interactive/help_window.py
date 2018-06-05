@@ -14,7 +14,10 @@
 
 """Code for the gcloud shell help window."""
 
-import StringIO
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import io
 
 from googlecloudsdk.calliope import cli_tree_markdown as markdown
 from googlecloudsdk.command_lib.interactive import parser
@@ -70,7 +73,7 @@ def GenerateHelpForCommand(cli, token, width):
   gen = markdown.CliTreeMarkdownGenerator(token.tree, cli.root)
   gen.PrintSectionIfExists('DESCRIPTION', disable_header=True)
   doc = gen.Edit()
-  fin = StringIO.StringIO(doc)
+  fin = io.StringIO(doc)
   lines.extend(render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(
           width=width, height=height), fin=fin).Run())
@@ -82,7 +85,7 @@ def GenerateHelpForCommand(cli, token, width):
   gen = markdown.CliTreeMarkdownGenerator(token.tree, cli.root)
   gen.PrintSynopsisSection()
   doc = gen.Edit()
-  fin = StringIO.StringIO(doc)
+  fin = io.StringIO(doc)
   lines.extend(render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(
           width=width, height=height, compact=False), fin=fin).Run())
@@ -96,7 +99,7 @@ def GenerateHelpForFlag(cli, token, width):
   gen.PrintFlagDefinition(token.tree)
   mark = gen.Edit()
 
-  fin = StringIO.StringIO(mark)
+  fin = io.StringIO(mark)
   return render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(
           width=width, height=cli.config.help_lines), fin=fin).Run()
@@ -108,7 +111,7 @@ def GenerateHelpForPositional(cli, token, width):
   gen.PrintPositionalDefinition(markdown.Positional(token.tree))
   mark = gen.Edit()
 
-  fin = StringIO.StringIO(mark)
+  fin = io.StringIO(mark)
   return render_document.MarkdownRenderer(
       token_renderer.TokenRenderer(
           width=width, height=cli.config.help_lines), fin=fin).Run()

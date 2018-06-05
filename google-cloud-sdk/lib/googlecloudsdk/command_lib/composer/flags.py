@@ -88,7 +88,7 @@ UPDATE_ENV_VARIABLES_FLAG = base.Argument(
     action=arg_parsers.UpdateAction,
     help="""\
     A list of environment variable NAME=VALUE pairs to set and provide to the
-    Aiflow scheduler, worker, and webserver processes. If an environmeent
+    Aiflow scheduler, worker, and webserver processes. If an environment
     variable already exists, its value is updated; otherwise a new environment
     variable is created.
 

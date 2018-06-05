@@ -592,9 +592,11 @@ class Address(_messages.Message):
     Values:
       IN_USE: <no description>
       RESERVED: <no description>
+      RESERVING: <no description>
     """
     IN_USE = 0
     RESERVED = 1
+    RESERVING = 2
 
   address = _messages.StringField(1)
   addressType = _messages.EnumField('AddressTypeValueValuesEnum', 2)
@@ -13002,6 +13004,82 @@ class DiskAggregatedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class DiskInstantiationConfig(_messages.Message):
+  r"""A specification of the desired way to instantiate a disk in the instance
+  template when its created from a source instance.
+
+  Enums:
+    InstantiateFromValueValuesEnum: Specifies whether to include the disk and
+      what image to use. Possible values are:   - source-image: to use the
+      same image that was used to create the source instance's corresponding
+      disk. Applicable to the boot disk and additional read-write disks.  -
+      source-image-family: to use the same image family that was used to
+      create the source instance's corresponding disk. Applicable to the boot
+      disk and additional read-write disks.  - custom-image: to use a user-
+      provided image url for disk creation. Applicable to the boot disk and
+      additional read-write disks.  - attach-read-only: to attach a read-only
+      disk. Applicable to read-only disks.  - do-not-include: to exclude a
+      disk from the template. Applicable to additional read-write disks, local
+      SSDs, and read-only disks.
+
+  Fields:
+    autoDelete: Specifies whether the disk will be auto-deleted when the
+      instance is deleted (but not when the disk is detached from the
+      instance).
+    customImage: The custom source image to be used to restore this disk when
+      instantiating this instance template.
+    deviceName: Specifies the device name of the disk to which the
+      configurations apply to.
+    instantiateFrom: Specifies whether to include the disk and what image to
+      use. Possible values are:   - source-image: to use the same image that
+      was used to create the source instance's corresponding disk. Applicable
+      to the boot disk and additional read-write disks.  - source-image-
+      family: to use the same image family that was used to create the source
+      instance's corresponding disk. Applicable to the boot disk and
+      additional read-write disks.  - custom-image: to use a user-provided
+      image url for disk creation. Applicable to the boot disk and additional
+      read-write disks.  - attach-read-only: to attach a read-only disk.
+      Applicable to read-only disks.  - do-not-include: to exclude a disk from
+      the template. Applicable to additional read-write disks, local SSDs, and
+      read-only disks.
+  """
+
+  class InstantiateFromValueValuesEnum(_messages.Enum):
+    r"""Specifies whether to include the disk and what image to use. Possible
+    values are:   - source-image: to use the same image that was used to
+    create the source instance's corresponding disk. Applicable to the boot
+    disk and additional read-write disks.  - source-image-family: to use the
+    same image family that was used to create the source instance's
+    corresponding disk. Applicable to the boot disk and additional read-write
+    disks.  - custom-image: to use a user-provided image url for disk
+    creation. Applicable to the boot disk and additional read-write disks.  -
+    attach-read-only: to attach a read-only disk. Applicable to read-only
+    disks.  - do-not-include: to exclude a disk from the template. Applicable
+    to additional read-write disks, local SSDs, and read-only disks.
+
+    Values:
+      ATTACH_READ_ONLY: <no description>
+      BLANK: <no description>
+      CUSTOM_IMAGE: <no description>
+      DEFAULT: <no description>
+      DO_NOT_INCLUDE: <no description>
+      SOURCE_IMAGE: <no description>
+      SOURCE_IMAGE_FAMILY: <no description>
+    """
+    ATTACH_READ_ONLY = 0
+    BLANK = 1
+    CUSTOM_IMAGE = 2
+    DEFAULT = 3
+    DO_NOT_INCLUDE = 4
+    SOURCE_IMAGE = 5
+    SOURCE_IMAGE_FAMILY = 6
+
+  autoDelete = _messages.BooleanField(1)
+  customImage = _messages.StringField(2)
+  deviceName = _messages.StringField(3)
+  instantiateFrom = _messages.EnumField('InstantiateFromValueValuesEnum', 4)
+
+
 class DiskList(_messages.Message):
   r"""A list of Disk resources.
 
@@ -17638,6 +17716,13 @@ class InstanceTemplate(_messages.Message):
     properties: The instance properties for this instance template.
     selfLink: [Output Only] The URL for this instance template. The server
       defines this URL.
+    sourceInstance: The source instance used to create the template. You can
+      provide this as a partial or full URL to the resource. For example, the
+      following are valid values:   - https://www.googleapis.com/compute/v1/pr
+      ojects/project/zones/zone/instances/instance  -
+      projects/project/zones/zone/instances/instance
+    sourceInstanceParams: The source instance params to use to create this
+      instance template.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -17647,6 +17732,8 @@ class InstanceTemplate(_messages.Message):
   name = _messages.StringField(5)
   properties = _messages.MessageField('InstanceProperties', 6)
   selfLink = _messages.StringField(7)
+  sourceInstance = _messages.StringField(8)
+  sourceInstanceParams = _messages.MessageField('SourceInstanceParams', 9)
 
 
 class InstanceTemplateList(_messages.Message):
@@ -23907,6 +23994,20 @@ class SnapshotList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class SourceInstanceParams(_messages.Message):
+  r"""A specification of the parameters to use when creating the instance
+  template from a source instance.
+
+  Fields:
+    diskConfigs: Attached disks configuration. If not provided, defaults are
+      applied: For boot disk and any other R/W disks, new custom images will
+      be created from each disk. For read-only disks, they will be attached in
+      read-only mode. Local SSD disks will be created as blank volumes.
+  """
+
+  diskConfigs = _messages.MessageField('DiskInstantiationConfig', 1, repeated=True)
 
 
 class SslCertificate(_messages.Message):

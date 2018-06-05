@@ -336,7 +336,7 @@ class ResourceResolver(object):
   def _ValidateNames(self, names):
     if not isinstance(names, list):
       raise BadArgumentException(
-          'Expected names to be a list but it is {0!r}'.format(names))
+          "Expected names to be a list but it is '{0}'".format(names))
 
   def _ValidateDefaultScope(self, default_scope):
     if default_scope is not None and default_scope not in self.scopes:

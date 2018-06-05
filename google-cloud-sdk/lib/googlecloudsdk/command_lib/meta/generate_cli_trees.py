@@ -44,6 +44,7 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import text as text_utils
 
 import httplib2
+import six
 from typing import Any, Dict  # pylint: disable=unused-import
 
 
@@ -204,14 +205,15 @@ class CliTreeGenerator(object):
                      ignore_out_of_date=False, verbose=False,
                      warn_on_exceptions=False):
     """Loads the CLI tree or generates it if necessary, and returns the tree."""
-    path, f = self.FindTreeFile(directories)
-    if not f:
-      # TODO(b/69033748): disable until issues resolved
-      if _DisableLongRunningCliTreeGeneration(self.command):
-        return None
-    else:
-      up_to_date = False
-      with f:
+    f = None
+    try:
+      path, f = self.FindTreeFile(directories)
+      if not f:
+        # TODO(b/69033748): disable until issues resolved
+        if _DisableLongRunningCliTreeGeneration(self.command):
+          return None
+      else:
+        up_to_date = False
         try:
           tree = json.load(f)
         except ValueError:
@@ -219,13 +221,16 @@ class CliTreeGenerator(object):
           tree = None
         if tree:
           readonly, up_to_date = self.IsUpToDate(tree, verbose=verbose)
-      if readonly:
-        return tree
-      elif up_to_date:
-        if not force:
+        if readonly:
           return tree
-      elif ignore_out_of_date:
-        return None
+        elif up_to_date:
+          if not force:
+            return tree
+        elif ignore_out_of_date:
+          return None
+    finally:
+      if f:
+        f.close()
 
     def _Generate():
       """Helper that generates a CLI tree and writes it to a JSON file."""
@@ -242,7 +247,7 @@ class CliTreeGenerator(object):
           except (EnvironmentError, files.Error):
             if not warn_on_exceptions:
               raise
-            log.warning(str(e))
+            log.warning(six.text_type(e))
             return None
         with f:
           resource_printer.Print(tree, print_format='json', out=f)
@@ -303,7 +308,7 @@ class BqCliTreeGenerator(CliTreeGenerator):
       if e.returncode != 1:
         raise
       output = e.output
-    return output.replace('bq.py', 'bq')
+    return encoding.Decode(output).replace('bq.py', 'bq')
 
   def AddFlags(self, command, content, is_global=False):
     """Adds flags in content lines to command."""
@@ -1162,7 +1167,7 @@ def _GetDirectories(directory=None, warn_on_exceptions=False):
     except cli_tree.SdkRootNotFoundError as e:
       if not warn_on_exceptions:
         raise
-      log.warning(str(e))
+      log.warning(six.text_type(e))
     directories.append(cli_tree.CliTreeConfigDir())
   return directories
 
@@ -1191,7 +1196,7 @@ def UpdateCliTrees(cli=None, commands=None, directory=None,
   directories = _GetDirectories(
       directory=directory, warn_on_exceptions=warn_on_exceptions)
   if not commands:
-    commands = set([cli_tree.DEFAULT_CLI_NAME] + GENERATORS.keys())
+    commands = set([cli_tree.DEFAULT_CLI_NAME] + list(GENERATORS.keys()))
 
   failed = []
   for command in sorted(commands):

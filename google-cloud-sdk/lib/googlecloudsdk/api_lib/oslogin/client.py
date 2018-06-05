@@ -51,6 +51,9 @@ class OsloginClient(object):
       self.messages = None
 
   def __nonzero__(self):
+    return self.__bool__()
+
+  def __bool__(self):
     return bool(self.client)
 
   def GetLoginProfile(self, user):

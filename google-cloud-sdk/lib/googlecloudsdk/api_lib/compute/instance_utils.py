@@ -488,10 +488,6 @@ def CreatePersistentAttachedDiskMessages(
     else:
       kwargs = {}
 
-    kwargs['diskEncryptionKey'] = kms_utils.MaybeGetKmsKey(
-        disk, disk_ref.project, compute,
-        kwargs.get('diskEncryptionKey', None))
-
     attached_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=boot,
@@ -512,7 +508,7 @@ def CreatePersistentAttachedDiskMessages(
 
 def CreatePersistentCreateDiskMessages(compute_client,
                                        resources, csek_keys, create_disks,
-                                       instance_ref):
+                                       instance_ref, enable_kms=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -530,6 +526,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
              * auto-delete - whether disks is deleted when VM is deleted,
              * device-name - device name on VM.
     instance_ref: reference to the instance that will own the new disks.
+    enable_kms: True if KMS keys are supported for the disk.
   Returns:
     list of API messages for attached disks
   """
@@ -593,9 +590,8 @@ def CreatePersistentCreateDiskMessages(compute_client,
         disk_key = csek_utils.MaybeLookupKeyMessage(csek_keys, disk_ref,
                                                     compute)
 
-    disk_key = kms_utils.MaybeGetKmsKeyFromDict(
-        disk, instance_ref.project, compute,
-        disk_key)
+    if enable_kms:
+      disk_key = kms_utils.MaybeGetKmsKeyFromDict(disk, messages, disk_key)
 
     create_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
@@ -639,7 +635,7 @@ def CreateAcceleratorConfigMessages(msgs, accelerator_type_ref,
 def CreateDefaultBootAttachedDiskMessage(
     compute_client, resources, disk_type, disk_device_name, disk_auto_delete,
     disk_size_gb, require_csek_key_create, image_uri, instance_ref,
-    csek_keys=None, kms_args=None):
+    csek_keys=None, kms_args=None, enable_kms=False):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
@@ -698,11 +694,12 @@ def CreateDefaultBootAttachedDiskMessage(
     kwargs_init_parms = {}
     effective_boot_disk_name = disk_device_name
 
-  kms_key = kms_utils.MaybeGetKmsKey(
-      kms_args, instance_ref.project, compute,
-      kwargs_disk.get('diskEncryptionKey', None))
-  if kms_key:
-    kwargs_disk = {'diskEncryptionKey': kms_key}
+  if enable_kms:
+    kms_key = kms_utils.MaybeGetKmsKey(
+        kms_args, messages, kwargs_disk.get('diskEncryptionKey', None),
+        boot_disk_prefix=True)
+    if kms_key:
+      kwargs_disk = {'diskEncryptionKey': kms_key}
 
   return messages.AttachedDisk(
       autoDelete=disk_auto_delete,

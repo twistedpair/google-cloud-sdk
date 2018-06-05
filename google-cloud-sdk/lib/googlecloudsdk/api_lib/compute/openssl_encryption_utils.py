@@ -12,12 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for encryption functions using openssl."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import base64
 import subprocess
 import tempfile
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+
+import six
 
 
 DEFAULT_KEY_LENGTH = 2048
@@ -30,13 +34,13 @@ class OpenSSLException(exceptions.Error):
 def StripKey(key):
   """Returns key with header, footer and all newlines removed."""
   key = key.strip()
-  key_lines = key.split('\n')
-  if (not key_lines[0].startswith('-----')
-      or not key_lines[-1].startswith('-----')):
+  key_lines = key.split(b'\n')
+  if (not key_lines[0].startswith(b'-----')
+      or not key_lines[-1].startswith(b'-----')):
     raise OpenSSLException(
         'The following key does not appear to be in PEM format: \n{0}'
         .format(key))
-  return ''.join(key_lines[1:-1])
+  return b''.join(key_lines[1:-1])
 
 
 class OpensslCrypt(object):
@@ -73,7 +77,7 @@ class OpensslCrypt(object):
 
   def GetKeyPair(self, key_length=DEFAULT_KEY_LENGTH):
     """Returns an RSA key pair (private key)."""
-    return self.RunOpenSSL(['genrsa', str(key_length)])
+    return self.RunOpenSSL(['genrsa', six.text_type(key_length)])
 
   def GetPublicKey(self, key):
     """Returns a public key from a key pair."""
@@ -89,7 +93,7 @@ class OpensslCrypt(object):
     Returns:
       Decrypted version of enc_message
     """
-    _ = destroy_key
+    del destroy_key
     encrypted_message_data = base64.b64decode(enc_message)
 
     # Write the private key to a temporary file for decryption
@@ -120,7 +124,7 @@ class OpensslCrypt(object):
 
     # The modulus is 5 bytes from the end of the key and is the number of bytes
     # needed to contain the bits of key length
-    key_bytes = key_length / 8
+    key_bytes = key_length // 8
     if key_length % 8:
       key_bytes += 1
 

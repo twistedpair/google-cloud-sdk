@@ -61,10 +61,10 @@ def GetSchedulingNodeAffinityListFromArgs(args, messages):
             key='compute.googleapis.com/node-group-name',
             operator=operator_enum.IN,
             values=[args.node_group]))
-    if args.node_index:
-      node_affinities.append(
-          messages.SchedulingNodeAffinity(
-              key='compute.googleapis.com/node-index',
-              operator=operator_enum.IN,
-              values=[str(args.node_index)]))
+  if args.node:
+    node_affinities.append(
+        messages.SchedulingNodeAffinity(
+            key='compute.googleapis.com/node-name',
+            operator=operator_enum.IN,
+            values=[args.node]))
   return node_affinities

@@ -21,7 +21,8 @@ as listing the contents. We use the API for checking ACLs.
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
-from io import BytesIO
+
+import io
 import mimetypes
 import os
 
@@ -35,6 +36,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exc
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.credentials import http
 
 
 GSUTIL_BUCKET_REGEX = r'^gs://.*$'
@@ -191,6 +193,7 @@ class StorageClient(object):
       BadFileException if the file download is not successful.
     """
     download = transfer.Download.FromFile(local_path)
+    download.bytes_http = http.Http(response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=bucket_ref.bucket,
         object=object_path)
@@ -230,8 +233,9 @@ class StorageClient(object):
     Returns:
       file-like object containing the data read.
     """
-    data = BytesIO()
+    data = io.BytesIO()
     download = transfer.Download.FromStream(data)
+    download.bytes_http = http.Http(response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=object_ref.bucket,
         object=object_ref.name)

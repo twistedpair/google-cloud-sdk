@@ -213,7 +213,7 @@
             "There was an error when parsing a label's value.",
             "The request contains a scenario number that was not declared in the\nmanifest.",
             "Device administrator applications are not allowed.",
-            "The zipped XCTest was malformed. The zip did not contain a single\n.xctestrun file alongside a Debug-iphoneos directory containing the\ncompiled artifacts for the test.",
+            "The zipped XCTest was malformed. The zip did not contain a single\n.xctestrun file and the contents of the DerivedData\/Build\/Products\ndirectory.",
             "The zipped XCTest was built for the iOS simulator rather than for a\nphysical device.",
             "The .xctestrun file did not specify any test targets.",
             "One or more of the test targets defined in the .xctestrun file specifies\n\"UseDestinationArtifacts\", which is disallowed.",
@@ -692,11 +692,11 @@
     },
     "IosXcTest": {
       "id": "IosXcTest",
-      "description": "A test of an iOS application that uses the XCTest framework.\nXcode supports the option to \"build for testing\", which generates an\n.xctestrun file that contains a test specification (arguments, test methods,\netc). This test type accepts a zip file containing the .xctestrun file and\nits corresponding Debug-iphoneos directory that contains all of the binaries\nneeded to run the tests.",
+      "description": "A test of an iOS application that uses the XCTest framework.\nXcode supports the option to \"build for testing\", which generates an\n.xctestrun file that contains a test specification (arguments, test methods,\netc). This test type accepts a zip file containing the .xctestrun file and\nthe corresponding contents of the Build\/Products directory that contains all\nthe binaries needed to run the tests.",
       "type": "object",
       "properties": {
         "testsZip": {
-          "description": "The .zip containing the .xctestrun file and the Debug-iphoneos directory\nfrom DerivedData\/Build\/Products. The .xctestrun file in this zip is ignored\nif the xctestrun field is specified.\nRequired",
+          "description": "The .zip containing the .xctestrun file and the contents of the\nDerivedData\/Build\/Products directory.\nThe .xctestrun file in this zip is ignored if the xctestrun field is\nspecified.\nRequired",
           "$ref": "FileReference"
         },
         "xctestrun": {
@@ -824,11 +824,11 @@
           "type": "string"
         },
         "locale": {
-          "description": "The locale the test device used for testing.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "description": "The locale the test device used for testing (only \"en\" is currently\nsupported). Use the EnvironmentDiscoveryService to get supported options\n(not yet implemented).\nRequired",
           "type": "string"
         },
         "orientation": {
-          "description": "How the device is oriented during the test.\nUse the EnvironmentDiscoveryService to get supported options.\nRequired",
+          "description": "How the device is oriented during the test (only \"portrait\" is currently\nsupported). Use the EnvironmentDiscoveryService to get supported options.\n(not yet implemented).\nRequired",
           "type": "string"
         }
       }

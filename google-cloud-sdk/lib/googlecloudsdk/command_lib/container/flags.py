@@ -404,7 +404,7 @@ def AddEnableBinAuthzFlag(parser, hidden=True):
   )
 
 
-def AddZoneAndRegionFlags(parser, region_hidden=False):
+def AddZoneAndRegionFlags(parser):
   """Adds the --zone and --region flags to the parser."""
   # TODO(b/33343238): Remove the short form of the zone flag.
   # TODO(b/18105938): Add zone prompting
@@ -416,7 +416,6 @@ def AddZoneAndRegionFlags(parser, region_hidden=False):
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   group.add_argument(
       '--region',
-      hidden=region_hidden,
       help='The compute region (e.g. us-central1) for the cluster.')
 
 

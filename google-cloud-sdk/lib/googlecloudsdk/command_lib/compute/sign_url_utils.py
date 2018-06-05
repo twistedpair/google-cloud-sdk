@@ -104,7 +104,7 @@ def SignUrl(url, key_name, encoded_key_value, validity_seconds):
 
   # Append the signature as another query parameter.
   signature = _GetSignature(
-      base64.urlsafe_b64decode(encoded_key_value), url_to_sign)
+      base64.urlsafe_b64decode(encoded_key_value), url_to_sign.encode('utf-8'))
   return '{url}&Signature={signature}'.format(
       url=url_to_sign, signature=signature)
 

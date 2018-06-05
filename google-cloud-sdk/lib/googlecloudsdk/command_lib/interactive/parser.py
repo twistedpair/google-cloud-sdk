@@ -19,12 +19,15 @@ commands and flags being used as well as perform completion. This is not a
 replacement for argparse (yet).
 """
 
+from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import enum
 
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.command_lib.interactive import lexer
+
+import six
 
 
 LOOKUP_COMMANDS = cli_tree.LOOKUP_COMMANDS
@@ -110,7 +113,7 @@ class Parser(object):
 
   def SetContext(self, context=None):
     """Sets the default command prompt context."""
-    self.context = unicode(context or '')
+    self.context = six.text_type(context or '')
 
   def ParseCommand(self, line):
     """Parses the next command from line and returns a list of ArgTokens.

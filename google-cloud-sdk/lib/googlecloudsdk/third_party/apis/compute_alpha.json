@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20180521",
+ "revision": "20180525",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -663,9 +663,11 @@
      "description": "[Output Only] The status of the address, which can be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING is currently in the process of being reserved. A RESERVED address is currently reserved and available to use. An IN_USE address is currently being used by another resource and is not available.",
      "enum": [
       "IN_USE",
-      "RESERVED"
+      "RESERVED",
+      "RESERVING"
      ],
      "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -4725,6 +4727,10 @@
       "",
       ""
      ]
+    },
+    "allPorts": {
+     "type": "boolean",
+     "description": "This field is used along with the backend_service field for internal load balancing or with the target field for internal TargetInstance. This field cannot be used with port or portRange fields.\n\nWhen the load balancing scheme is INTERNAL and protocol is TCP/UDP, specify this field to allow packets addressed to any ports will be forwarded to the backends configured with this forwarding rule."
     },
     "backendService": {
      "type": "string",
@@ -17948,6 +17954,16 @@
       "type": "string"
      }
     },
+    "icmpIdleTimeoutSec": {
+     "type": "integer",
+     "description": "Timeout (in seconds) for ICMP connections. Defaults to 30s if not set.",
+     "format": "int32"
+    },
+    "minPortsPerVm": {
+     "type": "integer",
+     "description": "Minimum number of ports allocated to a VM from this NAT config. If not set, a default number of ports is allocated to a VM. This gets rounded up to the nearest power of 2. Eg. if the value of this field is 50, at least 64 ports will be allocated to a VM.",
+     "format": "int32"
+    },
     "name": {
      "type": "string",
      "description": "Unique name of this Nat service. The name must be 1-63 characters long and comply with RFC1035.",
@@ -17992,6 +18008,21 @@
      "items": {
       "$ref": "RouterNatSubnetworkToNat"
      }
+    },
+    "tcpEstablishedIdleTimeoutSec": {
+     "type": "integer",
+     "description": "Timeout (in seconds) for TCP established connections. Defaults to 1200s if not set.",
+     "format": "int32"
+    },
+    "tcpTransitoryIdleTimeoutSec": {
+     "type": "integer",
+     "description": "Timeout (in seconds) for TCP transitory connections. Defaults to 30s if not set.",
+     "format": "int32"
+    },
+    "udpIdleTimeoutSec": {
+     "type": "integer",
+     "description": "Timeout (in seconds) for UDP connections. Defaults to 30s if not set.",
+     "format": "int32"
     }
    }
   },

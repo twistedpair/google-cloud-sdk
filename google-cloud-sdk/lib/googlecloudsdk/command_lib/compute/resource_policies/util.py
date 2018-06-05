@@ -23,8 +23,27 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import times
 
 
-def FormatStartTime(dt):
-  return times.FormatDateTime(dt, '%H:%M', times.UTC)
+_API_TIMEZONE = times.UTC
+
+
+def _ParseWeeklyDayAndTime(start_time, weekday):
+  """Converts the dt and day to _API_TIMEZONE and returns API formatted values.
+
+  Args:
+    start_time: The datetime object which represents a start time.
+    weekday: The times.Weekday value which corresponds to the weekday.
+
+  Returns:
+    The weekday and start_time pair formatted as strings for use by the API
+    clients.
+  """
+  weekday = times.GetWeekdayInTimezone(start_time, weekday, _API_TIMEZONE)
+  formatted_time = _FormatStartTime(start_time)
+  return weekday.name, formatted_time
+
+
+def _FormatStartTime(dt):
+  return times.FormatDateTime(dt, '%H:%M', _API_TIMEZONE)
 
 
 def MakeVmMaintenancePolicy(policy_ref, args, messages):
@@ -81,14 +100,16 @@ def _ParseCycleFrequencyArgs(args, messages, supports_hourly=False):
   if args.daily_cycle:
     daily_cycle = messages.ResourcePolicyDailyCycle(
         daysInCycle=1,
-        startTime=FormatStartTime(args.start_time))
+        startTime=_FormatStartTime(args.start_time))
   if args.weekly_cycle:
     day_enum = messages.ResourcePolicyWeeklyCycleDayOfWeek.DayValueValuesEnum
+    weekday = times.Weekday.Get(args.weekly_cycle.upper())
+    day, start_time = _ParseWeeklyDayAndTime(args.start_time, weekday)
     weekly_cycle = messages.ResourcePolicyWeeklyCycle(
         dayOfWeeks=[
             messages.ResourcePolicyWeeklyCycleDayOfWeek(
-                day=day_enum(args.weekly_cycle.upper()),
-                startTime=FormatStartTime(args.start_time))])
+                day=day_enum(day),
+                startTime=start_time)])
   if args.IsSpecified('weekly_cycle_from_file'):
     if args.weekly_cycle_from_file:
       weekly_cycle = _ParseWeeklyCycleFromFile(args, messages)
@@ -98,7 +119,7 @@ def _ParseCycleFrequencyArgs(args, messages, supports_hourly=False):
   if supports_hourly and args.hourly_cycle:
     hourly_cycle = messages.ResourcePolicyHourlyCycle(
         hoursInCycle=args.hourly_cycle,
-        startTime=FormatStartTime(args.start_time))
+        startTime=_FormatStartTime(args.start_time))
   return hourly_cycle, daily_cycle, weekly_cycle
 
 
@@ -120,17 +141,19 @@ def _ParseWeeklyCycleFromFile(args, messages):
           args.GetFlag('weekly_cycle_from_file'),
           'Each JSON/YAML object in the list must have the following keys: '
           '[day, startTime].')
+    day = day_and_time['day'].upper()
     try:
-      day = day_enum(day_and_time['day'].upper())
-    except TypeError:
+      weekday = times.Weekday.Get(day)
+    except KeyError:
       raise exceptions.InvalidArgumentException(
           args.GetFlag('weekly_cycle_from_file'),
-          'Invalid value for `day`: [{}].'.format(day_and_time['day']))
+          'Invalid value for `day`: [{}].'.format(day))
     start_time = arg_parsers.Datetime.Parse(day_and_time['startTime'])
+    day, start_time = _ParseWeeklyDayAndTime(start_time, weekday)
     days_of_week.append(
         messages.ResourcePolicyWeeklyCycleDayOfWeek(
-            day=day,
-            startTime=FormatStartTime(start_time)))
+            day=day_enum(day),
+            startTime=start_time))
   return messages.ResourcePolicyWeeklyCycle(dayOfWeeks=days_of_week)
 
 

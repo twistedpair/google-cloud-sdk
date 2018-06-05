@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Util methods for Stackdriver Monitoring Surface."""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import exceptions as calliope_exc
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -19,6 +21,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
+import six
 
 
 CHANNELS_FIELD_REMAPPINGS = {'channelLabels': 'labels'}
@@ -47,7 +50,7 @@ def ValidateUpdateArgsSpecified(args, update_arg_dests, resource):
 
 
 def _RemapFields(yaml_obj, field_remappings):
-  for field_name, remapped_name in field_remappings.iteritems():
+  for field_name, remapped_name in six.iteritems(field_remappings):
     if field_name in yaml_obj:
       if remapped_name in yaml_obj:
         raise ConflictingFieldsError('Cannot specify both {} and {}.'.format(

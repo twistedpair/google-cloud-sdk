@@ -14,6 +14,7 @@
 
 """The gcloud interactive key bindings."""
 
+from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import re
@@ -23,6 +24,8 @@ from googlecloudsdk.command_lib.interactive import browser
 from prompt_toolkit import enums
 from prompt_toolkit import keys
 from prompt_toolkit.key_binding import manager
+
+import six
 
 
 class _KeyBinding(object):
@@ -50,7 +53,7 @@ class _KeyBinding(object):
   def GetName(self):
     """Returns the binding display name."""
     return re.sub('.*<(.*)>.*', r'\1',
-                  str(self.key)).replace('C-', 'ctrl-')  # pytype: disable=wrong-arg-types
+                  six.text_type(self.key)).replace('C-', 'ctrl-')  # pytype: disable=wrong-arg-types
 
   def GetLabel(self, markdown=False):
     """Returns the key binding display label containing the name and value."""

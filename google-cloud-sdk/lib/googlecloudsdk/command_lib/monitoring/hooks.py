@@ -11,7 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Hooks for YAML commands for Stackdrive Monitoring Surface."""
+
+from __future__ import unicode_literals
 
 
 def AddOrderByToListRequest(unused_ref, args, list_request):
@@ -40,4 +43,3 @@ def ModifyListNotificationChannelsRequest(project_ref, args, list_request):
 
   list_request.filter = filter_expr
   return list_request
-

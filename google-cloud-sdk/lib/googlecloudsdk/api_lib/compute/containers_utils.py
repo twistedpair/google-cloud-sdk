@@ -80,7 +80,7 @@ class InvalidMetadataKeyException(exceptions.ToolException):
 
   def __init__(self, metadata_key):
     super(InvalidMetadataKeyException, self).__init__(
-        'Metadata key "{0}" is not allowed when running contenerized VM.'
+        'Metadata key "{0}" is not allowed when running containerized VM.'
         .format(metadata_key))
 
 

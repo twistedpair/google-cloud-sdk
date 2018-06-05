@@ -14,6 +14,9 @@
 
 """gcloud interactive static styles."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from prompt_toolkit import styles
 from prompt_toolkit import token
 

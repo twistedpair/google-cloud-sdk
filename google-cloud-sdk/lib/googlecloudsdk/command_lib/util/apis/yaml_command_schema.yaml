@@ -18,6 +18,12 @@ description: The specification for a full calliope command
 definitions:
   python_hook:
     type: string
+    # A Python hook points to a module, class, an optionally a sub attribute
+    # or function. The thing it points to will be called by the framework
+    # and must have the function signature required by that particular hook.
+    # If arguments are given (:foo=bar,baz=stuff), The function will first be
+    # called with those arguments, and the return value will be used as the
+    # callable hook.
     # Examples:
     #   googlecloudsdk.module:classname
     #   googlecloudsdk.module:class.attribute
@@ -57,12 +63,13 @@ definitions:
       type: object
       additionalProperties: false
       properties:
-        # The choice as it appears on the command line.
+        # The choice as it appears on the command line
+        # (should be lower-kebab-case).
         arg_value: {type: [string, number, boolean]}
         # The string representation of the API enum value that will be used
         # when this choice is selected.
         enum_value: {type: string}
-        # The help text to show next to the choice on the MAN page.
+        # The help text to show next to the choice on the man page.
         help_text: {type: string}
 
   fallthrough:
@@ -206,8 +213,11 @@ definitions:
       metavar: {type: string}
       # Overrides the choices that are generated for the argument.
       choices: {$ref: "#/definitions/choices"}
-      # The default value of the argument when not provided. Mutually exclusive
-      # with fallback. Use !!null to set default to None.
+      # TODO(b/80307139): Combine default and fallback.
+      # The default value of the argument when not specified. Mutually exclusive
+      # with fallback. If provided and None, the default of the argument is
+      # explicitly set to None. If not provided, no default is set on the
+      # argument.
       default: {type: [string, number, boolean, array, 'null']}
       # The module path to a function to call (with no arguments) if no value is
       # provided; the result of this function will be used for this argument
@@ -253,16 +263,16 @@ additionalProperties: false
 required: [request, help_text, arguments]
 properties:
 
-  # Corresponds to the Hidden decorator for command classes.
+  # Determines whether the command is visible in help text or not.
   is_hidden: {type: boolean}
 
-  # Corresponds to the ReleaseTracks decorator for command classes.
+  # Determines which release tracks this command implementation will apply to.
   release_tracks:
     type: array
     items: {enum: [ALPHA, BETA, GA]}
 
   # The type of command to generate. This is inferred based on the name
-  # of the command.
+  # of the command file (convert to uppercase and remove .yaml extension).
   command_type:
     enum:
       - DESCRIBE
@@ -274,7 +284,17 @@ properties:
       - SET_IAM_POLICY
       - GENERIC
 
-  # Corresponds to the detailed_help attribute on command classes.
+  # Corresponds to the detailed_help attribute on command classes. Typically
+  # looks something like this (brief and description are required):
+  # help_text:
+  #   brief: Delete a Compute Engine virtual machine.
+  #   DESCRIPTION: |
+  #     This command stops, and deletes the given virtual machine instance. Any
+  #     boot disks associated with this instance are also deleted.
+  #   EXAMPLES: |
+  #     To delete an instance:
+  #
+  #       $ {command} INSTANCE_NAME --zone ZONE
   help_text:
     type: object
     additionalProperties: false
@@ -304,18 +324,29 @@ properties:
       collection: {type: string}
       # The API version to use, defaults to API set as gcloud default.
       api_version: {type: string}
-      # The name of the method to call to perform the operation.
+      # The name of the method to call to perform the operation. Optional if
+      # your command is one of the supported command types (not Generic).
       method: {type: string}
       # A mapping of method parameter to resource reference field (or '', to use
       # the full method name) for references or APIs that use non-standard
-      # naming.
+      # naming. For example, if a resource ref has a project, location, and
+      # instance attribute, but the request URI has the structure
+      # /projects/{project}/regions/{region}/instances/{instance}, you would use
+      # resource_method_params:
+      #   region: location
+      # To map the resource attribute to the correct method parameter.
       resource_method_params:
         type: object
         patternProperties:
           .*: {type: string}
       # A mapping of request field names to static values to insert into the
       # request. Specifying simple values here accomplishes the same as a
-      # a custom request generator, but is simpler.
+      # a custom request generator, but is simpler. For example, if you had an
+      # an API that could work in several modes, but we only use one in the
+      # command, you could set:
+      # static_fields:
+      #   requests.features.type: TYPE1
+      # To always populate that field with the correct mode.
       static_fields:
         type: object
         patternProperties:
@@ -351,11 +382,12 @@ properties:
     type: object
     additionalProperties: false
     properties:
+      # TODO(b/80311963): Support all resource paths here.
       # The field in the response that is the id of the resource (just the
       # name, not the relative name or URI). This is used to construct a
       # URI for resources out of the result of a list command. If not
       # provided, there won't be a --uri flag on the list command.
-      id_field: {type: string}
+      id_field: {type: string, pattern: "\\w+"}
       # The attribute of the API response to return (instead of the entire
       # response.
       result_attribute: {$ref: "#/definitions/attribute"}
@@ -445,8 +477,8 @@ properties:
           # default).
           field: {type: string}
 
-  # Enumerates the non-resource API fields that arguments should be generated
-  # for.
+  # Enumerates the API fields (other than those specifying the resource to act
+  # on) that arguments should be generated.
   arguments:
     type: object
     additionalProperties: false
@@ -481,7 +513,9 @@ properties:
           # will be used for the resource arg in the command. If not set,
           # command will use the name from the spec.
           arg_name: {type: string}
-          # List of resource arg attributes to not generate flags for.
+          # List of resource arg attributes to not generate flags for. These
+          # attributes will need to have fallthroughs in the resource arg spec
+          # in order to be populated.
           removed_flags:
             type: array
             items: {type: string}
@@ -500,6 +534,7 @@ properties:
           # not include anything that would go in a presentation spec. It is
           # expected that this entire section be imported from a resources.yaml
           # file in command_lib.
+          # (ex !REF googlecloudsdk.command_lib.pubsub.resources:topic)
           spec:
             type: object
             additionalProperties: false
@@ -545,7 +580,7 @@ properties:
     type: object
     additionalProperties: false
     properties:
-      # Corresponds tothe default output format setting on the command.
+      # Corresponds to the default output format setting on the command.
       format: {type: string}
 
 

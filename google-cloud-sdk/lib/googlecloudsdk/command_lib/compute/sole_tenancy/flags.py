@@ -14,13 +14,12 @@
 """Flags for the `compute sole-tenancy` related commands."""
 from __future__ import absolute_import
 from __future__ import unicode_literals
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 
 
 def AddNodeAffinityFlagToParser(parser):
   """Adds a node affinity flag used for scheduling instances."""
-  sole_tenancy_group = parser.add_group('Sole Tenancy', mutex=True, hidden=True)
+  sole_tenancy_group = parser.add_group('Sole Tenancy', mutex=True)
   sole_tenancy_group.add_argument(
       '--node-affinity-file',
       type=arg_parsers.BufferedFileInput(),
@@ -41,27 +40,8 @@ def AddNodeAffinityFlagToParser(parser):
           *values*::: Optional. A list of values which correspond to the node
           affinity label values of the Node resource.
           """)
-  node_shortcuts_group = sole_tenancy_group.add_group('Node Groups')
-  node_shortcuts_group.add_argument(
+  sole_tenancy_group.add_argument(
       '--node-group',
-      required=True,
       help='The name of the node group to schedule this instance on.')
-  node_shortcuts_group.add_argument(
-      '--node-index',
-      type=int,
-      help='The index of the node within the node group to schedule this '
-           'instance on.')
-
-
-def AddSoleTenancyArgsToParser(parser):
-  parser.add_argument(
-      '--sole-tenancy-host',
-      action=actions.DeprecationAction(
-          '--sole-tenancy-host',
-          removed=True,
-          error='Instance creation on sole tenancy hosts is deprecated. Use '
-                '--node-affinity-file, --node-group, --node-index flags '
-                'instead. See `alpha compute sole-tenancy node-groups` for '
-                'more information.'),
-      hidden=True,
-      help='The name of the sole tenancy host to create this instance on.')
+  sole_tenancy_group.add_argument(
+      '--node', help='The name of the node to schedule this instance on.')

@@ -189,6 +189,9 @@ class BucketReference(object):
   def __ne__(self, other):
     return not self.__eq__(other)
 
+  def __hash__(self):
+    return hash(self.ToBucketUrl())
+
 
 class ObjectReference(object):
   """Wrapper class to make working with Cloud Storage bucket/objects easier."""
@@ -256,6 +259,9 @@ class ObjectReference(object):
 
   def __ne__(self, other):
     return not self.__eq__(other)
+
+  def __hash__(self):
+    return hash(self.ToUrl())
 
 
 def GetMessages():

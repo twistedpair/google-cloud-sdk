@@ -13,6 +13,7 @@
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import functools
 
 from googlecloudsdk.api_lib.compute import constants
@@ -27,6 +28,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
+from googlecloudsdk.command_lib.compute.kms import resource_args as kms_resource_args
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as core_resources
@@ -348,66 +350,8 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       help='Automatically delete boot disks when their instances are deleted.')
 
   if enable_kms:
-    parser.add_argument(
-        '--boot-disk-kms-key',
-        help="""\
-        Fully qualified Cloud KMS cryptokey name that will protect the
-        {resource}.
-
-        This can either be the fully qualified path or the name.
-
-        The fully qualified Cloud KMS cryptokey has the format:
-        ``projects/<project-id>/locations/<location>/keyRings/<ring-name>/
-        cryptoKeys/<key-name>''
-
-        If the value is not fully qualified then --boot-disk-kms-location,
-        --boot-disk-kms-keyring, and optionally --boot-disk-kms-project are
-        required.
-
-        See {kms_help} for more details.
-        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
-
-    parser.add_argument(
-        '--boot-disk-kms-project',
-        help="""\
-        Project that contains the Cloud KMS cryptokey that will protect the
-        {resource}.
-
-        If the project is not specified then the project where the {resource} is
-        being created will be used.
-
-        If this flag is set then --boot-disk-key-location,
-        --boot-disk-kms-keyring, and --boot-disk-kms-key are required.
-
-        See {kms_help} for more details.
-        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
-
-    parser.add_argument(
-        '--boot-disk-kms-location',
-        help="""\
-        Location of the Cloud KMS cryptokey to be used for protecting the
-        {resource}.
-
-        All Cloud KMS cryptokeys are reside in a 'location'.
-        To get a list of possible locations run 'gcloud kms locations list'.
-
-        If this flag is set then --boot-disk-kms-keyring and
-        --boot-disk-kms-key are required.
-
-        See {kms_help} for more details.
-        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
-
-    parser.add_argument(
-        '--boot-disk-kms-keyring',
-        help="""\
-        The keyring which contains the Cloud KMS cryptokey that will protect the
-        {resource}.
-
-        If this flag is set then --boot-disk-kms-location and
-        --boot-disk-kms-key are required.
-
-        See {kms_help} for more details.
-        """.format(resource='boot disk', kms_help=kms_utils.KMS_HELP_URL))
+    kms_resource_args.AddKmsKeyResourceArg(
+        parser, 'disk', boot_disk_prefix=True)
 
   disk_arg_spec = {
       'name': str,

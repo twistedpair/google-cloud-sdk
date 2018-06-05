@@ -964,10 +964,10 @@
         "framework": {
           "description": "Optional. The machine learning framework Cloud ML Engine uses to train\nthis version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,\nand `XGBOOST`. If you do not specify a framework, Cloud ML Engine uses\nTensorFlow. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set\nthe runtime version of the model to 1.4 or greater.",
           "enumDescriptions": [
-            "",
-            "",
-            "",
-            ""
+            "Unspecified framework. Defaults to TensorFlow.",
+            "Tensorflow framework.",
+            "Scikit-learn framework.",
+            "XGBoost framework."
           ],
           "type": "string",
           "enum": [

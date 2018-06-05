@@ -23,7 +23,6 @@ from __future__ import unicode_literals
 
 import argparse
 import json
-import os
 import sys
 
 
@@ -63,41 +62,20 @@ def _verify_tensorflow(version):
   return True
 
 
-def import_prediction_lib():
-  try:
-    if not _verify_tensorflow('1.0.0'):
-      sys.exit(-1)
-
-    sdk_root_dir = os.environ['CLOUDSDK_ROOT']
-    # pylint: disable=g-import-not-at-top
-    try:
-      # This horrible hack is necessary because we can't import the Cloud ML SDK
-      # like normal; we're probably missing dependencies. We just want to import
-      # prediction.prediction_lib.
-      sys.path.insert(0, os.path.join(sdk_root_dir, 'lib', 'third_party',
-                                      'cloud_ml_engine_sdk'))
-      from prediction import prediction_lib  # pytype: disable=import-error
-      return prediction_lib
-    finally:
-      sys.path.pop(0)
-    # pylint: enable=g-import-not-at-top
-  except ImportError as err:
-    if 'prediction_lib' in err:
-      # This shouldn't happen; we should always have predict_lib.py available.
-      # If anyone gets here, we want to know about it.
-      eprint('Error importing prediction library:\n\n',
-             str(err), '\n\nPlease contact support.')
-      sys.exit(-1)
-    else:
-      # We shouldn't ever get here after _verify_tensorflow succeeds
-      eprint('Missing dependency for local prediction:', err)
-      eprint('Please make sure this module is available to `python`.')
-    sys.exit(1)
-
-
 def main():
+  if not _verify_tensorflow('1.0.0'):
+    sys.exit(-1)
+  # We want to do this *after* we verify tensorflow so the user gets a nicer
+  # error message.
+  # pylint: disable=g-import-not-at-top
+  from cloud.ml.prediction import prediction_lib
+  # pylint: enable=g-import-not-at-top
   parser = argparse.ArgumentParser()
   parser.add_argument('--model-dir', required=True, help='Path of the model.')
+  parser.add_argument('--framework', required=False, default='tensorflow',
+                      help=('The ML framework used to train this version of '
+                            'the model. If not specified, defaults to '
+                            '`tensorflow`'))
   args, _ = parser.parse_known_args()
 
   instances = []
@@ -105,9 +83,9 @@ def main():
     instance = json.loads(line.rstrip('\n'))
     instances.append(instance)
 
-  prediction_lib = import_prediction_lib()
   predictions = prediction_lib.local_predict(model_dir=args.model_dir,
-                                             instances=instances)
+                                             instances=instances,
+                                             framework=args.framework)
   print(json.dumps(predictions))
 
 

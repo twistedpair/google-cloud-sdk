@@ -13,6 +13,8 @@
 # limitations under the License.
 """Common methods to display parts of SQL query results."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from functools import partial
 from apitools.base.py import encoding
 from googlecloudsdk.core.resource import resource_printer
@@ -68,6 +70,19 @@ def _ConvertToTree(plan_nodes):
       return n
 
 
+def _ConvertToStringValue(prop):
+  """Converts the prop to a string if it exists.
+
+  Args:
+    prop (object_value): The value returned from _GetAdditionalProperty.
+
+  Returns:
+    A string value for the given prop, or the `not_found_value` if the prop does
+    not exist.
+  """
+  return getattr(prop, 'string_value', prop)
+
+
 def QueryHasAggregateStats(result):
   """Checks if the given results have aggregate statistics.
 
@@ -92,14 +107,12 @@ def DisplayQueryAggregateStats(query_stats, out):
       stats taken from the server response to a query.
     out: Output stream to which we print.
   """
-  # additional_properties = query_stats.additionalProperties
-
   get_prop = partial(_GetAdditionalProperty, query_stats.additionalProperties)
   stats = {
-      'total_elapsed_time': get_prop('elapsed_time'),
-      'cpu_time': get_prop('cpu_time'),
-      'rows_returned': get_prop('rows_returned'),
-      'rows_scanned': get_prop('rows_scanned')
+      'total_elapsed_time': _ConvertToStringValue(get_prop('elapsed_time')),
+      'cpu_time': _ConvertToStringValue(get_prop('cpu_time')),
+      'rows_returned': _ConvertToStringValue(get_prop('rows_returned')),
+      'rows_scanned': _ConvertToStringValue(get_prop('rows_scanned'))
   }
   resource_printer.Print(
       stats,

@@ -13,10 +13,14 @@
 # limitations under the License.
 """Resource definition generator."""
 
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 import json
 import re
 
 from googlecloudsdk.api_lib.util import resource as resource_util
+import six
 
 
 _COLLECTION_SUB_RE = r'[a-zA-Z_]+(?:\.[a-zA-Z0-9_]+)+'
@@ -85,7 +89,7 @@ class DiscoveryDoc(object):
   def _ExtractResources(self, api_version, infos):
     """Extract resource definitions from discovery doc."""
     collections = []
-    for name, info in infos.iteritems():
+    for name, info in six.iteritems(infos):
       if name == 'methods':
         get_method = info.get('get')
         if get_method:
@@ -202,7 +206,7 @@ class DiscoveryDoc(object):
 
     # Print warnings if people have declared custom resources that are
     # unnecessary.
-    for name, paths in ignored.iteritems():
+    for name, paths in six.iteritems(ignored):
       if len(paths) > 1:
         # There are multiple unique paths for this collection name. It is
         # required to be declared to disambiguate.
@@ -210,8 +214,8 @@ class DiscoveryDoc(object):
       path = paths.pop()
       if path == custom_resources[name]['path']:
         # There is 1 path and it is the same as the custom one registered.
-        print ('WARNING: Custom resource [{}] in API [{}/{}] is redundant.'
-               .format(name, self.api_name, api_version))
+        print(('WARNING: Custom resource [{}] in API [{}/{}] is redundant.'
+               .format(name, self.api_name, api_version)))
     return generated
 
   def MakeResourceCollection(self, collection_name, path, enable_uri_parsing,

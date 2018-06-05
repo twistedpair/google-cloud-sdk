@@ -34,10 +34,6 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import retry
 
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request
-
 
 EMAIL_REGEX = re.compile(r'^.+@([^.@][^@]+)$')
 FINGERPRINT_REGEX = re.compile(
@@ -271,13 +267,13 @@ def ReadServiceConfigFile(file_path):
         'Could not open service config file [{0}]: {1}'.format(file_path, ex))
 
 
-def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
+def PushNormalizedGoogleServiceConfig(service_name, project, config_dict):
   """Pushes a given normalized Google service configuration.
 
   Args:
     service_name: name of the service
     project: the producer project Id
-    config_contents: the contents of the Google Service Config file.
+    config_dict: the parsed contents of the Google Service Config file.
 
   Returns:
     Result of the ServicesConfigsCreate request (a Service object)
@@ -285,7 +281,9 @@ def PushNormalizedGoogleServiceConfig(service_name, project, config_contents):
   messages = GetMessagesModule()
   client = GetClientInstance()
 
-  service_config = encoding.JsonToMessage(messages.Service, config_contents)
+  # Be aware: DictToMessage takes the value first and message second;
+  # JsonToMessage takes the message first and value second
+  service_config = encoding.DictToMessage(config_dict, messages.Service)
   service_config.producerProjectId = project
   create_request = (
       messages.ServicemanagementServicesConfigsCreateRequest(
@@ -597,10 +595,3 @@ def LoadJsonOrYaml(input_string):
 
   # First, try to decode JSON. If that fails, try to decode YAML.
   return TryJson() or TryYaml()
-
-
-def GenerateManagementUrl(service, project):
-  return ('https://console.cloud.google.com/endpoints/api/'
-          '{service}/overview?project={project}'.format(
-              service=six.moves.urllib.parse.quote(service),
-              project=six.moves.urllib.parse.quote(project)))

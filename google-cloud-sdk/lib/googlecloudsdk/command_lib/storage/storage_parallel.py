@@ -35,6 +35,8 @@ current process). Afterwards, there will be objects at
 
 This removes the objects uploaded in the last code snippet.
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import itertools
 
 from googlecloudsdk.api_lib.storage import storage_api
@@ -44,6 +46,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import parallel
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import text
+from six.moves import zip
 
 
 # This default value has been chosen after lots of experimentation.
@@ -71,17 +74,18 @@ class FileUploadTask(object):
     self.remote_path = remote_path
 
   def __repr__(self):
-    return (u'FileUploadTask('
-            u'local_path={task.local_path!r}, '
-            u'bucket_url={task.bucket_url!r}, '
-            u'remote_path={task.remote_path!r})').format(task=self)
+    return ('FileUploadTask('
+            'local_path={task.local_path!r}, '
+            'bucket_url={task.bucket_url!r}, '
+            'remote_path={task.remote_path!r})').format(task=self)
 
   def __hash__(self):
     return hash((self.local_path, self.bucket_url, self.remote_path))
 
 
-def _UploadFile((file_upload_task, callback)):
+def _UploadFile(value):
   """Complete one FileUploadTask (safe to run in parallel)."""
+  file_upload_task, callback = value
   storage_client = storage_api.StorageClient()
   bucket_ref = storage_util.BucketReference.FromBucketUrl(
       file_upload_task.bucket_url)
@@ -111,7 +115,7 @@ def _DoParallelOperation(num_threads, tasks, method, label, show_progress_bar):
       operation.
   """
   log.debug(label)
-  log.debug(u'Using [%d] threads', num_threads)
+  log.debug('Using [%d] threads', num_threads)
 
   pool = parallel.GetPool(num_threads)
   if show_progress_bar:
@@ -121,7 +125,7 @@ def _DoParallelOperation(num_threads, tasks, method, label, show_progress_bar):
     progress_bar = console_io.NoOpProgressBar()
     callback = None
   with progress_bar, pool:
-    pool.Map(method, zip(tasks, itertools.cycle((callback,))))
+    pool.Map(method, list(zip(tasks, itertools.cycle((callback,)))))
 
 
 def UploadFiles(files_to_upload, num_threads=DEFAULT_NUM_THREADS,
@@ -163,16 +167,17 @@ class ObjectDeleteTask(object):
     self.remote_path = remote_path
 
   def __repr__(self):
-    return (u'ObjectDeleteTask('
-            u'bucket_url={task.bucket_url!r}, '
-            u'remote_path={task.remote_path!r})').format(task=self)
+    return ('ObjectDeleteTask('
+            'bucket_url={task.bucket_url!r}, '
+            'remote_path={task.remote_path!r})').format(task=self)
 
   def __hash__(self):
     return hash((self.bucket_url, self.remote_path))
 
 
-def _DeleteObject((object_delete_task, callback)):
+def _DeleteObject(value):
   """Complete one ObjectDeleteTask (safe to run in parallel)."""
+  object_delete_task, callback = value
   storage_client = storage_api.StorageClient()
   bucket_ref = storage_util.BucketReference.FromBucketUrl(
       object_delete_task.bucket_url)

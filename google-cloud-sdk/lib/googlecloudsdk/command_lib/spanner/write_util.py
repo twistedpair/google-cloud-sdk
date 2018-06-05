@@ -21,11 +21,15 @@
       As the values user input are strings by default, the type conversion is
       necessary.
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 from collections import OrderedDict
 import re
 from apitools.base.py import extra_types
 from googlecloudsdk.core.exceptions import Error
+import six
+from six.moves import zip
 
 
 class BadColumnNameError(Error):
@@ -104,7 +108,7 @@ class _TableColumn(object):
     return self.col_type.GetJsonValue(value)
 
 
-class _ColumnType(object):
+class _ColumnType(six.with_metaclass(abc.ABCMeta, object)):
   """A wrapper that stores the column type information.
 
   A column type can be one of the scalar types such as integers, as well as
@@ -119,8 +123,6 @@ class _ColumnType(object):
   # valid key and column types.
   _SCALAR_TYPES = ('BOOL', 'BYTES', 'DATE', 'FLOAT64', 'INT64', 'STRING',
                    'TIMESTAMP')
-
-  __metaclass__ = abc.ABCMeta
 
   def __init__(self, scalar_type):
     self.scalar_type = scalar_type
@@ -282,7 +284,7 @@ class Table(object):
     """
     column_list = []
 
-    for col_name, col_value in data_dict.iteritems():
+    for col_name, col_value in six.iteritems(data_dict):
       col_in_table = self._FindColumnByName(col_name)
       col_json_value = col_in_table.GetJsonValues(col_value)
       column_list.append(ColumnJsonData(col_name, col_json_value))

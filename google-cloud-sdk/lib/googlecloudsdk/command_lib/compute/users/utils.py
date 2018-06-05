@@ -14,6 +14,7 @@
 
 """Common functions for users."""
 
+from __future__ import unicode_literals
 DEFAULT_LIST_FORMAT = """\
     table(
       name,
