@@ -44,11 +44,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -67,12 +62,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -304,6 +293,22 @@
           "items": {
             "type": "string"
           }
+        },
+        "biasingStrength": {
+          "description": "Strength of biasing to use (strong, medium or weak). If you use strong\nbiasing option then more likely to see those phrases in the results. If\nbiasing strength is not specified then by default medium biasing would be\nused.",
+          "enumDescriptions": [
+            "",
+            "Low bias",
+            "Medium bias",
+            "High bias"
+          ],
+          "type": "string",
+          "enum": [
+            "BIASING_STRENGTH_UNSPECIFIED",
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ]
         }
       }
     },

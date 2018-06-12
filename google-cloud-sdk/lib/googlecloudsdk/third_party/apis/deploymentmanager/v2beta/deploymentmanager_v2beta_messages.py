@@ -1003,7 +1003,7 @@ class DeploymentmanagerTypeProvidersGetTypeRequest(_messages.Message):
 
   Fields:
     project: The project ID for this request.
-    type: The name of the type provider for this request.
+    type: The name of the type provider type for this request.
     typeProvider: The name of the type provider for this request.
   """
 

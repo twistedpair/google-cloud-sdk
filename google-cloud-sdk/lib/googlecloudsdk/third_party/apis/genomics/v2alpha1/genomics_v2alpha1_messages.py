@@ -67,6 +67,11 @@ class Action(_messages.Message):
       the container also has an ENTRYPOINT the values are used as entrypoint
       arguments.  Otherwise, they are used as a command and arguments to run
       inside the container.
+    credentials: If the specified image is hosted on a private registry other
+      than Google Container Registry, the credentials required to pull the
+      image must be specified here as an encrypted secret.  The secret must
+      decrypt to a JSON encoded dictionary containing both `username` and
+      `password` keys.
     entrypoint: If specified, overrides the ENTRYPOINT specified in the
       container.
     environment: The environment to pass into the container.  This environment
@@ -234,15 +239,16 @@ class Action(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   commands = _messages.StringField(1, repeated=True)
-  entrypoint = _messages.StringField(2)
-  environment = _messages.MessageField('EnvironmentValue', 3)
-  flags = _messages.EnumField('FlagsValueListEntryValuesEnum', 4, repeated=True)
-  imageUri = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  mounts = _messages.MessageField('Mount', 7, repeated=True)
-  name = _messages.StringField(8)
-  pidNamespace = _messages.StringField(9)
-  portMappings = _messages.MessageField('PortMappingsValue', 10)
+  credentials = _messages.MessageField('Secret', 2)
+  entrypoint = _messages.StringField(3)
+  environment = _messages.MessageField('EnvironmentValue', 4)
+  flags = _messages.EnumField('FlagsValueListEntryValuesEnum', 5, repeated=True)
+  imageUri = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mounts = _messages.MessageField('Mount', 8, repeated=True)
+  name = _messages.StringField(9)
+  pidNamespace = _messages.StringField(10)
+  portMappings = _messages.MessageField('PortMappingsValue', 11)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -821,6 +827,9 @@ class Network(_messages.Message):
   Fields:
     name: The network name to attach the VM's network interface to.  If
       unspecified, the global default network is used.
+    subnetwork: If the specified network is configured for custom subnet
+      creation, the name of the subnetwork to attach the instance to must be
+      specified here.
     usePrivateAddress: If set to true, do not attach a public IP address to
       the VM.  Note that without an public IP address, additional
       configuration is required to allow the VM to access Google services.
@@ -829,7 +838,8 @@ class Network(_messages.Message):
   """
 
   name = _messages.StringField(1)
-  usePrivateAddress = _messages.BooleanField(2)
+  subnetwork = _messages.StringField(2)
+  usePrivateAddress = _messages.BooleanField(3)
 
 
 class Operation(_messages.Message):
@@ -1211,6 +1221,23 @@ class RuntimeMetadata(_messages.Message):
   computeEngine = _messages.MessageField('ComputeEngine', 1)
 
 
+class Secret(_messages.Message):
+  r"""Secret holds encrypted information that is only decrypted and stored in
+  RAM by the worker VM when running the pipeline.
+
+  Fields:
+    cipherText: The value of the cipherText response from the `encrypt`
+      method.
+    keyName: The name of the Cloud KMS key that will be used to decrypt the
+      secret value.  The VM service account must have the required permissions
+      and authentication scopes to invoke the `decrypt` method on the
+      specified key.
+  """
+
+  cipherText = _messages.StringField(1)
+  keyName = _messages.StringField(2)
+
+
 class ServiceAccount(_messages.Message):
   r"""Carries information about a Google Cloud Service Account.
 
@@ -1236,14 +1263,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1279,17 +1304,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):

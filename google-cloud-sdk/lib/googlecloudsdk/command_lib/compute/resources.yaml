@@ -71,3 +71,13 @@ subnet:
       parameter_name: subnetwork
       attribute_name: subnetwork
       help: The name of the Google Compute Engine subnetwork.
+
+snapshot:
+  name: snapshot
+  collection: compute.snapshots
+  attributes:
+    - *project
+    - &snapshot
+      parameter_name: snapshot
+      attribute_name: snapshot_name
+      help: The name of the Google Compute Engine snapshot.

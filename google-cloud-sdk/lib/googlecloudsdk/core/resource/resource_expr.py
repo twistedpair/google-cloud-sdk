@@ -480,7 +480,7 @@ class _ExprOperator(_Expr):  # pytype: disable=ignored-abstractmethod
 
     # Check for datetime. Dates may have trailing timzone indicators. We don't
     # match them but ParseDateTime will handle them.
-    if re.match(r'\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d', value):
+    if re.match(r'\d\d\d\d-\d\d-\d\d[ T]\d\d:\d\d:\d\d', value):
       try:
         value = times.ParseDateTime(value)
         # Make sure the value and operand times are both tz aware or tz naive.

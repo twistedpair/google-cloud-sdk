@@ -17,14 +17,11 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 import copy
 
-from googlecloudsdk.api_lib.compute.tpus import tpu_utils as api_util
-from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.util.apis import resource_arg_schema
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.core import properties
-from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import pkg_resources
 
@@ -72,134 +69,15 @@ TPU_YAML_SPEC_TEMPLATE = OrderedDict({
 })
 
 
-class TpuOperationsPoller(waiter.CloudOperationPoller):
-  """Poller for Cloud TPU operations API.
-
-  This is necessary because the core operations library doesn't directly support
-  simple_uri.
-  """
-
-  def __init__(self, client):
-    self.client = client
-    super(TpuOperationsPoller, self).__init__(
-        self.client.client.projects_locations_operations,
-        self.client.client.projects_locations_operations)
-
-  def Poll(self, operation_ref):
-    return self.client.GetOperation(operation_ref)
-
-  def GetResult(self, operation):
-    """Override."""
-    return operation
-
-
-def Describe(tpu_node, zone=None):
-  """Invoke TPU Get API."""
-  zone = zone or properties.VALUES.compute.zone.GetOrFail
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  node_ref = resources.REGISTRY.Parse(
-      tpu_node,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_NODE_COLLECTION)
-
-  return tpu_api_client.Get(node_ref)
-
-
-def Delete(tpu_node, zone=None):
-  """Invoke TPU Delete API."""
-  zone = zone or properties.VALUES.compute.zone.GetOrFail
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  node_ref = resources.REGISTRY.Parse(
-      tpu_node,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_NODE_COLLECTION)
-
-  return WaitForOperation(tpu_api_client.Delete(node_ref), zone)
-
-
-def Reset(tpu_node, zone):
-  """Invoke TPU Reset API."""
-  zone = zone or properties.VALUES.compute.zone.GetOrFail
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  node_ref = resources.REGISTRY.Parse(
-      tpu_node,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_NODE_COLLECTION)
-
-  return WaitForOperation(tpu_api_client.Reset(node_ref), zone)
-
-
-def List(page_size, limit, zone=None):
-  """Invoke TPU List API."""
-  zone = zone or properties.VALUES.compute.zone.GetOrFail()
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  location_ref = resources.REGISTRY.Parse(
-      zone,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_LOCATION_COLLECTION)
-
-  return tpu_api_client.List(location_ref, page_size, limit)
-
-
-def WaitForOperation(operation, zone):
-  """Wait for the specified tpu operation."""
-  wait_message = 'Waiting for operation [{0}] to complete'.format(
-      operation.name)
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  poller = TpuOperationsPoller(tpu_api_client)
-  operation_ref = resources.REGISTRY.Parse(
-      operation.name,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': zone},
-      collection=TPU_OPERATION_COLLECTION)
-  return waiter.WaitFor(poller, operation_ref, wait_message)
-
-
-def Create(name,
-           cidr_range,
-           description=None,
-           network='default',
-           accelerator_type=None,
-           version=None,
-           zone=None):
-  """Invoke TPU Create API and return created resource."""
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  zone = zone or properties.VALUES.compute.zone.GetOrFail()
-  node_msg = tpu_api_client.messages.Node(cidrBlock=cidr_range,
-                                          network=network,
-                                          acceleratorType=accelerator_type,
-                                          tensorflowVersion=version,
-                                          description=description)
-
-  parent_ref = resources.REGISTRY.Parse(
-      zone,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection=TPU_LOCATION_COLLECTION)
-  return WaitForOperation(tpu_api_client.Create(node_msg, parent_ref, name),
-                          zone)
-
-
-def Reimage(node_ref, version, zone):
-  """Invoke TPU Reimage API and wait for operation result."""
-  tpu_api_client = api_util.TpusClient('v1alpha1')
-  return WaitForOperation(tpu_api_client.Reimage(node_ref, version), zone)
+def GetMessagesModule(version='v1'):
+  return apis.GetMessagesModule('tpu', version)
 
 
 def StartRequestHook(ref, args, request):
   """Declarative request hook for TPU Start command."""
   del ref
   del args
-  start_request = api_util.GetMessagesModule().StartNodeRequest()
+  start_request = GetMessagesModule().StartNodeRequest()
   request.startNodeRequest = start_request
   return request
 
@@ -208,7 +86,7 @@ def StopRequestHook(ref, args, request):
   """Declarative request hook for TPU Stop command."""
   del ref
   del args
-  stop_request = api_util.GetMessagesModule().StopNodeRequest()
+  stop_request = GetMessagesModule().StopNodeRequest()
   request.stopNodeRequest = stop_request
   return request
 

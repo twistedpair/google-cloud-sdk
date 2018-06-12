@@ -50,7 +50,7 @@ class Collections(enum.Enum):
 ,
 %   if collection_info.flat_paths:
       {
-%     for path_name, flat_path in collection_info.flat_paths.iteritems():
+%     for path_name, flat_path in collection_info.flat_paths.items():
           '${path_name}':
 %       for i, part in enumerate(SplitPath(flat_path, 80 - 3 - 14)):
 %         if i:

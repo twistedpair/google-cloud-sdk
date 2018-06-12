@@ -29,6 +29,7 @@ import abc
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 import six
 
 
@@ -57,14 +58,17 @@ class _FallthroughBase(six.with_metaclass(abc.ABCMeta, object)):
   attribute can't be found.
   """
 
-  def __init__(self, hint):
+  def __init__(self, hint, active=False):
     """Initializes a fallthrough to an arbitrary function.
 
     Args:
       hint: str, The user-facing message for the fallthrough when it cannot be
         resolved.
+      active: bool, True if the fallthrough is considered to be "actively"
+        specified, i.e. on the command line.
     """
     self._hint = hint
+    self.active = active
 
   def GetValue(self, parsed_args):
     """Gets a value from information given to the fallthrough.
@@ -92,26 +96,32 @@ class _FallthroughBase(six.with_metaclass(abc.ABCMeta, object)):
     """String representation of the fallthrough for user-facing messaging."""
     return self._hint
 
+  def __hash__(self):
+    return hash(self.hint) + hash(self.active)
+
 
 class Fallthrough(_FallthroughBase):
   """A fallthrough that can get an attribute value from an arbitrary function.
   """
 
-  def __init__(self, function, hint):
+  def __init__(self, function, hint, active=False):
     """Initializes a fallthrough to an arbitrary function.
 
     Args:
       function: f() -> value, A no argument function that returns the value of
         the argument or None if it cannot be resolved.
       hint: str, The user-facing message for the fallthrough when it cannot be
-        resolved.
+        resolved. Should start with a lower-case letter.
+      active: bool, True if the fallthrough is considered to be "actively"
+        specified, i.e. on the command line.
+
 
     Raises:
       ValueError: if no hint is provided
     """
     if not hint:
       raise ValueError('Hint must be provided.')
-    super(Fallthrough, self).__init__(hint)
+    super(Fallthrough, self).__init__(hint, active=active)
     self._function = function
 
   def _Call(self, parsed_args):
@@ -128,11 +138,7 @@ class PropertyFallthrough(_FallthroughBase):
     Args:
       prop: googlecloudsdk.core.properties._Property, a property.
     """
-    hint = 'Set the property [{}]'.format(prop)
-    # Special messaging for the project property, which can be modified by the
-    # global --project flag.
-    if prop == properties.VALUES.core.project:
-      hint += ' or provide the flag [--project] on the command line'
+    hint = 'set the property [{}]'.format(prop)
 
     super(PropertyFallthrough, self).__init__(hint)
     self.property = prop
@@ -149,6 +155,9 @@ class PropertyFallthrough(_FallthroughBase):
       return False
     return other.property == self.property
 
+  def __hash__(self):
+    return hash(self.property)
+
 
 class ArgFallthrough(_FallthroughBase):
   """Gets an attribute from the argparse parsed values for that arg."""
@@ -163,7 +172,8 @@ class ArgFallthrough(_FallthroughBase):
         argument is plural (i.e. parses to a list).
     """
     super(ArgFallthrough, self).__init__(
-        'Provide the flag [{}] on the command line'.format(arg_name))
+        'provide the flag [{}] on the command line'.format(arg_name),
+        active=True)
     self.arg_name = arg_name
     self.plural = plural
 
@@ -181,6 +191,64 @@ class ArgFallthrough(_FallthroughBase):
     if not isinstance(other, self.__class__):
       return False
     return other.arg_name == self.arg_name and self.plural == other.plural
+
+  def __hash__(self):
+    return hash(self.arg_name) + hash(self.plural)
+
+
+class FullySpecifiedAnchorFallthrough(_FallthroughBase):
+  """A fallthrough that gets a parameter from the value of the anchor."""
+
+  def __init__(self, fallthrough, collection_info, parameter_name):
+    """Initializes a fallthrough getting a parameter from the anchor.
+
+    For anchor arguments which can be plural, returns the list.
+
+    Args:
+      fallthrough: _FallthroughBase, any fallthrough for an anchor arg.
+      collection_info: the info of the collection to parse the anchor as.
+      parameter_name: str, the name of the parameter
+    """
+    hint = fallthrough.hint + (' with a fully specified name')
+    super(FullySpecifiedAnchorFallthrough, self).__init__(
+        hint, active=fallthrough.active)
+    self.fallthrough = fallthrough
+    self.parameter_name = parameter_name
+    self.collection_info = collection_info
+    self._resources = resources.REGISTRY.Clone()
+    self._resources.RegisterApiByName(self.collection_info.api_name,
+                                      self.collection_info.api_version)
+
+  def _GetFromAnchor(self, anchor_value):
+    try:
+      resource_ref = self._resources.Parse(
+          anchor_value,
+          collection=self.collection_info.full_name)
+    except resources.Error:
+      return None
+    # This should only be called for final parsing when the anchor attribute
+    # has been split up into non-plural fallthroughs; thus, if an AttributeError
+    # results from the parser being passed a list, skip it for now.
+    except AttributeError:
+      return None
+    return getattr(resource_ref, self.parameter_name, None)
+
+  def _Call(self, parsed_args):
+    try:
+      anchor_value = self.fallthrough.GetValue(parsed_args)
+    except FallthroughNotFoundError:
+      return None
+    return self._GetFromAnchor(anchor_value)
+
+  def __eq__(self, other):
+    return (isinstance(other, self.__class__)
+            and other.fallthrough == self.fallthrough
+            and other.collection_info == self.collection_info
+            and other.parameter_name == self.parameter_name)
+
+  def __hash__(self):
+    return sum(map(hash, [self.fallthrough, str(self.collection_info),
+                          self.parameter_name]))
 
 
 class Deps(object):
@@ -243,3 +311,22 @@ class Deps(object):
       return False
     return (other.attribute_to_fallthroughs_map ==
             self.attribute_to_fallthroughs_map)
+
+
+class FilteredDeps(Deps):
+  """A wrapper to filter dependencies for use by commands."""
+
+  def __init__(self, deps_obj, fallthrough_filter):
+    """Initialized.
+
+    Args:
+      deps_obj: Deps, a Deps object that holds data for the concept.
+      fallthrough_filter: Callable, a function that filters fallthroughs. If
+        f(fallthrough) returns True, that fallthrough will be used.
+    """
+    fallthroughs_map = deps_obj.attribute_to_fallthroughs_map
+    final_map = {
+        attr: filter(fallthrough_filter, fallthroughs)
+        for attr, fallthroughs in six.iteritems(fallthroughs_map)}
+    super(FilteredDeps, self).__init__(final_map,
+                                       parsed_args=deps_obj.parsed_args)

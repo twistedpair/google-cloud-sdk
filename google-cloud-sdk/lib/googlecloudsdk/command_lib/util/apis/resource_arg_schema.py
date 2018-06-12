@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.calliope.concepts import util as resource_util
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.core import properties
@@ -42,7 +43,7 @@ class InvalidResourceArgumentLists(Error):
         .format(', '.join(expected), ', '.join(actual)))
 
 
-_DEFAULT_PROPS = {'project': properties.VALUES.core.project}
+_DEFAULT_CONFIGS = {'project': project_resource_args.PROJECT_ATTRIBUTE_CONFIG}
 IGNORED_FIELDS = {
     'project': 'project',
     'projectId': 'project',
@@ -186,11 +187,7 @@ def _GenerateAttributes(expected_param_names, attribute_data):
       # attribute as a substitute.
       attribute_name = IGNORED_FIELDS[expected_name]
       final_attributes.append(
-          (expected_name, concepts.ResourceParameterAttributeConfig(
-              name=attribute_name, help_text='', completer=None,
-              fallthroughs=[
-                  deps.PropertyFallthrough(_DEFAULT_PROPS.get(attribute_name))])
-          ))
+          (expected_name, _DEFAULT_CONFIGS.get(attribute_name)))
     else:
       # It doesn't match (or there are no more registered params) and the
       # field is not being ignored, error.
@@ -244,9 +241,13 @@ def _CreateAttribute(data):
 
   prop_string = data.get('property')
   prop = properties.FromString(prop_string) if prop_string else None
-  prop = prop or _DEFAULT_PROPS.get(attribute_name)
   if prop:
     fallthroughs.insert(0, deps.PropertyFallthrough(prop))
+  default_config = _DEFAULT_CONFIGS.get(attribute_name)
+  if default_config:
+    fallthroughs += [
+        fallthrough for fallthrough in default_config.fallthroughs
+        if fallthrough not in fallthroughs]
 
   completion_id_field = data.get('completion_id_field')
   completion_request_params = data.get('completion_request_params', [])

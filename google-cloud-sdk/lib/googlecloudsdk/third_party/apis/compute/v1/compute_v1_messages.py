@@ -1951,6 +1951,7 @@ class BackendBucket(_messages.Message):
 
   Fields:
     bucketName: Cloud Storage bucket name.
+    cdnPolicy: Cloud CDN Coniguration for this BackendBucket.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional textual description of the resource; provided by
@@ -1970,13 +1971,33 @@ class BackendBucket(_messages.Message):
   """
 
   bucketName = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  enableCdn = _messages.BooleanField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default=u'compute#backendBucket')
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
+  cdnPolicy = _messages.MessageField('BackendBucketCdnPolicy', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  enableCdn = _messages.BooleanField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(7, default=u'compute#backendBucket')
+  name = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+
+
+class BackendBucketCdnPolicy(_messages.Message):
+  r"""Message containing Cloud CDN configuration for a backend bucket.
+
+  Fields:
+    signedUrlCacheMaxAgeSec: Number of seconds up to which the response to a
+      signed URL request will be cached in the CDN. After this time period,
+      the Signed URL will be revalidated before being served. Defaults to 1hr
+      (3600s). If this field is set, Cloud CDN will internally act as though
+      all responses from this bucket had a ?Cache-Control: public, max-
+      age=[TTL]? header, regardless of any existing Cache-Control header. The
+      actual headers served in responses will not be altered.
+    signedUrlKeyNames: [Output Only] Names of the keys currently configured
+      for Cloud CDN Signed URL on this backend bucket.
+  """
+
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(1)
+  signedUrlKeyNames = _messages.StringField(2, repeated=True)
 
 
 class BackendBucketList(_messages.Message):
@@ -2141,7 +2162,9 @@ class BackendService(_messages.Message):
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
-      fingerprint must be provided in order to update the BackendService.
+      fingerprint must be provided in order to update the BackendService.  To
+      see the latest fingerprint, make a get() request to retrieve a
+      BackendService.
     healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
       resource for health checking this BackendService. Currently at most one
       health check can be specified, and a health check is required for
@@ -2421,9 +2444,20 @@ class BackendServiceCdnPolicy(_messages.Message):
 
   Fields:
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
+    signedUrlCacheMaxAgeSec: Number of seconds up to which the response to a
+      signed URL request will be cached in the CDN. After this time period,
+      the Signed URL will be revalidated before being served. Defaults to 1hr
+      (3600s). If this field is set, Cloud CDN will internally act as though
+      all responses from this backend had a ?Cache-Control: public, max-
+      age=[TTL]? header, regardless of any existing Cache-Control header. The
+      actual headers served in responses will not be altered.
+    signedUrlKeyNames: [Output Only] Names of the keys currently configured
+      for Cloud CDN Signed URL on this backend service.
   """
 
   cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
+  signedUrlCacheMaxAgeSec = _messages.IntegerField(2)
+  signedUrlKeyNames = _messages.StringField(3, repeated=True)
 
 
 class BackendServiceGroupHealth(_messages.Message):
@@ -3705,6 +3739,32 @@ class ComputeAutoscalersUpdateRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeBackendBucketsAddSignedUrlKeyRequest(_messages.Message):
+  r"""A ComputeBackendBucketsAddSignedUrlKeyRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to which the Signed URL
+      Key should be added. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    signedUrlKey: A SignedUrlKey resource to be passed as the request body.
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  signedUrlKey = _messages.MessageField('SignedUrlKey', 4)
+
+
 class ComputeBackendBucketsDeleteRequest(_messages.Message):
   r"""A ComputeBackendBucketsDeleteRequest object.
 
@@ -3726,6 +3786,32 @@ class ComputeBackendBucketsDeleteRequest(_messages.Message):
   backendBucket = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeBackendBucketsDeleteSignedUrlKeyRequest(_messages.Message):
+  r"""A ComputeBackendBucketsDeleteSignedUrlKeyRequest object.
+
+  Fields:
+    backendBucket: Name of the BackendBucket resource to which the Signed URL
+      Key should be added. The name should conform to RFC1035.
+    keyName: The name of the Signed URL Key to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backendBucket = _messages.StringField(1, required=True)
+  keyName = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendBucketsGetRequest(_messages.Message):
@@ -3861,6 +3947,32 @@ class ComputeBackendBucketsUpdateRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeBackendServicesAddSignedUrlKeyRequest(_messages.Message):
+  r"""A ComputeBackendServicesAddSignedUrlKeyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the Signed
+      URL Key should be added. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    signedUrlKey: A SignedUrlKey resource to be passed as the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  signedUrlKey = _messages.MessageField('SignedUrlKey', 4)
+
+
 class ComputeBackendServicesAggregatedListRequest(_messages.Message):
   r"""A ComputeBackendServicesAggregatedListRequest object.
 
@@ -3928,6 +4040,32 @@ class ComputeBackendServicesDeleteRequest(_messages.Message):
   backendService = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeBackendServicesDeleteSignedUrlKeyRequest(_messages.Message):
+  r"""A ComputeBackendServicesDeleteSignedUrlKeyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the Signed
+      URL Key should be added. The name should conform to RFC1035.
+    keyName: The name of the Signed URL Key to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  keyName = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeBackendServicesGetHealthRequest(_messages.Message):
@@ -13780,6 +13918,28 @@ class DisksScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class DistributionPolicy(_messages.Message):
+  r"""A DistributionPolicy object.
+
+  Fields:
+    zones: Zones where the regional managed instance group will create and
+      manage instances.
+  """
+
+  zones = _messages.MessageField('DistributionPolicyZoneConfiguration', 1, repeated=True)
+
+
+class DistributionPolicyZoneConfiguration(_messages.Message):
+  r"""A DistributionPolicyZoneConfiguration object.
+
+  Fields:
+    zone: The URL of the zone. The zone must exist in the region where the
+      managed instance group is located.
+  """
+
+  zone = _messages.StringField(1)
+
+
 class Firewall(_messages.Message):
   r"""Represents a Firewall resource.
 
@@ -16457,10 +16617,13 @@ class InstanceGroupManager(_messages.Message):
       of those actions.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    distributionPolicy: Policy specifying intended distribution of instances
+      in regional managed instance group.
     fingerprint: Fingerprint of this resource. This field may be used in
       optimistic locking. It will be ignored when inserting an
       InstanceGroupManager. An up-to-date fingerprint must be provided in
-      order to update the InstanceGroupManager.
+      order to update the InstanceGroupManager.  To see the latest
+      fingerprint, make a get() request to retrieve an InstanceGroupManager.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
@@ -16491,18 +16654,19 @@ class InstanceGroupManager(_messages.Message):
   creationTimestamp = _messages.StringField(2)
   currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 3)
   description = _messages.StringField(4)
-  fingerprint = _messages.BytesField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  instanceGroup = _messages.StringField(7)
-  instanceTemplate = _messages.StringField(8)
-  kind = _messages.StringField(9, default=u'compute#instanceGroupManager')
-  name = _messages.StringField(10)
-  namedPorts = _messages.MessageField('NamedPort', 11, repeated=True)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  targetPools = _messages.StringField(14, repeated=True)
-  targetSize = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(16)
+  distributionPolicy = _messages.MessageField('DistributionPolicy', 5)
+  fingerprint = _messages.BytesField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  instanceGroup = _messages.StringField(8)
+  instanceTemplate = _messages.StringField(9)
+  kind = _messages.StringField(10, default=u'compute#instanceGroupManager')
+  name = _messages.StringField(11)
+  namedPorts = _messages.MessageField('NamedPort', 12, repeated=True)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  targetPools = _messages.StringField(15, repeated=True)
+  targetSize = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(17)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -20066,7 +20230,7 @@ class MachineTypesScopedList(_messages.Message):
 
 
 class ManagedInstance(_messages.Message):
-  r"""Next available tag: 12
+  r"""A Managed Instance resource.
 
   Enums:
     CurrentActionValueValuesEnum: [Output Only] The current action that the
@@ -20248,7 +20412,8 @@ class Metadata(_messages.Message):
       locking. The fingerprint is initially generated by Compute Engine and
       changes after every request to modify or update metadata. You must
       always provide an up-to-date fingerprint hash in order to update or
-      change metadata.
+      change metadata.  To see the latest fingerprint, make a get() request to
+      retrieve the resource.
     items: Array of key/value pairs. The total size of all keys and values
       must be less than 512 KB.
     kind: [Output Only] Type of the resource. Always compute#metadata for
@@ -23720,6 +23885,24 @@ class ServiceAccount(_messages.Message):
   scopes = _messages.StringField(2, repeated=True)
 
 
+class SignedUrlKey(_messages.Message):
+  r"""Represents a customer-supplied Signing Key used by Cloud CDN Signed URLs
+
+  Fields:
+    keyName: Name of the key. The name must be 1-63 characters long, and
+      comply with RFC1035. Specifically, the name must be 1-63 characters long
+      and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
+      means the first character must be a lowercase letter, and all following
+      characters must be a dash, lowercase letter, or digit, except the last
+      character, which cannot be a dash.
+    keyValue: 128-bit key value used for signing the URL. The key value must
+      be a valid RFC 4648 Section 5 base64url encoded string.
+  """
+
+  keyName = _messages.StringField(1)
+  keyValue = _messages.StringField(2)
+
+
 class Snapshot(_messages.Message):
   r"""A persistent disk snapshot resource. (== resource_for beta.snapshots ==)
   (== resource_for v1.snapshots ==)
@@ -24341,7 +24524,8 @@ class SslPolicy(_messages.Message):
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a SslPolicy. An up-to-date fingerprint
-      must be provided in order to update the SslPolicy.
+      must be provided in order to update the SslPolicy.  To see the latest
+      fingerprint, make a get() request to retrieve an SslPolicy.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output only] Type of the resource. Always compute#sslPolicyfor SSL
@@ -24569,7 +24753,8 @@ class Subnetwork(_messages.Message):
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
-      must be provided in order to update the Subnetwork.
+      must be provided in order to update the Subnetwork.  To see the latest
+      fingerprint, make a get() request to retrieve a Subnetwork.
     gatewayAddress: [Output Only] The gateway address for default routes to
       reach destination addresses outside this subnetwork.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -27493,7 +27678,8 @@ class UrlMap(_messages.Message):
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a UrlMap. An up-to-date fingerprint must
-      be provided in order to update the UrlMap.
+      be provided in order to update the UrlMap.  To see the latest
+      fingerprint, make a get() request to retrieve a UrlMap.
     hostRules: The list of HostRules to use against the URL.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.

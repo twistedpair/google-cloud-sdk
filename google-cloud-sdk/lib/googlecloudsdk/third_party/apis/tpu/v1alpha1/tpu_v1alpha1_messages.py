@@ -228,6 +228,7 @@ class Node(_messages.Message):
       the node reach out to the 0th entry in this map first.
     port: Output only. DEPRECATED! Use network_endpoints instead. The network
       port for the TPU Node as visible to Compute Engine instances.
+    schedulingConfig: A SchedulingConfig attribute.
     serviceAccount: Output only. The service account used to run the tensor
       flow services within the node. To share resources, including Google
       Cloud Storage data, with the Tensorflow job running in the Node, this
@@ -315,9 +316,10 @@ class Node(_messages.Message):
   network = _messages.StringField(10)
   networkEndpoints = _messages.MessageField('NetworkEndpoint', 11, repeated=True)
   port = _messages.StringField(12)
-  serviceAccount = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  tensorflowVersion = _messages.StringField(15)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 13)
+  serviceAccount = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  tensorflowVersion = _messages.StringField(16)
 
 
 class Operation(_messages.Message):
@@ -466,6 +468,16 @@ class ReimageNodeRequest(_messages.Message):
 
 class ResetNodeRequest(_messages.Message):
   r"""Request for ResetNode."""
+
+
+class SchedulingConfig(_messages.Message):
+  r"""A SchedulingConfig object.
+
+  Fields:
+    preemptible: A boolean attribute.
+  """
+
+  preemptible = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -935,13 +935,17 @@ class SSHCommand(object):
     # PuTTY and friends always ask on fingerprint mismatch
     in_str = 'y\n' if env.suite is Suite.PUTTY and force_connect else None
 
-    # We pipe stdout to a specific file
+    # We pipe stdout to a specific file if given a file, otherwise we write
+    # to stdout.
+    out_func = None
     extra_popen_kwargs = {}
     if explicit_output_file:
       extra_popen_kwargs['stdout'] = explicit_output_file
+    else:
+      out_func = log.out.write
 
     status = execution_utils.Exec(args, no_exit=True, in_str=in_str,
-                                  **extra_popen_kwargs)
+                                  out_func=out_func, **extra_popen_kwargs)
     if status == env.ssh_exit_code:
       raise CommandError(args[0], return_code=status)
     return status

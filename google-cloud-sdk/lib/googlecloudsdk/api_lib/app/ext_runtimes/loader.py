@@ -15,6 +15,7 @@
 """Utilities for loading runtime defs from git."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import abc
 import contextlib
 import os
@@ -162,7 +163,7 @@ def _PullTags(local_repo, client_wrapper, target_dir):
   # Try to get the "latest" tag (latest released version)
   revision = None
   tag = None
-  for tag in ('refs/tags/latest', 'refs/heads/master'):
+  for tag in (b'refs/tags/latest', b'refs/heads/master'):
     try:
       log.debug('looking up ref %s', tag)
       revision = local_repo[tag]

@@ -117,14 +117,14 @@ def AddLocationFlag(parser, resource='resource'):
   parser.add_argument(
       '--location',
       completer=LocationCompleter,
-      help='The location of the {0}.'.format(resource))
+      help='Location of the {0}.'.format(resource))
 
 
 def AddKeyRingFlag(parser, resource='resource'):
   parser.add_argument(
       '--keyring',
       completer=KeyRingCompleter,
-      help='The keyring of the {0}.'.format(resource))
+      help='Key ring of the {0}.'.format(resource))
 
 
 def AddCryptoKeyFlag(parser, help_text=None):
@@ -145,7 +145,7 @@ def AddCryptoKeyVersionFlag(parser, help_action, required=False):
       '--version',
       required=required,
       completer=KeyVersionCompleter,
-      help='The version {0}.'.format(help_action))
+      help='Version {0}.'.format(help_action))
 
 
 def AddCryptoKeyPrimaryVersionFlag(parser, help_action, required=False):
@@ -153,7 +153,7 @@ def AddCryptoKeyPrimaryVersionFlag(parser, help_action, required=False):
       '--primary-version',
       required=required,
       completer=KeyVersionCompleter,
-      help='The primary version {0}.'.format(help_action))
+      help='Primary version {0}.'.format(help_action))
 
 
 def AddRotationPeriodFlag(parser):
@@ -182,14 +182,14 @@ def AddRemoveRotationScheduleFlag(parser):
 def AddPlaintextFileFlag(parser, help_action):
   parser.add_argument(
       '--plaintext-file',
-      help='Path to the plaintext file {0}.'.format(help_action),
+      help='File path of the plaintext file {0}.'.format(help_action),
       required=True)
 
 
 def AddCiphertextFileFlag(parser, help_action):
   parser.add_argument(
       '--ciphertext-file',
-      help='Path to the ciphertext file {0}.'.format(help_action),
+      help='File path of the ciphertext file {0}.'.format(help_action),
       required=True)
 
 
@@ -197,7 +197,8 @@ def AddAadFileFlag(parser):
   parser.add_argument(
       '--additional-authenticated-data-file',
       help=
-      'Path to the optional file containing the additional authenticated data.')
+      'File path to the optional file containing the additional authenticated '
+      'data.')
 
 
 # Arguments
@@ -205,7 +206,7 @@ def AddKeyRingArgument(parser, help_action):
   parser.add_argument(
       'keyring',
       completer=KeyRingCompleter,
-      help='Name of the keyring {0}.'.format(help_action))
+      help='Name of the key ring {0}.'.format(help_action))
 
 
 def AddCryptoKeyArgument(parser, help_action):

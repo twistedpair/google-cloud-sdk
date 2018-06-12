@@ -35,6 +35,7 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
 import six
+from six.moves import map
 
 
 class PermissionError(exceptions.Error):
@@ -311,7 +312,7 @@ def Exec(args,
 
       if isinstance(in_str, six.text_type):
         in_str = in_str.encode('utf-8')
-      stdout, stderr = map(encoding.Decode, p.communicate(input=in_str))
+      stdout, stderr = list(map(encoding.Decode, p.communicate(input=in_str)))
 
       if out_func:
         out_func(stdout)

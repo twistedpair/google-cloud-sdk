@@ -20,9 +20,8 @@ from __future__ import unicode_literals
 import textwrap
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.core import properties
 
 
 def _GetNoteResourceSpec():
@@ -72,12 +71,7 @@ def _GetAuthorityResourceSpec():
   return concepts.ResourceSpec(
       'binaryauthorization.projects.attestationAuthorities',
       resource_name='authority',
-      projectsId=concepts.ResourceParameterAttributeConfig(
-          name='project',
-          help_text='The project of the {resource}.',
-          fallthroughs=[
-              deps.PropertyFallthrough(properties.VALUES.core.project)],
-      ),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       attestationAuthoritiesId=concepts.ResourceParameterAttributeConfig(
           name='name',
           help_text='The ID of the {resource}.',

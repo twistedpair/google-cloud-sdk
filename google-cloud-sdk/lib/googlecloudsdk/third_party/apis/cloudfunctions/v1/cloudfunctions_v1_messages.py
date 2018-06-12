@@ -91,7 +91,7 @@ class CloudFunction(_messages.Message):
     Values:
       CLOUD_FUNCTION_STATUS_UNSPECIFIED: Not specified. Invalid state.
       ACTIVE: Function has been succesfully deployed and is serving.
-      OFFLINE: Function deployment failed and the function isn\u2019t serving.
+      OFFLINE: Function deployment failed and the function isn't serving.
       DEPLOY_IN_PROGRESS: Function is being created or updated.
       DELETE_IN_PROGRESS: Function is being deleted.
       UNKNOWN: Function deployment failed and the function serving state is
@@ -801,14 +801,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -844,17 +842,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):

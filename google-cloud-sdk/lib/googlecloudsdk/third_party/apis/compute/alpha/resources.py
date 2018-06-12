@@ -335,12 +335,27 @@ class Collections(enum.Enum):
       [u'project', u'region', u'operation'],
       True
   )
+  REGIONSSLCERTIFICATES = (
+      'regionSslCertificates',
+      'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
+      {},
+      [u'project', u'region', u'sslCertificate'],
+      True
+  )
   REGIONTARGETHTTPPROXIES = (
       'regionTargetHttpProxies',
       'projects/{project}/regions/{region}/targetHttpProxies/'
       '{targetHttpProxy}',
       {},
       [u'project', u'region', u'targetHttpProxy'],
+      True
+  )
+  REGIONTARGETHTTPSPROXIES = (
+      'regionTargetHttpsProxies',
+      'projects/{project}/regions/{region}/targetHttpsProxies/'
+      '{targetHttpsProxy}',
+      {},
+      [u'project', u'region', u'targetHttpsProxy'],
       True
   )
   REGIONURLMAPS = (

@@ -517,3 +517,13 @@ def Compile(expression='', defaults=None, symbols=None, by_columns=False,
       expression, defaults=defaults, symbols=symbols, compiler=Compile)
   return Projector(projection, by_columns=by_columns,
                    retain_none_values=retain_none_values)
+
+
+class IdentityProjector(Projector):
+  """A no-op resource projector that preserves the original object."""
+
+  def __init__(self):
+    super(IdentityProjector, self).__init__(resource_projection_parser.Parse())
+
+  def Evaluate(self, obj):
+    return obj

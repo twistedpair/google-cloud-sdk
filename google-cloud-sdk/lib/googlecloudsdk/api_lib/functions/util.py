@@ -72,13 +72,6 @@ def GetApiMessagesModule():
   return apis.GetMessagesModule(_API_NAME, _API_VERSION)
 
 
-def GetLocationRef():
-  return resources.REGISTRY.Parse(
-      properties.VALUES.functions.region.Get(),
-      params={'projectsId': properties.VALUES.core.project.Get(required=True)},
-      collection='cloudfunctions.projects.locations')
-
-
 def GetFunctionRef(name):
   return resources.REGISTRY.Parse(
       name, params={
@@ -301,6 +294,7 @@ def FormatTimestamp(timestamp):
 
 @CatchHTTPErrorRaiseHTTPException
 def GetFunction(function_name):
+  """Returns the Get method on function response, None if it doesn't exist."""
   client = GetApiClientInstance()
   messages = client.MESSAGES_MODULE
   try:
@@ -340,8 +334,7 @@ def PatchFunction(function, fields_to_patch):
 
 
 @CatchHTTPErrorRaiseHTTPException
-def CreateFunction(function):
-  location = GetLocationRef().RelativeName()
+def CreateFunction(function, location):
   client = GetApiClientInstance()
   messages = client.MESSAGES_MODULE
   op = client.projects_locations_functions.Create(

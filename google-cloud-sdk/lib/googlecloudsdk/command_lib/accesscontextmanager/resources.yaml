@@ -10,7 +10,7 @@ policy:
       property: access_context_manager/policy
       fallthroughs:
         - hook: googlecloudsdk.command_lib.accesscontextmanager.policies:GetDefaultPolicy
-          hint: Automatically, if the current account belongs to an organization with exactly one access policy.
+          hint: automatically, if the current account belongs to an organization with exactly one access policy.
 level:
   name: level
   request_id_field: accessLevel.name

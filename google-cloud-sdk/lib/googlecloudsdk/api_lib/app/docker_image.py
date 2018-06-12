@@ -14,6 +14,8 @@
 
 """Encapsulation of a docker image."""
 
+from __future__ import unicode_literals
+
 
 class Image(object):
   """Docker image that requires building and should be removed afterwards."""

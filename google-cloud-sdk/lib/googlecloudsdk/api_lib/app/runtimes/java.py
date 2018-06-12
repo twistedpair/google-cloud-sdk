@@ -18,6 +18,7 @@ runtimes_test, which should also mostly go away.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import textwrap
 
 JAVA_APP_YAML = textwrap.dedent("""\

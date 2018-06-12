@@ -1423,7 +1423,7 @@ prompt, or run:
       self.__Write(log.status,
                    'Installing component in a new window.\n\n'
                    'Please re-run this command when installation is complete.\n'
-                   '    $ {0}'.format(' '.join(sys.argv)))
+                   '    $ {0}'.format(' '.join(['gcloud'] + sys.argv[1:])))
       raise
 
     # Restart the original command.

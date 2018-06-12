@@ -372,13 +372,13 @@ class ConsoleAttr(object):
         to the console output to control the font settings.
     """
     if not self._csi:
-      return u''
+      return ''
     codes = []
     if bold:
       codes.append(self._font_bold)
     if italic:
       codes.append(self._font_italic)
-    return u'{csi}{codes}m'.format(csi=self._csi, codes=';'.join(codes))
+    return '{csi}{codes}m'.format(csi=self._csi, codes=';'.join(codes))
 
   def GetRawKey(self):
     """Reads one key press from stdin with no echo.

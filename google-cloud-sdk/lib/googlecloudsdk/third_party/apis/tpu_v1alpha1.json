@@ -344,6 +344,9 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "schedulingConfig": {
+          "$ref": "SchedulingConfig"
+        },
         "networkEndpoints": {
           "description": "Output only. The network endpoints where TPU workers can be accessed and sent work.\nIt is recommended that Tensorflow clients of the node reach out to the 0th\nentry in this map first.",
           "type": "array",
@@ -373,6 +376,15 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "SchedulingConfig": {
+      "id": "SchedulingConfig",
+      "type": "object",
+      "properties": {
+        "preemptible": {
+          "type": "boolean"
         }
       }
     },

@@ -14,6 +14,8 @@
 
 """Utilities for dealing with region resources."""
 
+from __future__ import unicode_literals
+
 
 class Region(object):
   """Value class representing a region resource."""

@@ -274,6 +274,12 @@ apis:
       discovery_doc: dns_v1beta2.json
     v2beta1:
       discovery_doc: dns_v2beta1.json
+  file:
+    v1alpha1:
+      discovery_doc: file_v1alpha1.json
+      default: true
+    v1beta1:
+      discovery_doc: file_v1beta1.json
   genomics:
     v1:
       discovery_doc: genomics_v1.json
@@ -408,8 +414,8 @@ apis:
     v1alpha1:
       discovery_doc: tpu_v1alpha1.json
       default: true
-    v1beta1:
-      discovery_doc: tpu_v1beta1.json
+    v1:
+      discovery_doc: tpu_v1.json
   videointelligence:
     v1:
       discovery_doc: videointelligence_v1.json

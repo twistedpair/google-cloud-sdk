@@ -266,7 +266,7 @@ class Folder(_messages.Message):
   Fields:
     createTime: Output only. Timestamp when the Folder was created. Assigned
       by the server.
-    displayName: The folder\u2019s display name. A folder\u2019s display name must be
+    displayName: The folder's display name. A folder's display name must be
       unique amongst its siblings, e.g. no two folders with the same parent
       can share the same display name. The display name must start and end
       with a letter or digit, may contain letters, digits, spaces, hyphens and
@@ -278,7 +278,7 @@ class Folder(_messages.Message):
       [UndeleteFolder].
     name: Output only. The resource name of the Folder. Its format is
       `folders/{folder_id}`, for example: "folders/1234".
-    parent: The Folder\u2019s parent's resource name. Updates to the folder's
+    parent: The Folder's parent's resource name. Updates to the folder's
       parent must be performed via [MoveFolders].
   """
 

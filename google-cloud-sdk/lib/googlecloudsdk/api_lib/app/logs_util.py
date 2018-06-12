@@ -13,6 +13,7 @@
 # limitations under the License.
 """General formatting utils, App Engine specific formatters."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.logging import util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -221,7 +222,7 @@ class LogPrinter(object):
                   ' format.'.format(entry.timestamp))
       time = '????-??-?? ??:??:??'
 
-    out = u'{timestamp} {log_text}'.format(
+    out = '{timestamp} {log_text}'.format(
         timestamp=time,
         log_text=text)
     if self.max_length and len(out) > self.max_length:

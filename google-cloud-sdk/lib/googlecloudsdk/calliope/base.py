@@ -473,6 +473,7 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
 class Group(_Common):
   """Group is a base class for groups to implement."""
 
+  _allow_py3 = True
   _command_suggestions = {}
 
   def __init__(self):
@@ -663,6 +664,23 @@ def Hidden(cmd_class):
   # pylint: disable=protected-access
   cmd_class._is_hidden = True
   return cmd_class
+
+
+def DisallowPython3(group_class):
+  """Decorator to indicate a surface doesn't support being run undder Python 3.
+
+  Calliope will error out if sub-elements of this surface are attempted to be
+  loaded. Should only be applied to groups.
+
+  Args:
+    group_class: base.Group, A calliope group.
+
+  Returns:
+    A modified version of the provided class.
+  """
+  # pylint: disable=protected-access
+  group_class._allow_py3 = False
+  return group_class
 
 
 def CommandSuggestion(command, suggestion):

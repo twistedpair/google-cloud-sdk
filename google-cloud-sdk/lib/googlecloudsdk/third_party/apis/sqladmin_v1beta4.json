@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20180525",
+ "revision": "20180604",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -894,6 +894,10 @@
     "ipv4Enabled": {
      "type": "boolean",
      "description": "Whether the instance should be assigned an IP address or not."
+    },
+    "privateNetwork": {
+     "type": "string",
+     "description": "Reserved for future use."
     },
     "requireSsl": {
      "type": "boolean",
@@ -2013,7 +2017,7 @@
      "id": "sql.instances.addServerCa",
      "path": "projects/{project}/instances/{instance}/addServerCa",
      "httpMethod": "POST",
-     "description": "Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There can not be more than one CA version waiting to be rotated in.",
+     "description": "Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2109,7 +2113,7 @@
      "id": "sql.instances.demoteMaster",
      "path": "projects/{project}/instances/{instance}/demoteMaster",
      "httpMethod": "POST",
-     "description": "Reserved for future use.",
+     "description": "Demotes the standalone instance to be a Cloud SQL read replica for an external database server.",
      "parameters": {
       "instance": {
        "type": "string",

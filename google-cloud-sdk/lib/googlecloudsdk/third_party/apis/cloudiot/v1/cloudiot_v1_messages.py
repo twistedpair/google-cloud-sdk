@@ -233,152 +233,6 @@ class CloudiotProjectsLocationsRegistriesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class CloudiotProjectsLocationsRegistriesGroupsDevicesConfigVersionsListRequest(_messages.Message):
-  r"""A
-  CloudiotProjectsLocationsRegistriesGroupsDevicesConfigVersionsListRequest
-  object.
-
-  Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-    numVersions: The number of versions to list. Versions are listed in
-      decreasing order of the version number. The maximum number of versions
-      retained is 10. If this value is zero, it will return all the versions
-      available.
-  """
-
-  name = _messages.StringField(1, required=True)
-  numVersions = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesDeleteRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesDeleteRequest object.
-
-  Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesGetRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesGetRequest object.
-
-  Fields:
-    fieldMask: The fields of the `Device` resource to be returned in the
-      response. If the field mask is unset or empty, all fields are returned.
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-  """
-
-  fieldMask = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesModifyCloudToDeviceConfigRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesModifyCloudToDeviceCon
-  figRequest object.
-
-  Fields:
-    modifyCloudToDeviceConfigRequest: A ModifyCloudToDeviceConfigRequest
-      resource to be passed as the request body.
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-  """
-
-  modifyCloudToDeviceConfigRequest = _messages.MessageField('ModifyCloudToDeviceConfigRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesPatchRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesPatchRequest object.
-
-  Fields:
-    device: A Device resource to be passed as the request body.
-    name: The resource path name. For example, `projects/p1/locations/us-
-      central1/registries/registry0/devices/dev0` or `projects/p1/locations
-      /us-central1/registries/registry0/devices/{num_id}`. When `name` is
-      populated as a response from the service, it always ends in the device
-      numeric ID.
-    updateMask: Only updates the `device` fields indicated by this mask. The
-      field mask must not be empty, and it must not contain fields that are
-      immutable or only set by the server. Mutable top-level fields:
-      `credentials`, `blocked`, and `metadata`
-  """
-
-  device = _messages.MessageField('Device', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsDevicesStatesListRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesStatesListRequest
-  object.
-
-  Fields:
-    name: The name of the device. For example, `projects/p0/locations/us-
-      central1/registries/registry0/devices/device0` or `projects/p0/locations
-      /us-central1/registries/registry0/devices/{num_id}`.
-    numStates: The number of states to list. States are listed in descending
-      order of update time. The maximum number of states retained is 10. If
-      this value is zero, it will return all the states available.
-  """
-
-  name = _messages.StringField(1, required=True)
-  numStates = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsGetIamPolicyRequest object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsSetIamPolicyRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest(_messages.Message):
-  r"""A CloudiotProjectsLocationsRegistriesGroupsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class CloudiotProjectsLocationsRegistriesListRequest(_messages.Message):
   r"""A CloudiotProjectsLocationsRegistriesListRequest object.
 
@@ -995,14 +849,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1038,17 +890,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class StateNotificationConfig(_messages.Message):

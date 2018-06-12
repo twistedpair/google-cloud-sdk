@@ -124,7 +124,7 @@ def ImportPath(path):
   module_file = None
   try:
     module_file, module_path, module_description = imp.find_module(
-        module_name, [module_dir])  # pytype: disable=none-attr
+        module_name, [module_dir])
     return imp.load_module(
         module_name, module_file, module_path, module_description)
   except ImportError as e:

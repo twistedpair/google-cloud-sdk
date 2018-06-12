@@ -278,17 +278,22 @@ def _MatchCollection(resource_spec, attribute):
 def _GetCompleterCollectionInfo(resource_spec, attribute):
   # type: (concepts.ResourceSpec, concepts.Attribute) ->  typing.Optional[resource_lib.CollectionInfo]  # pylint: disable=line-too-long
   """Gets collection info for an attribute in a resource."""
+  api_version = None
   collection = _MatchCollection(resource_spec, attribute)
   if collection:
-    full_collection_name = (resource_spec._collection_info.api_name + '.'  # pylint: disable=protected-access
-                            + collection)
+    # pylint: disable=protected-access
+    full_collection_name = (
+        resource_spec._collection_info.api_name + '.' + collection)
+    # TODO(b/109799172): add a unit test where api_version is not the default
+    api_version = resource_spec._collection_info.api_version
   # The CloudResourceManager projects collection can be used for "synthetic"
   # project resources that don't have their own method.
   elif attribute.name == 'project':
     full_collection_name = 'cloudresourcemanager.projects'
   else:
     return None
-  return resources.REGISTRY.GetCollectionInfo(full_collection_name)
+  return resources.REGISTRY.GetCollectionInfo(full_collection_name,
+                                              api_version=api_version)
 
 
 def _GetCollectionAndMethod(resource_spec, attribute_name):

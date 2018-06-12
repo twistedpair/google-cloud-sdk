@@ -1466,10 +1466,11 @@ class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeltaPresenceEstimationConfig(_messages.Message):
-  r"""\u03b4-presence metric, used to estimate how likely it is for an attacker to
-  figure out that one given individual appears in a de-identified dataset.
-  Similarly to the k-map metric, we cannot compute \u03b4-presence exactly without
-  knowing the attack dataset, so we use a statistical model instead.
+  r"""\u03b4-presence metric, used to estimate how likely it is for an
+  attacker to figure out that one given individual appears in a de-identified
+  dataset. Similarly to the k-map metric, we cannot compute \u03b4-presence
+  exactly without knowing the attack dataset, so we use a statistical model
+  instead.
 
   Fields:
     auxiliaryTables: Several auxiliary tables can be used in the analysis.
@@ -1517,8 +1518,8 @@ class GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues(_messages.Message):
   Fields:
     estimatedProbability: The estimated probability that a given individual
       sharing these quasi-identifier values is in the dataset. This value,
-      typically called \u03b4, is the ratio between the number of records in the
-      dataset with these quasi-identifier values, and the total number of
+      typically called \u03b4, is the ratio between the number of records in
+      the dataset with these quasi-identifier values, and the total number of
       individuals (inside *and* outside the dataset) with these quasi-
       identifier values. For example, if there are 15 individuals in the
       dataset who share the same quasi-identifier values, and an estimated 100
@@ -1531,8 +1532,8 @@ class GooglePrivacyDlpV2DeltaPresenceEstimationQuasiIdValues(_messages.Message):
 
 
 class GooglePrivacyDlpV2DeltaPresenceEstimationResult(_messages.Message):
-  r"""Result of the \u03b4-presence computation. Note that these results are an
-  estimation, not exact values.
+  r"""Result of the \u03b4-presence computation. Note that these results are
+  an estimation, not exact values.
 
   Fields:
     deltaPresenceEstimationHistogram: The intervals [min_probability,
@@ -1852,11 +1853,11 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
     lowerBound: Lower bound value of buckets. All values less than
       `lower_bound` are grouped together into a single bucket; for example if
       `lower_bound` = 10, then all values less than 10 are replaced with the
-      value \u201c-10\u201d. [Required].
+      value "-10". [Required].
     upperBound: Upper bound value of buckets. All values greater than
       upper_bound are grouped together into a single bucket; for example if
       `upper_bound` = 89, then all values greater than 89 are replaced with
-      the value \u201c89+\u201d. [Required].
+      the value "89+". [Required].
   """
 
   bucketSize = _messages.FloatField(1)
@@ -1865,7 +1866,7 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2HotwordRule(_messages.Message):
-  r"""Detection rule that adjusts the likelihood of findings within a certain
+  r"""The rule that adjusts the likelihood of findings within a certain
   proximity of hotwords.
 
   Fields:
@@ -1908,7 +1909,7 @@ class GooglePrivacyDlpV2ImageRedactionConfig(_messages.Message):
       text that it matches against all info_types that are found, but not
       specified in another ImageRedactionConfig.
     redactAllText: If true, all text found in the image, regardless whether it
-      matches an info_type, is redacted.
+      matches an info_type, is redacted. Only one should be provided.
     redactionColor: The color to use when redacting content from an image. If
       not specified, the default is black.
   """
@@ -1993,8 +1994,9 @@ class GooglePrivacyDlpV2InfoTypeTransformation(_messages.Message):
   info_type.
 
   Fields:
-    infoTypes: InfoTypes to apply the transformation to. Empty list will match
-      all available infoTypes for this transformation.
+    infoTypes: InfoTypes to apply the transformation to. An empty list will
+      cause this transformation to apply to all findings that correspond to
+      infoTypes that were requested in `InspectConfig`.
     primitiveTransformation: Primitive transformation to apply to the
       infoType. [required]
   """
@@ -2661,35 +2663,44 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
   r"""Cloud repository for storing output.
 
   Enums:
-    OutputSchemaValueValuesEnum: Schema used for writing the findings. Columns
-      are derived from the `Finding` object. If appending to an existing
-      table, any columns from the predefined schema that are missing will be
-      added. No columns in the existing table will be deleted.  If
-      unspecified, then all available columns will be used for a new table,
-      and no changes will be made to an existing table.
+    OutputSchemaValueValuesEnum: Schema used for writing the findings for
+      Inspect jobs. This field is only used for Inspect and must be
+      unspecified for Risk jobs. Columns are derived from the `Finding`
+      object. If appending to an existing table, any columns from the
+      predefined schema that are missing will be added. No columns in the
+      existing table will be deleted.  If unspecified, then all available
+      columns will be used for a new table, and no changes will be made to an
+      existing table.
 
   Fields:
-    outputSchema: Schema used for writing the findings. Columns are derived
-      from the `Finding` object. If appending to an existing table, any
-      columns from the predefined schema that are missing will be added. No
-      columns in the existing table will be deleted.  If unspecified, then all
-      available columns will be used for a new table, and no changes will be
-      made to an existing table.
+    outputSchema: Schema used for writing the findings for Inspect jobs. This
+      field is only used for Inspect and must be unspecified for Risk jobs.
+      Columns are derived from the `Finding` object. If appending to an
+      existing table, any columns from the predefined schema that are missing
+      will be added. No columns in the existing table will be deleted.  If
+      unspecified, then all available columns will be used for a new table,
+      and no changes will be made to an existing table.
     table: Store findings in an existing table or a new table in an existing
-      dataset. Each column in an existing table must have the same name, type,
-      and mode of a field in the `Finding` object. If table_id is not set a
-      new one will be generated for you with the following format:
-      dlp_googleapis_yyyy_mm_dd_[dlp_job_id]. Pacific timezone will be used
-      for generating the date details.
+      dataset. If table_id is not set a new one will be generated for you with
+      the following format: dlp_googleapis_yyyy_mm_dd_[dlp_job_id]. Pacific
+      timezone will be used for generating the date details.  For Inspect,
+      each column in an existing output table must have the same name, type,
+      and mode of a field in the `Finding` object.  For Risk, an existing
+      output table should be the output of a previous Risk analysis job run on
+      the same source table, with the same privacy metric and quasi-
+      identifiers. Risk jobs that analyze the same table but compute a
+      different privacy metric, or use different sets of quasi-identifiers,
+      cannot store their results in the same table.
   """
 
   class OutputSchemaValueValuesEnum(_messages.Enum):
-    r"""Schema used for writing the findings. Columns are derived from the
-    `Finding` object. If appending to an existing table, any columns from the
-    predefined schema that are missing will be added. No columns in the
-    existing table will be deleted.  If unspecified, then all available
-    columns will be used for a new table, and no changes will be made to an
-    existing table.
+    r"""Schema used for writing the findings for Inspect jobs. This field is
+    only used for Inspect and must be unspecified for Risk jobs. Columns are
+    derived from the `Finding` object. If appending to an existing table, any
+    columns from the predefined schema that are missing will be added. No
+    columns in the existing table will be deleted.  If unspecified, then all
+    available columns will be used for a new table, and no changes will be
+    made to an existing table.
 
     Values:
       OUTPUT_SCHEMA_UNSPECIFIED: <no description>
@@ -2989,8 +3000,8 @@ class GooglePrivacyDlpV2RedactConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2RedactImageRequest(_messages.Message):
-  r"""Request to search for potentially sensitive info in a list of items and
-  replace it with a default or provided content.
+  r"""Request to search for potentially sensitive info in an image and redact
+  it by covering it with a colored rectangle.
 
   Fields:
     byteItem: The content must be PNG, JPEG, SVG or BMP.
@@ -3145,7 +3156,7 @@ class GooglePrivacyDlpV2Row(_messages.Message):
 class GooglePrivacyDlpV2SaveFindings(_messages.Message):
   r"""If set, the detailed findings will be persisted to the specified
   OutputStorageConfig. Only a single instance of this action can be specified.
-  Compatible with: Inspect
+  Compatible with: Inspect, Risk
 
   Fields:
     outputConfig: A GooglePrivacyDlpV2OutputStorageConfig attribute.
@@ -3697,14 +3708,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -3740,17 +3749,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 encoding.AddCustomJsonFieldMapping(

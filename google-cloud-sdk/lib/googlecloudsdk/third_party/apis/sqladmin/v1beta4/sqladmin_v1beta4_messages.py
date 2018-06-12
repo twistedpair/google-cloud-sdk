@@ -652,12 +652,14 @@ class IpConfiguration(_messages.Message):
       connect to the instance using the IP. In CIDR notation, also known as
       'slash' notation (e.g. 192.168.100.0/24).
     ipv4Enabled: Whether the instance should be assigned an IP address or not.
+    privateNetwork: Reserved for future use.
     requireSsl: Whether SSL connections over IP should be enforced or not.
   """
 
   authorizedNetworks = _messages.MessageField('AclEntry', 1, repeated=True)
   ipv4Enabled = _messages.BooleanField(2)
-  requireSsl = _messages.BooleanField(3)
+  privateNetwork = _messages.StringField(3)
+  requireSsl = _messages.BooleanField(4)
 
 
 class IpMapping(_messages.Message):

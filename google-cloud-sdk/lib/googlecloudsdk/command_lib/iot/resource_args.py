@@ -18,9 +18,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.core import properties
 
 
 def DeviceAttributeConfig():
@@ -43,13 +42,6 @@ def RegionAttributeConfig():
       help_text='The Cloud region for the {resource}.')
 
 
-def ProjectAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Cloud project for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
-
-
 def GetDeviceResourceSpec():
   return concepts.ResourceSpec(
       'cloudiot.projects.locations.registries.devices',
@@ -57,7 +49,7 @@ def GetDeviceResourceSpec():
       devicesId=DeviceAttributeConfig(),
       registriesId=RegistryAttributeConfig(),
       locationsId=RegionAttributeConfig(),
-      projectsId=ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 
@@ -67,7 +59,7 @@ def GetRegistryResourceSpec():
       resource_name='registry',
       registriesId=RegistryAttributeConfig(),
       locationsId=RegionAttributeConfig(),
-      projectsId=ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 
@@ -76,7 +68,7 @@ def GetRegionResourceSpec():
       'cloudiot.projects.locations',
       resource_name='region',
       locationsId=RegionAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
 
 
 def AddDeviceResourceArg(parser, verb, positional=True):

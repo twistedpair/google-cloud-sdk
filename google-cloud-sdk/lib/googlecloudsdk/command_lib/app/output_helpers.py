@@ -15,6 +15,7 @@
 """This module holds exceptions raised by commands."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.services import enable_api
@@ -22,7 +23,7 @@ from googlecloudsdk.api_lib.services import exceptions as s_exceptions
 from googlecloudsdk.core import log
 
 
-DEPLOY_SERVICE_MESSAGE_TEMPLATE = u"""\
+DEPLOY_SERVICE_MESSAGE_TEMPLATE = """\
 descriptor:      [{descriptor}]
 source:          [{source}]
 target project:  [{project}]
@@ -32,7 +33,7 @@ target url:      [{url}]
 
 """
 
-DEPLOY_CONFIG_MESSAGE_TEMPLATE = u"""\
+DEPLOY_CONFIG_MESSAGE_TEMPLATE = """\
 descriptor:      [{descriptor}]
 type:            [{type}]
 target project:  [{project}]
@@ -47,16 +48,16 @@ CONFIG_TYPES = {
     yaml_parsing.ConfigYamlInfo.DOS: 'DoS blacklist',
 }
 
-PROMOTE_MESSAGE_TEMPLATE = u"""\
+PROMOTE_MESSAGE_TEMPLATE = """\
      (add --promote if you also want to make this service available from
      [{default_url}])
 """
 
-RUNTIME_MISMATCH_MSG = (u"You've generated a Dockerfile that may be customized "
-                        u'for your application.  To use this Dockerfile, '
-                        u'the runtime field in [{0}] must be set to custom.')
+RUNTIME_MISMATCH_MSG = ("You've generated a Dockerfile that may be customized "
+                        'for your application.  To use this Dockerfile, '
+                        'the runtime field in [{0}] must be set to custom.')
 
-QUEUE_TASKS_WARNING = u"""\
+QUEUE_TASKS_WARNING = """\
 Caution: You are updating queue configuration. This will override any changes
 performed using 'gcloud tasks'. More details at
 https://cloud.google.com/cloud-tasks/docs/queue-yaml

@@ -44,11 +44,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -67,12 +62,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -1431,7 +1420,7 @@
           }
         },
         "bestGuessLabels": {
-          "description": "Best guess text labels for the request image.",
+          "description": "The service's best guess as to the topic of the request image.\nInferred from similar images on the open web.",
           "type": "array",
           "items": {
             "$ref": "WebLabel"
@@ -2731,7 +2720,7 @@
           }
         },
         "bestGuessLabels": {
-          "description": "Best guess text labels for the request image.",
+          "description": "The service's best guess as to the topic of the request image.\nInferred from similar images on the open web.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudVisionV1p2beta1WebDetectionWebLabel"

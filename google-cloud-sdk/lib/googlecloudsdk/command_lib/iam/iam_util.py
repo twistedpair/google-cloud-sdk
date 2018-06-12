@@ -98,6 +98,10 @@ def AddArgForPolicyFile(parser):
       metavar='POLICY_FILE',
       help="""\
         Path to a local JSON or YAML formatted file containing a valid policy.
+
+        The output of the `get-iam-policy` command is a valid file, as is any
+        JSON or YAML file conforming to the structure of a
+        [Policy](https://cloud.google.com/iam/reference/rest/v1/Policy).
         """)
 
 

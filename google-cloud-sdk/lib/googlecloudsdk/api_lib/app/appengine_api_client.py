@@ -15,6 +15,7 @@
 """Functions for creating a client to talk to the App Engine Admin API."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import itertools
 import json
 import operator

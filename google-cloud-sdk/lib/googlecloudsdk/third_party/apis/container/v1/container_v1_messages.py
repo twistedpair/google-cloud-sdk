@@ -1882,7 +1882,7 @@ class DailyMaintenanceWindow(_messages.Message):
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) format "PTnHnMnS".
     startTime: Time within the maintenance window to start the maintenance
       operations. Time format should be in
-      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) format "HH:MM\u201d, where HH
+      [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) format "HH:MM", where HH
       : [00-23] and MM : [00-59] GMT.
   """
 
@@ -3340,14 +3340,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -3383,17 +3381,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class StartIPRotationRequest(_messages.Message):
@@ -3494,11 +3490,16 @@ class SubjectAccessReviewStatus(_messages.Message):
 
   Fields:
     allowed: Is the action authorized.
+    denied: Is this action explicitly denied. NB: It is perfectly valid to
+      have both allowed == false, and denied == false. This means the
+      authorizer has no opinion, and other authorizers in the chain should be
+      consulted.
     reason: Error message if unauthorized.
   """
 
   allowed = _messages.BooleanField(1)
-  reason = _messages.StringField(2)
+  denied = _messages.BooleanField(2)
+  reason = _messages.StringField(3)
 
 
 class Token(_messages.Message):

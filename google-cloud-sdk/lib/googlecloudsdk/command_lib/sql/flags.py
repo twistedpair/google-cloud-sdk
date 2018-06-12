@@ -163,30 +163,40 @@ def AddAssignIp(parser, show_negated_in_help=False):
       help='The instance must be assigned an IP address.', **kwargs)
 
 
-def AddAuthorizedGAEApps(parser):
+def AddAuthorizedGAEApps(parser, update=False):
+  help_ = (
+      'First Generation instances only. List of project IDs for App Engine '
+      'applications running in the Standard environment that '
+      'can access this instance.')
+  if update:
+    help_ += (
+        '\n\nThe value given for this argument *replaces* the existing list.')
   parser.add_argument(
       '--authorized-gae-apps',
       type=arg_parsers.ArgList(min_length=1),
       metavar='APP',
       required=False,
-      help=('First Generation instances only. List of IDs for App Engine '
-            'applications running in the Standard environment that '
-            'can access this instance.'))
+      help=help_)
 
 
-def AddAuthorizedNetworks(parser):
+def AddAuthorizedNetworks(parser, update=False):
+  """Adds the `--authorized-networks` flag."""
   cidr_validator = arg_parsers.RegexpValidator(
       _CIDR_REGEX, ('Must be specified in CIDR notation, also known as '
                     '\'slash\' notation (e.g. 192.168.100.0/24).'))
+  help_ = ('The list of external networks that are allowed to connect to '
+           'the instance. Specified in CIDR notation, also known as '
+           '\'slash\' notation (e.g. 192.168.100.0/24).')
+  if update:
+    help_ += (
+        '\n\nThe value given for this argument *replaces* the existing list.')
   parser.add_argument(
       '--authorized-networks',
       type=arg_parsers.ArgList(min_length=1, element_type=cidr_validator),
       metavar='NETWORK',
       required=False,
       default=[],
-      help=('The list of external networks that are allowed to connect to '
-            'the instance. Specified in CIDR notation, also known as '
-            '\'slash\' notation (e.g. 192.168.100.0/24).'))
+      help=help_)
 
 
 def AddBackupStartTime(parser):
@@ -197,19 +207,24 @@ def AddBackupStartTime(parser):
             'format - HH:MM, in the UTC timezone.'))
 
 
-def AddDatabaseFlags(parser):
+def AddDatabaseFlags(parser, update=False):
+  """Adds the `--database-flags` flag."""
+  help_ = ('A comma-separated list of database flags to set on the '
+           'instance. Use an equals sign to separate flag name and value. '
+           'Flags without values, like skip_grant_tables, can be written '
+           'out without a value after, e.g., `skip_grant_tables=`. Use '
+           'on/off for booleans. View the Instance Resource API for allowed '
+           'flags. (e.g., `--database-flags max_allowed_packet=55555,'
+           'skip_grant_tables=,log_output=1`)')
+  if update:
+    help_ += (
+        '\n\nThe value given for this argument *replaces* the existing list.')
   parser.add_argument(
       '--database-flags',
       type=arg_parsers.ArgDict(min_length=1),
       metavar='FLAG=VALUE',
       required=False,
-      help=('A comma-separated list of database flags to set on the '
-            'instance. Use an equals sign to separate flag name and value. '
-            'Flags without values, like skip_grant_tables, can be written '
-            'out without a value after, e.g., `skip_grant_tables=`. Use '
-            'on/off for booleans. View the Instance Resource API for allowed '
-            'flags. (e.g., `--database-flags max_allowed_packet=55555,'
-            'skip_grant_tables=,log_output=1`)'))
+      help=help_)
 
 
 def AddCPU(parser):

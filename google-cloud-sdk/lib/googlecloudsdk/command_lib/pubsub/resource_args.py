@@ -18,9 +18,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.core import properties
 
 
 def SubscriptionAttributeConfig():
@@ -35,20 +34,12 @@ def TopicAttributeConfig():
       help_text='Name of the topic.')
 
 
-def ProjectAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Cloud project for the {resource}. If not set, it will '
-                'use the project set in properties.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
-
-
 def GetSubscriptionResourceSpec():
   return concepts.ResourceSpec(
       'pubsub.projects.subscriptions',
       resource_name='subscription',
       subscriptionsId=SubscriptionAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetTopicResourceSpec():
@@ -56,7 +47,7 @@ def GetTopicResourceSpec():
       'pubsub.projects.topics',
       resource_name='topic',
       topicsId=TopicAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
 
 
 def CreateSubscriptionResourceArg(verb, plural=False):

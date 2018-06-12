@@ -16,6 +16,8 @@
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
+
+import io
 import json
 import re
 
@@ -49,7 +51,7 @@ class DiscoveryDoc(object):
 
   @classmethod
   def FromJson(cls, path):
-    with open(path, 'rU') as f:
+    with io.open(path, 'r', encoding='utf8') as f:
       return cls(json.load(f))
 
   @property

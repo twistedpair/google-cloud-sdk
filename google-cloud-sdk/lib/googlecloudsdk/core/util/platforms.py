@@ -395,6 +395,12 @@ class PythonVersion(object):
   MIN_REQUIRED_PY2_VERSION = (2, 6)
   MIN_SUPPORTED_PY2_VERSION = (2, 7)
   MIN_SUPPORTED_PY3_VERSION = (3, 4)
+  ENV_VAR_MESSAGE = """\
+
+If you have a compatible Python interpreter installed, you can use it by setting
+the CLOUDSDK_PYTHON environment variable to point to it.
+
+"""
 
   def __init__(self, version=None):
     if version:
@@ -404,23 +410,19 @@ class PythonVersion(object):
     else:
       self.version = None
 
-  def SupportedVersionMessage(self):
-    return 'Please use Python version {0}.{1}.x or {2}.{3} and up.'.format(
-        PythonVersion.MIN_SUPPORTED_PY2_VERSION[0],
-        PythonVersion.MIN_SUPPORTED_PY2_VERSION[1],
-        PythonVersion.MIN_SUPPORTED_PY3_VERSION[0],
-        PythonVersion.MIN_SUPPORTED_PY3_VERSION[1])
+  def SupportedVersionMessage(self, allow_py3):
+    if allow_py3:
+      return 'Please use Python version {0}.{1}.x or {2}.{3} and up.'.format(
+          PythonVersion.MIN_SUPPORTED_PY2_VERSION[0],
+          PythonVersion.MIN_SUPPORTED_PY2_VERSION[1],
+          PythonVersion.MIN_SUPPORTED_PY3_VERSION[0],
+          PythonVersion.MIN_SUPPORTED_PY3_VERSION[1])
+    else:
+      return 'Please use Python version {0}.{1}.x.'.format(
+          PythonVersion.MIN_SUPPORTED_PY2_VERSION[0],
+          PythonVersion.MIN_SUPPORTED_PY2_VERSION[1])
 
-  def __PrintEnvVarMessage(self):
-    """Prints how to set CLOUDSDK_PYTHON."""
-    sys.stderr.write("""\
-
-If you have a compatible Python interpreter installed, you can use it by setting
-the CLOUDSDK_PYTHON environment variable to point to it.
-
-""")
-
-  def IsCompatible(self, allow_py3=False):
+  def IsCompatible(self, allow_py3=False, raise_exception=False):
     """Ensure that the Python version we are using is compatible.
 
     This will print an error message if not compatible.
@@ -431,6 +433,11 @@ the CLOUDSDK_PYTHON environment variable to point to it.
     Args:
       allow_py3: bool, True if we should allow a Python 3 interpreter to run
         gcloud. If False, this returns an error for Python 3.
+      raise_exception: bool, True to raise an exception rather than printing
+        the error and exiting.
+
+    Raises:
+      Error: If not compatible and raise_exception is True.
 
     Returns:
       bool, True if the version is valid, False otherwise.
@@ -440,7 +447,7 @@ the CLOUDSDK_PYTHON environment variable to point to it.
       # We don't know the version, not a good sign.
       error = ('ERROR: Your current version of Python is not compatible with '
                'the Google Cloud SDK. {0}\n'
-               .format(self.SupportedVersionMessage()))
+               .format(self.SupportedVersionMessage(allow_py3)))
     else:
       if self.version[0] < 3:
         # Python 2 Mode
@@ -448,22 +455,24 @@ the CLOUDSDK_PYTHON environment variable to point to it.
           error = ('ERROR: Python {0}.{1} is not compatible with the Google '
                    'Cloud SDK. {2}\n'
                    .format(self.version[0], self.version[1],
-                           self.SupportedVersionMessage()))
+                           self.SupportedVersionMessage(allow_py3)))
       else:
         # Python 3 Mode
         if not allow_py3:
           error = ('ERROR: Python 3 and later is not compatible with the '
                    'Google Cloud SDK. {0}\n'
-                   .format(self.SupportedVersionMessage()))
+                   .format(self.SupportedVersionMessage(allow_py3)))
         elif self.version < PythonVersion.MIN_SUPPORTED_PY3_VERSION:
           error = ('ERROR: Python {0}.{1} is not compatible with the Google '
                    'Cloud SDK. {2}\n'
                    .format(self.version[0], self.version[1],
-                           self.SupportedVersionMessage()))
+                           self.SupportedVersionMessage(allow_py3)))
 
     if error:
+      if raise_exception:
+        raise Error(error)
       sys.stderr.write(error)
-      self.__PrintEnvVarMessage()
+      sys.stderr.write(PythonVersion.ENV_VAR_MESSAGE)
       return False
 
     # Warn that 2.6 might not work.
@@ -472,7 +481,7 @@ the CLOUDSDK_PYTHON environment variable to point to it.
       sys.stderr.write("""\
 WARNING:  Python 2.6.x is no longer officially supported by the Google Cloud SDK
 and may not function correctly.  {0}
-""".format(self.SupportedVersionMessage()))
-      self.__PrintEnvVarMessage()
+{1}""".format(self.SupportedVersionMessage(allow_py3),
+              PythonVersion.ENV_VAR_MESSAGE))
 
     return True

@@ -13,6 +13,8 @@
 # limitations under the License.
 """Constants for `gcloud tasks` commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.api_lib.app import region_util
 
 

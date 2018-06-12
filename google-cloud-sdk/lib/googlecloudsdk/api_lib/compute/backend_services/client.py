@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Backend service."""
 
 from __future__ import absolute_import
@@ -79,19 +78,21 @@ class BackendService(object):
                   project=self.ref.project,
                   backendService=self.ref.Name()))
 
-  def _MakeSetSecurityPolicyRequestTuple(self, security_policy):
+  def MakeSetSecurityPolicyRequestTuple(self, security_policy):
     region = getattr(self.ref, 'region', None)
     if region is not None:
       raise exceptions.InvalidArgumentException(
           'region', 'Can only set security policy for global backend services.')
 
     return (
-        self._client.backendServices, 'SetSecurityPolicy',
+        self._client.backendServices,
+        'SetSecurityPolicy',
         self._messages.ComputeBackendServicesSetSecurityPolicyRequest(
             securityPolicyReference=self._messages.SecurityPolicyReference(
                 securityPolicy=security_policy),
             project=self.ref.project,
-            backendService=self.ref.Name()))
+            backendService=self.ref.Name()),
+    )
 
   def Delete(self, only_generate_request=False):
     requests = [self._MakeDeleteRequestTuple()]
@@ -143,7 +144,7 @@ class BackendService(object):
 
   def SetSecurityPolicy(self, security_policy='', only_generate_request=False):
     """Sets the security policy for the backend service."""
-    requests = [self._MakeSetSecurityPolicyRequestTuple(security_policy)]
+    requests = [self.MakeSetSecurityPolicyRequestTuple(security_policy)]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests

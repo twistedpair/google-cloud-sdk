@@ -99,7 +99,7 @@ def AddBackupScheduleArgs(parser):
       help='Maximum number of days snapshot can be retained.')
   snapshot_properties_group = parser.add_group('Snapshot properties')
   labels_util.GetCreateLabelsFlag(
-      extra_message=' These will be added to the disk snapshots on creation.',
+      extra_message='These will be added to the disk snapshots on creation.',
       labels_name='snapshot-labels').AddToParser(snapshot_properties_group)
   snapshot_properties_group.add_argument(
       '--guest-flush',

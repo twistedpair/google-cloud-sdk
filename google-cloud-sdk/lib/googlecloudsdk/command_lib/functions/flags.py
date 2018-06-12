@@ -16,12 +16,17 @@
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.functions import triggers
 from googlecloudsdk.api_lib.functions import util as api_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -50,33 +55,6 @@ def GetLocationsUri(resource):
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection=LOCATIONS_COLLECTION)
   return ref.SelfLink()
-
-
-class LocationsCompleter(completers.ListCommandCompleter):
-
-  def __init__(self, **kwargs):
-    super(LocationsCompleter, self).__init__(
-        collection=LOCATIONS_COLLECTION,
-        list_command='alpha functions regions list --uri',
-        **kwargs)
-
-
-def AddRegionFlag(parser, help_text):
-  parser.add_argument(
-      '--region',
-      help=help_text,
-      completer=LocationsCompleter,
-      action=actions.StoreProperty(properties.VALUES.functions.region),
-  )
-
-
-def AddFunctionNameArg(parser):
-  """Add arguments specifying function name to the parser."""
-  parser.add_argument(
-      'name',
-      help='Name of the function to deploy.',
-      type=api_util.ValidateFunctionNameOrRaise,
-  )
 
 
 def AddFunctionMemoryFlag(parser):
@@ -272,3 +250,72 @@ def AddTriggerFlagGroup(parser):
             '`--trigger-resource` must be a bucket name. For a list of '
             'expected resources, call `functions event_types list`.'),
   )
+
+
+class LocationsCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(LocationsCompleter, self).__init__(
+        collection=LOCATIONS_COLLECTION,
+        list_command='alpha functions regions list --uri',
+        **kwargs)
+
+
+def AddRegionFlag(parser, help_text):
+  parser.add_argument(
+      '--region',
+      help=help_text,
+      completer=LocationsCompleter,
+      action=actions.StoreProperty(properties.VALUES.functions.region),
+  )
+
+
+def RegionAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='region',
+      help_text=(
+          'The Cloud region for the {resource}. Overrides the default '
+          '`functions/region` property value for this command invocation.'),
+      completer=LocationsCompleter,
+      fallthroughs=[
+          deps.PropertyFallthrough(properties.VALUES.functions.region),
+      ],
+  )
+
+
+def FunctionAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='function',
+      help_text='The Cloud functon name.',
+      value_type=api_util.ValidateFunctionNameOrRaise,
+  )
+
+
+def GetFunctionResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudfunctions.projects.locations.functions',
+      resource_name='function',
+      disable_auto_completers=False,
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      functionsId=FunctionAttributeConfig(),
+  )
+
+
+def AddFunctionResourceArg(parser, verb, positional=True):
+  """Adds a Cloud function resource argument.
+
+  NOTE: May be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the argparse parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the instance ID is a positional rather
+      than a flag.
+  """
+  name = 'NAME' if positional else '--function'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetFunctionResourceSpec(),
+      'The Cloud function name {}.'.format(verb),
+      required=True).AddToParser(parser)

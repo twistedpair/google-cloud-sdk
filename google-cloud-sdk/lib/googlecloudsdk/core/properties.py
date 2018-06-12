@@ -1384,6 +1384,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.appengine = self._Add('appengine')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.bigtableclusteradmin = self._Add('bigtableclusteradmin')
+    self.binaryauthorization = self._Add('binaryauthorization')
     self.bio = self._Add('bio')
     self.categorymanager = self._Add('categorymanager')
     self.cloudbilling = self._Add('cloudbilling')

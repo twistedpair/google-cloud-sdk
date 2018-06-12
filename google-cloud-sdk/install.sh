@@ -43,11 +43,16 @@ _cloudsdk_root_dir() {
     case $_cloudsdk_dir in
     1)  break ;;
     esac
+    if [ -d "${_cloudsdk_path}" ]; then
+      break
+    fi
     _cloudsdk_dir=1
     _cloudsdk_path=$(dirname "$_cloudsdk_path")
   done
   while :
   do  case $_cloudsdk_path in
+      */)     _cloudsdk_path=$(dirname "$_cloudsdk_path/.")
+              ;;
       */.)    _cloudsdk_path=$(dirname "$_cloudsdk_path")
               ;;
       */bin)  dirname "$_cloudsdk_path"
@@ -61,14 +66,6 @@ _cloudsdk_root_dir() {
 }
 CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
-# Cloud SDK requires python 2.7
-case $CLOUDSDK_PYTHON in
-*python2*)
-  ;;
-*python[0-9]*)
-  CLOUDSDK_PYTHON=
-  ;;
-esac
 # if CLOUDSDK_PYTHON is empty
 if [ -z "$CLOUDSDK_PYTHON" ]; then
   # if python2 exists then plain python may point to a version != 2
@@ -77,7 +74,16 @@ if [ -z "$CLOUDSDK_PYTHON" ]; then
   elif which python2.7 >/dev/null; then
     # this is what some OS X versions call their built-in Python
     CLOUDSDK_PYTHON=python2.7
+  elif which python >/dev/null; then
+    # Use unversioned python if it exists.
+    CLOUDSDK_PYTHON=python
+  elif which python3 >/dev/null; then
+    # We support python3, but only want to default to it if nothing else is
+    # found.
+    CLOUDSDK_PYTHON=python3
   else
+    # This won't work because it wasn't found above, but at this point this
+    # is our best guess for the error message.
     CLOUDSDK_PYTHON=python
   fi
 fi

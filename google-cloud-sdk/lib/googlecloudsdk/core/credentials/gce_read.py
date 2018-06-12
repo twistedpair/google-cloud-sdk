@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import http_encoding
 
 from six.moves import urllib
 
@@ -54,5 +55,6 @@ def ReadNoProxy(uri):
   request = urllib.request.Request(uri, headers=GOOGLE_GCE_METADATA_HEADERS)
   timeout_property = (
       properties.VALUES.compute.gce_metadata_read_timeout_sec.GetInt())
-  return urllib.request.build_opener(urllib.request.ProxyHandler({})).open(
+  result = urllib.request.build_opener(urllib.request.ProxyHandler({})).open(
       request, timeout=timeout_property).read()
+  return http_encoding.Decode(result)

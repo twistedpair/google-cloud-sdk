@@ -440,6 +440,20 @@ MAP = {
             default_version=False
         ),
     },
+    'file': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.file.v1alpha1',
+            client_classpath='file_v1alpha1_client.FileV1alpha1',
+            messages_modulepath='file_v1alpha1_messages',
+            default_version=True
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.file.v1beta1',
+            client_classpath='file_v1beta1_client.FileV1beta1',
+            messages_modulepath='file_v1beta1_messages',
+            default_version=False
+        ),
+    },
     'genomics': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.genomics.v1',
@@ -673,17 +687,17 @@ MAP = {
         ),
     },
     'tpu': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.tpu.v1',
+            client_classpath='tpu_v1_client.TpuV1',
+            messages_modulepath='tpu_v1_messages',
+            default_version=False
+        ),
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.tpu.v1alpha1',
             client_classpath='tpu_v1alpha1_client.TpuV1alpha1',
             messages_modulepath='tpu_v1alpha1_messages',
             default_version=True
-        ),
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.tpu.v1beta1',
-            client_classpath='tpu_v1beta1_client.TpuV1beta1',
-            messages_modulepath='tpu_v1beta1_messages',
-            default_version=False
         ),
     },
     'videointelligence': {

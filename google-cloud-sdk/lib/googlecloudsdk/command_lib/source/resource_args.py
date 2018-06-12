@@ -13,6 +13,8 @@
 # limitations under the License.
 """Shared resource flags for Cloud Source Repo."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -65,19 +67,9 @@ def CreateRepoResourcePresentationSpec(verb, positional=True):
   )
 
 
-def CreateTopicResourcePresentationSpec(verb, group):
+def CreateTopicResourcePresentationSpec(verb, help_text, group):
   """Create add_topic, remove_topic or update_topic specs."""
   name = '--' + verb + '-topic'
-  help_text_prefix = 'The Cloud Pub/Sub topic to '
-
-  # TODO(b/77914513): pass the string directly and
-  # clean up the help text in update.
-  if verb == 'add':
-    help_text = help_text_prefix + 'add to the repository.'
-  elif verb == 'remove':
-    help_text = help_text_prefix + 'remove from the repository.'
-  else:
-    help_text = help_text_prefix + 'update in the repository.'
 
   return concept_parsers.ResourcePresentationSpec(
       name, GetTopicResourceSpec(), help_text, prefixes=True, group=group)

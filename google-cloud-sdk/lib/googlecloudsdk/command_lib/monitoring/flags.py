@@ -230,7 +230,7 @@ def AddNotificationChannelSettingFlags(parser, update=False):
 
 def AddCreateLabelsFlag(parser, labels_name, resource_name, extra_message='',
                         validate_values=True):
-  extra_message += (' If the {0} was given as a JSON/YAML object from a string '
+  extra_message += ('If the {0} was given as a JSON/YAML object from a string '
                     'or file, this flag will replace the labels value '
                     'in the given {0}.'.format(resource_name))
   labels_util.GetCreateLabelsFlag(

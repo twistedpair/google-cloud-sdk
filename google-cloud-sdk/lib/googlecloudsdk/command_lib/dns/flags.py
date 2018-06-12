@@ -18,11 +18,10 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.core import properties
 
 
 class KeyCompleter(completers.ListCommandCompleter):
@@ -67,19 +66,12 @@ def ZoneAttributeConfig():
       help_text='The Cloud DNS zone for the {resource}.')
 
 
-def ProjectAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Cloud project for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
-
-
 def GetZoneResourceSpec():
   return concepts.ResourceSpec(
       'dns.managedZones',
       resource_name='zone',
       managedZone=ZoneAttributeConfig(),
-      project=ProjectAttributeConfig(),
+      project=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 

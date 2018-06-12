@@ -16,6 +16,7 @@
 
 # The version of the docker API the docker-py client uses.
 # Warning: other versions might have different return values for some functions.
+from __future__ import unicode_literals
 DOCKER_PY_VERSION = 'auto'
 
 # Timeout of HTTP request from docker-py client to docker daemon, in seconds.

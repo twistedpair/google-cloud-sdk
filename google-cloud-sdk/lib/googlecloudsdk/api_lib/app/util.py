@@ -15,6 +15,7 @@
 """Utility functions for gcloud app."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import datetime
 import os
 import posixpath
@@ -112,7 +113,7 @@ def GenerateVersionId(datetime_getter=datetime.datetime.now):
   Returns:
     A version string based.
   """
-  return datetime_getter().isoformat().lower().translate(None, ':-')[:15]
+  return datetime_getter().isoformat().lower().translate(None, b':-')[:15]
 
 
 def ConvertToPosixPath(path):

@@ -387,7 +387,7 @@ class Table(object):
     try:
       return self._columns[col_name]
     except KeyError:
-      valid_column_names = ', '.join(self._columns.keys())
+      valid_column_names = ', '.join(list(self._columns.keys()))
       raise BadColumnNameError(
           'Column name [{}] is invalid. Valid column names: [{}].'.format(
               col_name, valid_column_names))

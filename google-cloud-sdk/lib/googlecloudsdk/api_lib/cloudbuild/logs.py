@@ -126,7 +126,7 @@ class LogTailer(object):
         self._PrintFirstLine()
       self.cursor += len(body)
       body = encoding.Decode(body)
-      self._PrintLogLine(body.rstrip(u'\n'))
+      self._PrintLogLine(body.rstrip('\n'))
 
       if is_last:
         self._PrintLastLine()

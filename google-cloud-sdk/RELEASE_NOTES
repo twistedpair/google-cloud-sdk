@@ -5,6 +5,45 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 205.0.0 (2018-06-12)
+
+### Cloud Bigtable
+
+*   Added new flags to the `cbt` commmand-line tool:
+    *   `-user-agent` for specifying a custom User Agent
+    *   `-columns` for specifying columns to read with `read` and `lookup`
+    *   `-cells-per-column` for limiting number of cells read per column with `read` and `lookup`
+
+### Cloud Datastore
+
+*    Added `gcloud datastore indexes` command group to beta with the following commands:
+     *   `gcloud datastore indexes cleanup`
+     *   `gcloud datastore indexes create`
+
+### Cloud Interconnect
+
+*   Promoted interconnects attachments partner related commands to GA.
+
+### Cloud Storage
+
+
+* Updated gsutil component to 4.32
+
+### Cloud TPU
+
+* Added `--preemptible` flag to `gcloud beta compute tpus create`.
+
+### Compute Engine
+
+* Added the `--network` flag to `gcloud compute images export` to allow the
+  export process to use a network other than `default`.
+* Promoted `--quic-override` flag of `compute target-https-proxies
+  <create|update>` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 204.0.0 (2018-06-05)
 
 ### Breaking Changes

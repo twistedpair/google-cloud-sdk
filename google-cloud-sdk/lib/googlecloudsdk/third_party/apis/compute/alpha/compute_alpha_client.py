@@ -78,7 +78,9 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionOperations = self.RegionOperationsService(self)
+    self.regionSslCertificates = self.RegionSslCertificatesService(self)
     self.regionTargetHttpProxies = self.RegionTargetHttpProxiesService(self)
+    self.regionTargetHttpsProxies = self.RegionTargetHttpsProxiesService(self)
     self.regionUrlMaps = self.RegionUrlMapsService(self)
     self.regions = self.RegionsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
@@ -10062,6 +10064,146 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+  class RegionSslCertificatesService(base_api.BaseApiService):
+    """Service class for the regionSslCertificates resource."""
+
+    _NAME = u'regionSslCertificates'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionSslCertificatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified SslCertificate resource in the region.
+
+      Args:
+        request: (ComputeRegionSslCertificatesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.regionSslCertificates.delete',
+        ordered_params=[u'project', u'region', u'sslCertificate'],
+        path_params=[u'project', u'region', u'sslCertificate'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
+        request_field='',
+        request_type_name=u'ComputeRegionSslCertificatesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
+
+      Args:
+        request: (ComputeRegionSslCertificatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslCertificate) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionSslCertificates.get',
+        ordered_params=[u'project', u'region', u'sslCertificate'],
+        path_params=[u'project', u'region', u'sslCertificate'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/sslCertificates/{sslCertificate}',
+        request_field='',
+        request_type_name=u'ComputeRegionSslCertificatesGetRequest',
+        response_type_name=u'SslCertificate',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a SslCertificate resource in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeRegionSslCertificatesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionSslCertificates.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/sslCertificates',
+        request_field=u'sslCertificate',
+        request_type_name=u'ComputeRegionSslCertificatesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of SslCertificate resources available to the specified project in the specified region.
+
+      Args:
+        request: (ComputeRegionSslCertificatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslCertificateList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionSslCertificates.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/sslCertificates',
+        request_field='',
+        request_type_name=u'ComputeRegionSslCertificatesListRequest',
+        response_type_name=u'SslCertificateList',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource and region.
+
+      Args:
+        request: (ComputeRegionSslCertificatesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionSslCertificates.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/sslCertificates/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeRegionSslCertificatesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class RegionTargetHttpProxiesService(base_api.BaseApiService):
     """Service class for the regionTargetHttpProxies resource."""
 
@@ -10224,6 +10366,198 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/regions/{region}/targetHttpProxies/{resource}/testIamPermissions',
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeRegionTargetHttpProxiesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionTargetHttpsProxiesService(base_api.BaseApiService):
+    """Service class for the regionTargetHttpsProxies resource."""
+
+    _NAME = u'regionTargetHttpsProxies'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionTargetHttpsProxiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified TargetHttpsProxy resource.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.regionTargetHttpsProxies.delete',
+        ordered_params=[u'project', u'region', u'targetHttpsProxy'],
+        path_params=[u'project', u'region', u'targetHttpsProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}',
+        request_field='',
+        request_type_name=u'ComputeRegionTargetHttpsProxiesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetHttpsProxy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionTargetHttpsProxies.get',
+        ordered_params=[u'project', u'region', u'targetHttpsProxy'],
+        path_params=[u'project', u'region', u'targetHttpsProxy'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}',
+        request_field='',
+        request_type_name=u'ComputeRegionTargetHttpsProxiesGetRequest',
+        response_type_name=u'TargetHttpsProxy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionTargetHttpsProxies.insert',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies',
+        request_field=u'targetHttpsProxy',
+        request_type_name=u'ComputeRegionTargetHttpsProxiesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetHttpsProxyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.regionTargetHttpsProxies.list',
+        ordered_params=[u'project', u'region'],
+        path_params=[u'project', u'region'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies',
+        request_field='',
+        request_type_name=u'ComputeRegionTargetHttpsProxiesListRequest',
+        response_type_name=u'TargetHttpsProxyList',
+        supports_download=False,
+    )
+
+    def SetSslCertificates(self, request, global_params=None):
+      r"""Replaces SslCertificates for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetSslCertificates')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetSslCertificates.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionTargetHttpsProxies.setSslCertificates',
+        ordered_params=[u'project', u'region', u'targetHttpsProxy'],
+        path_params=[u'project', u'region', u'targetHttpsProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}/setSslCertificates',
+        request_field=u'regionTargetHttpsProxiesSetSslCertificatesRequest',
+        request_type_name=u'ComputeRegionTargetHttpsProxiesSetSslCertificatesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetUrlMap(self, request, global_params=None):
+      r"""Changes the URL map for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesSetUrlMapRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetUrlMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetUrlMap.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionTargetHttpsProxies.setUrlMap',
+        ordered_params=[u'project', u'region', u'targetHttpsProxy'],
+        path_params=[u'project', u'region', u'targetHttpsProxy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{targetHttpsProxy}/setUrlMap',
+        request_field=u'urlMapReference',
+        request_type_name=u'ComputeRegionTargetHttpsProxiesSetUrlMapRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionTargetHttpsProxiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionTargetHttpsProxies.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/targetHttpsProxies/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeRegionTargetHttpsProxiesTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
@@ -10811,6 +11145,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeRoutersGetRequest',
         response_type_name=u'Router',
+        supports_download=False,
+    )
+
+    def GetNatMappingInfo(self, request, global_params=None):
+      r"""Retrieves runtime Nat mapping information of VM endpoints.
+
+      Args:
+        request: (ComputeRoutersGetNatMappingInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmEndpointNatMappingsList) The response message.
+      """
+      config = self.GetMethodConfig('GetNatMappingInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNatMappingInfo.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.routers.getNatMappingInfo',
+        ordered_params=[u'project', u'region', u'router'],
+        path_params=[u'project', u'region', u'router'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/routers/{router}/getNatMappingInfo',
+        request_field='',
+        request_type_name=u'ComputeRoutersGetNatMappingInfoRequest',
+        response_type_name=u'VmEndpointNatMappingsList',
         supports_download=False,
     )
 
@@ -11662,6 +12022,32 @@ For more information, see Deleting snaphots.
       self._upload_configs = {
           }
 
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all SslCertificate resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeSslCertificatesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SslCertificateAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.sslCertificates.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/sslCertificates',
+        request_field='',
+        request_type_name=u'ComputeSslCertificatesAggregatedListRequest',
+        response_type_name=u'SslCertificateAggregatedList',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified SslCertificate resource.
 
@@ -12507,6 +12893,32 @@ For more information, see Deleting snaphots.
       super(ComputeAlpha.TargetHttpsProxiesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetHttpsProxyAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.targetHttpsProxies.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/targetHttpsProxies',
+        request_field='',
+        request_type_name=u'ComputeTargetHttpsProxiesAggregatedListRequest',
+        response_type_name=u'TargetHttpsProxyAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified TargetHttpsProxy resource.

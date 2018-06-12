@@ -263,4 +263,4 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):  # pytype: disable=i
       The list of unrestricted table names matching name.
     """
     rows = self._metadata.Select(Metadata.Row(name=name, restricted=False))
-    return [Metadata(row).name for row in rows]  # pytype: disable=none-attr
+    return [Metadata(row).name for row in rows]

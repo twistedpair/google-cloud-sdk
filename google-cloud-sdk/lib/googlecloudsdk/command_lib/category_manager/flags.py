@@ -16,9 +16,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.core import properties
 
 
 def AddOrganizationIdArg(parser):
@@ -34,13 +33,6 @@ def AddOrganizationIdArg(parser):
 def _AssetAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='asset', help_text='An asset reference.')
-
-
-def _ProjectAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Cloud project for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
 
 
 def _TaxonomyAttributeConfig():
@@ -65,7 +57,7 @@ def _GetProjectAnnotationResourceSpec():
   return concepts.ResourceSpec(
       'categorymanager.projects.taxonomies.annotations',
       resource_name='annotation',
-      projectsId=_ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       taxonomiesId=_TaxonomyAttributeConfig(),
       annotationsId=_AnnotationsAttributeConfig())
 
@@ -74,7 +66,7 @@ def _GetProjectTaxonomyResourceSpec():
   return concepts.ResourceSpec(
       'categorymanager.projects.taxonomies',
       resource_name='taxonomy',
-      projectsId=_ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       taxonomiesId=_TaxonomyAttributeConfig())
 
 

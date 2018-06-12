@@ -22,10 +22,9 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
-from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import text
 
 
@@ -243,14 +242,6 @@ def InstanceAttributeConfig():
       help_text='The Cloud Bigtable instance for the {resource}.')
 
 
-def ProjectAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Cloud project for the {resource}.',
-      # Fall back to the project configured as the gcloud default
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
-
-
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
@@ -269,7 +260,7 @@ def GetInstanceResourceSpec():
       'bigtableadmin.projects.instances',
       resource_name='instance',
       instancesId=InstanceAttributeConfig(),
-      projectsId=ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 
@@ -280,7 +271,7 @@ def GetClusterResourceSpec():
       resource_name='cluster',
       clustersId=ClusterAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
-      projectsId=ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 
@@ -290,7 +281,7 @@ def GetAppProfileResourceSpec():
       'bigtableadmin.projects.instances.appProfiles',
       resource_name='app-profile',
       instancesId=InstanceAttributeConfig(),
-      projectsId=ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 

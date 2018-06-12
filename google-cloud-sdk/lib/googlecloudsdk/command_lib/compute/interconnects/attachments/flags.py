@@ -23,6 +23,16 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
 _BANDWIDTH_CHOICES = OrderedDict([
+    ('50m', '50 Mbit/s'),
+    ('100m', '100 Mbit/s'),
+    ('200m', '200 Mbit/s'),
+    ('300m', '300 Mbit/s'),
+    ('400m', '400 Mbit/s'),
+    ('500m', '500 Mbit/s'),
+    ('1g', '1 Gbit/s'),
+    ('2g', '2 Gbit/s'),
+    ('5g', '5 Gbit/s'),
+    ('10g', '10 Gbit/s'),
     ('bps-50m', '50 Mbit/s'),
     ('bps-100m', '100 Mbit/s'),
     ('bps-200m', '200 Mbit/s'),
@@ -80,47 +90,58 @@ def InterconnectAttachmentArgumentForRouter(required=False,
 
 def AddAdminEnabled(parser, default_behavior=True, update=False):
   """Adds adminEnabled flag to the argparse.ArgumentParser."""
-
+  group = parser.add_group(mutex=True,
+                           required=False,
+                           help='')
   if update:
     # Update command
     help_text = """\
       Administrative status of the interconnect attachment.
       When this is enabled, the attachment is operational and will carry
-      traffic. Use --no-admin-enabled to disable it.
+      traffic. Use --no-enable-admin to disable it.
       """
   elif default_behavior:
     # Create command for dedicated attachments, backend default behavior is to
     # enable if not specified.
     help_text = """\
-      Administrative status of the interconnect attachment. If not provided on
-      creation, defaults to enabled.
+      Administrative status of the interconnect attachment. If not provided
+      on creation, defaults to enabled.
       When this is enabled, the attachment is operational and will carry
-      traffic. Use --no-admin-enabled to disable it.
+      traffic. Use --no-enable-admin to disable it.
       """
   else:
     # Create command for partner attachments, backend default behavior is to
     # disabled if not specified.
     help_text = """\
-      Administrative status of the interconnect attachment. If not provided on
-      creation, defaults to disabled.
+      Administrative status of the interconnect attachment. If not provided
+      on creation, defaults to disabled.
       When this is enabled, the attachment is operational and will carry
-      traffic. Use --no-admin-enabled to disable it.
+      traffic. Use --no-enable-admin to disable it.
       """
 
-  parser.add_argument(
+  group.add_argument(
       '--admin-enabled',
-      action='store_true',
+      hidden=True,
       default=None,
-      help=help_text)
+      action='store_true',
+      help='(DEPRECATED) Use --enable-admin instead.')
+
+  group.add_argument(
+      '--enable-admin', action='store_true', default=None, help=help_text)
 
 
 def AddBandwidth(parser, required):
   """Adds bandwidth flag to the argparse.ArgumentParser."""
+  help_text = """\
+      Provisioned capacity of the attachment in bits/s.
+      """
   base.ChoiceArgument(
       '--bandwidth',
+      # TODO(b/80311900): use arg_parsers.BinarySize()
+      # and deprecate the proto enum names
       choices=_BANDWIDTH_CHOICES,
       required=required,
-      help_str=('Provisioned capacity of the attachment.')).AddToParser(parser)
+      help_str=help_text).AddToParser(parser)
 
 
 def AddVlan(parser):
@@ -154,23 +175,24 @@ def AddPartnerMetadata(parser, required=True):
       '--partner-name',
       required=required,
       help="""\
-      Plain text name of the Partner providing this attachment. This value may
-      be validated to match approved Partner values.
+      Plain text name of the Partner providing this attachment. This value
+      may be validated to match approved Partner values.
       """)
   group.add_argument(
       '--partner-interconnect-name',
       required=required,
       help="""\
-      Plain text name of the Interconnect this attachment is connected to, as
-      displayed in the Partner's portal. For instance "Chicago 1".
+      Plain text name of the Interconnect this attachment is connected to,
+      as displayed in the Partner's portal. For instance "Chicago 1".
       """)
   group.add_argument(
       '--partner-portal-url',
       required=required,
       help="""\
-      URL of the Partner's portal for this Attachment. The Partner may wish to
-      customise this to be a deep-link to the specific resource on the Partner
-      portal. This value may be validated to match approved Partner values.
+      URL of the Partner's portal for this Attachment. The Partner may wish
+      to customize this to be a deep-link to the specific resource on the
+      Partner portal. This value may be validated to match approved Partner
+      values.
       """)
 
 

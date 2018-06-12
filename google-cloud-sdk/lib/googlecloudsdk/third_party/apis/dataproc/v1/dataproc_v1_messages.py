@@ -752,6 +752,9 @@ class DiskConfig(_messages.Message):
 
   Fields:
     bootDiskSizeGb: Optional. Size in GB of the boot disk (default is 500GB).
+    bootDiskType: Optional. Type of the boot disk (default is "pd-standard").
+      Valid values: "pd-ssd" (Persistent Disk Solid State Drive) or "pd-
+      standard" (Persistent Disk Hard Disk Drive).
     numLocalSsds: Optional. Number of attached SSDs, from 0 to 4 (default is
       0). If SSDs are not attached, the boot disk is used to store runtime
       logs and HDFS
@@ -762,7 +765,8 @@ class DiskConfig(_messages.Message):
   """
 
   bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  numLocalSsds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  bootDiskType = _messages.StringField(2)
+  numLocalSsds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Empty(_messages.Message):

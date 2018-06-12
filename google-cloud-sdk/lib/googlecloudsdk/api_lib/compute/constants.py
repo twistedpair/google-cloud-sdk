@@ -137,6 +137,7 @@ SSH_KEYS_LEGACY_METADATA_KEY = 'sshKeys'
 SSH_KEYS_BLOCK_METADATA_KEY = 'block-project-ssh-keys'
 OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 MAX_METADATA_VALUE_SIZE_IN_BYTES = 262144
+SSH_KEY_TYPES = ('ssh-dss', 'ecdsa-sha2-nistp256', 'ssh-ed25519', 'ssh-rsa')
 
 _STORAGE_RO = 'https://www.googleapis.com/auth/devstorage.read_only'
 _LOGGING_WRITE = 'https://www.googleapis.com/auth/logging.write'

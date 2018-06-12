@@ -5,7 +5,7 @@
  "name": "bigtableclusteradmin",
  "canonicalName": "Bigtable Cluster Admin",
  "version": "v1",
- "revision": "20180514",
+ "revision": "20180509",
  "title": "Cloud Bigtable Cluster Admin API",
  "description": "This is a OnePlatform service.",
  "ownerDomain": "google.com",

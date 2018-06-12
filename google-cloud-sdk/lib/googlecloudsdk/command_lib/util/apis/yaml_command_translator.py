@@ -90,6 +90,9 @@ class CommandBuilder(object):
     elif (self.spec.command_type ==
           yaml_command_schema.CommandType.SET_IAM_POLICY):
       command = self._GenerateSetIamPolicyCommand()
+    elif (self.spec.command_type ==
+          yaml_command_schema.CommandType.ADD_IAM_POLICY_BINDING):
+      command = self._GenerateAddIamPolicyBindingCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
@@ -365,6 +368,49 @@ class CommandBuilder(object):
 
     return Command
 
+  def _GenerateAddIamPolicyBindingCommand(self):
+    """Generates an add-iam-policy-binding command.
+
+    An add-iam-policy-binding command takes a resource argument, a member to add
+    the binding for, a role to define the role of the member, and two API
+    methods to get and set the policy on the resource.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.Command):
+      """Add IAM policy binding command closure."""
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        iam_util.AddArgsForAddIamPolicyBinding(parser)
+        base.URI_FLAG.RemoveFromParser(parser)
+
+      def Run(self_, args):
+        """Called when command is executed."""
+        # Use Policy message and set IAM request field name overrides for API's
+        # with non-standard naming (if provided)
+        policy_request_path = 'setIamPolicyRequest'
+        if self.spec.iam:
+          policy_request_path = (
+              self.spec.iam.set_iam_policy_request_path or policy_request_path)
+        policy_field_path = policy_request_path + '.policy'
+
+        policy = self._GetModifiedIamPolicy(args, 'add')
+        self.spec.request.static_fields[policy_field_path] = policy
+
+        ref, response = self._CommonRun(args)
+        iam_util.LogSetIamPolicy(ref.Name(), self.resource_type)
+        return self._HandleResponse(response, args)
+
+    return Command
+
   def _GenerateGenericCommand(self):
     """Generates a generic command.
 
@@ -488,6 +534,40 @@ class CommandBuilder(object):
     update_request = self.method.GetMessageByName(set_iam_policy_request)
     if hasattr(update_request, 'updateMask'):
       self.spec.request.static_fields[mask_field_path] = update_mask
+
+  def _GetModifiedIamPolicy(self, args, policy_binding_type):
+    """Get the current IAM policy and then add/remove bindings as specified.
+
+    An IAM binding is a pair of role and member. If policy_binding_type is add,
+    the member and role specified in args would be added; if policy_binding_type
+    is remove, the member and role specified in args would be removed.
+
+    Args:
+      args: The argparse parser.
+      policy_binding_type: string, add or remove.
+
+    Returns:
+      IAM policy.
+    """
+    get_iam_method = registry.GetMethod(self.spec.request.collection,
+                                        'getIamPolicy',
+                                        self.spec.request.api_version)
+    get_iam_request = self.arg_generator.CreateRequest(
+        args,
+        use_relative_name=self.spec.request.use_relative_name,
+        override_method=get_iam_method)
+    policy = get_iam_method.Call(get_iam_request)
+    binding = self.method.GetMessageByName('Binding')
+
+    if policy_binding_type == 'add':
+      iam_util.AddBindingToIamPolicy(binding, policy, args.member, args.role)
+    elif policy_binding_type == 'remove':
+      # TODO(b/78797448)
+      raise NotImplementedError()
+    else:
+      pass
+
+    return policy
 
   def _HandleAsync(self, args, resource_ref, operation,
                    request_string, extract_resource_result=True):

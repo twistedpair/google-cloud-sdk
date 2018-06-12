@@ -43,11 +43,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -66,12 +61,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -2462,6 +2451,10 @@
         "reason": {
           "description": "Error message if unauthorized.",
           "type": "string"
+        },
+        "denied": {
+          "description": "Is this action explicitly denied.\nNB: It is perfectly valid to have both allowed == false, and\ndenied == false. This means the authorizer has no opinion, and other\nauthorizers in the chain should be consulted.",
+          "type": "boolean"
         }
       }
     },

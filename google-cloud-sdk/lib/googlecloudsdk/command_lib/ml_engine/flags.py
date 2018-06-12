@@ -25,9 +25,9 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.iam import completers as iam_completers
 from googlecloudsdk.command_lib.ml_engine import models_util
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions
@@ -395,14 +395,6 @@ def GetPredictJobSummary():
       OUTPUT=_JOB_PREDICT_OUTPUT_SUMMARY_FORMAT)
 
 
-# Resource arguments
-def ProjectAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Cloud project for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
-
-
 def ModelAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='model',
@@ -421,7 +413,7 @@ def GetVersionResourceSpec():
       resource_name='version',
       versionsId=VersionAttributeConfig(),
       modelsId=ModelAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
 
 
 def AddVersionResourceArg(parser, verb):

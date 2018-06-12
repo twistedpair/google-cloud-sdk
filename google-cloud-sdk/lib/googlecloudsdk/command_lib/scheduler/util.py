@@ -104,6 +104,13 @@ def ParseMessageBody(message_body):
 
   pubsub_message_type = scheduler_messages.PubsubTarget.PubsubMessageValue
   encoded_data = base64.urlsafe_b64encode(pubsub_message.data)
+  # Apitools will convert these messages to JSON values before issuing the
+  # request. Since extra_types is used here, apitools does not handle converting
+  # string_value to unicode before converting to JSON using json.dumps. That
+  # means we have to convert to unicode here before the request goes into
+  # apitools. Since the data is base64 encoded (which is all ascii), encoding it
+  # here will not change it's value.
+  encoded_data = http_encoding.Decode(encoded_data)
   return pubsub_message_type.AdditionalProperty(
       key='data',
       value=extra_types.JsonValue(string_value=encoded_data))

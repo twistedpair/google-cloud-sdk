@@ -14,12 +14,17 @@
 
 """gcloud CLI tree lister module."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import io
 import json
 import os
 
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.core import module_util
 from googlecloudsdk.core.util import files
+import six
 
 
 def _ParameterizePath(path):
@@ -82,17 +87,17 @@ def ListAll(directory=None):
           try:
             module = module_util.ImportPath(path)
           except module_util.ImportModuleError as e:
-            error = unicode(e)
+            error = six.text_type(e)
           try:
             tree = module.TREE
           except AttributeError:
             tree = None
         elif extension == '.json':
-          with open(path, 'r') as f:
+          with io.open(path, 'rt') as f:
             try:
               tree = json.loads(f.read())
             except Exception as e:  # pylint: disable=broad-except, record all errors
-              error = unicode(e)
+              error = six.text_type(e)
         if tree:
           version = tree.get(cli_tree.LOOKUP_VERSION, 'UNKNOWN')
           cli_version = tree.get(cli_tree.LOOKUP_CLI_VERSION, 'UNKNOWN')

@@ -20,7 +20,7 @@ import os
 import uuid
 from apitools.base.py import exceptions
 from googlecloudsdk.api_lib.source import git
-from googlecloudsdk.api_lib.source.repos import sourcerepo
+from googlecloudsdk.api_lib.source import sourcerepo
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties

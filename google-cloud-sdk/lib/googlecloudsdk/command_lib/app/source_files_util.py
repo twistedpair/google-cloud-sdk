@@ -18,6 +18,7 @@ Based on the runtime and environment, this can entail generating a new
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 
 from googlecloudsdk.api_lib.app import env

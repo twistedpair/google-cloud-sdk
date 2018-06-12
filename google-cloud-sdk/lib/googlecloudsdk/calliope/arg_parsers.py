@@ -844,7 +844,7 @@ class ArgList(ArgType):
     else:
       optional = '[{0},...]'.format(metavar)
 
-    msg = ','.join(filter(None, [required, optional]))
+    msg = ','.join([x for x in [required, optional] if x])
 
     if len(msg) < self._MAX_METAVAR_LENGTH:
       return msg

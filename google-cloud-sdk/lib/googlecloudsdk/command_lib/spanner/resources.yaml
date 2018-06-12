@@ -16,7 +16,7 @@ instance:
       parameter_name: instancesId
       attribute_name: instance
       help: |
-        The name of the spanner instance.
+        The name of the Cloud Spanner instance.
 
 database:
   name: database
@@ -28,4 +28,4 @@ database:
       parameter_name: databasesId
       attribute_name: database
       help: |
-        The name of the database.
+        The name of the Cloud Spanner database.

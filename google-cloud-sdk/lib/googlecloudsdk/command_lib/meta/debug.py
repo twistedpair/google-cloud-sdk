@@ -20,6 +20,8 @@ Contains things like:
 
 That make interactive debugging with gcloud a dream.
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import code
 import pdb
 # `site` initializes the interactive mode (defines `exit`/`quit`, sets up
@@ -118,7 +120,7 @@ def _PopulateApiNamesWithLoadMessage():
   """
   load_apis_message = (
       'Run `{0}()` to load all APIs, including this one.').format(
-          LoadApis.func_name)
+          LoadApis.__name__)
 
   class _LoadApisMessage(object):
 

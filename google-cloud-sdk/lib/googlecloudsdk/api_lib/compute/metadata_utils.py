@@ -14,12 +14,21 @@
 """Convenience functions for dealing with metadata."""
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
 import copy
 
+from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import file_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
+
 import six
+
+
+class InvalidSshKeyException(core_exceptions.Error):
+  """InvalidSshKeyException is for invalid ssh keys in metadata"""
 
 
 def _DictToMetadataMessage(message_classes, metadata_dict):
@@ -40,6 +49,67 @@ def _MetadataMessageToDict(metadata_message):
     for item in metadata_message.items:
       res[item.key] = item.value
   return res
+
+
+def _ValidateSshKeys(metadata_dict):
+  """Validates the ssh-key entries in metadata.
+
+  The ssh-key entry in metadata should start with <username> and it cannot
+  be a private key
+  (i.e. <username>:ssh-rsa <key-blob> <username>@<example.com> or
+  <username>:ssh-rsa <key-blob>
+  google-ssh {"userName": <username>@<example.com>, "expireOn": <date>}
+  when the key can expire.)
+
+  Args:
+    metadata_dict: A dictionary object containing metadata.
+
+  Raises:
+    InvalidSshKeyException: If the <username> at the front is missing or private
+    key(s) are detected.
+  """
+
+  ssh_keys = metadata_dict.get(constants.SSH_KEYS_METADATA_KEY, '')
+  ssh_keys_legacy = metadata_dict.get(constants.SSH_KEYS_LEGACY_METADATA_KEY,
+                                      '')
+  ssh_keys_combined = '\n'.join((ssh_keys, ssh_keys_legacy))
+
+  if 'PRIVATE KEY' in ssh_keys_combined:
+    raise InvalidSshKeyException(
+        'Private key(s) are detected. Note that only public keys '
+        'should be added.')
+
+  keys = ssh_keys_combined.split('\n')
+  keys_missing_username = []
+  for key in keys:
+    if key and _SshKeyStartsWithKeyType(key):
+      keys_missing_username.append(key)
+
+  if keys_missing_username:
+    message = ('The following key(s) are missing the <username> at the front\n'
+               '{}\n\n'
+               'Format ssh keys following '
+               'https://cloud.google.com/compute/docs/'
+               'instances/adding-removing-ssh-keys')
+    message_content = message.format('\n'.join(keys_missing_username))
+    raise InvalidSshKeyException(message_content)
+
+
+def _SshKeyStartsWithKeyType(key):
+  """Checks if the key starts with any key type in constants.SSH_KEY_TYPES.
+
+  Args:
+    key: A ssh key in metadata.
+
+  Returns:
+    True if the key starts with any key type in constants.SSH_KEY_TYPES, returns
+    false otherwise.
+
+  """
+  key_starts_with_types = [
+      key.startswith(key_type) for key_type in constants.SSH_KEY_TYPES
+  ]
+  return any(key_starts_with_types)
 
 
 def ConstructMetadataMessage(message_classes,
@@ -78,6 +148,11 @@ def ConstructMetadataMessage(message_classes,
 
   existing_metadata_dict = _MetadataMessageToDict(existing_metadata)
   existing_metadata_dict.update(new_metadata_dict)
+  try:
+    _ValidateSshKeys(existing_metadata_dict)
+  except InvalidSshKeyException as e:
+    log.warning(e)
+
   new_metadata_message = _DictToMetadataMessage(message_classes,
                                                 existing_metadata_dict)
 

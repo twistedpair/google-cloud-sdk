@@ -14,6 +14,9 @@
 
 """The meta cache command library support."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import walker
@@ -163,8 +166,12 @@ class _CompleterModuleGenerator(walker.Walker):
     Returns:
       The subtree module list.
     """
+
+    def _ActionKey(action):
+      return action.__repr__()
+
     args = command.ai
-    for arg in sorted(args.flag_args + args.positional_args):
+    for arg in sorted(args.flag_args + args.positional_args, key=_ActionKey):
       try:
         completer_class = arg.completer
       except AttributeError:
@@ -187,7 +194,7 @@ class _CompleterModuleGenerator(walker.Walker):
             pass
         except (apis_util.UnknownAPIError,
                 resources.InvalidCollectionException) as e:
-          collection = u'ERROR: {}'.format(e)
+          collection = 'ERROR: {}'.format(e)
       if arg.option_strings:
         name = arg.option_strings[0]
       else:
@@ -214,4 +221,4 @@ class _CompleterModuleGenerator(walker.Walker):
 
 def ListAttachedCompleters(cli):
   """Returns the list of all attached CompleterModule objects in cli."""
-  return _CompleterModuleGenerator(cli).Walk().values()
+  return list(_CompleterModuleGenerator(cli).Walk().values())

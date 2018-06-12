@@ -307,8 +307,8 @@ class Cache(object):  # pytype: disable=ignored-abstractmethod
 
   def Invalidate(self):
     """Invalidates the cache by invalidating all of its tables."""
-    for name in self.Select():  # pytype: disable=none-attr
-      self.Table(name).Invalidate()  # pytype: disable=none-attr
+    for name in self.Select():
+      self.Table(name).Invalidate()
 
   @abc.abstractmethod
   def Commit(self):

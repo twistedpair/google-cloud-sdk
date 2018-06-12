@@ -317,8 +317,8 @@ class Context(_messages.Message):
   `google.rpc.context.ProjectContext` and `google.rpc.context.OriginContext`.
   Available context types are defined in package `google.rpc.context`.  This
   also provides mechanism to whitelist any protobuf message extension that can
-  be sent in grpc metadata using \u201cx-goog-ext-<extension_id>-bin\u201d and \u201cx-goog-
-  ext-<extension_id>-jspb\u201d format. For example, list any service specific
+  be sent in grpc metadata using "x-goog-ext-<extension_id>-bin" and "x-goog-
+  ext-<extension_id>-jspb" format. For example, list any service specific
   protobuf types that can appear in grpc metadata as follows in your yaml
   file:  Example:      context:       rules:        - selector:
   "google.example.library.v1.LibraryService.CreateBook"

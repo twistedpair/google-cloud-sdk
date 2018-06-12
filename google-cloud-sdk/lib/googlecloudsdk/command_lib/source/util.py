@@ -68,10 +68,7 @@ def ParseSourceRepoWithModifiedTopic(args, repo):
   elif args.remove_topic:
     return _RemoveTopicFromResource(topic_name, repo, resource_name='repo')
   elif args.update_topic:
-    updated_config = _ParsePubsubConfig(topic_name, args.message_format,
-                                        args.service_account)
-    return _UpdateTopicInResource(
-        topic_name, updated_config, repo, resource_name='repo')
+    return _UpdateTopicInResource(topic_name, args, repo, resource_name='repo')
 
   return repo
 
@@ -88,10 +85,8 @@ def ParseProjectConfigWithModifiedTopic(args, project_config):
     return _RemoveTopicFromResource(
         topic_name, project_config, resource_name='project')
   elif args.update_topic:
-    updated_config = _ParsePubsubConfig(topic_name, args.message_format,
-                                        args.service_account)
     return _UpdateTopicInResource(
-        topic_name, updated_config, project_config, resource_name='project')
+        topic_name, args, project_config, resource_name='project')
 
   return project_config
 
@@ -155,7 +150,7 @@ def _RemoveTopicFromResource(topic_name, resource, resource_name):
           additionalProperties=config_additional_properties))
 
 
-def _UpdateTopicInResource(topic_name, updated_config, resource, resource_name):
+def _UpdateTopicInResource(topic_name, args, resource, resource_name):
   """Update the topic in the configuration and return a new repo message."""
 
   if resource.pubsubConfigs is None:
@@ -165,7 +160,8 @@ def _UpdateTopicInResource(topic_name, updated_config, resource, resource_name):
   config_additional_properties = resource.pubsubConfigs.additionalProperties
   for i, config in enumerate(config_additional_properties):
     if config.key == topic_name:
-      config_additional_properties[i].value = updated_config
+      config_additional_properties[i].value = _UpdateConfigWithArgs(
+          config.value, args)
       break
   else:
     raise InvalidTopicError('Invalid topic [{0}]: You must specify a '
@@ -195,3 +191,21 @@ def _ParsePubsubConfig(topic_name, message_format=None, service_account=None):
       messageFormat=parsed_message_format,
       serviceAccountEmail=service_account,
       topic=topic_name)
+
+
+def _GetMessageFormatString(pubsub_config):
+  message_format_type = getattr(pubsub_config, 'messageFormat')
+  message_format_enums = _MESSAGES.PubsubConfig.MessageFormatValueValuesEnum
+  if message_format_type == message_format_enums.PROTOBUF:
+    return 'protobuf'
+
+  return 'json'
+
+
+def _UpdateConfigWithArgs(pubsub_config, args):
+  message_format = args.message_format or _GetMessageFormatString(pubsub_config)
+  service_account = args.service_account or getattr(pubsub_config,
+                                                    'serviceAccountEmail')
+  topic_name = pubsub_config.topic
+
+  return _ParsePubsubConfig(topic_name, message_format, service_account)

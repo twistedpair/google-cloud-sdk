@@ -201,6 +201,17 @@ class ResourceInfo(ConceptInfo):
 
       attribute_fallthroughs += self.fallthroughs_map.get(attribute_name, [])
       fallthroughs_map[attribute_name] = attribute_fallthroughs
+    anchor_fallthroughs = fallthroughs_map[self.concept_spec.anchor.name]
+    for attribute in self.concept_spec.attributes[:-1]:
+      parameter_name = self.concept_spec.ParamName(attribute.name)
+      anchor_based_fallthroughs = [
+          deps_lib.FullySpecifiedAnchorFallthrough(
+              anchor_fallthrough, self.concept_spec.collection_info,
+              parameter_name)
+          for anchor_fallthrough in anchor_fallthroughs]
+      fallthroughs_map[attribute.name] = (
+          anchor_based_fallthroughs + fallthroughs_map[attribute.name])
+
     return fallthroughs_map
 
   def GetHints(self, attribute_name):
@@ -220,7 +231,7 @@ class ResourceInfo(ConceptInfo):
 
   def GetGroupHelp(self):
     """Build group help for the argument group."""
-    if len(list(filter(bool, self.attribute_to_args_map.values()))) == 1:
+    if len(list(filter(bool, list(self.attribute_to_args_map.values())))) == 1:
       generic_help = 'This represents a Cloud resource.'
     else:
       generic_help = ('The arguments in this group can be used to specify the '
@@ -407,16 +418,17 @@ class ResourceInfo(ConceptInfo):
     # Iterate through the values provided to the anchor argument, creating for
     # each a separate parsed resource.
     resources = []
-    for i, fallthrough in enumerate(anchor_fallthroughs):
+    for i, anchor_fallthrough in enumerate(anchor_fallthroughs):
 
       try:
-        anchor_values = fallthrough.GetValue(parsed_args)
+        anchor_values = anchor_fallthrough.GetValue(parsed_args)
       except deps_lib.FallthroughNotFoundError:
         continue
       for arg_value in anchor_values:
         def F(return_value=arg_value):
           return return_value
-        fallthrough = deps_lib.Fallthrough(F, fallthrough.hint)
+        fallthrough = deps_lib.Fallthrough(F, anchor_fallthrough.hint,
+                                           active=anchor_fallthrough.active)
         fallthroughs_map[anchor] = (
             anchor_fallthroughs[:i] + [fallthrough] +
             anchor_fallthroughs[i:])

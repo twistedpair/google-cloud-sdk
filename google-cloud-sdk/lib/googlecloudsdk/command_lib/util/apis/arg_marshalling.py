@@ -66,8 +66,12 @@ class DeclarativeArgumentGenerator(object):
     args.extend(self._GenerateResourceArg())
     return args
 
-  def CreateRequest(self, namespace, static_fields=None,
-                    resource_method_params=None, use_relative_name=True):
+  def CreateRequest(self,
+                    namespace,
+                    static_fields=None,
+                    resource_method_params=None,
+                    use_relative_name=True,
+                    override_method=None):
     """Generates the request object for the method call from the parsed args.
 
     Args:
@@ -80,11 +84,13 @@ class DeclarativeArgumentGenerator(object):
         to resource ref attribute name when the API method uses non-standard
         names.
       use_relative_name: Use ref.RelativeName() if True otherwise ref.Name().
+      override_method: APIMethod, The method other than self.method, this is
+        used when the command has more than one API call.
 
     Returns:
       The apitools message to be send to the method.
     """
-    message_type = self.method.GetRequestType()
+    message_type = (override_method or self.method).GetRequestType()
     message = message_type()
 
     # Insert static fields into message.
@@ -480,6 +486,3 @@ class AutoArgumentGenerator(object):
         field_name.lower().endswith('request')):
       return 'request'
     return field_name
-
-
-

@@ -49,7 +49,6 @@ def AddOptionalTopicFlags(group, resource_name='repo'):
   group.add_argument(
       '--message-format',
       choices=['json', 'protobuf'],
-      default='json',
       help="""\
 The format of the message to publish to the topic.""")
 
@@ -80,11 +79,15 @@ def AddRepoUpdateArgs(parser, verb='to update'):
   concept_parsers.ConceptParser(
       [
           resource_args.CreateTopicResourcePresentationSpec(
-              'add', topic_resource_group),
+              'add', 'The Cloud Pub/Sub topic to add to the repository.',
+              topic_resource_group),
           resource_args.CreateTopicResourcePresentationSpec(
-              'remove', topic_resource_group),
+              'remove',
+              'The Cloud Pub/Sub topic to remove from the repository.',
+              topic_resource_group),
           resource_args.CreateTopicResourcePresentationSpec(
-              'update', topic_resource_group),
+              'update', 'The Cloud Pub/Sub topic to update in the project.',
+              topic_resource_group),
           resource_args.CreateRepoResourcePresentationSpec(verb)
       ],
       command_level_fallthroughs={
@@ -107,11 +110,14 @@ def AddProjectConfigUpdateArgs(parser):
   concept_parsers.ConceptParser(
       [
           resource_args.CreateTopicResourcePresentationSpec(
-              'add', topic_resource_group),
+              'add', 'The Cloud Pub/Sub topic to add to the project.',
+              topic_resource_group),
           resource_args.CreateTopicResourcePresentationSpec(
-              'remove', topic_resource_group),
+              'remove', 'The Cloud Pub/Sub topic to remove from the project.',
+              topic_resource_group),
           resource_args.CreateTopicResourcePresentationSpec(
-              'update', topic_resource_group),
+              'update', 'The Cloud Pub/Sub topic to update in the project.',
+              topic_resource_group),
       ],
       command_level_fallthroughs={
           '--add-topic.project': ['--topic-project'],

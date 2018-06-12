@@ -17,19 +17,12 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
 _PROJECT = properties.VALUES.core.project
 _INSTANCE = properties.VALUES.spanner.instance
-
-
-def ProjectAttributeConfig():
-  """Get project resource attribute with default value."""
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='The Cloud Project for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(_PROJECT)])
 
 
 def InstanceAttributeConfig():
@@ -58,7 +51,7 @@ def GetInstanceResourceSpec():
       'spanner.projects.instances',
       resource_name='instance',
       instancesId=InstanceAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetDatabaseResourceSpec():
@@ -67,7 +60,7 @@ def GetDatabaseResourceSpec():
       resource_name='database',
       databasesId=DatabaseAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetSessionResourceSpec():
@@ -77,7 +70,7 @@ def GetSessionResourceSpec():
       sessionsId=SessionAttributeConfig(),
       databasesId=DatabaseAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
-      projectsId=ProjectAttributeConfig())
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
 
 
 def AddInstanceResourceArg(parser, verb, positional=True):

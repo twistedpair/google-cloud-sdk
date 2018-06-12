@@ -493,7 +493,8 @@ class Parser(object):
     return self._projection
 
 
-def Parse(expression, defaults=None, symbols=None, aliases=None, compiler=None):
+def Parse(expression='', defaults=None, symbols=None, aliases=None,
+          compiler=None):
   """Parses a resource projector expression.
 
   Args:

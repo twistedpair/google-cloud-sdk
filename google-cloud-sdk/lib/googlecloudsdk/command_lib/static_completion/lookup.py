@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
 import os
 import shlex
 
@@ -191,8 +192,11 @@ def Complete():
     # The bash/zsh completion scripts set IFS_ENV_VAR to one character.
     ifs = os.environ.get(IFS_ENV_VAR, IFS_ENV_DEFAULT)
     # Write completions to stream
+    f = None
     try:
       f = _OpenCompletionsOutputStream()
-      f.write(ifs.join(completions))
+      # the other side also uses the console encoding
+      f.write(ifs.join(completions).encode())
     finally:
-      f.close()
+      if f:
+        f.close()

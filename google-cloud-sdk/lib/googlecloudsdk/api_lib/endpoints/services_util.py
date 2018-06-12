@@ -559,7 +559,7 @@ def WaitForOperation(operation_ref, client):
                                   'is still pending.'.format(operation_id))
 
   # Check to see if the operation resulted in an error
-  if WaitForOperation.operation_response.error is not None:  # pytype: disable=none-attr
+  if WaitForOperation.operation_response.error is not None:
     raise exceptions.OperationErrorException(
         'The operation with ID {0} resulted in a failure.'.format(operation_id))
 

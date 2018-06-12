@@ -67,6 +67,9 @@ class CommandType(Enum):
   # IAM support currently implemented as subcommands
   GET_IAM_POLICY = 'getIamPolicy'
   SET_IAM_POLICY = 'setIamPolicy'
+  # For add/remove-iam-policy-binding commands, the actual API method to modify
+  # the iam support is 'setIamPolicy'.
+  ADD_IAM_POLICY_BINDING = 'setIamPolicy'
   # Generic commands are those that don't extend a specific calliope command
   # base class.
   GENERIC = None

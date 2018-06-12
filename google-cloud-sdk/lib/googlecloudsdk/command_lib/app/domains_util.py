@@ -14,6 +14,7 @@
 """Utilities for `gcloud app domain-mappings`."""
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from googlecloudsdk.calliope import exceptions
 
 NO_CERTIFICATE_ID_MESSAGE = ('A certificate ID cannot be provided when using'

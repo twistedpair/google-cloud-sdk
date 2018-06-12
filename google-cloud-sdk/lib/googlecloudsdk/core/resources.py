@@ -841,7 +841,7 @@ class Registry(object):
         cur_level[token] = {}
       cur_level = cur_level[token]
     if None in cur_level:
-      raise AmbiguousResourcePath(cur_level[None], parser)
+      raise AmbiguousResourcePath(cur_level[None], parser.collection_info.name)
 
     cur_level[None] = subcollection, parser  # pytype: disable=attribute-error
 

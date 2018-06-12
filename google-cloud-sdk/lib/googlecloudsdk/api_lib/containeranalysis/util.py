@@ -13,11 +13,14 @@
 # limitations under the License.
 """Utilities for the container analysis commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import itertools
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import resources
+from six.moves import range
 
 # The maximum number of resource URLs by which to filter when showing
 # occurrences. This is required since filtering by too many causes the

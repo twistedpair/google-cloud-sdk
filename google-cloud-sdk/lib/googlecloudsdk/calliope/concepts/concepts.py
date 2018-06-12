@@ -96,6 +96,9 @@ class ConceptSpec(object):
       return False
     return self.name == other.name and self.attributes == other.attributes
 
+  def __hash__(self):
+    return hash(self.name) + hash(self.attributes)
+
 
 class _Attribute(object):
   """A base class for concept attributes.
@@ -136,6 +139,11 @@ class _Attribute(object):
             and self.fallthroughs == other.fallthroughs
             and self.value_type == other.value_type)
 
+  def __hash__(self):
+    return sum(map(hash, [
+        self.name, self.help_text, self.required, self.completer,
+        self.value_type])) + sum(map(hash, self.fallthroughs))
+
 
 class Attribute(_Attribute):
   """An attribute of a resource.
@@ -162,6 +170,11 @@ class Attribute(_Attribute):
             and self.completion_request_params
             == other.completion_request_params
             and self.completion_id_field == other.completion_id_field)
+
+  def __hash__(self):
+    return super(Attribute, self).__hash__() + sum(
+        map(hash, [str(self.completion_request_params),
+                   self.completion_id_field]))
 
 
 class ResourceSpec(ConceptSpec):
@@ -345,6 +358,10 @@ class ResourceSpec(ConceptSpec):
     return (super(ResourceSpec, self).__eq__(other)
             and self.disable_auto_completers == other.disable_auto_completers
             and self.attribute_to_params_map == other.attribute_to_params_map)
+
+  def __hash__(self):
+    return super(ResourceSpec, self).__hash__() + sum(
+        map(hash, [self.disable_auto_completers, self.attribute_to_params_map]))
 
 
 class ResourceParameterAttributeConfig(object):

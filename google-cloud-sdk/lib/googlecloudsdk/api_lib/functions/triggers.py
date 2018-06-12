@@ -68,6 +68,7 @@ class TriggerEvent(object):
   def resource_is_optional(self):
     return self.resource_type in TriggerEvent.OPTIONAL_RESOURCE_TYPES
 
+# TODO (b/73062780): Event types should not be hard-coded.
 # Don't use those structures directly. Use registry object instead.
 # By convention, first event type is default.
 _BETA_PROVIDERS = [

@@ -91,10 +91,16 @@ KEY_FORMAT_ERROR = (
     'Only hyphens (-), underscores (_), lowercase characters, and numbers are '
     'allowed. Keys must start with a lowercase character. International '
     'characters are allowed.')
+KEY_FORMAT_HELP = (
+    'Keys must start with a lowercase character and contain only hyphens '
+    '(`-`), underscores (```_```), lowercase characters, and numbers.')
 
 VALUE_FORMAT_ERROR = (
     'Only hyphens (-), underscores (_), lowercase characters, and numbers are '
     'allowed. International characters are allowed.')
+VALUE_FORMAT_HELP = (
+    'Values must contain only hyphens (`-`), underscores (```_```), lowercase '
+    'characters, and numbers.')
 
 KEY_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
     IsValidLabelKey, KEY_FORMAT_ERROR)
@@ -105,14 +111,23 @@ VALUE_FORMAT_VALIDATOR = arg_parsers.CustomFunctionValidator(
 
 def GetCreateLabelsFlag(extra_message='', labels_name='labels',
                         validate_values=True):
+  """Makes the base.Argument for --labels flag."""
   value_type = VALUE_FORMAT_VALIDATOR if validate_values else None
+  format_help = [KEY_FORMAT_HELP]
+  if validate_values:
+    format_help.append(VALUE_FORMAT_HELP)
+  help_parts = ['A list of label KEY=VALUE pairs to add.',
+                ' '.join(format_help)]
+  if extra_message:
+    help_parts.append(extra_message)
+
   return base.Argument(
       '--{}'.format(labels_name),
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(
           key_type=KEY_FORMAT_VALIDATOR, value_type=value_type),
       action=arg_parsers.UpdateAction,
-      help='A list of label KEY=VALUE pairs to add.' + extra_message)
+      help=('\n\n'.join(help_parts)))
 
 
 def GetClearLabelsFlag(labels_name='labels'):
@@ -135,16 +150,25 @@ def GetClearLabelsFlag(labels_name='labels'):
 
 def GetUpdateLabelsFlag(extra_message, labels_name='labels',
                         validate_values=True):
+  """Makes a base.Argument for the `--update-labels` flag."""
   value_type = VALUE_FORMAT_VALIDATOR if validate_values else None
+  format_help = [KEY_FORMAT_HELP]
+  if validate_values:
+    format_help.append(VALUE_FORMAT_HELP)
+  help_parts = [
+      ('A list of label KEY=VALUE pairs to update. If a label exists its value '
+       'is modified, otherwise a new label is created.'),
+      ' '.join(format_help)]
+  if extra_message:
+    help_parts.append(extra_message)
+
   return base.Argument(
       '--update-{}'.format(labels_name),
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(
           key_type=KEY_FORMAT_VALIDATOR, value_type=value_type),
       action=arg_parsers.UpdateAction,
-      help="""\
-      A list of label KEY=VALUE pairs to update. If a label exists its value
-      is modified, otherwise a new label is created.""" + extra_message)
+      help='\n\n'.join(help_parts))
 
 
 def GetRemoveLabelsFlag(extra_message, labels_name='labels'):

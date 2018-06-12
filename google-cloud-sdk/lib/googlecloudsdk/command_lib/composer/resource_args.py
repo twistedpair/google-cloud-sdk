@@ -17,15 +17,9 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
-
-
-def ProjectAttributeConfig():
-  return concepts.ResourceParameterAttributeConfig(
-      name='project',
-      help_text='Cloud project for the {resource}.',
-      fallthroughs=[deps.PropertyFallthrough(properties.VALUES.core.project)])
 
 
 def LocationAttributeConfig(fallthroughs_enabled=True):
@@ -54,7 +48,7 @@ def GetLocationResourceSpec(fallthroughs_enabled=True):
   return concepts.ResourceSpec(
       'composer.projects.locations',
       resource_name='location',
-      projectsId=ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(
           fallthroughs_enabled=fallthroughs_enabled))
 
@@ -63,7 +57,7 @@ def GetEnvironmentResourceSpec():
   return concepts.ResourceSpec(
       'composer.projects.locations.environments',
       resource_name='environment',
-      projectsId=ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       environmentsId=EnvironmentAttributeConfig())
 
@@ -72,7 +66,7 @@ def GetOperationResourceSpec():
   return concepts.ResourceSpec(
       'composer.projects.locations.operations',
       resource_name='operation',
-      projectsId=ProjectAttributeConfig(),
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       operationsId=OperationAttributeConfig())
 

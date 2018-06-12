@@ -44,11 +44,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -67,12 +62,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -958,6 +947,20 @@
         "operation": {
           "description": "Output only. An operation that indicates the status of the current scan.",
           "$ref": "Operation"
+        },
+        "continuousAnalysis": {
+          "description": "Whether the resource is continuously analyzed.",
+          "enumDescriptions": [
+            "Unknown",
+            "The resource is continuously analyzed.",
+            "The resource is ignored for continuous analysis."
+          ],
+          "type": "string",
+          "enum": [
+            "CONTINUOUS_ANALYSIS_UNSPECIFIED",
+            "ACTIVE",
+            "INACTIVE"
+          ]
         },
         "analysisStatus": {
           "description": "The status of discovery for the resource.",

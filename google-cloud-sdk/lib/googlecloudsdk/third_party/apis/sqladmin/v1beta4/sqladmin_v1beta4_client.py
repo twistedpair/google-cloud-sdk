@@ -371,7 +371,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def AddServerCa(self, request, global_params=None):
-      r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There can not be more than one CA version waiting to be rotated in.
+      r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in.
 
       Args:
         request: (SqlInstancesAddServerCaRequest) input message
@@ -449,7 +449,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def DemoteMaster(self, request, global_params=None):
-      r"""Reserved for future use.
+      r"""Demotes the standalone instance to be a Cloud SQL read replica for an external database server.
 
       Args:
         request: (SqlInstancesDemoteMasterRequest) input message

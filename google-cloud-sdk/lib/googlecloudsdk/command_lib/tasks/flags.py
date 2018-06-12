@@ -13,6 +13,8 @@
 # limitations under the License.
 """Utilities for flags for `gcloud tasks` commands."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import sys
 
 from googlecloudsdk.calliope import arg_parsers

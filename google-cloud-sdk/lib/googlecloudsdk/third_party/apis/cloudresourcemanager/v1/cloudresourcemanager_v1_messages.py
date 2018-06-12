@@ -917,13 +917,13 @@ class ListPolicy(_messages.Message):
       DENY, then an attempt to activate any API will be denied.  The following
       examples demonstrate different possible layerings:  Example 1 (no
       inherited values):   `organizations/foo` has a `Policy` with values:
-      {allowed_values: \u201cE1\u201d allowed_values:\u201dE2\u201d}   ``projects/bar`` has
+      {allowed_values: "E1" allowed_values:"E2"}   ``projects/bar`` has
       `inherit_from_parent` `false` and values:     {allowed_values: "E3"
       allowed_values: "E4"} The accepted values at `organizations/foo` are
       `E1`, `E2`. The accepted values at `projects/bar` are `E3`, and `E4`.
       Example 2 (inherited values):   `organizations/foo` has a `Policy` with
-      values:     {allowed_values: \u201cE1\u201d allowed_values:\u201dE2\u201d}   `projects/bar`
-      has a `Policy` with values:     {value: \u201cE3\u201d value: \u201dE4\u201d
+      values:     {allowed_values: "E1" allowed_values:"E2"}   `projects/bar`
+      has a `Policy` with values:     {value: "E3" value: "E4"
       inherit_from_parent: true} The accepted values at `organizations/foo`
       are `E1`, `E2`. The accepted values at `projects/bar` are `E1`, `E2`,
       `E3`, and `E4`.  Example 3 (inheriting both allowed and denied values):
@@ -932,7 +932,7 @@ class ListPolicy(_messages.Message):
       {denied_values: "E1"} The accepted values at `organizations/foo` are
       `E1`, `E2`. The value accepted at `projects/bar` is `E2`.  Example 4
       (RestoreDefault):   `organizations/foo` has a `Policy` with values:
-      {allowed_values: \u201cE1\u201d allowed_values:\u201dE2\u201d}   `projects/bar` has a
+      {allowed_values: "E1" allowed_values:"E2"}   `projects/bar` has a
       `Policy` with values:     {RestoreDefault: {}} The accepted values at
       `organizations/foo` are `E1`, `E2`. The accepted values at
       `projects/bar` are either all or none depending on the value of
@@ -942,12 +942,12 @@ class ListPolicy(_messages.Message):
       levels are either all or none depending on the value of
       `constraint_default` (if `ALLOW`, all; if `DENY`, none).  Example 6
       (ListConstraint allowing all):   `organizations/foo` has a `Policy` with
-      values:     {allowed_values: \u201cE1\u201d allowed_values: \u201dE2\u201d}   `projects/bar`
+      values:     {allowed_values: "E1" allowed_values: "E2"}   `projects/bar`
       has a `Policy` with:     {all: ALLOW} The accepted values at
       `organizations/foo` are `E1`, E2`. Any value is accepted at
       `projects/bar`.  Example 7 (ListConstraint allowing none):
       `organizations/foo` has a `Policy` with values:     {allowed_values:
-      \u201cE1\u201d allowed_values: \u201dE2\u201d}   `projects/bar` has a `Policy` with:
+      "E1" allowed_values: "E2"}   `projects/bar` has a `Policy` with:
       {all: DENY} The accepted values at `organizations/foo` are `E1`, E2`. No
       value is accepted at `projects/bar`.
     suggestedValue: Optional. The Google Cloud Console will try to default to

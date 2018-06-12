@@ -16,6 +16,7 @@
 # Metric names for CSI
 
 # Reserved CSI metric prefix for appengine
+from __future__ import unicode_literals
 _APPENGINE_PREFIX = 'app_deploy_'
 
 # "Start" suffix

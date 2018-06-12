@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20180525",
+ "revision": "20180604",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2707,7 +2707,7 @@
       },
       "type": {
        "type": "string",
-       "description": "The name of the type provider for this request.",
+       "description": "The name of the type provider type for this request.",
        "required": true,
        "location": "path"
       },

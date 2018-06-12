@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
 
@@ -72,6 +74,9 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
         return dumper.represent_scalar('tag:yaml.org,2002:null', 'null')
       return dumper.represent_scalar('tag:yaml.org,2002:str', null)
 
+    def _OrderedDictPresenter(dumper, data):
+      return dumper.represent_mapping('tag:yaml.org,2002:map', data.items())
+
     def _UndefinedPresenter(dumper, data):
       r = repr(data)
       if r == '[]':
@@ -91,6 +96,9 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
                                Dumper=yaml.dumper.SafeDumper)
     self._yaml.add_representer(type(None),
                                _NullPresenter,
+                               Dumper=yaml.dumper.SafeDumper)
+    self._yaml.add_representer(collections.OrderedDict,
+                               _OrderedDictPresenter,
                                Dumper=yaml.dumper.SafeDumper)
 
   class _LiteralLines(six.text_type):

@@ -14,6 +14,10 @@
 
 """Utilities for gcloud help text differences."""
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+import io
 import os
 import re
 import shutil
@@ -24,6 +28,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import text
+import six
 
 
 # Help documents must not contain any of these invalid brand abbreviations.
@@ -144,13 +149,13 @@ def DirDiff(old_dir, new_dir, diff):
     relative_file = os.path.relpath(new_file, new_dir)
     if diff.Ignore(relative_file):
       continue
-    with open(new_file, 'r') as f:
+    with io.open(new_file, 'rt') as f:
       new_contents = f.read()
     diff.Validate(relative_file, new_contents)
     old_contents = None
     old_file = os.path.normpath(os.path.join(old_dir, relative_file))
     if old_file in old_files:
-      with open(old_file, 'r') as f:
+      with io.open(old_file, 'rt') as f:
         old_contents = f.read()
       if old_contents == new_contents:
         continue
@@ -351,4 +356,4 @@ class HelpTextUpdater(object):
     try:
       return self._Update(restrict)
     except (IOError, OSError, SystemError) as e:
-      raise HelpTextUpdateError('Update failed: %s' % unicode(e))
+      raise HelpTextUpdateError('Update failed: %s' % six.text_type(e))

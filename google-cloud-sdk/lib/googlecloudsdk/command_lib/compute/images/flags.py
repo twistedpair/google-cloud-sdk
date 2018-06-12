@@ -37,9 +37,12 @@ _SOURCE_SNAPSHOT_DETAILED_HELP = """\
 """
 _REPLACEMENT_DISK_DETAILED_HELP = """\
        Specifies a Compute Engine image as a replacement for the image
-       being phased out. Users of the deprecated image will be advised to switch
-       to this replacement. For example, *--replacement example-image* or
-       *--replacement projects/google/global/images/example-image*.
+       being phased out. Users of the deprecated image will be
+       advised to switch to this replacement. For example, *--replacement
+       example-image* or *--replacement
+       projects/google/global/images/example-image*.
+
+       This flag value is purely informational and is not validated in any way.
        """
 
 _SOURCE_DISK_ZONE_EXPLANATION = compute_flags.ZONE_PROPERTY_EXPLANATION
