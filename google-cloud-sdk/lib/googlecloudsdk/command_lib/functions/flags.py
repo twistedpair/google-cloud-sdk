@@ -170,6 +170,7 @@ def AddStageBucketFlag(parser):
 
 
 def AddRuntimeFlag(parser):
+  # TODO(b/110148388): Do not hardcode list of choices in the help text.
   parser.add_argument(
       '--runtime',
       help="""\

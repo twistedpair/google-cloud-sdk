@@ -18,6 +18,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 def AddOrganizationIdArg(parser):
@@ -76,7 +77,7 @@ def CreateAnnotationResourceArg(plural=False, positional=False, required=True):
   if plural:
     name = 'annotations'
     help_text = 'A comma separated list of annotation references.'
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs.ResourcePresentationSpec(
       name if positional else ('--' + name),
       _GetProjectAnnotationResourceSpec(),
       help_text,
@@ -86,7 +87,7 @@ def CreateAnnotationResourceArg(plural=False, positional=False, required=True):
 
 
 def CreateTaxonomyResourceArg(positional=False):
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs.ResourcePresentationSpec(
       'taxonomy' if positional else '--taxonomy',
       _GetProjectTaxonomyResourceSpec(),
       'A taxonomy reference.',
@@ -95,7 +96,7 @@ def CreateTaxonomyResourceArg(positional=False):
 
 
 def CreateAssetResourceArg(positional=False):
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs.ResourcePresentationSpec(
       'asset' if positional else '--asset',
       _GetAssetResourceSpec(),
       group_help='The asset reference.',

@@ -634,10 +634,10 @@ def SaveCredentialsAsADC(credentials, file_path):
         credentials.user_agent,
         credentials.revoke_uri)
   try:
-    with files.OpenForWritingPrivate(file_path) as f:
-      json.dump(credentials.serialization_data, f, sort_keys=True,
-                indent=2, separators=(',', ': '))
-  except IOError as e:
+    contents = json.dumps(credentials.serialization_data, sort_keys=True,
+                          indent=2, separators=(',', ': '))
+    files.WriteFileContents(file_path, contents, private=True)
+  except files.Error as e:
     log.debug(e, exc_info=True)
     raise CredentialFileSaveError(
         'Error saving Application Default Credentials: ' + str(e))
@@ -717,9 +717,7 @@ class _LegacyGenerator(object):
       cred = self.credentials
       key = cred._private_key_pkcs12  # pylint: disable=protected-access
       password = cred._private_key_password  # pylint: disable=protected-access
-
-      with files.OpenForWritingPrivate(self._p12_key_path, binary=True) as pk:
-        pk.write(key)
+      files.WriteBinaryFileContents(self._p12_key_path, key, private=True)
 
       # the .boto file gets some different fields
       self._WriteFileContents(
@@ -741,9 +739,4 @@ class _LegacyGenerator(object):
     """
 
     full_path = os.path.realpath(os.path.expanduser(filepath))
-
-    try:
-      with files.OpenForWritingPrivate(full_path) as cred_file:
-        cred_file.write(contents)
-    except (OSError, IOError) as e:
-      raise Exception('Failed to open %s for writing: %s' % (filepath, e))
+    files.WriteFileContents(full_path, contents, private=True)

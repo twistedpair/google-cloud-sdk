@@ -17,11 +17,11 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
 import os
 
 from googlecloudsdk.api_lib.ml.products import product_util
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.core.util import files
 
 
 ALPHA_LIST_NOTE = ('Note: For alpha, only catalogs with associated '
@@ -72,8 +72,7 @@ def GetImageFromPath(path):
   image = messages.Image()
 
   if os.path.isfile(path):
-    with io.open(path, 'rb') as content_file:
-      image.content = content_file.read()
+    image.content = files.ReadBinaryFileContents(path)
   elif storage_util.ObjectReference.IsStorageUrl(path):
     image.source = messages.ImageSource(imageUri=path)
   else:

@@ -7,7 +7,7 @@
   "version": "v2beta2",
   "revision": "0",
   "title": "Cloud Tasks API",
-  "description": "Manages the execution of large numbers of distributed requests. Cloud Tasks is in Alpha.",
+  "description": "Manages the execution of large numbers of distributed requests.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

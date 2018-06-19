@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Argument processors for DLP surface arguments."""
+
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
 import os
-
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 
 _DLP_API = 'dlp'
@@ -330,10 +331,9 @@ def GetImageFromFile(path):
   extension = extension or 'n_a'
   image_item = _GetMessageClass('GooglePrivacyDlpV2ByteContentItem')
   if os.path.isfile(path) and _ValidateExtension(extension):
-    with io.open(path, 'rb') as content_file:
-      enum_val = arg_utils.ChoiceToEnum(VALID_IMAGE_EXTENSIONS[extension],
-                                        image_item.TypeValueValuesEnum)
-      image = image_item(data=content_file.read(), type=enum_val)
+    enum_val = arg_utils.ChoiceToEnum(VALID_IMAGE_EXTENSIONS[extension],
+                                      image_item.TypeValueValuesEnum)
+    image = image_item(data=files.ReadBinaryFileContents(path), type=enum_val)
   else:
     raise ImageFileError(
         'The image path [{}] does not exist or has an invalid extension. '

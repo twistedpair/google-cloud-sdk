@@ -30,6 +30,8 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.core.util import files
+
 import six
 
 
@@ -507,5 +509,5 @@ def ReadYaml(file_path, message_type):
 
 def WriteYaml(file_path, message):
   py_value = encoding.MessageToPyValue(message)
-  with open(file_path, 'w') as f:
+  with files.FileWriter(file_path) as f:
     yaml.dump(py_value, stream=f)

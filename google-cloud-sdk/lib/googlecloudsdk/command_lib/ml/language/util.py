@@ -17,11 +17,11 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
 import os
 
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import files
 
 
 LANGUAGE_API = 'language'
@@ -50,8 +50,7 @@ def UpdateRequestWithInput(unused_ref, args, request):
       raise ValueError('Either a file or content must be provided for '
                        'analysis by the Natural Language API, not both.')
     if os.path.isfile(content_file):
-      with io.open(content_file, 'rt') as content_file:
-        document.content = content_file.read()
+      document.content = files.ReadFileContents(content_file)
     elif storage_util.ObjectReference.IsStorageUrl(content_file):
       document.gcsContentUri = content_file
     else:

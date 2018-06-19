@@ -17,11 +17,13 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 import imp
-import io
 import os
 import pkgutil
 import sys
+
+from googlecloudsdk.core.util import files
 
 import six
 
@@ -54,8 +56,7 @@ def GetResourceFromFile(path):
     IOError: if resource is not found under given path.
   """
   if os.path.isfile(path):
-    with io.open(path, 'rb') as f:
-      return f.read()
+    return files.ReadBinaryFileContents(path)
 
   importer = pkgutil.get_importer(os.path.dirname(path))
   if hasattr(importer, 'get_data'):

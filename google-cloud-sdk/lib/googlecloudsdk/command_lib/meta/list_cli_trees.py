@@ -17,7 +17,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
 import json
 import os
 
@@ -93,11 +92,10 @@ def ListAll(directory=None):
           except AttributeError:
             tree = None
         elif extension == '.json':
-          with io.open(path, 'rt') as f:
-            try:
-              tree = json.loads(f.read())
-            except Exception as e:  # pylint: disable=broad-except, record all errors
-              error = six.text_type(e)
+          try:
+            tree = json.loads(files.ReadFileContents(path))
+          except Exception as e:  # pylint: disable=broad-except, record all errors
+            error = six.text_type(e)
         if tree:
           version = tree.get(cli_tree.LOOKUP_VERSION, 'UNKNOWN')
           cli_version = tree.get(cli_tree.LOOKUP_CLI_VERSION, 'UNKNOWN')

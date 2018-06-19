@@ -352,16 +352,13 @@ class _MetricsCollector(object):
     uuid_path = config.Paths().analytics_cid_path
     cid = None
     if os.path.exists(uuid_path):
-      with open(uuid_path) as f:
-        cid = f.read()
+      cid = files.ReadFileContents(uuid_path)
       if cid:
         return cid
 
+    cid = uuid.uuid4().hex  # A random UUID
     files.MakeDir(os.path.dirname(uuid_path))
-    with open(uuid_path, 'w') as f:
-      cid = uuid.uuid4().hex
-      f.write(cid)  # A random UUID
-
+    files.WriteFileContents(uuid_path, cid)
     return cid
 
   @staticmethod

@@ -1141,9 +1141,13 @@ class GoogleCloudMlV1Version(_messages.Message):
     lastUseTime: Output only. The time the version was last used for
       prediction.
     machineType: Optional. The type of machine on which to serve the model.
-      The following are currently supported:   mls1-highmem-1    1 core    2
-      Gb RAM   mls1-highcpu-4    4 core    2 Gb RAM If not set, mls1-highmem-1
-      is used. Currently only applies to online prediction.
+      Currently only applies to online prediction service. Naming design doc
+      for CMLE online prediction Machine Types: https://docs.google.com/docume
+      nt/d/1V3tko3VJ64PcpsmNxCXiPoPGccL9_K8gX1YjC8UofzQ/edit#heading=h.7lvy6ow
+      fx4eh. The following are currently supported and will be deprecated in
+      Beta release.   mls1-highmem-1    1 core    2 Gb RAM   mls1-highcpu-4
+      4 core    2 Gb RAM The following are available in Beta:   mls1-c1-m2
+      1 core    2 Gb RAM   Default   mls1-c4-m2        1 core    4 Gb RAM
     manualScaling: Manually select the number of nodes to use for serving the
       model. You should generally use `auto_scaling` with an appropriate
       `min_nodes` instead, but this option is available if you want more

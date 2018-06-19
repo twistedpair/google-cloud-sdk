@@ -17,7 +17,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
 import os
 import re
 import shutil
@@ -149,14 +148,12 @@ def DirDiff(old_dir, new_dir, diff):
     relative_file = os.path.relpath(new_file, new_dir)
     if diff.Ignore(relative_file):
       continue
-    with io.open(new_file, 'rt') as f:
-      new_contents = f.read()
+    new_contents = file_utils.ReadFileContents(new_file)
     diff.Validate(relative_file, new_contents)
     old_contents = None
     old_file = os.path.normpath(os.path.join(old_dir, relative_file))
     if old_file in old_files:
-      with io.open(old_file, 'rt') as f:
-        old_contents = f.read()
+      old_contents = file_utils.ReadFileContents(old_file)
       if old_contents == new_contents:
         continue
       op = 'edit'

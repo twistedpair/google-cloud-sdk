@@ -22,21 +22,19 @@ import re
 import sys
 import textwrap
 
-from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.calliope import walker
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 from googlecloudsdk.core import module_util
-from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.core.resource import resource_printer
-from googlecloudsdk.core.resource import resource_projector
-from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import files
 
 import six
 
+# Lazy import modules to improve tab completion performance.
+# Alternatively, this module could be reorganized to separate tree loading from
+# dumping but that would have significant fallout for the module's usage
+# throughout the code base.
+# pylint:disable=g-import-not-at-top
 
 # This module is the CLI tree generator. VERSION is a stamp that is used to
 # detect breaking changes. If an external CLI tree version does not exactly
@@ -132,6 +130,8 @@ def _GetDefaultCliCommandVersion():
     # normal installation
     return version
   try:
+    from googlecloudsdk.core.updater import update_manager
+
     manager = update_manager.UpdateManager()
     components = manager.GetCurrentVersionsInformation()
     # personal installation
@@ -144,6 +144,8 @@ def _GetDefaultCliCommandVersion():
 
 def _GetDescription(arg):
   """Returns the most detailed description from arg."""
+  from googlecloudsdk.calliope import usage_text
+
   return usage_text.GetArgDetails(arg)
 
 
@@ -257,6 +259,7 @@ class Flag(FlagOrPositional):
   """
 
   def __init__(self, flag, name):
+    from googlecloudsdk.calliope import arg_parsers
 
     super(Flag, self).__init__(flag, name)
     self.choices = []
@@ -372,6 +375,7 @@ class Command(object):
   """
 
   def __init__(self, command, parent):
+    from googlecloudsdk.core.console import console_io
 
     self.commands = {}
     self.flags = {}
@@ -670,6 +674,9 @@ def _Serialize(tree):
 
 def _DumpToFile(tree, f):
   """Dump helper."""
+  from googlecloudsdk.core.resource import resource_printer
+  from googlecloudsdk.core.resource import resource_projector
+
   resource_printer.Print(
       resource_projector.MakeSerializable(_Serialize(tree)),
       'json',
@@ -723,6 +730,8 @@ def CliTreePath(name=DEFAULT_CLI_NAME, directory=None):
 
 def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
   """Generates and returns the CLI root for name."""
+  from googlecloudsdk.core.console import progress_tracker
+
   if path == '-':
     message = 'Generating the {} CLI'.format(name)
   elif path:
@@ -759,8 +768,10 @@ def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
   if path == '-':
     _DumpToFile(tree, sys.stdout)
   else:
-    with open(path, 'w') as f:
+    with files.FileWriter(path) as f:
       _DumpToFile(tree, f)
+  from googlecloudsdk.core.resource import resource_projector
+
   return resource_projector.MakeSerializable(tree)
 
 
@@ -805,6 +816,8 @@ def _IsUpToDate(tree, path, ignore_errors, verbose):
     return False
 
   if verbose:
+    from googlecloudsdk.core import log
+
     log.status.Print('[{}] CLI tree version [{}] is up to date.'.format(
         DEFAULT_CLI_NAME, expected_command_version))
   return True
@@ -814,8 +827,7 @@ def _Load(path, cli=None, force=False, verbose=False):
   """Load() helper. Returns a tree or None if the tree failed to load."""
   try:
     if not force:
-      with open(path, 'r') as f:
-        tree = json.loads(f.read())
+      tree = json.loads(files.ReadFileContents(path))
       if _IsUpToDate(tree, path, bool(cli), verbose):
         return tree
       del tree
@@ -824,7 +836,7 @@ def _Load(path, cli=None, force=False, verbose=False):
       os.remove(path)
     except OSError:
       pass
-  except (IOError, OSError) as e:
+  except files.Error as e:
     if not cli:
       raise CliTreeLoadError(six.text_type(e))
   return None
@@ -891,6 +903,8 @@ def Load(path=None, cli=None, force=False, one_time_use_ok=False,
       path = CliTreePath()
     except SdkRootNotFoundError:
       if cli and one_time_use_ok:
+        from googlecloudsdk.core.resource import resource_projector
+
         tree = _GenerateRoot(cli)
         return resource_projector.MakeSerializable(tree)
       raise

@@ -18,7 +18,6 @@ from __future__ import unicode_literals
 
 import abc
 import contextlib
-import errno
 import os
 import random
 import re
@@ -120,7 +119,7 @@ def WriteEnvYaml(env, output_dir):
     output_dir: str, Path of directory to which env.yaml file should be written.
   """
   env_file_path = os.path.join(output_dir, 'env.yaml')
-  with open(env_file_path, 'w') as env_file:
+  with files.FileWriter(env_file_path) as env_file:
     resource_printer.Print([env], print_format='yaml', out=env_file)
 
 
@@ -135,13 +134,10 @@ def ReadEnvYaml(output_dir):
   """
   env_file_path = os.path.join(output_dir, 'env.yaml')
   try:
-    with open(env_file_path, 'r') as env_file:
-      return yaml.load(env_file)
-  except IOError as err:
-    if err.errno == errno.ENOENT:
-      raise NoEnvYamlError(output_dir)
-    else:
-      raise err
+    with files.FileReader(env_file_path) as f:
+      return yaml.load(f)
+  except files.MissingFileError:
+    raise NoEnvYamlError(output_dir)
 
 
 def PrintEnvExport(env):

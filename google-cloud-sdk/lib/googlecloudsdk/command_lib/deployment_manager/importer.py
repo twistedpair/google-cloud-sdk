@@ -23,6 +23,8 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
+
 import requests
 import six
 import six.moves.urllib.parse
@@ -103,9 +105,8 @@ class _ImportFile(_BaseImport):
   def GetContent(self):
     if self.content is None:
       try:
-        with open(self.full_path, 'r') as resource:
-          self.content = resource.read()
-      except IOError as e:
+        self.content = files.ReadFileContents(self.full_path)
+      except files.Error as e:
         raise exceptions.ConfigError(
             "Unable to read file '%s'. %s" % (self.full_path, str(e)))
     return self.content

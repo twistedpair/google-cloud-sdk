@@ -22,6 +22,7 @@ from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.compute import utils as api_utils
 from googlecloudsdk.api_lib.dataproc import compute_helpers
 from googlecloudsdk.api_lib.dataproc import constants
+from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
@@ -214,23 +215,24 @@ for more information.
       type=arg_parsers.ArgList(min_length=1),
       metavar='SCOPE',
       help="""\
-Specifies scopes for the node instances. The project's default service account
-is used. Multiple SCOPEs can specified, separated by commas.
+Specifies scopes for the node instances. Multiple SCOPEs can be specified,
+separated by commas.
 Examples:
 
   $ {{command}} example-cluster --scopes https://www.googleapis.com/auth/bigtable.admin
 
   $ {{command}} example-cluster --scopes sqlservice,bigquery
 
-The following scopes necessary for the cluster to function properly are always
-added, even if not explicitly specified:
+The following *minimum scopes* are necessary for the cluster to function
+properly and are always added, even if not explicitly specified:
 
 [format="csv"]
 |========
 {minimum_scopes}
 |========
 
-If this flag is not specified the following default scopes are also included:
+If the `--scopes` flag is not specified, the following *default scopes*
+are also included:
 
 [format="csv"]
 |========
@@ -482,6 +484,22 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
       changed_config = True
     if changed_config:
       cluster_config.lifecycleConfig = lifecycle_config
+
+  if beta and hasattr(args.CONCEPTS, 'kms_key'):
+    kms_ref = args.CONCEPTS.kms_key.Parse()
+    if kms_ref:
+      encryption_config = dataproc.messages.EncryptionConfig()
+      encryption_config.gcePdKmsKeyName = kms_ref.RelativeName()
+      cluster_config.encryptionConfig = encryption_config
+    else:
+      # Did user use any gce-pd-kms-key flags?
+      for keyword in [
+          'gce-pd-kms-key', 'gce-pd-kms-key-project', 'gce-pd-kms-key-location',
+          'gce-pd-kms-key-keyring'
+      ]:
+        if getattr(args, keyword.replace('-', '_'), None):
+          raise exceptions.ArgumentError(
+              '--gce-pd-kms-key was not fully specified.')
 
   # Secondary worker group is optional. However, users may specify
   # future pVMs configuration at creation time.

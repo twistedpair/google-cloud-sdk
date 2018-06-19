@@ -273,6 +273,10 @@
           "description": "If this cluster supports namespace-level IAM policies. Clusters that\nsupport namespace-level IAM may have IAM policies set on their namespaces\nusing SetIamPolicy.",
           "type": "boolean"
         },
+        "managedPodIdentityConfig": {
+          "description": "Configuration for the use of GCP IAM Service Accounts in applications in\nthis cluster.",
+          "$ref": "ManagedPodIdentityConfig"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -1176,6 +1180,17 @@
         },
         "enableSharedNetwork": {
           "description": "Enable the ability to reference subnets belonging to other projects.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ManagedPodIdentityConfig": {
+      "id": "ManagedPodIdentityConfig",
+      "description": "Configuration for the use of GCP IAM Service Accounts in applications in\nthis cluster.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable the use of GCP IAM Service Accounts in applications in this cluster.",
           "type": "boolean"
         }
       }

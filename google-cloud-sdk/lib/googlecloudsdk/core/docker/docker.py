@@ -34,7 +34,7 @@ from googlecloudsdk.core.docker import constants
 from googlecloudsdk.core.util import files
 
 
-_USERNAME = 'oauth2accesstoken'
+_USERNAME = 'gclouddockertoken'
 _EMAIL = 'not@val.id'
 _CREDENTIAL_STORE_KEY = 'credsStore'
 

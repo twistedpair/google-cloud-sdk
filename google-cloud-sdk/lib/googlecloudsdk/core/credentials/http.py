@@ -25,6 +25,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import creds as core_creds
 from googlecloudsdk.core.credentials import store
+from googlecloudsdk.core.util import files
 
 from oauth2client import client
 import six
@@ -116,8 +117,8 @@ def _GetIAMAuthHandlers(authority_selector, authorization_token_file):
   authorization_token = None
   if authorization_token_file:
     try:
-      authorization_token = open(authorization_token_file, 'r').read()
-    except IOError as e:
+      authorization_token = files.ReadFileContents(authorization_token_file)
+    except files.Error as e:
       raise Error(e)
 
   handlers = []

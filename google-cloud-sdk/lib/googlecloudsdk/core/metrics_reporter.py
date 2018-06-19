@@ -23,6 +23,7 @@ import pickle
 import sys
 
 from googlecloudsdk.core import http_proxy
+from googlecloudsdk.core.util import files
 
 try:
   # pylint:disable=g-import-not-at-top
@@ -42,7 +43,7 @@ def ReportMetrics(metrics_file_path):
   Args:
       metrics_file_path: str, File with pickled metrics (list of tuples).
   """
-  with open(metrics_file_path, 'rb') as metrics_file:
+  with files.BinaryFileReader(metrics_file_path) as metrics_file:
     metrics = pickle.load(metrics_file)
   os.remove(metrics_file_path)
 

@@ -88,6 +88,10 @@ if [ -z "$CLOUDSDK_PYTHON" ]; then
   fi
 fi
 
+# $PYTHONHOME can interfere with gcloud. Users should use
+# CLOUDSDK_PYTHON to configure which python gcloud uses.
+unset PYTHONHOME
+
 # if CLOUDSDK_PYTHON_SITEPACKAGES and VIRTUAL_ENV are empty
 case :$CLOUDSDK_PYTHON_SITEPACKAGES:$VIRTUAL_ENV: in
 :::)  # add -S to CLOUDSDK_PYTHON_ARGS if not already there

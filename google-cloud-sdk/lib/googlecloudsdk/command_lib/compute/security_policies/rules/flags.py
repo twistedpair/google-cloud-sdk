@@ -35,8 +35,10 @@ def AddPriority(parser, operation, is_plural=False):
       metavar='PRIORITY',
       nargs='*' if is_plural else None,
       completer=SecurityPolicyRulesCompleter,
-      help=('The priority of the rule{0} to {1}.'.format(
-          's' if is_plural else '', operation)))
+      help=('The priority of the rule{0} to {1}. Rules are evaluated in order '
+            'from highest priority to lowest priority where 0 is the highest '
+            'priority and 2147483647 is the lowest priority.'.format(
+                's' if is_plural else '', operation)))
 
 
 def AddMatcher(parser, required=True):

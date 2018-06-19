@@ -542,6 +542,8 @@ properties:
             properties:
               # The name of the resource argument, used for messaging.
               name: {type: string}
+              # The pluralized name if default rules won't work.
+              plural_name: {type: string}
               # The full collection name of the resource argument.
               collection: {type: string}
               # The api version this spec refers to. If empty, it applies to any

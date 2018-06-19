@@ -517,6 +517,7 @@ class ChoiceEnumMapper(object):
                metavar=None,
                dest=None,
                default=None,
+               hidden=False,
                include_filter=None):
     """Initialize ChoiceEnumMapper.
 
@@ -535,6 +536,8 @@ class ChoiceEnumMapper(object):
       dest: string, string, pass through for base.Argument,
           see base.ChoiceArgument().
       default: string, string, pass through for base.Argument,
+          see base.ChoiceArgument().
+      hidden: boolean, pass through for base.Argument,
           see base.ChoiceArgument().
       include_filter: callable, function or type string->bool used to filter
           enum values from message_enum that should be included in choices.
@@ -568,7 +571,8 @@ class ChoiceEnumMapper(object):
         action=action,
         metavar=metavar,
         dest=dest,
-        default=default)
+        default=default,
+        hidden=hidden)
 
   def _ValidateAndParseMappings(self):
     """Validates and parses choice to enum mappings.

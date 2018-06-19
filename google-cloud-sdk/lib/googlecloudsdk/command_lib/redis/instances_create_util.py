@@ -17,8 +17,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
-from googlecloudsdk.command_lib.redis import util
-from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -30,22 +28,6 @@ def ParseInstanceNetworkArg(network):
   return network_ref.RelativeName()
 
 
-def AddRedisConfigs(instance_ref, args, create_request):
-  if args.redis_config:
-    messages = util.GetMessagesForResource(instance_ref)
-    create_request.instance.redisConfigs = util.PackageInstanceRedisConfig(
-        args.redis_config, messages)
-  return create_request
-
-
 def PackageInstanceLabels(labels, messages):
   return encoding.DictToAdditionalPropertyMessage(
       labels, messages.Instance.LabelsValue, sort_items=True)
-
-
-def AddLabels(instance_ref, args, create_request):
-  messages = util.GetMessagesForResource(instance_ref)
-  create_request.instance.labels = labels_util.ParseCreateArgs(
-      args, messages.Instance.LabelsValue)
-  return create_request
-

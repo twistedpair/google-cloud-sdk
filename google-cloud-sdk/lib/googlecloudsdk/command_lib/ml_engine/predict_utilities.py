@@ -15,14 +15,16 @@
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
 import codecs
+import io
 import json
 
 
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import files
+from googlecloudsdk.core.console import console_io
 
 import six
 
@@ -111,7 +113,8 @@ def ReadInstancesFromArgs(json_instances, text_instances, limit=None):
     data_format = 'text'
     input_file = text_instances
 
-  with files.Open(input_file, 'rb') as f:
+  data = console_io.ReadFromFileOrStdin(input_file, binary=True)
+  with io.BytesIO(data) as f:
     return ReadInstances(f, data_format, limit=limit)
 
 

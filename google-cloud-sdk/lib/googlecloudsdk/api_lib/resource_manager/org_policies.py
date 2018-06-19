@@ -48,7 +48,7 @@ def GetFileAsMessage(path, message):
   Raises:
     files.Error, exceptions.ResourceManagerInputFileError
   """
-  in_text = files.GetFileContents(path)
+  in_text = files.ReadFileContents(path)
   if not in_text:
     raise exceptions.ResourceManagerInputFileError(
         'Empty policy file [{0}]'.format(path))

@@ -21,6 +21,7 @@ import os
 from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.api import appinfo_errors
 from googlecloudsdk.third_party.appengine.api import appinfo_includes
@@ -147,7 +148,7 @@ class _YamlInfo(object):
     Returns:
       The result of the parse.
     """
-    with open(file_path, 'r') as fp:
+    with files.FileReader(file_path) as fp:
       return parser(fp)
 
 
@@ -401,9 +402,8 @@ class ServiceYamlInfo(_YamlInfo):
     if getattr(parsed, 'skip_files', None) == appinfo.DEFAULT_SKIP_FILES:
       # Make sure that this was actually a default, not from the file.
       try:
-        with open(file_path, 'r') as readfile:
-          contents = readfile.read()
-      except IOError:  # If the class was initiated with a non-existent file
+        contents = files.ReadFileContents(file_path)
+      except files.Error:  # If the class was initiated with a non-existent file
         contents = ''
       self._has_explicit_skip_files = 'skip_files' in contents
     else:

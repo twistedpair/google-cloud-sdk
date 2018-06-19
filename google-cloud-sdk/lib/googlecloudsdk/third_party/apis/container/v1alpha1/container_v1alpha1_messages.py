@@ -276,6 +276,8 @@ class Cluster(_messages.Message):
       cluster. * if left as an empty string,`logging.googleapis.com` will be
       used.
     maintenancePolicy: Configure the maintenance policy for this cluster.
+    managedPodIdentityConfig: Configuration for the use of GCP IAM Service
+      Accounts in applications in this cluster.
     masterAuth: The authentication information for accessing the master
       endpoint.
     masterAuthorizedNetworks: The configuration options for master authorized
@@ -418,28 +420,29 @@ class Cluster(_messages.Message):
   locations = _messages.StringField(25, repeated=True)
   loggingService = _messages.StringField(26)
   maintenancePolicy = _messages.MessageField('MaintenancePolicy', 27)
-  masterAuth = _messages.MessageField('MasterAuth', 28)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 29)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 30)
-  masterIpv4CidrBlock = _messages.StringField(31)
-  monitoringService = _messages.StringField(32)
-  name = _messages.StringField(33)
-  network = _messages.StringField(34)
-  networkConfig = _messages.MessageField('NetworkConfig', 35)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 36)
-  nodeConfig = _messages.MessageField('NodeConfig', 37)
-  nodeIpv4CidrSize = _messages.IntegerField(38, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 39, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 40)
-  privateCluster = _messages.BooleanField(41)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 42)
-  selfLink = _messages.StringField(43)
-  servicesIpv4Cidr = _messages.StringField(44)
-  status = _messages.EnumField('StatusValueValuesEnum', 45)
-  statusMessage = _messages.StringField(46)
-  subnetwork = _messages.StringField(47)
-  tpuIpv4CidrBlock = _messages.StringField(48)
-  zone = _messages.StringField(49)
+  managedPodIdentityConfig = _messages.MessageField('ManagedPodIdentityConfig', 28)
+  masterAuth = _messages.MessageField('MasterAuth', 29)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 30)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 31)
+  masterIpv4CidrBlock = _messages.StringField(32)
+  monitoringService = _messages.StringField(33)
+  name = _messages.StringField(34)
+  network = _messages.StringField(35)
+  networkConfig = _messages.MessageField('NetworkConfig', 36)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 37)
+  nodeConfig = _messages.MessageField('NodeConfig', 38)
+  nodeIpv4CidrSize = _messages.IntegerField(39, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 40, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 41)
+  privateCluster = _messages.BooleanField(42)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 43)
+  selfLink = _messages.StringField(44)
+  servicesIpv4Cidr = _messages.StringField(45)
+  status = _messages.EnumField('StatusValueValuesEnum', 46)
+  statusMessage = _messages.StringField(47)
+  subnetwork = _messages.StringField(48)
+  tpuIpv4CidrBlock = _messages.StringField(49)
+  zone = _messages.StringField(50)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -2105,6 +2108,18 @@ class MaintenanceWindow(_messages.Message):
   """
 
   dailyMaintenanceWindow = _messages.MessageField('DailyMaintenanceWindow', 1)
+
+
+class ManagedPodIdentityConfig(_messages.Message):
+  r"""Configuration for the use of GCP IAM Service Accounts in applications in
+  this cluster.
+
+  Fields:
+    enabled: Enable the use of GCP IAM Service Accounts in applications in
+      this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class MasterAuth(_messages.Message):

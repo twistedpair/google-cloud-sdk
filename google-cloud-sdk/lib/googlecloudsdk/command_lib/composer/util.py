@@ -334,7 +334,7 @@ def ParseRequirementsFile(requirements_file_path):
   """
   requirements = {}
   try:
-    with open(requirements_file_path) as requirements_file:
+    with files.FileReader(requirements_file_path) as requirements_file:
       for requirement_specifier in requirements_file:
         requirement_specifier = requirement_specifier.strip()
         if not requirement_specifier:
@@ -346,7 +346,7 @@ def ParseRequirementsFile(requirements_file_path):
               'Duplicate package in requirements file: {0}'.format(package))
         requirements[package] = version
       return requirements
-  except EnvironmentError:
+  except files.Error:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
     raise Error(

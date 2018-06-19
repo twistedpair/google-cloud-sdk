@@ -19,11 +19,11 @@ from __future__ import unicode_literals
 
 import os
 import re
+import sys
 
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr_os
 
-from six.moves import map
 from six.moves import range
 from six.moves import urllib
 
@@ -288,32 +288,6 @@ def GetDivider(text=''):
   return text.center(width, '=')
 
 
-def _CommonPrefix(paths):
-  """Given a list of paths, return the longest shared directory prefix.
-
-  We want to:
-  (1) Only split at path boundaries (i.e.
-      _CommonPrefix(['/foo/bar', '/foo/baz']) => '/foo' , not '/foo/b')
-  (2) Ignore the path basenames, even when files are identical (i.e.
-      _CommonPrefix(['/foo/bar'] * 3') => '/foo'
-
-  For these reasons, we can't just us os.path.commonprefix.
-
-  Args:
-    paths: list of str, list of path names
-
-  Returns:
-    str, common prefix
-  """
-  prefix = os.path.commonprefix(list(map(os.path.dirname, paths)))
-  if not prefix:
-    return prefix
-  if all([path.startswith(prefix + os.path.sep) for path in paths]):
-    return prefix + os.path.sep
-  else:
-    return os.path.dirname(prefix) + os.path.sep
-
-
 def _FormatIssueBody(info, log_data=None):
   """Construct a useful issue body with which to pre-populate the issue tracker.
 
@@ -378,6 +352,30 @@ def _StacktraceEntryReplacement(entry):
   return formatted_entry
 
 
+def _SysPath():
+  """Return the Python paths (can be mocked for testing)."""
+  return sys.path
+
+
+def _StripLongestSysPath(path):
+  python_paths = sorted(_SysPath(), key=len, reverse=True)
+  for python_path in python_paths:
+    prefix = python_path + os.path.sep
+    if path.startswith(prefix):
+      return path[len(prefix):]
+  return path
+
+
+def _StripCommonDir(path):
+  prefix = 'googlecloudsdk' + os.path.sep
+  return path[len(prefix):] if path.startswith(prefix) else path
+
+
+def _StripPath(path):
+  """Removes common elements (sys.path, common SDK directories) from path."""
+  return _StripCommonDir(os.path.normpath(_StripLongestSysPath(path)))
+
+
 def _FormatTraceback(traceback):
   """Compacts stack trace portion of traceback and extracts exception.
 
@@ -402,28 +400,9 @@ def _FormatTraceback(traceback):
   formatted_stacktrace += '\n'
 
   stacktrace_files = re.findall(r'File "(.*)"', stacktrace)
-  common_prefix = _CommonPrefix(stacktrace_files)
-  sep = os.path.sep
 
-  # Strip out lib/googlecloudsdk
-  formatted_stacktrace = formatted_stacktrace.replace(
-      common_prefix + 'lib' + sep + 'googlecloudsdk' + sep, '')
-  formatted_stacktrace = formatted_stacktrace.replace(
-      sep + 'lib' + sep + 'googlecloudsdk' + sep, sep)
-
-  # Strip out lib/third_party
-  formatted_stacktrace = formatted_stacktrace.replace(
-      common_prefix + 'lib' + sep + 'third_party' + sep, '')
-  formatted_stacktrace = formatted_stacktrace.replace(
-      sep + 'lib' + sep + 'third_party' + sep, sep)
-
-  # Strip out ./
-  formatted_stacktrace = formatted_stacktrace.replace(common_prefix + '.' + sep,
-                                                      '')
-  formatted_stacktrace = formatted_stacktrace.replace(sep + '.' + sep, sep)
-
-  # Strip out common  prefix
-  formatted_stacktrace = formatted_stacktrace.replace(common_prefix, '')
+  for path in stacktrace_files:
+    formatted_stacktrace = formatted_stacktrace.replace(path, _StripPath(path))
 
   # Make each stack frame entry more compact
   formatted_stacktrace = re.sub(TRACEBACK_ENTRY_REGEXP,

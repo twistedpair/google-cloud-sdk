@@ -22,6 +22,7 @@ import textwrap
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs as presentation_specs_lib
 
 
 def _GetNoteResourceSpec():
@@ -58,7 +59,7 @@ def GetAuthorityNotePresentationSpec(group_help,
     flag_overrides = {
         'project': _FormatArgName('{}-project'.format(base_name), positional),
     }
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs_lib.ResourcePresentationSpec(
       name=_FormatArgName(base_name, positional),
       concept_spec=_GetNoteResourceSpec(),
       group_help=group_help,
@@ -90,7 +91,7 @@ def GetAuthorityPresentationSpec(group_help,
     flag_overrides = {
         'project': _FormatArgName('{}-project'.format(base_name), positional),
     }
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs_lib.ResourcePresentationSpec(
       name=_FormatArgName(base_name, positional),
       concept_spec=_GetAuthorityResourceSpec(),
       group_help=group_help,
@@ -115,11 +116,24 @@ def AddArtifactUrlFlag(parser, required=True):
 
 def AddListAttestationsFlags(parser):
   AddArtifactUrlFlag(parser, required=False)
+
+  mutex_group = parser.add_mutually_exclusive_group(required=True)
   AddConcepts(
-      parser,
+      mutex_group,
+      GetAuthorityPresentationSpec(
+          base_name='attestation-authority',
+          required=False,  # one-of requirement is set in mutex_group.
+          positional=False,
+          use_global_project_flag=False,
+          group_help=textwrap.dedent("""\
+            The Attestation Authority whose Container Analysis Note will be
+            queried for attestations. Note that the caller must have the
+            `containeranalysis.notes.listOccurrences` permission on the note
+            being queried.""")
+      ),
       GetAuthorityNotePresentationSpec(
           base_name='attestation-authority-note',
-          required=False,
+          required=False,  # one-of requirement is set in mutex_group.
           positional=False,
           group_help=textwrap.dedent("""\
             The Container Analysis ATTESTATION_AUTHORITY Note that will be
@@ -129,7 +143,7 @@ def AddListAttestationsFlags(parser):
             the note lives.  Note that the caller must have the
             `containeranalysis.notes.listOccurrences` permission on the note
             being queried.""")
-      )
+      ),
   )
 
 

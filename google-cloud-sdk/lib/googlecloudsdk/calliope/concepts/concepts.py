@@ -183,7 +183,8 @@ class ResourceSpec(ConceptSpec):
 
   # TODO(b/67707644): Enable completers by default when confident enough.
   def __init__(self, resource_collection, resource_name='resource',
-               api_version=None, disable_auto_completers=True, **kwargs):
+               api_version=None, disable_auto_completers=True, plural_name=None,
+               **kwargs):
     """Initializes a ResourceSpec.
 
     To use a ResourceSpec, give a collection path such as
@@ -208,6 +209,8 @@ class ResourceSpec(ConceptSpec):
         registry.
       disable_auto_completers: bool, whether to add completers automatically
         where possible.
+      plural_name: str, the pluralized name. Will be pluralized by default rules
+        if not given in cases where the resource is referred to in the plural.
       **kwargs: Parameter names (such as 'projectsId') from the
         collection path, mapped to ResourceParameterAttributeConfigs.
 
@@ -216,6 +219,7 @@ class ResourceSpec(ConceptSpec):
         collection has no params.
     """
     self._name = resource_name
+    self.plural_name = plural_name
     self.collection = resource_collection
     self._resources = resources.REGISTRY.Clone()
     self._collection_info = self._resources.GetCollectionInfo(

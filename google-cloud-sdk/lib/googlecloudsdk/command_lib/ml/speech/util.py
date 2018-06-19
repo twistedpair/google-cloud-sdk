@@ -17,12 +17,12 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
 import os
 
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import files
 
 
 SPEECH_API = 'speech'
@@ -56,8 +56,7 @@ def GetAudioHook(version=SPEECH_API_VERSION):
     audio = messages.RecognitionAudio()
 
     if os.path.isfile(path):
-      with io.open(path, 'rb') as content_file:
-        audio.content = content_file.read()
+      audio.content = files.ReadBinaryFileContents(path)
     elif storage_util.ObjectReference.IsStorageUrl(path):
       audio.uri = path
     else:

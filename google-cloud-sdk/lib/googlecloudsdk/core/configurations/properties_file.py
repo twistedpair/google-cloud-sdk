@@ -21,6 +21,7 @@ import os
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files
 
+import six
 from six.moves import configparser
 
 
@@ -112,5 +113,9 @@ def PersistProperty(file_path, section, name, value):
 
   properties_dir, unused_name = os.path.split(file_path)
   files.MakeDir(properties_dir)
-  with open(file_path, 'w') as fp:
+
+  # They changed the interface for configparser. On Python 2 it operates with
+  # byte strings, on Python 3 it operaters with text strings.
+  writer = files.BinaryFileWriter if six.PY2 else files.FileWriter
+  with writer(file_path) as fp:
     parsed_config.write(fp)

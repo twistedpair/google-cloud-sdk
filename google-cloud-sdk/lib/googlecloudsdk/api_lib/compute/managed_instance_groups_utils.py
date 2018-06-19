@@ -64,6 +64,9 @@ _NUM_RANDOM_CHARACTERS_IN_AS_NAME = 4
 CLOUD_PUB_SUB_VALID_RESOURCE_RE = r'^[A-Za-z][A-Za-z0-9-_.~+%]{2,}$'
 
 
+# TODO(b/110191362): resign from passing whole args to functions in this file
+
+
 class ResourceNotFoundException(exceptions.ToolException):
   """The user tries to get/use/update resource which does not exist."""
 
@@ -1158,3 +1161,15 @@ def GetDeviceNamesFromStatefulPolicy(stateful_policy):
 
 def IsAutoscalerNew(autoscaler):
   return getattr(autoscaler, 'name', None) is None
+
+
+def ApplyInstanceRedistributionTypeToUpdatePolicy(
+    client, instance_redistribution_type, update_policy):
+  if instance_redistribution_type:
+    if update_policy is None:
+      update_policy = client.messages.InstanceGroupManagerUpdatePolicy()
+    update_policy.instanceRedistributionType = (
+        client.messages.InstanceGroupManagerUpdatePolicy.
+        InstanceRedistributionTypeValueValuesEnum)(
+            instance_redistribution_type)
+  return update_policy

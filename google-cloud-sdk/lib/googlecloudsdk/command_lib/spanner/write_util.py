@@ -172,7 +172,6 @@ def ConvertJsonValueForScalarTypes(scalar_type, scalar_value):
   Returns:
     An API accepts JSON value of a column or an element of an array column.
   """
-  # TODO(b/72552329): add data validation before conversion.
   if scalar_value == 'NULL':
     return extra_types.JsonValue(is_null=True)
   elif scalar_type == 'BOOL':

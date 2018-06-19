@@ -89,6 +89,7 @@ class YAMLResourceArgument(object):
     self._api_version = data.get('api_version')
     self._attribute_data = data['attributes']
     self._disable_auto_completers = disable_auto_completers
+    self._plural_name = data.get('plural_name')
 
     attribute_names = [a['attribute_name'] for a in self._attribute_data]
     for removed in self.removed_flags:
@@ -150,6 +151,7 @@ class YAMLResourceArgument(object):
         full_collection_name, resource_name=self.name,
         api_version=api_version,
         disable_auto_completers=self._disable_auto_completers,
+        plural_name=self._plural_name,
         **{param: attribute for param, attribute in attributes})
 
 

@@ -34,7 +34,10 @@ def CreateNodeTemplate(node_template_ref, args, messages):
   if args.IsSpecified('node_requirements'):
     node_type_flexbility = messages.NodeTemplateNodeTypeFlexibility(
         cpus=str(args.node_requirements.get('vCPU', 'any')),
-        localSsd=args.node_requirements.get('localSSD', 'any'),
+        # local SSD is unique because the user may omit the local SSD constraint
+        # entirely to include the possibility of node types with no local SSD.
+        # "any" corresponds to "greater than zero".
+        localSsd=args.node_requirements.get('localSSD', None),
         memory=args.node_requirements.get('memory', 'any'))
 
   return messages.NodeTemplate(

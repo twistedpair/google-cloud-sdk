@@ -31,6 +31,7 @@ import os
 import subprocess
 import tempfile
 
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 
@@ -71,9 +72,7 @@ def OnlineEdit(text):
         problem.
   """
   fname = tempfile.NamedTemporaryFile(suffix='.txt').name
-
-  with open(fname, 'w') as f_out:
-    f_out.write(text)
+  files.WriteFileContents(fname, text)
 
   # Get the mod time, so we can check if anything was actually done.
   start_mtime = FileModifiedTime(fname)
@@ -102,5 +101,4 @@ def OnlineEdit(text):
   if start_mtime == end_mtime:
     raise NoSaveException('edit aborted by user')
 
-  with open(fname) as f_done:
-    return f_done.read()
+  return files.ReadFileContents(fname)

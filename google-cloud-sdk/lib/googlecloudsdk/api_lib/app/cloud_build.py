@@ -33,6 +33,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
+
 import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 
@@ -87,8 +88,7 @@ def _GetDockerignoreExclusions(source_dir, gen_files):
   exclude = set()
   ignore_contents = None
   if os.path.exists(dockerignore):
-    with open(dockerignore) as f:
-      ignore_contents = f.read()
+    ignore_contents = files.ReadFileContents(dockerignore)
   else:
     ignore_contents = gen_files.get('.dockerignore')
   if ignore_contents:
@@ -156,7 +156,7 @@ def UploadSource(source_dir, object_ref, gen_files=None, skip_files=None):
   # eg, CTRL-C on windows leaves both the directory and the file. Unavoidable.
   # On Posix, `kill -9` has similar behavior, but CTRL-C allows cleanup.
   with files.TemporaryDirectory() as temp_dir:
-    f = open(os.path.join(temp_dir, 'src.tgz'), 'w+b')
+    f = files.BinaryFileWriter(os.path.join(temp_dir, 'src.tgz'))
     with gzip.GzipFile(mode='wb', fileobj=f) as gz:
       _CreateTar(source_dir, gen_files, included_paths, gz)
     f.close()

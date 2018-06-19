@@ -14246,16 +14246,18 @@ class ForwardingRule(_messages.Message):
   Enums:
     IPProtocolValueValuesEnum: The IP protocol to which this rule applies.
       Valid options are TCP, UDP, ESP, AH, SCTP or ICMP.  When the load
-      balancing scheme is INTERNAL, only TCP and UDP are valid.
+      balancing scheme is INTERNAL, only TCP and UDP are valid. When the load
+      balancing scheme is INTERNAL_SELF_MANAGED, only TCPis valid.
     IpVersionValueValuesEnum: The IP Version that will be used by this
       forwarding rule. Valid options are IPV4 or IPV6. This can only be
-      specified for a global forwarding rule.
+      specified for an external global forwarding rule.
     LoadBalancingSchemeValueValuesEnum: This signifies what the ForwardingRule
       will be used for and can only take the following values: INTERNAL,
-      EXTERNAL The value of INTERNAL means that this will be used for Internal
-      Network Load Balancing (TCP, UDP). The value of EXTERNAL means that this
-      will be used for External Load Balancing (HTTP(S) LB, External TCP/UDP
-      LB, SSL Proxy)
+      INTERNAL_SELF_MANAGED, EXTERNAL. The value of INTERNAL means that this
+      will be used for Internal Network Load Balancing (TCP, UDP). The value
+      of INTERNAL_SELF_MANAGED means that this will be used for Internal
+      Global HTTP(S) LB. The value of EXTERNAL means that this will be used
+      for External Load Balancing (HTTP(S) LB, External TCP/UDP LB, SSL Proxy)
 
   Fields:
     IPAddress: The IP address that this forwarding rule is serving on behalf
@@ -14267,12 +14269,14 @@ class ForwardingRule(_messages.Message):
       field is empty, an ephemeral IPv4 address from the same scope (global or
       regional) will be assigned. A regional forwarding rule supports IPv4
       only. A global forwarding rule supports either IPv4 or IPv6.  When the
-      load balancing scheme is INTERNAL, this can only be an RFC 1918 IP
-      address belonging to the network/subnet configured for the forwarding
-      rule. By default, if this field is empty, an ephemeral internal IP
-      address will be automatically allocated from the IP range of the subnet
-      or network configured for this forwarding rule.  An address can be
-      specified either by a literal IP address or a URL reference to an
+      load balancing scheme is INTERNAL_SELF_MANAGED, this must be a URL
+      reference to an existing Address resource ( internal regional static IP
+      address).  When the load balancing scheme is INTERNAL, this can only be
+      an RFC 1918 IP address belonging to the network/subnet configured for
+      the forwarding rule. By default, if this field is empty, an ephemeral
+      internal IP address will be automatically allocated from the IP range of
+      the subnet or network configured for this forwarding rule.  An address
+      can be specified either by a literal IP address or a URL reference to an
       existing Address resource. The following examples are all valid:   -
       100.1.2.3  - https://www.googleapis.com/compute/v1/projects/project/regi
       ons/region/addresses/address  -
@@ -14280,8 +14284,9 @@ class ForwardingRule(_messages.Message):
       regions/region/addresses/address  - global/addresses/address  - address
     IPProtocol: The IP protocol to which this rule applies. Valid options are
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
-      INTERNAL, only TCP and UDP are valid.
-    backendService: This field is not used for external load balancing.  For
+      INTERNAL, only TCP and UDP are valid. When the load balancing scheme is
+      INTERNAL_SELF_MANAGED, only TCPis valid.
+    backendService: This field is only used for INTERNAL load balancing.  For
       internal load balancing, this field identifies the BackendService
       resource to receive the matched traffic.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -14291,14 +14296,16 @@ class ForwardingRule(_messages.Message):
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     ipVersion: The IP Version that will be used by this forwarding rule. Valid
-      options are IPV4 or IPV6. This can only be specified for a global
-      forwarding rule.
+      options are IPV4 or IPV6. This can only be specified for an external
+      global forwarding rule.
     kind: [Output Only] Type of the resource. Always compute#forwardingRule
       for Forwarding Rule resources.
     loadBalancingScheme: This signifies what the ForwardingRule will be used
-      for and can only take the following values: INTERNAL, EXTERNAL The value
-      of INTERNAL means that this will be used for Internal Network Load
-      Balancing (TCP, UDP). The value of EXTERNAL means that this will be used
+      for and can only take the following values: INTERNAL,
+      INTERNAL_SELF_MANAGED, EXTERNAL. The value of INTERNAL means that this
+      will be used for Internal Network Load Balancing (TCP, UDP). The value
+      of INTERNAL_SELF_MANAGED means that this will be used for Internal
+      Global HTTP(S) LB. The value of EXTERNAL means that this will be used
       for External Load Balancing (HTTP(S) LB, External TCP/UDP LB, SSL Proxy)
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
@@ -14307,10 +14314,10 @@ class ForwardingRule(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
-    network: This field is not used for external load balancing.  For internal
-      load balancing, this field identifies the network that the load balanced
-      IP should belong to for this Forwarding Rule. If this field is not
-      specified, the default network will be used.
+    network: This field is not used for external load balancing.  For INTERNAL
+      and INTERNAL_SELF_MANAGED load balancing, this field identifies the
+      network that the load balanced IP should belong to for this Forwarding
+      Rule. If this field is not specified, the default network will be used.
     portRange: This field is used along with the target field for
       TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
       TargetVpnGateway, TargetPool, TargetInstance.  Applicable only when
@@ -14333,7 +14340,7 @@ class ForwardingRule(_messages.Message):
       must specify this field as part of the HTTP request URL. It is not
       settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
-    subnetwork: This field is not used for external load balancing.  For
+    subnetwork: This field is only used for INTERNAL load balancing.  For
       internal load balancing, this field identifies the subnetwork that the
       load balanced IP should belong to for this Forwarding Rule.  If the
       network specified is in auto subnet mode, this field is optional.
@@ -14343,13 +14350,15 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object.
+      appropriate to the target object. For INTERNAL_SELF_MANAGED" load
+      balancing, only HTTP and HTTPS targets are valid.
   """
 
   class IPProtocolValueValuesEnum(_messages.Enum):
     r"""The IP protocol to which this rule applies. Valid options are TCP,
     UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is INTERNAL,
-    only TCP and UDP are valid.
+    only TCP and UDP are valid. When the load balancing scheme is
+    INTERNAL_SELF_MANAGED, only TCPis valid.
 
     Values:
       AH: <no description>
@@ -14368,8 +14377,8 @@ class ForwardingRule(_messages.Message):
 
   class IpVersionValueValuesEnum(_messages.Enum):
     r"""The IP Version that will be used by this forwarding rule. Valid
-    options are IPV4 or IPV6. This can only be specified for a global
-    forwarding rule.
+    options are IPV4 or IPV6. This can only be specified for an external
+    global forwarding rule.
 
     Values:
       IPV4: <no description>
@@ -14382,10 +14391,12 @@ class ForwardingRule(_messages.Message):
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""This signifies what the ForwardingRule will be used for and can only
-    take the following values: INTERNAL, EXTERNAL The value of INTERNAL means
-    that this will be used for Internal Network Load Balancing (TCP, UDP). The
-    value of EXTERNAL means that this will be used for External Load Balancing
-    (HTTP(S) LB, External TCP/UDP LB, SSL Proxy)
+    take the following values: INTERNAL, INTERNAL_SELF_MANAGED, EXTERNAL. The
+    value of INTERNAL means that this will be used for Internal Network Load
+    Balancing (TCP, UDP). The value of INTERNAL_SELF_MANAGED means that this
+    will be used for Internal Global HTTP(S) LB. The value of EXTERNAL means
+    that this will be used for External Load Balancing (HTTP(S) LB, External
+    TCP/UDP LB, SSL Proxy)
 
     Values:
       EXTERNAL: <no description>
@@ -15680,9 +15691,9 @@ class Image(_messages.Message):
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
       supplied encryption key.
-    sourceDiskId: The ID value of the disk used to create this image. This
-      value may be used to determine whether the image was taken from the
-      current or a previous instance of a given disk name.
+    sourceDiskId: [Output Only] The ID value of the disk used to create this
+      image. This value may be used to determine whether the image was taken
+      from the current or a previous instance of a given disk name.
     sourceImage: URL of the source image used to create this image. This can
       be a full or valid partial URL. You must provide exactly one of:   -
       this property, or   - the rawDisk.source property, or   - the sourceDisk

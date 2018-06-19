@@ -23,7 +23,7 @@ _WARNING_MSG = 'This command is deprecated and will be removed in version {0}.'
 
 _REMOVED_MSG = 'This command has been removed as of version {0}.'
 
-_COMMAND_ALT_MSG = ' Please use {0} as an alternative.'
+_COMMAND_ALT_MSG = ' Use `{0}` instead.'
 
 
 def DeprecateCommandAtVersion(remove_version,

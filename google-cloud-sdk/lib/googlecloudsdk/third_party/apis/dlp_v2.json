@@ -141,7 +141,7 @@
           }
         },
         "minLikelihood": {
-          "description": "Only returns findings equal or above this threshold. The default is\nPOSSIBLE.",
+          "description": "Only returns findings equal or above this threshold. The default is\nPOSSIBLE.\nSee https:\/\/cloud.google.com\/dlp\/docs\/likelihood to learn more.",
           "enumDescriptions": [
             "Default value; same as POSSIBLE.",
             "Few matching elements.",
@@ -172,7 +172,7 @@
           "type": "boolean"
         },
         "customInfoTypes": {
-          "description": "Custom infoTypes provided by the user.",
+          "description": "CustomInfoTypes provided by the user. See\nhttps:\/\/cloud.google.com\/dlp\/docs\/creating-custom-infotypes to learn more.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2CustomInfoType"
@@ -444,7 +444,7 @@
           "type": "string"
         },
         "table": {
-          "description": "Structured content for inspection.",
+          "description": "Structured content for inspection. See\nhttps:\/\/cloud.google.com\/dlp\/docs\/inspecting-text#inspecting_a_table to\nlearn more.",
           "$ref": "GooglePrivacyDlpV2Table"
         },
         "byteItem": {
@@ -455,7 +455,7 @@
     },
     "GooglePrivacyDlpV2Table": {
       "id": "GooglePrivacyDlpV2Table",
-      "description": "Structured content to inspect. Up to 50,000 `Value`s per request allowed.",
+      "description": "Structured content to inspect. Up to 50,000 `Value`s per request allowed.\nSee https:\/\/cloud.google.com\/dlp\/docs\/inspecting-text#inspecting_a_table to\nlearn more.",
       "type": "object",
       "properties": {
         "headers": {
@@ -1303,7 +1303,7 @@
     },
     "GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig": {
       "id": "GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig",
-      "description": "Replaces an identifier with a surrogate using FPE with the FFX\nmode of operation; however when used in the `ReidentifyContent` API method,\nit serves the opposite function by reversing the surrogate back into\nthe original identifier.\nThe identifier must be encoded as ASCII.\nFor a given crypto key and context, the same identifier will be\nreplaced with the same surrogate.\nIdentifiers must be at least two characters long.\nIn the case that the identifier is the empty string, it will be skipped.\nSee [Pseudonymization](\/dlp\/docs\/pseudonymization) for example usage.",
+      "description": "Replaces an identifier with a surrogate using FPE with the FFX\nmode of operation; however when used in the `ReidentifyContent` API method,\nit serves the opposite function by reversing the surrogate back into\nthe original identifier.\nThe identifier must be encoded as ASCII.\nFor a given crypto key and context, the same identifier will be\nreplaced with the same surrogate.\nIdentifiers must be at least two characters long.\nIn the case that the identifier is the empty string, it will be skipped.\nSee https:\/\/cloud.google.com\/dlp\/docs\/pseudonymization to learn more.",
       "type": "object",
       "properties": {
         "cryptoKey": {
@@ -1403,7 +1403,7 @@
     },
     "GooglePrivacyDlpV2FixedSizeBucketingConfig": {
       "id": "GooglePrivacyDlpV2FixedSizeBucketingConfig",
-      "description": "Buckets values based on fixed size ranges. The\nBucketing transformation can provide all of this functionality,\nbut requires more configuration. This message is provided as a convenience to\nthe user for simple bucketing strategies.\n\nThe transformed value will be a hyphenated string of\n<lower_bound>-<upper_bound>, i.e if lower_bound = 10 and upper_bound = 20\nall values that are within this bucket will be replaced with \"10-20\".\n\nThis can be used on data of type: double, long.\n\nIf the bound Value type differs from the type of data\nbeing transformed, we will first attempt converting the type of the data to\nbe transformed to match the type of the bound before comparing.",
+      "description": "Buckets values based on fixed size ranges. The\nBucketing transformation can provide all of this functionality,\nbut requires more configuration. This message is provided as a convenience to\nthe user for simple bucketing strategies.\n\nThe transformed value will be a hyphenated string of\n<lower_bound>-<upper_bound>, i.e if lower_bound = 10 and upper_bound = 20\nall values that are within this bucket will be replaced with \"10-20\".\n\nThis can be used on data of type: double, long.\n\nIf the bound Value type differs from the type of data\nbeing transformed, we will first attempt converting the type of the data to\nbe transformed to match the type of the bound before comparing.\n\nSee https:\/\/cloud.google.com\/dlp\/docs\/concepts-bucketing to learn more.",
       "type": "object",
       "properties": {
         "lowerBound": {
@@ -1423,7 +1423,7 @@
     },
     "GooglePrivacyDlpV2BucketingConfig": {
       "id": "GooglePrivacyDlpV2BucketingConfig",
-      "description": "Generalization function that buckets values based on ranges. The ranges and\nreplacement values are dynamically provided by the user for custom behavior,\nsuch as 1-30 -> LOW 31-65 -> MEDIUM 66-100 -> HIGH\nThis can be used on\ndata of type: number, long, string, timestamp.\nIf the bound `Value` type differs from the type of data being transformed, we\nwill first attempt converting the type of the data to be transformed to match\nthe type of the bound before comparing.",
+      "description": "Generalization function that buckets values based on ranges. The ranges and\nreplacement values are dynamically provided by the user for custom behavior,\nsuch as 1-30 -> LOW 31-65 -> MEDIUM 66-100 -> HIGH\nThis can be used on\ndata of type: number, long, string, timestamp.\nIf the bound `Value` type differs from the type of data being transformed, we\nwill first attempt converting the type of the data to be transformed to match\nthe type of the bound before comparing.\nSee https:\/\/cloud.google.com\/dlp\/docs\/concepts-bucketing to learn more.",
       "type": "object",
       "properties": {
         "buckets": {
@@ -1502,7 +1502,7 @@
     },
     "GooglePrivacyDlpV2DateShiftConfig": {
       "id": "GooglePrivacyDlpV2DateShiftConfig",
-      "description": "Shifts dates by random number of days, with option to be consistent for the\nsame context.",
+      "description": "Shifts dates by random number of days, with option to be consistent for the\nsame context. See https:\/\/cloud.google.com\/dlp\/docs\/concepts-date-shifting\nto learn more.",
       "type": "object",
       "properties": {
         "upperBoundDays": {
@@ -1876,7 +1876,7 @@
     },
     "GooglePrivacyDlpV2InspectTemplate": {
       "id": "GooglePrivacyDlpV2InspectTemplate",
-      "description": "The inspectTemplate contains a configuration (set of types of sensitive data\nto be detected) to be used anywhere you otherwise would normally specify\nInspectConfig.",
+      "description": "The inspectTemplate contains a configuration (set of types of sensitive data\nto be detected) to be used anywhere you otherwise would normally specify\nInspectConfig. See https:\/\/cloud.google.com\/dlp\/docs\/concepts-templates\nto learn more.",
       "type": "object",
       "properties": {
         "name": {
@@ -1965,7 +1965,7 @@
     },
     "GooglePrivacyDlpV2DeidentifyTemplate": {
       "id": "GooglePrivacyDlpV2DeidentifyTemplate",
-      "description": "The DeidentifyTemplates contains instructions on how to deidentify content.",
+      "description": "The DeidentifyTemplates contains instructions on how to deidentify content.\nSee https:\/\/cloud.google.com\/dlp\/docs\/concepts-templates to learn more.",
       "type": "object",
       "properties": {
         "name": {
@@ -2047,7 +2047,7 @@
     },
     "GooglePrivacyDlpV2JobTrigger": {
       "id": "GooglePrivacyDlpV2JobTrigger",
-      "description": "Contains a configuration to make dlp api calls on a repeating basis.",
+      "description": "Contains a configuration to make dlp api calls on a repeating basis.\nSee https:\/\/cloud.google.com\/dlp\/docs\/concepts-job-triggers to learn more.",
       "type": "object",
       "properties": {
         "name": {
@@ -2309,7 +2309,7 @@
     },
     "GooglePrivacyDlpV2Action": {
       "id": "GooglePrivacyDlpV2Action",
-      "description": "A task to execute on the completion of a job.",
+      "description": "A task to execute on the completion of a job.\nSee https:\/\/cloud.google.com\/dlp\/docs\/concepts-actions to learn more.",
       "type": "object",
       "properties": {
         "saveFindings": {
@@ -2402,7 +2402,7 @@
       "type": "object",
       "properties": {
         "recurrencePeriodDuration": {
-          "description": "With this option a job is started a regular periodic basis. For\nexample: every 10 minutes.\n\nA scheduled start time will be skipped if the previous\nexecution has not ended when its scheduled time occurs.\n\nThis value must be set to a time duration greater than or equal\nto 60 minutes and can be no longer than 60 days.",
+          "description": "With this option a job is started a regular periodic basis. For\nexample: every day (86400 seconds).\n\nA scheduled start time will be skipped if the previous\nexecution has not ended when its scheduled time occurs.\n\nThis value must be set to a time duration greater than or equal\nto 1 day and can be no longer than 60 days.",
           "type": "string",
           "format": "google-duration"
         }
@@ -2506,7 +2506,7 @@
     },
     "GooglePrivacyDlpV2RiskAnalysisJobConfig": {
       "id": "GooglePrivacyDlpV2RiskAnalysisJobConfig",
-      "description": "Configuration for a risk analysis job.",
+      "description": "Configuration for a risk analysis job. See\nhttps:\/\/cloud.google.com\/dlp\/docs\/concepts-risk-analysis to learn more.",
       "type": "object",
       "properties": {
         "privacyMetric": {
@@ -3384,7 +3384,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Finds potentially sensitive info in content.\nThis method has limits on input size, processing time, and output size.\n[How-to guide for text](\/dlp\/docs\/inspecting-text), [How-to guide for\nimages](\/dlp\/docs\/inspecting-images)"
+              "description": "Finds potentially sensitive info in content.\nThis method has limits on input size, processing time, and output size.\n\nFor how to guides, see https:\/\/cloud.google.com\/dlp\/docs\/inspecting-images\nand https:\/\/cloud.google.com\/dlp\/docs\/inspecting-text,"
             },
             "deidentify": {
               "id": "dlp.projects.content.deidentify",
@@ -3412,7 +3412,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "De-identifies potentially sensitive info from a ContentItem.\nThis method has limits on input size and output size.\n[How-to guide](\/dlp\/docs\/deidentify-sensitive-data)"
+              "description": "De-identifies potentially sensitive info from a ContentItem.\nThis method has limits on input size and output size.\nSee https:\/\/cloud.google.com\/dlp\/docs\/deidentify-sensitive-data to\nlearn more."
             },
             "reidentify": {
               "id": "dlp.projects.content.reidentify",
@@ -3440,7 +3440,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Re-identifies content that has been de-identified."
+              "description": "Re-identifies content that has been de-identified.\nSee\nhttps:\/\/cloud.google.com\/dlp\/docs\/pseudonymization#re-identification_in_free_text_code_example\nto learn more."
             }
           }
         },
@@ -3472,7 +3472,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\n[How-to guide](\/dlp\/docs\/redacting-sensitive-data-images)"
+              "description": "Redacts potentially sensitive info from an image.\nThis method has limits on input size, processing time, and output size.\nSee https:\/\/cloud.google.com\/dlp\/docs\/redacting-sensitive-data-images to\nlearn more."
             }
           }
         },
@@ -3504,7 +3504,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates an InspectTemplate for re-using frequently used configuration\nfor inspecting content, images, and storage."
+              "description": "Creates an InspectTemplate for re-using frequently used configuration\nfor inspecting content, images, and storage.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             },
             "patch": {
               "id": "dlp.projects.inspectTemplates.patch",
@@ -3532,7 +3532,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates the InspectTemplate."
+              "description": "Updates the InspectTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             },
             "get": {
               "id": "dlp.projects.inspectTemplates.get",
@@ -3557,7 +3557,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets an InspectTemplate."
+              "description": "Gets an InspectTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             },
             "list": {
               "id": "dlp.projects.inspectTemplates.list",
@@ -3593,7 +3593,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists InspectTemplates."
+              "description": "Lists InspectTemplates.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             },
             "delete": {
               "id": "dlp.projects.inspectTemplates.delete",
@@ -3618,7 +3618,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes an InspectTemplate."
+              "description": "Deletes an InspectTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             }
           }
         },
@@ -3650,7 +3650,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a DeidentifyTemplate for re-using frequently used configuration\nfor de-identifying content, images, and storage."
+              "description": "Creates a DeidentifyTemplate for re-using frequently used configuration\nfor de-identifying content, images, and storage.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             },
             "patch": {
               "id": "dlp.projects.deidentifyTemplates.patch",
@@ -3678,7 +3678,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates the DeidentifyTemplate."
+              "description": "Updates the DeidentifyTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             },
             "get": {
               "id": "dlp.projects.deidentifyTemplates.get",
@@ -3703,7 +3703,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a DeidentifyTemplate."
+              "description": "Gets a DeidentifyTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             },
             "list": {
               "id": "dlp.projects.deidentifyTemplates.list",
@@ -3739,7 +3739,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists DeidentifyTemplates."
+              "description": "Lists DeidentifyTemplates.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             },
             "delete": {
               "id": "dlp.projects.deidentifyTemplates.delete",
@@ -3764,7 +3764,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a DeidentifyTemplate."
+              "description": "Deletes a DeidentifyTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             }
           }
         },
@@ -3796,7 +3796,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a job trigger to run DLP actions such as scanning storage for\nsensitive information on a set schedule."
+              "description": "Creates a job trigger to run DLP actions such as scanning storage for\nsensitive information on a set schedule.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-job-triggers to learn more."
             },
             "patch": {
               "id": "dlp.projects.jobTriggers.patch",
@@ -3824,7 +3824,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a job trigger."
+              "description": "Updates a job trigger.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-job-triggers to learn more."
             },
             "get": {
               "id": "dlp.projects.jobTriggers.get",
@@ -3849,7 +3849,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a job trigger."
+              "description": "Gets a job trigger.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-job-triggers to learn more."
             },
             "list": {
               "id": "dlp.projects.jobTriggers.list",
@@ -3858,14 +3858,14 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The parent resource name, for example projects\/my-project-id.",
+                  "description": "The parent resource name, for example `projects\/my-project-id`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "Optional page token to continue retrieval. Comes from previous call\nto ListJobTriggers. `order_by` and `filter` should not change for\nsubsequent calls, but can be omitted if token is specified.",
+                  "description": "Optional page token to continue retrieval. Comes from previous call\nto ListJobTriggers. `order_by` field must not\nchange for subsequent calls.",
                   "location": "query",
                   "type": "string"
                 },
@@ -3876,7 +3876,7 @@
                   "format": "int32"
                 },
                 "orderBy": {
-                  "description": "Optional comma separated list of triggeredJob fields to order by,\nfollowed by 'asc\/desc' postfix, i.e.\n`\"create_time asc,name desc,schedule_mode asc\"`. This list is\ncase-insensitive.\n\nExample: `\"name asc,schedule_mode desc, status desc\"`\n\nSupported filters keys and values are:\n\n- `create_time`: corresponds to time the triggeredJob was created.\n- `update_time`: corresponds to time the triggeredJob was last updated.\n- `name`: corresponds to JobTrigger's display name.\n- `status`: corresponds to the triggeredJob status.",
+                  "description": "Optional comma separated list of triggeredJob fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the triggeredJob was created.\n- `update_time`: corresponds to time the triggeredJob was last updated.\n- `name`: corresponds to JobTrigger's name.",
                   "location": "query",
                   "type": "string"
                 }
@@ -3890,7 +3890,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists job triggers."
+              "description": "Lists job triggers.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-job-triggers to learn more."
             },
             "delete": {
               "id": "dlp.projects.jobTriggers.delete",
@@ -3915,7 +3915,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a job trigger."
+              "description": "Deletes a job trigger.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-job-triggers to learn more."
             }
           }
         },
@@ -3947,7 +3947,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a new job to inspect storage or calculate risk metrics.\n[How-to guide](\/dlp\/docs\/compute-risk-analysis)."
+              "description": "Creates a new job to inspect storage or calculate risk metrics.\nSee https:\/\/cloud.google.com\/dlp\/docs\/inspecting-storage and\nhttps:\/\/cloud.google.com\/dlp\/docs\/compute-risk-analysis to learn more."
             },
             "list": {
               "id": "dlp.projects.dlpJobs.list",
@@ -3998,7 +3998,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists DlpJobs that match the specified filter in the request."
+              "description": "Lists DlpJobs that match the specified filter in the request.\nSee https:\/\/cloud.google.com\/dlp\/docs\/inspecting-storage and\nhttps:\/\/cloud.google.com\/dlp\/docs\/compute-risk-analysis to learn more."
             },
             "get": {
               "id": "dlp.projects.dlpJobs.get",
@@ -4023,7 +4023,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets the latest state of a long-running DlpJob."
+              "description": "Gets the latest state of a long-running DlpJob.\nSee https:\/\/cloud.google.com\/dlp\/docs\/inspecting-storage and\nhttps:\/\/cloud.google.com\/dlp\/docs\/compute-risk-analysis to learn more."
             },
             "delete": {
               "id": "dlp.projects.dlpJobs.delete",
@@ -4048,7 +4048,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a long-running DlpJob. This method indicates that the client is\nno longer interested in the DlpJob result. The job will be cancelled if\npossible."
+              "description": "Deletes a long-running DlpJob. This method indicates that the client is\nno longer interested in the DlpJob result. The job will be cancelled if\npossible.\nSee https:\/\/cloud.google.com\/dlp\/docs\/inspecting-storage and\nhttps:\/\/cloud.google.com\/dlp\/docs\/compute-risk-analysis to learn more."
             },
             "cancel": {
               "id": "dlp.projects.dlpJobs.cancel",
@@ -4076,7 +4076,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Starts asynchronous cancellation on a long-running DlpJob. The server\nmakes a best effort to cancel the DlpJob, but success is not\nguaranteed."
+              "description": "Starts asynchronous cancellation on a long-running DlpJob. The server\nmakes a best effort to cancel the DlpJob, but success is not\nguaranteed.\nSee https:\/\/cloud.google.com\/dlp\/docs\/inspecting-storage and\nhttps:\/\/cloud.google.com\/dlp\/docs\/compute-risk-analysis to learn more."
             }
           }
         }
@@ -4109,7 +4109,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Returns a list of the sensitive information types that the DLP API\nsupports. For more information, see [Listing supported predefined\ninfoTypes](\/dlp\/docs\/listing-infotypes)."
+          "description": "Returns a list of the sensitive information types that the DLP API\nsupports. See https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference to\nlearn more."
         }
       }
     },
@@ -4143,7 +4143,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates an InspectTemplate for re-using frequently used configuration\nfor inspecting content, images, and storage."
+              "description": "Creates an InspectTemplate for re-using frequently used configuration\nfor inspecting content, images, and storage.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             },
             "patch": {
               "id": "dlp.organizations.inspectTemplates.patch",
@@ -4171,7 +4171,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates the InspectTemplate."
+              "description": "Updates the InspectTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             },
             "get": {
               "id": "dlp.organizations.inspectTemplates.get",
@@ -4196,7 +4196,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets an InspectTemplate."
+              "description": "Gets an InspectTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             },
             "list": {
               "id": "dlp.organizations.inspectTemplates.list",
@@ -4232,7 +4232,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists InspectTemplates."
+              "description": "Lists InspectTemplates.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             },
             "delete": {
               "id": "dlp.organizations.inspectTemplates.delete",
@@ -4257,7 +4257,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes an InspectTemplate."
+              "description": "Deletes an InspectTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates to learn more."
             }
           }
         },
@@ -4289,7 +4289,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a DeidentifyTemplate for re-using frequently used configuration\nfor de-identifying content, images, and storage."
+              "description": "Creates a DeidentifyTemplate for re-using frequently used configuration\nfor de-identifying content, images, and storage.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             },
             "patch": {
               "id": "dlp.organizations.deidentifyTemplates.patch",
@@ -4317,7 +4317,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates the DeidentifyTemplate."
+              "description": "Updates the DeidentifyTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             },
             "get": {
               "id": "dlp.organizations.deidentifyTemplates.get",
@@ -4342,7 +4342,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a DeidentifyTemplate."
+              "description": "Gets a DeidentifyTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             },
             "list": {
               "id": "dlp.organizations.deidentifyTemplates.list",
@@ -4378,7 +4378,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists DeidentifyTemplates."
+              "description": "Lists DeidentifyTemplates.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             },
             "delete": {
               "id": "dlp.organizations.deidentifyTemplates.delete",
@@ -4403,7 +4403,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a DeidentifyTemplate."
+              "description": "Deletes a DeidentifyTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
             }
           }
         }

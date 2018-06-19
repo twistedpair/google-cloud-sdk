@@ -14,6 +14,8 @@
 
 """Base template using which the apis_map.py is generated."""
 
+from __future__ import unicode_literals
+
 
 class APIDef(object):
   """Struct for info required to instantiate clients/messages for API versions.

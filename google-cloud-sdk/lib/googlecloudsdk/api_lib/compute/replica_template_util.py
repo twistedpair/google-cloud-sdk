@@ -19,9 +19,12 @@ ReplicaPool template files.
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
+
 import six
 
 
@@ -67,9 +70,8 @@ def ParseTemplate(template_file, params=None, params_from_file=None):
     if key in joined_params:
       raise exceptions.ToolException('Duplicate param key: ' + key)
     try:
-      with open(file_path) as opened_file:
-        joined_params[key] = opened_file.read()
-    except IOError as e:
+      joined_params[key] = files.ReadFileContents(file_path)
+    except files.Error as e:
       raise exceptions.ToolException(
           'Could not load param key "{0}" from file "{1}": {2}'.format(
               key, file_path, e.strerror))

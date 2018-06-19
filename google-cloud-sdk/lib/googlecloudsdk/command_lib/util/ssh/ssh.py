@@ -445,25 +445,18 @@ class Keys(object):
       readable, or is empty. Otherwise returns the first line utf8 decoded.
     """
     try:
-      with open(path) as f:
-        # Decode to utf8 to handle any unicode characters. Key data is base64
-        # encoded so it cannot contain any unicode. Comments may contain
-        # unicode, but they are ignored in the key file analysis here, so
-        # replacing invalid chars with ? is OK.
+      with files.FileReader(path) as f:
         line = f.readline().strip()
-        if isinstance(line, six.binary_type):
-          line = line.decode('utf8', 'replace')
         if line:
           return line
         msg = 'is empty'
         status = KeyFileStatus.BROKEN
-    except IOError as e:
-      if e.errno == errno.ENOENT:
-        msg = 'does not exist'
-        status = KeyFileStatus.ABSENT
-      else:
-        msg = 'is not readable'
-        status = KeyFileStatus.BROKEN
+    except files.MissingFileError:
+      msg = 'does not exist'
+      status = KeyFileStatus.ABSENT
+    except files.Error:
+      msg = 'is not readable'
+      status = KeyFileStatus.BROKEN
     log.warning('The %s SSH key file for gcloud %s.', kind, msg)
     return status
 
@@ -480,7 +473,7 @@ class Keys(object):
       Keys.PublicKey, a public key (that passed primitive validation).
     """
     filepath = self.keys[_KeyFileKind.PUBLIC].filename
-    with open(filepath) as f:
+    with files.FileReader(filepath) as f:
       # TODO(b/33467618): Currently we enforce that key exists on the first
       # line, but OpenSSH does not enforce that.
       first_line = f.readline()
@@ -557,7 +550,7 @@ class KnownHosts(object):
       opened, the KnownHosts object will have no entries.
     """
     try:
-      known_hosts = files.GetFileContents(file_path).splitlines()
+      known_hosts = files.ReadFileContents(file_path).splitlines()
     except files.Error as e:
       known_hosts = []
       log.debug('SSH Known Hosts File [{0}] could not be opened: {1}'
@@ -612,8 +605,8 @@ class KnownHosts(object):
 
   def Write(self):
     """Writes the file to disk."""
-    with files.OpenForWritingPrivate(self.file_path) as f:
-      f.write('\n'.join(self.known_hosts) + '\n')
+    files.WriteFileContents(
+        self.file_path, '\n'.join(self.known_hosts) + '\n', private=True)
 
 
 def GetDefaultSshUsername(warn_on_account_user=False):
@@ -935,17 +928,13 @@ class SSHCommand(object):
     # PuTTY and friends always ask on fingerprint mismatch
     in_str = 'y\n' if env.suite is Suite.PUTTY and force_connect else None
 
-    # We pipe stdout to a specific file if given a file, otherwise we write
-    # to stdout.
-    out_func = None
+    # We pipe stdout to a specific file
     extra_popen_kwargs = {}
     if explicit_output_file:
       extra_popen_kwargs['stdout'] = explicit_output_file
-    else:
-      out_func = log.out.write
 
     status = execution_utils.Exec(args, no_exit=True, in_str=in_str,
-                                  out_func=out_func, **extra_popen_kwargs)
+                                  **extra_popen_kwargs)
     if status == env.ssh_exit_code:
       raise CommandError(args[0], return_code=status)
     return status

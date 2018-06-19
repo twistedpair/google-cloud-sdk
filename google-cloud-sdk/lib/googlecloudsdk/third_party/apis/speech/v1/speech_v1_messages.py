@@ -287,13 +287,16 @@ class SpeechContext(_messages.Message):
     BiasingStrengthValueValuesEnum: Strength of biasing to use (strong, medium
       or weak). If you use strong biasing option then more likely to see those
       phrases in the results. If biasing strength is not specified then by
-      default medium biasing would be used.
+      default medium biasing would be used. If you'd like different phrases to
+      have different biasing strengths, you can specify multiple
+      speech_contexts.
 
   Fields:
     biasingStrength: Strength of biasing to use (strong, medium or weak). If
       you use strong biasing option then more likely to see those phrases in
       the results. If biasing strength is not specified then by default medium
-      biasing would be used.
+      biasing would be used. If you'd like different phrases to have different
+      biasing strengths, you can specify multiple speech_contexts.
     phrases: *Optional* A list of strings containing words and phrases "hints"
       so that the speech recognition is more likely to recognize them. This
       can be used to improve the accuracy for specific words and phrases, for
@@ -307,7 +310,8 @@ class SpeechContext(_messages.Message):
     r"""Strength of biasing to use (strong, medium or weak). If you use strong
     biasing option then more likely to see those phrases in the results. If
     biasing strength is not specified then by default medium biasing would be
-    used.
+    used. If you'd like different phrases to have different biasing strengths,
+    you can specify multiple speech_contexts.
 
     Values:
       BIASING_STRENGTH_UNSPECIFIED: <no description>

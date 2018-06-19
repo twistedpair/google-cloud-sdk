@@ -903,7 +903,7 @@
           "type": "string"
         },
         "machineType": {
-          "description": "Optional. The type of machine on which to serve the model.\nThe following are currently supported:\n  mls1-highmem-1    1 core    2 Gb RAM\n  mls1-highcpu-4    4 core    2 Gb RAM\nIf not set, mls1-highmem-1 is used. Currently only applies to\nonline prediction.",
+          "description": "Optional. The type of machine on which to serve the model. Currently only\napplies to online prediction service.\nNaming design doc for CMLE online prediction Machine Types:\nhttps:\/\/docs.google.com\/document\/d\/1V3tko3VJ64PcpsmNxCXiPoPGccL9_K8gX1YjC8UofzQ\/edit#heading=h.7lvy6owfx4eh.\nThe following are currently supported and will be deprecated in\nBeta release.\n  mls1-highmem-1    1 core    2 Gb RAM\n  mls1-highcpu-4    4 core    2 Gb RAM\nThe following are available in Beta:\n  mls1-c1-m2        1 core    2 Gb RAM   Default\n  mls1-c4-m2        1 core    4 Gb RAM",
           "type": "string"
         },
         "autoScaling": {

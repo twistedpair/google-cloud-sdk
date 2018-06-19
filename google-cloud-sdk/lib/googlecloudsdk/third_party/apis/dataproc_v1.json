@@ -1242,6 +1242,140 @@
           "format": "google-datetime"
         }
       }
+    },
+    "WorkflowMetadata": {
+      "id": "WorkflowMetadata",
+      "description": "A Cloud Dataproc workflow template resource.",
+      "type": "object",
+      "properties": {
+        "template": {
+          "description": "Output only. The \"resource name\" of the template.",
+          "type": "string"
+        },
+        "version": {
+          "description": "Output only. The version of template at the time of workflow instantiation.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "createCluster": {
+          "description": "Output only. The create cluster operation metadata.",
+          "$ref": "ClusterOperation"
+        },
+        "graph": {
+          "description": "Output only. The workflow graph.",
+          "$ref": "WorkflowGraph"
+        },
+        "deleteCluster": {
+          "description": "Output only. The delete cluster operation metadata.",
+          "$ref": "ClusterOperation"
+        },
+        "state": {
+          "description": "Output only. The workflow state.",
+          "enumDescriptions": [
+            "Unused.",
+            "The operation has been created.",
+            "The operation is running.",
+            "The operation is done; either cancelled or completed."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "PENDING",
+            "RUNNING",
+            "DONE"
+          ]
+        },
+        "clusterName": {
+          "description": "Output only. The name of the managed cluster.",
+          "type": "string"
+        },
+        "parameters": {
+          "description": "Map from parameter names to values that were used for those parameters.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ClusterOperation": {
+      "id": "ClusterOperation",
+      "description": "The cluster operation triggered by a workflow.",
+      "type": "object",
+      "properties": {
+        "operationId": {
+          "description": "Output only. The id of the cluster operation.",
+          "type": "string"
+        },
+        "error": {
+          "description": "Output only. Error, if operation failed.",
+          "type": "string"
+        },
+        "done": {
+          "description": "Output only. Indicates the operation is done.",
+          "type": "boolean"
+        }
+      }
+    },
+    "WorkflowGraph": {
+      "id": "WorkflowGraph",
+      "description": "The workflow graph.",
+      "type": "object",
+      "properties": {
+        "nodes": {
+          "description": "Output only. The workflow nodes.",
+          "type": "array",
+          "items": {
+            "$ref": "WorkflowNode"
+          }
+        }
+      }
+    },
+    "WorkflowNode": {
+      "id": "WorkflowNode",
+      "description": "The workflow node.",
+      "type": "object",
+      "properties": {
+        "stepId": {
+          "description": "Output only. The name of the node.",
+          "type": "string"
+        },
+        "prerequisiteStepIds": {
+          "description": "Output only. Node's prerequisite nodes.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "jobId": {
+          "description": "Output only. The job id; populated after the node enters RUNNING state.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The node state.",
+          "enumDescriptions": [
+            "State is unspecified.",
+            "The node is awaiting prerequisite node to finish.",
+            "The node is runnable but not running.",
+            "The node is running.",
+            "The node completed successfully.",
+            "The node failed. A node can be marked FAILED because its ancestor or peer failed."
+          ],
+          "type": "string",
+          "enum": [
+            "NODE_STATE_UNSPECIFIED",
+            "BLOCKED",
+            "RUNNABLE",
+            "RUNNING",
+            "COMPLETED",
+            "FAILED"
+          ]
+        },
+        "error": {
+          "description": "Output only. The error detail.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {

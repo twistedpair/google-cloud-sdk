@@ -55,7 +55,8 @@ class Parser(object):
     _snake_re: Compiled re for converting key names to angry snake case.
   """
 
-  _BOOLEAN_ATTRIBUTES = ['optional', 'reverse', 'wrap']
+  _BOOLEAN_ATTRIBUTES = ['optional', 'reverse']
+  _OPTIONAL_BOOLEAN_ATTRIBUTES = ['wrap']
 
   def __init__(self, defaults=None, symbols=None, aliases=None, compiler=None):
     """Constructor.
@@ -127,14 +128,12 @@ class Parser(object):
         option.append('reverse')
       if self.subformat:
         option.append('subformat')
-      if self.wrap:
-        option.append('wrap')
       if option:
         options = ', [{0}]'.format('|'.join(option))
       else:
         options = ''
       return (
-          '({flag}, {order}, {label}, {align}, {active},'
+          '({flag}, {order}, {label}, {align}, {active}, {wrap},'
           ' {transform}{options})'.format(
               flag=self.flag,
               order=('UNORDERED' if self.order is None else str(self.order)),
@@ -142,6 +141,7 @@ class Parser(object):
                      else "'" + self.label + "'"),
               align=self.align,
               active=self.transform.active if self.transform else None,
+              wrap=self.wrap,
               transform=self.transform,
               options=options))
 
@@ -321,7 +321,7 @@ class Parser(object):
           # A Boolean attribute with a non-Boolean value.
           raise resource_exceptions.ExpressionSyntaxError(
               'value not expected [{0}].'.format(self._lex.Annotate(here)))
-      elif boolean_value:
+      elif boolean_value and name not in self._OPTIONAL_BOOLEAN_ATTRIBUTES:
         # A non-Boolean attribute without a value or a no- prefix.
         raise resource_exceptions.ExpressionSyntaxError(
             'value expected [{0}].'.format(self._lex.Annotate(here)))

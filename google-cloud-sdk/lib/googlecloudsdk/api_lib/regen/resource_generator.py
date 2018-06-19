@@ -17,11 +17,11 @@ from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import io
 import json
 import re
 
 from googlecloudsdk.api_lib.util import resource as resource_util
+from googlecloudsdk.core.util import files
 import six
 
 
@@ -51,7 +51,7 @@ class DiscoveryDoc(object):
 
   @classmethod
   def FromJson(cls, path):
-    with io.open(path, 'r', encoding='utf8') as f:
+    with files.FileReader(path) as f:
       return cls(json.load(f))
 
   @property

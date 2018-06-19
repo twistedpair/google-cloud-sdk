@@ -22,6 +22,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.util.apis import resource_arg_schema
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs as presentation_specs_lib
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import pkg_resources
 
@@ -128,7 +129,7 @@ def AddReimageResourcesToParser(parser):
   resource_specs = LoadTPUResourceSpecs(custom_help)
   presentation_specs = []
   for arg in (spec for spec in resource_specs if spec.name in custom_help):
-    presentation_specs.append(concept_parsers.ResourcePresentationSpec(
+    presentation_specs.append(presentation_specs_lib.ResourcePresentationSpec(
         TPU_YAML_SPEC_TEMPLATE[arg.name]['flag_name'],
         arg.GenerateResourceSpec(),
         arg.group_help,

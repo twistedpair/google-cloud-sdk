@@ -512,18 +512,18 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
 
   Fields:
     orderBy: Optional comma separated list of triggeredJob fields to order by,
-      followed by 'asc/desc' postfix, i.e. `"create_time asc,name
-      desc,schedule_mode asc"`. This list is case-insensitive.  Example:
-      `"name asc,schedule_mode desc, status desc"`  Supported filters keys and
-      values are:  - `create_time`: corresponds to time the triggeredJob was
-      created. - `update_time`: corresponds to time the triggeredJob was last
-      updated. - `name`: corresponds to JobTrigger's display name. - `status`:
-      corresponds to the triggeredJob status.
+      followed by `asc` or `desc` postfix. This list is case-insensitive,
+      default sorting order is ascending, redundant space characters are
+      insignificant.  Example: `name asc,update_time, create_time desc`
+      Supported fields are:  - `create_time`: corresponds to time the
+      triggeredJob was created. - `update_time`: corresponds to time the
+      triggeredJob was last updated. - `name`: corresponds to JobTrigger's
+      name.
     pageSize: Optional size of the page, can be limited by a server.
     pageToken: Optional page token to continue retrieval. Comes from previous
-      call to ListJobTriggers. `order_by` and `filter` should not change for
-      subsequent calls, but can be omitted if token is specified.
-    parent: The parent resource name, for example projects/my-project-id.
+      call to ListJobTriggers. `order_by` field must not change for subsequent
+      calls.
+    parent: The parent resource name, for example `projects/my-project-id`.
   """
 
   orderBy = _messages.StringField(1)
@@ -548,7 +548,8 @@ class DlpProjectsJobTriggersPatchRequest(_messages.Message):
 
 
 class GooglePrivacyDlpV2Action(_messages.Message):
-  r"""A task to execute on the completion of a job.
+  r"""A task to execute on the completion of a job. See
+  https://cloud.google.com/dlp/docs/concepts-actions to learn more.
 
   Fields:
     pubSub: Publish a notification to a pubsub topic.
@@ -717,7 +718,8 @@ class GooglePrivacyDlpV2BucketingConfig(_messages.Message):
   used on data of type: number, long, string, timestamp. If the bound `Value`
   type differs from the type of data being transformed, we will first attempt
   converting the type of the data to be transformed to match the type of the
-  bound before comparing.
+  bound before comparing. See https://cloud.google.com/dlp/docs/concepts-
+  bucketing to learn more.
 
   Fields:
     buckets: Set of buckets. Ranges must be non-overlapping.
@@ -1027,7 +1029,9 @@ class GooglePrivacyDlpV2ContentItem(_messages.Message):
 
   Fields:
     byteItem: Content data to inspect or redact. Replaces `type` and `data`.
-    table: Structured content for inspection.
+    table: Structured content for inspection. See
+      https://cloud.google.com/dlp/docs/inspecting-text#inspecting_a_table to
+      learn more.
     value: String data to inspect or redact.
   """
 
@@ -1165,7 +1169,7 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
   crypto key and context, the same identifier will be replaced with the same
   surrogate. Identifiers must be at least two characters long. In the case
   that the identifier is the empty string, it will be skipped. See
-  [Pseudonymization](/dlp/docs/pseudonymization) for example usage.
+  https://cloud.google.com/dlp/docs/pseudonymization to learn more.
 
   Enums:
     CommonAlphabetValueValuesEnum:
@@ -1317,7 +1321,8 @@ class GooglePrivacyDlpV2DatastoreOptions(_messages.Message):
 
 class GooglePrivacyDlpV2DateShiftConfig(_messages.Message):
   r"""Shifts dates by random number of days, with option to be consistent for
-  the same context.
+  the same context. See https://cloud.google.com/dlp/docs/concepts-date-
+  shifting to learn more.
 
   Fields:
     context: Points to the field that contains the context, for example, an
@@ -1441,7 +1446,8 @@ class GooglePrivacyDlpV2DeidentifyContentResponse(_messages.Message):
 
 class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
   r"""The DeidentifyTemplates contains instructions on how to deidentify
-  content.
+  content. See https://cloud.google.com/dlp/docs/concepts-templates to learn
+  more.
 
   Fields:
     createTime: The creation timestamp of a inspectTemplate, output only
@@ -1842,7 +1848,8 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
   can be used on data of type: double, long.  If the bound Value type differs
   from the type of data being transformed, we will first attempt converting
   the type of the data to be transformed to match the type of the bound before
-  comparing.
+  comparing.  See https://cloud.google.com/dlp/docs/concepts-bucketing to
+  learn more.
 
   Fields:
     bucketSize: Size of each bucket (except for minimum and maximum buckets).
@@ -2025,12 +2032,15 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
   Enums:
     ContentOptionsValueListEntryValuesEnum:
     MinLikelihoodValueValuesEnum: Only returns findings equal or above this
-      threshold. The default is POSSIBLE.
+      threshold. The default is POSSIBLE. See
+      https://cloud.google.com/dlp/docs/likelihood to learn more.
 
   Fields:
     contentOptions: List of options defining data content to scan. If empty,
       text, images, and other content will be included.
-    customInfoTypes: Custom infoTypes provided by the user.
+    customInfoTypes: CustomInfoTypes provided by the user. See
+      https://cloud.google.com/dlp/docs/creating-custom-infotypes to learn
+      more.
     excludeInfoTypes: When true, excludes type information of the findings.
     includeQuote: When true, a contextual quote from the data that triggered a
       finding is included in the response; see Finding.quote.
@@ -2039,7 +2049,8 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       https://cloud.google.com/dlp/docs/infotypes-reference.
     limits: A GooglePrivacyDlpV2FindingLimits attribute.
     minLikelihood: Only returns findings equal or above this threshold. The
-      default is POSSIBLE.
+      default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
+      learn more.
   """
 
   class ContentOptionsValueListEntryValuesEnum(_messages.Enum):
@@ -2056,7 +2067,7 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
 
   class MinLikelihoodValueValuesEnum(_messages.Enum):
     r"""Only returns findings equal or above this threshold. The default is
-    POSSIBLE.
+    POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to learn more.
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
@@ -2162,7 +2173,8 @@ class GooglePrivacyDlpV2InspectResult(_messages.Message):
 class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
   r"""The inspectTemplate contains a configuration (set of types of sensitive
   data to be detected) to be used anywhere you otherwise would normally
-  specify InspectConfig.
+  specify InspectConfig. See https://cloud.google.com/dlp/docs/concepts-
+  templates to learn more.
 
   Fields:
     createTime: The creation timestamp of a inspectTemplate, output only
@@ -2187,7 +2199,8 @@ class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
 
 
 class GooglePrivacyDlpV2JobTrigger(_messages.Message):
-  r"""Contains a configuration to make dlp api calls on a repeating basis.
+  r"""Contains a configuration to make dlp api calls on a repeating basis. See
+  https://cloud.google.com/dlp/docs/concepts-job-triggers to learn more.
 
   Enums:
     StatusValueValuesEnum: A status for this trigger. [required]
@@ -3129,7 +3142,8 @@ class GooglePrivacyDlpV2Result(_messages.Message):
 
 
 class GooglePrivacyDlpV2RiskAnalysisJobConfig(_messages.Message):
-  r"""Configuration for a risk analysis job.
+  r"""Configuration for a risk analysis job. See
+  https://cloud.google.com/dlp/docs/concepts-risk-analysis to learn more.
 
   Fields:
     actions: Actions to execute at the completion of the job. Are executed in
@@ -3170,10 +3184,10 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
 
   Fields:
     recurrencePeriodDuration: With this option a job is started a regular
-      periodic basis. For example: every 10 minutes.  A scheduled start time
-      will be skipped if the previous execution has not ended when its
-      scheduled time occurs.  This value must be set to a time duration
-      greater than or equal to 60 minutes and can be no longer than 60 days.
+      periodic basis. For example: every day (86400 seconds).  A scheduled
+      start time will be skipped if the previous execution has not ended when
+      its scheduled time occurs.  This value must be set to a time duration
+      greater than or equal to 1 day and can be no longer than 60 days.
   """
 
   recurrencePeriodDuration = _messages.StringField(1)
@@ -3261,7 +3275,8 @@ class GooglePrivacyDlpV2SurrogateType(_messages.Message):
 
 class GooglePrivacyDlpV2Table(_messages.Message):
   r"""Structured content to inspect. Up to 50,000 `Value`s per request
-  allowed.
+  allowed. See https://cloud.google.com/dlp/docs/inspecting-
+  text#inspecting_a_table to learn more.
 
   Fields:
     headers: A GooglePrivacyDlpV2FieldId attribute.

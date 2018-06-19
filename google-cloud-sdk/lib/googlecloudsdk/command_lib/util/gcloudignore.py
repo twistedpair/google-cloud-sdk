@@ -30,7 +30,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import fnmatch
-import io
 import os
 import re
 
@@ -471,9 +470,8 @@ class FileChooser(object):
       FileChooser.
     """
     try:
-      with io.open(ignore_file_path, 'rt') as f:
-        text = f.read()
-    except IOError as err:
+      text = files.ReadFileContents(ignore_file_path)
+    except files.Error as err:
       raise BadFileError(
           'Could not read ignore file [{}]: {}'.format(ignore_file_path, err))
     return cls.FromString(text, dirname=os.path.dirname(ignore_file_path),

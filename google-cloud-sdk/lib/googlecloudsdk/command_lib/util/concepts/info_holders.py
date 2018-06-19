@@ -23,12 +23,16 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.command_lib.util.concepts import completers
+from googlecloudsdk.core.util import text
 import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 
 
 ANCHOR_HELP = ('The ID of the {resource} or a fully qualified identifier for '
                'the {resource}.')
+
+PLURAL_ANCHOR_HELP = ('IDs of the {resource} or fully qualified identifiers '
+                      'for the {resource}.')
 
 
 class ConceptInfo(six.with_metaclass(abc.ABCMeta, object)):
@@ -277,6 +281,19 @@ class ResourceInfo(ConceptInfo):
       return True
     return False
 
+  def _GetHelpTextForAttribute(self, attribute, is_anchor=False):
+    """Helper to get the help text for the attribute arg."""
+    if is_anchor:
+      help_text = ANCHOR_HELP if not self.plural else PLURAL_ANCHOR_HELP
+    else:
+      help_text = attribute.help_text
+
+    expansion_name = text.Pluralize(
+        2 if self.plural else 1,
+        self.resource_spec.name,
+        plural=getattr(self.resource_spec, 'plural_name', None))
+    return help_text.format(resource=expansion_name)
+
   def _KwargsForAttribute(self, name, attribute, is_anchor=False):
     """Constructs the kwargs for adding an attribute to argparse."""
     # Argument is modal if it's the anchor, unless there are fallthroughs.
@@ -284,9 +301,8 @@ class ResourceInfo(ConceptInfo):
     # a more robust solution will be needed, e.g. a GetFallthroughsForAttribute
     # method.
     required = is_anchor and not self.fallthroughs_map.get(attribute.name, [])
-    # Expand the help text.
-    help_text = ANCHOR_HELP if is_anchor else attribute.help_text
-    final_help_text = help_text.format(resource=self.resource_spec.name)
+    final_help_text = self._GetHelpTextForAttribute(
+        attribute, is_anchor=is_anchor)
     plural = attribute == self.resource_spec.anchor and self.plural
     if attribute.completer:
       completer = attribute.completer

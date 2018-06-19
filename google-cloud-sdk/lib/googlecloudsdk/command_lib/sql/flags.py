@@ -144,16 +144,17 @@ def AddPromptForPassword(parser):
 
 
 def AddActivationPolicy(parser):
-  parser.add_argument(
+  base.ChoiceArgument(
       '--activation-policy',
       required=False,
-      choices=['ALWAYS', 'NEVER', 'ON_DEMAND'],
+      choices=['always', 'never', 'on-demand'],
       default=None,
-      help=('The activation policy for this instance. This specifies when '
-            'the instance should be activated and is applicable only when '
-            'the instance state is RUNNABLE. The default is ON_DEMAND. '
-            'More information on activation policies can be found here: '
-            'https://cloud.google.com/sql/faq#activation_policy'))
+      help_str=('The activation policy for this instance. This specifies when '
+                'the instance should be activated and is applicable only when '
+                'the instance state is `RUNNABLE`. The default is `on-demand`. '
+                'More information on activation policies can be found here: '
+                'https://cloud.google.com/sql/faq#activation_policy')
+  ).AddToParser(parser)
 
 
 def AddAssignIp(parser, show_negated_in_help=False):
@@ -271,7 +272,7 @@ def AddFollowGAEApp(parser):
 
 
 def AddMaintenanceReleaseChannel(parser):
-  parser.add_argument(
+  base.ChoiceArgument(
       '--maintenance-release-channel',
       choices={
           'production': 'Production updates are stable and recommended '
@@ -282,13 +283,14 @@ def AddMaintenanceReleaseChannel(parser):
                      'their compatibility with your application prior '
                      'to the production release.'
       },
-      type=lambda val: val.lower(),
-      help="Which channel's updates to apply during the maintenance window. "
-           "If not specified, Cloud SQL chooses the timing of updates to your "
-           "instance.")
+
+      help_str=("Which channel's updates to apply during the maintenance "
+                "window. If not specified, Cloud SQL chooses the timing of "
+                "updates to your instance.")).AddToParser(parser)
 
 
 def AddMaintenanceWindowDay(parser):
+  # TODO(b/79740068) Convert to ChoiceArgument when resolved.
   parser.add_argument(
       '--maintenance-window-day',
       choices=arg_parsers.DayOfWeek.DAYS,
@@ -316,13 +318,13 @@ def AddMemory(parser):
 
 
 def AddReplication(parser):
-  parser.add_argument(
+  base.ChoiceArgument(
       '--replication',
       required=False,
-      choices=['SYNCHRONOUS', 'ASYNCHRONOUS'],
+      choices=['synchronous', 'asynchronous'],
       default=None,
-      help='The type of replication this instance uses. The default is '
-           'SYNCHRONOUS.')
+      help_str='The type of replication this instance uses. The default is '
+      'synchronous.').AddToParser(parser)
 
 
 def AddStorageAutoIncrease(parser):

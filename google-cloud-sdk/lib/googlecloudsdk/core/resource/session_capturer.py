@@ -60,6 +60,7 @@ class _Mock(object):
 class _StreamCapturerBase(io.IOBase):
   """A base class for input/output stream capturers."""
 
+  # pylint: disable=super-init-not-called, All this is about to be deleted.
   def __init__(self, real_stream):
     self._real_stream = real_stream
     self._capturing_stream = StringIO()
@@ -114,10 +115,9 @@ class FileIoCapturerBase(object):  # pytype: disable=ignored-abstractmethod
     self._outputs = []
     self._private_outputs = []
     self._real_open = builtins.open
-    self._real_private = files.OpenForWritingPrivate
     self._mocks = (
-        _Mock(builtins, 'open', new=self.Open),
-        _Mock(files, 'OpenForWritingPrivate', new=self.OpenForWritingPrivate),
+        _Mock(io, 'open', new=self.Open),
+        _Mock(files, 'PrivatizeFile', new=lambda x: None)
     )
 
   def Mock(self):
@@ -125,11 +125,7 @@ class FileIoCapturerBase(object):  # pytype: disable=ignored-abstractmethod
       m.Start()
 
   @abc.abstractmethod
-  def Open(self, name, mode='r', buffering=-1):
-    pass
-
-  @abc.abstractmethod
-  def OpenForWritingPrivate(self, path, binary=False):
+  def Open(self, name, mode='r', buffering=-1, **kwargs):
     pass
 
   def Unmock(self):
@@ -176,7 +172,7 @@ class FileIoCapturer(FileIoCapturerBase):
     self._inputs = []
     self.Mock()
 
-  def Open(self, name, mode='r', buffering=-1):
+  def Open(self, name, mode='r', buffering=-1, **kwargs):
     if not self._ShouldCaptureFile(name, sys._getframe().f_back):  # pylint: disable=protected-access
       return self._real_open(name, mode, buffering)
     if 'w' in mode:
@@ -185,11 +181,6 @@ class FileIoCapturer(FileIoCapturerBase):
     else:
       capturer = InputStreamCapturer(self._real_open(name, mode, buffering))
       self._Save(self._inputs, name, capturer)
-    return capturer
-
-  def OpenForWritingPrivate(self, path, binary=False):
-    capturer = OutputStreamCapturer(self._real_private(path, binary))
-    self._Save(self._private_outputs, path, capturer)
     return capturer
 
   def GetInputs(self):

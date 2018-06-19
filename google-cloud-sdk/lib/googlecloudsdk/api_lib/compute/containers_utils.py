@@ -22,8 +22,11 @@ from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
+
 import six
+
 
 USER_INIT_TEMPLATE = """#cloud-config
 runcmd:
@@ -278,29 +281,26 @@ def _ReadDictionary(filename):
   env_vars = {}
   if not filename:
     return env_vars
-  try:
-    with open(filename, 'r') as f:
-      for i, line in enumerate(f):
-        # Strip whitespace at the beginning and end of line
-        line = line.strip()
-        # Ignore comments and empty lines
-        if len(line) <= 1 or line[0] == '#':
-          continue
-        # Find first left '=' character
-        assignment_op_loc = line.find('=')
-        if assignment_op_loc == -1:
-          raise exceptions.BadFileException(
-              'Syntax error in {}:{}: Expected VAR=VAL, got {}'.format(
-                  filename, i, line))
-        env = line[:assignment_op_loc]
-        val = line[assignment_op_loc+1:]
-        if ' ' in env or '\t' in env:
-          raise exceptions.BadFileException(
-              'Syntax error in {}:{} Variable name cannot contain whitespaces,'
-              ' got "{}"'.format(filename, i, env))
-        env_vars[env] = val
-  except IOError as e:
-    raise exceptions.BadFileException(e)
+  with files.FileReader(filename) as f:
+    for i, line in enumerate(f):
+      # Strip whitespace at the beginning and end of line
+      line = line.strip()
+      # Ignore comments and empty lines
+      if len(line) <= 1 or line[0] == '#':
+        continue
+      # Find first left '=' character
+      assignment_op_loc = line.find('=')
+      if assignment_op_loc == -1:
+        raise exceptions.BadFileException(
+            'Syntax error in {}:{}: Expected VAR=VAL, got {}'.format(
+                filename, i, line))
+      env = line[:assignment_op_loc]
+      val = line[assignment_op_loc+1:]
+      if ' ' in env or '\t' in env:
+        raise exceptions.BadFileException(
+            'Syntax error in {}:{} Variable name cannot contain whitespaces,'
+            ' got "{}"'.format(filename, i, env))
+      env_vars[env] = val
   return env_vars
 
 

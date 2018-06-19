@@ -753,9 +753,9 @@ version [{1}].  To clear your fixed version setting, run:
         fpath = os.path.join(self.__sdk_root, name)
         if not os.path.exists(fpath):
           continue
-        with open(fpath, 'rb') as f:
-          md5 = hashlib.md5(f.read()).hexdigest()
-          md5dict[name] = md5
+
+        md5 = hashlib.md5(file_utils.ReadBinaryFileContents(fpath)).hexdigest()
+        md5dict[name] = md5
       except OSError:
         md5dict[name] = 0
         continue

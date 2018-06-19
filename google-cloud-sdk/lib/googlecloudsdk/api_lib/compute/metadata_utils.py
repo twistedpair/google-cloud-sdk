@@ -18,11 +18,11 @@ from __future__ import unicode_literals
 import copy
 
 from googlecloudsdk.api_lib.compute import constants
-from googlecloudsdk.api_lib.compute import file_utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
 
 import six
 
@@ -142,9 +142,7 @@ def ConstructMetadataMessage(message_classes,
     if key in new_metadata_dict:
       raise exceptions.ToolException(
           'Encountered duplicate metadata key [{0}].'.format(key))
-
-    new_metadata_dict[key] = file_utils.ReadFile(
-        file_path, 'metadata key [{0}]'.format(key))
+    new_metadata_dict[key] = files.ReadFileContents(file_path)
 
   existing_metadata_dict = _MetadataMessageToDict(existing_metadata)
   existing_metadata_dict.update(new_metadata_dict)

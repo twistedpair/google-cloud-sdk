@@ -32,6 +32,10 @@ DEFAULT_RELEASE_TRACK = base.ReleaseTrack.GA
 STORAGE_TYPE_PREFIX = 'PD_'
 
 
+def _ParseActivationPolicy(policy):
+  return policy.replace('-', '_').upper() if policy else None
+
+
 def ShowZoneDeprecationWarnings(args):
   """Show warnings if both region and zone are specified or neither is.
 
@@ -54,7 +58,7 @@ def ShowZoneDeprecationWarnings(args):
 
 
 class _BaseInstances(object):
-  """Common utility functions for sql instance commands."""
+  """Common utility functions for sql instance commands."""\
 
   @classmethod
   def _ConstructBaseSettingsFromArgs(cls,
@@ -84,7 +88,7 @@ class _BaseInstances(object):
         tier=reducers.MachineType(instance, args.tier, args.memory, args.cpu),
         pricingPlan=args.pricing_plan,
         replicationType=args.replication,
-        activationPolicy=args.activation_policy)
+        activationPolicy=_ParseActivationPolicy(args.activation_policy))
 
     if args.authorized_gae_apps:
       settings.authorizedGaeApplications = args.authorized_gae_apps

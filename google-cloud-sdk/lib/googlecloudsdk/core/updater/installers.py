@@ -221,7 +221,7 @@ class ComponentInstaller(object):
       except Exception:
         total_size = 0
 
-      with open(download_file_path, 'wb') as fp:
+      with file_utils.BinaryFileWriter(download_file_path) as fp:
         # This is the buffer size that shutil.copyfileobj uses.
         buf_size = 16*1024
         total_written = 0

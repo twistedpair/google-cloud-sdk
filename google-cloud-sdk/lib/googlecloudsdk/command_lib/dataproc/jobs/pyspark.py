@@ -33,13 +33,13 @@ class PySparkBase(job_base.JobBase):
 
     parser.add_argument(
         'py_file',
-        help='The main .py file to run as the driver.')
+        help='Main .py file to run as the driver.')
     parser.add_argument(
         '--py-files',
         type=arg_parsers.ArgList(),
         metavar='PY_FILE',
         default=[],
-        help=('Comma separated list of Python files to be provided to the job.'
+        help=('Comma separated list of Python files to be provided to the job. '
               'Must be one of the following file formats" .py, ,.zip, or .egg'))
     parser.add_argument(
         '--jars',
@@ -65,18 +65,26 @@ class PySparkBase(job_base.JobBase):
     parser.add_argument(
         'job_args',
         nargs=argparse.REMAINDER,
-        help='The arguments to pass to the driver.')
+        help='Arguments to pass to the driver.')
     parser.add_argument(
         '--properties',
         type=arg_parsers.ArgDict(),
         metavar='PROPERTY=VALUE',
-        help='A list of key value pairs to configure PySpark.')
+        help='List of key value pairs to configure PySpark. For a list of '
+             'available properties, see: '
+             'https://spark.apache.org/docs/latest/'
+             'configuration.html#available-properties. Alternatively, to '
+             'see examples of how to use the `--properties` flag, see: '
+             'https://cloud.google.com/dataproc/docs/concepts/'
+             'configuring-clusters/cluster-properties'
+             '#how_the_properties_flag_works')
     parser.add_argument(
         '--driver-log-levels',
         type=arg_parsers.ArgDict(),
         metavar='PACKAGE=LEVEL',
-        help=('A list of package to log4j log level pairs to configure driver '
-              'logging. For example: root=FATAL,com.example=INFO'))
+        help=('List of key value pairs to configure driver logging, where key '
+              'is a package and value is the log4j log level. For '
+              'example: root=FATAL,com.example=INFO'))
 
   @staticmethod
   def GetFilesByType(args):

@@ -32,6 +32,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
 
 
@@ -259,10 +260,10 @@ def IsRawProto(filename):
 
 def ReadServiceConfigFile(file_path):
   try:
-    mode = 'rb' if IsProtoDescriptor(file_path) else 'r'
-    with open(file_path, mode) as f:
-      return f.read()
-  except IOError as ex:
+    if IsProtoDescriptor(file_path):
+      return files.ReadBinaryFileContents(file_path)
+    return files.ReadFileContents(file_path)
+  except files.Error as ex:
     raise calliope_exceptions.BadFileException(
         'Could not open service config file [{0}]: {1}'.format(file_path, ex))
 

@@ -975,7 +975,7 @@ class _SectionCore(_Section):
         ' to the API not being enabled.')
     self.allow_py3 = self._AddBool(
         'allow_py3',
-        default=False,
+        default=True,
         hidden=True,
         help_text='If true, allow a Python 3 interpreter to run gcloud.')
 
@@ -1108,7 +1108,7 @@ class _SectionAuth(_Section):
     super(_SectionAuth, self).__init__('auth')
     self.auth_host = self._Add(
         'auth_host', hidden=True,
-        default=b'https://accounts.google.com/o/oauth2/auth')
+        default='https://accounts.google.com/o/oauth2/auth')
     self.disable_credentials = self._AddBool(
         'disable_credentials', default=False,
         help_text='If True, `gcloud` will not attempt to load any credentials '
@@ -1116,7 +1116,7 @@ class _SectionAuth(_Section):
         'that adds authentication to requests.')
     self.token_host = self._Add(
         'token_host', hidden=True,
-        default=b'https://www.googleapis.com/oauth2/v4/token')
+        default='https://www.googleapis.com/oauth2/v4/token')
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(

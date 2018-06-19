@@ -24,6 +24,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import files
 
 from oauth2client import client
 from oauth2client import clientsecrets
@@ -108,9 +109,8 @@ def GetClientSecretsType(client_id_file):
       'python/guide/aaa_client_secrets')
 
   try:
-    with open(client_id_file, 'r') as fp:
-      obj = json.load(fp)
-  except IOError:
+    obj = json.loads(files.ReadFileContents(client_id_file))
+  except files.Error:
     raise InvalidClientSecretsError(
         'Cannot read file: "%s"' % client_id_file)
   if obj is None:

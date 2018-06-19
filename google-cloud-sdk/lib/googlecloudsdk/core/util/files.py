@@ -31,7 +31,7 @@ import time
 import traceback
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import encoding as encoding_util
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
 
@@ -51,6 +51,11 @@ except NameError:
 
 class Error(Exception):
   """Base exception for the file_utils module."""
+  pass
+
+
+class MissingFileError(Error):
+  """Error for when a file does not exist."""
   pass
 
 
@@ -76,7 +81,7 @@ def CopyTree(src, dst):
   os.makedirs(dst)
   errors = []
   for name in os.listdir(src):
-    name = encoding.Decode(name)
+    name = encoding_util.Decode(name)
     srcname = os.path.join(src, name)
     dstname = os.path.join(dst, name)
     try:
@@ -123,14 +128,6 @@ def MakeDir(path, mode=0o777):
            'directory.'))
     else:
       raise
-
-
-def Open(path, *args, **kwargs):
-  """Opens a file (wrapper for open()), or '-' for stdin."""
-  if path == '-':
-    return contextlib.closing(sys.stdin)
-  else:
-    return open(path, *args, **kwargs)
 
 
 def _WaitForRetry(retries_left):
@@ -319,7 +316,7 @@ def FindDirectoryContaining(starting_dir_path, directory_entry_name):
     it.
   """
   prev_path = None
-  path = encoding.Decode(os.path.realpath(starting_dir_path))
+  path = encoding_util.Decode(os.path.realpath(starting_dir_path))
   while path != prev_path:
     search_dir = os.path.join(path, directory_entry_name)
     if os.path.isdir(search_dir):
@@ -335,7 +332,7 @@ def IsDirAncestorOf(ancestor_directory, path):
   Args:
     ancestor_directory: str, path to the directory that is the potential
       ancestor of path
-    path: str, path to the file/directory that is a potential descendent of
+    path: str, path to the file/directory that is a potential descendant of
       ancestor_directory
 
   Returns:
@@ -347,8 +344,9 @@ def IsDirAncestorOf(ancestor_directory, path):
   if not os.path.isdir(ancestor_directory):
     raise ValueError('[{0}] is not a directory.'.format(ancestor_directory))
 
-  path = encoding.Decode(os.path.realpath(path))
-  ancestor_directory = encoding.Decode(os.path.realpath(ancestor_directory))
+  path = encoding_util.Decode(os.path.realpath(path))
+  ancestor_directory = encoding_util.Decode(
+      os.path.realpath(ancestor_directory))
 
   try:
     rel = os.path.relpath(path, ancestor_directory)
@@ -361,7 +359,7 @@ def IsDirAncestorOf(ancestor_directory, path):
 
 def _GetSystemPath():
   """Returns properly encoded system PATH variable string."""
-  return encoding.GetEncodedValue(os.environ, 'PATH')
+  return encoding_util.GetEncodedValue(os.environ, 'PATH')
 
 
 def SearchForExecutableOnPath(executable, path=None):
@@ -571,9 +569,9 @@ class TemporaryDirectory(object):
           'Got exception {0}'
           'while another exception was active {1} [{2}]'
           .format(
-              encoding.Decode(traceback.format_exc()),
+              encoding_util.Decode(traceback.format_exc()),
               prev_exc_type,
-              encoding.Decode(prev_exc_val)))
+              encoding_util.Decode(prev_exc_val)))
       exceptions.reraise(prev_exc_type(message), tb=prev_exc_trace)
     # always return False so any exceptions will be re-raised
     return False
@@ -617,7 +615,7 @@ class Checksum(object):
     Returns:
       self, For method chaining.
     """
-    with open(file_path, 'rb') as fp:
+    with BinaryFileReader(file_path) as fp:
       while True:
         chunk = fp.read(4096)
         if not chunk:
@@ -710,33 +708,6 @@ class Checksum(object):
     return Checksum.FromSingleFile(input_path, algorithm=algorithm).HexDigest()
 
 
-def OpenForWritingPrivate(path, binary=False):
-  """Open a file for writing, with the right permissions for user-private files.
-
-  Args:
-    path: str, The full path to the file.
-    binary: bool, If true forces binary mode, this only affects Windows.
-
-  Returns:
-    A file context manager.
-  """
-
-  parent_dir_path, _ = os.path.split(path)
-  full_parent_dir_path = encoding.Decode(
-      os.path.realpath(os.path.expanduser(parent_dir_path)))
-  MakeDir(full_parent_dir_path, mode=0o700)
-
-  flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC
-  # Accommodate Windows; stolen from python2.6/tempfile.py.
-  if hasattr(os, 'O_NOINHERIT'):
-    flags |= os.O_NOINHERIT
-    if binary:
-      flags |= os.O_BINARY
-
-  fd = os.open(path, flags, 0o600)
-  return os.fdopen(fd, 'wb' if binary else 'w')
-
-
 class ChDir(object):
   """Do some things from a certain directory, and reset the directory afterward.
   """
@@ -805,8 +776,8 @@ class FileLock(object):
     if self._locked:
       return
     try:
-      self._file = open(self._path, 'w')
-    except IOError as e:
+      self._file = FileWriter(self._path)
+    except Error as e:
       raise FileLockLockingError(e)
 
     max_wait_ms = None
@@ -935,28 +906,6 @@ def _FileInBinaryMode(file_obj):
 # pytype: enable=import-error
 
 
-def GetFileContents(path, binary=False):
-  """Returns the contents of the specified file.
-
-  Args:
-    path: str, The path of the file to read.
-    binary: bool, True to open the file in binary mode.
-
-  Raises:
-    Error: If the file cannot be read or is larger than max_bytes.
-
-  Returns:
-    The contents of the file.
-  """
-  try:
-    with open(path, 'rb' if binary else 'rt') as in_file:
-      return in_file.read()
-  except EnvironmentError as e:
-    # EnvironmentError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise Error('Unable to read file [{0}]: {1}'.format(path, e))
-
-
 def WriteStreamBytes(stream, contents):
   """Write the given bytes to the stream.
 
@@ -1023,8 +972,7 @@ def WriteFileAtomically(file_name, contents):
 
   if platforms.OperatingSystem.IsWindows():
     # On Windows, there is no good way to atomically write this file.
-    with OpenForWritingPrivate(file_name) as writer:
-      writer.write(contents)
+    WriteFileContents(file_name, contents, private=True)
   else:
     # This opens files with 0600, which are the correct permissions.
     with tempfile.NamedTemporaryFile(
@@ -1038,35 +986,6 @@ def WriteFileAtomically(file_name, contents):
       os.rename(temp_file.name, file_name)
 
 
-def WriteFileContents(path, content, overwrite=True, binary=False,
-                      private=False):
-  """Writes content to the specified file.
-
-  Args:
-    path: str, The path of the file to write.
-    content: str, The content to write to the file.
-    overwrite: bool, Whether or not to overwrite the file if it exists.
-    binary: bool, True to open the file in binary mode.
-    private: bool, Whether to write the file in private mode.
-
-  Raises:
-    Error: If the file cannot be written.
-  """
-  try:
-    if not overwrite and os.path.exists(path):
-      raise Error('File [{0}] already exists and overwrite=False'.format(path))
-    if private:
-      with OpenForWritingPrivate(path, binary=binary) as writer:
-        writer.write(content)
-    else:
-      with open(path, 'wb' if binary else 'w') as out_file:
-        out_file.write(content)
-  except EnvironmentError as e:
-    # EnvironmentError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise Error('Unable to write file [{0}]: {1}'.format(path, e))
-
-
 def GetTreeSizeBytes(path, predicate=None):
   """Returns sum of sizes of not-ingnored files under given path, in bytes."""
   result = 0
@@ -1078,3 +997,200 @@ def GetTreeSizeBytes(path, predicate=None):
       if predicate(file_path):
         result += os.path.getsize(file_path)
   return result
+
+
+def ReadFileContents(path):
+  """Reads the text contents from the given path.
+
+  Args:
+    path: str, The file path to read.
+
+  Raises:
+    Error: If the file cannot be read.
+
+  Returns:
+    str, The text string read from the file.
+  """
+  try:
+    with FileReader(path) as f:
+      return f.read()
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to read file [{0}]: {1}'.format(path, e))
+
+
+def ReadBinaryFileContents(path):
+  """Reads the binary contents from the given path.
+
+  Args:
+    path: str, The file path to read.
+
+  Raises:
+    Error: If the file cannot be read.
+
+  Returns:
+    bytes, The byte string read from the file.
+  """
+  try:
+    with BinaryFileReader(path) as f:
+      return f.read()
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to read file [{0}]: {1}'.format(path, e))
+
+
+def WriteFileContents(path, contents, overwrite=True, private=False):
+  """Writes the given text contents to a file at the given path.
+
+  Args:
+    path: str, The file path to write to.
+    contents: str, The text string to write.
+    overwrite: bool, False to error out if the file already exists.
+    private: bool, True to make the file have 0o600 permissions.
+
+  Raises:
+    Error: If the file cannot be written.
+  """
+  try:
+    _CheckOverwrite(path, overwrite)
+    with FileWriter(path, private=private) as f:
+      # This decode is here because a lot of libraries on Python 2 can return
+      # both text or bytes depending on if unicode is present. If you truly
+      # pass binary data to this, the decode will fail (as it should). If you
+      # pass an ascii string (that you got from json.dumps() for example), this
+      # will prevent it from crashing.
+      f.write(encoding_util.Decode(contents))
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to write file [{0}]: {1}'.format(path, e))
+
+
+def WriteBinaryFileContents(path, contents, overwrite=True, private=False):
+  """Writes the given binary contents to a file at the given path.
+
+  Args:
+    path: str, The file path to write to.
+    contents: str, The byte string to write.
+    overwrite: bool, False to error out if the file already exists.
+    private: bool, True to make the file have 0o600 permissions.
+
+  Raises:
+    Error: If the file cannot be written.
+  """
+  try:
+    _CheckOverwrite(path, overwrite)
+    with BinaryFileWriter(path, private=private) as f:
+      f.write(contents)
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to write file [{0}]: {1}'.format(path, e))
+
+
+def _CheckOverwrite(path, overwrite):
+  if not overwrite and os.path.exists(path):
+    raise Error(
+        'File [{0}] already exists and cannot be overwritten'.format(path))
+
+
+def FileReader(path):
+  """Opens the given file for text read for use in a 'with' statement.
+
+  Args:
+    path: str, The file path to read from.
+
+  Returns:
+    A file-like object opened for read in text mode.
+  """
+  return _FileOpener(path, 'rt', 'read', encoding='utf8')
+
+
+def BinaryFileReader(path):
+  """Opens the given file for binary read for use in a 'with' statement.
+
+  Args:
+    path: str, The file path to read from.
+
+  Returns:
+    A file-like object opened for read in binary mode.
+  """
+  return _FileOpener(path, 'rb', 'read')
+
+
+def FileWriter(path, private=False, append=False):
+  """Opens the given file for text write for use in a 'with' statement.
+
+  Args:
+    path: str, The file path to write to.
+    private: bool, True to create or update the file permission to be 0o600.
+    append: bool, True to append to an existing file.
+
+  Returns:
+    A file-like object opened for write in text mode.
+  """
+  mode = 'at' if append else 'wt'
+  return _FileOpener(path, mode, 'write', encoding='utf8', private=private)
+
+
+def BinaryFileWriter(path, private=False):
+  """Opens the given file for binary write for use in a 'with' statement.
+
+  Args:
+    path: str, The file path to write to.
+    private: bool, True to create or update the file permission to be 0o600.
+
+  Returns:
+    A file-like object opened for write in binary mode.
+  """
+  return _FileOpener(path, 'wb', 'write', private=private)
+
+
+def _FileOpener(path, mode, verb, encoding=None, private=False):
+  """Opens a file in various modes and does error handling."""
+  if private:
+    PrivatizeFile(path)
+  try:
+    return io.open(path, mode, encoding=encoding)
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    exc_type = Error
+    if isinstance(e, IOError) and e.errno == errno.ENOENT:
+      exc_type = MissingFileError
+    raise exc_type('Unable to {0} file [{1}]: {2}'.format(verb, path, e))
+
+
+def PrivatizeFile(path):
+  """Makes an existing file private or creates a new, empty private file.
+
+  In theory it would be better to return the open file descriptor so that it
+  could be used directly. The issue that we would need to pass an encoding to
+  os.fdopen() and on Python 2. This is not supported. Instead we just create
+  the empty file and then we will just open it normally later to do the write.
+
+  Args:
+    path: str, The path of the file to create or privatize.
+  """
+  try:
+    if os.path.exists(path):
+      os.chmod(path, 0o600)
+    else:
+      parent_dir_path, _ = os.path.split(path)
+      full_parent_dir_path = encoding_util.Decode(
+          os.path.realpath(os.path.expanduser(parent_dir_path)))
+      MakeDir(full_parent_dir_path, mode=0o700)
+
+      flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC
+      # Accommodate Windows; stolen from python2.6/tempfile.py.
+      if hasattr(os, 'O_NOINHERIT'):
+        flags |= os.O_NOINHERIT
+
+      fd = os.open(path, flags, 0o600)
+      os.close(fd)
+  except EnvironmentError as e:
+    # EnvironmentError is parent of IOError, OSError and WindowsError.
+    # Raised when file does not exist or can't be opened/read.
+    raise Error('Unable to create private file [{0}]: {1}'.format(path, e))

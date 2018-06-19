@@ -71,17 +71,7 @@ class Kubeconfig(object):
     self._data['clusters'] = list(self.clusters.values())
     self._data['users'] = list(self.users.values())
     self._data['contexts'] = list(self.contexts.values())
-    # We use os.open here to explicitly set file mode 0600.
-    # the flags passed should mimic behavior of open(self._filename, 'w'),
-    # which does write with truncate and creates file if not existing.
-    flags = os.O_WRONLY | os.O_TRUNC | os.O_CREAT
-    try:
-      fd = os.open(self._filename, flags, 0o600)
-    except OSError as error:
-      raise Error(
-          'don\'t have the permission to open kubeconfig file {0}: {1}'.format(
-              self._filename, error))
-    with os.fdopen(fd, 'w') as fp:
+    with file_utils.FileWriter(self._filename, private=True) as fp:
       yaml.dump(self._data, fp)
 
   def SetCurrentContext(self, context):

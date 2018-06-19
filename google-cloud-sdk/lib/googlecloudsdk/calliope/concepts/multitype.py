@@ -65,12 +65,15 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
 
   Attributes:
     name: str, the name of the concept
+    plural_name: str, the pluralized name. Will be pluralized by default rules
+      if not given in cases where the resource is referred to in the plural.
     attributes: [concepts._Attribute], a list of attributes of the concept.
     type_enum: enum.Enum, an Enum class representing the available types.
   """
 
-  def __init__(self, name, *concept_specs):
+  def __init__(self, name, *concept_specs, **kwargs):
     self._name = name
+    self._plural_name = kwargs.get('plural_name', None)
     self._concept_specs = concept_specs
     self._attributes = []
     self._attribute_to_types_map = {}

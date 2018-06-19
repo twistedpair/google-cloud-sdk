@@ -111,6 +111,14 @@ class NoStagingLocationError(UploadFailureError):
   """No staging location was provided but one was required."""
 
 
+class InvalidSourceDirError(UploadFailureError):
+  """Error indicating that the source directory is invalid."""
+
+  def __init__(self, source_dir):
+    super(InvalidSourceDirError, self).__init__(
+        'Source directory [{}] is not a valid directory.'.format(source_dir))
+
+
 def _CopyIfNotWritable(source_dir, temp_dir):
   """Returns a writable directory with the same contents as source_dir.
 
@@ -128,8 +136,18 @@ def _CopyIfNotWritable(source_dir, temp_dir):
 
   Raises:
     UploadFailureError: if the command exits non-zero.
+    InvalidSourceDirError: if the source directory is not valid.
   """
-  if files.HasWriteAccessInDir(source_dir):
+  if not os.path.isdir(source_dir):
+    raise InvalidSourceDirError(source_dir)
+  # A race condition may cause a ValueError while checking for write access
+  # even if the directory was valid before.
+  try:
+    writable = files.HasWriteAccessInDir(source_dir)
+  except ValueError:
+    raise InvalidSourceDirError(source_dir)
+
+  if writable:
     return source_dir
 
   if files.IsDirAncestorOf(source_dir, temp_dir):
@@ -165,8 +183,7 @@ def _GenerateSetupPyIfNeeded(setup_py_path, package_name):
 
   setup_contents = DEFAULT_SETUP_FILE.format(package_name=package_name)
   log.info('Generating temporary setup.py file:\n%s', setup_contents)
-  with open(setup_py_path, 'w') as setup_file:
-    setup_file.write(setup_contents)
+  files.WriteFileContents(setup_py_path, setup_contents)
   return True
 
 
@@ -408,6 +425,7 @@ def BuildPackages(package_path, output_dir):
   Raises:
     SetuptoolsFailedError: If the setup.py file fails to successfully build.
     MissingInitError: If the package doesn't contain an `__init__.py` file.
+    InvalidSourceDirError: if the source directory is not valid.
   """
   package_path = os.path.abspath(package_path)
   package_root = os.path.dirname(package_path)

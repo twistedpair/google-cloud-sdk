@@ -483,21 +483,20 @@ class LogData(object):
     Returns:
       LogData, representation of the log file
     """
-    with open(log_file) as log_fp:
-      contents = log_fp.read()
-      traceback = None
-      command = None
-      match = re.search(cls.COMMAND_REGEXP, contents)
-      if match:
-        # ex. gcloud.group.subgroup.command
-        dotted_cmd_string, = match.groups()
-        command = ' '.join(dotted_cmd_string.split('.'))
-      if cls.TRACEBACK_MARKER in contents:
-        traceback = (contents.split(cls.TRACEBACK_MARKER)[-1])
-        # Trim any log lines that follow the traceback
-        traceback = re.split(log.LOG_PREFIX_PATTERN, traceback)[0]
-        traceback = traceback.strip()
-      return cls(log_file, command, contents, traceback)
+    contents = file_utils.ReadFileContents(log_file)
+    traceback = None
+    command = None
+    match = re.search(cls.COMMAND_REGEXP, contents)
+    if match:
+      # ex. gcloud.group.subgroup.command
+      dotted_cmd_string, = match.groups()
+      command = ' '.join(dotted_cmd_string.split('.'))
+    if cls.TRACEBACK_MARKER in contents:
+      traceback = (contents.split(cls.TRACEBACK_MARKER)[-1])
+      # Trim any log lines that follow the traceback
+      traceback = re.split(log.LOG_PREFIX_PATTERN, traceback)[0]
+      traceback = traceback.strip()
+    return cls(log_file, command, contents, traceback)
 
 
 class LogsInfo(object):
@@ -525,8 +524,7 @@ class LogsInfo(object):
     last_log = LastLogFile(config.Paths().logs_dir)
     if not self.last_log:
       return ''
-    with open(last_log) as fp:
-      return fp.read()
+    return file_utils.ReadFileContents(last_log)
 
   def GetRecentRuns(self):
     """Return the most recent runs, as reported by info_holder.LogsInfo.

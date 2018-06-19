@@ -5,6 +5,63 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 206.0.0 (2018-06-19)
+
+### Breaking Changes
+
+*   **(Container Registry)** Updated `docker-credential-gcr` to version 1.5.0.
+    *   Order of access_token sources has been reversed: by default, `gcloud`
+        will now take precedence over environmental sources when operating in
+        Kubernetes Engine, Compute Engine, or App Engine Managed VMs.
+    *   See docker-credential-gcr v1.5.0 release notes on GitHub:
+        https://github.com/GoogleCloudPlatform/docker-credential-gcr/releases/tag/v1.5.0
+
+
+### Cloud SDK
+
+* The `gcloud` CLI now has experimental support for running using a Python 3.4+
+  interpreter. (Prior versions of gcloud required Python 2.7.) All `gcloud`
+  commands are supported except for the following command groups:
+    * `gcloud app`
+    * `gcloud datastore`
+    * `gcloud scheduler`
+    * `gcloud tasks`
+* Python tools other than `gcloud` that are shipped in the Cloud SDK still
+  require a Python 2.7 interpreter.
+* For more information on how to configure your Python interpreter, run:
+  `gcloud topic startup` or visit:
+  https://cloud.google.com/sdk/gcloud/reference/topic/startup
+* Fixed issue where credentials were written with broad permissions.
+
+### App Engine
+
+* Modified `gcloud app domain-mappings create` to provision an automatically
+  managed SSL certificate by default on domain mapping creation.
+* Promoted `--certificate-management` flag of
+  `gcloud app domain-mappings <create|update>` to GA.
+
+### Cloud Dataproc
+
+* Added the `--gce-pd-kms-key` flag to `dataproc clusters create` in beta to enable protecting clusters with Google Cloud KMS encryption.
+
+### Cloud Machine Learning Engine
+
+* Promoted the `--framework` flag of `gcloud ml-engine versions create` to GA.
+
+### Compute Engine
+
+* Added the `--labels` flag to `gcloud beta compute disks snapshot` to enable setting labels on new snapshots.
+
+### Kubernetes Engine
+
+*   Promoted the `--min-cpu-platform` flag of `gcloud container create` to GA.
+*   Promoted `--accelerator` flag of `gcloud container <clusters|node-pools> create` to GA.
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 205.0.0 (2018-06-12)
 
 ### Cloud Bigtable

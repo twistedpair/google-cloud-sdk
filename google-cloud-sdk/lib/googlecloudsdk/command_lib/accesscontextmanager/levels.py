@@ -56,12 +56,11 @@ class InvalidFormatError(ParseError):
 
 def _LoadData(path):
   try:
-    with open(path) as config_file:
-      return yaml.load(config_file)
-  except yaml.error.YAMLError as err:
-    raise ParseError(path, 'Problem parsing data as YAML: {}'.format(err))
-  except EnvironmentError as err:
+    return yaml.load_path(path)
+  except yaml.FileLoadError as err:
     raise ParseError(path, 'Problem loading file: {}'.format(err))
+  except yaml.YAMLParseError as err:
+    raise ParseError(path, 'Problem parsing data as YAML: {}'.format(err))
 
 
 def _ValidateAllFieldsRecognized(path, conditions):

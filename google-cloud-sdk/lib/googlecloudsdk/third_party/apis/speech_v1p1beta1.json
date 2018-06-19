@@ -295,7 +295,7 @@
           }
         },
         "biasingStrength": {
-          "description": "Strength of biasing to use (strong, medium or weak). If you use strong\nbiasing option then more likely to see those phrases in the results. If\nbiasing strength is not specified then by default medium biasing would be\nused.",
+          "description": "Strength of biasing to use (strong, medium or weak). If you use strong\nbiasing option then more likely to see those phrases in the results. If\nbiasing strength is not specified then by default medium biasing would be\nused. If you'd like different phrases to have different biasing strengths,\nyou can specify multiple speech_contexts.",
           "enumDescriptions": [
             "",
             "Low bias",

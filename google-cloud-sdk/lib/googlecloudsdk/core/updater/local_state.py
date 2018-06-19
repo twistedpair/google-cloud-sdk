@@ -24,9 +24,9 @@ tracking when we check for updates.
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 import compileall
 import errno
-import io
 import logging
 import os
 import posixpath
@@ -646,7 +646,7 @@ class InstallationManifest(object):
         of the install.
       files: list of str, The files that were created by the installation.
     """
-    with io.open(self.manifest_file, 'wt') as fp:
+    with file_utils.FileWriter(self.manifest_file) as fp:
       for f in _NormalizeFileList(files):
         fp.write(f + '\n')
     snapshot.WriteToFile(self.snapshot_file, component_id=self.id)
@@ -691,7 +691,7 @@ class InstallationManifest(object):
     Returns:
       list of str, The files and directories installed by this component.
     """
-    with open(self.manifest_file) as f:
+    with file_utils.FileReader(self.manifest_file) as f:
       files = [line.rstrip() for line in f]
     return files
 
@@ -701,7 +701,7 @@ class InstallationManifest(object):
     Returns:
       set(str), The directories installed by this component.
     """
-    with open(self.manifest_file) as f:
+    with file_utils.FileReader(self.manifest_file) as f:
       dirs = set()
       for line in f:
         norm_file_path = os.path.dirname(line.rstrip())

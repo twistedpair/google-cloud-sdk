@@ -25,6 +25,9 @@ from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
 
 
+# TODO(b/110191362): resign from passing whole args to functions in this file
+
+
 class RegionalInstanceGroupManagersCompleter(
     compute_completers.ListCommandCompleter):
 
@@ -484,14 +487,6 @@ def AddMigUpdateStatefulFlags(parser):
 
 def GetValidatedUpdateStatefulPolicyParams(args, current_stateful_policy):
   """Check stateful properties of update request; returns final device list."""
-  if not (args.add_stateful_disks or args.remove_stateful_disks or
-          args.IsSpecified('stateful_names')):
-    raise exceptions.InvalidArgumentException(
-        parameter_name='update',
-        message='No update specified, you need to use at least one flag from:'
-        ' --add-stateful-disks, --remove-stateful-disks, --stateful-names,'
-        ' --no-stateful-names')
-
   current_device_names = set(
       managed_instance_groups_utils.GetDeviceNamesFromStatefulPolicy(
           current_stateful_policy))
@@ -546,3 +541,45 @@ def GetValidatedUpdateStatefulPolicyParams(args, current_stateful_policy):
             'as non-stateful. Current device names are [{}]'.format(
                 str(final_disks))))
   return sorted(list(final_disks))
+
+
+INSTANCE_REDISTRIBUTION_TYPES = ['NONE', 'PROACTIVE']
+
+
+def AddMigInstanceRedistributionTypeFlag(parser):
+  """Add --instance-redistribution-type flag to the parser."""
+  parser.add_argument(
+      '--instance-redistribution-type',
+      metavar='TYPE',
+      type=lambda x: x.upper(),
+      choices=INSTANCE_REDISTRIBUTION_TYPES,
+      help="""\
+      Specify type of instance redistribution policy. Instance redistribution
+      type gives possibility to enable or disable automatic instance
+      redistribution between zones to its target distribution. Target
+      distribution is a state of regional managed instance group where all
+      instances are spread out equally between all target zones.
+
+      Instance redistribution type may be specified for non-autoscaled regional
+      managed instance group only. By default it is set to PROACTIVE.
+
+      The following types are available:
+
+       * NONE - managed instance group will not take any action to bring
+         instances to its target distribution.
+
+       * PROACTIVE - managed instance group will actively converge all instances
+         between zones to its target distribution.
+      """)
+
+
+def ValidateMigInstanceRedistributionTypeFlag(instance_redistribution_type,
+                                              group_ref):
+  """Check correctness of instance-redistribution-type flag value."""
+  if instance_redistribution_type and (group_ref.Collection() !=
+                                       'compute.regionInstanceGroupManagers'):
+    raise exceptions.InvalidArgumentException(
+        parameter_name='--instance-redistribution-type',
+        message=(
+            'Flag --instance-redistribution-type may be specified for regional '
+            'managed instance groups only.'))

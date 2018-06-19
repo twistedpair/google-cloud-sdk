@@ -335,7 +335,11 @@ def GetDockerTagsForDigest(digest, http_obj):
   tags = []
   tag_names = GetTagNamesForDigest(digest, http_obj)
   for tag_name in tag_names:  # iterate over digest tags
-    tags.append(docker_name.Tag(str(repository) + ':' + tag_name))
+    try:
+      tag = docker_name.Tag(str(repository) + ':' + tag_name)
+    except docker_name.BadNameException as e:
+      raise InvalidImageNameError(six.text_type(e))
+    tags.append(tag)
   return tags
 
 
@@ -384,7 +388,12 @@ def GetDockerImageFromTagOrDigest(image_name):
         raise InvalidImageNameError(
             '[{0}] could not be resolved to a full digest.'.format(image_name))
       image_name = resolved
-  return ValidateImagePathAndReturn(docker_name.Digest(image_name))
+  try:
+    return ValidateImagePathAndReturn(docker_name.Digest(image_name))
+  except docker_name.BadNameException:
+    raise InvalidImageNameError(
+        '[{0}] digest must be of the form "sha256:<digest>".'.format(
+            image_name))
 
 
 def GetDigestFromName(image_name):
@@ -438,7 +447,9 @@ def GetDigestFromName(image_name):
       ResolveManifestListTag(tag_or_digest) or ResolveV22Tag(tag_or_digest) or
       ResolveV2Tag(tag_or_digest))
   if not sha256:
-    raise InvalidImageNameError('[{0}] is not a valid name.'.format(image_name))
+    raise InvalidImageNameError(
+        '[{0}] is not a valid name. Expected tag in the form "base:tag" or '
+        '"tag" or digest in the form "sha256:<digest>"'.format(image_name))
 
   return docker_name.Digest('{registry}/{repository}@{sha256}'.format(
       registry=tag_or_digest.registry,

@@ -17,12 +17,12 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
 import os
 import re
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import files
 
 VISION_API = 'vision'
 VISION_API_VERSION = 'v1'
@@ -55,8 +55,7 @@ def GetImageFromPath(path):
   image = messages.Image()
 
   if os.path.isfile(path):
-    with io.open(path, 'rb') as content_file:
-      image.content = content_file.read()
+    image.content = files.ReadBinaryFileContents(path)
   elif re.match(IMAGE_URI_FORMAT, path):
     image.source = messages.ImageSource(imageUri=path)
   else:

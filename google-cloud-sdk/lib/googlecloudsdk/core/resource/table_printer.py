@@ -36,6 +36,10 @@ _TABLE_COLUMN_PAD = 2
 _BOX_CHAR_LENGTH = 1
 
 
+# Default min width.
+_MIN_WIDTH = 10
+
+
 def _Stringify(value):  # pylint: disable=invalid-name
   """Represents value as a JSON string if it's not a string."""
   if value is None:
@@ -377,10 +381,13 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
 
     # If table is wider than the console and columns can be wrapped,
     # change wrapped column widths to fit within the available space.
-    wrap = []
+    wrap = {}
     for i, col in enumerate(self._Visible(self.column_attributes.Columns())):
       if col.attribute.wrap:
-        wrap.append(i)
+        if isinstance(col.attribute.wrap, bool):
+          wrap[i] = _MIN_WIDTH
+        else:
+          wrap[i] = col.attribute.wrap
     if wrap:
       visible_cols = len(self._Visible(self.column_attributes.Columns()))
       table_padding = (visible_cols - 1) * table_column_pad
@@ -395,7 +402,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         available_width = total_col_width - non_wrappable_width
         for i, col_width in enumerate(col_widths):
           if i in wrap:
-            col_widths[i] = max(available_width // len(wrap), 1)
+            min_width = min(wrap[i], col_widths[i])
+            col_widths[i] = max(available_width // len(wrap), min_width)
 
     # Print the title if specified.
     title = self.attributes.get('title') if self._page_count <= 1 else None

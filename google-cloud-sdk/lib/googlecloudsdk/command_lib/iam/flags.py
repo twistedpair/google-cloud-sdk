@@ -45,3 +45,23 @@ def GetOrgFlag(verb):
   return base.Argument(
       '--organization',
       help='The organization of the role you want to {0}.'.format(verb))
+
+
+_RESOURCE_NAME_HELP = """\
+The full resource name or URI to {verb}.
+
+See ["Resource Names"](https://cloud.google.com/apis/design/resource_names) for
+details. To get a URI from most `list` commands in `gcloud`, pass the `--uri`
+flag. For example:
+
+```
+$ gcloud compute instances list --project prj --uri
+https://www.googleapis.com/compute/v1/projects/prj/zones/us-east1-c/instances/i1
+https://www.googleapis.com/compute/v1/projects/prj/zones/us-east1-d/instances/i2
+```
+
+"""
+
+
+def GetResourceNameFlag(verb):
+  return base.Argument('resource', help=_RESOURCE_NAME_HELP.format(verb=verb))

@@ -782,9 +782,11 @@ def WriteToFileOrStdout(path, content, overwrite=True, binary=False,
       files.WriteStreamBytes(sys.stdout, content)
     else:
       out.write(content)
+  elif binary:
+    files.WriteBinaryFileContents(path, content, overwrite=overwrite,
+                                  private=private)
   else:
-    files.WriteFileContents(
-        path, content, overwrite=overwrite, binary=binary, private=private)
+    files.WriteFileContents(path, content, overwrite=overwrite, private=private)
 
 
 def Reset(stdout=None, stderr=None):

@@ -216,7 +216,7 @@ def ConstructUpdateMaskFromPolicy(policy_file_path):
     a FieldMask containing policy fields to be modified, based on which fields
     are present in the input file.
   """
-  policy_file = files.GetFileContents(policy_file_path)
+  policy_file = files.ReadFileContents(policy_file_path)
   # Since json is a subset of yaml, parse file as yaml.
   policy = yaml.load(policy_file)
 

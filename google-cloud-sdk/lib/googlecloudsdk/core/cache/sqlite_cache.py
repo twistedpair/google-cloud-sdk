@@ -28,6 +28,7 @@ import os
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import metadata_table
 from googlecloudsdk.core.cache import persistent_cache_base
+from googlecloudsdk.core.util import files
 
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -200,21 +201,19 @@ class Cache(metadata_table.CacheUsingMetadataTable):
     # Surprise, we have to do the heavy lifting.
     # That stops here.
     try:
-      with open(name, 'rb') as f:
+      with files.BinaryFileReader(name) as f:
         actual_magic = f.read(len(self._EXPECTED_MAGIC))
         if actual_magic != self._EXPECTED_MAGIC:
           raise exceptions.CacheInvalid(
               '[{}] is not a persistent cache.'.format(self.name))
       self._persistent = True
-    except IOError as e:
-      if e.errno in (errno.EISDIR, errno.EACCES):
-        raise exceptions.CacheInvalid(
-            '[{}] is not a persistent cache.'.format(self.name))
-      elif e.errno != errno.ENOENT:
-        raise
-      elif not create:
+    except files.MissingFileError:
+      if not create:
         raise exceptions.CacheNotFound(
             'Persistent cache [{}] not found.'.format(self.name))
+    except files.Error:
+      raise exceptions.CacheInvalid(
+          '[{}] is not a persistent cache.'.format(self.name))
     self._db = sqlite3.connect(name)
     self.cursor = self._db.cursor()
     self._restricted = set(['__lock__'])

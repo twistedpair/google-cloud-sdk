@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 def SubscriptionAttributeConfig():
@@ -64,7 +65,7 @@ def CreateSubscriptionResourceArg(verb, plural=False):
     help_stem = 'One or more subscriptions'
   else:
     help_stem = 'Name of the subscription'
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs.ResourcePresentationSpec(
       'subscription',
       GetSubscriptionResourceSpec(),
       '{} {}'.format(help_stem, verb),
@@ -108,7 +109,7 @@ def CreateTopicResourceArg(verb, positional=True, plural=False):
   help_stem = 'Name of the topic'
   if plural:
     help_stem = 'One or more topics'
-  return concept_parsers.ResourcePresentationSpec(
+  return presentation_specs.ResourcePresentationSpec(
       name,
       GetTopicResourceSpec(),
       '{} {}'.format(help_stem, verb),

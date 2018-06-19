@@ -26,6 +26,7 @@ from distutils import version as distutils_version
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 from six.moves import urllib
@@ -216,17 +217,16 @@ def ReadConfigurationFile(path):
   if not os.path.exists(path):
     return {}
 
-  with open(path) as reader:
-    contents = reader.read()
-    # If the file is empty, return empty JSON.
-    # This helps if someone 'touched' the file or manually
-    # deleted the contents.
-    if not contents or contents.isspace():
-      return {}
+  contents = files.ReadFileContents(path)
+  # If the file is empty, return empty JSON.
+  # This helps if someone 'touched' the file or manually
+  # deleted the contents.
+  if not contents or contents.isspace():
+    return {}
 
-    try:
-      return json.loads(contents)
-    except ValueError as err:
-      raise InvalidDockerConfigError(
-          ('Docker configuration file [{}] could not be read as JSON: '
-           '{}').format(path, str(err)))
+  try:
+    return json.loads(contents)
+  except ValueError as err:
+    raise InvalidDockerConfigError(
+        ('Docker configuration file [{}] could not be read as JSON: '
+         '{}').format(path, str(err)))

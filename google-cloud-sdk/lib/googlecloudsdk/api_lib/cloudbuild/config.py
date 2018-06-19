@@ -25,6 +25,8 @@ from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
+
 import six
 
 
@@ -258,9 +260,9 @@ def LoadCloudbuildConfigFromPath(path, messages, params=None):
     raise NotFoundException(path)
 
   try:
-    with open(path) as f:
+    with files.FileReader(path) as f:
       return LoadCloudbuildConfigFromStream(f, messages, params, path=path)
-  except EnvironmentError:
+  except files.Error:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
     raise FileReadException(path)

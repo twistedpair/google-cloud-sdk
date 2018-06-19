@@ -23,6 +23,7 @@ from googlecloudsdk.command_lib.iot import flags
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_encoding
 from googlecloudsdk.core.util import times
 
@@ -156,9 +157,8 @@ def _ReadKeyFileFromPath(path):
   if not path:
     raise ValueError('path is required')
   try:
-    with open(path, 'r') as f:
-      return f.read()
-  except (IOError, OSError) as err:
+    return files.ReadFileContents(path)
+  except files.Error as err:
     raise InvalidKeyFileError('Could not read key file [{}]:\n\n{}'.format(
         path, err))
 
@@ -315,9 +315,7 @@ def ReadConfigData(args):
   if args.IsSpecified('config_data'):
     return http_encoding.Encode(args.config_data)
   elif args.IsSpecified('config_file'):
-    # Note: use 'rb' for Windows
-    with open(args.config_file, 'rb') as f:
-      return f.read()
+    return files.ReadBinaryFileContents(args.config_file)
   else:
     raise ValueError('Neither --config-data nor --config-file given.')
 
@@ -338,9 +336,8 @@ def _ReadMetadataValueFromFile(path):
   if not path:
     raise ValueError('path is required')
   try:
-    with open(path, 'r') as f:
-      return f.read()
-  except (IOError, OSError) as err:
+    return files.ReadFileContents(path)
+  except files.Error as err:
     raise InvalidMetadataError('Could not read value file [{}]:\n\n{}'.format(
         path, err))
 

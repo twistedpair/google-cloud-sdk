@@ -138,7 +138,7 @@ def GetFileAsMessage(path, message, client):
     path = tf.name
 
   # Read the file.
-  in_text = files.GetFileContents(path)
+  in_text = files.ReadFileContents(path)
   if not in_text:
     raise genomics_exceptions.GenomicsInputFileError(
         'Empty file [{0}]'.format(path))

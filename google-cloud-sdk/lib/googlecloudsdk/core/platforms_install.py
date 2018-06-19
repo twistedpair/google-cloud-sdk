@@ -196,9 +196,8 @@ class _RcUpdater(object):
 
       # Check whether RC file is a file and store its contents.
       if os.path.isfile(self.rc_path):
-        with open(self.rc_path) as rc_file:
-          rc_contents = rc_file.read()
-          original_rc_contents = rc_contents
+        rc_contents = files.ReadFileContents(self.rc_path)
+        original_rc_contents = rc_contents
       elif os.path.exists(self.rc_path):
         _TraceAction(
             '[{rc_path}] exists and is not a file, so it cannot be updated.'
@@ -243,8 +242,7 @@ class _RcUpdater(object):
         return
 
       try:
-        with open(self.rc_path, 'w') as rc_file:
-          rc_file.write(rc_contents)
+        files.WriteFileContents(self.rc_path, rc_contents)
       except (files.Error, IOError, OSError):
         _TraceAction(
             'Could not update [{rc_path}]. Ensure you have write access to '

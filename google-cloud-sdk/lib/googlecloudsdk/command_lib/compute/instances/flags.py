@@ -1328,15 +1328,12 @@ def AddAcceleratorArgs(parser):
   """Adds Accelerator-related args."""
   # Attaches accelerators (e.g. GPUs) to the instances. e.g. --accelerator
   # type=nvidia-tesla-k80,count=4
-  # TODO(b/34676942): METAVAR should be synthesized or it should not be needed
-  # for ArgDict type of argument.
   parser.add_argument(
       '--accelerator',
       type=arg_parsers.ArgDict(spec={
           'type': str,
           'count': int,
       }),
-      metavar='type=TYPE,[count=COUNT]',
       help="""\
       Attaches accelerators (e.g. GPUs) to the instances.
 

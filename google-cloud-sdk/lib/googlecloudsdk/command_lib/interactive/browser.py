@@ -33,7 +33,7 @@ import six
 class FakeSubprocessModule(object):
 
   def Popen(self, args, **kwargs):
-    with open(os.devnull, 'w') as devnull:
+    with files.FileWriter(os.devnull) as devnull:
       kwargs.update({'stderr': devnull, 'stdout': devnull})
       return subprocess.Popen(args, **kwargs)
 

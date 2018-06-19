@@ -57,14 +57,14 @@ class _Table(persistent_cache_base.Table):
       self._cache._restricted.add(name)  # pylint: disable=protected-access
     self.deleted = False
     try:
-      with open(os.path.join(self._cache.name,
-                             self.EncodeName(name)), 'r') as f:
-        contents = f.read()
-    except IOError as e:
-      if e.errno != errno.ENOENT:
-        raise
+      contents = files.ReadFileContents(
+          os.path.join(self._cache.name, self.EncodeName(name)))
+    except files.MissingFileError:
       contents = None
       self.changed = True
+    except files.Error:
+      raise
+
     if contents:
       self._rows = [tuple(r) for r in json.loads(contents)]
     else:
@@ -107,8 +107,7 @@ class _Table(persistent_cache_base.Table):
                 modified=self.modified,
                 restricted=self.restricted,
                 version=self._cache.version)])
-        with open(path, 'w') as f:
-          f.write(json.dumps(self._rows))
+        files.WriteFileContents(path, json.dumps(self._rows))
 
   def _RowEqual(self, a, b):
     """Returns True if rows a and b have the same key."""

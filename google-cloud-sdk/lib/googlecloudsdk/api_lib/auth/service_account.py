@@ -48,7 +48,7 @@ class BadCredentialJsonFileException(Error):
 
 def CredentialsFromAdcFile(filename):
   """Load credentials from given service account json file."""
-  content = files.GetFileContents(filename)
+  content = files.ReadFileContents(filename)
   try:
     json_key = json.loads(content)
     return CredentialsFromAdcDict(json_key)
@@ -76,8 +76,7 @@ def CredentialsFromP12File(filename, account, password=None):
   """Create p12 service account credentials from given file."""
 
   try:
-    with open(filename, 'rb') as f:
-      private_key = f.read()
+    private_key = files.ReadBinaryFileContents(filename)
   except EnvironmentError as e:
     raise BadCredentialFileException('Could not read file {0}'.format(e))
 

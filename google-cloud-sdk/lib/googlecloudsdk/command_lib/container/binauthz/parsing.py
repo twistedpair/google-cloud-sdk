@@ -70,7 +70,7 @@ def LoadResourceFile(input_fname):
     ResourceFileParseError: A parse error occurred.
   """
   try:
-    input_text = files.GetFileContents(input_fname)
+    input_text = files.ReadFileContents(input_fname)
   except files.Error as e:
     raise ResourceFileReadError(str(e))
 

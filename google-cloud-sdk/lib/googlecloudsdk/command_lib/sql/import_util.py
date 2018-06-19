@@ -27,14 +27,15 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-def AddBaseImportFlags(parser):
+def AddBaseImportFlags(parser, filetype):
   base.ASYNC_FLAG.AddToParser(parser)
   flags.AddInstanceArgument(parser)
   flags.AddUriArgument(
       parser,
-      'Path to the MySQL dump file in Google Cloud Storage from which'
+      'Path to the {filetype} file in Google Cloud Storage from which'
       ' the import is made. The URI is in the form gs://bucketName/fileName.'
-      ' Compressed gzip files (.gz) are also supported.')
+      ' Compressed gzip files (.gz) are also supported.'
+      .format(filetype=filetype))
   flags.AddUser(parser, 'The PostgreSQL user for this import operation')
 
 
@@ -67,8 +68,8 @@ def RunImportCommand(args, client, import_context):
       collection='sql.instances')
 
   console_io.PromptContinue(
-      message='Data from {0} will be imported to {1}.'.format(
-          args.uri[0], args.instance),
+      message='Data from [{0}] will be imported to [{1}].'.format(
+          args.uri, args.instance),
       default=True,
       cancel_on_no=True)
 

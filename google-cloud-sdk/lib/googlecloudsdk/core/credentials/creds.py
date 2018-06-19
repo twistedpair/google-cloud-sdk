@@ -31,6 +31,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import devshell as c_devshell
+from googlecloudsdk.core.util import files
 
 from oauth2client import client
 from oauth2client import service_account
@@ -493,10 +494,16 @@ def FromJson(json_value):
 
 
 def _GetSqliteStore(sqlite_credential_file=None, sqlite_access_token_file=None):
-  credential_store = SqliteCredentialStore(
-      sqlite_credential_file or config.Paths().credentials_db_path)
-  access_token_cache = AccessTokenCache(
-      sqlite_access_token_file or config.Paths().access_token_db_path)
+  """Get a sqlite-based Credential Store."""
+  sqlite_credential_file = (sqlite_credential_file or
+                            config.Paths().credentials_db_path)
+  files.PrivatizeFile(sqlite_credential_file)
+  credential_store = SqliteCredentialStore(sqlite_credential_file)
+
+  sqlite_access_token_file = (sqlite_access_token_file or
+                              config.Paths().access_token_db_path)
+  files.PrivatizeFile(sqlite_access_token_file)
+  access_token_cache = AccessTokenCache(sqlite_access_token_file)
   return CredentialStoreWithCache(credential_store, access_token_cache)
 
 

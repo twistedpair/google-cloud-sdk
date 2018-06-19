@@ -25,6 +25,8 @@ from __future__ import unicode_literals
 import collections
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import files
+
 from ruamel import yaml
 from typing import Any, AnyStr, Generator, IO, Iterable, Optional, Union  # pylint: disable=unused-import, for pytype
 
@@ -143,11 +145,9 @@ def load_path(path, round_trip=False):
     The parsed YAML data.
   """
   try:
-    with open(path, 'r') as fp:
+    with files.FileReader(path) as fp:
       return load(fp, file_hint=path, round_trip=round_trip)
-  except EnvironmentError as e:
-    # EnvironmentError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
+  except files.Error as e:
     raise FileLoadError(e, f=path)
 
 
@@ -166,10 +166,10 @@ def load_all_path(path):
     The parsed YAML data.
   """
   try:
-    with open(path, 'r') as fp:
+    with files.FileReader(path) as fp:
       for x in load_all(fp, file_hint=path):
         yield x
-  except EnvironmentError as e:
+  except files.Error as e:
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
     raise FileLoadError(e, f=path)

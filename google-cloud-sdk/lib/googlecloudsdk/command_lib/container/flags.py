@@ -1294,19 +1294,19 @@ behavior.
       metavar='SCOPE',
       default='gke-default',
       help="""\
-Specifies scopes for the node instances. The project's default service account
-is used. Examples:
+Specifies scopes for the node instances. Examples:
 
-    $ {{command}} {example_target} --scopes=https://www.googleapis.com/auth/devstorage.read_only
+$ {{command}} {example_target} --scopes=https://www.googleapis.com/auth/devstorage.read_only
 
-    $ {{command}} {example_target} --scopes=bigquery,storage-rw,compute-ro
+$ {{command}} {example_target} --scopes=bigquery,storage-rw,compute-ro
 
-Multiple SCOPEs can specified, separated by commas.  logging-write and/or
-monitoring are added unless Cloud Logging and/or Cloud Monitoring are disabled
-(see --enable-cloud-logging and --enable-cloud-monitoring for more info).
+Multiple SCOPEs can be specified, separated by commas. `logging-write`
+and/or `monitoring` are added unless Cloud Logging and/or Cloud Monitoring
+are disabled (see `--enable-cloud-logging` and `--enable-cloud-monitoring`
+for more information).
 {track_help}
-SCOPE can be either the full URI of the scope or an alias. Available aliases
-are:
+SCOPE can be either the full URI of the scope or an alias. Available
+aliases are:
 
 [format="csv",options="header"]
 |========
@@ -1325,12 +1325,12 @@ Alias,URI
 Automatically enable Google Cloud Endpoints to take advantage of API management
 features by adding service-control and service-management scopes.
 
-If --no-enable-cloud-endpoints is set, remove service-control and
+If `--no-enable-cloud-endpoints` is set, remove service-control and
 service-management scopes, even if they are implicitly (via default) or
-explicitly set via --scopes.
+explicitly set via `--scopes`.
 
---[no-]enable-cloud-endpoints is not allowed if container/new_scopes_behavior
-property is set to true.
+`--[no-]enable-cloud-endpoints` is not allowed if
+`container/new_scopes_behavior` property is set to true.
 """
   scopes_group.add_argument(
       '--enable-cloud-endpoints',
@@ -1632,4 +1632,22 @@ of RAM:
 
   parser.add_argument(
       '--machine-type', '-m',
+      help=help_text)
+
+
+def AddManagedPodIdentityFlag(parser):
+  """Adds --enable-managed-pod-identity flag to the parser."""
+  help_text = """\
+Enable Managed Pod Identity on the cluster.
+
+When enabled, pods with cloud.google.com/service-account annotations will be
+able to authenticate to Google Cloud Platform APIs on behalf of service account
+specified in the annotation.
+"""
+  parser.add_argument(
+      '--enable-managed-pod-identity',
+      action='store_true',
+      default=False,
+      # TODO(b/109942548): unhide this flag for Beta
+      hidden=True,
       help=help_text)

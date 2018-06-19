@@ -80,17 +80,18 @@ def AddCreateArgsToParser(parser):
               $ gcloud alpha compute sole-tenancy node-types""")
   node_type_group.add_argument(
       '--node-requirements',
-      type=arg_parsers.ArgDict(spec={
-          'vCPU': _IntOrAny(),
-          'memory': _BinarySizeOrAny('MB'),
-          'localSSD': _BinarySizeOrAny('GB'),
-      }),
+      type=arg_parsers.ArgDict(
+          spec={
+              'vCPU': _IntOrAny(),
+              'memory': _BinarySizeOrAny('MB'),
+              'localSSD': _BinarySizeOrAny('GB'),
+          }),
       help="""\
 The requirements for nodes. Google Compute Engine will automatically
 choose a node type that fits the requirements on Node Group creation.
 If multiple node types match your defined criteria, the NodeType with
 the least amount of each resource will be selected. You can specify 'any'
-to indicate no preference for a certain resource.
+to indicate any non-zero value for a certain resource.
 
 The following keys are allowed:
 
@@ -102,5 +103,6 @@ should include unit (eg. 3072MB or 9GB). If no units are specified,
 
 *localSSD*:::: Optional. The amount of SSD space available on the
 node. This value should include unit (eg. 3072MB or 9GB). If no
-units are specified, *GB is assumed*.
+units are specified, *GB is assumed*. If this key is not specified, local SSD is
+unconstrained.
       """)

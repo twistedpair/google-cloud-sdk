@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import io
 import os
 import socket
 import threading
@@ -28,6 +27,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import files
 
+import six
 from six.moves import http_client
 from six.moves import urllib_error
 
@@ -104,11 +104,11 @@ class _OnGCECache(object):
     gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
       try:
-        with io.open(gce_cache_path) as gcecache_file:
-          mtime = os.stat(gce_cache_path).st_mtime
-          expiration_time = mtime + _GCE_CACHE_MAX_AGE
-          return gcecache_file.read() == str(True), expiration_time
-      except (OSError, IOError):
+        mtime = os.stat(gce_cache_path).st_mtime
+        expiration_time = mtime + _GCE_CACHE_MAX_AGE
+        gcecache_file_value = files.ReadFileContents(gce_cache_path)
+        return gcecache_file_value == str(True), expiration_time
+      except (OSError, IOError, files.Error):
         # Failed to read Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet
         # exist.
@@ -120,8 +120,8 @@ class _OnGCECache(object):
     gce_cache_path = config.Paths().GCECachePath()
     with self.file_lock:
       try:
-        with files.OpenForWritingPrivate(gce_cache_path) as gcecache_file:
-          gcecache_file.write(str(on_gce))
+        files.WriteFileContents(
+            gce_cache_path, six.text_type(on_gce), private=True)
       except (OSError, IOError, files.Error):
         # Failed to write Google Compute Engine credential cache file.
         # This could be due to permission reasons, or because it doesn't yet

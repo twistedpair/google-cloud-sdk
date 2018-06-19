@@ -350,7 +350,8 @@ class CreateClusterOptions(object):
                master_ipv4_cidr=None,
                tpu_ipv4_cidr=None,
                enable_tpu=None,
-               default_max_pods_per_node=None):
+               default_max_pods_per_node=None,
+               enable_managed_pod_identity=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -414,6 +415,7 @@ class CreateClusterOptions(object):
     self.enable_tpu = enable_tpu
     self.issue_client_certificate = issue_client_certificate
     self.default_max_pods_per_node = default_max_pods_per_node
+    self.enable_managed_pod_identity = enable_managed_pod_identity
 
 
 class UpdateClusterOptions(object):
@@ -1715,6 +1717,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
+    if options.enable_managed_pod_identity:
+      cluster.managedPodIdentityConfig = self.messages.ManagedPodIdentityConfig(
+          enabled=options.enable_managed_pod_identity)
+
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)

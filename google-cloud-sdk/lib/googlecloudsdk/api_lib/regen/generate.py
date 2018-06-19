@@ -16,13 +16,13 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import io
 import logging
 import os
 
 from apitools.gen import gen_client
 from googlecloudsdk.api_lib.regen import api_def
 from googlecloudsdk.api_lib.regen import resource_generator
+from googlecloudsdk.core.util import files
 from mako import runtime
 from mako import template
 import six
@@ -88,8 +88,7 @@ def GenerateApi(base_dir, root_dir, api_name, api_version, api_config):
     if not os.path.isfile(init_file):
       logging.warning('%s does not have __init__.py file, generating ...',
                       package_dir)
-      with io.open(init_file, 'wt') as f:
-        f.write(_INIT_FILE_CONTENT)
+      files.WriteFileContents(init_file, _INIT_FILE_CONTENT)
 
 
 def _CamelCase(snake_case):
@@ -150,8 +149,7 @@ def GenerateApiMap(base_dir, root_dir, api_config):
   """
 
   api_def_filename, _ = os.path.splitext(api_def.__file__)
-  with io.open(api_def_filename + '.py', 'rt') as api_def_file:
-    api_def_source = api_def_file.read()
+  api_def_source = files.ReadFileContents(api_def_filename + '.py')
 
   tpl = template.Template(filename=os.path.join(os.path.dirname(__file__),
                                                 'template.tpl'))
@@ -159,7 +157,7 @@ def GenerateApiMap(base_dir, root_dir, api_config):
   logging.debug('Generating api map at %s', api_map_file)
   api_map = _MakeApiMap(root_dir.replace('/', '.'), api_config)
   logging.debug('Creating following api map %s', api_map)
-  with io.open(api_map_file, 'wt') as apis_map_file:
+  with files.FileWriter(api_map_file) as apis_map_file:
     ctx = runtime.Context(apis_map_file,
                           api_def_source=api_def_source,
                           apis_map=api_map)
@@ -222,7 +220,7 @@ def GenerateResourceModule(base_dir, root_dir, api_name, api_version,
     logging.debug('Generating resource module at %s', resource_file_name)
     tpl = template.Template(filename=os.path.join(os.path.dirname(__file__),
                                                   'resources.tpl'))
-    with io.open(resource_file_name, 'wt') as output_file:
+    with files.FileWriter(resource_file_name) as output_file:
       ctx = runtime.Context(output_file,
                             collections=sorted(resource_collections),
                             base_url=resource_collections[0].base_url,

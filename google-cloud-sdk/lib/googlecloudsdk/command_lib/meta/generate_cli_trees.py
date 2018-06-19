@@ -30,7 +30,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import abc
-import io
 import json
 import os
 import re
@@ -171,8 +170,8 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
     for directory in directories or [cli_tree.CliTreeConfigDir()]:
       path = os.path.join(directory or '.', self.command) + '.json'
       try:
-        return path, io.open(path, 'rt')
-      except IOError:
+        return path, files.FileReader(path)
+      except files.Error:
         pass
     return path, None  # pytype: disable=name-error
 
@@ -240,14 +239,14 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
       tree = self.Generate()
       if tree:
         try:
-          f = io.open(path, 'wt')
-        except EnvironmentError as e:
+          f = files.FileWriter(path)
+        except files.Error as e:
           # CLI data config dir may not be initialized yet.
           directory, _ = os.path.split(path)
           try:
             files.MakeDir(directory)
-            f = io.open(path, 'wt')
-          except (EnvironmentError, files.Error):
+            f = files.FileWriter(path)
+          except files.Error:
             if not warn_on_exceptions:
               raise
             log.warning(six.text_type(e))
@@ -827,7 +826,7 @@ class _ManCommandCollector(_ManPageCollector):
   def _GetRawManPageText(self):
     """Returns the raw man page text."""
     try:
-      with io.open(os.devnull, 'wt') as f:
+      with files.FileWriter(os.devnull) as f:
         return subprocess.check_output(['man', self.command], stderr=f)
     except (OSError, subprocess.CalledProcessError):
       raise NoManPageTextForCommand(

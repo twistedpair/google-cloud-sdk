@@ -136,7 +136,9 @@ def ReadFromFileOrStdin(path, binary):
   """
   if path == '-':
     return ReadStdin(binary=binary)
-  return files.GetFileContents(path, binary=binary)
+  if binary:
+    return files.ReadBinaryFileContents(path)
+  return files.ReadFileContents(path)
 
 
 def ReadStdin(binary=False):

@@ -99,4 +99,6 @@ def AddUpdateArgs(parser):
   updated_field.add_argument(
       '--enable-flow-logs',
       action=arg_parsers.StoreTrueFalseAction,
-      help=('Enable/disable flow logging for this subnet.'))
+      help=('Enable/disable VPC flow logging for this subnet. More information '
+            'for VPC flow logs can be found at '
+            'https://cloud.google.com/vpc/docs/using-flow-logs.'))
