@@ -477,7 +477,7 @@
           "format": "int32"
         },
         "type": {
-          "description": "The Compute Engine disk type.  If unspecified, 'standard-pd' is used.",
+          "description": "The Compute Engine disk type.  If unspecified, 'pd-standard' is used.",
           "type": "string"
         },
         "sourceImage": {

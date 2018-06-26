@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -319,6 +320,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}',
       {},
       [u'project', u'region'],
+      True
+  )
+  RESOURCEPOLICIES = (
+      'resourcePolicies',
+      'projects/{project}/regions/{region}/resourcePolicies/{resourcePolicy}',
+      {},
+      [u'project', u'region', u'resourcePolicy'],
       True
   )
   ROUTERS = (

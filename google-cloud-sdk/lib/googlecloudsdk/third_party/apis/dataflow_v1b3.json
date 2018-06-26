@@ -338,6 +338,10 @@
           "items": {
             "$ref": "ExecutionStageState"
           }
+        },
+        "jobMetadata": {
+          "description": "This field is populated by the Dataflow service to support filtering jobs\nby the metadata values provided here. Populated for ListJobs and all GetJob\nviews SUMMARY and higher.",
+          "$ref": "JobMetadata"
         }
       }
     },
@@ -1103,6 +1107,194 @@
           "description": "The time at which the stage transitioned to this state.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "JobMetadata": {
+      "id": "JobMetadata",
+      "description": "Metadata available primarily for filtering jobs. Will be included in the\nListJob response and Job SUMMARY view+.",
+      "type": "object",
+      "properties": {
+        "sdkVersion": {
+          "description": "The SDK version used to run the job.",
+          "$ref": "SdkVersion"
+        },
+        "spannerDetails": {
+          "description": "Identification of a Spanner source used in the Dataflow job.",
+          "type": "array",
+          "items": {
+            "$ref": "SpannerIODetails"
+          }
+        },
+        "bigqueryDetails": {
+          "description": "Identification of a BigQuery source used in the Dataflow job.",
+          "type": "array",
+          "items": {
+            "$ref": "BigQueryIODetails"
+          }
+        },
+        "bigTableDetails": {
+          "description": "Identification of a BigTable source used in the Dataflow job.",
+          "type": "array",
+          "items": {
+            "$ref": "BigTableIODetails"
+          }
+        },
+        "pubsubDetails": {
+          "description": "Identification of a PubSub source used in the Dataflow job.",
+          "type": "array",
+          "items": {
+            "$ref": "PubSubIODetails"
+          }
+        },
+        "fileDetails": {
+          "description": "Identification of a File source used in the Dataflow job.",
+          "type": "array",
+          "items": {
+            "$ref": "FileIODetails"
+          }
+        },
+        "datastoreDetails": {
+          "description": "Identification of a Datastore source used in the Dataflow job.",
+          "type": "array",
+          "items": {
+            "$ref": "DatastoreIODetails"
+          }
+        }
+      }
+    },
+    "SdkVersion": {
+      "id": "SdkVersion",
+      "description": "The version of the SDK used to run the jobl",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version of the SDK used to run the job.",
+          "type": "string"
+        },
+        "versionDisplayName": {
+          "description": "A readable string describing the version of the sdk.",
+          "type": "string"
+        },
+        "sdkSupportStatus": {
+          "description": "The support status for this SDK version.",
+          "enumDescriptions": [
+            "Cloud Dataflow is unaware of this version.",
+            "This is a known version of an SDK, and is supported.",
+            "A newer version of the SDK family exists, and an update is recommended.",
+            "This version of the SDK is deprecated and will eventually be no\nlonger supported.",
+            "Support for this SDK version has ended and it should no longer be used."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "SUPPORTED",
+            "STALE",
+            "DEPRECATED",
+            "UNSUPPORTED"
+          ]
+        }
+      }
+    },
+    "SpannerIODetails": {
+      "id": "SpannerIODetails",
+      "description": "Metadata for a Spanner connector used by the job.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "ProjectId accessed in the connection.",
+          "type": "string"
+        },
+        "instanceId": {
+          "description": "InstanceId accessed in the connection.",
+          "type": "string"
+        },
+        "databaseId": {
+          "description": "DatabaseId accessed in the connection.",
+          "type": "string"
+        }
+      }
+    },
+    "BigQueryIODetails": {
+      "id": "BigQueryIODetails",
+      "description": "Metadata for a BigQuery connector used by the job.",
+      "type": "object",
+      "properties": {
+        "table": {
+          "description": "Table accessed in the connection.",
+          "type": "string"
+        },
+        "dataset": {
+          "description": "Dataset accessed in the connection.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "Project accessed in the connection.",
+          "type": "string"
+        },
+        "query": {
+          "description": "Query used to access data in the connection.",
+          "type": "string"
+        }
+      }
+    },
+    "BigTableIODetails": {
+      "id": "BigTableIODetails",
+      "description": "Metadata for a BigTable connector used by the job.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "ProjectId accessed in the connection.",
+          "type": "string"
+        },
+        "instanceId": {
+          "description": "InstanceId accessed in the connection.",
+          "type": "string"
+        },
+        "tableId": {
+          "description": "TableId accessed in the connection.",
+          "type": "string"
+        }
+      }
+    },
+    "PubSubIODetails": {
+      "id": "PubSubIODetails",
+      "description": "Metadata for a PubSub connector used by the job.",
+      "type": "object",
+      "properties": {
+        "topic": {
+          "description": "Topic accessed in the connection.",
+          "type": "string"
+        },
+        "subscription": {
+          "description": "Subscription used in the connection.",
+          "type": "string"
+        }
+      }
+    },
+    "FileIODetails": {
+      "id": "FileIODetails",
+      "description": "Metadata for a File connector used by the job.",
+      "type": "object",
+      "properties": {
+        "filePattern": {
+          "description": "File Pattern used to access files by the connector.",
+          "type": "string"
+        }
+      }
+    },
+    "DatastoreIODetails": {
+      "id": "DatastoreIODetails",
+      "description": "Metadata for a Datastore connector used by the job.",
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "description": "Namespace used in the connection.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "ProjectId accessed in the connection.",
+          "type": "string"
         }
       }
     },

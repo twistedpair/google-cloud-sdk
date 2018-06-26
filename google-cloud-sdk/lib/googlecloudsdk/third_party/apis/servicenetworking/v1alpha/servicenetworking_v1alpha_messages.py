@@ -2177,6 +2177,18 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class Subnetwork(_messages.Message):
+  r"""Message returning the created service subnetwork.
+
+  Fields:
+    ipCidrRange: Subnetwork CIDR range in "10.x.x.x/y" format.
+    name: Subnetwork name. See https://cloud.google.com/compute/docs/vpc/
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class SystemParameter(_messages.Message):
   r"""Define a parameter's name and location. The parameter may be passed as
   either an HTTP header or a URL query parameter, and if both are passed the

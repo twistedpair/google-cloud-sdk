@@ -1034,7 +1034,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Update the version of a CryptoKey that will be used in Encrypt"
+                      "description": "Update the version of a CryptoKey that will be used in Encrypt."
                     },
                     "setIamPolicy": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.setIamPolicy",

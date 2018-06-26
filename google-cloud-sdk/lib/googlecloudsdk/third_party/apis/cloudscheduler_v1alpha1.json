@@ -185,7 +185,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.\n\nCaller-specified in CreateJobRequest, after which it becomes\noutput only.",
+          "description": "The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.\n\nThe maximum allowed length for `JOB_ID` is 500 characters.\nCaller-specified in CreateJobRequest, after which it becomes\noutput only.",
           "type": "string"
         },
         "description": {

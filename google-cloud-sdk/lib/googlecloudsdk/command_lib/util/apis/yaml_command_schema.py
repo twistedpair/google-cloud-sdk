@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,6 +71,7 @@ class CommandType(Enum):
   # For add/remove-iam-policy-binding commands, the actual API method to modify
   # the iam support is 'setIamPolicy'.
   ADD_IAM_POLICY_BINDING = 'setIamPolicy'
+  REMOVE_IAM_POLICY_BINDING = 'setIamPolicy'
   # Generic commands are those that don't extend a specific calliope command
   # base class.
   GENERIC = None

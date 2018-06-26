@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -305,7 +306,7 @@ def AddAutoprovisioningFlags(parser, hidden=False):
     hidden: If true, suppress help text for added options.
   """
 
-  group = parser.add_argument_group('Node autoprovisioning')
+  group = parser.add_argument_group('Node autoprovisioning', hidden=hidden)
   group.add_argument(
       '--enable-autoprovisioning',
       required=True,
@@ -412,11 +413,11 @@ def AddZoneAndRegionFlags(parser):
   group.add_argument(
       '--zone',
       '-z',
-      help='The compute zone (e.g. us-central1-a) for the cluster',
+      help='Compute zone (e.g. us-central1-a) for the cluster',
       action=actions.StoreProperty(properties.VALUES.compute.zone))
   group.add_argument(
       '--region',
-      help='The compute region (e.g. us-central1) for the cluster.')
+      help='Compute region (e.g. us-central1) for the cluster.')
 
 
 def AddAsyncFlag(parser):
@@ -761,27 +762,6 @@ def AddPrivateClusterFlags(parser, hidden=False):
       default=None,
       required=True,
       hidden=hidden)
-
-
-def AddEnableSharedNetworkFlag(parser, hidden=False):
-  """Adds a --enable-shared-network flag to parser."""
-  help_text = """\
-Temporary flag allowing the cluster to be created with a shared network and
-subnetwork. This requires using alias IPs with a pre-existing subnetwork and
-secondary ranges. At a later release, this flag will not be necessary.
-
-The following flags must also be provided: '--enable-kubernetes-alpha',
-'--enable-ip-alias', '--subnetwork', '--services-secondary-range-name', and
-'--cluster-secondary-range-name'.
-
-The flag '--create-subnetwork' cannot be specified.
-"""
-  parser.add_argument(
-      '--enable-shared-network',
-      action='store_true',
-      default=None,
-      hidden=hidden,
-      help=help_text)
 
 
 def AddEnableLegacyAuthorizationFlag(parser, hidden=False):

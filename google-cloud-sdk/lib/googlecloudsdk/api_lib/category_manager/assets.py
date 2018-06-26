@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +23,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.util import encoding as core_encoding
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
 
@@ -171,7 +173,8 @@ def SearchAssets(annotations, show_only_annotatable, match_child_annotations,
   while asset_limit > 0:
     url = _SEARCH_NAME_FORMAT.format(
         base_url, six.moves.urllib.parse.urlencode(query_params))
-    response, content = http.Http().request(uri=url, headers=_HEADERS)
+    response, raw_content = http.Http().request(uri=url, headers=_HEADERS)
+    content = core_encoding.Decode(raw_content)
 
     status_code = response['status']
     if status_code != '200':

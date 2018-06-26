@@ -1163,7 +1163,7 @@
     },
     "ClusterStatus": {
       "id": "ClusterStatus",
-      "description": "ClusterStatus is used for internal only purposes to transition a cluster\nbetween DEGRADED AND RUNNING using UpdateClusterInternal. The message is used\nin ClusterUpdate's DesiredClusterStatus field and should not be confused with\nCluster's Status Enum.",
+      "description": "ClusterStatus is used for internal only purposes by the monitoring server\nto transition a cluster between DEGRADED AND RUNNING using\nUpdateClusterInternal. The message is used in ClusterUpdate's\nDesiredClusterStatus field and should not be confused with Cluster's Status\nEnum.\nTODO(b\/72158008) Implement a PatchClusterInternal method that takes an\ninternal proto instead so we don't have to define this message here\nTill then, this message should be in sync with the definition in the\ninternal.proto",
       "type": "object",
       "properties": {
         "status": {
@@ -1185,7 +1185,39 @@
           "type": "string"
         },
         "internal": {
-          "description": "An internal field for the sub-error type or other metadata for the Status.",
+          "description": "An internal field for the sub-error type or other metadata for the\nStatus.",
+          "type": "string"
+        },
+        "conditions": {
+          "description": "Which conditions caused the current cluster state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
+        }
+      }
+    },
+    "StatusCondition": {
+      "id": "StatusCondition",
+      "description": "StatusCondition describes why a cluster or a node pool has a certain status\n(e.g., ERROR or DEGRADED).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Machine-friendly representation of the condition",
+          "enumDescriptions": [
+            "UNKNOWN indicates a generic condition.",
+            "GCE_STOCKOUT indicates a GCE stockout.",
+            "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.\nMore codes TBA"
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "GCE_STOCKOUT",
+            "GKE_SERVICE_ACCOUNT_DELETED"
+          ]
+        },
+        "message": {
+          "description": "Human-friendly representation of the condition",
           "type": "string"
         }
       }
@@ -1627,7 +1659,7 @@
           "$ref": "NodePool"
         },
         "parent": {
-          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
         },
         "version": {
@@ -2281,7 +2313,7 @@
           "type": "string"
         },
         "groups": {
-          "description": "Groups that this user is a part of. This is currently only filled in for\nVMID-based Authenticate calls.",
+          "description": "Groups that this user is a part of. This is currently only filled in for\nVMID-based Authenticate calls and for organizations that have enabled\nsecurity groups.",
           "type": "array",
           "items": {
             "type": "string"
@@ -3534,7 +3566,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",

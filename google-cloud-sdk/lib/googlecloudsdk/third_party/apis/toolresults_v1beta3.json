@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20180608",
+ "revision": "20180620",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -1220,6 +1220,20 @@
    "description": "An issue detected occurring during a test execution.",
    "externalTypeName": "google.devtools.toolresults.v1.TestIssue",
    "properties": {
+    "category": {
+     "type": "string",
+     "description": "Category of issue. Required.",
+     "enum": [
+      "common",
+      "robo",
+      "unspecifiedCategory"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
     "errorMessage": {
      "type": "string",
      "description": "A brief human-readable message describing the issue. Required."
@@ -1230,10 +1244,12 @@
      "enum": [
       "info",
       "severe",
+      "suggestion",
       "unspecifiedSeverity",
       "warning"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",

@@ -90,7 +90,7 @@ class AndroidInstrumentationTest(_messages.Message):
       run without the orchestrator.
 
   Fields:
-    appApk: The APK for the application under test. Required
+    appApk: The APK for the application under test.
     appPackageId: The java package for the application under test. Optional,
       default is determined by examining the application's manifest.
     orchestratorOption: The option of whether running each test within its own
@@ -243,7 +243,7 @@ class AndroidRoboTest(_messages.Message):
   virtual or physical Android Device, finding culprits and crashes as it goes.
 
   Fields:
-    appApk: The APK for the application under test. Required
+    appApk: The APK for the application under test.
     appInitialActivity: The initial activity that should be used to start the
       app. Optional
     appPackageId: The java package for the application under test. Optional,
@@ -292,7 +292,7 @@ class AndroidTestLoop(_messages.Message):
   for the time being.
 
   Fields:
-    appApk: The APK for the application under test. Required
+    appApk: The APK for the application under test.
     appPackageId: The java package for the application under test. Optional,
       default is determined by examining the application's manifest.
     scenarioLabels: The list of scenario labels that should be run during the

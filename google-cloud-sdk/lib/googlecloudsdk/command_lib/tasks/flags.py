@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -135,9 +136,8 @@ def AddFilterLeasedTasksFlag(parser):
 
 def AddCreatePullTaskFlags(parser):
   """Add flags needed for creating a pull task to the parser."""
-  group = parser.add_group(required=True)
-  AddQueueResourceFlag(group, required=False)
-  _GetTaskIdFlag().AddToParser(group)
+  AddQueueResourceFlag(parser, required=True)
+  _GetTaskIdFlag().AddToParser(parser)
   for flag in _PullTaskFlags():
     flag.AddToParser(parser)
   _AddPayloadFlags(parser)
@@ -145,9 +145,8 @@ def AddCreatePullTaskFlags(parser):
 
 def AddCreateAppEngineTaskFlags(parser):
   """Add flags needed for creating a App Engine task to the parser."""
-  group = parser.add_group(required=True)
-  AddQueueResourceFlag(group, required=False)
-  _GetTaskIdFlag().AddToParser(group)
+  AddQueueResourceFlag(parser, required=True)
+  _GetTaskIdFlag().AddToParser(parser)
   for flag in _AppEngineTaskFlags():
     flag.AddToParser(parser)
   _AddPayloadFlags(parser)
@@ -180,10 +179,7 @@ def _AppEngineQueueFlags():
           '--max-tasks-dispatched-per-second',
           type=float,
           help="""\
-          The maximum rate at which tasks are dispatched from this queue. This
-          also determines "max burst size" for App Engine queues: if
-          `--max-tasks-dispatched-per-second` is 1, then max burst size is 10;
-          otherwise it is `max-tasks-dispatched-per-second` / 5.
+          The maximum rate at which tasks are dispatched from this queue.
           """),
       base.Argument(
           '--max-concurrent-tasks',
@@ -198,9 +194,18 @@ def _AppEngineQueueFlags():
           '--max-doublings',
           type=int,
           help="""\
-          The maximum number of times that the interval between failed task
-          retries will be doubled before the increase becomes constant. The
-          constant is: min-backoff * 2 ** (max-doublings - 1).
+          The time between retries will double maxDoublings times.
+
+          A tasks retry interval starts at minBackoff, then doubles maxDoublings
+          times, then increases linearly, and finally retries retries at
+          intervals of maxBackoff up to maxAttempts times.
+
+          For example, if minBackoff is 10s, maxBackoff is 300s, and
+          maxDoublings is 3, then the a task will first be retried in 10s. The
+          retry interval will double three times, and then increase linearly by
+          2^3 * 10s. Finally, the task will retry at intervals of maxBackoff
+          until the task has been attempted maxAttempts times. Thus, the
+          requests will retry at 10s, 20s, 40s, 80s, 160s, 240s, 300s, 300s.
           """),
       base.Argument(
           '--min-backoff',
@@ -274,9 +279,11 @@ def _AppEngineTaskFlags():
 
 def _GetTaskIdFlag():
   return base.Argument(
-      '--id', required=False, metavar='TASK_ID',
+      'task',
+      metavar='TASK_ID',
+      nargs='?',
       help="""\
-      The ID of the task to create.
+      The task to create.
 
       If not specified then the system will generate a random unique task
       ID. Explicitly specifying a task ID enables task de-duplication. If a
@@ -302,13 +309,11 @@ def _CommonTaskFlags():
 def _AddPayloadFlags(parser):
   payload_group = parser.add_mutually_exclusive_group()
   payload_group.add_argument('--payload-content', help="""\
-          Data payload to be consumed by the task worker to process the task.
+          Data payload used by the task worker to process the task.
           """)
   payload_group.add_argument('--payload-file', help="""\
-          File containing data payload to be consumed by the task worker to
-          execute the task. The payload will be sent as the HTTP message body. A
-          message body, and thus a payload, is allowed only if the HTTP method
-          is "POST" or "PUT".
+          File containing data payload used by the task worker to process the
+          task.
           """)
 
 

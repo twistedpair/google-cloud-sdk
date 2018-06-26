@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -903,7 +904,8 @@ class SSHCommand(object):
     return args
 
   def Run(self, env=None, force_connect=False,
-          explicit_output_file=None):
+          explicit_output_file=None,
+          explicit_error_file=None):
     """Run the SSH command using the given environment.
 
     Args:
@@ -911,8 +913,8 @@ class SSHCommand(object):
       force_connect: bool, whether to inject 'y' into the prompts for `plink`,
         which is insecure and not recommended. It serves legacy compatibility
         purposes only.
-      explicit_output_file: File-like object into which pipe stdout.
-        Useful when some process is needed over the command.
+      explicit_output_file: Pipe stdout into this file-like object
+      explicit_error_file: Pipe stderr into this file-like object
 
     Raises:
       MissingCommandError: If SSH command(s) not found.
@@ -932,6 +934,8 @@ class SSHCommand(object):
     extra_popen_kwargs = {}
     if explicit_output_file:
       extra_popen_kwargs['stdout'] = explicit_output_file
+    if explicit_error_file:
+      extra_popen_kwargs['stderr'] = explicit_error_file
 
     status = execution_utils.Exec(args, no_exit=True, in_str=in_str,
                                   **extra_popen_kwargs)
@@ -1227,4 +1231,3 @@ class FileReference(object):
 
   def __repr__(self):
     return self.ToArg()
-

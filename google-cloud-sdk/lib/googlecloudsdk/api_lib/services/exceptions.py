@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +18,9 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
-from googlecloudsdk.core import exceptions
 
 
-class Error(exceptions.Error):
+class Error(core_exceptions.Error):
   """Exceptions for Services errors."""
 
 

@@ -177,6 +177,14 @@ class RecognitionConfig(_messages.Message):
       detected in the audio. NOTE: This feature is only supported for Voice
       Command and Voice Search use cases and performance may vary for other
       use cases (e.g., phone call transcription).
+    audioChannelCount: *Optional* The number of channels in the input audio
+      data. ONLY set this for MULTI-CHANNEL recognition. Valid values for
+      LINEAR16 and FLAC are `1`-`8`. Valid values for OGG_OPUS are '1'-'254'.
+      Valid value for MULAW, AMR, AMR_WB and SPEEX_WITH_HEADER_BYTE is only
+      `1`. If `0` or omitted, defaults to one channel (mono). NOTE: We only
+      recognize the first channel by default. To perform independent
+      recognition on each channel set enable_separate_recognition_per_channel
+      to 'true'.
     diarizationSpeakerCount: *Optional* If set, specifies the estimated number
       of speakers in the conversation. If not set, defaults to '2'. Ignored
       unless enable_speaker_diarization is set to true."
@@ -187,6 +195,13 @@ class RecognitionConfig(_messages.Message):
       hypotheses. NOTE: "This is currently offered as an experimental service,
       complimentary to all users. In the future this may be exclusively
       available as a premium feature."
+    enableSeparateRecognitionPerChannel: This needs to be set to 'true'
+      explicitly and audio_channel_count > 1 to get each channel recognized
+      separately. The recognition result will contain a channel_tag field to
+      state which channel that result belongs to. If this is not 'true', we
+      will only recognize the first channel. NOTE: The request is also billed
+      cumulatively for all channels recognized:     (audio_channel_count times
+      the audio length)
     enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
       for each recognized word in the top alternative of the recognition
       result using a speaker_tag provided in the WordInfo. Note: When this is
@@ -304,20 +319,22 @@ class RecognitionConfig(_messages.Message):
     SPEEX_WITH_HEADER_BYTE = 7
 
   alternativeLanguageCodes = _messages.StringField(1, repeated=True)
-  diarizationSpeakerCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  enableAutomaticPunctuation = _messages.BooleanField(3)
-  enableSpeakerDiarization = _messages.BooleanField(4)
-  enableWordConfidence = _messages.BooleanField(5)
-  enableWordTimeOffsets = _messages.BooleanField(6)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 7)
-  languageCode = _messages.StringField(8)
-  maxAlternatives = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 10)
-  model = _messages.StringField(11)
-  profanityFilter = _messages.BooleanField(12)
-  sampleRateHertz = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 14, repeated=True)
-  useEnhanced = _messages.BooleanField(15)
+  audioChannelCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  diarizationSpeakerCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  enableAutomaticPunctuation = _messages.BooleanField(4)
+  enableSeparateRecognitionPerChannel = _messages.BooleanField(5)
+  enableSpeakerDiarization = _messages.BooleanField(6)
+  enableWordConfidence = _messages.BooleanField(7)
+  enableWordTimeOffsets = _messages.BooleanField(8)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 9)
+  languageCode = _messages.StringField(10)
+  maxAlternatives = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 12)
+  model = _messages.StringField(13)
+  profanityFilter = _messages.BooleanField(14)
+  sampleRateHertz = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 16, repeated=True)
+  useEnhanced = _messages.BooleanField(17)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -481,19 +498,13 @@ class SpeechContext(_messages.Message):
   phrases in the results.
 
   Enums:
-    BiasingStrengthValueValuesEnum: Strength of biasing to use (strong, medium
-      or weak). If you use strong biasing option then more likely to see those
-      phrases in the results. If biasing strength is not specified then by
-      default medium biasing would be used. If you'd like different phrases to
-      have different biasing strengths, you can specify multiple
-      speech_contexts.
+    StrengthValueValuesEnum: Hint strength to use (high, medium or low). If
+      you use a high strength then you are more likely to see those phrases in
+      the results. If strength is not specified then by default medium
+      strength will be used. If you'd like different phrases to have different
+      strengths, you can specify multiple speech_contexts.
 
   Fields:
-    biasingStrength: Strength of biasing to use (strong, medium or weak). If
-      you use strong biasing option then more likely to see those phrases in
-      the results. If biasing strength is not specified then by default medium
-      biasing would be used. If you'd like different phrases to have different
-      biasing strengths, you can specify multiple speech_contexts.
     phrases: *Optional* A list of strings containing words and phrases "hints"
       so that the speech recognition is more likely to recognize them. This
       can be used to improve the accuracy for specific words and phrases, for
@@ -501,28 +512,33 @@ class SpeechContext(_messages.Message):
       also be used to add additional words to the vocabulary of the
       recognizer. See [usage
       limits](https://cloud.google.com/speech/limits#content).
+    strength: Hint strength to use (high, medium or low). If you use a high
+      strength then you are more likely to see those phrases in the results.
+      If strength is not specified then by default medium strength will be
+      used. If you'd like different phrases to have different strengths, you
+      can specify multiple speech_contexts.
   """
 
-  class BiasingStrengthValueValuesEnum(_messages.Enum):
-    r"""Strength of biasing to use (strong, medium or weak). If you use strong
-    biasing option then more likely to see those phrases in the results. If
-    biasing strength is not specified then by default medium biasing would be
-    used. If you'd like different phrases to have different biasing strengths,
-    you can specify multiple speech_contexts.
+  class StrengthValueValuesEnum(_messages.Enum):
+    r"""Hint strength to use (high, medium or low). If you use a high strength
+    then you are more likely to see those phrases in the results. If strength
+    is not specified then by default medium strength will be used. If you'd
+    like different phrases to have different strengths, you can specify
+    multiple speech_contexts.
 
     Values:
-      BIASING_STRENGTH_UNSPECIFIED: <no description>
-      LOW: Low bias
-      MEDIUM: Medium bias
-      HIGH: High bias
+      STRENGTH_UNSPECIFIED: <no description>
+      LOW: Low strength
+      MEDIUM: Medium strength
+      HIGH: High strength
     """
-    BIASING_STRENGTH_UNSPECIFIED = 0
+    STRENGTH_UNSPECIFIED = 0
     LOW = 1
     MEDIUM = 2
     HIGH = 3
 
-  biasingStrength = _messages.EnumField('BiasingStrengthValueValuesEnum', 1)
-  phrases = _messages.StringField(2, repeated=True)
+  phrases = _messages.StringField(1, repeated=True)
+  strength = _messages.EnumField('StrengthValueValuesEnum', 2)
 
 
 class SpeechOperationsGetRequest(_messages.Message):
@@ -566,9 +582,19 @@ class SpeechRecognitionResult(_messages.Message):
       (up to the maximum specified in `max_alternatives`). These alternatives
       are ordered in terms of accuracy, with the top (first) alternative being
       the most probable, as ranked by the recognizer.
+    channelTag: For multi-channel audio, this is the channel number
+      corresponding to the recognized result for the audio from that channel.
+      For audio_channel_count = N, its output values can range from '1' to
+      'N'.
+    languageCode: Output only. The [BCP-47](https://www.rfc-
+      editor.org/rfc/bcp/bcp47.txt) language tag of the language in this
+      result. This language code was detected to have the most likelihood of
+      being spoken in the audio.
   """
 
   alternatives = _messages.MessageField('SpeechRecognitionAlternative', 1, repeated=True)
+  channelTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  languageCode = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

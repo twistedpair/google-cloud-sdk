@@ -169,6 +169,36 @@ class AutoscalingSettings(_messages.Message):
   maxNumWorkers = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class BigQueryIODetails(_messages.Message):
+  r"""Metadata for a BigQuery connector used by the job.
+
+  Fields:
+    dataset: Dataset accessed in the connection.
+    projectId: Project accessed in the connection.
+    query: Query used to access data in the connection.
+    table: Table accessed in the connection.
+  """
+
+  dataset = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  query = _messages.StringField(3)
+  table = _messages.StringField(4)
+
+
+class BigTableIODetails(_messages.Message):
+  r"""Metadata for a BigTable connector used by the job.
+
+  Fields:
+    instanceId: InstanceId accessed in the connection.
+    projectId: ProjectId accessed in the connection.
+    tableId: TableId accessed in the connection.
+  """
+
+  instanceId = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+  tableId = _messages.StringField(3)
+
+
 class CPUTime(_messages.Message):
   r"""Modeled after information exposed by /proc/stat.
 
@@ -1292,6 +1322,18 @@ class DataflowProjectsWorkerMessagesRequest(_messages.Message):
   sendWorkerMessagesRequest = _messages.MessageField('SendWorkerMessagesRequest', 2)
 
 
+class DatastoreIODetails(_messages.Message):
+  r"""Metadata for a Datastore connector used by the job.
+
+  Fields:
+    namespace: Namespace used in the connection.
+    projectId: ProjectId accessed in the connection.
+  """
+
+  namespace = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+
+
 class DerivedSource(_messages.Message):
   r"""Specification of one of the bundles produced as a result of splitting a
   Source (e.g. when executing a SourceSplitRequest, or when splitting an
@@ -1736,6 +1778,16 @@ class FailedLocation(_messages.Message):
   name = _messages.StringField(1)
 
 
+class FileIODetails(_messages.Message):
+  r"""Metadata for a File connector used by the job.
+
+  Fields:
+    filePattern: File Pattern used to access files by the connector.
+  """
+
+  filePattern = _messages.StringField(1)
+
+
 class FlattenInstruction(_messages.Message):
   r"""An instruction that copies its inputs (zero or more) to its (single)
   output.
@@ -1982,6 +2034,9 @@ class Job(_messages.Message):
     id: The unique ID of this job.  This field is set by the Cloud Dataflow
       service when the Job is created, and is immutable for the life of the
       job.
+    jobMetadata: This field is populated by the Dataflow service to support
+      filtering jobs by the metadata values provided here. Populated for
+      ListJobs and all GetJob views SUMMARY and higher.
     labels: User-defined labels for this job.  The labels map can contain no
       more than 64 entries.  Entries of the labels map are UTF8 strings that
       comply with the following restrictions:  * Keys must conform to regexp:
@@ -2229,19 +2284,20 @@ class Job(_messages.Message):
   environment = _messages.MessageField('Environment', 5)
   executionInfo = _messages.MessageField('JobExecutionInfo', 6)
   id = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  location = _messages.StringField(9)
-  name = _messages.StringField(10)
-  pipelineDescription = _messages.MessageField('PipelineDescription', 11)
-  projectId = _messages.StringField(12)
-  replaceJobId = _messages.StringField(13)
-  replacedByJobId = _messages.StringField(14)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 15)
-  stageStates = _messages.MessageField('ExecutionStageState', 16, repeated=True)
-  steps = _messages.MessageField('Step', 17, repeated=True)
-  tempFiles = _messages.StringField(18, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  jobMetadata = _messages.MessageField('JobMetadata', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  location = _messages.StringField(10)
+  name = _messages.StringField(11)
+  pipelineDescription = _messages.MessageField('PipelineDescription', 12)
+  projectId = _messages.StringField(13)
+  replaceJobId = _messages.StringField(14)
+  replacedByJobId = _messages.StringField(15)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 16)
+  stageStates = _messages.MessageField('ExecutionStageState', 17, repeated=True)
+  steps = _messages.MessageField('Step', 18, repeated=True)
+  tempFiles = _messages.StringField(19, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
 
 
 class JobExecutionInfo(_messages.Message):
@@ -2349,6 +2405,33 @@ class JobMessage(_messages.Message):
   messageImportance = _messages.EnumField('MessageImportanceValueValuesEnum', 2)
   messageText = _messages.StringField(3)
   time = _messages.StringField(4)
+
+
+class JobMetadata(_messages.Message):
+  r"""Metadata available primarily for filtering jobs. Will be included in the
+  ListJob response and Job SUMMARY view+.
+
+  Fields:
+    bigTableDetails: Identification of a BigTable source used in the Dataflow
+      job.
+    bigqueryDetails: Identification of a BigQuery source used in the Dataflow
+      job.
+    datastoreDetails: Identification of a Datastore source used in the
+      Dataflow job.
+    fileDetails: Identification of a File source used in the Dataflow job.
+    pubsubDetails: Identification of a PubSub source used in the Dataflow job.
+    sdkVersion: The SDK version used to run the job.
+    spannerDetails: Identification of a Spanner source used in the Dataflow
+      job.
+  """
+
+  bigTableDetails = _messages.MessageField('BigTableIODetails', 1, repeated=True)
+  bigqueryDetails = _messages.MessageField('BigQueryIODetails', 2, repeated=True)
+  datastoreDetails = _messages.MessageField('DatastoreIODetails', 3, repeated=True)
+  fileDetails = _messages.MessageField('FileIODetails', 4, repeated=True)
+  pubsubDetails = _messages.MessageField('PubSubIODetails', 5, repeated=True)
+  sdkVersion = _messages.MessageField('SdkVersion', 6)
+  spannerDetails = _messages.MessageField('SpannerIODetails', 7, repeated=True)
 
 
 class JobMetrics(_messages.Message):
@@ -2987,6 +3070,18 @@ class Position(_messages.Message):
   shufflePosition = _messages.StringField(6)
 
 
+class PubSubIODetails(_messages.Message):
+  r"""Metadata for a PubSub connector used by the job.
+
+  Fields:
+    subscription: Subscription used in the connection.
+    topic: Topic accessed in the connection.
+  """
+
+  subscription = _messages.StringField(1)
+  topic = _messages.StringField(2)
+
+
 class PubsubLocation(_messages.Message):
   r"""Identifies a pubsub location to use for transferring data into or out of
   a streaming Dataflow job.
@@ -3129,6 +3224,42 @@ class RuntimeEnvironment(_messages.Message):
   subnetwork = _messages.StringField(7)
   tempLocation = _messages.StringField(8)
   zone = _messages.StringField(9)
+
+
+class SdkVersion(_messages.Message):
+  r"""The version of the SDK used to run the jobl
+
+  Enums:
+    SdkSupportStatusValueValuesEnum: The support status for this SDK version.
+
+  Fields:
+    sdkSupportStatus: The support status for this SDK version.
+    version: The version of the SDK used to run the job.
+    versionDisplayName: A readable string describing the version of the sdk.
+  """
+
+  class SdkSupportStatusValueValuesEnum(_messages.Enum):
+    r"""The support status for this SDK version.
+
+    Values:
+      UNKNOWN: Cloud Dataflow is unaware of this version.
+      SUPPORTED: This is a known version of an SDK, and is supported.
+      STALE: A newer version of the SDK family exists, and an update is
+        recommended.
+      DEPRECATED: This version of the SDK is deprecated and will eventually be
+        no longer supported.
+      UNSUPPORTED: Support for this SDK version has ended and it should no
+        longer be used.
+    """
+    UNKNOWN = 0
+    SUPPORTED = 1
+    STALE = 2
+    DEPRECATED = 3
+    UNSUPPORTED = 4
+
+  sdkSupportStatus = _messages.EnumField('SdkSupportStatusValueValuesEnum', 1)
+  version = _messages.StringField(2)
+  versionDisplayName = _messages.StringField(3)
 
 
 class SendDebugCaptureRequest(_messages.Message):
@@ -3681,6 +3812,20 @@ class SourceSplitShard(_messages.Message):
 
   derivationMode = _messages.EnumField('DerivationModeValueValuesEnum', 1)
   source = _messages.MessageField('Source', 2)
+
+
+class SpannerIODetails(_messages.Message):
+  r"""Metadata for a Spanner connector used by the job.
+
+  Fields:
+    databaseId: DatabaseId accessed in the connection.
+    instanceId: InstanceId accessed in the connection.
+    projectId: ProjectId accessed in the connection.
+  """
+
+  databaseId = _messages.StringField(1)
+  instanceId = _messages.StringField(2)
+  projectId = _messages.StringField(3)
 
 
 class SplitInt64(_messages.Message):

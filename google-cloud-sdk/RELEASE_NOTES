@@ -5,6 +5,78 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 207.0.0 (2018-06-26)
+
+### App Engine
+
+
+* Updated the Python SDK to version 1.9.71.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+* Updated the Go SDK to version 1.9.65.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/go/release-notes
+
+### App Engine Flexible Environment
+
+*   Added the `rollout_strategy` property to the `endpoints_api_service` section
+    in the `app.yaml`. Setting this makes Endpoints run in `managed` mode.
+
+### Cloud Build
+
+*   Added `gcloud builds` command group to create and manage builds for Google
+    Cloud Build.
+
+### Cloud Dataproc
+
+* Promoted boot disk type configuration flags of
+  `gcloud dataproc clusters create` command to GA:
+  * `--master-boot-disk-type`
+  * `--worker-boot-disk-type`
+  * `--preemptible-worker-boot-disk-type`
+* Promoted the `--image` flag of `gcloud dataproc clusters create` to GA.
+
+### Cloud Machine Learning Engine
+
+* Promoted `--machine-type` flag of `gcloud ml-engine versions create` commands to beta.
+
+### Cloud SQL
+
+* Added the `--host` flag to `gcloud sql users <create|delete|set-password>`.
+* Deprecated the `host` argument of `gcloud sql users
+  <create|delete|set-password>` in favor of the `--host` flag.
+
+### Cloud TPU
+
+* Promoted the `gcloud compute tpus` command group to GA
+
+### Compute Engine
+
+* Promoted the following Cloud CDN Signed URL commands to GA:
+    *   `gcloud compute sign-url`
+    *   `gcloud compute backend-buckets add-signed-url-key`
+    *   `gcloud compute backend-buckets delete-signed-url-key`
+    *   `gcloud compute backend-services add-signed-url-key`
+    *   `gcloud compute backend-services delete-signed-url-key`
+* Promoted `--signed-url-cache-max-age` flag to GA in the following commands:
+    *   `gcloud compute backend-buckets create`
+    *   `gcloud compute backend-buckets update`
+    *   `gcloud compute backend-services create`
+    *   `gcloud compute backend-services update`
+* Promoted the `HTTP2` value to beta for the `--protocol` flag of `gcloud
+  compute backend-services <create|update>`.
+* Promoted `http2` related `gcloud compute health-checks` commands to beta.
+
+### Kubernetes Engine
+
+Added the `--enable-autoscaling` flag to the `node-pools` command to enable
+autoscaling for a node-pool. For example,
+`gcloud beta container node-pools update --enable-autoscaling --max-nodes=3`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 206.0.0 (2018-06-19)
 
 ### Breaking Changes

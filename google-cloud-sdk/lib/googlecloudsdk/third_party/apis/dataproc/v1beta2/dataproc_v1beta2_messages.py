@@ -1586,8 +1586,9 @@ class InstanceGroupConfig(_messages.Message):
       these instances.Beta Feature: This feature is still under development.
       It may be changed before final release.
     diskConfig: Optional. Disk option config settings.
-    imageUri: Output only. The Compute Engine image resource used for cluster
-      instances. Inferred from SoftwareConfig.image_version.
+    imageUri: Optional. The Compute Engine image resource used for cluster
+      instances. It can be specified or may be inferred from
+      SoftwareConfig.image_version.
     instanceNames: Output only. The list of instance names. Cloud Dataproc
       derives the names from cluster_name, num_instances, and the instance
       group.

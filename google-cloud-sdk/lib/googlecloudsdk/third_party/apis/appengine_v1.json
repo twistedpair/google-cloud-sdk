@@ -912,7 +912,7 @@
           "$ref": "StaticFilesHandler"
         },
         "script": {
-          "description": "Executes a script to handle the request that matches this URL pattern.",
+          "description": "Executes a script to handle the requests that match this URL pattern. Only the auto value is supported for Node.js in the App Engine standard environment, for example \"script\": \"auto\".",
           "$ref": "ScriptHandler"
         },
         "apiEndpoint": {
@@ -938,7 +938,7 @@
           ]
         },
         "login": {
-          "description": "Level of login required to access this resource.",
+          "description": "Level of login required to access this resource. Not supported for Node.js in the App Engine standard environment.",
           "enumDescriptions": [
             "Not specified. LOGIN_OPTIONAL is assumed.",
             "Does not require that the user is signed in.",

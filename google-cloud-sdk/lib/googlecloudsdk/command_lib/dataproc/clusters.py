@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -90,31 +91,18 @@ def ArgsForClusterRef(parser, beta=False):
       '--worker-machine-type',
       help='The type of machine to use for workers. Defaults to '
       'server-specified.')
-  if beta:
-    image_parser = parser.add_mutually_exclusive_group()
-    # TODO(b/73291743): Add external doc link to --image
-    image_parser.add_argument(
-        '--image',
-        metavar='IMAGE',
-        help='The full custom image URI or the custom image name that '
-        'will be used to create a cluster.')
-    image_parser.add_argument(
-        '--image-version',
-        metavar='VERSION',
-        help='The image version to use for the cluster. Defaults to the '
-        'latest version.')
-  else:
-    parser.add_argument(
-        '--image',
-        hidden=True,
-        help='The full image URI to use with the cluster. Overrides '
-        '--image-version.')
-    parser.add_argument(
-        '--image-version',
-        metavar='VERSION',
-        help='The image version to use for the cluster. Defaults to the '
-        'latest version.')
-
+  image_parser = parser.add_mutually_exclusive_group()
+  # TODO(b/73291743): Add external doc link to --image
+  image_parser.add_argument(
+      '--image',
+      metavar='IMAGE',
+      help='The full custom image URI or the custom image name that '
+      'will be used to create a cluster.')
+  image_parser.add_argument(
+      '--image-version',
+      metavar='VERSION',
+      help='The image version to use for the cluster. Defaults to the '
+      'latest version.')
   parser.add_argument(
       '--bucket',
       help='The Google Cloud Storage bucket to use with the Google Cloud '
@@ -314,18 +302,17 @@ Alias,URI
       """,
       hidden=not beta)
 
-  if beta:
-    boot_disk_type_detailed_help = """\
-        The type of the boot disk. The value must be ``pd-standard'' or
-        ``pd-ssd''.
-        """
-    parser.add_argument(
-        '--master-boot-disk-type', help=boot_disk_type_detailed_help)
-    parser.add_argument(
-        '--worker-boot-disk-type', help=boot_disk_type_detailed_help)
-    parser.add_argument(
-        '--preemptible-worker-boot-disk-type',
-        help=boot_disk_type_detailed_help)
+  boot_disk_type_detailed_help = """\
+      The type of the boot disk. The value must be ``pd-standard'' or
+      ``pd-ssd''.
+      """
+  parser.add_argument(
+      '--master-boot-disk-type', help=boot_disk_type_detailed_help)
+  parser.add_argument(
+      '--worker-boot-disk-type', help=boot_disk_type_detailed_help)
+  parser.add_argument(
+      '--preemptible-worker-boot-disk-type',
+      help=boot_disk_type_detailed_help)
 
 
 def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
@@ -446,8 +433,7 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
               dataproc,
               args.master_boot_disk_type if beta else None,
               master_boot_disk_size_gb,
-              args.num_master_local_ssds,
-              beta,
+              args.num_master_local_ssds
           )),
       workerConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_workers,
@@ -459,7 +445,6 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
               args.worker_boot_disk_type if beta else None,
               worker_boot_disk_size_gb,
               args.num_worker_local_ssds,
-              beta,
           )),
       initializationActions=init_actions,
       softwareConfig=software_config,
@@ -515,7 +500,6 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
                 args.preemptible_worker_boot_disk_type if beta else None,
                 preemptible_worker_boot_disk_size_gb,
                 None,
-                beta,
             )))
     if beta and args.worker_min_cpu_platform:
       cluster_config.secondaryWorkerConfig.minCpuPlatform = (
@@ -527,8 +511,7 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
 def GetDiskConfig(dataproc,
                   boot_disk_type,
                   boot_disk_size,
-                  num_local_ssds,
-                  beta=False):
+                  num_local_ssds):
   """Get dataproc cluster disk configuration.
 
   Args:
@@ -536,20 +519,15 @@ def GetDiskConfig(dataproc,
     boot_disk_type: Type of the boot disk
     boot_disk_size: Size of the boot disk
     num_local_ssds: Number of the Local SSDs
-    beta: Whether to use BETA features
 
   Returns:
     disk_config: Dataproc cluster disk configuration
   """
 
-  if beta:
-    return dataproc.messages.DiskConfig(
-        bootDiskType=boot_disk_type,
-        bootDiskSizeGb=boot_disk_size,
-        numLocalSsds=num_local_ssds)
-
   return dataproc.messages.DiskConfig(
-      bootDiskSizeGb=boot_disk_size, numLocalSsds=num_local_ssds)
+      bootDiskType=boot_disk_type,
+      bootDiskSizeGb=boot_disk_size,
+      numLocalSsds=num_local_ssds)
 
 
 def CreateCluster(dataproc, cluster, is_async, timeout):

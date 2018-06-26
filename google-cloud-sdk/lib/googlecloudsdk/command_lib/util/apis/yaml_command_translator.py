@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -93,6 +94,9 @@ class CommandBuilder(object):
     elif (self.spec.command_type ==
           yaml_command_schema.CommandType.ADD_IAM_POLICY_BINDING):
       command = self._GenerateAddIamPolicyBindingCommand()
+    elif (self.spec.command_type ==
+          yaml_command_schema.CommandType.REMOVE_IAM_POLICY_BINDING):
+      command = self._GenerateRemoveIamPolicyBindingCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
     else:
@@ -411,6 +415,49 @@ class CommandBuilder(object):
 
     return Command
 
+  def _GenerateRemoveIamPolicyBindingCommand(self):
+    """Generates a remove-iam-policy-binding command.
+
+    A remove-iam-policy-binding command takes a resource argument, a member,
+    a role to remove the member from, and two API methods to get and set the
+    policy on the resource.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.Command):
+      """Remove IAM policy binding command closure."""
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        iam_util.AddArgsForRemoveIamPolicyBinding(parser)
+        base.URI_FLAG.RemoveFromParser(parser)
+
+      def Run(self_, args):
+        """Called when command is executed."""
+        # Use Policy message and set IAM request field name overrides for API's
+        # with non-standard naming (if provided)
+        policy_request_path = 'setIamPolicyRequest'
+        if self.spec.iam:
+          policy_request_path = (
+              self.spec.iam.set_iam_policy_request_path or policy_request_path)
+        policy_field_path = policy_request_path + '.policy'
+
+        policy = self._GetModifiedIamPolicy(args, 'remove')
+        self.spec.request.static_fields[policy_field_path] = policy
+
+        ref, response = self._CommonRun(args)
+        iam_util.LogSetIamPolicy(ref.Name(), self.resource_type)
+        return self._HandleResponse(response, args)
+
+    return Command
+
   def _GenerateGenericCommand(self):
     """Generates a generic command.
 
@@ -557,13 +604,12 @@ class CommandBuilder(object):
         use_relative_name=self.spec.request.use_relative_name,
         override_method=get_iam_method)
     policy = get_iam_method.Call(get_iam_request)
-    binding = self.method.GetMessageByName('Binding')
 
     if policy_binding_type == 'add':
+      binding = self.method.GetMessageByName('Binding')
       iam_util.AddBindingToIamPolicy(binding, policy, args.member, args.role)
     elif policy_binding_type == 'remove':
-      # TODO(b/78797448)
-      raise NotImplementedError()
+      iam_util.RemoveBindingFromIamPolicy(policy, args.member, args.role)
     else:
       pass
 

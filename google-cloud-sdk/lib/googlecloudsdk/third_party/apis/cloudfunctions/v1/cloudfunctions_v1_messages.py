@@ -64,6 +64,9 @@ class CloudFunction(_messages.Message):
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
       URL.
     labels: Labels associated with this Cloud Function.
+    maxInstances: The limit on the maximum number of function instances that
+      may coexist at a given time. This feature is currently in alpha,
+      available only for whitelisted users.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
     runtime: The runtime in which the function is going to run. If empty,
@@ -135,16 +138,17 @@ class CloudFunction(_messages.Message):
   eventTrigger = _messages.MessageField('EventTrigger', 4)
   httpsTrigger = _messages.MessageField('HttpsTrigger', 5)
   labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  runtime = _messages.StringField(8)
-  serviceAccountEmail = _messages.StringField(9)
-  sourceArchiveUrl = _messages.StringField(10)
-  sourceRepository = _messages.MessageField('SourceRepository', 11)
-  sourceUploadUrl = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  timeout = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  versionId = _messages.IntegerField(16)
+  maxInstances = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  name = _messages.StringField(8)
+  runtime = _messages.StringField(9)
+  serviceAccountEmail = _messages.StringField(10)
+  sourceArchiveUrl = _messages.StringField(11)
+  sourceRepository = _messages.MessageField('SourceRepository', 12)
+  sourceUploadUrl = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  timeout = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  versionId = _messages.IntegerField(17)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

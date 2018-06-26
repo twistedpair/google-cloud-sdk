@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +29,7 @@ from __future__ import absolute_import
 from __future__ import division
 
 from __future__ import unicode_literals
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
@@ -106,7 +108,23 @@ def AddUsername(parser):
 
 
 def AddHost(parser):
-  parser.add_argument('host', help='Cloud SQL user\'s host.')
+  """Add the 'deprecated_host' arg and '--host' flag to the parser."""
+  help_text = 'Cloud SQL user\'s host. Only applies to MySQL instances.'
+
+  host = parser.add_argument_group(mutex=True)
+  # NOTICE: is_required = False is a short-term solution -- don't use elsewhere.
+  host.add_argument(
+      'deprecated_host',
+      help=help_text,
+      action=actions.DeprecationAction(
+          'deprecated_host',
+          removed=False,
+          warn='Positional argument {flag_name} is deprecated. Use '
+               '--host instead.'),
+      hidden=True).is_required = False
+  host.add_argument(
+      '--host',
+      help=help_text)
 
 
 def AddAvailabilityType(parser):

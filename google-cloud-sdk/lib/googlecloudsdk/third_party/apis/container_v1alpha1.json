@@ -277,6 +277,14 @@
           "description": "Configuration for the use of GCP IAM Service Accounts in applications in\nthis cluster.",
           "$ref": "ManagedPodIdentityConfig"
         },
+        "resourceUsageExportConfig": {
+          "description": "Configuration for exporting resource usages. Resource usage export is\ndisabled when this config unspecified.",
+          "$ref": "ResourceUsageExportConfig"
+        },
+        "authenticatorGroupsConfig": {
+          "description": "Configuration controlling RBAC group membership information.",
+          "$ref": "AuthenticatorGroupsConfig"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -328,7 +336,7 @@
           ]
         },
         "statusMessage": {
-          "description": "[Output only] Additional information about the current status of this\ncluster, if available.",
+          "description": "[Output only] Additional information about the current status of this\ncluster, if available.\nDeprecated, use the field conditions instead.",
           "type": "string"
         },
         "nodeIpv4CidrSize": {
@@ -371,6 +379,13 @@
         "databaseEncryptionKeyId": {
           "description": "ResourceID of a CloudKMS key to be used for the encryption of secrets in\netcd. Ex.\nprojects\/kms-project\/locations\/global\/keyRings\/ring-1\/cryptoKeys\/key-1",
           "type": "string"
+        },
+        "conditions": {
+          "description": "Which conditions caused the current cluster state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -660,9 +675,9 @@
           "description": "Configuration for Istio, an open platform to connect, manage, and secure\nmicroservices.",
           "$ref": "IstioConfig"
         },
-        "elafrosConfig": {
-          "description": "Configuration for Elafros, an open serverless platform that runs functions,\napps, and containers. The `IstioConfig` addon must be enabled in order to\nenable Elafros. This option can only be enabled at cluster creation time.",
-          "$ref": "ElafrosConfig"
+        "serverlessConfig": {
+          "description": "Configuration for the serverless addon. The `IstioConfig` addon must be\nenabled in order to enable serverless. This option can only be enabled at\ncluster creation time.",
+          "$ref": "ServerlessConfig"
         }
       }
     },
@@ -733,13 +748,13 @@
         }
       }
     },
-    "ElafrosConfig": {
-      "id": "ElafrosConfig",
-      "description": "Configuration options for Elafros, an open serverless platform that runs\nfunctions, apps, and containers.",
+    "ServerlessConfig": {
+      "id": "ServerlessConfig",
+      "description": "Configuration options for the serverless feature.",
       "type": "object",
       "properties": {
         "disabled": {
-          "description": "Whether Elafros is enabled for this cluster.",
+          "description": "Whether serverless is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -812,8 +827,15 @@
           ]
         },
         "statusMessage": {
-          "description": "[Output only] Additional information about the current status of this\nnode pool instance, if available.",
+          "description": "[Output only] Additional information about the current status of this\nnode pool instance, if available.\nDeprecated, use the field conditions instead.",
           "type": "string"
+        },
+        "conditions": {
+          "description": "Which conditions caused the current node pool state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -837,7 +859,7 @@
           "format": "int32"
         },
         "autoprovisioned": {
-          "description": "Is autosprovisoning enabled for this node pool.",
+          "description": "Can this node pool be deleted automatically.",
           "type": "boolean"
         }
       }
@@ -889,6 +911,31 @@
           "description": "Constraint enforced on the max num of pods per node.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "StatusCondition": {
+      "id": "StatusCondition",
+      "description": "StatusCondition describes why a cluster or a node pool has a certain status\n(e.g., ERROR or DEGRADED).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Machine-friendly representation of the condition",
+          "enumDescriptions": [
+            "UNKNOWN indicates a generic condition.",
+            "GCE_STOCKOUT indicates a GCE stockout.",
+            "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.\nMore codes TBA"
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "GCE_STOCKOUT",
+            "GKE_SERVICE_ACCOUNT_DELETED"
+          ]
+        },
+        "message": {
+          "description": "Human-friendly representation of the condition",
+          "type": "string"
         }
       }
     },
@@ -1149,7 +1196,7 @@
       "description": "Contains information about amount of some resource in the cluster.\nFor memory, value should be in GB.",
       "type": "object",
       "properties": {
-        "name": {
+        "resourceType": {
           "description": "Resource name \"cpu\", \"memory\" or gpu-specific string.",
           "type": "string"
         },
@@ -1191,6 +1238,39 @@
       "properties": {
         "enabled": {
           "description": "Enable the use of GCP IAM Service Accounts in applications in this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ResourceUsageExportConfig": {
+      "id": "ResourceUsageExportConfig",
+      "description": "Configuration for exporting cluster resource usages.",
+      "type": "object",
+      "properties": {
+        "bigqueryDestination": {
+          "description": "Configuration to use BigQuery as usage export destination.",
+          "$ref": "BigQueryDestination"
+        }
+      }
+    },
+    "BigQueryDestination": {
+      "id": "BigQueryDestination",
+      "description": "Parameters for using BigQuery as the destination of resource usage export.",
+      "type": "object",
+      "properties": {
+        "datasetId": {
+          "description": "The ID of a BigQuery Dataset.",
+          "type": "string"
+        }
+      }
+    },
+    "AuthenticatorGroupsConfig": {
+      "id": "AuthenticatorGroupsConfig",
+      "description": "Configuration for returning group information from authenticators.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether this cluster should return group membership lookups\nduring authentication using a group of security groups.",
           "type": "boolean"
         }
       }
@@ -1302,7 +1382,7 @@
           "type": "string"
         },
         "statusMessage": {
-          "description": "If an error has occurred, a textual description of the error.",
+          "description": "If an error has occurred, a textual description of the error.\nDeprecated, use the field conditions instead.",
           "type": "string"
         },
         "selfLink": {
@@ -1328,6 +1408,20 @@
         "progress": {
           "description": "[Output only] Progress information for an operation.",
           "$ref": "OperationProgress"
+        },
+        "clusterConditions": {
+          "description": "Which conditions caused the current cluster state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
+        },
+        "nodepoolConditions": {
+          "description": "Which conditions caused the current node pool state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -1531,7 +1625,7 @@
     },
     "ClusterStatus": {
       "id": "ClusterStatus",
-      "description": "ClusterStatus is used for internal only purposes by the monitoring server\nto transition a cluster between DEGRADED AND RUNNING using\nUpdateClusterInternal. The message is used in ClusterUpdate's\nDesiredClusterStatus field and should not be confused with Cluster's Status\nEnum.\nTODO(b\/69364507) Implement a PatchClusterInternal method that takes an\ninternal proto instead so we don't have to define this message here",
+      "description": "ClusterStatus is used for internal only purposes by the monitoring server\nto transition a cluster between DEGRADED AND RUNNING using\nUpdateClusterInternal. The message is used in ClusterUpdate's\nDesiredClusterStatus field and should not be confused with Cluster's Status\nEnum.\nTODO(b\/69364507) Implement a PatchClusterInternal method that takes an\ninternal proto instead so we don't have to define this message here\nTill then, this message should be in sync with the definition in the\ninternal.proto",
       "type": "object",
       "properties": {
         "status": {
@@ -1555,6 +1649,13 @@
         "internal": {
           "description": "An internal field for the sub-error type or other metadata for the\nStatus.",
           "type": "string"
+        },
+        "conditions": {
+          "description": "Which conditions caused the current cluster state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -1995,7 +2096,7 @@
           "$ref": "NodePool"
         },
         "parent": {
-          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
         },
         "version": {
@@ -2775,7 +2876,7 @@
           ]
         },
         "name": {
-          "description": "Contains the name of the resource requested.\nSpecific in the format 'projects\/*\/locations\/*'.",
+          "description": "Contains the name of the resource requested.\nSpecified in the format 'projects\/*\/locations\/*'.",
           "type": "string"
         },
         "recommended": {
@@ -2965,7 +3066,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Contains the name of the resource requested.\nSpecific in the format 'projects\/*\/locations'.",
+                  "description": "Contains the name of the resource requested.\nSpecified in the format 'projects\/*'.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -3689,7 +3790,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",

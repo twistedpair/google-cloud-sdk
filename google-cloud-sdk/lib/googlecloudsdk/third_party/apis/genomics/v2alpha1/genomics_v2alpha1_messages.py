@@ -463,7 +463,7 @@ class Disk(_messages.Message):
       reasonable I/O performance.
     sourceImage: An optional image to put on the disk before attaching it to
       the VM.
-    type: The Compute Engine disk type.  If unspecified, 'standard-pd' is
+    type: The Compute Engine disk type.  If unspecified, 'pd-standard' is
       used.
   """
 

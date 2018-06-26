@@ -493,7 +493,8 @@ request returns an empty response body: {}.
     def Patch(self, request, global_params=None):
       r"""Updates the specified Version resource.
 
-Currently the only supported field to update is `description`.
+Currently the only update-able fields are `description` and
+`autoScaling.minNodes`.
 
       Args:
         request: (MlProjectsModelsVersionsPatchRequest) input message

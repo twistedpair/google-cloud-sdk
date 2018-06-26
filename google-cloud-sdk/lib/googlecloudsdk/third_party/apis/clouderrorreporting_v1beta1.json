@@ -731,7 +731,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Report an individual error event.\n\nThis endpoint accepts <strong>either<\/strong> an OAuth token,\n<strong>or<\/strong> an\n<a href=\"https:\/\/support.google.com\/cloud\/answer\/6158862\">API key<\/a>\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example:\n<pre>POST https:\/\/clouderrorreporting.googleapis.com\/v1beta1\/projects\/example-project\/events:report?key=123ABC456<\/pre>"
+              "description": "Report an individual error event.\n\nThis endpoint accepts **either** an OAuth token,\n**or** an [API key](https:\/\/support.google.com\/cloud\/answer\/6158862)\nfor authentication. To use an API key, append it to the URL as the value of\na `key` parameter. For example:\n\n`POST https:\/\/clouderrorreporting.googleapis.com\/v1beta1\/projects\/example-project\/events:report?key=123ABC456`"
             }
           }
         }

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +41,10 @@ yaml.add_representer(
     collections.OrderedDict,
     yaml.dumper.SafeRepresenter.represent_dict,
     Dumper=yaml.dumper.SafeDumper)
+yaml.add_representer(
+    collections.OrderedDict,
+    yaml.dumper.RoundTripRepresenter.represent_dict,
+    Dumper=yaml.dumper.RoundTripDumper)
 
 
 class Error(exceptions.Error):
@@ -208,3 +213,17 @@ def dump_all(documents, stream=None, **kwargs):
   """
   return yaml.safe_dump_all(
       documents, stream=stream, default_flow_style=False, indent=2, **kwargs)
+
+
+def convert_to_block_text(data):
+  # type: (Union[dict, list]) -> None
+  r"""This processes the given dict or list so it will render as block text.
+
+  By default, the yaml dumper will write multiline strings out as a double
+  quoted string that just includes '\n'. Calling this on the data strucuture
+  will make it use the '|-' notation.
+
+  Args:
+    data: {} or [], The data structure to process.
+  """
+  yaml.scalarstring.walk_tree(data)

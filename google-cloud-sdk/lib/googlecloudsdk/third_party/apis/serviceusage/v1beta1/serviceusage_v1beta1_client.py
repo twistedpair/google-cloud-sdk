@@ -64,12 +64,13 @@ service.
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/operations/{operationsId}',
         http_method=u'GET',
         method_id=u'serviceusage.operations.get',
-        ordered_params=[u'operationsId'],
-        path_params=[u'operationsId'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/operations/{operationsId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ServiceusageOperationsGetRequest',
         response_type_name=u'Operation',
@@ -138,12 +139,13 @@ Operation<response: google.protobuf.Empty>
           config, request, global_params=global_params)
 
     BatchEnable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services:batchEnable',
         http_method=u'POST',
         method_id=u'serviceusage.services.batchEnable',
-        ordered_params=[u'v1beta1Id', u'v1beta1Id1'],
-        path_params=[u'v1beta1Id', u'v1beta1Id1'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services:batchEnable',
+        relative_path=u'v1beta1/{+parent}/services:batchEnable',
         request_field=u'batchEnableServicesRequest',
         request_type_name=u'ServiceusageServicesBatchEnableRequest',
         response_type_name=u'Operation',
@@ -172,12 +174,13 @@ Operation<response: google.protobuf.Empty>
           config, request, global_params=global_params)
 
     Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:disable',
         http_method=u'POST',
         method_id=u'serviceusage.services.disable',
-        ordered_params=[u'v1beta1Id', u'v1beta1Id1', u'servicesId'],
-        path_params=[u'servicesId', u'v1beta1Id', u'v1beta1Id1'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:disable',
+        relative_path=u'v1beta1/{+name}:disable',
         request_field=u'disableServiceRequest',
         request_type_name=u'ServiceusageServicesDisableRequest',
         response_type_name=u'Operation',
@@ -200,12 +203,13 @@ Operation<response: google.protobuf.Empty>
           config, request, global_params=global_params)
 
     Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:enable',
         http_method=u'POST',
         method_id=u'serviceusage.services.enable',
-        ordered_params=[u'v1beta1Id', u'v1beta1Id1', u'servicesId'],
-        path_params=[u'servicesId', u'v1beta1Id', u'v1beta1Id1'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:enable',
+        relative_path=u'v1beta1/{+name}:enable',
         request_field=u'enableServiceRequest',
         request_type_name=u'ServiceusageServicesEnableRequest',
         response_type_name=u'Operation',
@@ -226,12 +230,13 @@ Operation<response: google.protobuf.Empty>
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}',
         http_method=u'GET',
         method_id=u'serviceusage.services.get',
-        ordered_params=[u'v1beta1Id', u'v1beta1Id1', u'servicesId'],
-        path_params=[u'servicesId', u'v1beta1Id', u'v1beta1Id1'],
+        ordered_params=[u'name'],
+        path_params=[u'name'],
         query_params=[],
-        relative_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}',
+        relative_path=u'v1beta1/{+name}',
         request_field='',
         request_type_name=u'ServiceusageServicesGetRequest',
         response_type_name=u'Service',
@@ -258,12 +263,13 @@ services enabled on the project.
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services',
         http_method=u'GET',
         method_id=u'serviceusage.services.list',
-        ordered_params=[u'v1beta1Id', u'v1beta1Id1'],
-        path_params=[u'v1beta1Id', u'v1beta1Id1'],
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
         query_params=[u'filter', u'pageSize', u'pageToken'],
-        relative_path=u'v1beta1/{v1beta1Id}/{v1beta1Id1}/services',
+        relative_path=u'v1beta1/{+parent}/services',
         request_field='',
         request_type_name=u'ServiceusageServicesListRequest',
         response_type_name=u'ListServicesResponse',

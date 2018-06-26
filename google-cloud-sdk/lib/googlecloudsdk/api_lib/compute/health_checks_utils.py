@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -129,10 +130,10 @@ def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
             ' health check. Pass in an empty string to unset.'))
 
 
-def AddHttpRelatedCreationArgs(parser):
+def AddHttpRelatedCreationArgs(parser, port_specification=False):
   """Adds parser arguments for creation related to HTTP."""
 
-  _AddPortRelatedCreationArgs(parser)
+  _AddPortRelatedCreationArgs(parser, port_specification=port_specification)
   AddProxyHeaderRelatedCreateArgs(parser)
 
   parser.add_argument(
@@ -189,10 +190,10 @@ def AddHttpRelatedUpdateArgs(parser):
       """)
 
 
-def AddTcpRelatedCreationArgs(parser):
+def AddTcpRelatedCreationArgs(parser, port_specification=False):
   """Adds parser arguments for creation related to TCP."""
 
-  _AddPortRelatedCreationArgs(parser)
+  _AddPortRelatedCreationArgs(parser, port_specification=port_specification)
   AddProxyHeaderRelatedCreateArgs(parser)
   _AddTcpRelatedArgsImpl(add_info_about_clearing=False, parser=parser)
 
@@ -208,21 +209,7 @@ def AddTcpRelatedUpdateArgs(parser):
 def AddUdpRelatedArgs(parser, request_and_response_required=True):
   """Adds parser arguments related to UDP."""
 
-  parser.add_argument(
-      '--port',
-      type=int,
-      help="""\
-      The UDP port number that this health check monitors. The default is not
-      set.
-      """)
-
-  parser.add_argument(
-      '--port-name',
-      help="""\
-      The port name that this health check monitors. By default, this is
-      empty. Setting this to an empty string will clear any existing
-      port-name value.
-      """)
+  _AddPortRelatedCreationArgs(parser, port_type='UDP', default_port=None)
 
   parser.add_argument(
       '--request',
@@ -241,35 +228,56 @@ def AddUdpRelatedArgs(parser, request_and_response_required=True):
       """)
 
 
-def _AddPortRelatedCreationArgs(parser):
+def _AddPortRelatedCreationArgs(parser, port_specification=False,
+                                port_type='TCP', default_port=80):
   """Adds parser create subcommand arguments --port and --port-name."""
 
-  parser.add_argument(
+  port_group_help = [
+      'These flags configure the port that the health check monitors.'
+  ]
+  if default_port:
+    port_group_help.append(
+        'If none is specified, the default port of 80 is used; if'
+    )
+  else:
+    port_group_help.append('If')
+  port_group_help.append(
+      'both `--port` and `--port-name` are specified, `--port` takes '
+      'precedence.')
+  port_group = parser.add_group(help=' '.join(port_group_help))
+  port_group.add_argument(
       '--port',
       type=int,
-      default=80,
+      default=default_port,
       help="""\
-      The TCP port number that this health check monitors. The default value
-      is 80.
-      """)
+      The {} port number that this health check monitors.
+      """.format(port_type))
 
-  parser.add_argument(
+  port_group.add_argument(
       '--port-name',
       help="""\
       The port name that this health check monitors. By default, this is
       empty.
       """)
 
+  if port_specification:
+    _AddPortSpecificationFlag(port_group)
+
 
 def _AddPortRelatedUpdateArgs(parser):
   """Adds parser update subcommand arguments --port and --port-name."""
 
-  parser.add_argument(
+  port_group = parser.add_group(help=(
+      'These flags configure the port that the health check monitors. '
+      'If both `--port` and `--port-name` are specified, `--port` takes '
+      'precedence.'))
+
+  port_group.add_argument(
       '--port',
       type=int,
       help='The TCP port number that this health check monitors.')
 
-  parser.add_argument(
+  port_group.add_argument(
       '--port-name',
       help="""\
       The port name that this health check monitors. By default, this is
@@ -376,7 +384,7 @@ def CheckProtocolAgnosticArgs(args):
                                             args.unhealthy_threshold))
 
 
-def AddPortSpecificationFlag(parser):
+def _AddPortSpecificationFlag(parser):
   """Adds parser argument for specfiying proxy specification."""
   choices = {
       'use-fixed-port': '--port is used for health checking.',

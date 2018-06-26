@@ -2531,7 +2531,8 @@ class UrlMap(_messages.Message):
   Enums:
     AuthFailActionValueValuesEnum: Action to take when users access resources
       that require authentication. Defaults to redirect.
-    LoginValueValuesEnum: Level of login required to access this resource.
+    LoginValueValuesEnum: Level of login required to access this resource. Not
+      supported for Node.js in the App Engine standard environment.
     RedirectHttpResponseCodeValueValuesEnum: 30x code to use when performing
       redirects for the secure field. Defaults to 302.
     SecurityLevelValueValuesEnum: Security (HTTPS) enforcement for this URL.
@@ -2540,11 +2541,13 @@ class UrlMap(_messages.Message):
     apiEndpoint: Uses API Endpoints to handle requests.
     authFailAction: Action to take when users access resources that require
       authentication. Defaults to redirect.
-    login: Level of login required to access this resource.
+    login: Level of login required to access this resource. Not supported for
+      Node.js in the App Engine standard environment.
     redirectHttpResponseCode: 30x code to use when performing redirects for
       the secure field. Defaults to 302.
-    script: Executes a script to handle the request that matches this URL
-      pattern.
+    script: Executes a script to handle the requests that match this URL
+      pattern. Only the auto value is supported for Node.js in the App Engine
+      standard environment, for example "script": "auto".
     securityLevel: Security (HTTPS) enforcement for this URL.
     staticFiles: Returns the contents of a file, such as an image, as the
       response.
@@ -2572,7 +2575,8 @@ class UrlMap(_messages.Message):
     AUTH_FAIL_ACTION_UNAUTHORIZED = 2
 
   class LoginValueValuesEnum(_messages.Enum):
-    r"""Level of login required to access this resource.
+    r"""Level of login required to access this resource. Not supported for
+    Node.js in the App Engine standard environment.
 
     Values:
       LOGIN_UNSPECIFIED: Not specified. LOGIN_OPTIONAL is assumed.

@@ -171,7 +171,6 @@ class AuthenticationRule(_messages.Message):
   Fields:
     allowWithoutCredential: If true, the service accepts API keys without any
       other credential.
-    customAuth: Configuration for custom authentication.
     oauth: The requirements for OAuth credentials.
     requirements: Requirements for additional authentication providers.
     selector: Selects the methods to which this rule applies.  Refer to
@@ -179,10 +178,9 @@ class AuthenticationRule(_messages.Message):
   """
 
   allowWithoutCredential = _messages.BooleanField(1)
-  customAuth = _messages.MessageField('CustomAuthRequirements', 2)
-  oauth = _messages.MessageField('OAuthRequirements', 3)
-  requirements = _messages.MessageField('AuthRequirement', 4, repeated=True)
-  selector = _messages.StringField(5)
+  oauth = _messages.MessageField('OAuthRequirements', 2)
+  requirements = _messages.MessageField('AuthRequirement', 3, repeated=True)
+  selector = _messages.StringField(4)
 
 
 class AuthorizationConfig(_messages.Message):
@@ -270,6 +268,21 @@ class BatchEnableServicesRequest(_messages.Message):
   """
 
   serviceIds = _messages.StringField(1, repeated=True)
+
+
+class BatchEnableServicesResponse(_messages.Message):
+  r"""Response message for the `BatchEnableServices` method. This response
+  message is assigned to the `response` field of the returned Operation when
+  that operation is done.
+
+  Fields:
+    failures: If allow_partial_success is true, and one or more services could
+      not be enabled, this field contains the details about each failure.
+    services: The new state of the services after enabling.
+  """
+
+  failures = _messages.MessageField('EnableFailure', 1, repeated=True)
+  services = _messages.MessageField('GoogleApiServiceusageV1Service', 2, repeated=True)
 
 
 class Billing(_messages.Message):
@@ -369,18 +382,6 @@ class Control(_messages.Message):
   environment = _messages.StringField(1)
 
 
-class CustomAuthRequirements(_messages.Message):
-  r"""Configuration for a custom authentication provider.
-
-  Fields:
-    provider: A configuration string containing connection information for the
-      authentication provider, typically formatted as a SmartService string
-      (go/smartservice).
-  """
-
-  provider = _messages.StringField(1)
-
-
 class CustomError(_messages.Message):
   r"""Customize service error responses.  For example, list any service
   specific protobuf types that can appear in error detail lists of error
@@ -428,6 +429,18 @@ class CustomHttpPattern(_messages.Message):
 
 class DisableServiceRequest(_messages.Message):
   r"""Request message for the `DisableService` method."""
+
+
+class DisableServiceResponse(_messages.Message):
+  r"""Response message for the `DisableService` method. This response message
+  is assigned to the `response` field of the returned Operation when that
+  operation is done.
+
+  Fields:
+    service: The new state of the service after disabling.
+  """
+
+  service = _messages.MessageField('GoogleApiServiceusageV1Service', 1)
 
 
 class Documentation(_messages.Message):
@@ -507,8 +520,43 @@ class DocumentationRule(_messages.Message):
   selector = _messages.StringField(3)
 
 
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance:      service Foo {
+  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
+  JSON representation for `Empty` is empty JSON object `{}`.
+  """
+
+
+
+class EnableFailure(_messages.Message):
+  r"""A EnableFailure object.
+
+  Fields:
+    errorMessage: An error message describing why the service could not be
+      enabled.
+    serviceId: The service id of a service that could not be enabled.
+  """
+
+  errorMessage = _messages.StringField(1)
+  serviceId = _messages.StringField(2)
+
+
 class EnableServiceRequest(_messages.Message):
   r"""Request message for the `EnableService` method."""
+
+
+class EnableServiceResponse(_messages.Message):
+  r"""Response message for the `EnableService` method. This response message
+  is assigned to the `response` field of the returned Operation when that
+  operation is done.
+
+  Fields:
+    service: The new state of the service after enabling.
+  """
+
+  service = _messages.MessageField('GoogleApiServiceusageV1Service', 1)
 
 
 class Endpoint(_messages.Message):
@@ -801,6 +849,77 @@ class GoogleApiService(_messages.Message):
   title = _messages.StringField(26)
   types = _messages.MessageField('Type', 27, repeated=True)
   usage = _messages.MessageField('Usage', 28)
+
+
+class GoogleApiServiceusageV1Service(_messages.Message):
+  r"""A service that is available for use by the consumer.
+
+  Enums:
+    StateValueValuesEnum: Whether or not the service has been enabled for use
+      by the consumer.
+
+  Fields:
+    config: The service configuration of the available service. Some fields
+      may be filtered out of the configuration in responses to the
+      `ListServices` method. These fields are present only in responses to the
+      `GetService` method.
+    name: The resource name of the consumer and service.  A valid name would
+      be: - projects/123/services/serviceusage.googleapis.com
+    parent: The resource name of the consumer.  A valid name would be: -
+      projects/123
+    state: Whether or not the service has been enabled for use by the
+      consumer.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Whether or not the service has been enabled for use by the consumer.
+
+    Values:
+      STATE_UNSPECIFIED: The default value, which indicates that the enabled
+        state of the service is unspecified or not meaningful. Currently, all
+        consumers other than projects (such as folders and organizations) are
+        always in this state.
+      DISABLED: The service cannot be used by this consumer. It has either
+        been explicitly disabled, or has never been enabled.
+      ENABLED: The service has been explicitly enabled for use by this
+        consumer.
+    """
+    STATE_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  config = _messages.MessageField('GoogleApiServiceusageV1ServiceConfig', 1)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class GoogleApiServiceusageV1ServiceConfig(_messages.Message):
+  r"""The configuration of the service.
+
+  Fields:
+    apis: A list of API interfaces exported by this service. Contains only the
+      names, versions, and method names of the interfaces.
+    authentication: Auth configuration. Contains only the OAuth rules.
+    documentation: Additional API documentation. Contains only the summary and
+      the documentation URL.
+    endpoints: Configuration for network endpoints. Contains only the names
+      and aliases of the endpoints.
+    name: The DNS address at which this service is available.  An example DNS
+      address would be: `calendar.googleapis.com`.
+    quota: Quota configuration.
+    title: The product title for this service.
+    usage: Configuration controlling usage of this service.
+  """
+
+  apis = _messages.MessageField('Api', 1, repeated=True)
+  authentication = _messages.MessageField('Authentication', 2)
+  documentation = _messages.MessageField('Documentation', 3)
+  endpoints = _messages.MessageField('Endpoint', 4, repeated=True)
+  name = _messages.StringField(5)
+  quota = _messages.MessageField('Quota', 6)
+  title = _messages.StringField(7)
+  usage = _messages.MessageField('Usage', 8)
 
 
 class Http(_messages.Message):
@@ -1979,10 +2098,10 @@ class ServiceusageOperationsGetRequest(_messages.Message):
   r"""A ServiceusageOperationsGetRequest object.
 
   Fields:
-    operationsId: Part of `name`. The name of the operation resource.
+    name: The name of the operation resource.
   """
 
-  operationsId = _messages.StringField(1, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ServiceusageOperationsListRequest(_messages.Message):
@@ -2007,16 +2126,13 @@ class ServiceusageServicesBatchEnableRequest(_messages.Message):
   Fields:
     batchEnableServicesRequest: A BatchEnableServicesRequest resource to be
       passed as the request body.
-    v1beta1Id: Part of `parent`. Parent to enable services on.  An example
-      name would be: `projects/123` where `123` is the project number (not
-      project ID).  The `BatchEnableServices` method currently only supports
-      projects.
-    v1beta1Id1: Part of `parent`. See documentation of `v1beta1Id`.
+    parent: Parent to enable services on.  An example name would be:
+      `projects/123` where `123` is the project number (not project ID).  The
+      `BatchEnableServices` method currently only supports projects.
   """
 
   batchEnableServicesRequest = _messages.MessageField('BatchEnableServicesRequest', 1)
-  v1beta1Id = _messages.StringField(2, required=True)
-  v1beta1Id1 = _messages.StringField(3, required=True)
+  parent = _messages.StringField(2, required=True)
 
 
 class ServiceusageServicesDisableRequest(_messages.Message):
@@ -2025,19 +2141,14 @@ class ServiceusageServicesDisableRequest(_messages.Message):
   Fields:
     disableServiceRequest: A DisableServiceRequest resource to be passed as
       the request body.
-    servicesId: Part of `name`. See documentation of `v1beta1Id`.
-    v1beta1Id: Part of `name`. Name of the consumer and service to disable the
-      service on.  The enable and disable methods currently only support
-      projects.  An example name would be:
-      `projects/123/services/serviceusage.googleapis.com` where `123` is the
-      project number (not project ID).
-    v1beta1Id1: Part of `name`. See documentation of `v1beta1Id`.
+    name: Name of the consumer and service to disable the service on.  The
+      enable and disable methods currently only support projects.  An example
+      name would be: `projects/123/services/serviceusage.googleapis.com` where
+      `123` is the project number (not project ID).
   """
 
   disableServiceRequest = _messages.MessageField('DisableServiceRequest', 1)
-  servicesId = _messages.StringField(2, required=True)
-  v1beta1Id = _messages.StringField(3, required=True)
-  v1beta1Id1 = _messages.StringField(4, required=True)
+  name = _messages.StringField(2, required=True)
 
 
 class ServiceusageServicesEnableRequest(_messages.Message):
@@ -2046,37 +2157,29 @@ class ServiceusageServicesEnableRequest(_messages.Message):
   Fields:
     enableServiceRequest: A EnableServiceRequest resource to be passed as the
       request body.
-    servicesId: Part of `name`. See documentation of `v1beta1Id`.
-    v1beta1Id: Part of `name`. Name of the consumer and service to enable the
-      service on.  The `EnableService` and `DisableService` methods currently
-      only support projects.  Enabling a service requires that the service is
-      public or is shared with the user enabling the service.  An example name
-      would be: `projects/123/services/serviceusage.googleapis.com` where
-      `123` is the project number (not project ID).
-    v1beta1Id1: Part of `name`. See documentation of `v1beta1Id`.
+    name: Name of the consumer and service to enable the service on.  The
+      `EnableService` and `DisableService` methods currently only support
+      projects.  Enabling a service requires that the service is public or is
+      shared with the user enabling the service.  An example name would be:
+      `projects/123/services/serviceusage.googleapis.com` where `123` is the
+      project number (not project ID).
   """
 
   enableServiceRequest = _messages.MessageField('EnableServiceRequest', 1)
-  servicesId = _messages.StringField(2, required=True)
-  v1beta1Id = _messages.StringField(3, required=True)
-  v1beta1Id1 = _messages.StringField(4, required=True)
+  name = _messages.StringField(2, required=True)
 
 
 class ServiceusageServicesGetRequest(_messages.Message):
   r"""A ServiceusageServicesGetRequest object.
 
   Fields:
-    servicesId: Part of `name`. See documentation of `v1beta1Id`.
-    v1beta1Id: Part of `name`. Name of the consumer and service to get the
-      `ConsumerState` for.  An example name would be:
+    name: Name of the consumer and service to get the `ConsumerState` for.  An
+      example name would be:
       `projects/123/services/serviceusage.googleapis.com` where `123` is the
       project number (not project ID).
-    v1beta1Id1: Part of `name`. See documentation of `v1beta1Id`.
   """
 
-  servicesId = _messages.StringField(1, required=True)
-  v1beta1Id = _messages.StringField(2, required=True)
-  v1beta1Id1 = _messages.StringField(3, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class ServiceusageServicesListRequest(_messages.Message):
@@ -2089,17 +2192,14 @@ class ServiceusageServicesListRequest(_messages.Message):
       cannot exceed 200.  If not set, the default page size is 50.
     pageToken: Token identifying which result to start with, which is returned
       by a previous list call.
-    v1beta1Id: Part of `parent`. Parent to search for services on.  An example
-      name would be: `projects/123` where `123` is the project number (not
-      project ID).
-    v1beta1Id1: Part of `parent`. See documentation of `v1beta1Id`.
+    parent: Parent to search for services on.  An example name would be:
+      `projects/123` where `123` is the project number (not project ID).
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
-  v1beta1Id = _messages.StringField(4, required=True)
-  v1beta1Id1 = _messages.StringField(5, required=True)
+  parent = _messages.StringField(4, required=True)
 
 
 class SourceContext(_messages.Message):
@@ -2165,14 +2265,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -2208,17 +2306,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -407,11 +408,17 @@ def KillSubprocess(p):
   else:
     # Create a mapping of ppid to pid for all processes, then kill all
     # subprocesses from the main process down
+
+    # set env LANG for subprocess.Popen to be 'en_US.UTF-8'
+    new_env = dict(os.environ)
+    new_env['LANG'] = 'en_US.UTF-8'
     get_pids_process = subprocess.Popen(['ps', '-e',
                                          '-o', 'ppid=', '-o', 'pid='],
                                         stdout=subprocess.PIPE,
-                                        stderr=subprocess.PIPE)
+                                        stderr=subprocess.PIPE,
+                                        env=new_env)
     (stdout, stderr) = get_pids_process.communicate()
+    stdout = stdout.decode('utf-8')
     if get_pids_process.returncode != 0:
       raise RuntimeError('Failed to get subprocesses of process: {0}'
                          .format(p.pid))

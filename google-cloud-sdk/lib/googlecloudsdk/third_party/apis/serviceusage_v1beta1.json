@@ -44,11 +44,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -67,12 +62,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -643,10 +632,6 @@
           "description": "The requirements for OAuth credentials.",
           "$ref": "OAuthRequirements"
         },
-        "customAuth": {
-          "description": "Configuration for custom authentication.",
-          "$ref": "CustomAuthRequirements"
-        },
         "allowWithoutCredential": {
           "description": "If true, the service accepts API keys without any other credential.",
           "type": "boolean"
@@ -667,17 +652,6 @@
       "properties": {
         "canonicalScopes": {
           "description": "The list of publicly documented OAuth scopes that are allowed access. An\nOAuth token containing any of these scopes will be accepted.\n\nExample:\n\n     canonical_scopes: https:\/\/www.googleapis.com\/auth\/calendar,\n                       https:\/\/www.googleapis.com\/auth\/calendar.read",
-          "type": "string"
-        }
-      }
-    },
-    "CustomAuthRequirements": {
-      "id": "CustomAuthRequirements",
-      "description": "Configuration for a custom authentication provider.",
-      "type": "object",
-      "properties": {
-        "provider": {
-          "description": "A configuration string containing connection information for the\nauthentication provider, typically formatted as a SmartService string\n(go\/smartservice).",
           "type": "string"
         }
       }
@@ -1945,6 +1919,148 @@
           ]
         }
       }
+    },
+    "EnableServiceResponse": {
+      "id": "EnableServiceResponse",
+      "description": "Response message for the `EnableService` method.\nThis response message is assigned to the `response` field of the returned\nOperation when that operation is done.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "The new state of the service after enabling.",
+          "$ref": "GoogleApiServiceusageV1Service"
+        }
+      }
+    },
+    "GoogleApiServiceusageV1Service": {
+      "id": "GoogleApiServiceusageV1Service",
+      "description": "A service that is available for use by the consumer.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the consumer and service.\n\nA valid name would be:\n- projects\/123\/services\/serviceusage.googleapis.com",
+          "type": "string"
+        },
+        "parent": {
+          "description": "The resource name of the consumer.\n\nA valid name would be:\n- projects\/123",
+          "type": "string"
+        },
+        "config": {
+          "description": "The service configuration of the available service.\nSome fields may be filtered out of the configuration in responses to\nthe `ListServices` method. These fields are present only in responses to\nthe `GetService` method.",
+          "$ref": "GoogleApiServiceusageV1ServiceConfig"
+        },
+        "state": {
+          "description": "Whether or not the service has been enabled for use by the consumer.",
+          "enumDescriptions": [
+            "The default value, which indicates that the enabled state of the service\nis unspecified or not meaningful. Currently, all consumers other than\nprojects (such as folders and organizations) are always in this state.",
+            "The service cannot be used by this consumer. It has either been explicitly\ndisabled, or has never been enabled.",
+            "The service has been explicitly enabled for use by this consumer."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "DISABLED",
+            "ENABLED"
+          ]
+        }
+      }
+    },
+    "GoogleApiServiceusageV1ServiceConfig": {
+      "id": "GoogleApiServiceusageV1ServiceConfig",
+      "description": "The configuration of the service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The DNS address at which this service is available.\n\nAn example DNS address would be:\n`calendar.googleapis.com`.",
+          "type": "string"
+        },
+        "title": {
+          "description": "The product title for this service.",
+          "type": "string"
+        },
+        "apis": {
+          "description": "A list of API interfaces exported by this service. Contains only the names,\nversions, and method names of the interfaces.",
+          "type": "array",
+          "items": {
+            "$ref": "Api"
+          }
+        },
+        "documentation": {
+          "description": "Additional API documentation. Contains only the summary and the\ndocumentation URL.",
+          "$ref": "Documentation"
+        },
+        "quota": {
+          "description": "Quota configuration.",
+          "$ref": "Quota"
+        },
+        "authentication": {
+          "description": "Auth configuration. Contains only the OAuth rules.",
+          "$ref": "Authentication"
+        },
+        "usage": {
+          "description": "Configuration controlling usage of this service.",
+          "$ref": "Usage"
+        },
+        "endpoints": {
+          "description": "Configuration for network endpoints. Contains only the names and aliases\nof the endpoints.",
+          "type": "array",
+          "items": {
+            "$ref": "Endpoint"
+          }
+        }
+      }
+    },
+    "DisableServiceResponse": {
+      "id": "DisableServiceResponse",
+      "description": "Response message for the `DisableService` method.\nThis response message is assigned to the `response` field of the returned\nOperation when that operation is done.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "The new state of the service after disabling.",
+          "$ref": "GoogleApiServiceusageV1Service"
+        }
+      }
+    },
+    "BatchEnableServicesResponse": {
+      "id": "BatchEnableServicesResponse",
+      "description": "Response message for the `BatchEnableServices` method.\nThis response message is assigned to the `response` field of the returned\nOperation when that operation is done.",
+      "type": "object",
+      "properties": {
+        "services": {
+          "description": "The new state of the services after enabling.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleApiServiceusageV1Service"
+          }
+        },
+        "failures": {
+          "description": "If allow_partial_success is true, and one or more services could not be\nenabled, this field contains the details about each failure.",
+          "type": "array",
+          "items": {
+            "$ref": "EnableFailure"
+          }
+        }
+      }
+    },
+    "EnableFailure": {
+      "id": "EnableFailure",
+      "type": "object",
+      "properties": {
+        "serviceId": {
+          "description": "The service id of a service that could not be enabled.",
+          "type": "string"
+        },
+        "errorMessage": {
+          "description": "An error message describing why the service could not be enabled.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {
@@ -1991,19 +2107,20 @@
         },
         "get": {
           "id": "serviceusage.operations.get",
-          "path": "v1beta1/operations/{operationsId}",
+          "path": "v1beta1/{+name}",
           "flatPath": "v1beta1/operations/{operationsId}",
           "httpMethod": "GET",
           "parameters": {
-            "operationsId": {
-              "description": "Part of `name`. The name of the operation resource.",
+            "name": {
+              "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
+              "pattern": "^operations\/[^\/]+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "operationsId"
+            "name"
           ],
           "response": {
             "$ref": "Operation"
@@ -2020,33 +2137,20 @@
       "methods": {
         "enable": {
           "id": "serviceusage.services.enable",
-          "path": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:enable",
+          "path": "v1beta1/{+name}:enable",
           "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:enable",
           "httpMethod": "POST",
           "parameters": {
-            "v1beta1Id": {
-              "description": "Part of `name`. Name of the consumer and service to enable the service on.\n\nThe `EnableService` and `DisableService` methods currently only support\nprojects.\n\nEnabling a service requires that the service is public or is shared with\nthe user enabling the service.\n\nAn example name would be:\n`projects\/123\/services\/serviceusage.googleapis.com`\nwhere `123` is the project number (not project ID).",
+            "name": {
+              "description": "Name of the consumer and service to enable the service on.\n\nThe `EnableService` and `DisableService` methods currently only support\nprojects.\n\nEnabling a service requires that the service is public or is shared with\nthe user enabling the service.\n\nAn example name would be:\n`projects\/123\/services\/serviceusage.googleapis.com`\nwhere `123` is the project number (not project ID).",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "v1beta1Id1": {
-              "description": "Part of `name`. See documentation of `v1beta1Id`.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "servicesId": {
-              "description": "Part of `name`. See documentation of `v1beta1Id`.",
-              "location": "path",
-              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "v1beta1Id",
-            "v1beta1Id1",
-            "servicesId"
+            "name"
           ],
           "request": {
             "$ref": "EnableServiceRequest"
@@ -2062,33 +2166,20 @@
         },
         "disable": {
           "id": "serviceusage.services.disable",
-          "path": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:disable",
+          "path": "v1beta1/{+name}:disable",
           "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}:disable",
           "httpMethod": "POST",
           "parameters": {
-            "v1beta1Id": {
-              "description": "Part of `name`. Name of the consumer and service to disable the service on.\n\nThe enable and disable methods currently only support projects.\n\nAn example name would be:\n`projects\/123\/services\/serviceusage.googleapis.com`\nwhere `123` is the project number (not project ID).",
+            "name": {
+              "description": "Name of the consumer and service to disable the service on.\n\nThe enable and disable methods currently only support projects.\n\nAn example name would be:\n`projects\/123\/services\/serviceusage.googleapis.com`\nwhere `123` is the project number (not project ID).",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "v1beta1Id1": {
-              "description": "Part of `name`. See documentation of `v1beta1Id`.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "servicesId": {
-              "description": "Part of `name`. See documentation of `v1beta1Id`.",
-              "location": "path",
-              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "v1beta1Id",
-            "v1beta1Id1",
-            "servicesId"
+            "name"
           ],
           "request": {
             "$ref": "DisableServiceRequest"
@@ -2104,33 +2195,20 @@
         },
         "get": {
           "id": "serviceusage.services.get",
-          "path": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}",
+          "path": "v1beta1/{+name}",
           "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services/{servicesId}",
           "httpMethod": "GET",
           "parameters": {
-            "v1beta1Id": {
-              "description": "Part of `name`. Name of the consumer and service to get the `ConsumerState` for.\n\nAn example name would be:\n`projects\/123\/services\/serviceusage.googleapis.com`\nwhere `123` is the project number (not project ID).",
+            "name": {
+              "description": "Name of the consumer and service to get the `ConsumerState` for.\n\nAn example name would be:\n`projects\/123\/services\/serviceusage.googleapis.com`\nwhere `123` is the project number (not project ID).",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "v1beta1Id1": {
-              "description": "Part of `name`. See documentation of `v1beta1Id`.",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "servicesId": {
-              "description": "Part of `name`. See documentation of `v1beta1Id`.",
-              "location": "path",
-              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+\/services\/[^\/]+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "v1beta1Id",
-            "v1beta1Id1",
-            "servicesId"
+            "name"
           ],
           "response": {
             "$ref": "Service"
@@ -2143,20 +2221,15 @@
         },
         "list": {
           "id": "serviceusage.services.list",
-          "path": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services",
+          "path": "v1beta1/{+parent}/services",
           "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services",
           "httpMethod": "GET",
           "parameters": {
-            "v1beta1Id": {
-              "description": "Part of `parent`. Parent to search for services on.\n\nAn example name would be:\n`projects\/123`\nwhere `123` is the project number (not project ID).",
+            "parent": {
+              "description": "Parent to search for services on.\n\nAn example name would be:\n`projects\/123`\nwhere `123` is the project number (not project ID).",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "v1beta1Id1": {
-              "description": "Part of `parent`. See documentation of `v1beta1Id`.",
-              "location": "path",
-              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+$",
               "type": "string"
             },
             "pageSize": {
@@ -2177,8 +2250,7 @@
             }
           },
           "parameterOrder": [
-            "v1beta1Id",
-            "v1beta1Id1"
+            "parent"
           ],
           "response": {
             "$ref": "ListServicesResponse"
@@ -2191,26 +2263,20 @@
         },
         "batchEnable": {
           "id": "serviceusage.services.batchEnable",
-          "path": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services:batchEnable",
+          "path": "v1beta1/{+parent}/services:batchEnable",
           "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/services:batchEnable",
           "httpMethod": "POST",
           "parameters": {
-            "v1beta1Id": {
-              "description": "Part of `parent`. Parent to enable services on.\n\nAn example name would be:\n`projects\/123`\nwhere `123` is the project number (not project ID).\n\nThe `BatchEnableServices` method currently only supports projects.",
+            "parent": {
+              "description": "Parent to enable services on.\n\nAn example name would be:\n`projects\/123`\nwhere `123` is the project number (not project ID).\n\nThe `BatchEnableServices` method currently only supports projects.",
               "location": "path",
               "required": true,
-              "type": "string"
-            },
-            "v1beta1Id1": {
-              "description": "Part of `parent`. See documentation of `v1beta1Id`.",
-              "location": "path",
-              "required": true,
+              "pattern": "^[^\/]+\/[^\/]+$",
               "type": "string"
             }
           },
           "parameterOrder": [
-            "v1beta1Id",
-            "v1beta1Id1"
+            "parent"
           ],
           "request": {
             "$ref": "BatchEnableServicesRequest"

@@ -125,10 +125,10 @@ class CloneContext(_messages.Message):
   r"""Database instance clone context.
 
   Fields:
-    binLogCoordinates: Binary log coordinates, if specified, indentify the the
+    binLogCoordinates: Binary log coordinates, if specified, identify the
       position up to which the source instance should be cloned. If not
       specified, the source instance is cloned up to the most recent binary
-      log coordintes.
+      log coordinates.
     destinationInstanceName: Name of the Cloud SQL instance to be created as a
       clone.
     kind: This is always sql#cloneContext.
@@ -771,10 +771,9 @@ class OnPremisesConfiguration(_messages.Message):
 
 
 class Operation(_messages.Message):
-  r"""An Operations resource contains information about database instance
-  operations such as create, delete, and restart. Operations resources are
-  created in response to operations that were initiated; you never create them
-  directly.
+  r"""An Operation resource. For successful operations that return an
+  Operation resource, only the fields relevant to the operation are populated
+  in the resource.
 
   Fields:
     endTime: The time this operation finished in UTC timezone in RFC 3339
@@ -1127,7 +1126,7 @@ class SqlDatabasesListRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    project: Project ID of the project for which to list Cloud SQL instances.
+    project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
@@ -1506,8 +1505,7 @@ class SqlSslCertsDeleteRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    project: Project ID of the project that contains the instance to be
-      deleted.
+    project: Project ID of the project that contains the instance.
     sha1Fingerprint: Sha1 FingerPrint.
   """
 
@@ -1535,8 +1533,7 @@ class SqlSslCertsInsertRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    project: Project ID of the project to which the newly created Cloud SQL
-      instances should belong.
+    project: Project ID of the project that contains the instance.
     sslCertsInsertRequest: A SslCertsInsertRequest resource to be passed as
       the request body.
   """
@@ -1551,7 +1548,7 @@ class SqlSslCertsListRequest(_messages.Message):
 
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
-    project: Project ID of the project for which to list Cloud SQL instances.
+    project: Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
@@ -1670,8 +1667,7 @@ class SslCertsInsertRequest(_messages.Message):
 
   Fields:
     commonName: User supplied name. Must be a distinct name from the other
-      certificates for this instance. New certificates will not be usable
-      until the instance is restarted.
+      certificates for this instance.
   """
 
   commonName = _messages.StringField(1)
@@ -1756,8 +1752,8 @@ class Tier(_messages.Message):
     RAM: The maximum RAM usage of this tier in bytes.
     kind: This is always sql#tier.
     region: The applicable regions for this tier.
-    tier: An identifier for the service tier, for example D1, D2 etc. For
-      related information, see Pricing.
+    tier: An identifier for the machine type, for example, db-n1-standard-1.
+      For related information, see Pricing.
   """
 
   DiskQuota = _messages.IntegerField(1)

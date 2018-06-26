@@ -457,8 +457,9 @@ class Job(_messages.Message):
     httpTarget: Http target.
     lastAttemptTime: Output only. The time the last job attempt started.
     name: The job name. For example:
-      `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  Caller-
-      specified in CreateJobRequest, after which it becomes output only.
+      `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  The maximum
+      allowed length for `JOB_ID` is 500 characters. Caller-specified in
+      CreateJobRequest, after which it becomes output only.
     nextScheduleTime: Output only. The next time the job is scheduled. Note
       that this may be a retry of a previously failed attempt or the next
       execution time according to the schedule.

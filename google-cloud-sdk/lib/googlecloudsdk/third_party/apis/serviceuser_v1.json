@@ -1861,7 +1861,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. Name of the consumer and the service to enable for that consumer.\n\nA valid path would be:\n- \/v1\/projects\/my-project\/services\/servicemanagement.googleapis.com:enable",
+                  "description": "Part of `name`. Name of the consumer and the service to enable for that consumer.\n\nA valid path would be:\n- projects\/my-project\/services\/servicemanagement.googleapis.com",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -1896,7 +1896,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "projectsId": {
-                  "description": "Part of `name`. Name of the consumer and the service to disable for that consumer.\n\nThe Service User implementation accepts the following forms for consumer:\n- \"project:<project_id>\"\n\nA valid path would be:\n- \/v1\/projects\/my-project\/services\/servicemanagement.googleapis.com:disable",
+                  "description": "Part of `name`. Name of the consumer and the service to disable for that consumer.\n\nThe Service User implementation accepts the following forms for consumer:\n- \"project:<project_id>\"\n\nA valid path would be:\n- projects\/my-project\/services\/servicemanagement.googleapis.com",
                   "location": "path",
                   "required": true,
                   "type": "string"

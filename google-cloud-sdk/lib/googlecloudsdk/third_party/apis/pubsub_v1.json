@@ -506,7 +506,7 @@
       "type": "object",
       "properties": {
         "receivedMessages": {
-          "description": "Received Pub\/Sub messages. The Pub\/Sub system will return zero messages if\nthere are no more available in the backlog. The Pub\/Sub system may return\nfewer than the `maxMessages` requested even if there are more messages\navailable in the backlog.",
+          "description": "Received Pub\/Sub messages. The list will be empty if there are no more\nmessages available in the backlog. For JSON, the response can be entirely\nempty. The Pub\/Sub system may return fewer than the `maxMessages` requested\neven if there are more messages available in the backlog.",
           "type": "array",
           "items": {
             "$ref": "ReceivedMessage"
@@ -1312,7 +1312,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/pubsub"
               ],
-              "description": "Pulls messages from the server. Returns an empty list if there are no\nmessages available in the backlog. The server may return `UNAVAILABLE` if\nthere are too many concurrent pull requests pending for the given\nsubscription."
+              "description": "Pulls messages from the server. The server may return `UNAVAILABLE` if\nthere are too many concurrent pull requests pending for the given\nsubscription."
             },
             "modifyPushConfig": {
               "id": "pubsub.projects.subscriptions.modifyPushConfig",

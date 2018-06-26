@@ -263,12 +263,12 @@ class GoogleCloudVideointelligenceV1VideoAnnotationProgress(_messages.Message):
   r"""Annotation progress for a single video.
 
   Fields:
-    inputUri: Output only. Video file location in [Google Cloud
+    inputUri: Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
-    progressPercent: Output only. Approximate percentage processed thus far.
-      Guaranteed to be 100 when fully processed.
-    startTime: Output only. Time when the request was received.
-    updateTime: Output only. Time of the most recent update.
+    progressPercent: Approximate percentage processed thus far. Guaranteed to
+      be 100 when fully processed.
+    startTime: Time when the request was received.
+    updateTime: Time of the most recent update.
   """
 
   inputUri = _messages.StringField(1)
@@ -281,13 +281,12 @@ class GoogleCloudVideointelligenceV1VideoAnnotationResults(_messages.Message):
   r"""Annotation results for a single video.
 
   Fields:
-    error: Output only. Non-streaming error only. If set, indicates an error.
-      Note that for a single `AnnotateVideoRequest` some videos may succeed
-      and some may fail.
+    error: If set, indicates an error. Note that for a single
+      `AnnotateVideoRequest` some videos may succeed and some may fail.
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Output only. Video file location in [Google Cloud
+    inputUri: Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
     segmentLabelAnnotations: Label annotations on video level or user
       specified segment level. There is exactly one element for each unique
@@ -313,9 +312,9 @@ class GoogleCloudVideointelligenceV1VideoContext(_messages.Message):
   Fields:
     explicitContentDetectionConfig: Config for EXPLICIT_CONTENT_DETECTION.
     labelDetectionConfig: Config for LABEL_DETECTION.
-    segments: Non-streaming request only. Video segments to annotate. The
-      segments may overlap and are not required to be contiguous or span the
-      whole video. If unspecified, each video is treated as a single segment.
+    segments: Video segments to annotate. The segments may overlap and are not
+      required to be contiguous or span the whole video. If unspecified, each
+      video is treated as a single segment.
     shotChangeDetectionConfig: Config for SHOT_CHANGE_DETECTION.
   """
 
@@ -474,12 +473,12 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationProgress(_messages.Messa
   r"""Annotation progress for a single video.
 
   Fields:
-    inputUri: Output only. Video file location in [Google Cloud
+    inputUri: Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
-    progressPercent: Output only. Approximate percentage processed thus far.
-      Guaranteed to be 100 when fully processed.
-    startTime: Output only. Time when the request was received.
-    updateTime: Output only. Time of the most recent update.
+    progressPercent: Approximate percentage processed thus far. Guaranteed to
+      be 100 when fully processed.
+    startTime: Time when the request was received.
+    updateTime: Time of the most recent update.
   """
 
   inputUri = _messages.StringField(1)
@@ -492,13 +491,12 @@ class GoogleCloudVideointelligenceV1beta2VideoAnnotationResults(_messages.Messag
   r"""Annotation results for a single video.
 
   Fields:
-    error: Output only. Non-streaming error only. If set, indicates an error.
-      Note that for a single `AnnotateVideoRequest` some videos may succeed
-      and some may fail.
+    error: If set, indicates an error. Note that for a single
+      `AnnotateVideoRequest` some videos may succeed and some may fail.
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Output only. Video file location in [Google Cloud
+    inputUri: Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
     segmentLabelAnnotations: Label annotations on video level or user
       specified segment level. There is exactly one element for each unique
@@ -667,17 +665,15 @@ class GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative(_message
   r"""Alternative hypotheses (a.k.a. n-best list).
 
   Fields:
-    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
-      higher number indicates an estimated greater likelihood that the
-      recognized words are correct. This field is typically provided only for
-      the top hypothesis, and only for `is_final=true` results. Clients should
-      not rely on the `confidence` field as it is not guaranteed to be
-      accurate or consistent. The default of 0.0 is a sentinel value
-      indicating `confidence` was not set.
-    transcript: Output only. Transcript text representing the words that the
-      user spoke.
-    words: Output only. A list of word-specific information for each
-      recognized word.
+    confidence: The confidence estimate between 0.0 and 1.0. A higher number
+      indicates an estimated greater likelihood that the recognized words are
+      correct. This field is typically provided only for the top hypothesis,
+      and only for `is_final=true` results. Clients should not rely on the
+      `confidence` field as it is not guaranteed to be accurate or consistent.
+      The default of 0.0 is a sentinel value indicating `confidence` was not
+      set.
+    transcript: Transcript text representing the words that the user spoke.
+    words: A list of word-specific information for each recognized word.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -689,10 +685,10 @@ class GoogleCloudVideointelligenceV1p1beta1SpeechTranscription(_messages.Message
   r"""A speech recognition result corresponding to a portion of the audio.
 
   Fields:
-    alternatives: Output only. May contain one or more recognition hypotheses
-      (up to the maximum specified in `max_alternatives`). These alternatives
-      are ordered in terms of accuracy, with the top (first) alternative being
-      the most probable, as ranked by the recognizer.
+    alternatives: May contain one or more recognition hypotheses (up to the
+      maximum specified in `max_alternatives`).  These alternatives are
+      ordered in terms of accuracy, with the top (first) alternative being the
+      most probable, as ranked by the recognizer.
   """
 
   alternatives = _messages.MessageField('GoogleCloudVideointelligenceV1p1beta1SpeechRecognitionAlternative', 1, repeated=True)
@@ -702,12 +698,12 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationProgress(_messages.Mes
   r"""Annotation progress for a single video.
 
   Fields:
-    inputUri: Output only. Video file location in [Google Cloud
+    inputUri: Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
-    progressPercent: Output only. Approximate percentage processed thus far.
-      Guaranteed to be 100 when fully processed.
-    startTime: Output only. Time when the request was received.
-    updateTime: Output only. Time of the most recent update.
+    progressPercent: Approximate percentage processed thus far. Guaranteed to
+      be 100 when fully processed.
+    startTime: Time when the request was received.
+    updateTime: Time of the most recent update.
   """
 
   inputUri = _messages.StringField(1)
@@ -720,13 +716,12 @@ class GoogleCloudVideointelligenceV1p1beta1VideoAnnotationResults(_messages.Mess
   r"""Annotation results for a single video.
 
   Fields:
-    error: Output only. Non-streaming error only. If set, indicates an error.
-      Note that for a single `AnnotateVideoRequest` some videos may succeed
-      and some may fail.
+    error: If set, indicates an error. Note that for a single
+      `AnnotateVideoRequest` some videos may succeed and some may fail.
     explicitAnnotation: Explicit content annotation.
     frameLabelAnnotations: Label annotations on frame level. There is exactly
       one element for each unique label.
-    inputUri: Output only. Video file location in [Google Cloud
+    inputUri: Video file location in [Google Cloud
       Storage](https://cloud.google.com/storage/).
     segmentLabelAnnotations: Label annotations on video level or user
       specified segment level. There is exactly one element for each unique
@@ -768,16 +763,15 @@ class GoogleCloudVideointelligenceV1p1beta1WordInfo(_messages.Message):
   `enable_word_time_offsets`.
 
   Fields:
-    endTime: Output only. Time offset relative to the beginning of the audio,
-      and corresponding to the end of the spoken word. This field is only set
-      if `enable_word_time_offsets=true` and only in the top hypothesis. This
-      is an experimental feature and the accuracy of the time offset can vary.
-    startTime: Output only. Time offset relative to the beginning of the
-      audio, and corresponding to the start of the spoken word. This field is
-      only set if `enable_word_time_offsets=true` and only in the top
-      hypothesis. This is an experimental feature and the accuracy of the time
-      offset can vary.
-    word: Output only. The word corresponding to this set of information.
+    endTime: Time offset relative to the beginning of the audio, and
+      corresponding to the end of the spoken word. This field is only set if
+      `enable_word_time_offsets=true` and only in the top hypothesis. This is
+      an experimental feature and the accuracy of the time offset can vary.
+    startTime: Time offset relative to the beginning of the audio, and
+      corresponding to the start of the spoken word. This field is only set if
+      `enable_word_time_offsets=true` and only in the top hypothesis. This is
+      an experimental feature and the accuracy of the time offset can vary.
+    word: The word corresponding to this set of information.
   """
 
   endTime = _messages.StringField(1)

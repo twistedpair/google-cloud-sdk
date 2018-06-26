@@ -1850,3 +1850,97 @@ Modify basic_auth.csv and reset the K8S API server.
       super(ContainerV1beta1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns NOT_FOUND error if.
+the resource does not exist. Returns an empty policy if the resource exists
+but does not have a policy set.
+
+Authorization requires the Google IAM permission
+`container.clusters.getIamPolicy` on the specified resource.
+
+      Args:
+        request: (ContainerProjectsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}:getIamPolicy',
+        http_method=u'POST',
+        method_id=u'container.projects.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:getIamPolicy',
+        request_field=u'googleIamV1GetIamPolicyRequest',
+        request_type_name=u'ContainerProjectsGetIamPolicyRequest',
+        response_type_name=u'GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy for a resource. Replaces any existing.
+policy.
+
+Authorization requires the Google IAM permission
+'container.clusters.setIamPolicy' on the specified resource.
+
+      Args:
+        request: (ContainerProjectsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'container.projects.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:setIamPolicy',
+        request_field=u'googleIamV1SetIamPolicyRequest',
+        request_type_name=u'ContainerProjectsSetIamPolicyRequest',
+        response_type_name=u'GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+If the resource does not exist, this will return an empty set of
+permissions, not a NOT_FOUND error.
+
+There is no permission required to make this API call.
+
+      Args:
+        request: (ContainerProjectsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'container.projects.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1beta1/{+resource}:testIamPermissions',
+        request_field=u'googleIamV1TestIamPermissionsRequest',
+        request_type_name=u'ContainerProjectsTestIamPermissionsRequest',
+        response_type_name=u'GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )

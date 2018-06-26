@@ -298,6 +298,11 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "maxInstances": {
+          "description": "The limit on the maximum number of function instances that may coexist at a\ngiven time. This feature is currently in alpha, available only for\nwhitelisted users.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

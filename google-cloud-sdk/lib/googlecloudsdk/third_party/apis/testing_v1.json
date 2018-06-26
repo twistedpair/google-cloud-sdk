@@ -489,7 +489,7 @@
       "type": "object",
       "properties": {
         "appApk": {
-          "description": "The APK for the application under test.\nRequired",
+          "description": "The APK for the application under test.",
           "$ref": "FileReference"
         },
         "testApk": {
@@ -537,7 +537,7 @@
       "type": "object",
       "properties": {
         "appApk": {
-          "description": "The APK for the application under test.\nRequired",
+          "description": "The APK for the application under test.",
           "$ref": "FileReference"
         },
         "appPackageId": {
@@ -655,7 +655,7 @@
       "type": "object",
       "properties": {
         "appApk": {
-          "description": "The APK for the application under test.\nRequired",
+          "description": "The APK for the application under test.",
           "$ref": "FileReference"
         },
         "appPackageId": {

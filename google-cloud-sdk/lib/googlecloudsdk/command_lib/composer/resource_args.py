@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +29,7 @@ def LocationAttributeConfig(fallthroughs_enabled=True):
   ] if fallthroughs_enabled else [])
   return concepts.ResourceParameterAttributeConfig(
       name='location',
-      help_text='Compute Engine zone in which to create the {resource}.',
+      help_text='Compute Engine region in which to create the {resource}.',
       fallthroughs=fallthroughs)
 
 

@@ -11,7 +11,7 @@ class BinaryauthorizationV1alpha1(base_api.BaseApiClient):
   BASE_URL = u'https://binaryauthorization.googleapis.com/'
 
   _PACKAGE = u'binaryauthorization'
-  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = u'v1alpha1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'

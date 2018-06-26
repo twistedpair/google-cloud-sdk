@@ -418,6 +418,10 @@ This method has limits on input size and output size.
 See https://cloud.google.com/dlp/docs/deidentify-sensitive-data to
 learn more.
 
+When no InfoTypes or CustomInfoTypes are specified in this request, the
+system will automatically choose what detectors to run. By default this may
+be all types, but may change over time as detectors are updated.
+
       Args:
         request: (DlpProjectsContentDeidentifyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -445,6 +449,10 @@ learn more.
     def Inspect(self, request, global_params=None):
       r"""Finds potentially sensitive info in content.
 This method has limits on input size, processing time, and output size.
+
+When no InfoTypes or CustomInfoTypes are specified in this request, the
+system will automatically choose what detectors to run. By default this may
+be all types, but may change over time as detectors are updated.
 
 For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images
 and https://cloud.google.com/dlp/docs/inspecting-text,
@@ -705,6 +713,10 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 See https://cloud.google.com/dlp/docs/inspecting-storage and
 https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 
+When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
+system will automatically choose what detectors to run. By default this may
+be all types, but may change over time as detectors are updated.
+
       Args:
         request: (DlpProjectsDlpJobsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -833,6 +845,10 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
 This method has limits on input size, processing time, and output size.
 See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images to
 learn more.
+
+When no InfoTypes or CustomInfoTypes are specified in this request, the
+system will automatically choose what detectors to run. By default this may
+be all types, but may change over time as detectors are updated.
 
       Args:
         request: (DlpProjectsImageRedactRequest) input message

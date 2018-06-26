@@ -274,10 +274,8 @@ class AppEngineRouting(_messages.Message):
       is attempted.  If version is empty, then the task will be sent to the
       version which is the default version when the task is attempted.  If
       instance is empty, then the task will be sent to an instance which is
-      available when the task is attempted.  When service is "default",
-      version is "default", and instance is empty, host is shortened to just
-      the `application_domain_name`.  If service, version, or instance is
-      invalid, then the task will be sent to the default version of the
+      available when the task is attempted.  If service, version, or instance
+      is invalid, then the task will be sent to the default version of the
       default service when the task is attempted.
     instance: App instance.  By default, the task is sent to an instance which
       is available when the task is attempted.  Requests can only be sent to a
@@ -289,19 +287,19 @@ class AppEngineRouting(_messages.Message):
       are-routed) and [App Engine Flex request
       routing](/appengine/docs/flexible/python/how-requests-are-routed).
     service: App service.  By default, the task is sent to the service which
-      is the default service when the task is attempted ("default").  For some
-      queues or tasks which were created using the App Engine Task Queue API,
-      host is not parsable into service, version, and instance. For example,
-      some tasks which were created using the App Engine SDK use a custom
-      domain name; custom domains are not parsed by Cloud Tasks. If host is
-      not parsable, then service, version, and instance are the empty string.
+      is the default service when the task is attempted.  For some queues or
+      tasks which were created using the App Engine Task Queue API, host is
+      not parsable into service, version, and instance. For example, some
+      tasks which were created using the App Engine SDK use a custom domain
+      name; custom domains are not parsed by Cloud Tasks. If host is not
+      parsable, then service, version, and instance are the empty string.
     version: App version.  By default, the task is sent to the version which
-      is the default version when the task is attempted ("default").  For some
-      queues or tasks which were created using the App Engine Task Queue API,
-      host is not parsable into service, version, and instance. For example,
-      some tasks which were created using the App Engine SDK use a custom
-      domain name; custom domains are not parsed by Cloud Tasks. If host is
-      not parsable, then service, version, and instance are the empty string.
+      is the default version when the task is attempted.  For some queues or
+      tasks which were created using the App Engine Task Queue API, host is
+      not parsable into service, version, and instance. For example, some
+      tasks which were created using the App Engine SDK use a custom domain
+      name; custom domains are not parsed by Cloud Tasks. If host is not
+      parsable, then service, version, and instance are the empty string.
   """
 
   host = _messages.StringField(1)
@@ -522,8 +520,9 @@ class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsQueuesPatchRequest object.
 
   Fields:
-    name: The queue name.  The queue name must have the following format:
-      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
+    name: Caller-specified and required in CreateQueue, after which it becomes
+      output only.  The queue name.  The queue name must have the following
+      format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens
       (-), colons (:), or periods (.).    For more information, see
       [Identifying projects](/resource-manager/docs/creating-managing-
@@ -532,8 +531,7 @@ class CloudtasksProjectsLocationsQueuesPatchRequest(_messages.Message):
       by calling    ListLocations.    For more information, see
       https://cloud.google.com/about/locations/. * `QUEUE_ID` can contain
       letters ([A-Za-z]), numbers ([0-9]), or   hyphens (-). The maximum
-      length is 100 characters.  Caller-specified and required in CreateQueue,
-      after which it becomes output only.
+      length is 100 characters.
     queue: A Queue resource to be passed as the request body.
     updateMask: A mask used to specify which fields of the queue are being
       updated.  If empty, then all fields will be updated.
@@ -946,8 +944,9 @@ class LeaseTasksRequest(_messages.Message):
       LeaseTasks call so that another worker can retry it.  The maximum lease
       duration is 1 week. `lease_duration` will be truncated to the nearest
       second.
-    maxTasks: The maximum number of tasks to lease. The maximum that can be
-      requested is 1000.
+    maxTasks: The maximum number of tasks to lease.  The system will make a
+      best effort to return as close to as `max_tasks` as possible.  The
+      largest that `max_tasks` can be is 1000.
     responseView: The response_view specifies which subset of the Task will be
       returned.  By default response_view is BASIC; not all information is
       retrieved by default because some data, such as payloads, might be
@@ -1209,8 +1208,9 @@ class Queue(_messages.Message):
   Fields:
     appEngineHttpTarget: App Engine HTTP target.  An App Engine queue is a
       queue that has an AppEngineHttpTarget.
-    name: The queue name.  The queue name must have the following format:
-      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
+    name: Caller-specified and required in CreateQueue, after which it becomes
+      output only.  The queue name.  The queue name must have the following
+      format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
       `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens
       (-), colons (:), or periods (.).    For more information, see
       [Identifying projects](/resource-manager/docs/creating-managing-
@@ -1219,8 +1219,7 @@ class Queue(_messages.Message):
       by calling    ListLocations.    For more information, see
       https://cloud.google.com/about/locations/. * `QUEUE_ID` can contain
       letters ([A-Za-z]), numbers ([0-9]), or   hyphens (-). The maximum
-      length is 100 characters.  Caller-specified and required in CreateQueue,
-      after which it becomes output only.
+      length is 100 characters.
     pullTarget: Pull target.  A pull queue is a queue that has a PullTarget.
     purgeTime: Output only. The last time this queue was purged.  All tasks
       that were created before this time were purged.  A queue can be purged
@@ -1687,11 +1686,12 @@ class Task(_messages.Message):
       An App Engine task is a task that has AppEngineHttpRequest set.
     createTime: Output only. The time that the task was created.
       `create_time` will be truncated to the nearest second.
-    name: The task name.  The task name must have the following format:
-      `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID
-      `  * `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),
-      hyphens (-), colons (:), or periods (.).    For more information, see
-      [Identifying projects](/resource-manager/docs/creating-managing-
+    name: Optionally caller-specified in CreateTask.  The task name.  The task
+      name must have the following format: `projects/PROJECT_ID/locations/LOCA
+      TION_ID/queues/QUEUE_ID/tasks/TASK_ID`  * `PROJECT_ID` can contain
+      letters ([A-Za-z]), numbers ([0-9]),    hyphens (-), colons (:), or
+      periods (.).    For more information, see    [Identifying projects
+      ](/resource-manager/docs/creating-managing-
       projects#identifying_projects) * `LOCATION_ID` is the canonical ID for
       the task's location.    The list of available locations can be obtained
       by calling    ListLocations.    For more information, see
@@ -1699,8 +1699,7 @@ class Task(_messages.Message):
       letters ([A-Za-z]), numbers ([0-9]), or   hyphens (-). The maximum
       length is 100 characters. * `TASK_ID` can contain only letters
       ([A-Za-z]), numbers ([0-9]),   hyphens (-), or underscores (_). The
-      maximum length is 500 characters.  Optionally caller-specified in
-      CreateTask.
+      maximum length is 500 characters.
     pullMessage: LeaseTasks to process the task. Can be set only if
       pull_target is set on the queue.  A pull task is a task that has
       PullMessage set.

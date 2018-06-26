@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -242,6 +243,7 @@ class _Sections(object):
     self.app = _SectionApp()
     self.auth = _SectionAuth()
     self.billing = _SectionBilling()
+    self.builds = _SectionBuilds()
     self.component_manager = _SectionComponentManager()
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
@@ -251,6 +253,7 @@ class _Sections(object):
     self.devshell = _SectionDevshell()
     self.emulator = _SectionEmulator()
     self.experimental = _SectionExperimental()
+    self.filestore = _SectionFilestore()
     self.functions = _SectionFunctions()
     self.gcloudignore = _SectionGcloudignore()
     self.interactive = _SectionInteractive()
@@ -269,6 +272,7 @@ class _Sections(object):
         self.app,
         self.auth,
         self.billing,
+        self.builds,
         self.component_manager,
         self.composer,
         self.compute,
@@ -278,6 +282,7 @@ class _Sections(object):
         self.devshell,
         self.emulator,
         self.experimental,
+        self.filestore,
         self.functions,
         self.gcloudignore,
         self.interactive,
@@ -673,7 +678,7 @@ class _SectionApp(_Section):
         validator=CloudBuildTimeoutValidator,
         help_text='Timeout, in seconds, to wait for Docker builds to '
                   'complete during deployments. All Docker builds now use the '
-                  'Container Builder API.')
+                  'Cloud Build API.')
     self.container_builder_image = self._Add(
         'container_builder_image',
         default='gcr.io/cloud-builders/docker',
@@ -734,6 +739,33 @@ class _SectionApp(_Section):
         'use_deprecated_preparation',
         default=False,
         hidden=True)
+
+
+class _SectionBuilds(_Section):
+  """Contains the properties for the 'builds' section."""
+
+  def __init__(self):
+    super(_SectionBuilds, self).__init__('builds')
+
+    def TimeoutValidator(timeout):
+      if timeout is None:
+        return
+      try:
+        seconds = int(timeout)  # bare int means seconds
+      except ValueError:
+        seconds = times.ParseDuration(timeout).total_seconds
+      if seconds <= 0:
+        raise InvalidValueError('Timeout must be a positive time duration.')
+    self.timeout = self._Add(
+        'timeout',
+        validator=TimeoutValidator,
+        help_text='Timeout, in seconds, to wait for builds to complete.')
+    self.check_tag = self._AddBool(
+        'check_tag',
+        default=True,
+        hidden=True,
+        help_text='If True, validate that the --tag value to builds '
+        'submit is in the gcr.io or *.gcr.io namespace.')
 
 
 class _SectionContainer(_Section):
@@ -1194,6 +1226,18 @@ class _SectionExperimental(_Section):
     self.fast_component_update = self._AddBool(
         'fast_component_update',
         default=False)
+
+
+class _SectionFilestore(_Section):
+  """Contains the properties for the 'filestore' section."""
+
+  def __init__(self):
+    super(_SectionFilestore, self).__init__('filestore')
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Cloud Filestore '
+        'locations. When a `--location` flag is required but not '
+        'provided, the command will fall back to this value, if set.')
 
 
 class _SectionTest(_Section):

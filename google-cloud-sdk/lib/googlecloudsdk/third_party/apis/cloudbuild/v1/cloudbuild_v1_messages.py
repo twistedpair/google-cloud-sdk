@@ -23,8 +23,8 @@ class ArtifactObjects(_messages.Message):
       naming#requirements)).  Files in the workspace matching any path pattern
       will be uploaded to Cloud Storage with this location as a prefix.
     paths: Path globs used to match files in the build's workspace.
-    timing: Stores timing information for pushing all artifact objects.
-      @OutputOnly
+    timing: Output only. Stores timing information for pushing all artifact
+      objects.
   """
 
   location = _messages.StringField(1)
@@ -84,47 +84,47 @@ class Build(_messages.Message):
   first 7 characters of $REVISION_ID or $COMMIT_SHA.
 
   Enums:
-    StatusValueValuesEnum: Status of the build. @OutputOnly
+    StatusValueValuesEnum: Output only. Status of the build.
 
   Messages:
     SubstitutionsValue: Substitutions data for `Build` resource.
-    TimingValue: Stores timing information for phases of the build. Valid keys
-      are:  * BUILD: time to execute all build steps * PUSH: time to push all
-      specified images. * FETCHSOURCE: time to fetch source.  If the build
-      does not specify source or images, these keys will not be included.
-      @OutputOnly
+    TimingValue: Output only. Stores timing information for phases of the
+      build. Valid keys are:  * BUILD: time to execute all build steps * PUSH:
+      time to push all specified images. * FETCHSOURCE: time to fetch source.
+      If the build does not specify source or images, these keys will not be
+      included.
 
   Fields:
     artifacts: Artifacts produced by the build that should be uploaded upon
       successful completion of all build steps.
-    buildTriggerId: The ID of the `BuildTrigger` that triggered this build, if
-      it was triggered automatically. @OutputOnly
-    createTime: Time at which the request to create the build was received.
-      @OutputOnly
-    finishTime: Time at which execution of the build was finished.  The
-      difference between finish_time and start_time is the duration of the
-      build's execution. @OutputOnly
-    id: Unique identifier of the build. @OutputOnly
+    buildTriggerId: Output only. The ID of the `BuildTrigger` that triggered
+      this build, if it was triggered automatically.
+    createTime: Output only. Time at which the request to create the build was
+      received.
+    finishTime: Output only. Time at which execution of the build was
+      finished.  The difference between finish_time and start_time is the
+      duration of the build's execution.
+    id: Output only. Unique identifier of the build.
     images: A list of images to be pushed upon the successful completion of
       all build steps.  The images are pushed using the builder service
       account's credentials.  The digests of the pushed images will be stored
       in the `Build` resource's results field.  If any of the images fail to
       be pushed, the build status is marked `FAILURE`.
-    logUrl: URL to logs for this build in Google Cloud Console. @OutputOnly
+    logUrl: Output only. URL to logs for this build in Google Cloud Console.
     logsBucket: Google Cloud Storage bucket where logs should be written (see
       [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)). Logs file names will be of the format
       `${logs_bucket}/log-${build_id}.txt`.
     options: Special options for this build.
-    projectId: ID of the project. @OutputOnly.
-    results: Results of the build. @OutputOnly
+    projectId: Output only. ID of the project.
+    results: Output only. Results of the build.
     secrets: Secrets to decrypt using Cloud Key Management Service.
     source: The location of the source files to build.
-    sourceProvenance: A permanent fixed identifier for source. @OutputOnly
-    startTime: Time at which execution of the build was started. @OutputOnly
-    status: Status of the build. @OutputOnly
-    statusDetail: Customer-readable message about the current status.
-      @OutputOnly
+    sourceProvenance: Output only. A permanent fixed identifier for source.
+    startTime: Output only. Time at which execution of the build was started.
+    status: Output only. Status of the build.
+    statusDetail: Output only. Customer-readable message about the current
+      status.
     steps: Required. The operations to be performed on the workspace.
     substitutions: Substitutions data for `Build` resource.
     tags: Tags for annotation of a `Build`. These are not docker tags.
@@ -132,15 +132,15 @@ class Build(_messages.Message):
       second granularity. If this amount of time elapses, work on the build
       will cease and the build status will be `TIMEOUT`.  Default time is ten
       minutes.
-    timing: Stores timing information for phases of the build. Valid keys are:
-      * BUILD: time to execute all build steps * PUSH: time to push all
-      specified images. * FETCHSOURCE: time to fetch source.  If the build
-      does not specify source or images, these keys will not be included.
-      @OutputOnly
+    timing: Output only. Stores timing information for phases of the build.
+      Valid keys are:  * BUILD: time to execute all build steps * PUSH: time
+      to push all specified images. * FETCHSOURCE: time to fetch source.  If
+      the build does not specify source or images, these keys will not be
+      included.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""Status of the build. @OutputOnly
+    r"""Output only. Status of the build.
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
@@ -188,10 +188,10 @@ class Build(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TimingValue(_messages.Message):
-    r"""Stores timing information for phases of the build. Valid keys are:  *
-    BUILD: time to execute all build steps * PUSH: time to push all specified
-    images. * FETCHSOURCE: time to fetch source.  If the build does not
-    specify source or images, these keys will not be included. @OutputOnly
+    r"""Output only. Stores timing information for phases of the build. Valid
+    keys are:  * BUILD: time to execute all build steps * PUSH: time to push
+    all specified images. * FETCHSOURCE: time to fetch source.  If the build
+    does not specify source or images, these keys will not be included.
 
     Messages:
       AdditionalProperty: An additional property for a TimingValue object.
@@ -349,9 +349,9 @@ class BuildStep(_messages.Message):
   r"""A step in the build pipeline.
 
   Enums:
-    StatusValueValuesEnum: Status of the build step. At this time, build step
-      status is only updated on build completion; step status is not updated
-      in real-time as the build progresses. @OutputOnly
+    StatusValueValuesEnum: Output only. Status of the build step. At this
+      time, build step status is only updated on build completion; step status
+      is not updated in real-time as the build progresses.
 
   Fields:
     args: A list of arguments that will be presented to the step when it is
@@ -390,14 +390,14 @@ class BuildStep(_messages.Message):
     secretEnv: A list of environment variables which are encrypted using a
       Cloud Key Management Service crypto key. These values must be specified
       in the build's `Secret`.
-    status: Status of the build step. At this time, build step status is only
-      updated on build completion; step status is not updated in real-time as
-      the build progresses. @OutputOnly
+    status: Output only. Status of the build step. At this time, build step
+      status is only updated on build completion; step status is not updated
+      in real-time as the build progresses.
     timeout: Time limit for executing this build step. If not defined, the
       step has no time limit and will be allowed to continue to run until
       either it completes or the build itself times out.
-    timing: Stores timing information for executing this build step.
-      @OutputOnly
+    timing: Output only. Stores timing information for executing this build
+      step.
     volumes: List of volumes to mount into the build step.  Each volume will
       be created as an empty volume prior to execution of the build step. Upon
       completion of the build, volumes and their contents will be discarded.
@@ -411,9 +411,9 @@ class BuildStep(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""Status of the build step. At this time, build step status is only
-    updated on build completion; step status is not updated in real-time as
-    the build progresses. @OutputOnly
+    r"""Output only. Status of the build step. At this time, build step status
+    is only updated on build completion; step status is not updated in real-
+    time as the build progresses.
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
@@ -457,12 +457,12 @@ class BuildTrigger(_messages.Message):
 
   Fields:
     build: Contents of the build template.
-    createTime: Time when the trigger was created.  @OutputOnly
+    createTime: Output only. Time when the trigger was created.
     description: Human-readable description of this trigger.
     disabled: If true, the trigger will never result in a build.
     filename: Path, from the source root, to a file whose contents is used for
       the template.
-    id: Unique identifier of the trigger.  @OutputOnly
+    id: Output only. Unique identifier of the trigger.
     substitutions: Substitutions data for Build resource.
     triggerTemplate: Template describing the types of source changes to
       trigger a build.  Branch and tag names in trigger templates are
@@ -512,8 +512,8 @@ class BuiltImage(_messages.Message):
     digest: Docker Registry 2.0 digest.
     name: Name used to push the container image to Google Container Registry,
       as presented to `docker push`.
-    pushTiming: Stores timing information for pushing the specified image.
-      @OutputOnly
+    pushTiming: Output only. Stores timing information for pushing the
+      specified image.
   """
 
   digest = _messages.StringField(1)
@@ -1021,24 +1021,24 @@ class SourceProvenance(_messages.Message):
   that some source was used for this build.
 
   Messages:
-    FileHashesValue: Hash(es) of the build source, which can be used to verify
-      that the original source integrity was maintained in the build. Note
-      that `FileHashes` will only be populated if `BuildOptions` has requested
-      a `SourceProvenanceHash`.  The keys to this map are file paths used as
-      build source and the values contain the hash values for those files.  If
-      the build source came in a single package such as a gzipped tarfile
-      (`.tar.gz`), the `FileHash` will be for the single path to that file.
-      @OutputOnly
+    FileHashesValue: Output only. Hash(es) of the build source, which can be
+      used to verify that the originalsource integrity was maintained in the
+      build. Note that `FileHashes` willonly be populated if `BuildOptions`
+      has requested a `SourceProvenanceHash`.  The keys to this map are file
+      paths used as build source and the values contain the hash values for
+      those files.  If the build source came in a single package such as a
+      gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path
+      to that file.
 
   Fields:
-    fileHashes: Hash(es) of the build source, which can be used to verify that
-      the original source integrity was maintained in the build. Note that
-      `FileHashes` will only be populated if `BuildOptions` has requested a
-      `SourceProvenanceHash`.  The keys to this map are file paths used as
-      build source and the values contain the hash values for those files.  If
-      the build source came in a single package such as a gzipped tarfile
-      (`.tar.gz`), the `FileHash` will be for the single path to that file.
-      @OutputOnly
+    fileHashes: Output only. Hash(es) of the build source, which can be used
+      to verify that the originalsource integrity was maintained in the build.
+      Note that `FileHashes` willonly be populated if `BuildOptions` has
+      requested a `SourceProvenanceHash`.  The keys to this map are file paths
+      used as build source and the values contain the hash values for those
+      files.  If the build source came in a single package such as a gzipped
+      tarfile (`.tar.gz`), the `FileHash` will be for the single path to that
+      file.
     resolvedRepoSource: A copy of the build's `source.repo_source`, if exists,
       with any revisions resolved.
     resolvedStorageSource: A copy of the build's `source.storage_source`, if
@@ -1047,14 +1047,13 @@ class SourceProvenance(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FileHashesValue(_messages.Message):
-    r"""Hash(es) of the build source, which can be used to verify that the
-    original source integrity was maintained in the build. Note that
-    `FileHashes` will only be populated if `BuildOptions` has requested a
+    r"""Output only. Hash(es) of the build source, which can be used to verify
+    that the originalsource integrity was maintained in the build. Note that
+    `FileHashes` willonly be populated if `BuildOptions` has requested a
     `SourceProvenanceHash`.  The keys to this map are file paths used as build
     source and the values contain the hash values for those files.  If the
     build source came in a single package such as a gzipped tarfile
     (`.tar.gz`), the `FileHash` will be for the single path to that file.
-    @OutputOnly
 
     Messages:
       AdditionalProperty: An additional property for a FileHashesValue object.

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,7 +51,8 @@ def AddMatcher(parser, required=True):
       '--src-ip-ranges',
       type=arg_parsers.ArgList(),
       metavar='SRC_IP_RANGE',
-      help='The source IP ranges to match for this rule.')
+      help=('The source IPs/IP ranges to match for this rule. '
+            'To match all IPs specify *.'))
   matcher.add_argument(
       '--expression',
       help='The Cloud Armor rules language expression to match for this rule.')

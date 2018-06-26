@@ -220,6 +220,15 @@
           "type": "integer",
           "format": "int32"
         },
+        "audioChannelCount": {
+          "description": "*Optional* The number of channels in the input audio data.\nONLY set this for MULTI-CHANNEL recognition.\nValid values for LINEAR16 and FLAC are `1`-`8`.\nValid values for OGG_OPUS are '1'-'254'.\nValid value for MULAW, AMR, AMR_WB and SPEEX_WITH_HEADER_BYTE is only `1`.\nIf `0` or omitted, defaults to one channel (mono).\nNOTE: We only recognize the first channel by default.\nTo perform independent recognition on each channel set\nenable_separate_recognition_per_channel to 'true'.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "enableSeparateRecognitionPerChannel": {
+          "description": "This needs to be set to \u2018true\u2019 explicitly and audio_channel_count > 1\nto get each channel recognized separately. The recognition result will\ncontain a channel_tag field to state which channel that result belongs to.\nIf this is not \u2018true\u2019, we will only recognize the first channel.\nNOTE: The request is also billed cumulatively for all channels recognized:\n    (audio_channel_count times the audio length)",
+          "type": "boolean"
+        },
         "languageCode": {
           "description": "*Required* The language of the supplied audio as a\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag.\nExample: \"en-US\".\nSee [Language Support](https:\/\/cloud.google.com\/speech\/docs\/languages)\nfor a list of the currently supported language codes.",
           "type": "string"
@@ -294,17 +303,17 @@
             "type": "string"
           }
         },
-        "biasingStrength": {
-          "description": "Strength of biasing to use (strong, medium or weak). If you use strong\nbiasing option then more likely to see those phrases in the results. If\nbiasing strength is not specified then by default medium biasing would be\nused. If you'd like different phrases to have different biasing strengths,\nyou can specify multiple speech_contexts.",
+        "strength": {
+          "description": "Hint strength to use (high, medium or low). If you use a high strength then\nyou are more likely to see those phrases in the results. If strength is not\nspecified then by default medium strength will be used. If you'd like\ndifferent phrases to have different strengths, you can specify multiple\nspeech_contexts.",
           "enumDescriptions": [
             "",
-            "Low bias",
-            "Medium bias",
-            "High bias"
+            "Low strength",
+            "Medium strength",
+            "High strength"
           ],
           "type": "string",
           "enum": [
-            "BIASING_STRENGTH_UNSPECIFIED",
+            "STRENGTH_UNSPECIFIED",
             "LOW",
             "MEDIUM",
             "HIGH"
@@ -460,6 +469,15 @@
           "items": {
             "$ref": "SpeechRecognitionAlternative"
           }
+        },
+        "channelTag": {
+          "description": "For multi-channel audio, this is the channel number corresponding to the\nrecognized result for the audio from that channel.\nFor audio_channel_count = N, its output values can range from '1' to 'N'.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "languageCode": {
+          "description": "Output only. The\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag of the\nlanguage in this result. This language code was detected to have the most\nlikelihood of being spoken in the audio.",
+          "type": "string"
         }
       }
     },

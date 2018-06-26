@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,16 +26,22 @@ class Collections(enum.Enum):
 
   OPERATIONS = (
       'operations',
-      'operations/{operationsId}',
-      {},
-      [u'operationsId'],
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      [u'name'],
       True
   )
   SERVICES = (
       'services',
-      '{v1beta1Id}/{v1beta1Id1}/services/{servicesId}',
-      {},
-      [u'v1beta1Id', u'v1beta1Id1', u'servicesId'],
+      '{+name}',
+      {
+          '':
+              '{v1beta1Id}/{v1beta1Id1}/services/{servicesId}',
+      },
+      [u'name'],
       True
   )
 

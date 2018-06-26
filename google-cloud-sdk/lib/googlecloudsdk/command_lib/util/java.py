@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +20,7 @@ import re
 import subprocess
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 
@@ -45,8 +47,11 @@ def RequireJavaInstalled(for_text, min_version=7):
                     'and on your system PATH'.format(for_text=for_text,
                                                      v=min_version))
   try:
-    output = subprocess.check_output([java_path, '-version'],
-                                     stderr=subprocess.STDOUT)
+    output = encoding.Decode(
+        subprocess.check_output(
+            [java_path, '-Dfile.encoding=UTF-8', '-version'],
+            stderr=subprocess.STDOUT),
+        encoding='utf-8')
   except subprocess.CalledProcessError:
     raise JavaError('Unable to execute the java that was found on your PATH.'
                     ' The {for_text} requires a Java {v}+ JRE installed and on '

@@ -74,7 +74,10 @@ SCHEMA = s.Message(
     default_expiration=s.Value(converter=c.ExpirationToDuration),
     endpoints_api_service=s.Message(
         name=s.Value(),
+        rollout_strategy=s.Value(
+            converter=c.ConvertEndpointsRolloutStrategyToEnum),
         config_id=s.Value(),
+        trace_sampling=s.Value('disable_trace_sampling', converter=c.Not),
     ),
     env=s.Value(),
     env_variables=s.Map(),

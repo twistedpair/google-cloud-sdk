@@ -85,6 +85,8 @@ class AttestationAuthority(_messages.Message):
   existing authority cannot be modified except where indicated.
 
   Fields:
+    description: Optional. A descriptive comment.  This field may be updated.
+      The field may be displayed in chooser dialogs.
     name: Required. The resource name, in the format:
       `projects/*/attestationAuthorities/*`. This field may not be updated.
     systemOwnedDrydockNote: A Drydock ATTESTATION_AUTHORITY Note, created by
@@ -95,10 +97,11 @@ class AttestationAuthority(_messages.Message):
       user.
   """
 
-  name = _messages.StringField(1)
-  systemOwnedDrydockNote = _messages.MessageField('SystemOwnedDrydockNote', 2)
-  updateTime = _messages.StringField(3)
-  userOwnedDrydockNote = _messages.MessageField('UserOwnedDrydockNote', 4)
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  systemOwnedDrydockNote = _messages.MessageField('SystemOwnedDrydockNote', 3)
+  updateTime = _messages.StringField(4)
+  userOwnedDrydockNote = _messages.MessageField('UserOwnedDrydockNote', 5)
 
 
 class AttestationAuthorityPublicKey(_messages.Message):
@@ -287,8 +290,8 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
@@ -314,17 +317,22 @@ class Empty(_messages.Message):
 class IamPolicy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam/docs).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     bindings: Associates a list of `members` to a `role`. `bindings` with no
@@ -386,6 +394,7 @@ class Policy(_messages.Message):
       engine/reference/rest/v1/projects.zones.clusters.
     defaultAdmissionRule: Required. Default admission rule for a cluster
       without a per-cluster admission rule.
+    description: Optional. A descriptive comment.
     name: Output only. The resource name, in the format `projects/*/policy`.
       There is at most one policy per project.
     updateTime: Output only. Time when the policy was last updated.
@@ -425,8 +434,9 @@ class Policy(_messages.Message):
   admissionWhitelistPatterns = _messages.MessageField('AdmissionWhitelistPattern', 1, repeated=True)
   clusterAdmissionRules = _messages.MessageField('ClusterAdmissionRulesValue', 2)
   defaultAdmissionRule = _messages.MessageField('AdmissionRule', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  description = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -453,14 +463,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -496,17 +504,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class SystemOwnedDrydockNote(_messages.Message):
@@ -516,10 +522,11 @@ class SystemOwnedDrydockNote(_messages.Message):
   Fields:
     noteReference: Output only. The Drydock resource name of a
       ATTESTATION_AUTHORITY Note, created by the Binary Authorization policy
-      management service, in the format: `providers/*/notes/*`. Drydock is an
-      external dependency. This field may not be updated.  An attestation by
-      this authority is stored as a Drydock ATTESTATION_AUTHORITY Occurrence
-      that names a container image and that links to this Note.
+      management service, in the format: `projects/*/notes/*` (or the legacy
+      `providers/*/notes/*`). Drydock is an external dependency. This field
+      may not be updated.  An attestation by this authority is stored as a
+      Drydock ATTESTATION_AUTHORITY Occurrence that names a container image
+      and that links to this Note.
     publicKeys: Optional. Public keys that verify attestations signed by this
       authority. This field may be updated.  If this field is non-empty, one
       of the specified public keys must verify that an attestation was signed
@@ -562,10 +569,10 @@ class UserOwnedDrydockNote(_messages.Message):
   Fields:
     noteReference: Required. The Drydock resource name of a
       ATTESTATION_AUTHORITY Note, created by the user, in the format:
-      `providers/*/notes/*`. This field may not be updated.  An attestation by
-      this authority is stored as a Drydock ATTESTATION_AUTHORITY Occurrence
-      that names a container image and that links to this Note. Drydock is an
-      external dependency.
+      `projects/*/notes/*` (or the legacy `providers/*/notes/*`). This field
+      may not be updated.  An attestation by this authority is stored as a
+      Drydock ATTESTATION_AUTHORITY Occurrence that names a container image
+      and that links to this Note. Drydock is an external dependency.
     publicKeys: Optional. Public keys that verify attestations signed by this
       authority. This field may be updated.  If this field is non-empty, one
       of the specified public keys must verify that an attestation was signed

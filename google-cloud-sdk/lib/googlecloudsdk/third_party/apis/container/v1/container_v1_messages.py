@@ -830,15 +830,20 @@ class Cluster(_messages.Message):
 
 
 class ClusterStatus(_messages.Message):
-  r"""ClusterStatus is used for internal only purposes to transition a cluster
-  between DEGRADED AND RUNNING using UpdateClusterInternal. The message is
-  used in ClusterUpdate's DesiredClusterStatus field and should not be
-  confused with Cluster's Status Enum.
+  r"""ClusterStatus is used for internal only purposes by the monitoring
+  server to transition a cluster between DEGRADED AND RUNNING using
+  UpdateClusterInternal. The message is used in ClusterUpdate's
+  DesiredClusterStatus field and should not be confused with Cluster's Status
+  Enum. TODO(b/72158008) Implement a PatchClusterInternal method that takes an
+  internal proto instead so we don't have to define this message here Till
+  then, this message should be in sync with the definition in the
+  internal.proto
 
   Enums:
     StatusValueValuesEnum: The current status of the cluster.
 
   Fields:
+    conditions: Which conditions caused the current cluster state.
     internal: An internal field for the sub-error type or other metadata for
       the Status.
     message: A human-readable message that describes the status of the
@@ -861,9 +866,10 @@ class ClusterStatus(_messages.Message):
     RUNNING = 1
     DEGRADED = 2
 
-  internal = _messages.StringField(1)
-  message = _messages.StringField(2)
-  status = _messages.EnumField('StatusValueValuesEnum', 3)
+  conditions = _messages.MessageField('StatusCondition', 1, repeated=True)
+  internal = _messages.StringField(2)
+  message = _messages.StringField(3)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
 class ClusterUpdate(_messages.Message):
@@ -1793,7 +1799,7 @@ class CreateNodePoolRequest(_messages.Message):
     nodePool: The node pool to create.
     parent: The parent (project, location, cluster id) where the node pool
       will be created. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -3420,6 +3426,35 @@ class StartIPRotationRequest(_messages.Message):
   zone = _messages.StringField(6)
 
 
+class StatusCondition(_messages.Message):
+  r"""StatusCondition describes why a cluster or a node pool has a certain
+  status (e.g., ERROR or DEGRADED).
+
+  Enums:
+    CodeValueValuesEnum: Machine-friendly representation of the condition
+
+  Fields:
+    code: Machine-friendly representation of the condition
+    message: Human-friendly representation of the condition
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Machine-friendly representation of the condition
+
+    Values:
+      UNKNOWN: UNKNOWN indicates a generic condition.
+      GCE_STOCKOUT: GCE_STOCKOUT indicates a GCE stockout.
+      GKE_SERVICE_ACCOUNT_DELETED: GKE_SERVICE_ACCOUNT_DELETED indicates that
+        the user deleted their robot service account. More codes TBA
+    """
+    UNKNOWN = 0
+    GCE_STOCKOUT = 1
+    GKE_SERVICE_ACCOUNT_DELETED = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+
+
 class SubjectAccessReviewSpec(_messages.Message):
   r"""The description of the request for authorization. This should match the
   SubjectAccessReviewSpec struct in pkg/apis/authorization/v1beta1/types.go
@@ -3667,7 +3702,8 @@ class UserInfo(_messages.Message):
       ExtraValue>, where ExtraValue is a typedef to []string. Proto3 doesn't
       support that way, so we use ListValue here.
     groups: Groups that this user is a part of. This is currently only filled
-      in for VMID-based Authenticate calls.
+      in for VMID-based Authenticate calls and for organizations that have
+      enabled security groups.
     uid: A unique identifier (across time) for the user. This is not currently
       filled in for GKE.
     username: The name of the user. This should be the email address

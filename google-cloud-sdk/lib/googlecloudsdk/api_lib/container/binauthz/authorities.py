@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,13 +51,14 @@ class Client(object):
         field='attestationAuthorities',
         batch_size_attribute='pageSize')
 
-  def Create(self, authority_ref, note_ref):
+  def Create(self, authority_ref, note_ref, description=None):
     """Create an attestation authorities associated with the current project."""
     project_ref = authority_ref.Parent(util.PROJECTS_COLLECTION)
     return self.client.projects_attestationAuthorities.Create(
         self.messages.BinaryauthorizationProjectsAttestationAuthoritiesCreateRequest(  # pylint: disable=line-too-long
             attestationAuthority=self.messages.AttestationAuthority(
                 name=authority_ref.RelativeName(),
+                description=description,
                 userOwnedDrydockNote=self.messages.UserOwnedDrydockNote(
                     noteReference=note_ref.RelativeName(),
                 ),
@@ -177,18 +179,20 @@ class Client(object):
         for public_key in updated_authority.userOwnedDrydockNote.publicKeys
         if public_key.id == fingerprint)
 
-  def Update(self, authority_ref):
-    """Update an attestation authorities associated with the current project.
+  def Update(self, authority_ref, description=None):
+    """Update an attestation authority.
 
     Args:
       authority_ref: ResourceSpec, The authority to be updated.
+      description: string, If provided, the new authority description.
 
     Returns:
       The updated authority.
     """
     authority = self.Get(authority_ref)
 
-    # TODO(b/74193183): Add a comment option.
+    if description is not None:
+      authority.description = description
 
     return self.client.projects_attestationAuthorities.Update(authority)
 

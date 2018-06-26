@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -240,7 +241,7 @@ def AddTriggerFlagGroup(parser):
       metavar='EVENT_TYPE',
       choices=sorted(triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.AllEventLabels()),
       help=('Specifies which action should trigger the function. For a '
-            'list of acceptable values, call `functions event_types list`.')
+            'list of acceptable values, call `functions event-types list`.')
   )
   trigger_provider_spec_group.add_argument(
       '--trigger-resource',
@@ -249,7 +250,7 @@ def AddTriggerFlagGroup(parser):
             'observed. E.g. if `--trigger-event` is  '
             '`providers/cloud.storage/eventTypes/object.change`, '
             '`--trigger-resource` must be a bucket name. For a list of '
-            'expected resources, call `functions event_types list`.'),
+            'expected resources, call `functions event-types list`.'),
   )
 
 

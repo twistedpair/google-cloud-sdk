@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20180608",
+ "revision": "20180620",
  "title": "Cloud SQL Administration API",
  "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
  "ownerDomain": "google.com",
@@ -244,7 +244,7 @@
    "properties": {
     "binLogCoordinates": {
      "$ref": "BinLogCoordinates",
-     "description": "Binary log coordinates, if specified, indentify the the position up to which the source instance should be cloned. If not specified, the source instance is cloned up to the most recent binary log coordintes."
+     "description": "Binary log coordinates, if specified, identify the position up to which the source instance should be cloned. If not specified, the source instance is cloned up to the most recent binary log coordinates."
     },
     "destinationInstanceName": {
      "type": "string",
@@ -1044,7 +1044,7 @@
   "Operation": {
    "id": "Operation",
    "type": "object",
-   "description": "An Operations resource contains information about database instance operations such as create, delete, and restart. Operations resources are created in response to operations that were initiated; you never create them directly.",
+   "description": "An Operation resource. For successful operations that return an Operation resource, only the fields relevant to the operation are populated in the resource.",
    "properties": {
     "endTime": {
      "type": "string",
@@ -1426,7 +1426,7 @@
    "properties": {
     "commonName": {
      "type": "string",
-     "description": "User supplied name. Must be a distinct name from the other certificates for this instance. New certificates will not be usable until the instance is restarted."
+     "description": "User supplied name. Must be a distinct name from the other certificates for this instance."
     }
    }
   },
@@ -1502,7 +1502,7 @@
     },
     "tier": {
      "type": "string",
-     "description": "An identifier for the service tier, for example D1, D2 etc. For related information, see Pricing."
+     "description": "An identifier for the machine type, for example, db-n1-standard-1. For related information, see Pricing."
     }
    }
   },
@@ -1886,7 +1886,7 @@
       },
       "project": {
        "type": "string",
-       "description": "Project ID of the project for which to list Cloud SQL instances.",
+       "description": "Project ID of the project that contains the instance.",
        "required": true,
        "location": "path"
       }
@@ -2048,7 +2048,7 @@
      "id": "sql.instances.clone",
      "path": "projects/{project}/instances/{instance}/clone",
      "httpMethod": "POST",
-     "description": "Creates a Cloud SQL instance as a clone of the source instance. The API is not ready for Second Generation instances yet.",
+     "description": "Creates a Cloud SQL instance as a clone of the source instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2113,7 +2113,7 @@
      "id": "sql.instances.demoteMaster",
      "path": "projects/{project}/instances/{instance}/demoteMaster",
      "httpMethod": "POST",
-     "description": "Demotes the standalone instance to be a Cloud SQL read replica for an external database server.",
+     "description": "Demotes the stand-alone instance to be a Cloud SQL read replica for an external database server.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2441,7 +2441,7 @@
      "id": "sql.instances.resetSslConfig",
      "path": "projects/{project}/instances/{instance}/resetSslConfig",
      "httpMethod": "POST",
-     "description": "Deletes all client certificates and generates a new server SSL certificate for the instance. The changes will not take effect until the instance is restarted. Existing instances without a server certificate will need to call this once to set a server certificate.",
+     "description": "Deletes all client certificates and generates a new server SSL certificate for the instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2817,7 +2817,7 @@
      "id": "sql.sslCerts.delete",
      "path": "projects/{project}/instances/{instance}/sslCerts/{sha1Fingerprint}",
      "httpMethod": "DELETE",
-     "description": "Deletes the SSL certificate. The change will not take effect until the instance is restarted.",
+     "description": "Deletes the SSL certificate. For First Generation instances, the certificate remains valid until the instance is restarted.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -2827,7 +2827,7 @@
       },
       "project": {
        "type": "string",
-       "description": "Project ID of the project that contains the instance to be deleted.",
+       "description": "Project ID of the project that contains the instance.",
        "required": true,
        "location": "path"
       },
@@ -2903,7 +2903,7 @@
       },
       "project": {
        "type": "string",
-       "description": "Project ID of the project to which the newly created Cloud SQL instances should belong.",
+       "description": "Project ID of the project that contains the instance.",
        "required": true,
        "location": "path"
       }
@@ -2937,7 +2937,7 @@
       },
       "project": {
        "type": "string",
-       "description": "Project ID of the project for which to list Cloud SQL instances.",
+       "description": "Project ID of the project that contains the instance.",
        "required": true,
        "location": "path"
       }
@@ -2962,7 +2962,7 @@
      "id": "sql.tiers.list",
      "path": "projects/{project}/tiers",
      "httpMethod": "GET",
-     "description": "Lists all available service tiers for Google Cloud SQL, for example D1, D2. For related information, see Pricing.",
+     "description": "Lists all available machine types (tiers) for Cloud SQL, for example, db-n1-standard-1. For related information, see Pricing.",
      "parameters": {
       "project": {
        "type": "string",

@@ -5278,6 +5278,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetDefaultNetworkTier(self, request, global_params=None):
+      r"""Sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
+
+      Args:
+        request: (ComputeProjectsSetDefaultNetworkTierRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetDefaultNetworkTier')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetDefaultNetworkTier.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.projects.setDefaultNetworkTier',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/setDefaultNetworkTier',
+        request_field=u'projectsSetDefaultNetworkTierRequest',
+        request_type_name=u'ComputeProjectsSetDefaultNetworkTierRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetUsageExportBucket(self, request, global_params=None):
       r"""Enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
 
@@ -7549,6 +7575,32 @@ For more information, see Deleting snaphots.
         request_field='',
         request_type_name=u'ComputeSubnetworksListRequest',
         response_type_name=u'SubnetworkList',
+        supports_download=False,
+    )
+
+    def ListUsable(self, request, global_params=None):
+      r"""Retrieves an aggregated list of usable subnetworks.
+
+      Args:
+        request: (ComputeSubnetworksListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UsableSubnetworksAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.subnetworks.listUsable',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/subnetworks/listUsable',
+        request_field='',
+        request_type_name=u'ComputeSubnetworksListUsableRequest',
+        response_type_name=u'UsableSubnetworksAggregatedList',
         supports_download=False,
     )
 

@@ -1368,18 +1368,6 @@ class GoogleDevtoolsContaineranalysisV1alpha1SourceContext(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
 
 
-class GrafeasV1beta1OperationMetadata(_messages.Message):
-  r"""Metadata for an operation.
-
-  Fields:
-    createTime: Output only. The time this operation was created.
-    endTime: Output only. The time that this operation was marked as done.
-  """
-
-  createTime = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-
-
 class Hash(_messages.Message):
   r"""Container message for hash values.
 

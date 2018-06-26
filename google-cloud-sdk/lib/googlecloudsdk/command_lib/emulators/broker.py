@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -408,11 +409,12 @@ class Broker(object):
     uri = 'http://{0}{1}'.format(self._address, path)
     http_client = httplib2.Http(timeout=timeout_secs)
     try:
-      return http_client.request(
+      http_response, body = http_client.request(
           uri=uri,
           method=method,
           headers={'Content-Type': 'application/json; charset=UTF-8'},
           body=body)
+      return http_response, body.decode('utf-8')
     except socket.error as e:
       if isinstance(e, socket.timeout):
         raise RequestTimeoutError(e)

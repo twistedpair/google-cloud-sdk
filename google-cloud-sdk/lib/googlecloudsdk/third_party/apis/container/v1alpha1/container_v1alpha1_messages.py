@@ -31,10 +31,6 @@ class AddonsConfig(_messages.Message):
   cluster, enabling additional functionality.
 
   Fields:
-    elafrosConfig: Configuration for Elafros, an open serverless platform that
-      runs functions, apps, and containers. The `IstioConfig` addon must be
-      enabled in order to enable Elafros. This option can only be enabled at
-      cluster creation time.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -48,14 +44,17 @@ class AddonsConfig(_messages.Message):
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
+    serverlessConfig: Configuration for the serverless addon. The
+      `IstioConfig` addon must be enabled in order to enable serverless. This
+      option can only be enabled at cluster creation time.
   """
 
-  elafrosConfig = _messages.MessageField('ElafrosConfig', 1)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 2)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 3)
-  istioConfig = _messages.MessageField('IstioConfig', 4)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 5)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 6)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
+  istioConfig = _messages.MessageField('IstioConfig', 3)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 4)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 5)
+  serverlessConfig = _messages.MessageField('ServerlessConfig', 6)
 
 
 class AuditConfig(_messages.Message):
@@ -64,6 +63,17 @@ class AuditConfig(_messages.Message):
   Fields:
     enabled: Enable audit logging of the Kubernetes API.  If enabled, audit
       logs will be exported to Cloud Audit Logging.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class AuthenticatorGroupsConfig(_messages.Message):
+  r"""Configuration for returning group information from authenticators.
+
+  Fields:
+    enabled: Whether this cluster should return group membership lookups
+      during authentication using a group of security groups.
   """
 
   enabled = _messages.BooleanField(1)
@@ -116,6 +126,17 @@ class AutoUpgradeOptions(_messages.Message):
   autoUpgradeStartTime = _messages.StringField(1)
   description = _messages.StringField(2)
   requestedUpgradeStartTime = _messages.StringField(3)
+
+
+class BigQueryDestination(_messages.Message):
+  r"""Parameters for using BigQuery as the destination of resource usage
+  export.
+
+  Fields:
+    datasetId: The ID of a BigQuery Dataset.
+  """
+
+  datasetId = _messages.StringField(1)
 
 
 class BinaryAuthorization(_messages.Message):
@@ -202,12 +223,15 @@ class Cluster(_messages.Message):
     addonsConfig: Configurations for the various addons available to run in
       the cluster.
     auditConfig: Configuration for audit logging.
+    authenticatorGroupsConfig: Configuration controlling RBAC group membership
+      information.
     autoscaling: Cluster-level autoscaling configuration.
     binaryAuthorization: Configuration for Binary Authorization.
     clusterIpv4Cidr: The IP address range of the container pods in this
       cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `10.96.0.0/14`). Leave blank to have one
       automatically chosen or specify a `/14` block in `10.0.0.0/8`.
+    conditions: Which conditions caused the current cluster state.
     createTime: [Output only] The time the cluster was created, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     currentMasterVersion: [Output only] The current software version of the
@@ -321,6 +345,8 @@ class Cluster(_messages.Message):
       where nodes and the master communicate over private IP addresses.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related GCE resources.
+    resourceUsageExportConfig: Configuration for exporting resource usages.
+      Resource usage export is disabled when this config unspecified.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
@@ -328,7 +354,8 @@ class Cluster(_messages.Message):
       addresses are typically put in the last `/16` from the container CIDR.
     status: [Output only] The current status of this cluster.
     statusMessage: [Output only] Additional information about the current
-      status of this cluster, if available.
+      status of this cluster, if available. Deprecated, use the field
+      conditions instead.
     subnetwork: The name of the Google Compute Engine
       [subnetwork](/compute/docs/subnetworks) to which the cluster is
       connected. On output this shows the subnetwork ID instead of the name.
@@ -395,54 +422,57 @@ class Cluster(_messages.Message):
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
   auditConfig = _messages.MessageField('AuditConfig', 2)
-  autoscaling = _messages.MessageField('ClusterAutoscaling', 3)
-  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
-  clusterIpv4Cidr = _messages.StringField(5)
-  createTime = _messages.StringField(6)
-  currentMasterVersion = _messages.StringField(7)
-  currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(9)
-  databaseEncryptionKeyId = _messages.StringField(10)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 11)
-  description = _messages.StringField(12)
-  enableKubernetesAlpha = _messages.BooleanField(13)
-  enableNamespaceLevelIam = _messages.BooleanField(14)
-  enableTpu = _messages.BooleanField(15)
-  endpoint = _messages.StringField(16)
-  expireTime = _messages.StringField(17)
-  initialClusterVersion = _messages.StringField(18)
-  initialNodeCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(20, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 21)
-  labelFingerprint = _messages.StringField(22)
-  legacyAbac = _messages.MessageField('LegacyAbac', 23)
-  location = _messages.StringField(24)
-  locations = _messages.StringField(25, repeated=True)
-  loggingService = _messages.StringField(26)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 27)
-  managedPodIdentityConfig = _messages.MessageField('ManagedPodIdentityConfig', 28)
-  masterAuth = _messages.MessageField('MasterAuth', 29)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 30)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 31)
-  masterIpv4CidrBlock = _messages.StringField(32)
-  monitoringService = _messages.StringField(33)
-  name = _messages.StringField(34)
-  network = _messages.StringField(35)
-  networkConfig = _messages.MessageField('NetworkConfig', 36)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 37)
-  nodeConfig = _messages.MessageField('NodeConfig', 38)
-  nodeIpv4CidrSize = _messages.IntegerField(39, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 40, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 41)
-  privateCluster = _messages.BooleanField(42)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 43)
-  selfLink = _messages.StringField(44)
-  servicesIpv4Cidr = _messages.StringField(45)
-  status = _messages.EnumField('StatusValueValuesEnum', 46)
-  statusMessage = _messages.StringField(47)
-  subnetwork = _messages.StringField(48)
-  tpuIpv4CidrBlock = _messages.StringField(49)
-  zone = _messages.StringField(50)
+  authenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 3)
+  autoscaling = _messages.MessageField('ClusterAutoscaling', 4)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 5)
+  clusterIpv4Cidr = _messages.StringField(6)
+  conditions = _messages.MessageField('StatusCondition', 7, repeated=True)
+  createTime = _messages.StringField(8)
+  currentMasterVersion = _messages.StringField(9)
+  currentNodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(11)
+  databaseEncryptionKeyId = _messages.StringField(12)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 13)
+  description = _messages.StringField(14)
+  enableKubernetesAlpha = _messages.BooleanField(15)
+  enableNamespaceLevelIam = _messages.BooleanField(16)
+  enableTpu = _messages.BooleanField(17)
+  endpoint = _messages.StringField(18)
+  expireTime = _messages.StringField(19)
+  initialClusterVersion = _messages.StringField(20)
+  initialNodeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(22, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 23)
+  labelFingerprint = _messages.StringField(24)
+  legacyAbac = _messages.MessageField('LegacyAbac', 25)
+  location = _messages.StringField(26)
+  locations = _messages.StringField(27, repeated=True)
+  loggingService = _messages.StringField(28)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 29)
+  managedPodIdentityConfig = _messages.MessageField('ManagedPodIdentityConfig', 30)
+  masterAuth = _messages.MessageField('MasterAuth', 31)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 32)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 33)
+  masterIpv4CidrBlock = _messages.StringField(34)
+  monitoringService = _messages.StringField(35)
+  name = _messages.StringField(36)
+  network = _messages.StringField(37)
+  networkConfig = _messages.MessageField('NetworkConfig', 38)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 39)
+  nodeConfig = _messages.MessageField('NodeConfig', 40)
+  nodeIpv4CidrSize = _messages.IntegerField(41, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 42, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 43)
+  privateCluster = _messages.BooleanField(44)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 45)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 46)
+  selfLink = _messages.StringField(47)
+  servicesIpv4Cidr = _messages.StringField(48)
+  status = _messages.EnumField('StatusValueValuesEnum', 49)
+  statusMessage = _messages.StringField(50)
+  subnetwork = _messages.StringField(51)
+  tpuIpv4CidrBlock = _messages.StringField(52)
+  zone = _messages.StringField(53)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -467,12 +497,15 @@ class ClusterStatus(_messages.Message):
   UpdateClusterInternal. The message is used in ClusterUpdate's
   DesiredClusterStatus field and should not be confused with Cluster's Status
   Enum. TODO(b/69364507) Implement a PatchClusterInternal method that takes an
-  internal proto instead so we don't have to define this message here
+  internal proto instead so we don't have to define this message here Till
+  then, this message should be in sync with the definition in the
+  internal.proto
 
   Enums:
     StatusValueValuesEnum: The current status of the cluster.
 
   Fields:
+    conditions: Which conditions caused the current cluster state.
     internal: An internal field for the sub-error type or other metadata for
       the Status.
     message: A human-readable message that describes the status of the
@@ -495,9 +528,10 @@ class ClusterStatus(_messages.Message):
     RUNNING = 1
     DEGRADED = 2
 
-  internal = _messages.StringField(1)
-  message = _messages.StringField(2)
-  status = _messages.EnumField('StatusValueValuesEnum', 3)
+  conditions = _messages.MessageField('StatusCondition', 1, repeated=True)
+  internal = _messages.StringField(2)
+  message = _messages.StringField(3)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
 class ClusterUpdate(_messages.Message):
@@ -868,8 +902,8 @@ class ContainerProjectsLocationsListRequest(_messages.Message):
       if that response token was set (which happens when listing more
       Locations than fit in a single ListLocationsResponse). This is currently
       not used and will be honored once we use pagination.
-    parent: Contains the name of the resource requested. Specific in the
-      format 'projects/*/locations'.
+    parent: Contains the name of the resource requested. Specified in the
+      format 'projects/*'.
     version: API request version that initiates this operation.
   """
 
@@ -1213,7 +1247,7 @@ class CreateNodePoolRequest(_messages.Message):
     nodePool: The node pool to create.
     parent: The parent (project, location, cluster id) where the node pool
       will be created. Specified in the format
-      'projects/*/locations/*/clusters/*/nodePools/*'.
+      'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
       project
       number](https://developers.google.com/console/help/new/#projectnumber).
@@ -1262,17 +1296,6 @@ class DailyMaintenanceWindow(_messages.Message):
   daysInCycle = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   duration = _messages.StringField(2)
   startTime = _messages.StringField(3)
-
-
-class ElafrosConfig(_messages.Message):
-  r"""Configuration options for Elafros, an open serverless platform that runs
-  functions, apps, and containers.
-
-  Fields:
-    disabled: Whether Elafros is enabled for this cluster.
-  """
-
-  disabled = _messages.BooleanField(1)
 
 
 class Empty(_messages.Message):
@@ -2058,7 +2081,7 @@ class Location(_messages.Message):
       Regional or Zonal.
 
   Fields:
-    name: Contains the name of the resource requested. Specific in the format
+    name: Contains the name of the resource requested. Specified in the format
       'projects/*/locations/*'.
     recommended: Recommended is a bool combining the drain state of the
       location (ie- has the region been drained manually?), and the stockout
@@ -2488,6 +2511,7 @@ class NodePool(_messages.Message):
   Fields:
     autoscaling: Autoscaler configuration for this NodePool. Autoscaler is
       enabled only if a valid configuration is present.
+    conditions: Which conditions caused the current node pool state.
     config: The node configuration of the pool.
     initialNodeCount: The initial node count for the pool. You must ensure
       that your Compute Engine <a href="/compute/docs/resource-
@@ -2503,7 +2527,8 @@ class NodePool(_messages.Message):
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
     statusMessage: [Output only] Additional information about the current
-      status of this node pool instance, if available.
+      status of this node pool instance, if available. Deprecated, use the
+      field conditions instead.
     version: The version of the Kubernetes of this node.
   """
 
@@ -2536,16 +2561,17 @@ class NodePool(_messages.Message):
     ERROR = 6
 
   autoscaling = _messages.MessageField('NodePoolAutoscaling', 1)
-  config = _messages.MessageField('NodeConfig', 2)
-  initialNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(4, repeated=True)
-  management = _messages.MessageField('NodeManagement', 5)
-  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 6)
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  version = _messages.StringField(11)
+  conditions = _messages.MessageField('StatusCondition', 2, repeated=True)
+  config = _messages.MessageField('NodeConfig', 3)
+  initialNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(5, repeated=True)
+  management = _messages.MessageField('NodeManagement', 6)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 7)
+  name = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  statusMessage = _messages.StringField(11)
+  version = _messages.StringField(12)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -2553,7 +2579,7 @@ class NodePoolAutoscaling(_messages.Message):
   to adjust the size of the node pool to the current cluster usage.
 
   Fields:
-    autoprovisioned: Is autosprovisoning enabled for this node pool.
+    autoprovisioned: Can this node pool be deleted automatically.
     enabled: Is autoscaling enabled for this node pool.
     maxNodeCount: Maximum number of nodes in the NodePool. Must be >=
       min_node_count. There has to enough quota to scale up the cluster.
@@ -2610,6 +2636,7 @@ class Operation(_messages.Message):
     StatusValueValuesEnum: The current status of the operation.
 
   Fields:
+    clusterConditions: Which conditions caused the current cluster state.
     detail: Detailed operation progress, if available.
     endTime: [Output only] The time the operation completed, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
@@ -2618,6 +2645,7 @@ class Operation(_messages.Message):
       [region](/compute/docs/regions-zones/regions-zones#available) in which
       the cluster resides.
     name: The server-assigned ID for the operation.
+    nodepoolConditions: Which conditions caused the current node pool state.
     operationType: The operation type.
     progress: [Output only] Progress information for an operation.
     selfLink: Server-defined URL for the resource.
@@ -2625,7 +2653,7 @@ class Operation(_messages.Message):
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     status: The current status of the operation.
     statusMessage: If an error has occurred, a textual description of the
-      error.
+      error. Deprecated, use the field conditions instead.
     targetLink: Server-defined URL for the target of the operation.
     zone: The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the operation is taking
@@ -2690,18 +2718,20 @@ class Operation(_messages.Message):
     DONE = 3
     ABORTING = 4
 
-  detail = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  location = _messages.StringField(3)
-  name = _messages.StringField(4)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  progress = _messages.MessageField('OperationProgress', 6)
-  selfLink = _messages.StringField(7)
-  startTime = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  targetLink = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  clusterConditions = _messages.MessageField('StatusCondition', 1, repeated=True)
+  detail = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  location = _messages.StringField(4)
+  name = _messages.StringField(5)
+  nodepoolConditions = _messages.MessageField('StatusCondition', 6, repeated=True)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 7)
+  progress = _messages.MessageField('OperationProgress', 8)
+  selfLink = _messages.StringField(9)
+  startTime = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  statusMessage = _messages.StringField(12)
+  targetLink = _messages.StringField(13)
+  zone = _messages.StringField(14)
 
 
 class OperationProgress(_messages.Message):
@@ -2762,12 +2792,23 @@ class ResourceLimit(_messages.Message):
   Fields:
     maximum: Maximum amount of the resource in the cluster.
     minimum: Minimum amount of the resource in the cluster.
-    name: Resource name "cpu", "memory" or gpu-specific string.
+    resourceType: Resource name "cpu", "memory" or gpu-specific string.
   """
 
   maximum = _messages.IntegerField(1)
   minimum = _messages.IntegerField(2)
-  name = _messages.StringField(3)
+  resourceType = _messages.StringField(3)
+
+
+class ResourceUsageExportConfig(_messages.Message):
+  r"""Configuration for exporting cluster resource usages.
+
+  Fields:
+    bigqueryDestination: Configuration to use BigQuery as usage export
+      destination.
+  """
+
+  bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
 
 
 class RollbackNodePoolUpgradeRequest(_messages.Message):
@@ -2819,6 +2860,16 @@ class ServerConfig(_messages.Message):
   validImageTypes = _messages.StringField(4, repeated=True)
   validMasterVersions = _messages.StringField(5, repeated=True)
   validNodeVersions = _messages.StringField(6, repeated=True)
+
+
+class ServerlessConfig(_messages.Message):
+  r"""Configuration options for the serverless feature.
+
+  Fields:
+    disabled: Whether serverless is enabled for this cluster.
+  """
+
+  disabled = _messages.BooleanField(1)
 
 
 class SetAddonsConfigRequest(_messages.Message):
@@ -3311,6 +3362,35 @@ class StartIPRotationRequest(_messages.Message):
   rotateCredentials = _messages.BooleanField(4)
   version = _messages.StringField(5)
   zone = _messages.StringField(6)
+
+
+class StatusCondition(_messages.Message):
+  r"""StatusCondition describes why a cluster or a node pool has a certain
+  status (e.g., ERROR or DEGRADED).
+
+  Enums:
+    CodeValueValuesEnum: Machine-friendly representation of the condition
+
+  Fields:
+    code: Machine-friendly representation of the condition
+    message: Human-friendly representation of the condition
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Machine-friendly representation of the condition
+
+    Values:
+      UNKNOWN: UNKNOWN indicates a generic condition.
+      GCE_STOCKOUT: GCE_STOCKOUT indicates a GCE stockout.
+      GKE_SERVICE_ACCOUNT_DELETED: GKE_SERVICE_ACCOUNT_DELETED indicates that
+        the user deleted their robot service account. More codes TBA
+    """
+    UNKNOWN = 0
+    GCE_STOCKOUT = 1
+    GKE_SERVICE_ACCOUNT_DELETED = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
 
 
 class UpdateClusterRequest(_messages.Message):

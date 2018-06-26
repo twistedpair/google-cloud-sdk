@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,8 +55,7 @@ if --enable-master-authorized-networks is not \
 specified."""
 
 NO_AUTOPROVISIONING_MSG = """\
-Node autoprovisioning is currently in alpha. Please contact GKE support \
-if you're interested in enabling alpha features in your cluster.
+Node autoprovisioning is currently in beta.
 """
 
 NO_AUTOPROVISIONING_LIMITS_ERROR_MSG = """\
@@ -338,7 +338,6 @@ class CreateClusterOptions(object):
                create_subnetwork=None,
                cluster_secondary_range_name=None,
                services_secondary_range_name=None,
-               enable_shared_network=None,
                accelerators=None,
                enable_binauthz=None,
                min_cpu_platform=None,
@@ -401,7 +400,6 @@ class CreateClusterOptions(object):
     self.create_subnetwork = create_subnetwork
     self.cluster_secondary_range_name = cluster_secondary_range_name
     self.services_secondary_range_name = services_secondary_range_name
-    self.enable_shared_network = enable_shared_network
     self.accelerators = accelerators
     self.enable_binauthz = enable_binauthz
     self.min_cpu_platform = min_cpu_platform
@@ -916,35 +914,10 @@ class APIAdapter(object):
           self.messages.ClientCertificateConfig(
               issueClientCertificate=options.issue_client_certificate))
 
-    self.ParseNetworkConfigOptions(options, cluster)
     self.ParseIPAliasOptions(options, cluster)
     self.ParseAllowRouteOverlapOptions(options, cluster)
     self.ParsePrivateClusterOptions(options, cluster)
     self.ParseTpuOptions(options, cluster)
-    return cluster
-
-  def ParseNetworkConfigOptions(self, options, cluster):
-    """Asserts the options for Shared VPC Networking."""
-    if not options.enable_shared_network:
-      return cluster
-
-    req_related_options = [('enable-kubernetes-alpha',
-                            options.enable_kubernetes_alpha),
-                           ('enable-ip-alias',
-                            options.enable_ip_alias), ('subnetwork',
-                                                       options.subnetwork),
-                           ('cluster-secondary-range-name',
-                            options.cluster_secondary_range_name),
-                           ('services-secondary-range-name',
-                            options.services_secondary_range_name)]
-
-    for name, opt in req_related_options:
-      if not opt:
-        raise util.MissingArgForSharedSubnetError(name)
-
-    network_config = self.messages.NetworkConfig(
-        enableSharedNetwork=options.enable_shared_network)
-    cluster.networkConfig = network_config
     return cluster
 
   def ParseIPAliasOptions(self, options, cluster):
@@ -1687,6 +1660,69 @@ class V1Beta1Adapter(V1Adapter):
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
+  def CreateClusterAutoscalingCommon(self, options):
+    """Create cluster's autoscaling configuration.
+
+    Args:
+      options: Either CreateClusterOptions or UpdateClusterOptions.
+    Returns:
+      Cluster's autoscaling configuration.
+    """
+    if (options.enable_autoprovisioning and
+        (options.max_cpu is None or options.max_memory is None)):
+      raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
+    resource_limits = []
+    if options.min_cpu is not None or options.max_cpu is not None:
+      resource_limits.append(self.messages.ResourceLimit(
+          resourceType='cpu',
+          minimum=options.min_cpu,
+          maximum=options.max_cpu))
+    if options.min_memory is not None or options.max_memory is not None:
+      resource_limits.append(self.messages.ResourceLimit(
+          resourceType='memory',
+          minimum=options.min_memory,
+          maximum=options.max_memory))
+    if options.max_accelerator is not None:
+      accelerator_type = options.max_accelerator.get('type')
+      min_count = 0
+      if options.min_accelerator is not None:
+        if options.min_accelerator.get('type') != accelerator_type:
+          raise util.Error(MISMATCH_ACCELERATOR_TYPE_LIMITS_ERROR_MSG)
+        min_count = options.min_accelerator.get('count', 0)
+      resource_limits.append(self.messages.ResourceLimit(
+          resourceType=options.max_accelerator.get('type'),
+          minimum=min_count,
+          maximum=options.max_accelerator.get('count', 0)))
+    return self.messages.ClusterAutoscaling(
+        enableNodeAutoprovisioning=options.enable_autoprovisioning,
+        resourceLimits=resource_limits)
+
+  def UpdateNodePool(self, node_pool_ref, options):
+    if options.IsAutoscalingUpdate():
+      autoscaling = self.UpdateNodePoolAutoscaling(node_pool_ref, options)
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolId=node_pool_ref.nodePoolId,
+          desiredNodePoolAutoscaling=autoscaling)
+      operation = self.client.projects_locations_clusters.Update(
+          self.messages.UpdateClusterRequest(
+              name=ProjectLocationCluster(node_pool_ref.projectId,
+                                          node_pool_ref.zone,
+                                          node_pool_ref.clusterId),
+              update=update))
+      return self.ParseOperation(operation.name, node_pool_ref.zone)
+    else:
+      management = self.UpdateNodePoolNodeManagement(node_pool_ref, options)
+      req = (self.messages.SetNodePoolManagementRequest(
+          name=ProjectLocationClusterNodePool(
+              node_pool_ref.projectId,
+              node_pool_ref.zone,
+              node_pool_ref.clusterId,
+              node_pool_ref.nodePoolId),
+          management=management))
+      operation = (
+          self.client.projects_locations_clusters_nodePools.SetManagement(req))
+      return self.ParseOperation(operation.name, node_pool_ref.zone)
+
 
 class V1Alpha1Adapter(V1Beta1Adapter):
   """APIAdapter for v1alpha1."""
@@ -1751,43 +1787,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
-  def CreateClusterAutoscalingCommon(self, options):
-    """Create cluster's autoscaling configuration.
-
-    Args:
-      options: Either CreateClusterOptions or UpdateClusterOptions.
-    Returns:
-      Cluster's autoscaling configuration.
-    """
-    if (options.enable_autoprovisioning and
-        (options.max_cpu is None or options.max_memory is None)):
-      raise util.Error(NO_AUTOPROVISIONING_LIMITS_ERROR_MSG)
-    resource_limits = []
-    if options.min_cpu is not None or options.max_cpu is not None:
-      resource_limits.append(self.messages.ResourceLimit(
-          name='cpu',
-          minimum=options.min_cpu,
-          maximum=options.max_cpu))
-    if options.min_memory is not None or options.max_memory is not None:
-      resource_limits.append(self.messages.ResourceLimit(
-          name='memory',
-          minimum=options.min_memory,
-          maximum=options.max_memory))
-    if options.max_accelerator is not None:
-      accelerator_type = options.max_accelerator.get('type')
-      min_count = 0
-      if options.min_accelerator is not None:
-        if options.min_accelerator.get('type') != accelerator_type:
-          raise util.Error(MISMATCH_ACCELERATOR_TYPE_LIMITS_ERROR_MSG)
-        min_count = options.min_accelerator.get('count', 0)
-      resource_limits.append(self.messages.ResourceLimit(
-          name=options.max_accelerator.get('type'),
-          minimum=min_count,
-          maximum=options.max_accelerator.get('count', 0)))
-    return self.messages.ClusterAutoscaling(
-        enableNodeAutoprovisioning=options.enable_autoprovisioning,
-        resourceLimits=resource_limits)
-
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
     if options.local_ssd_volume_configs:
@@ -1801,32 +1800,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                                       node_pool_ref.clusterId))
     operation = self.client.projects_locations_clusters_nodePools.Create(req)
     return self.ParseOperation(operation.name, node_pool_ref.zone)
-
-  def UpdateNodePool(self, node_pool_ref, options):
-    if options.IsAutoscalingUpdate():
-      autoscaling = self.UpdateNodePoolAutoscaling(node_pool_ref, options)
-      update = self.messages.ClusterUpdate(
-          desiredNodePoolId=node_pool_ref.nodePoolId,
-          desiredNodePoolAutoscaling=autoscaling)
-      operation = self.client.projects_locations_clusters.Update(
-          self.messages.UpdateClusterRequest(
-              name=ProjectLocationCluster(node_pool_ref.projectId,
-                                          node_pool_ref.zone,
-                                          node_pool_ref.clusterId),
-              update=update))
-      return self.ParseOperation(operation.name, node_pool_ref.zone)
-    else:
-      management = self.UpdateNodePoolNodeManagement(node_pool_ref, options)
-      req = (self.messages.SetNodePoolManagementRequest(
-          name=ProjectLocationClusterNodePool(
-              node_pool_ref.projectId,
-              node_pool_ref.zone,
-              node_pool_ref.clusterId,
-              node_pool_ref.nodePoolId),
-          management=management))
-      operation = (
-          self.client.projects_locations_clusters_nodePools.SetManagement(req))
-      return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def GetIamPolicy(self, cluster_ref):
     return self.client.projects.GetIamPolicy(

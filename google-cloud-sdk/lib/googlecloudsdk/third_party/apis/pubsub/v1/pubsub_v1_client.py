@@ -594,8 +594,7 @@ subscription, such as its topic, are not modifiable.
     )
 
     def Pull(self, request, global_params=None):
-      r"""Pulls messages from the server. Returns an empty list if there are no.
-messages available in the backlog. The server may return `UNAVAILABLE` if
+      r"""Pulls messages from the server. The server may return `UNAVAILABLE` if.
 there are too many concurrent pull requests pending for the given
 subscription.
 

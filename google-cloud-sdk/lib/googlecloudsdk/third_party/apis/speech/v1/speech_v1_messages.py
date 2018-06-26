@@ -283,20 +283,7 @@ class SpeechContext(_messages.Message):
   r"""Provides "hints" to the speech recognizer to favor specific words and
   phrases in the results.
 
-  Enums:
-    BiasingStrengthValueValuesEnum: Strength of biasing to use (strong, medium
-      or weak). If you use strong biasing option then more likely to see those
-      phrases in the results. If biasing strength is not specified then by
-      default medium biasing would be used. If you'd like different phrases to
-      have different biasing strengths, you can specify multiple
-      speech_contexts.
-
   Fields:
-    biasingStrength: Strength of biasing to use (strong, medium or weak). If
-      you use strong biasing option then more likely to see those phrases in
-      the results. If biasing strength is not specified then by default medium
-      biasing would be used. If you'd like different phrases to have different
-      biasing strengths, you can specify multiple speech_contexts.
     phrases: *Optional* A list of strings containing words and phrases "hints"
       so that the speech recognition is more likely to recognize them. This
       can be used to improve the accuracy for specific words and phrases, for
@@ -306,26 +293,7 @@ class SpeechContext(_messages.Message):
       limits](https://cloud.google.com/speech/limits#content).
   """
 
-  class BiasingStrengthValueValuesEnum(_messages.Enum):
-    r"""Strength of biasing to use (strong, medium or weak). If you use strong
-    biasing option then more likely to see those phrases in the results. If
-    biasing strength is not specified then by default medium biasing would be
-    used. If you'd like different phrases to have different biasing strengths,
-    you can specify multiple speech_contexts.
-
-    Values:
-      BIASING_STRENGTH_UNSPECIFIED: <no description>
-      LOW: Low bias
-      MEDIUM: Medium bias
-      HIGH: High bias
-    """
-    BIASING_STRENGTH_UNSPECIFIED = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-
-  biasingStrength = _messages.EnumField('BiasingStrengthValueValuesEnum', 1)
-  phrases = _messages.StringField(2, repeated=True)
+  phrases = _messages.StringField(1, repeated=True)
 
 
 class SpeechOperationsGetRequest(_messages.Message):

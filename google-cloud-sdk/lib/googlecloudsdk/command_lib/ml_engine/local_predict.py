@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2016 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +38,14 @@ VERIFY_TENSORFLOW_VERSION = ('Please verify the installed tensorflow version '
                              'with: "python -c \'import tensorflow; '
                              'print tensorflow.__version__\'".')
 
+VERIFY_SCIKIT_LEARN_VERSION = ('Please verify the installed sklearn version '
+                               'with: "python -c \'import sklearn; '
+                               'print sklearn.__version__\'".')
+
+VERIFY_XGBOOST_VERSION = ('Please verify the installed xgboost version '
+                          'with: "python -c \'import xgboost; '
+                          'print xgboost.__version__\'".')
+
 
 def _verify_tensorflow(version):
   """Check whether TensorFlow is installed at an appropriate version."""
@@ -62,14 +71,73 @@ def _verify_tensorflow(version):
   return True
 
 
-def main():
-  if not _verify_tensorflow('1.0.0'):
+def _verify_scikit_learn(version):
+  """Check whether scikit-learn is installed at an appropriate version."""
+  # Check scikit-learn with a recent version is installed.
+  try:
+    # pylint: disable=g-import-not-at-top
+    import scipy  # pylint: disable=unused-variable
+    # pylint: enable=g-import-not-at-top
+  except ImportError:
+    eprint('Cannot import scipy, which is needed for scikit-learn. Please '
+           'verify "python -c \'import scipy\'" works.')
+    return False
+  try:
+    # pylint: disable=g-import-not-at-top
+    import sklearn  # pytype: disable=import-error
+    # pylint: enable=g-import-not-at-top
+  except ImportError:
+    eprint('Cannot import sklearn. Please verify '
+           '"python -c \'import sklearn\'" works.')
+    return False
+  try:
+    if sklearn.__version__ < version:
+      eprint('Scikit-learn version must be at least {} .'.format(version),
+             VERIFY_SCIKIT_LEARN_VERSION)
+      return False
+  except (NameError, AttributeError) as e:
+    eprint('Error while getting the installed scikit-learn version: ', e, '\n',
+           VERIFY_SCIKIT_LEARN_VERSION)
+    return False
+
+  return True
+
+
+def _verify_xgboost(version):
+  """Check whether xgboost is installed at an appropriate version."""
+  # Check xgboost with a recent version is installed.
+  try:
+    # pylint: disable=g-import-not-at-top
+    import xgboost  # pytype: disable=import-error
+    # pylint: enable=g-import-not-at-top
+  except ImportError:
+    eprint('Cannot import xgboost. Please verify '
+           '"python -c \'import xgboost\'" works.')
+    return False
+  try:
+    if xgboost.__version__ < version:
+      eprint('Xgboost version must be at least {} .'.format(version),
+             VERIFY_XGBOOST_VERSION)
+      return False
+  except (NameError, AttributeError) as e:
+    eprint('Error while getting the installed xgboost version: ', e, '\n',
+           VERIFY_XGBOOST_VERSION)
+    return False
+
+  return True
+
+
+def _verify_ml_libs(framework):
+  """Verifies the appropriate ML libs are installed per framework."""
+  if framework == 'tensorflow' and not _verify_tensorflow('1.0.0'):
     sys.exit(-1)
-  # We want to do this *after* we verify tensorflow so the user gets a nicer
-  # error message.
-  # pylint: disable=g-import-not-at-top
-  from cloud.ml.prediction import prediction_lib
-  # pylint: enable=g-import-not-at-top
+  elif framework == 'scikit_learn' and not _verify_scikit_learn('0.18.1'):
+    sys.exit(-1)
+  elif framework == 'xgboost' and not _verify_xgboost('0.6a2'):
+    sys.exit(-1)
+
+
+def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--model-dir', required=True, help='Path of the model.')
   parser.add_argument('--framework', required=False, default='tensorflow',
@@ -77,6 +145,13 @@ def main():
                             'the model. If not specified, defaults to '
                             '`tensorflow`'))
   args, _ = parser.parse_known_args()
+
+  _verify_ml_libs(args.framework)
+  # We want to do this *after* we verify ml libs so the user gets a nicer
+  # error message.
+  # pylint: disable=g-import-not-at-top
+  from cloud.ml.prediction import prediction_lib
+  # pylint: enable=g-import-not-at-top
 
   instances = []
   for line in sys.stdin:

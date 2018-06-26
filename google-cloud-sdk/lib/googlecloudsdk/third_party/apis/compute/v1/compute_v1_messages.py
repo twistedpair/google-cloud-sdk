@@ -460,6 +460,13 @@ class AccessConfig(_messages.Message):
   Only one access config per instance is supported.
 
   Enums:
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this access configuration and can only take the following
+      values: PREMIUM, STANDARD.  If an AccessConfig is specified without a
+      valid external IP address, an ephemeral IP will be created with this
+      networkTier.  If an AccessConfig with a valid external IP address is
+      specified, it must match that of the networkTier associated with the
+      Address resource owning that IP.
     TypeValueValuesEnum: The type of configuration. The default and only
       option is ONE_TO_ONE_NAT.
 
@@ -474,6 +481,13 @@ class AccessConfig(_messages.Message):
       field undefined to use an IP from a shared ephemeral IP address pool. If
       you specify a static external IP address, it must live in the same
       region as the zone of the instance.
+    networkTier: This signifies the networking tier used for configuring this
+      access configuration and can only take the following values: PREMIUM,
+      STANDARD.  If an AccessConfig is specified without a valid external IP
+      address, an ephemeral IP will be created with this networkTier.  If an
+      AccessConfig with a valid external IP address is specified, it must
+      match that of the networkTier associated with the Address resource
+      owning that IP.
     publicPtrDomainName: The DNS domain name for the public PTR record. This
       field can only be set when the set_public_ptr field is enabled.
     setPublicPtr: Specifies whether a public DNS ?PTR? record should be
@@ -482,6 +496,21 @@ class AccessConfig(_messages.Message):
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    r"""This signifies the networking tier used for configuring this access
+    configuration and can only take the following values: PREMIUM, STANDARD.
+    If an AccessConfig is specified without a valid external IP address, an
+    ephemeral IP will be created with this networkTier.  If an AccessConfig
+    with a valid external IP address is specified, it must match that of the
+    networkTier associated with the Address resource owning that IP.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of configuration. The default and only option is
@@ -495,9 +524,10 @@ class AccessConfig(_messages.Message):
   kind = _messages.StringField(1, default=u'compute#accessConfig')
   name = _messages.StringField(2)
   natIP = _messages.StringField(3)
-  publicPtrDomainName = _messages.StringField(4)
-  setPublicPtr = _messages.BooleanField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6, default=u'ONE_TO_ONE_NAT')
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
+  publicPtrDomainName = _messages.StringField(5)
+  setPublicPtr = _messages.BooleanField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7, default=u'ONE_TO_ONE_NAT')
 
 
 class Address(_messages.Message):
@@ -511,6 +541,10 @@ class Address(_messages.Message):
     IpVersionValueValuesEnum: The IP Version that will be used by this
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this Address and can only take the following values: PREMIUM
+      , STANDARD.  If this field is not specified, it is assumed to be
+      PREMIUM.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -538,6 +572,9 @@ class Address(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    networkTier: This signifies the networking tier used for configuring this
+      Address and can only take the following values: PREMIUM , STANDARD.  If
+      this field is not specified, it is assumed to be PREMIUM.
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses. You must
       specify this field as part of the HTTP request URL. You cannot set this
@@ -582,6 +619,18 @@ class Address(_messages.Message):
     IPV6 = 1
     UNSPECIFIED_VERSION = 2
 
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    r"""This signifies the networking tier used for configuring this Address
+    and can only take the following values: PREMIUM , STANDARD.  If this field
+    is not specified, it is assumed to be PREMIUM.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
     RESERVING, RESERVED, or IN_USE. An address that is RESERVING is currently
@@ -606,11 +655,12 @@ class Address(_messages.Message):
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
   kind = _messages.StringField(7, default=u'compute#address')
   name = _messages.StringField(8)
-  region = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  subnetwork = _messages.StringField(12)
-  users = _messages.StringField(13, repeated=True)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 9)
+  region = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  subnetwork = _messages.StringField(13)
+  users = _messages.StringField(14, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -1165,7 +1215,9 @@ class AttachedDiskInitializeParams(_messages.Message):
 
   Fields:
     diskName: Specifies the disk name. If not specified, the default is to use
-      the name of the instance.
+      the name of the instance. If the disk with the instance name exists
+      already in the given zone/region, a new name will be automatically
+      generated.
     diskSizeGb: Specifies the size of the disk in base-2 GB.
     diskType: Specifies the disk type to use to create the instance. If not
       specified, the default is pd-standard, specified using the full URL. For
@@ -1951,7 +2003,7 @@ class BackendBucket(_messages.Message):
 
   Fields:
     bucketName: Cloud Storage bucket name.
-    cdnPolicy: Cloud CDN Coniguration for this BackendBucket.
+    cdnPolicy: Cloud CDN configuration for this BackendBucket.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional textual description of the resource; provided by
@@ -8510,6 +8562,31 @@ class ComputeProjectsSetCommonInstanceMetadataRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ComputeProjectsSetDefaultNetworkTierRequest(_messages.Message):
+  r"""A ComputeProjectsSetDefaultNetworkTierRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    projectsSetDefaultNetworkTierRequest: A
+      ProjectsSetDefaultNetworkTierRequest resource to be passed as the
+      request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  projectsSetDefaultNetworkTierRequest = _messages.MessageField('ProjectsSetDefaultNetworkTierRequest', 2)
+  requestId = _messages.StringField(3)
+
+
 class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
   r"""A ComputeProjectsSetUsageExportBucketRequest object.
 
@@ -10800,6 +10877,52 @@ class ComputeSubnetworksListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeSubnetworksListUsableRequest(_messages.Message):
+  r"""A ComputeSubnetworksListUsableRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class ComputeSubnetworksPatchRequest(_messages.Message):
@@ -14258,6 +14381,13 @@ class ForwardingRule(_messages.Message):
       of INTERNAL_SELF_MANAGED means that this will be used for Internal
       Global HTTP(S) LB. The value of EXTERNAL means that this will be used
       for External Load Balancing (HTTP(S) LB, External TCP/UDP LB, SSL Proxy)
+    NetworkTierValueValuesEnum: This signifies the networking tier used for
+      configuring this load balancer and can only take the following values:
+      PREMIUM , STANDARD.  For regional ForwardingRule, the valid values are
+      PREMIUM and STANDARD. For GlobalForwardingRule, the valid value is
+      PREMIUM.  If this field is not specified, it is assumed to be PREMIUM.
+      If IPAddress is specified, this value must be equal to the networkTier
+      of the Address.
 
   Fields:
     IPAddress: The IP address that this forwarding rule is serving on behalf
@@ -14318,6 +14448,12 @@ class ForwardingRule(_messages.Message):
       and INTERNAL_SELF_MANAGED load balancing, this field identifies the
       network that the load balanced IP should belong to for this Forwarding
       Rule. If this field is not specified, the default network will be used.
+    networkTier: This signifies the networking tier used for configuring this
+      load balancer and can only take the following values: PREMIUM ,
+      STANDARD.  For regional ForwardingRule, the valid values are PREMIUM and
+      STANDARD. For GlobalForwardingRule, the valid value is PREMIUM.  If this
+      field is not specified, it is assumed to be PREMIUM. If IPAddress is
+      specified, this value must be equal to the networkTier of the Address.
     portRange: This field is used along with the target field for
       TargetHttpProxy, TargetHttpsProxy, TargetSslProxy, TargetTcpProxy,
       TargetVpnGateway, TargetPool, TargetInstance.  Applicable only when
@@ -14407,6 +14543,21 @@ class ForwardingRule(_messages.Message):
     INTERNAL = 1
     INVALID = 2
 
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    r"""This signifies the networking tier used for configuring this load
+    balancer and can only take the following values: PREMIUM , STANDARD.  For
+    regional ForwardingRule, the valid values are PREMIUM and STANDARD. For
+    GlobalForwardingRule, the valid value is PREMIUM.  If this field is not
+    specified, it is assumed to be PREMIUM. If IPAddress is specified, this
+    value must be equal to the networkTier of the Address.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
   IPAddress = _messages.StringField(1)
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
   backendService = _messages.StringField(3)
@@ -14418,12 +14569,13 @@ class ForwardingRule(_messages.Message):
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 9)
   name = _messages.StringField(10)
   network = _messages.StringField(11)
-  portRange = _messages.StringField(12)
-  ports = _messages.StringField(13, repeated=True)
-  region = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  subnetwork = _messages.StringField(16)
-  target = _messages.StringField(17)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 12)
+  portRange = _messages.StringField(13)
+  ports = _messages.StringField(14, repeated=True)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  subnetwork = _messages.StringField(17)
+  target = _messages.StringField(18)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -21481,6 +21633,10 @@ class Project(_messages.Message):
   beta.projects ==)
 
   Enums:
+    DefaultNetworkTierValueValuesEnum: This signifies the default network tier
+      used for configuring resources of the project and can only take the
+      following values: PREMIUM, STANDARD. Initially the default network tier
+      is PREMIUM.
     XpnProjectStatusValueValuesEnum: [Output Only] The role this project has
       in a shared VPC configuration. Currently only HOST projects are
       differentiated.
@@ -21491,6 +21647,10 @@ class Project(_messages.Message):
       information.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultNetworkTier: This signifies the default network tier used for
+      configuring resources of the project and can only take the following
+      values: PREMIUM, STANDARD. Initially the default network tier is
+      PREMIUM.
     defaultServiceAccount: [Output Only] Default service account used by VMs
       running in this project.
     description: An optional textual description of the resource.
@@ -21510,6 +21670,18 @@ class Project(_messages.Message):
       configuration. Currently only HOST projects are differentiated.
   """
 
+  class DefaultNetworkTierValueValuesEnum(_messages.Enum):
+    r"""This signifies the default network tier used for configuring resources
+    of the project and can only take the following values: PREMIUM, STANDARD.
+    Initially the default network tier is PREMIUM.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
   class XpnProjectStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The role this project has in a shared VPC configuration.
     Currently only HOST projects are differentiated.
@@ -21523,16 +21695,17 @@ class Project(_messages.Message):
 
   commonInstanceMetadata = _messages.MessageField('Metadata', 1)
   creationTimestamp = _messages.StringField(2)
-  defaultServiceAccount = _messages.StringField(3)
-  description = _messages.StringField(4)
-  enabledFeatures = _messages.StringField(5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#project')
-  name = _messages.StringField(8)
-  quotas = _messages.MessageField('Quota', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  usageExportLocation = _messages.MessageField('UsageExportLocation', 11)
-  xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 12)
+  defaultNetworkTier = _messages.EnumField('DefaultNetworkTierValueValuesEnum', 3)
+  defaultServiceAccount = _messages.StringField(4)
+  description = _messages.StringField(5)
+  enabledFeatures = _messages.StringField(6, repeated=True)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default=u'compute#project')
+  name = _messages.StringField(9)
+  quotas = _messages.MessageField('Quota', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  usageExportLocation = _messages.MessageField('UsageExportLocation', 12)
+  xpnProjectStatus = _messages.EnumField('XpnProjectStatusValueValuesEnum', 13)
 
 
 class ProjectsDisableXpnResourceRequest(_messages.Message):
@@ -21588,6 +21761,29 @@ class ProjectsListXpnHostsRequest(_messages.Message):
   organization = _messages.StringField(1)
 
 
+class ProjectsSetDefaultNetworkTierRequest(_messages.Message):
+  r"""A ProjectsSetDefaultNetworkTierRequest object.
+
+  Enums:
+    NetworkTierValueValuesEnum: Default network tier to be set.
+
+  Fields:
+    networkTier: Default network tier to be set.
+  """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    r"""Default network tier to be set.
+
+    Values:
+      PREMIUM: <no description>
+      STANDARD: <no description>
+    """
+    PREMIUM = 0
+    STANDARD = 1
+
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 1)
+
+
 class Quota(_messages.Message):
   r"""A quotas entry.
 
@@ -21624,6 +21820,7 @@ class Quota(_messages.Message):
       INTERCONNECT_ATTACHMENTS_TOTAL_MBPS: <no description>
       INTERNAL_ADDRESSES: <no description>
       IN_USE_ADDRESSES: <no description>
+      IN_USE_BACKUP_SCHEDULES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
@@ -21636,6 +21833,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
+      RESOURCE_POLICIES: <no description>
       ROUTERS: <no description>
       ROUTES: <no description>
       SECURITY_POLICIES: <no description>
@@ -21675,36 +21873,38 @@ class Quota(_messages.Message):
     INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 17
     INTERNAL_ADDRESSES = 18
     IN_USE_ADDRESSES = 19
-    LOCAL_SSD_TOTAL_GB = 20
-    NETWORKS = 21
-    NVIDIA_K80_GPUS = 22
-    NVIDIA_P100_GPUS = 23
-    NVIDIA_V100_GPUS = 24
-    PREEMPTIBLE_CPUS = 25
-    PREEMPTIBLE_LOCAL_SSD_GB = 26
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 27
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 28
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 29
-    REGIONAL_AUTOSCALERS = 30
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 31
-    ROUTERS = 32
-    ROUTES = 33
-    SECURITY_POLICIES = 34
-    SECURITY_POLICY_RULES = 35
-    SNAPSHOTS = 36
-    SSD_TOTAL_GB = 37
-    SSL_CERTIFICATES = 38
-    STATIC_ADDRESSES = 39
-    SUBNETWORKS = 40
-    TARGET_HTTPS_PROXIES = 41
-    TARGET_HTTP_PROXIES = 42
-    TARGET_INSTANCES = 43
-    TARGET_POOLS = 44
-    TARGET_SSL_PROXIES = 45
-    TARGET_TCP_PROXIES = 46
-    TARGET_VPN_GATEWAYS = 47
-    URL_MAPS = 48
-    VPN_TUNNELS = 49
+    IN_USE_BACKUP_SCHEDULES = 20
+    LOCAL_SSD_TOTAL_GB = 21
+    NETWORKS = 22
+    NVIDIA_K80_GPUS = 23
+    NVIDIA_P100_GPUS = 24
+    NVIDIA_V100_GPUS = 25
+    PREEMPTIBLE_CPUS = 26
+    PREEMPTIBLE_LOCAL_SSD_GB = 27
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 28
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 29
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 30
+    REGIONAL_AUTOSCALERS = 31
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 32
+    RESOURCE_POLICIES = 33
+    ROUTERS = 34
+    ROUTES = 35
+    SECURITY_POLICIES = 36
+    SECURITY_POLICY_RULES = 37
+    SNAPSHOTS = 38
+    SSD_TOTAL_GB = 39
+    SSL_CERTIFICATES = 40
+    STATIC_ADDRESSES = 41
+    SUBNETWORKS = 42
+    TARGET_HTTPS_PROXIES = 43
+    TARGET_HTTP_PROXIES = 44
+    TARGET_INSTANCES = 45
+    TARGET_POOLS = 46
+    TARGET_SSL_PROXIES = 47
+    TARGET_TCP_PROXIES = 48
+    TARGET_VPN_GATEWAYS = 49
+    URL_MAPS = 50
+    VPN_TUNNELS = 51
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -27910,6 +28110,166 @@ class UrlMapsValidateResponse(_messages.Message):
   """
 
   result = _messages.MessageField('UrlMapValidationResult', 1)
+
+
+class UsableSubnetwork(_messages.Message):
+  r"""Subnetwork which the current user has compute.subnetworks.use permission
+  on.
+
+  Fields:
+    ipCidrRange: The range of internal addresses that are owned by this
+      subnetwork.
+    network: Network URL.
+    secondaryIpRanges: Secondary IP ranges.
+    subnetwork: Subnetwork URL.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  network = _messages.StringField(2)
+  secondaryIpRanges = _messages.MessageField('UsableSubnetworkSecondaryRange', 3, repeated=True)
+  subnetwork = _messages.StringField(4)
+
+
+class UsableSubnetworkSecondaryRange(_messages.Message):
+  r"""Secondary IP range of a usable subnetwork.
+
+  Fields:
+    ipCidrRange: The range of IP addresses belonging to this subnetwork
+      secondary range.
+    rangeName: The name associated with this subnetwork secondary range, used
+      when adding an alias IP range to a VM instance. The name must be 1-63
+      characters long, and comply with RFC1035. The name must be unique within
+      the subnetwork.
+  """
+
+  ipCidrRange = _messages.StringField(1)
+  rangeName = _messages.StringField(2)
+
+
+class UsableSubnetworksAggregatedList(_messages.Message):
+  r"""A UsableSubnetworksAggregatedList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output] A list of usable subnetwork URLs.
+    kind: [Output Only] Type of resource. Always
+      compute#usableSubnetworksAggregatedList for aggregated lists of usable
+      subnetworks.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('UsableSubnetwork', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#usableSubnetworksAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class UsageExportLocation(_messages.Message):

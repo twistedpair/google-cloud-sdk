@@ -1773,18 +1773,19 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
   r"""Represents a piece of potentially sensitive content.
 
   Enums:
-    LikelihoodValueValuesEnum: Estimate of how likely it is that the
+    LikelihoodValueValuesEnum: Confidence of how likely it is that the
       `info_type` is correct.
 
   Fields:
     createTime: Timestamp when finding was detected.
     infoType: The type of content that might have been found. Provided if
-      requested by the `InspectConfig`.
-    likelihood: Estimate of how likely it is that the `info_type` is correct.
+      `excluded_types` is false.
+    likelihood: Confidence of how likely it is that the `info_type` is
+      correct.
     location: Where the content was found.
     quote: The content that was found. Even if the content is not textual, it
-      may be converted to a textual representation here. Provided if requested
-      by the `InspectConfig` and the finding is less than or equal to 4096
+      may be converted to a textual representation here. Provided if
+      `include_quote` is true and the finding is less than or equal to 4096
       bytes long. If the finding exceeds 4096 bytes in length, the quote may
       be omitted.
     quoteInfo: Contains data parsed from quotes. Only populated if
@@ -1793,7 +1794,7 @@ class GooglePrivacyDlpV2Finding(_messages.Message):
   """
 
   class LikelihoodValueValuesEnum(_messages.Enum):
-    r"""Estimate of how likely it is that the `info_type` is correct.
+    r"""Confidence of how likely it is that the `info_type` is correct.
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
@@ -2046,7 +2047,10 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       finding is included in the response; see Finding.quote.
     infoTypes: Restricts what info_types to look for. The values must
       correspond to InfoType values returned by ListInfoTypes or listed at
-      https://cloud.google.com/dlp/docs/infotypes-reference.
+      https://cloud.google.com/dlp/docs/infotypes-reference.  When no
+      InfoTypes or CustomInfoTypes are specified in a request, the system may
+      automatically choose what detectors to run. By default this may be all
+      types, but may change over time as detectors are updated.
     limits: A GooglePrivacyDlpV2FindingLimits attribute.
     minLikelihood: Only returns findings equal or above this threshold. The
       default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
@@ -3020,12 +3024,15 @@ class GooglePrivacyDlpV2RedactImageRequest(_messages.Message):
     byteItem: The content must be PNG, JPEG, SVG or BMP.
     imageRedactionConfigs: The configuration for specifying what content to
       redact from images.
+    includeFindings: Whether the response should include findings along with
+      the redacted image.
     inspectConfig: Configuration for the inspector.
   """
 
   byteItem = _messages.MessageField('GooglePrivacyDlpV2ByteContentItem', 1)
   imageRedactionConfigs = _messages.MessageField('GooglePrivacyDlpV2ImageRedactionConfig', 2, repeated=True)
-  inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 3)
+  includeFindings = _messages.BooleanField(3)
+  inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 4)
 
 
 class GooglePrivacyDlpV2RedactImageResponse(_messages.Message):
@@ -3035,12 +3042,15 @@ class GooglePrivacyDlpV2RedactImageResponse(_messages.Message):
     extractedText: If an image was being inspected and the InspectConfig's
       include_quote was set to true, then this field will include all text, if
       any, that was found in the image.
+    inspectResult: The findings. Populated when include_findings in the
+      request is true.
     redactedImage: The redacted image. The type will be the same as the
       original image.
   """
 
   extractedText = _messages.StringField(1)
-  redactedImage = _messages.BytesField(2)
+  inspectResult = _messages.MessageField('GooglePrivacyDlpV2InspectResult', 2)
+  redactedImage = _messages.BytesField(3)
 
 
 class GooglePrivacyDlpV2Regex(_messages.Message):

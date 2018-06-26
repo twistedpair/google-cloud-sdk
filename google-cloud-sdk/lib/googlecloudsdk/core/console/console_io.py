@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2013 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +21,7 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 import contextlib
 
+import io
 import json
 import os
 import re
@@ -96,22 +98,6 @@ def _NarrowWrap(narrow_by):
   TEXTWRAP.width -= narrow_by
   yield TEXTWRAP
   TEXTWRAP.width += narrow_by
-
-
-def _RawInput(prompt=None):
-  """A simple redirect to the built-in raw_input function.
-
-  If the prompt is given, it is correctly line wrapped.
-
-  Args:
-    prompt: str, An optional prompt.
-
-  Returns:
-    The input from stdin.
-  """
-  if prompt:
-    sys.stderr.write(_DoWrap(prompt))
-  return _GetInput()
 
 
 def _GetInput():
@@ -257,8 +243,62 @@ def PromptContinue(message=None, prompt_string=None, default=True,
       raise OperationCancelledError()
     return default
 
+  style = properties.VALUES.core.interactive_ux_style.Get()
+  prompt_generator = (
+      _TestPromptContinuePromptGenerator
+      if style == properties.VALUES.core.InteractiveUXStyles.TESTING.name
+      else _NormalPromptContinuePromptGenerator)
+
+  prompt, reprompt, ending = prompt_generator(
+      message=message, prompt_string=prompt_string, default=default,
+      throw_if_unattended=throw_if_unattended, cancel_on_no=cancel_on_no,
+      cancel_string=cancel_string)
+  sys.stderr.write(prompt)
+
+  def GetAnswer(reprompt):
+    """Get answer to input prompt."""
+    while True:
+      answer = _GetInput()
+      # pylint:disable=g-explicit-bool-comparison, We explicitly want to
+      # distinguish between empty string and None.
+      if answer == '':
+        # User just hit enter, return default.
+        return default
+      elif answer is None:
+        # This means we hit EOF, no input or user closed the stream.
+        if throw_if_unattended and not IsInteractive():
+          raise UnattendedPromptError()
+        else:
+          return default
+      elif answer.strip().lower() in ['y', 'yes']:
+        return True
+      elif answer.strip().lower() in ['n', 'no']:
+        return False
+      elif reprompt:
+        sys.stderr.write(reprompt)
+
+  try:
+    answer = GetAnswer(reprompt)
+  finally:
+    if ending:
+      sys.stderr.write(ending)
+
+  if not answer and cancel_on_no:
+    raise OperationCancelledError(cancel_string)
+  return answer
+
+
+def _NormalPromptContinuePromptGenerator(
+    message, prompt_string, default, throw_if_unattended, cancel_on_no,
+    cancel_string):
+  """Generates prompts for prompt continue under normal conditions."""
+  del throw_if_unattended
+  del cancel_on_no
+  del cancel_string
+
+  buf = io.StringIO()
   if message:
-    sys.stderr.write(_DoWrap(message) + '\n\n')
+    buf.write(_DoWrap(message) + '\n\n')
 
   if not prompt_string:
     prompt_string = 'Do you want to continue'
@@ -266,39 +306,22 @@ def PromptContinue(message=None, prompt_string=None, default=True,
     prompt_string += ' (Y/n)?  '
   else:
     prompt_string += ' (y/N)?  '
-  sys.stderr.write(_DoWrap(prompt_string))
+  buf.write(_DoWrap(prompt_string))
 
-  def GetAnswer():
-    """Get answer to input prompt."""
-    while True:
-      answer = _RawInput()
-      # pylint:disable=g-explicit-bool-comparison, We explicitly want to
-      # distinguish between empty string and None.
-      if answer == '':
-        # User just hit enter, return default.
-        sys.stderr.write('\n')
-        return default
-      elif answer is None:
-        # This means we hit EOF, no input or user closed the stream.
-        if throw_if_unattended and not IsInteractive():
-          sys.stderr.write('\n')
-          raise UnattendedPromptError()
-        else:
-          sys.stderr.write('\n')
-          return default
-      elif answer.strip().lower() in ['y', 'yes']:
-        sys.stderr.write('\n')
-        return True
-      elif answer.strip().lower() in ['n', 'no']:
-        sys.stderr.write('\n')
-        return False
-      else:
-        sys.stderr.write("Please enter 'y' or 'n':  ")
+  return (buf.getvalue(), "Please enter 'y' or 'n':  ", '\n')
 
-  answer = GetAnswer()
-  if not answer and cancel_on_no:
-    raise OperationCancelledError(cancel_string)
-  return answer
+
+def _TestPromptContinuePromptGenerator(
+    message, prompt_string, default, throw_if_unattended, cancel_on_no,
+    cancel_string):
+  """Generates prompts for prompt continue under test."""
+  del default
+  del throw_if_unattended
+  del cancel_on_no
+  return (JsonUXStub(
+      UXElementType.PROMPT_CONTINUE, message=message,
+      prompt_string=prompt_string, cancel_string=cancel_string) + '\n',
+          None, None)
 
 
 def PromptResponse(message=None, choices=None):
@@ -316,7 +339,8 @@ def PromptResponse(message=None, choices=None):
     return None
   if choices and IsInteractive(error=True):
     return prompt_completer.PromptCompleter(message, choices=choices).Input()
-  return _RawInput(message)
+  sys.stderr.write(_DoWrap(message))
+  return _GetInput()
 
 
 def PromptWithDefault(message=None, default=None, choices=None):
@@ -408,19 +432,19 @@ def _SuggestFreeformAnswer(suggester, answer, options):
   return suggester.GetSuggestion(answer)
 
 
-def _PrintOptions(options, limit=None):
+def _PrintOptions(options, write, limit=None):
   """Prints the options provided to stderr.
 
   Args:
     options:  [object], A list of objects to print as choices.  Their str()
       method will be used to display them.
+    write: f(x)->None, A function to call to write the data.
     limit: int, If set, will only print the first number of options equal
       to the given limit.
   """
   limited_options = options if limit is None else options[:limit]
   for i, option in enumerate(limited_options):
-    sys.stderr.write(' [{index}] {option}\n'.format(
-        index=i + 1, option=str(option)))
+    write(' [{index}] {option}\n'.format(index=i + 1, option=str(option)))
 
 
 # This defines the point at which, in a PromptChoice, the options
@@ -472,24 +496,32 @@ def PromptChoice(options, default=None, message=None,
   if properties.VALUES.core.disable_prompts.GetBool():
     return default
 
+  style = properties.VALUES.core.interactive_ux_style.Get()
+  if style == properties.VALUES.core.InteractiveUXStyles.TESTING.name:
+    write = lambda x: None
+    sys.stderr.write(JsonUXStub(
+        UXElementType.PROMPT_CHOICE, message=message,
+        prompt_string=prompt_string,
+        choices=[six.text_type(o) for o in options]) + '\n')
+  else:
+    write = sys.stderr.write
+
   if message:
-    sys.stderr.write(_DoWrap(message) + '\n')
+    write(_DoWrap(message) + '\n')
 
   if maximum > PROMPT_OPTIONS_OVERFLOW:
-    _PrintOptions(options, limit=PROMPT_OPTIONS_OVERFLOW)
+    _PrintOptions(options, write, limit=PROMPT_OPTIONS_OVERFLOW)
     truncated = maximum - PROMPT_OPTIONS_OVERFLOW
-    sys.stderr.write('Did not print [{truncated}] options.\n'
-                     .format(truncated=truncated))
-    sys.stderr.write(('Too many options [{maximum}]. Enter "list" at '
-                      'prompt to print choices fully.\n').format(
-                          maximum=maximum))
+    write('Did not print [{truncated}] options.\n'.format(truncated=truncated))
+    write('Too many options [{maximum}]. Enter "list" at prompt to print '
+          'choices fully.\n'.format(maximum=maximum))
   else:
-    _PrintOptions(options)
+    _PrintOptions(options, write)
 
   if not prompt_string:
     if allow_freeform:
-      prompt_string = ('Please enter numeric choice or text value '
-                       '(must exactly match list item)')
+      prompt_string = ('Please enter numeric choice or text value (must exactly'
+                       ' match list item)')
     else:
       prompt_string = 'Please enter your numeric choice'
   if default is None:
@@ -498,29 +530,29 @@ def PromptChoice(options, default=None, message=None,
     suffix_string = ' ({default}):  '.format(default=default + 1)
 
   def _PrintPrompt():
-    sys.stderr.write(_DoWrap(prompt_string + suffix_string))
+    write(_DoWrap(prompt_string + suffix_string))
   _PrintPrompt()
 
   while True:
-    answer = _RawInput()
+    answer = _GetInput()
     if answer is None or (answer is '' and default is not None):
       # Return default if we failed to read from stdin.
       # Return default if the user hit enter and there is a valid default,
       # or raise OperationCancelledError if default is the cancel option.
       # Prompt again otherwise
-      sys.stderr.write('\n')
+      write('\n')
       if cancel_option and default == maximum - 1:
         raise OperationCancelledError()
       return default
     if answer == 'list':
-      _PrintOptions(options)
+      _PrintOptions(options, write)
       _PrintPrompt()
       continue
     num_choice = _ParseAnswer(answer, options, allow_freeform)
     if cancel_option and num_choice == maximum:
       raise OperationCancelledError()
     if num_choice is not None and num_choice >= 1 and num_choice <= maximum:
-      sys.stderr.write('\n')
+      write('\n')
       return num_choice - 1
 
     # Arriving here means that there is no choice matching the answer that
@@ -530,17 +562,16 @@ def PromptChoice(options, default=None, message=None,
                                           answer,
                                           options)
       if suggestion is not None:
-        sys.stderr.write('[{answer}] not in list. Did you mean [{suggestion}]?'
-                         .format(answer=answer, suggestion=suggestion))
-        sys.stderr.write('\n')
+        write('[{answer}] not in list. Did you mean [{suggestion}]?'
+              .format(answer=answer, suggestion=suggestion))
+        write('\n')
 
     if allow_freeform:
-      sys.stderr.write(('Please enter a value between 1 and {maximum}, '
-                        'or a value present in the list:  ')
-                       .format(maximum=maximum))
+      write('Please enter a value between 1 and {maximum}, or a value present '
+            'in the list:  '.format(maximum=maximum))
     else:
-      sys.stderr.write('Please enter a value between 1 and {maximum}:  '
-                       .format(maximum=maximum))
+      write('Please enter a value between 1 and {maximum}:  '
+            .format(maximum=maximum))
 
 
 def PromptWithValidator(validator, error_message, prompt_string,
@@ -567,7 +598,8 @@ def PromptWithValidator(validator, error_message, prompt_string,
     sys.stderr.write(_DoWrap(message) + '\n')
 
   while True:
-    answer = _RawInput(prompt_string)
+    sys.stderr.write(_DoWrap(prompt_string))
+    answer = _GetInput()
     if validator(answer):
       return answer
     else:
@@ -848,8 +880,8 @@ class _StubProgressBar(object):
     self._stream = stream
 
   def Start(self):
-    self._stream.write(JsonUXStub(UXElementType.PROGRESS_BAR,
-                                  message=self._raw_label))
+    self._stream.write(
+        JsonUXStub(UXElementType.PROGRESS_BAR, message=self._raw_label))
 
   def SetProgress(self, progress_factor):
     pass
@@ -955,7 +987,7 @@ class UXElementType(enum.Enum):
   PROGRESS_TRACKER = (['message', 'aborted_message', 'status'])
   PROMPT_CONTINUE = (['message', 'prompt_string', 'cancel_string'])
   PROMPT_RESPONSE = (['choices'])
-  PROMPT_CHOICE = (['choices', 'prompt_string'])
+  PROMPT_CHOICE = (['message', 'prompt_string', 'choices'])
 
   def __init__(self, data_fields):
     self._data_fields = data_fields

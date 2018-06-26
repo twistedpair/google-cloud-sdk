@@ -1844,8 +1844,8 @@ class ServiceuserProjectsServicesDisableRequest(_messages.Message):
     projectsId: Part of `name`. Name of the consumer and the service to
       disable for that consumer.  The Service User implementation accepts the
       following forms for consumer: - "project:<project_id>"  A valid path
-      would be: - /v1/projects/my-
-      project/services/servicemanagement.googleapis.com:disable
+      would be: - projects/my-
+      project/services/servicemanagement.googleapis.com
     servicesId: Part of `name`. See documentation of `projectsId`.
   """
 
@@ -1861,8 +1861,8 @@ class ServiceuserProjectsServicesEnableRequest(_messages.Message):
     enableServiceRequest: A EnableServiceRequest resource to be passed as the
       request body.
     projectsId: Part of `name`. Name of the consumer and the service to enable
-      for that consumer.  A valid path would be: - /v1/projects/my-
-      project/services/servicemanagement.googleapis.com:enable
+      for that consumer.  A valid path would be: - projects/my-
+      project/services/servicemanagement.googleapis.com
     servicesId: Part of `name`. See documentation of `projectsId`.
   """
 

@@ -1813,23 +1813,6 @@
           "format": "google-datetime"
         }
       }
-    },
-    "GrafeasV1beta1OperationMetadata": {
-      "id": "GrafeasV1beta1OperationMetadata",
-      "description": "Metadata for an operation.",
-      "type": "object",
-      "properties": {
-        "createTime": {
-          "description": "Output only. The time this operation was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "endTime": {
-          "description": "Output only. The time that this operation was marked as done.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
     }
   },
   "resources": {
