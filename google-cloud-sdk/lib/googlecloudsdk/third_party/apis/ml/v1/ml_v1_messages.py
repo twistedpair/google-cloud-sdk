@@ -959,10 +959,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       <i>complex_model_m</i> that also includes   four NVIDIA Tesla P100 GPUs.
       The availability of these GPUs is in   the <i>Beta</i> launch stage.
       </dd>   <dt>cloud_tpu</dt>   <dd>   A TPU VM including one Cloud TPU.
-      The availability of Cloud TPU is in   <i>Beta</i> launch stage. See more
-      about   <a href="/ml-engine/docs/tensorflow/using-tpus">using TPUs to
-      train   your model</a>.   </dd> </dl>  You must set this value when
-      `scaleTier` is set to `CUSTOM`.
+      See more about   <a href="/ml-engine/docs/tensorflow/using-tpus">using
+      TPUs to train   your model</a>.   </dd> </dl>  You must set this value
+      when `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
@@ -1014,8 +1013,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       BASIC_GPU: A single worker instance [with a GPU](/ml-
         engine/docs/tensorflow/using-gpus).
       BASIC_TPU: A single worker instance with a [Cloud TPU](/ml-
-        engine/docs/tensorflow/using-tpus). The availability of Cloud TPU is
-        in <i>Beta</i> launch stage.
+        engine/docs/tensorflow/using-tpus).
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
         your own cluster specification. When you use this tier, set values to
         configure your processing cluster according to these guidelines:  *

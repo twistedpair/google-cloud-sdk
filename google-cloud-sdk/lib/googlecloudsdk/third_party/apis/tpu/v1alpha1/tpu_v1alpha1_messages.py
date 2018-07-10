@@ -466,10 +466,6 @@ class ReimageNodeRequest(_messages.Message):
   tensorflowVersion = _messages.StringField(1)
 
 
-class ResetNodeRequest(_messages.Message):
-  r"""Request for ResetNode."""
-
-
 class SchedulingConfig(_messages.Message):
   r"""A SchedulingConfig object.
 
@@ -756,19 +752,6 @@ class TpuProjectsLocationsNodesReimageRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   reimageNodeRequest = _messages.MessageField('ReimageNodeRequest', 2)
-
-
-class TpuProjectsLocationsNodesResetRequest(_messages.Message):
-  r"""A TpuProjectsLocationsNodesResetRequest object.
-
-  Fields:
-    name: The resource name.
-    resetNodeRequest: A ResetNodeRequest resource to be passed as the request
-      body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  resetNodeRequest = _messages.MessageField('ResetNodeRequest', 2)
 
 
 class TpuProjectsLocationsNodesStartRequest(_messages.Message):

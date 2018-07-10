@@ -87,8 +87,7 @@ def WaitForOperation(operation):
   """Waits for the given google.longrunning.Operation to complete."""
   operation_ref = resources.REGISTRY.Parse(
       operation.name, collection='datastore.projects.operations')
-  poller = waiter.CloudOperationPollerNoResources(GetService(),
-                                                  lambda x: x.RelativeName())
+  poller = waiter.CloudOperationPollerNoResources(GetService())
   return waiter.WaitFor(
       poller, operation_ref,
       'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()))

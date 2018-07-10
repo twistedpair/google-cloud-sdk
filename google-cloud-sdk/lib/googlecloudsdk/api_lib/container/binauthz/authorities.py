@@ -28,44 +28,93 @@ from googlecloudsdk.command_lib.container.binauthz import exceptions
 class Client(object):
   """A client for interacting with authorities."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or apis.GetClientInstance()
-    self.messages = messages or apis.GetMessagesModule()
+  def __init__(self, api_version=None):
+    self.client = apis.GetClientInstance(api_version)
+    self.messages = apis.GetMessagesModule(api_version)
+
+  @property
+  def _version(self):
+    return self.client._VERSION  # pylint: disable=protected-access
+
+  def _GetClientService(self):
+    if self._version == apis.V1_ALPHA1:
+      return self.client.projects_attestationAuthorities
+    elif self._version == apis.V1_BETA1:
+      return self.client.projects_attestors
+    else:
+      raise NotImplementedError('Unknown client version: ' + self._version)
 
   def Get(self, authority_ref):
     """Get the specified attestation authority."""
-    return self.client.projects_attestationAuthorities.Get(
-        self.messages.BinaryauthorizationProjectsAttestationAuthoritiesGetRequest(  # pylint: disable=line-too-long
-            name=authority_ref.RelativeName(),
-        ))
+    if self._version == apis.V1_ALPHA1:
+      return self._GetClientService().Get(
+          self.messages.BinaryauthorizationProjectsAttestationAuthoritiesGetRequest(  # pylint: disable=line-too-long
+              name=authority_ref.RelativeName(),
+          ))
+    elif self._version == apis.V1_BETA1:
+      return self._GetClientService().Get(
+          self.messages.BinaryauthorizationProjectsAttestorsGetRequest(  # pylint: disable=line-too-long
+              name=authority_ref.RelativeName(),
+          ))
+    else:
+      raise NotImplementedError('Unknown client version: ' + self._version)
 
   def List(self, project_ref, limit=None, batch_size=500):
     """List the attestation authorities associated with the current project."""
-    return list_pager.YieldFromList(
-        self.client.projects_attestationAuthorities,
-        self.messages.BinaryauthorizationProjectsAttestationAuthoritiesListRequest(  # pylint: disable=line-too-long
-            parent=project_ref.RelativeName(),
-        ),
-        batch_size=batch_size,
-        limit=limit,
-        field='attestationAuthorities',
-        batch_size_attribute='pageSize')
+    if self._version == apis.V1_ALPHA1:
+      return list_pager.YieldFromList(
+          self._GetClientService(),
+          self.messages.BinaryauthorizationProjectsAttestationAuthoritiesListRequest(  # pylint: disable=line-too-long
+              parent=project_ref.RelativeName(),
+          ),
+          batch_size=batch_size,
+          limit=limit,
+          field='attestationAuthorities',
+          batch_size_attribute='pageSize')
+    elif self._version == apis.V1_BETA1:
+      return list_pager.YieldFromList(
+          self._GetClientService(),
+          self.messages.BinaryauthorizationProjectsAttestorsListRequest(
+              parent=project_ref.RelativeName(),
+          ),
+          batch_size=batch_size,
+          limit=limit,
+          field='attestors',
+          batch_size_attribute='pageSize')
+    else:
+      raise NotImplementedError('Unknown client version: ' + self._version)
 
   def Create(self, authority_ref, note_ref, description=None):
     """Create an attestation authorities associated with the current project."""
     project_ref = authority_ref.Parent(util.PROJECTS_COLLECTION)
-    return self.client.projects_attestationAuthorities.Create(
-        self.messages.BinaryauthorizationProjectsAttestationAuthoritiesCreateRequest(  # pylint: disable=line-too-long
-            attestationAuthority=self.messages.AttestationAuthority(
-                name=authority_ref.RelativeName(),
-                description=description,
-                userOwnedDrydockNote=self.messages.UserOwnedDrydockNote(
-                    noteReference=note_ref.RelativeName(),
-                ),
-            ),
-            attestationAuthorityId=authority_ref.Name(),
-            parent=project_ref.RelativeName(),
-        ))
+    if self._version == apis.V1_ALPHA1:
+      return self._GetClientService().Create(
+          self.messages.BinaryauthorizationProjectsAttestationAuthoritiesCreateRequest(  # pylint: disable=line-too-long
+              attestationAuthority=self.messages.AttestationAuthority(
+                  name=authority_ref.RelativeName(),
+                  description=description,
+                  userOwnedDrydockNote=self.messages.UserOwnedDrydockNote(
+                      noteReference=note_ref.RelativeName(),
+                  ),
+              ),
+              attestationAuthorityId=authority_ref.Name(),
+              parent=project_ref.RelativeName(),
+          ))
+    elif self._version == apis.V1_BETA1:
+      return self._GetClientService().Create(
+          self.messages.BinaryauthorizationProjectsAttestorsCreateRequest(
+              attestor=self.messages.Attestor(
+                  name=authority_ref.RelativeName(),
+                  description=description,
+                  userOwnedDrydockNote=self.messages.UserOwnedDrydockNote(
+                      noteReference=note_ref.RelativeName(),
+                  ),
+              ),
+              attestorId=authority_ref.Name(),
+              parent=project_ref.RelativeName(),
+          ))
+    else:
+      raise NotImplementedError('Unknown client version: ' + self._version)
 
   def AddKey(self, authority_ref, key_content, comment=None):
     """Add a key to an attestation authority.
@@ -92,13 +141,21 @@ class Client(object):
           'Provided public key already present on authority [{}]'.format(
               authority.name))
 
-    authority.userOwnedDrydockNote.publicKeys.append(
-        self.messages.AttestationAuthorityPublicKey(
-            asciiArmoredPgpPublicKey=key_content,
-            comment=comment))
+    if self._version == apis.V1_ALPHA1:
+      authority.userOwnedDrydockNote.publicKeys.append(
+          self.messages.AttestationAuthorityPublicKey(
+              asciiArmoredPgpPublicKey=key_content,
+              comment=comment))
+    elif self._version == apis.V1_BETA1:
+      authority.userOwnedDrydockNote.publicKeys.append(
+          self.messages.AttestorPublicKey(
+              asciiArmoredPgpPublicKey=key_content,
+              comment=comment))
+    else:
+      raise NotImplementedError('Unknown client version: ' + self._version)
 
-    updated_authority = (
-        self.client.projects_attestationAuthorities.Update(authority))
+    updated_authority = self._GetClientService().Update(authority)
+
     return next(
         public_key
         for public_key in updated_authority.userOwnedDrydockNote.publicKeys
@@ -129,7 +186,7 @@ class Client(object):
         public_key for public_key in authority.userOwnedDrydockNote.publicKeys
         if public_key.id != fingerprint_to_remove]
 
-    self.client.projects_attestationAuthorities.Update(authority)
+    self._GetClientService().Update(authority)
 
   def UpdateKey(
       self, authority_ref, fingerprint, key_content=None, comment=None):
@@ -172,8 +229,8 @@ class Client(object):
     if comment is not None:
       existing_key.comment = comment
 
-    updated_authority = (
-        self.client.projects_attestationAuthorities.Update(authority))
+    updated_authority = self._GetClientService().Update(authority)
+
     return next(
         public_key
         for public_key in updated_authority.userOwnedDrydockNote.publicKeys
@@ -194,11 +251,19 @@ class Client(object):
     if description is not None:
       authority.description = description
 
-    return self.client.projects_attestationAuthorities.Update(authority)
+    return self._GetClientService().Update(authority)
 
   def Delete(self, authority_ref):
     """Delete the specified attestation authority."""
-    self.client.projects_attestationAuthorities.Delete(
-        self.messages.BinaryauthorizationProjectsAttestationAuthoritiesDeleteRequest(  # pylint: disable=line-too-long
-            name=authority_ref.RelativeName(),
-        ))
+    if self._version == apis.V1_ALPHA1:
+      req = self.messages.BinaryauthorizationProjectsAttestationAuthoritiesDeleteRequest(  # pylint: disable=line-too-long
+          name=authority_ref.RelativeName(),
+      )
+    elif self._version == apis.V1_BETA1:
+      req = self.messages.BinaryauthorizationProjectsAttestorsDeleteRequest(  # pylint: disable=line-too-long
+          name=authority_ref.RelativeName(),
+      )
+    else:
+      raise NotImplementedError('Unknown client version: ' + self._version)
+
+    self._GetClientService().Delete(req)

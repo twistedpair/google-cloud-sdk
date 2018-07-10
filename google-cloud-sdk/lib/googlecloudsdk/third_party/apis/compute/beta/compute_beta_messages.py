@@ -2263,15 +2263,16 @@ class BackendBucketCdnPolicy(_messages.Message):
   r"""Message containing Cloud CDN configuration for a backend bucket.
 
   Fields:
-    signedUrlCacheMaxAgeSec: Number of seconds up to which the response to a
-      signed URL request will be cached in the CDN. After this time period,
-      the Signed URL will be revalidated before being served. Defaults to 1hr
-      (3600s). If this field is set, Cloud CDN will internally act as though
-      all responses from this bucket had a ?Cache-Control: public, max-
-      age=[TTL]? header, regardless of any existing Cache-Control header. The
-      actual headers served in responses will not be altered.
-    signedUrlKeyNames: [Output Only] Names of the keys currently configured
-      for Cloud CDN Signed URL on this backend bucket.
+    signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
+      signed URL request will be considered fresh. After this time period, the
+      response will be revalidated before being served. Defaults to 1hr
+      (3600s). When serving responses to signed URL requests, Cloud CDN will
+      internally behave as though all responses from this backend had a
+      ?Cache-Control: public, max-age=[TTL]? header, regardless of any
+      existing Cache-Control header. The actual headers served in responses
+      will not be altered.
+    signedUrlKeyNames: [Output Only] Names of the keys for signing request
+      URLs.
   """
 
   signedUrlCacheMaxAgeSec = _messages.IntegerField(1)
@@ -2730,15 +2731,16 @@ class BackendServiceCdnPolicy(_messages.Message):
 
   Fields:
     cacheKeyPolicy: The CacheKeyPolicy for this CdnPolicy.
-    signedUrlCacheMaxAgeSec: Number of seconds up to which the response to a
-      signed URL request will be cached in the CDN. After this time period,
-      the Signed URL will be revalidated before being served. Defaults to 1hr
-      (3600s). If this field is set, Cloud CDN will internally act as though
-      all responses from this backend had a ?Cache-Control: public, max-
-      age=[TTL]? header, regardless of any existing Cache-Control header. The
-      actual headers served in responses will not be altered.
-    signedUrlKeyNames: [Output Only] Names of the keys currently configured
-      for Cloud CDN Signed URL on this backend service.
+    signedUrlCacheMaxAgeSec: Maximum number of seconds the response to a
+      signed URL request will be considered fresh. After this time period, the
+      response will be revalidated before being served. Defaults to 1hr
+      (3600s). When serving responses to signed URL requests, Cloud CDN will
+      internally behave as though all responses from this backend had a
+      ?Cache-Control: public, max-age=[TTL]? header, regardless of any
+      existing Cache-Control header. The actual headers served in responses
+      will not be altered.
+    signedUrlKeyNames: [Output Only] Names of the keys for signing request
+      URLs.
   """
 
   cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
@@ -3029,11 +3031,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently. This field is only visible as GOOGLE_INTERNAL or
-      CONDITION_TRUSTED_TESTER.
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
@@ -4885,6 +4886,20 @@ class ComputeDisksDeleteRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeDisksGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeDisksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeDisksGetRequest(_messages.Message):
   r"""A ComputeDisksGetRequest object.
 
@@ -5028,6 +5043,23 @@ class ComputeDisksResizeRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeDisksSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeDisksSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
 
 
 class ComputeDisksSetLabelsRequest(_messages.Message):
@@ -6469,6 +6501,18 @@ class ComputeImagesGetFromFamilyRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeImagesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeImagesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeImagesGetRequest(_messages.Message):
   r"""A ComputeImagesGetRequest object.
 
@@ -6550,6 +6594,21 @@ class ComputeImagesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeImagesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeImagesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeImagesSetLabelsRequest(_messages.Message):
@@ -6756,11 +6815,39 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
   r"""A ComputeInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: A string attribute.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
     instanceGroupManager: The name of the managed instance group.
-    maxResults: A integer attribute.
-    order_by: A string attribute.
-    pageToken: A string attribute.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    order_by: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
     project: Project ID for this request.
     zone: The name of the zone where the managed instance group is located.
   """
@@ -7412,6 +7499,18 @@ class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ComputeInstanceTemplatesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstanceTemplatesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeInstanceTemplatesGetRequest(_messages.Message):
   r"""A ComputeInstanceTemplatesGetRequest object.
 
@@ -7492,6 +7591,21 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceTemplatesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstanceTemplatesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeInstanceTemplatesTestIamPermissionsRequest(_messages.Message):
@@ -7694,6 +7808,20 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstancesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstancesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
 
 
 class ComputeInstancesGetRequest(_messages.Message):
@@ -7944,6 +8072,23 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstancesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstancesSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
 
 
 class ComputeInstancesSetLabelsRequest(_messages.Message):
@@ -10357,10 +10502,38 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
   r"""A ComputeProjectsGetXpnResourcesRequest object.
 
   Fields:
-    filter: A string attribute.
-    maxResults: A integer attribute.
-    order_by: A string attribute.
-    pageToken: A string attribute.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    order_by: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
     project: Project ID for this request.
   """
 
@@ -10375,10 +10548,38 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
   r"""A ComputeProjectsListXpnHostsRequest object.
 
   Fields:
-    filter: A string attribute.
-    maxResults: A integer attribute.
-    order_by: A string attribute.
-    pageToken: A string attribute.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    order_by: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
     project: Project ID for this request.
     projectsListXpnHostsRequest: A ProjectsListXpnHostsRequest resource to be
       passed as the request body.
@@ -11495,11 +11696,39 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
   r"""A ComputeRegionInstanceGroupManagersListManagedInstancesRequest object.
 
   Fields:
-    filter: A string attribute.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
     instanceGroupManager: The name of the managed instance group.
-    maxResults: A integer attribute.
-    order_by: A string attribute.
-    pageToken: A string attribute.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    order_by: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
   """
@@ -12911,6 +13140,18 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
   snapshot = _messages.StringField(3, required=True)
 
 
+class ComputeSnapshotsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeSnapshotsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeSnapshotsGetRequest(_messages.Message):
   r"""A ComputeSnapshotsGetRequest object.
 
@@ -12967,6 +13208,21 @@ class ComputeSnapshotsListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeSnapshotsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeSnapshotsSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeSnapshotsSetLabelsRequest(_messages.Message):
@@ -18134,6 +18390,25 @@ class GlobalSetLabelsRequest(_messages.Message):
 
   labelFingerprint = _messages.BytesField(1)
   labels = _messages.MessageField('LabelsValue', 2)
+
+
+class GlobalSetPolicyRequest(_messages.Message):
+  r"""A GlobalSetPolicyRequest object.
+
+  Fields:
+    bindings: Flatten Policy to create a backwacd compatible wire-format.
+      Deprecated. Use 'policy' to specify bindings.
+    etag: Flatten Policy to create a backward compatible wire-format.
+      Deprecated. Use 'policy' to specify the etag.
+    policy: REQUIRED: The complete policy to be applied to the 'resource'. The
+      size of the policy is limited to a few 10s of KB. An empty policy is in
+      general a valid policy but certain services (like Projects) might reject
+      them.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  policy = _messages.MessageField('Policy', 3)
 
 
 class GuestOsFeature(_messages.Message):
@@ -25397,6 +25672,7 @@ class NodeGroup(_messages.Message):
     nodes: [Deprecated] Use nodeGroups.listNodes instead. [Output Only] A list
       of nodes in this node group.
     selfLink: [Output Only] Server-defined URL for the resource.
+    size: [Output Only] The total number of nodes in the node group.
     status: A StatusValueValuesEnum attribute.
     zone: [Output Only] The name of the zone where the node group resides,
       such as us-central1-a.
@@ -25424,8 +25700,9 @@ class NodeGroup(_messages.Message):
   nodeTemplate = _messages.StringField(6)
   nodes = _messages.MessageField('NodeGroupNode', 7, repeated=True)
   selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  zone = _messages.StringField(10)
+  size = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  zone = _messages.StringField(11)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -30903,7 +31180,8 @@ class SecurityPoliciesWafConfig(_messages.Message):
 
 class SecurityPolicy(_messages.Message):
   r"""A security policy is comprised of one or more rules. It can also be
-  associated with one or more 'targets'. Next available tag: 11
+  associated with one or more 'targets'. Next available tag: 11 (==
+  resource_for beta.securityPolicies ==)
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -32596,6 +32874,15 @@ class TCPHealthCheck(_messages.Message):
   r"""A TCPHealthCheck object.
 
   Enums:
+    PortSpecificationValueValuesEnum: Specifies how port is selected for
+      health checking, can be one of following values: USE_FIXED_PORT: The
+      port number in port is used for health checking. USE_NAMED_PORT: The
+      portName is used for health checking. USE_SERVING_PORT: For
+      NetworkEndpointGroup, the port specified for each network endpoint is
+      used for health checking. For other backends, the port or named port
+      specified in the Backend Service is used for health checking.   If not
+      specified, TCP health check follows behavior specified in port and
+      portName fields.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -32605,6 +32892,14 @@ class TCPHealthCheck(_messages.Message):
       is 80. Valid values are 1 through 65535.
     portName: Port name as defined in InstanceGroup#NamedPort#name. If both
       port and port_name are defined, port takes precedence.
+    portSpecification: Specifies how port is selected for health checking, can
+      be one of following values: USE_FIXED_PORT: The port number in port is
+      used for health checking. USE_NAMED_PORT: The portName is used for
+      health checking. USE_SERVING_PORT: For NetworkEndpointGroup, the port
+      specified for each network endpoint is used for health checking. For
+      other backends, the port or named port specified in the Backend Service
+      is used for health checking.   If not specified, TCP health check
+      follows behavior specified in port and portName fields.
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     request: The application data to send once the TCP connection has been
@@ -32615,6 +32910,25 @@ class TCPHealthCheck(_messages.Message):
       If left empty (the default value), any response will indicate health.
       The response data can only be ASCII.
   """
+
+  class PortSpecificationValueValuesEnum(_messages.Enum):
+    r"""Specifies how port is selected for health checking, can be one of
+    following values: USE_FIXED_PORT: The port number in port is used for
+    health checking. USE_NAMED_PORT: The portName is used for health checking.
+    USE_SERVING_PORT: For NetworkEndpointGroup, the port specified for each
+    network endpoint is used for health checking. For other backends, the port
+    or named port specified in the Backend Service is used for health
+    checking.   If not specified, TCP health check follows behavior specified
+    in port and portName fields.
+
+    Values:
+      USE_FIXED_PORT: <no description>
+      USE_NAMED_PORT: <no description>
+      USE_SERVING_PORT: <no description>
+    """
+    USE_FIXED_PORT = 0
+    USE_NAMED_PORT = 1
+    USE_SERVING_PORT = 2
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
     r"""Specifies the type of proxy header to append before sending data to
@@ -32629,9 +32943,10 @@ class TCPHealthCheck(_messages.Message):
 
   port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   portName = _messages.StringField(2)
-  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 3)
-  request = _messages.StringField(4)
-  response = _messages.StringField(5)
+  portSpecification = _messages.EnumField('PortSpecificationValueValuesEnum', 3)
+  proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
+  request = _messages.StringField(5)
+  response = _messages.StringField(6)
 
 
 class Tags(_messages.Message):

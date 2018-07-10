@@ -730,10 +730,6 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
       permission on the Task resource.
 
   Fields:
-    orderBy: Sort order used for the query. The only fields supported for
-      sorting are `schedule_time` and `pull_message.tag`. All results will be
-      returned in approximately ascending order. The default ordering is by
-      `schedule_time`.
     pageSize: Requested page size. Fewer tasks than requested might be
       returned.  The maximum page size is 1000. If unspecified, the page size
       will be the maximum. Fewer tasks than requested might be returned, even
@@ -773,11 +769,10 @@ class CloudtasksProjectsLocationsQueuesTasksListRequest(_messages.Message):
     BASIC = 1
     FULL = 2
 
-  orderBy = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 5)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 4)
 
 
 class CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest(_messages.Message):

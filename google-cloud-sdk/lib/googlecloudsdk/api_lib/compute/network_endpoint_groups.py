@@ -31,7 +31,7 @@ class NetworkEndpointGroupsClient(object):
     self.resources = resources
     self._service = self.client.apitools_client.networkEndpointGroups
 
-  def Create(self, neg_ref, neg_type, network_endpoint_type, default_port=None,
+  def Create(self, neg_ref, network_endpoint_type, default_port=None,
              network=None, subnet=None):
     """Creates a network endpoint group."""
     network_uri = None
@@ -48,12 +48,10 @@ class NetworkEndpointGroupsClient(object):
           collection='compute.subnetworks')
       subnet_uri = subnet_ref.SelfLink()
 
-    type_enum = self.messages.NetworkEndpointGroup.TypeValueValuesEnum
     endpoint_type_enum = (self.messages.NetworkEndpointGroup
                           .NetworkEndpointTypeValueValuesEnum)
     network_endpoint_group = self.messages.NetworkEndpointGroup(
         name=neg_ref.Name(),
-        type=arg_utils.ChoiceToEnum(neg_type, type_enum),
         networkEndpointType=arg_utils.ChoiceToEnum(
             network_endpoint_type, endpoint_type_enum),
         loadBalancer=self.messages.NetworkEndpointGroupLbNetworkEndpointGroup(

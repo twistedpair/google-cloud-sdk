@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2018 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +17,140 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import retry
+
+_PROJECT_RESOURCE = 'projects/%s'
+_PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
+
+
+def EnableApiCall(project, service):
+  """Make API call to enable a specific service.
+
+  Args:
+    project: The project for which to enable the service.
+    service: The identifier of the service to enable, for example
+      'serviceusage.googleapis.com'.
+
+  Raises:
+    exceptions.EnableServicePermissionDeniedException: when enabling API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  # TODO(b/78464430): use resource argument.
+  request = messages.ServiceusageServicesEnableRequest(
+      name=_PROJECT_SERVICE_RESOURCE % (project, service))
+  try:
+    return client.services.Enable(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e,
+                            exceptions.EnableServicePermissionDeniedException)
+
+
+def BatchEnableApiCall(project, services):
+  """Make API call to batch enable services.
+
+  Args:
+    project: The project for which to enable the services.
+    services: Iterable of identifiers of services to enable.
+
+  Raises:
+    exceptions.EnableServicePermissionDeniedException: when enabling API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesBatchEnableRequest(
+      batchEnableServicesRequest=messages.BatchEnableServicesRequest(
+          serviceIds=services),
+      parent=_PROJECT_RESOURCE % project)
+  try:
+    return client.services.BatchEnable(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e,
+                            exceptions.EnableServicePermissionDeniedException)
+
+
+def DisableApiCall(project, service):
+  """Make API call to disable a specific service.
+
+  Args:
+    project: The project for which to enable the service.
+    service: The identifier of the service to disable, for example
+      'serviceusage.googleapis.com'.
+
+  Raises:
+    exceptions.EnableServicePermissionDeniedException: when disabling API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The result of the operation
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesDisableRequest(
+      name=_PROJECT_SERVICE_RESOURCE % (project, service))
+  try:
+    return client.services.Disable(request)
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e,
+                            exceptions.EnableServicePermissionDeniedException)
+
+
+def ListServices(project, enabled, page_size, limit):
+  """Make API call to list services.
+
+  Args:
+    project: The project for which to list services.
+    enabled: List only enabled services.
+    page_size: The page size to list.
+    limit: The max number of services to display.
+
+  Raises:
+    exceptions.ListServicesPermissionDeniedException: when listing services
+    fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The list of services
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  if enabled:
+    service_filter = 'state:ENABLED'
+  else:
+    service_filter = None
+  request = messages.ServiceusageServicesListRequest(
+      filter=service_filter, parent=_PROJECT_RESOURCE % project)
+  try:
+    return list_pager.YieldFromList(
+        client.services,
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='services')
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e,
+                            exceptions.EnableServicePermissionDeniedException)
 
 
 def GetOperation(name):

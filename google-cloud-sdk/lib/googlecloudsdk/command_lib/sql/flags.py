@@ -29,6 +29,8 @@ from __future__ import absolute_import
 from __future__ import division
 
 from __future__ import unicode_literals
+from googlecloudsdk.api_lib.compute import utils as compute_utils
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -109,7 +111,14 @@ def AddUsername(parser):
 
 def AddHost(parser):
   """Add the 'deprecated_host' arg and '--host' flag to the parser."""
-  help_text = 'Cloud SQL user\'s host. Only applies to MySQL instances.'
+  help_text = ('Cloud SQL user\'s host name expressed as a specific IP address'
+               ' or address range. `%` denotes an unrestricted host name. '
+               'Applicable flag for MySQL instances; ignored for PostgreSQL '
+               'instances. Note, if you connect to your instance using IP '
+               'addresses, you must add your client IP address as an Authorized'
+               ' Address, even if your host name is unrestricted. For help on '
+               'how to do so, read: '
+               'https://cloud.google.com/sql/docs/mysql/configure-ip')
 
   host = parser.add_argument_group(mutex=True)
   # NOTICE: is_required = False is a short-term solution -- don't use elsewhere.
@@ -280,6 +289,86 @@ def AddEnableBinLog(parser, show_negated_in_help=False):
       **kwargs)
 
 
+def AddExternalMasterGroup(parser):
+  """Add flags to the parser for creating an external master and replica."""
+
+  # Group for creating external primary instances.
+  external_master_group = parser.add_group(
+      required=False,
+      help='Options for creating a wrapper for an external data source.')
+  external_master_group.add_argument(
+      '--source-ip-address',
+      required=True,
+      type=compute_utils.IPV4Argument,
+      help=('Public IP address used to connect to and replicate from '
+            'the external data source.'))
+  external_master_group.add_argument(
+      '--source-port',
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=65535),
+      # Default MySQL port number.
+      default=3306,
+      help=('Port number used to connect to and replicate from the '
+            'external data source.'))
+
+  # Group for creating replicas of external primary instances.
+  internal_replica_group = parser.add_group(
+      required=False,
+      help=('Options for creating an internal replica of an external data '
+            'source.'))
+  internal_replica_group.add_argument(
+      '--master-username',
+      required=True,
+      help='Name of the replication user on the external data source.')
+
+  # TODO(b/78648703): Make group required when mutex required status is fixed.
+  # For entering the password of the replication user of an external primary.
+  master_password_group = internal_replica_group.add_group(
+      'Password group.', mutex=True)
+  master_password_group.add_argument(
+      '--master-password',
+      help='Password of the replication user on the external data source.')
+  master_password_group.add_argument(
+      '--prompt-for-master-password',
+      action='store_true',
+      help=('Prompt for the password of the replication user on the '
+            'external data source. The password is all typed characters up '
+            'to but not including the RETURN or ENTER key.'))
+  internal_replica_group.add_argument(
+      '--master-dump-file-path',
+      required=True,
+      type=storage_util.ObjectReference.FromArgument,
+      help=('Path to the MySQL dump file in Google Cloud Storage from '
+            'which the seed import is made. The URI is in the form '
+            'gs://bucketName/fileName. Compressed gzip files (.gz) are '
+            'also supported.'))
+
+  # For specifying SSL certs for connecting to an external primary.
+  credential_group = internal_replica_group.add_group(
+      'Client and server credentials.', required=False)
+  credential_group.add_argument(
+      '--master-ca-certificate-path',
+      required=True,
+      help=('Path to a file containing the X.509v3 (RFC5280) PEM encoded '
+            'certificate of the CA that signed the external data source\'s '
+            'certificate.'))
+
+  # For specifying client certs for connecting to an external primary.
+  client_credential_group = credential_group.add_group(
+      'Client credentials.', required=False)
+  client_credential_group.add_argument(
+      '--client-certificate-path',
+      required=True,
+      help=('Path to a file containing the X.509v3 (RFC5280) PEM encoded '
+            'certificate that will be used by the replica to authenticate '
+            'against the external data source.'))
+  client_credential_group.add_argument(
+      '--client-key-path',
+      required=True,
+      help=('Path to a file containing the unencrypted PKCS#1 or PKCS#8 '
+            'PEM encoded private key associated with the '
+            'clientCertificate.'))
+
+
 def AddFollowGAEApp(parser):
   parser.add_argument(
       '--follow-gae-app',
@@ -333,6 +422,14 @@ def AddMemory(parser):
             '9GiB) - if no units are specified, GiB is assumed. Both --cpu '
             'and --memory must be specified if a custom machine type is '
             'desired, and the --tier flag must be omitted.'))
+
+
+def AddNetwork(parser):
+  """Adds the `--network` flag to the parser."""
+  parser.add_argument(
+      '--network',
+      help=('The network in the current project that the instance will be part '
+            'of.'))
 
 
 def AddReplication(parser):

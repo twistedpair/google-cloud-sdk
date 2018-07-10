@@ -259,8 +259,8 @@ _VALID_KEY_TYPES = {
         curve is defined in [OpenSSL](https://www.openssl.org/) as
         the `prime256v1` curve.""",
     KeyTypes.ES256_X509_PEM.choice_name: """\
-        (As ES256_PEM, but wrapped in an X.509v3 certificate
-        ([RFC5280]( https://www.ietf.org/rfc/rfc5280.txt)),
+        As ES256_PEM, but wrapped in an X.509v3 certificate
+        ([RFC5280](https://www.ietf.org/rfc/rfc5280.txt)),
         encoded in base64, and wrapped by
         `-----BEGIN CERTIFICATE-----` and
         `-----END CERTIFICATE-----`.""",

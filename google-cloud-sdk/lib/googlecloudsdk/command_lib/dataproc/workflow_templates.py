@@ -20,6 +20,9 @@ from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.util.args import labels_util
 
+# Fields to filter on export.
+TEMPLATE_FIELDS = ['id', 'name', 'version', 'createTime', 'updateTime']
+
 
 def AddWorkflowTemplatesArgs(parser):
   """Register flags for this command."""
@@ -71,3 +74,9 @@ def ConfigureOrderedJob(messages, job, args):
   # Parse labels (if present)
   job.labels = labels_util.ParseCreateArgs(
       args, messages.OrderedJob.LabelsValue)
+
+
+def Filter(template):
+  for field in TEMPLATE_FIELDS:
+    if field in template:
+      del template[field]

@@ -1388,11 +1388,11 @@ def AddDeprecatedNodePoolNodeIdentityFlags(parser):
       new_behavior=False)
 
 
-def AddAddonsFlags(parser):
-  """Adds the --addons flag to the parser."""
+def AddAddonsFlagsWithOptions(parser, addon_options):
+  """Adds the --addons flag to the parser with the given addon options."""
   parser.add_argument(
       '--addons',
-      type=arg_parsers.ArgList(choices=api_adapter.ADDONS_OPTIONS),
+      type=arg_parsers.ArgList(choices=addon_options),
       metavar='ADDON',
       # TODO(b/65264376): Replace the doc link when a better doc is ready.
       help="""\
@@ -1401,6 +1401,16 @@ Default set of addons includes {0}. Addons
 are additional Kubernetes cluster components. Addons specified by this flag will
 be enabled. The others will be disabled.
 """.format(', '.join(api_adapter.DEFAULT_ADDONS)))
+
+
+def AddAddonsFlags(parser):
+  """Adds the --addons flag to the parser for the beta and GA tracks."""
+  AddAddonsFlagsWithOptions(parser, api_adapter.ADDONS_OPTIONS)
+
+
+def AddAlphaAddonsFlags(parser):
+  """Adds the --addons flag to the parser for the alpha track."""
+  AddAddonsFlagsWithOptions(parser, api_adapter.ALPHA_ADDONS_OPTIONS)
 
 
 def AddPodSecurityPolicyFlag(parser, hidden=False):
@@ -1500,13 +1510,12 @@ def AddIstioConfigFlag(parser, suppressed=False):
   """
 
   help_text = """\
-Configurations for Istio addon, requires --addons contains Istio for create,
-or --update-addons Istio=ENABLED for update.
+Configurations for Istio addon, requires --addons contains Istio.
 
 *auth*:::Optional Type of auth NONE or MUTUAL_TLS
 Example:
 
-  $ {command} example-cluster --istio-config=auth=NONE
+  $ {command} example-cluster --addons=Istio --istio-config=auth=NONE
 """
   parser.add_argument(
       '--istio-config',
@@ -1519,8 +1528,8 @@ Example:
       hidden=suppressed)
 
 
-def ValidateIstioConfigCreateArgs(istio_config_args, addons_args):
-  """Validates flags specifying Istio config for create.
+def ValidateIstioConfigArgs(istio_config_args, addons_args):
+  """Validates flags specifying Istio config.
 
   Args:
     istio_config_args: parsed comandline arguments for --istio_config.
@@ -1541,29 +1550,6 @@ def ValidateIstioConfigCreateArgs(istio_config_args, addons_args):
           '--istio-config is given')
 
 
-def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
-  """Validates flags specifying Istio config for update.
-
-  Args:
-    istio_config_args: parsed comandline arguments for --istio_config.
-    disable_addons_args: parsed comandline arguments for --update-addons.
-  Raises:
-    InvalidArgumentException: when auth is not NONE nor MUTUAL_TLS, or
-    --update-addons=Istio=ENABLED is not specified
-  """
-  if istio_config_args:
-    auth = istio_config_args.get('auth', '')
-    if auth not in ['NONE', 'MUTUAL_TLS']:
-      raise exceptions.InvalidArgumentException(
-          '--istio-config', 'auth must be one of NONE or MUTUAL_TLS '
-          'e.g. --istio-config auth=NONE')
-    disable_istio = disable_addons_args.get('Istio')
-    if disable_istio is None or disable_istio:
-      raise exceptions.InvalidArgumentException(
-          '--istio-config', '--update-addons=Istio=ENABLED must be specified '
-          'when --istio-config is given')
-
-
 def AddConcurrentNodeCountFlag(parser):
   help_text = """\
 The number of nodes to upgrade concurrently. Valid values are [1, {max}].
@@ -1575,6 +1561,17 @@ your cluster size.'
       '--concurrent-node-count',
       type=arg_parsers.BoundedInt(1, api_adapter.MAX_CONCURRENT_NODE_COUNT),
       help=help_text)
+
+
+# TODO(b/110368338): Drop this warning when changing the default value of the
+# flag.
+def WarnForUnspecifiedIpAllocationPolicy(args):
+  if not args.IsSpecified('enable_ip_alias'):
+    log.warning(
+        'Currently VPC-native is not the default mode during cluster creation. '
+        'In the future, this will become the default mode and can be disabled '
+        'using `--no-enable-ip-alias` flag. Use `--[no-]enable-ip-alias` flag '
+        'to suppress this warning.')
 
 
 # TODO(b/76157677): Drop this warning when changing the default value of the
@@ -1631,3 +1628,28 @@ specified in the annotation.
       # TODO(b/109942548): unhide this flag for Beta
       hidden=True,
       help=help_text)
+
+
+def AddResourceUsageBigqueryDatasetFlag(parser):
+  """Adds --resource-usage-bigquery-dataset flag to the parser."""
+
+  group = parser.add_mutually_exclusive_group(
+      "Exports cluster's usage of cloud resources")
+
+  dataset_help_text = """\
+The name of the BigQuery dataset to which the cluster's usage of cloud
+resources is exported. A table will be created in the specified dataset to
+store cluster resource usage. The resulting table can be joined with BigQuery
+Billing Export to produce a fine-grained cost breakdown.
+
+Resource usage export to BigQuery is disabled if this flag is omitted.
+
+Example:
+
+  $ {command} example-cluster --resource-usage-bigquery-dataset=example_bigquery_dataset_name
+"""
+
+  group.add_argument(
+      '--resource-usage-bigquery-dataset',
+      hidden=True,
+      help=dataset_help_text)

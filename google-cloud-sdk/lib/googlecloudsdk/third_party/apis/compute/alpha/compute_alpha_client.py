@@ -613,7 +613,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AddSignedUrlKey(self, request, global_params=None):
-      r"""Adds the given Signed URL Key to the backend bucket.
+      r"""Adds a key for validating requests with signed URLs for this backend bucket.
 
       Args:
         request: (ComputeBackendBucketsAddSignedUrlKeyRequest) input message
@@ -665,7 +665,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def DeleteSignedUrlKey(self, request, global_params=None):
-      r"""Deletes the given Signed URL Key from the backend bucket.
+      r"""Deletes a key for validating requests with signed URLs for this backend bucket.
 
       Args:
         request: (ComputeBackendBucketsDeleteSignedUrlKeyRequest) input message
@@ -909,7 +909,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AddSignedUrlKey(self, request, global_params=None):
-      r"""Adds the given Signed URL Key to the specified backend service.
+      r"""Adds a key for validating requests with signed URLs for this backend service.
 
       Args:
         request: (ComputeBackendServicesAddSignedUrlKeyRequest) input message
@@ -987,7 +987,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def DeleteSignedUrlKey(self, request, global_params=None):
-      r"""Deletes the given Signed URL Key from the specified backend service.
+      r"""Deletes a key for validating requests with signed URLs for this backend service.
 
       Args:
         request: (ComputeBackendServicesDeleteSignedUrlKeyRequest) input message
@@ -7240,6 +7240,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def ListIpAddresses(self, request, global_params=None):
+      r"""Lists the internal IP addresses in the specified network.
+
+      Args:
+        request: (ComputeNetworksListIpAddressesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IpAddressesList) The response message.
+      """
+      config = self.GetMethodConfig('ListIpAddresses')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListIpAddresses.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.networks.listIpAddresses',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'types'],
+        relative_path=u'projects/{project}/global/networks/{network}/listIpAddresses',
+        request_field='',
+        request_type_name=u'ComputeNetworksListIpAddressesRequest',
+        response_type_name=u'IpAddressesList',
+        supports_download=False,
+    )
+
     def ListIpOwners(self, request, global_params=None):
       r"""Lists the internal IP owners in the specified network.
 
@@ -9958,7 +9984,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.regionInstanceGroupManagers.updatePerInstanceConfigs',
         ordered_params=[u'project', u'region', u'instanceGroupManager'],
         path_params=[u'instanceGroupManager', u'project', u'region'],
-        query_params=[],
+        query_params=[u'requestId'],
         relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/updatePerInstanceConfigs',
         request_field=u'regionInstanceGroupManagerUpdateInstanceConfigReq',
         request_type_name=u'ComputeRegionInstanceGroupManagersUpdatePerInstanceConfigsRequest',
@@ -12788,7 +12814,7 @@ For more information, see Deleting snaphots.
         method_id=u'compute.subnetworks.patch',
         ordered_params=[u'project', u'region', u'subnetwork'],
         path_params=[u'project', u'region', u'subnetwork'],
-        query_params=[u'requestId'],
+        query_params=[u'drainTimeoutSeconds', u'requestId'],
         relative_path=u'projects/{project}/regions/{region}/subnetworks/{subnetwork}',
         request_field=u'subnetworkResource',
         request_type_name=u'ComputeSubnetworksPatchRequest',
@@ -14461,6 +14487,32 @@ For more information, see Deleting snaphots.
       super(ComputeAlpha.UrlMapsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves the list of all UrlMap resources, regional and global, available to the specified project.
+
+      Args:
+        request: (ComputeUrlMapsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UrlMapsAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.urlMaps.aggregatedList',
+        ordered_params=[u'project'],
+        path_params=[u'project'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/aggregated/urlMaps',
+        request_field='',
+        request_type_name=u'ComputeUrlMapsAggregatedListRequest',
+        response_type_name=u'UrlMapsAggregatedList',
+        supports_download=False,
+    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified UrlMap resource.

@@ -17,6 +17,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 import abc
+import copy
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -190,21 +191,25 @@ class ResourceInfo(ConceptInfo):
     """
     fallthroughs_map = {}
     for attribute in self.concept_spec.attributes:
+      # The only args that should be lists are anchor args for plural
+      # resources.
       attribute_name = attribute.name
       attribute_fallthroughs = []
+      plural = (attribute_name == self.concept_spec.anchor.name
+                and self.plural)
 
       # Start the fallthroughs list with the primary associated arg for the
       # attribute.
       arg_name = self.attribute_to_args_map.get(attribute_name)
       if arg_name:
-        # The only args that should be lists are anchor args for plural
-        # resources.
-        plural = (attribute_name == self.concept_spec.anchor.name
-                  and self.plural)
         attribute_fallthroughs.append(
             deps_lib.ArgFallthrough(arg_name, plural=plural))
 
-      attribute_fallthroughs += self.fallthroughs_map.get(attribute_name, [])
+      given_fallthroughs = self.fallthroughs_map.get(attribute_name, [])
+      for fallthrough in given_fallthroughs:
+        final_fallthrough = copy.deepcopy(fallthrough)
+        final_fallthrough.plural = plural
+        attribute_fallthroughs.append(final_fallthrough)
       fallthroughs_map[attribute_name] = attribute_fallthroughs
     anchor_fallthroughs = fallthroughs_map[self.concept_spec.anchor.name]
     for attribute in self.concept_spec.attributes[:-1]:

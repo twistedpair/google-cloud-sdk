@@ -19,6 +19,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
@@ -184,7 +185,7 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
 
 
 def CreatePersistentCreateDiskMessages(client, resources, user_project,
-                                       create_disks):
+                                       create_disks, support_kms=False):
   """Returns a list of AttachedDisk messages.
 
   Args:
@@ -202,6 +203,7 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
              * auto-delete - whether disks is deleted when VM is deleted ('yes'
                if True),
              * device-name - device name on VM.
+    support_kms: if KMS is supported
 
   Returns:
     list of API messages for attached disks
@@ -233,6 +235,11 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
           image_project=img_project,
           return_image_resource=False)
 
+    disk_key = None
+    if support_kms:
+      disk_key = kms_utils.MaybeGetKmsKeyFromDict(
+          disk, client.messages, disk_key)
+
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=False,
@@ -243,7 +250,8 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
             diskSizeGb=disk_size_gb,
             diskType=disk.get('type')),
         mode=mode,
-        type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
+        type=client.messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
+        diskEncryptionKey=disk_key)
 
     disks_messages.append(create_disk)
 
@@ -252,8 +260,14 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
 
 def CreateDefaultBootAttachedDiskMessage(
     messages, disk_type, disk_device_name, disk_auto_delete, disk_size_gb,
-    image_uri):
+    image_uri, kms_args=None, support_kms=False):
   """Returns an AttachedDisk message for creating a new boot disk."""
+  disk_key = None
+
+  if support_kms:
+    disk_key = kms_utils.MaybeGetKmsKey(
+        kms_args, messages, disk_key, boot_disk_prefix=True)
+
   return messages.AttachedDisk(
       autoDelete=disk_auto_delete,
       boot=True,
@@ -263,7 +277,8 @@ def CreateDefaultBootAttachedDiskMessage(
           diskSizeGb=disk_size_gb,
           diskType=disk_type),
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
-      type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
+      type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
+      diskEncryptionKey=disk_key)
 
 
 def CreateAcceleratorConfigMessages(messages, accelerator):

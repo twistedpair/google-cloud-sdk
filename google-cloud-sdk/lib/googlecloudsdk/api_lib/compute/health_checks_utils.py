@@ -130,10 +130,12 @@ def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
             ' health check. Pass in an empty string to unset.'))
 
 
-def AddHttpRelatedCreationArgs(parser, port_specification=False):
+def AddHttpRelatedCreationArgs(parser, port_specification=False,
+                               use_serving_port=False):
   """Adds parser arguments for creation related to HTTP."""
 
-  _AddPortRelatedCreationArgs(parser, port_specification=port_specification)
+  _AddPortRelatedCreationArgs(parser, port_specification=port_specification,
+                              use_serving_port=use_serving_port)
   AddProxyHeaderRelatedCreateArgs(parser)
 
   parser.add_argument(
@@ -190,10 +192,12 @@ def AddHttpRelatedUpdateArgs(parser):
       """)
 
 
-def AddTcpRelatedCreationArgs(parser, port_specification=False):
+def AddTcpRelatedCreationArgs(parser, port_specification=False,
+                              use_serving_port=False):
   """Adds parser arguments for creation related to TCP."""
 
-  _AddPortRelatedCreationArgs(parser, port_specification=port_specification)
+  _AddPortRelatedCreationArgs(parser, port_specification=port_specification,
+                              use_serving_port=use_serving_port)
   AddProxyHeaderRelatedCreateArgs(parser)
   _AddTcpRelatedArgsImpl(add_info_about_clearing=False, parser=parser)
 
@@ -229,6 +233,7 @@ def AddUdpRelatedArgs(parser, request_and_response_required=True):
 
 
 def _AddPortRelatedCreationArgs(parser, port_specification=False,
+                                use_serving_port=False,
                                 port_type='TCP', default_port=80):
   """Adds parser create subcommand arguments --port and --port-name."""
 
@@ -262,6 +267,9 @@ def _AddPortRelatedCreationArgs(parser, port_specification=False,
 
   if port_specification:
     _AddPortSpecificationFlag(port_group)
+
+  if use_serving_port:
+    _AddUseServingPortFlag(port_group)
 
 
 def _AddPortRelatedUpdateArgs(parser):
@@ -407,31 +415,61 @@ def _AddPortSpecificationFlag(parser):
       """).AddToParser(parser)
 
 
-def _RaiseBadPortSpecificationError(invalid_flag, invalid_enum):
+def _RaiseBadPortSpecificationError(invalid_flag, port_spec_flag,
+                                    invalid_value):
   raise exceptions.InvalidArgumentException(
-      '--port-specification',
-      '{0} cannot be specified when using: {1}.'.format(
-          invalid_flag, invalid_enum))
+      port_spec_flag, '{0} cannot be specified when using: {1}.'.format(
+          invalid_flag, invalid_value))
 
 
 def ValidateAndAddPortSpecificationToHealthCheck(args, x_health_check):
   """Modifies the health check as needed and adds port spec to the check."""
   enum_class = type(x_health_check).PortSpecificationValueValuesEnum
-  if args.port_specification:
+  if hasattr(args, 'port_specification') and args.port_specification:
     enum_value = arg_utils.ChoiceToEnum(args.port_specification, enum_class)
     if enum_value == enum_class.USE_FIXED_PORT:
       if args.IsSpecified('port_name'):
-        _RaiseBadPortSpecificationError('--port-name', 'USE_FIXED_PORT')
+        _RaiseBadPortSpecificationError('--port-name', '--port-specification',
+                                        'USE_FIXED_PORT')
     if enum_value == enum_class.USE_NAMED_PORT:
       if args.IsSpecified('port'):
-        _RaiseBadPortSpecificationError('--port', 'USE_NAMED_PORT')
+        _RaiseBadPortSpecificationError('--port', '--port-specification',
+                                        'USE_NAMED_PORT')
       # TODO(b/77489293): Stop overriding default values here.
       x_health_check.port = None
     if enum_value == enum_class.USE_SERVING_PORT:
       if args.IsSpecified('port_name'):
-        _RaiseBadPortSpecificationError('--port-name', 'USE_SERVING_PORT')
+        _RaiseBadPortSpecificationError('--port-name', '--port-specification',
+                                        'USE_SERVING_PORT')
       if args.IsSpecified('port'):
-        _RaiseBadPortSpecificationError('--port', 'USE_SERVING_PORT')
+        _RaiseBadPortSpecificationError('--port', '--port-specification',
+                                        'USE_SERVING_PORT')
       # TODO(b/77489293): Stop overriding default values here.
       x_health_check.port = None
+    if hasattr(args, 'use_serving_port') and args.use_serving_port:
+      _RaiseBadPortSpecificationError(
+          '--use-serving-port', '--port-specification', enum_value)
     x_health_check.portSpecification = enum_value
+  elif hasattr(args, 'use_serving_port') and args.use_serving_port:
+    if args.IsSpecified('port_name'):
+      _RaiseBadPortSpecificationError('--port-name', '--use-serving-port',
+                                      '--use-serving-port')
+    if args.IsSpecified('port'):
+      _RaiseBadPortSpecificationError('--port', '--use-serving-port',
+                                      '--use-serving-port')
+    x_health_check.portSpecification = enum_class.USE_SERVING_PORT
+    x_health_check.port = None
+
+
+def _AddUseServingPortFlag(parser):
+  """Adds parser argument for using serving port option."""
+  parser.add_argument(
+      '--use-serving-port',
+      action='store_true',
+      help="""\
+      If given, use the "serving port" for health checks:
+
+        - When health checking network endpoints in a Network Endpoint
+          Group, use the port specified with each endpoint.
+        - When health checking other backends, use the port or named port of
+          the backend service.""")

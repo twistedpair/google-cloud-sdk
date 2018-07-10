@@ -330,12 +330,18 @@ def FormatDateTime(dt, fmt=None, tzinfo=None):
       # Round the fractional part to n digits.
       val = _StrFtime(dt, std_fmt)
       if n and n < len(val):
-        round_format = '{{0:0{n}.0f}}'.format(n=n)
-        rounded = round_format.format(float(val) / 10 ** (len(val) - n))
-        if len(rounded) == n:
-          val = rounded
-        else:
-          val = val[:n]
+        # Explicitly avoiding implementation dependent floating point rounding
+        # diffs.
+        v = int(val[:n])  # The rounded value.
+        f = int(val[n])  # The first digit after the rounded value.
+        if f >= 5:
+          # Round up.
+          v += 1
+        zero_fill_format = '{{0:0{n}d}}'.format(n=n)
+        val = zero_fill_format.format(v)
+        if len(val) > n:
+          # All 9's rounded up by 1 overflowed width. Keep the unrounded value.
+          val = zero_fill_format.format(v - 1)
     elif spec == 's':
       # datetime.strftime('%s') botches tz aware dt!
       val = GetTimeStampFromDateTime(dt)

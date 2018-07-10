@@ -41,13 +41,6 @@ def AddTaskResourceArgs(parser, verb):
   AddQueueResourceFlag(parser, required=False)
 
 
-def AddIdArg(parser, noun, verb, metavar=None):
-  metavar = metavar or '{}_ID'.format(noun.replace(' ', '_').upper())
-  argument = base.Argument('id', metavar=metavar,
-                           help='ID of the {} {}.\n\n'.format(noun, verb))
-  argument.AddToParser(parser)
-
-
 def AddLocationFlag(parser):
   argument = base.Argument(
       '--location', hidden=True,

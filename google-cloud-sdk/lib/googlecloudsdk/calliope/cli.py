@@ -448,9 +448,9 @@ class CLILoader(object):
         choices=log.OrderedVerbosityNames(),
         default=log.DEFAULT_VERBOSITY_STRING,
         category=calliope_base.COMMONLY_USED_FLAGS,
-        help='Override the default verbosity for this command with any of the '
-        'supported standard verbosity levels: `debug`, `info`, `warning`, '
-        '`error`, and `none`.',
+        help=('Override the default verbosity for this command with any of the '
+              'supported standard verbosity levels: {}.'.format(', '.join(
+                  ['`' + name + '`' for name in log.OrderedVerbosityNames()]))),
         action=actions.StoreProperty(properties.VALUES.core.verbosity))
 
     # This should be a pure Boolean flag, but the alternate true/false explicit
@@ -909,8 +909,3 @@ class CLI(object):
                   error_extra_info=error_extra_info)
 
     exceptions.HandleError(exc, command_path_string, self.__known_error_handler)
-
-  def _Exit(self, exc):
-    """This method exists so we can mock this out during testing to not exit."""
-    # exit_code won't be defined in the KNOWN_ERRORs classes
-    sys.exit(getattr(exc, 'exit_code', 1))

@@ -27,15 +27,16 @@ def MakeNetworkEndpointGroupsArg():
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
-def AddCreateNegArgsToParser(parser):
+def AddCreateNegArgsToParser(parser, support_neg_type):
   """Adds flags for creating a network endpoint group to the parser."""
-  base.ChoiceArgument(
-      '--neg-type',
-      hidden=True,
-      choices=['load-balancing'],
-      default='load-balancing',
-      help_str='The type of network endpoint group to create.'
-  ).AddToParser(parser)
+  if support_neg_type:
+    base.ChoiceArgument(
+        '--neg-type',
+        hidden=True,
+        choices=['load-balancing'],
+        default='load-balancing',
+        help_str='The type of network endpoint group to create.'
+    ).AddToParser(parser)
   base.ChoiceArgument(
       '--network-endpoint-type',
       hidden=True,

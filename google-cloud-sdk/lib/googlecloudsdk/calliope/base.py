@@ -306,7 +306,7 @@ FORMAT_FLAG = Argument(
     default=None,
     category=COMMONLY_USED_FLAGS,
     help="""\
-        Sets the format for printing command output resources. The default is a
+        Set the format for printing command output resources. The default is a
         command-specific human-friendly output format. The supported formats
         are: `{0}`. For more details run $ gcloud topic formats.""".format(
             '`, `'.join(resource_printer.SupportedFormats())))
@@ -326,8 +326,8 @@ FILTER_FLAG = Argument(
     category=LIST_COMMAND_FLAGS,
     help="""\
     Apply a Boolean filter _EXPRESSION_ to each resource item to be listed.
-    If the expression evaluates True then that item is listed. For more
-    details and examples of filter expressions run $ gcloud topic filters. This
+    If the expression evaluates `True`, then that item is listed. For more
+    details and examples of filter expressions, run $ gcloud topic filters. This
     flag interacts with other flags that are applied in this order: *--flatten*,
     *--sort-by*, *--filter*, *--limit*.""")
 
@@ -336,7 +336,7 @@ LIMIT_FLAG = Argument(
     type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
     category=LIST_COMMAND_FLAGS,
     help="""\
-    The maximum number of resources to list. The default is *unlimited*.
+    Maximum number of resources to list. The default is *unlimited*.
     This flag interacts with other flags that are applied in this order:
     *--flatten*, *--sort-by*, *--filter*, *--limit*.
     """)
@@ -359,7 +359,7 @@ SORT_BY_FLAG = Argument(
     type=arg_parsers.ArgList(),
     category=LIST_COMMAND_FLAGS,
     help="""\
-    A comma-separated list of resource field key names to sort by. The
+    Comma-separated list of resource field key names to sort by. The
     default order is ascending. Prefix a field with ``~'' for descending
     order on that field. This flag interacts with other flags that are applied
     in this order: *--flatten*, *--sort-by*, *--filter*, *--limit*.

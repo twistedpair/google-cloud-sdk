@@ -1238,11 +1238,6 @@
                             "FULL"
                           ]
                         },
-                        "orderBy": {
-                          "description": "Sort order used for the query. The only fields supported for sorting\nare `schedule_time` and `pull_message.tag`. All results will be\nreturned in approximately ascending order. The default ordering is by\n`schedule_time`.",
-                          "location": "query",
-                          "type": "string"
-                        },
                         "pageSize": {
                           "description": "Requested page size. Fewer tasks than requested might be returned.\n\nThe maximum page size is 1000. If unspecified, the page size will\nbe the maximum. Fewer tasks than requested might be returned,\neven if more tasks exist; use\nnext_page_token in the\nresponse to determine if more tasks exist.",
                           "location": "query",

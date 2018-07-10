@@ -47,6 +47,8 @@ class CloudFunction(_messages.Message):
     StatusValueValuesEnum: Output only. Status of the function deployment.
 
   Messages:
+    EnvironmentVariablesValue: **Beta Feature**  Environment variables that
+      shall be available during function execution.
     LabelsValue: Labels associated with this Cloud Function.
 
   Fields:
@@ -59,6 +61,8 @@ class CloudFunction(_messages.Message):
       the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
       `source_location`.
+    environmentVariables: **Beta Feature**  Environment variables that shall
+      be available during function execution.
     eventTrigger: A source that fires events in response to a condition in
       another service.
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
@@ -69,6 +73,15 @@ class CloudFunction(_messages.Message):
       available only for whitelisted users.
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
+    network: The Google Compute Engine network that this function can connect
+      to. Either the fully-qualified URI of the network resource, or the short
+      name of the network must be specified. If the network belongs to another
+      project, the URI of the resource must be specified e.g., `https://www.go
+      ogleapis.com/compute/v1/projects/{project}/global/networks/{network}`
+      or `my-network`.  See [the VPC
+      documentation](https://cloud.google.com/compute/docs/vpc) for more
+      information on connecting Cloud projects.  This feature is currently in
+      alpha, available only for whitelisted users.
     runtime: The runtime in which the function is going to run. If empty,
       defaults to Node.js 6.
     serviceAccountEmail: Output only. The email of the function's service
@@ -109,6 +122,33 @@ class CloudFunction(_messages.Message):
     UNKNOWN = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentVariablesValue(_messages.Message):
+    r"""**Beta Feature**  Environment variables that shall be available during
+    function execution.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        EnvironmentVariablesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        EnvironmentVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels associated with this Cloud Function.
 
@@ -135,20 +175,22 @@ class CloudFunction(_messages.Message):
   availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   description = _messages.StringField(2)
   entryPoint = _messages.StringField(3)
-  eventTrigger = _messages.MessageField('EventTrigger', 4)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  maxInstances = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  name = _messages.StringField(8)
-  runtime = _messages.StringField(9)
-  serviceAccountEmail = _messages.StringField(10)
-  sourceArchiveUrl = _messages.StringField(11)
-  sourceRepository = _messages.MessageField('SourceRepository', 12)
-  sourceUploadUrl = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  timeout = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  versionId = _messages.IntegerField(17)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
+  eventTrigger = _messages.MessageField('EventTrigger', 5)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  maxInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  network = _messages.StringField(10)
+  runtime = _messages.StringField(11)
+  serviceAccountEmail = _messages.StringField(12)
+  sourceArchiveUrl = _messages.StringField(13)
+  sourceRepository = _messages.MessageField('SourceRepository', 14)
+  sourceUploadUrl = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  timeout = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  versionId = _messages.IntegerField(19)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

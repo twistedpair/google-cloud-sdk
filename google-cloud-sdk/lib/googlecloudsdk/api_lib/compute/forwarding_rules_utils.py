@@ -24,7 +24,7 @@ from googlecloudsdk.command_lib.compute.forwarding_rules import flags
 from googlecloudsdk.core import properties
 
 
-def _ValidateGlobalArgs(args):
+def _ValidateGlobalArgs(args, include_alpha=False):
   """Validate the global forwarding rules args."""
   if args.target_instance:
     raise exceptions.ToolException(
@@ -50,10 +50,29 @@ def _ValidateGlobalArgs(args):
         'You cannot specify [--target-vpn-gateway] for a global '
         'forwarding rule.')
 
+  if (include_alpha and
+      getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED'):
+    if not (getattr(args, 'target_http_proxy', None) or
+            getattr(args, 'target_https_proxy', None)):
+      raise exceptions.ToolException(
+          'You must specify either [--target-http-proxy] or '
+          '[--target-https-proxy] for an INTERNAL_SELF_MANAGED '
+          '[--load-balancing-scheme].')
 
-def GetGlobalTarget(resources, args):
+    if getattr(args, 'subnet', None):
+      raise exceptions.ToolException(
+          'You cannot specify [--subnet] for an INTERNAL_SELF_MANAGED '
+          '[--load-balancing-scheme].')
+
+    if not getattr(args, 'address', None):
+      raise exceptions.ToolException(
+          'You must specify [--address] for an INTERNAL_SELF_MANAGED '
+          '[--load-balancing-scheme]')
+
+
+def GetGlobalTarget(resources, args, include_alpha=False):
   """Return the forwarding target for a globally scoped request."""
-  _ValidateGlobalArgs(args)
+  _ValidateGlobalArgs(args, include_alpha)
   if args.target_http_proxy:
     return flags.TARGET_HTTP_PROXY_ARG.ResolveAsResource(args, resources)
 
@@ -65,13 +84,14 @@ def GetGlobalTarget(resources, args):
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
 
 
-def _ValidateRegionalArgs(args, allow_global_target):
+def _ValidateRegionalArgs(args, allow_global_target, include_alpha=False):
   """Validate the regional forwarding rules args.
 
   Args:
       args: The arguments given to the create/set-target command.
       allow_global_target: True if the regional forwarding rule can have global
       target in current api version.
+      include_alpha: Should alpha functionality be included?
   """
 
   if getattr(args, 'global', None):
@@ -117,14 +137,21 @@ def _ValidateRegionalArgs(args, allow_global_target):
         'You cannot specify [--subnet] or [--network] for non-internal '
         '[--load-balancing-scheme] forwarding rule.')
 
+  if (include_alpha and
+      getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED'):
+    raise exceptions.ToolException(
+        'You cannot specify an INTERNAL_SELF_MANAGED [--load-balancing-scheme] '
+        'for a regional forwarding rule.')
+
 
 def GetRegionalTarget(client,
                       resources,
                       args,
                       forwarding_rule_ref=None,
-                      allow_global_target=False):
+                      allow_global_target=False,
+                      include_alpha=False):
   """Return the forwarding target for a regionally scoped request."""
-  _ValidateRegionalArgs(args, allow_global_target)
+  _ValidateRegionalArgs(args, allow_global_target, include_alpha)
   if forwarding_rule_ref:
     region_arg = forwarding_rule_ref.region
     project_arg = forwarding_rule_ref.project

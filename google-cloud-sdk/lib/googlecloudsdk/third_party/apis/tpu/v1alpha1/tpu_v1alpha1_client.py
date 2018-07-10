@@ -251,33 +251,6 @@ class TpuV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Reset(self, request, global_params=None):
-      r"""Resets a node, which stops and starts the VM.
-
-      Args:
-        request: (TpuProjectsLocationsNodesResetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Reset')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Reset.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:reset',
-        http_method=u'POST',
-        method_id=u'tpu.projects.locations.nodes.reset',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}:reset',
-        request_field=u'resetNodeRequest',
-        request_type_name=u'TpuProjectsLocationsNodesResetRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def Start(self, request, global_params=None):
       r"""Starts a node.
 

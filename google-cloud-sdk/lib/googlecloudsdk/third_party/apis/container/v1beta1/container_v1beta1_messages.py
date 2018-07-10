@@ -504,6 +504,12 @@ class ClusterUpdate(_messages.Message):
       nodes being either created or removed from the cluster, depending on
       whether locations are being added or removed.  This list must always
       include the cluster's primary zone.
+    desiredLoggingService: The logging service the cluster should use to write
+      metrics. Currently available options:  *
+      "logging.googleapis.com/kubernetes" - the Google Cloud Logging service
+      with Kubernetes-native resource model in Stackdriver *
+      "logging.googleapis.com" - the Google Cloud Logging service * "none" -
+      no logs will be exported from the cluster
     desiredMasterAuthorizedNetworks: The desired configuration options for
       master authorized networks feature. This field is deprecated, use
       desired_master_authorized_networks_config instead.
@@ -525,6 +531,8 @@ class ClusterUpdate(_messages.Message):
       Kubernetes version - "-": picks the default Kubernetes version
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options:  *
+      "monitoring.googleapis.com/kubernetes" - the Google Cloud Monitoring
+      service with Kubernetes-native resource model in Stackdriver *
       "monitoring.googleapis.com" - the Google Cloud Monitoring service *
       "none" - no metrics will be exported from the cluster
     desiredNodePoolAutoscaling: Autoscaler configuration for the node pool
@@ -557,16 +565,17 @@ class ClusterUpdate(_messages.Message):
   desiredImageProject = _messages.StringField(8)
   desiredImageType = _messages.StringField(9)
   desiredLocations = _messages.StringField(10, repeated=True)
-  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 11)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 12)
-  desiredMasterId = _messages.StringField(13)
-  desiredMasterMachineType = _messages.StringField(14)
-  desiredMasterVersion = _messages.StringField(15)
-  desiredMonitoringService = _messages.StringField(16)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 17)
-  desiredNodePoolId = _messages.StringField(18)
-  desiredNodeVersion = _messages.StringField(19)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 20)
+  desiredLoggingService = _messages.StringField(11)
+  desiredMasterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 12)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 13)
+  desiredMasterId = _messages.StringField(14)
+  desiredMasterMachineType = _messages.StringField(15)
+  desiredMasterVersion = _messages.StringField(16)
+  desiredMonitoringService = _messages.StringField(17)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 18)
+  desiredNodePoolId = _messages.StringField(19)
+  desiredNodeVersion = _messages.StringField(20)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 21)
 
 
 class ClusterUpdateOptions(_messages.Message):

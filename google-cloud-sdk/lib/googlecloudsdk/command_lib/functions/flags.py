@@ -18,7 +18,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.functions import triggers
 from googlecloudsdk.api_lib.functions import util as api_util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
@@ -175,17 +174,20 @@ def AddRuntimeFlag(parser):
   parser.add_argument(
       '--runtime',
       help="""\
-          'The runtime in which to run the function. Defaults to Node.js 6.
+          The runtime in which to run the function. Defaults to Node.js 6.
 
           Choices:
 
           - `nodejs6`: Node.js 6
           - `nodejs8`: Node.js 8
           - `python37`: Python 3.7
-          - `go`: Golang
-          - `java`: Java
-          - `csharp`: C#
-          """,
+          """)
+
+
+def AddConnectedVPCFlag(parser):
+  parser.add_argument(
+      '--connected-vpc',
+      help='Specifies the VPC network to connect the function to.',
       hidden=True)
 
 
@@ -201,6 +203,33 @@ def AddEntryPointFlag(parser):
       You can use this flag to override the default behavior, by specifying
       the name of a JavaScript function that will be executed when the
       Google Cloud Function is triggered."""
+  )
+
+
+def AddMaxInstancesFlag(parser):
+  """Add flag for specifying the max instances for a function."""
+  mutex_group = parser.add_group(mutex=True)
+  mutex_group.add_argument(
+      '--max-instances',
+      type=arg_parsers.BoundedInt(lower_bound=1),
+      hidden=True,
+      help="""\
+      Sets the maximum number of instances for the function. There may be
+      per-region and/or per-function upper limits for max-instances. The
+      deploy fails if the upper limit is exceeded.
+
+      A function execution that would exceed max-instances times out.
+      """
+  )
+  mutex_group.add_argument(
+      '--clear-max-instances',
+      action='store_true',
+      hidden=True,
+      help="""\
+      Sets the maximum number of instances for the function to the Cloud
+      Functions default value. The default value is determined by the Cloud
+      Platform.
+      """
   )
 
 
@@ -239,7 +268,6 @@ def AddTriggerFlagGroup(parser):
   trigger_provider_spec_group.add_argument(
       '--trigger-event',
       metavar='EVENT_TYPE',
-      choices=sorted(triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.AllEventLabels()),
       help=('Specifies which action should trigger the function. For a '
             'list of acceptable values, call `functions event-types list`.')
   )

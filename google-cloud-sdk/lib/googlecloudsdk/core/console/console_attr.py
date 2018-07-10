@@ -91,6 +91,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import abc
 import os
 import sys
 import unicodedata
@@ -159,6 +160,32 @@ class BoxLineCharactersAscii(BoxLineCharacters):
   d_vh = '#'
   d_vl = '#'
   d_vr = '#'
+
+
+@six.add_metaclass(abc.ABCMeta)
+class ProgressTrackerSymbols(object):
+  """Characters used by progress trackers."""
+
+  @property
+  @abc.abstractmethod
+  def spin_marks(self):
+    pass
+
+
+class ProgressTrackerSymbolsUnicode(ProgressTrackerSymbols):
+  """Characters used by progress trackers."""
+
+  @property
+  def spin_marks(self):
+    return ['⠏', '⠛', '⠹', '⠼', '⠶', '⠧']
+
+
+class ProgressTrackerSymbolsAscii(ProgressTrackerSymbols):
+  """Characters used by progress trackers."""
+
+  @property
+  def spin_marks(self):
+    return ['|', '/', '-', '\\',]
 
 
 class ConsoleAttr(object):
@@ -235,12 +262,16 @@ class ConsoleAttr(object):
     if self._encoding == 'utf8':
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_UNICODE
+      self._progress_tracker_symbols = ProgressTrackerSymbolsUnicode()
     elif self._encoding == 'cp437':
       self._box_line_characters = BoxLineCharactersUnicode()
       self._bullets = self._BULLETS_WINDOWS
+      # Windows does not suport the unicode characters used for the spinner.
+      self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
     else:
       self._box_line_characters = BoxLineCharactersAscii()
       self._bullets = self._BULLETS_ASCII
+      self._progress_tracker_symbols = ProgressTrackerSymbolsAscii()
 
     # OS specific attributes.
     self._get_raw_key = [console_attr_os.GetRawKeyFunction()]
@@ -323,6 +354,14 @@ class ConsoleAttr(object):
       A tuple of bullet characters.
     """
     return self._bullets
+
+  def GetProgressTrackerSymbols(self):
+    """Returns the progress tracker characters object.
+
+    Returns:
+      A ProgressTrackerSymbols object for the console output device.
+    """
+    return self._progress_tracker_symbols
 
   def GetControlSequenceIndicator(self):
     """Returns the control sequence indicator string.

@@ -125,10 +125,12 @@ MAX_AUTHORIZED_NETWORKS_CIDRS = 20
 INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
+SERVERLESS = 'Serverless'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 DEFAULT_ADDONS = [INGRESS, HPA]
-ADDONS_OPTIONS = [INGRESS, HPA, DASHBOARD, ISTIO, NETWORK_POLICY]
+ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
+ALPHA_ADDONS_OPTIONS = ADDONS_OPTIONS + [SERVERLESS]
 
 UNSPECIFIED = 'UNSPECIFIED'
 SECURE = 'SECURE'
@@ -350,7 +352,8 @@ class CreateClusterOptions(object):
                tpu_ipv4_cidr=None,
                enable_tpu=None,
                default_max_pods_per_node=None,
-               enable_managed_pod_identity=None):
+               enable_managed_pod_identity=None,
+               resource_usage_bigquery_dataset=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -414,6 +417,7 @@ class CreateClusterOptions(object):
     self.issue_client_certificate = issue_client_certificate
     self.default_max_pods_per_node = default_max_pods_per_node
     self.enable_managed_pod_identity = enable_managed_pod_identity
+    self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
 
 
 class UpdateClusterOptions(object):
@@ -425,7 +429,6 @@ class UpdateClusterOptions(object):
                node_pool=None,
                monitoring_service=None,
                disable_addons=None,
-               istio_config=None,
                enable_autoscaling=None,
                min_nodes=None,
                max_nodes=None,
@@ -445,7 +448,6 @@ class UpdateClusterOptions(object):
     self.node_pool = node_pool
     self.monitoring_service = monitoring_service
     self.disable_addons = disable_addons
-    self.istio_config = istio_config
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
@@ -1741,6 +1743,16 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       else:
         raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
     if options.addons:
+      # Serverless is disabled by default.
+      if SERVERLESS in options.addons:
+        if ISTIO not in options.addons:
+          # Istio is a dependency of Serverless. We auto-enable Istio in no
+          # auth mode if not specified by the user.
+          log.warning('Auto-enabling the Istio addon, which is required to run '
+                      'the Serverless addon.')
+          options.addons.append(ISTIO)
+        cluster.addonsConfig.serverlessConfig = self.messages.ServerlessConfig(
+            disabled=False)
       # Istio is disabled by default
       if ISTIO in options.addons:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
@@ -1756,6 +1768,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.enable_managed_pod_identity:
       cluster.managedPodIdentityConfig = self.messages.ManagedPodIdentityConfig(
           enabled=options.enable_managed_pod_identity)
+    if options.resource_usage_bigquery_dataset:
+      bigquery_destination = self.messages.BigQueryDestination(
+          datasetId=options.resource_usage_bigquery_dataset)
+      cluster.resourceUsageExportConfig = \
+          self.messages.ResourceUsageExportConfig(
+              bigqueryDestination=bigquery_destination)
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
@@ -1765,18 +1783,22 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(options)
-    if (options.disable_addons is not None and
-        options.disable_addons.get(ISTIO) is not None):
-      istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
-      mtls = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_MUTUAL_TLS
-      istio_config = options.istio_config
-      if istio_config is not None:
-        auth_config = istio_config.get('auth')
-        if auth_config is not None:
-          if auth_config == 'MUTUAL_TLS':
-            istio_auth = mtls
-      update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
-          disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
+    if options.disable_addons is not None:
+      if options.disable_addons.get(ISTIO) is not None:
+        istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
+        mtls = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_MUTUAL_TLS
+        istio_config = options.istio_config
+        if istio_config is not None:
+          auth_config = istio_config.get('auth')
+          if auth_config is not None:
+            if auth_config == 'MUTUAL_TLS':
+              istio_auth = mtls
+        update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
+            disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
+      if options.disable_addons.get(SERVERLESS) is not None:
+        update.desiredAddonsConfig.serverlessConfig = (
+            self.messages.ServerlessConfig(
+                disabled=options.disable_addons.get(SERVERLESS)))
     if options.update_nodes and options.concurrent_node_count:
       update.concurrentNodeCount = options.concurrent_node_count
     op = self.client.projects_locations_clusters.Update(

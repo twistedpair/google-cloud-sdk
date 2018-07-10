@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.functions import operations
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as base_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
@@ -65,12 +66,16 @@ _API_NAME = 'cloudfunctions'
 _API_VERSION = 'v1'
 
 
-def GetApiClientInstance():
-  return apis.GetClientInstance(_API_NAME, _API_VERSION)
+def _GetApiVersion(track=calliope_base.ReleaseTrack.GA):  # pylint: disable=unused-argument
+  return _API_VERSION
 
 
-def GetApiMessagesModule():
-  return apis.GetMessagesModule(_API_NAME, _API_VERSION)
+def GetApiClientInstance(track=calliope_base.ReleaseTrack.GA):
+  return apis.GetClientInstance(_API_NAME, _GetApiVersion(track))
+
+
+def GetApiMessagesModule(track=calliope_base.ReleaseTrack.GA):
+  return apis.GetMessagesModule(_API_NAME, _GetApiVersion(track))
 
 
 def GetFunctionRef(name):
@@ -120,6 +125,10 @@ def GetHttpErrorMessage(error):
       violations = _GetViolationsFromError(error_info)
       if violations:
         message += '\nProblems:\n' + violations
+      if status == 403:
+        permission_issues = _GetPermissionErrorDetails(error_info)
+        if permission_issues:
+          message += '\nPermission Details:\n' + permission_issues
   except (ValueError, TypeError):
     message = error.content
   return 'ResponseError: status=[{0}], code=[{1}], message=[{2}]'.format(
@@ -266,6 +275,25 @@ def _GetViolationsFromError(error_info):
   except (ValueError, TypeError):
     pass
   return result
+
+
+def _GetPermissionErrorDetails(error_info):
+  """Looks for permission denied details in error message.
+
+  Args:
+    error_info: json containing error information.
+  Returns:
+    string containing details on permission issue and suggestions to correct.
+  """
+  try:
+    if 'details' in error_info:
+      details = error_info['details'][0]
+      if 'detail' in details:
+        return details['detail']
+
+  except (ValueError, TypeError):
+    pass
+  return None
 
 
 def CatchHTTPErrorRaiseHTTPException(func):

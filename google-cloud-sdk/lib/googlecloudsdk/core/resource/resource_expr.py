@@ -119,7 +119,6 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
   elif value == operand:
     return True
   elif value is None:
-    # if operand == '':  # pylint: disable=g-explicit-bool-comparison
     if operand in ('', None):
       return True
     if operand == '*' and op == ':':
@@ -137,7 +136,7 @@ def _MatchOneWordInText(backend, key, op, warned_attribute, value, pattern):
     return matched
 
   deprecated_matched = bool(deprecated_regex.search(text))
-  if (matched != deprecated_matched and
+  if (matched != deprecated_matched and warned_attribute and
       not getattr(backend, warned_attribute, False)):
     setattr(backend, warned_attribute, True)
     old_match = 'matches' if deprecated_matched else 'does not match'
@@ -172,6 +171,10 @@ def _WordMatch(backend, key, op, warned_attribute, value, pattern):
     (or any element in operand if it is a list).
   """
   if isinstance(value, dict):
+    # Don't check deprecated diffs on dicts. It adds instability to the UX and
+    # test assertions. Checking dict keys may be deprecated in the unified
+    # filter spec anyway, so it's not terrible to disable the checks for dicts.
+    warned_attribute = None
     values = []
     if value:
       values.extend(six.iterkeys(value))

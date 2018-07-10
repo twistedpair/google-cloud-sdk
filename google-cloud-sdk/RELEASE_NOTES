@@ -5,6 +5,110 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 208.0.0 (2018-07-10)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Added warning that the default value of `--enable-ip-alias` will change for
+  `container clusters create` command. VPC native(ip alias enabled) clusters
+  will become the default in the future. Use `--[no-]enable-ip-alias` flag
+  to suppress this warning.
+
+
+### Cloud SDK
+
+* gcloud TAB completion for commands, flags, and constant flag value choices is
+  ~10x faster.
+
+### App Engine
+
+
+* Updated the Python SDK to version 1.9.72.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+### Cloud Dataproc
+
+*   Added `gcloud beta dataproc workflow-templates export` to enable exporting
+    a workflow template to a YAML file.
+*   Added `gcloud beta dataproc workflow-templates import` to enable creating
+    and updating workflow templates using a YAML file.
+*   Added `--parameters` flag to `gcloud beta dataproc workflow-templates
+    instantiate` to enable parameterization of workflow templates.
+
+### Cloud Datastore Emulator
+
+*   Released Cloud Datastore Emulator version 2.0.1.
+    *   Improved backward compatibility with App Engine local development by
+    allowing special entity kinds written to Cloud Datastore to be whitelisted
+    for App Engine.
+
+### Cloud Filestore
+
+*   `gcloud filestore` command group is now available in beta. These commands
+    let you create, configure, and manipulate Cloud Filestore instances.
+    *   Run `gcloud filestore --help` to learn more.
+    *   More information on Cloud Filestore can be found here:
+        [https://cloud.google.com/filestore/](https://cloud.google.com/filestore/)
+    *   Detailed documentation can be found here:
+       [https://cloud.google.com/filestore/docs/](https://cloud.google.com/filestore/docs/)
+
+### Cloud Functions
+
+* Added `--runtime` flag to `gcloud beta functions deploy`.
+*   Added the following flags to `gcloud beta functions deploy` for setting
+    custom environment variables to functions:
+    *   `--clear-env-vars`
+    *   `--set-env-vars`
+    *   `--env-vars-file`
+    *   `--remove-env-vars`
+    *   `--update-env-vars`
+    See <https://cloud.google.com/functions/docs/env-var> for more information.
+
+### Cloud Machine Learning Engine
+
+* Promoted the `--python-version` flag of `gcloud ml-engine versions create` to GA.
+
+### Cloud Storage
+
+
+* Updated gsutil component to 4.33.
+
+### Compute Engine
+
+*   Added the following flags to `gcloud compute instance-templates create` to integrate with KMS:
+  *   `--boot-disk-kms-key`
+  *   `--boot-disk-kms-keyring`
+  *   `--boot-disk-kms-location`
+  *   `--boot-disk-kms-project`
+*   Promoted `gcloud compute network-endpoint-groups` command group to beta.
+*   Promoted `--network-endpoint-group` and `--network-endpoint-group-zone`
+    flags to beta in following commands:
+  *   `gcloud compute backend-services add-backend`
+  *   `gcloud compute backend-services remove-backend`
+  *   `gcloud compute backend-services update-backend`
+*   Promoted `--max-connections-per-endpoint` and `--max-rate-per-endpoint`
+    flags to beta in following commands:
+  *   `gcloud compute backend-services add-backend`
+  *   `gcloud compute backend-services update-backend`
+*   Added `--use-serving-port` flag to following commands:
+  *   `gcloud compute health-checks http create`
+  *   `gcloud compute health-checks https create`
+  *   `gcloud compute health-checks http2 create`
+  *   `gcloud compute health-checks ssl create`
+* Promoted the following `source-instance` flags of `gcloud compute instance-templates create` command to GA:
+  * `--source-instance`
+  * `--source-instance-zone`
+  * `--configure-disk`
+
+### Kubernetes Engine
+
+* Removed gcloud property `container/use_v1_api` and its alias `container/use_v1_api_client`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 207.0.0 (2018-06-26)
 
 ### App Engine
@@ -12,10 +116,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.71.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  <https://cloud.google.com/appengine/docs/python/release-notes>
 * Updated the Go SDK to version 1.9.65.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/go/release-notes
+  <https://cloud.google.com/appengine/docs/go/release-notes>
 
 ### App Engine Flexible Environment
 
@@ -69,9 +173,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Kubernetes Engine
 
-Added the `--enable-autoscaling` flag to the `node-pools` command to enable
-autoscaling for a node-pool. For example,
-`gcloud beta container node-pools update --enable-autoscaling --max-nodes=3`.
+* Added the `--enable-autoscaling` flag to the `node-pools` command to enable
+  autoscaling for a node-pool. For example,
+  `gcloud beta container node-pools update --enable-autoscaling --max-nodes=3`.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -86,7 +190,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
         will now take precedence over environmental sources when operating in
         Kubernetes Engine, Compute Engine, or App Engine Managed VMs.
     *   See docker-credential-gcr v1.5.0 release notes on GitHub:
-        https://github.com/GoogleCloudPlatform/docker-credential-gcr/releases/tag/v1.5.0
+        <https://github.com/GoogleCloudPlatform/docker-credential-gcr/releases/tag/v1.5.0>
 
 
 ### Cloud SDK
@@ -102,7 +206,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
   require a Python 2.7 interpreter.
 * For more information on how to configure your Python interpreter, run:
   `gcloud topic startup` or visit:
-  https://cloud.google.com/sdk/gcloud/reference/topic/startup
+  <https://cloud.google.com/sdk/gcloud/reference/topic/startup>
 * Fixed issue where credentials were written with broad permissions.
 
 ### App Engine
@@ -156,7 +260,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Storage
 
 
-* Updated gsutil component to 4.32
+* Updated gsutil component to 4.32.
 
 ### Cloud TPU
 
@@ -185,7 +289,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.64.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  <https://cloud.google.com/appengine/docs/java/release-notes>
 
 ### Cloud Endpoints
 
@@ -210,9 +314,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 * Promoted `--response` flag of `gcloud compute health-checks` commands to beta.
-* Promoted the following flags to beta to support using KMS keys to protect disks, images, and snapshots:
-  *    `--kms-key-*` flags of `gcloud compute <disks|images>`
-  *    `--boot-disk-kms-*` flags of `gcloud compute instances`.
+*   Promoted the following flags to beta to support using KMS keys to protect disks, images, and snapshots:
+    *    `--kms-key-*` flags of `gcloud compute <disks|images>`
+    *    `--boot-disk-kms-*` flags of `gcloud compute instances`.
 * Promoted node affinities in instance and instance template creation to beta.
 
 ### Firebase Test Lab
@@ -304,16 +408,16 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.70.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  <https://cloud.google.com/appengine/docs/python/release-notes>
 
 ### Cloud Datastore Emulator
 
-* Released Cloud Datastore Emulator version 2.0.0.
-  * Java 8 (or later) is now required to run the emulator.
-  * When the emulator is run in an App Engine local development server,
-    index.yaml parsing errors are bubbled up. Previously the emulator would
-    throw a AppEngineConfigException without responding to the development
-    server requests.
+*   Released Cloud Datastore Emulator version 2.0.0.
+    *   Java 8 (or later) is now required to run the emulator.
+    *   When the emulator is run in an App Engine local development server,
+        index.yaml parsing errors are bubbled up. Previously the emulator would
+        throw a AppEngineConfigException without responding to the development
+        server requests.
 
 ### Cloud Tools For PowerShell
 
@@ -494,9 +598,9 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Spanner
 
 *   The following commands are now available in beta:
-  *     `gcloud spanner rows delete`
-  *     `gcloud spanner rows insert`
-  *     `gcloud spanner rows update`
+    *   `gcloud spanner rows delete`
+    *   `gcloud spanner rows insert`
+    *   `gcloud spanner rows update`
 
 ### Kubernetes Engine
 
@@ -521,7 +625,6 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Fixed a rare, intermittent bug where deployments would fail with an error
   message about "copying files to App Engine".
-
 * Updated the Python SDK to version 1.9.69.
   Please visit the following release notes for details:
   https://cloud.google.com/appengine/docs/python/release-notes
@@ -593,7 +696,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.68.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  <https://cloud.google.com/appengine/docs/python/release-notes>
 
 ### App Engine Flexible Environment
 

@@ -18,8 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import textwrap
-
+from googlecloudsdk.api_lib.container.binauthz import apis
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -69,10 +68,12 @@ def GetAuthorityNotePresentationSpec(group_help,
   )
 
 
+# TODO(b/110900216): Remove when migrating to v1alpha2.
 def _GetAuthorityResourceSpec():
   return concepts.ResourceSpec(
       'binaryauthorization.projects.attestationAuthorities',
       resource_name='authority',
+      api_version=apis.V1_ALPHA1,
       projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       attestationAuthoritiesId=concepts.ResourceParameterAttributeConfig(
           name='name',
@@ -81,6 +82,7 @@ def _GetAuthorityResourceSpec():
   )
 
 
+# TODO(b/110900216): Remove when migrating to v1alpha2.
 def GetAuthorityPresentationSpec(group_help,
                                  base_name='authority',
                                  required=True,
@@ -101,6 +103,40 @@ def GetAuthorityPresentationSpec(group_help,
   )
 
 
+def _GetAttestorResourceSpec():
+  return concepts.ResourceSpec(
+      'binaryauthorization.projects.attestors',
+      resource_name='attestor',
+      # TODO(b/110900216): Remove when migrating to v1alpha2.
+      api_version=apis.V1_BETA1,
+      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      attestorsId=concepts.ResourceParameterAttributeConfig(
+          name='name',
+          help_text='The ID of the {resource}.',
+      )
+  )
+
+
+def GetAttestorPresentationSpec(group_help,
+                                base_name='attestor',
+                                required=True,
+                                positional=True,
+                                use_global_project_flag=True):
+  """Construct a resource spec for an attestor flag."""
+  flag_overrides = None
+  if not use_global_project_flag:
+    flag_overrides = {
+        'project': _FormatArgName('{}-project'.format(base_name), positional),
+    }
+  return presentation_specs_lib.ResourcePresentationSpec(
+      name=_FormatArgName(base_name, positional),
+      concept_spec=_GetAttestorResourceSpec(),
+      group_help=group_help,
+      required=required,
+      flag_name_overrides=flag_overrides,
+  )
+
+
 def AddConcepts(parser, *presentation_specs):
   concept_parsers.ConceptParser(presentation_specs).AddToParser(parser)
 
@@ -113,89 +149,3 @@ def AddArtifactUrlFlag(parser, required=True):
       help=('Container URL.  May be in the '
             '`*.gcr.io/repository/image` format, or may '
             'optionally contain the `http` or `https` scheme'))
-
-
-def AddListAttestationsFlags(parser):
-  AddArtifactUrlFlag(parser, required=False)
-
-  mutex_group = parser.add_mutually_exclusive_group(required=True)
-  AddConcepts(
-      mutex_group,
-      GetAuthorityPresentationSpec(
-          base_name='attestation-authority',
-          required=False,  # one-of requirement is set in mutex_group.
-          positional=False,
-          use_global_project_flag=False,
-          group_help=textwrap.dedent("""\
-            The Attestation Authority whose Container Analysis Note will be
-            queried for attestations. Note that the caller must have the
-            `containeranalysis.notes.listOccurrences` permission on the note
-            being queried.""")
-      ),
-      GetAuthorityNotePresentationSpec(
-          base_name='attestation-authority-note',
-          required=False,  # one-of requirement is set in mutex_group.
-          positional=False,
-          group_help=textwrap.dedent("""\
-            The Container Analysis ATTESTATION_AUTHORITY Note that will be
-            queried for attestations.  When this option is passed, only
-            occurrences with kind ATTESTATION_AUTHORITY will be returned.  The
-            occurrences might be from any project, not just the project where
-            the note lives.  Note that the caller must have the
-            `containeranalysis.notes.listOccurrences` permission on the note
-            being queried.""")
-      ),
-  )
-
-
-def AddCreateAttestationFlags(parser):
-  """Flags for Binary Authorization signature management."""
-
-  AddArtifactUrlFlag(parser)
-  parser.add_argument(
-      '--signature-file',
-      required=True,
-      type=str,
-      help=textwrap.dedent("""\
-        Path to file containing the signature to store, or `-` to read signature
-        from stdin."""))
-
-  mutex_group = parser.add_mutually_exclusive_group(required=True)
-  AddConcepts(
-      mutex_group,
-      GetAuthorityPresentationSpec(
-          base_name='attestation-authority',
-          required=False,  # one-of requirement is set in mutex_group.
-          positional=False,
-          use_global_project_flag=False,
-          group_help=textwrap.dedent("""\
-            The Attestation Authority whose Container Analysis Note will be used
-            to host the created attestation. In order to successfully attach the
-            attestation, the active gcloud account (core/account) must have the
-            `containeranalysis.notes.attachOccurrence` permission for the
-            Authority's underlying Note resource (usually via the
-            `containeranalysis.notes.attacher` role).""")
-      ),
-      GetAuthorityNotePresentationSpec(
-          base_name='attestation-authority-note',
-          required=False,  # one-of requirement is set in mutex_group.
-          positional=False,
-          group_help=textwrap.dedent("""\
-            The Container Analysis ATTESTATION_AUTHORITY Note that the created
-            attestation will be bound to.  This note must exist and the active
-            gcloud account (core/account) must have the
-            `containeranalysis.notes.attachOccurrence` permission for the note
-            resource (usually via the `containeranalysis.notes.attacher`
-            role).""")
-      ),
-  )
-
-  parser.add_argument(
-      '--pgp-key-fingerprint',
-      type=str,
-      required=True,
-      help=textwrap.dedent("""\
-        The cryptographic ID of the key used to generate the signature.  For
-        Binary Authorization, this must be the version 4, full 160-bit
-        fingerprint, expressed as a 40 character hexidecimal string.  See
-        https://tools.ietf.org/html/rfc4880#section-12.2 for details."""))

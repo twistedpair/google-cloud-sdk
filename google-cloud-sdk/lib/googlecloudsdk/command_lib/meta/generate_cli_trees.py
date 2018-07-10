@@ -39,6 +39,8 @@ import sys
 import textwrap
 
 from googlecloudsdk.calliope import cli_tree
+from googlecloudsdk.command_lib.static_completion import generate
+from googlecloudsdk.command_lib.static_completion import lookup
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
@@ -153,7 +155,7 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
   def Run(self, cmd):
     """Runs cmd and returns the output as a string."""
-    return subprocess.check_output(cmd)
+    return encoding.Decode(subprocess.check_output(cmd))
 
   def GetVersion(self):
     """Returns the CLI_VERSION string."""
@@ -483,7 +485,7 @@ class GsutilCliTreeGenerator(CliTreeGenerator):
       if e.returncode != 1:
         raise
       output = e.output
-    return output
+    return encoding.Decode(output)
 
   def AddFlags(self, command, content, is_global=False):
     """Adds flags in content lines to command."""
@@ -1175,7 +1177,7 @@ def _GetDirectories(directory=None, warn_on_exceptions=False):
 
 def UpdateCliTrees(cli=None, commands=None, directory=None,
                    force=False, verbose=False, warn_on_exceptions=False):
-  """(re)generates the CLI trees in directory if non-existent or out ot date.
+  """(re)generates the CLI trees in directory if non-existent or out of date.
 
   This function uses the progress tracker because some of the updates can
   take ~minutes.
@@ -1210,9 +1212,33 @@ def UpdateCliTrees(cli=None, commands=None, directory=None,
       if not tree:
         failed.append(command)
     elif cli:
-      cli_tree.Load(cli=cli,
-                    path=cli_tree.CliTreePath(directory=directories[0]),
-                    force=force, verbose=verbose)
+
+      def _Mtime(path):
+        try:
+          return os.path.getmtime(path)
+        except OSError:
+          return 0
+
+      # Update the CLI tree.
+      cli_tree_path = cli_tree.CliTreePath(directory=directories[0])
+      cli_tree.Load(cli=cli, path=cli_tree_path, force=force, verbose=verbose)
+
+      # Update the static completion CLI tree if older than the CLI tree. To
+      # keep static completion startup lightweight we don't track the release
+      # in the tree data. Using the modify time is a minimal sanity check.
+      completion_tree_path = lookup.CompletionCliTreePath(
+          directory=directories[0])
+      cli_tree_mtime = _Mtime(cli_tree_path)
+      completion_tree_mtime = _Mtime(completion_tree_path)
+      if (force or not completion_tree_mtime or
+          completion_tree_mtime < cli_tree_mtime):
+        files.MakeDir(os.path.dirname(completion_tree_path))
+        with files.FileWriter(completion_tree_path) as f:
+          generate.ListCompletionTree(cli, out=f)
+      elif verbose:
+        log.status.Print(
+            '[{}] static completion CLI tree is up to date.'.format(command))
+
   if failed:
     message = 'No CLI tree {} for [{}].'.format(
         text_utils.Pluralize(len(failed), 'generator'),

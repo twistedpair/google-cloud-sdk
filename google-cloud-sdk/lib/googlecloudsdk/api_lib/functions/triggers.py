@@ -22,6 +22,9 @@ import itertools
 import enum
 
 
+UNADVERTISED_PROVIDER_LABEL = 'unadvertised'
+
+
 @enum.unique
 class Resources(enum.Enum):
 
@@ -32,6 +35,10 @@ class Resources(enum.Enum):
       self.collection_id = collection_id
   TOPIC = Resource('topic', 'pubsub.projects.topics')
   BUCKET = Resource('bucket', 'cloudfunctions.projects.buckets')
+  FIREBASE_DB = Resource('firebase database', 'google.firebase.database.ref')
+  FIRESTORE_DOC = Resource('firestore document', 'google.firestore.document')
+  FIREBASE_ANALYTICS_EVENT = Resource('firebase analytics',
+                                      'google.firebase.analytics.event')
   PROJECT = Resource('project', 'cloudresourcemanager.projects')
 
 
@@ -86,6 +93,30 @@ _BETA_PROVIDERS = [
         TriggerEvent('google.storage.object.delete', Resources.BUCKET),
         TriggerEvent('google.storage.object.metadataUpdate', Resources.BUCKET),
     ]),
+    TriggerProvider('google.firebase.database.ref', [
+        TriggerEvent('providers/google.firebase.database/eventTypes/ref.create',
+                     Resources.FIREBASE_DB),
+        TriggerEvent('providers/google.firebase.database/eventTypes/ref.update',
+                     Resources.FIREBASE_DB),
+        TriggerEvent('providers/google.firebase.database/eventTypes/ref.delete',
+                     Resources.FIREBASE_DB),
+        TriggerEvent('providers/google.firebase.database/eventTypes/ref.write',
+                     Resources.FIREBASE_DB),
+    ]),
+    TriggerProvider('google.firestore.document', [
+        TriggerEvent('providers/cloud.firestore/eventTypes/document.create',
+                     Resources.FIRESTORE_DOC),
+        TriggerEvent('providers/cloud.firestore/eventTypes/document.update',
+                     Resources.FIRESTORE_DOC),
+        TriggerEvent('providers/cloud.firestore/eventTypes/document.delete',
+                     Resources.FIRESTORE_DOC),
+        TriggerEvent('providers/cloud.firestore/eventTypes/document.write',
+                     Resources.FIRESTORE_DOC),
+    ]),
+    TriggerProvider('google.firebase.analytics.event', [
+        TriggerEvent('providers/google.firebase.analytics/eventTypes/event.log',
+                     Resources.FIREBASE_ANALYTICS_EVENT),
+    ]),
 ]
 
 _ALPHA_PROVIDERS = [
@@ -107,6 +138,8 @@ class _TriggerProviderRegistry(object):
 
   def __init__(self, all_providers):
     self.providers = all_providers
+    self._unadvertised_provider = TriggerProvider(
+        UNADVERTISED_PROVIDER_LABEL, [])
 
   def ProvidersLabels(self):
     return (p.label for p in self.providers)
@@ -128,7 +161,7 @@ class _TriggerProviderRegistry(object):
     for p in self.providers:
       if event_label in self.EventsLabels(p.label):
         return p
-    return None
+    return self._unadvertised_provider
 
 
 OUTPUT_TRIGGER_PROVIDER_REGISTRY = _TriggerProviderRegistry(_BETA_PROVIDERS)

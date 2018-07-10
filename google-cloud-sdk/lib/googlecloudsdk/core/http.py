@@ -41,7 +41,7 @@ from six.moves import urllib
 from six.moves import zip  # pylint: disable=redefined-builtin
 
 
-def Http(timeout='unset', response_encoding=None):
+def Http(timeout='unset', response_encoding=None, ca_certs=None):
   """Get an httplib2.Http client that is properly configured for use by gcloud.
 
   This method does not add credentials to the client.  For an Http client that
@@ -52,6 +52,9 @@ def Http(timeout='unset', response_encoding=None):
         socket level timeout.  If timeout is None, timeout is infinite.  If
         default argument 'unset' is given, a sensible default is selected.
     response_encoding: str, the encoding to use to decode the response.
+    ca_certs: str, absolute filename of a ca_certs file that overrides the
+        default. The gcloud config property for ca_certs, in turn, overrides
+        this argument.
 
   Returns:
     An httplib2.Http client object configured with all the required settings
@@ -59,7 +62,7 @@ def Http(timeout='unset', response_encoding=None):
   """
   # Wrap the request method to put in our own user-agent, and trace reporting.
   gcloud_ua = MakeUserAgentString(properties.VALUES.metrics.command_name.Get())
-  http_client = _CreateRawHttpClient(timeout)
+  http_client = _CreateRawHttpClient(timeout, ca_certs)
   http_client = _Wrap(
       http_client,
       properties.VALUES.core.trace_token.Get(),
@@ -75,13 +78,19 @@ def Http(timeout='unset', response_encoding=None):
   return http_client
 
 
-def _CreateRawHttpClient(timeout='unset'):
+def _CreateRawHttpClient(timeout='unset', ca_certs=None):
+  """Create an HTTP client matching the appropriate gcloud properties."""
   # Compared with setting the default timeout in the function signature (i.e.
   # timeout=300), this lets you test with short default timeouts by mocking
   # GetDefaultTimeout.
   effective_timeout = timeout if timeout != 'unset' else GetDefaultTimeout()
   no_validate = properties.VALUES.auth.disable_ssl_validation.GetBool() or False
-  ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
+  ca_certs_property = properties.VALUES.core.custom_ca_certs_file.Get()
+  # Believe an explicitly-set ca_certs property over anything we added.
+  if ca_certs_property:
+    ca_certs = ca_certs_property
+  if no_validate:
+    ca_certs = None
   return httplib2.Http(timeout=effective_timeout,
                        proxy_info=http_proxy.GetHttpProxyInfo(),
                        ca_certs=ca_certs,

@@ -20,13 +20,31 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 
-_DEFAULT_VERSION = 'v1alpha1'
+V1_ALPHA1 = 'v1alpha1'
+V1_BETA1 = 'v1beta1'
+
+# TODO(b/110493948): Change to the beta surface when making the default.
+_DEFAULT_VERSION = V1_ALPHA1
 
 
-def GetClientInstance(version=_DEFAULT_VERSION):
+def GetApiVersion(release_track):
+  if release_track == base.ReleaseTrack.BETA:
+    return V1_BETA1
+  elif release_track == base.ReleaseTrack.ALPHA:
+    return V1_ALPHA1
+  else:
+    raise ValueError('Unsupported Release Track: {}'.format(release_track))
+
+
+def GetClientInstance(version=None):
+  if version is None:
+    version = _DEFAULT_VERSION
   return apis.GetClientInstance('binaryauthorization', version)
 
 
-def GetMessagesModule(version=_DEFAULT_VERSION):
+def GetMessagesModule(version=None):
+  if version is None:
+    version = _DEFAULT_VERSION
   return apis.GetMessagesModule('binaryauthorization', version)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2014 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +26,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
+from googlecloudsdk.core.util import files
 
 
 DEFAULT_PATH = 'transaction.yaml'
@@ -142,7 +144,12 @@ class TransactionFile(object):
     self.__trans_file_path = trans_file_path
 
     try:
-      self.__trans_file = open(trans_file_path, mode)
+      if mode == 'r':
+        self.__trans_file = files.FileReader(trans_file_path)
+      elif mode == 'w':
+        self.__trans_file = files.FileWriter(trans_file_path)
+      else:
+        raise ValueError('Unrecognized mode [{}]'.format(mode))
     except IOError as exp:
       msg = 'unable to open transaction [{0}] because [{1}]'
       msg = msg.format(trans_file_path, exp)

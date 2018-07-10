@@ -22,8 +22,8 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core.util import retry
 
 
-def PeerApiCall(project_number, service, network, reserved_ranges):
-  """Make API call to peer a specific service.
+def CreateConnection(project_number, service, network, reserved_ranges):
+  """Make API call to create a connection a specific service.
 
   Args:
     project_number: The number of the project for which to peer the service.
@@ -42,13 +42,14 @@ def PeerApiCall(project_number, service, network, reserved_ranges):
   client = _GetClientInstance()
   messages = client.MESSAGES_MODULE
 
-  request = messages.ServicenetworkingServicesPeerRequest(
-      name='services/' + service,
-      peerSharedNetworkRequest=messages.PeerSharedNetworkRequest(
+  # the API only takes project number, so we cannot use resource parser.
+  request = messages.ServicenetworkingServicesConnectionsCreateRequest(
+      parent='services/' + service,
+      connection=messages.Connection(
           network='projects/%s/global/networks/%s' % (project_number, network),
           reservedPeeringRanges=reserved_ranges))
   try:
-    return client.services.Peer(request)
+    return client.services_connections.Create(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(e, exceptions.PeerServicePermissionDeniedException)
@@ -115,4 +116,4 @@ def WaitOperation(name):
 
 
 def _GetClientInstance():
-  return apis.GetClientInstance('servicenetworking', 'v1alpha', no_http=False)
+  return apis.GetClientInstance('servicenetworking', 'v1beta', no_http=False)

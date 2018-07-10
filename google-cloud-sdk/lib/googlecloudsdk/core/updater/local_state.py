@@ -605,11 +605,11 @@ class InstallationState(object):
     with file_utils.ChDir(self.sdk_root):
       to_compile = [
           os.path.join('bin', 'bootstrapping'),
+          os.path.join('data', 'cli'),
           'lib',
           'platform',
       ]
       for d in to_compile:
-        d = encoding.Decode(d)
         # Using rx to skip unused Python3 directory vendored with gsutil's copy
         # of httplib2.
         compileall.compile_dir(d, rx=re.compile('python3'), quiet=True)

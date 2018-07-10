@@ -26,6 +26,7 @@ import textwrap
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -99,7 +100,7 @@ def CheckGitVersion(version_lower_bound=None):
     NoGitException: if `git` was not found.
   """
   try:
-    output = subprocess.check_output(['git', 'version'])
+    output = encoding.Decode(subprocess.check_output(['git', 'version']))
     if not output:
       raise InvalidGitException('The git version string is empty.')
     if not output.startswith('git version '):

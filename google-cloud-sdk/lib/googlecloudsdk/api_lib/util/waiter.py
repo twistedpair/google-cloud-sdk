@@ -156,7 +156,7 @@ class CloudOperationPollerNoResources(OperationPoller):
 
   # TODO(b/62478975): Remove get_name_func when ML API operation names
   # are compatible with gcloud parsing, and use RelativeName instead.
-  def __init__(self, operation_service, get_name_func):
+  def __init__(self, operation_service, get_name_func=None):
     """Sets up poller for cloud operations.
 
     Args:
@@ -171,7 +171,7 @@ class CloudOperationPollerNoResources(OperationPoller):
         `lambda x: x.RelativeName()`.
     """
     self.operation_service = operation_service
-    self.get_name = get_name_func
+    self.get_name = get_name_func or (lambda x: x.RelativeName())
 
   def IsDone(self, operation):
     """Overrides."""
@@ -276,6 +276,10 @@ def PollUntilDone(poller, operation_ref,
                   sleep_ms=2000,
                   status_update=None):
   """Waits for poller.Poll to complete.
+
+  Note that this *does not* print nice messages to stderr for the user; most
+  callers should use WaitFor instead for the best UX unless there's a good
+  reason not to print.
 
   Args:
     poller: OperationPoller, poller to use during retrials.

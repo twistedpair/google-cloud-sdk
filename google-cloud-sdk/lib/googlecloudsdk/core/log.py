@@ -140,7 +140,7 @@ class _ConsoleWriter(object):
   can be captured by the log file.
   """
 
-  def __init__(self, logger, output_filter, stream_wrapper):
+  def __init__(self, logger, output_filter, stream_wrapper, always_flush=False):
     """Creates a new _ConsoleWriter wrapper.
 
     Args:
@@ -149,10 +149,12 @@ class _ConsoleWriter(object):
         output or not.
       stream_wrapper: _StreamWrapper, The wrapper for the output stream,
         stdout or stderr.
+      always_flush: bool, always flush stream_wrapper, default to False.
     """
     self.__logger = logger
     self.__filter = output_filter
     self.__stream_wrapper = stream_wrapper
+    self.__always_flush = always_flush
 
   def Print(self, *msg):
     """Writes the given message to the output stream, and adds a newline.
@@ -192,6 +194,8 @@ class _ConsoleWriter(object):
         # Encode to byte strings for output only on Python 2.
         stream_msg = msg.encode(stream_encoding or 'utf8', 'replace')
       self.__stream_wrapper.stream.write(stream_msg)
+      if self.__always_flush:
+        self.flush()
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def write(self, msg):
@@ -470,7 +474,8 @@ class _LogManager(object):
                                         self.stdout_stream_wrapper)
     self.stderr_writer = _ConsoleWriter(self.file_only_logger,
                                         self._user_output_filter,
-                                        self.stderr_stream_wrapper)
+                                        self.stderr_stream_wrapper,
+                                        always_flush=True)
 
     self.verbosity = None
     self.user_output_enabled = None

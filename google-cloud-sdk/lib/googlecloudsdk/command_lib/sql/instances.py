@@ -33,6 +33,14 @@ DEFAULT_RELEASE_TRACK = base.ReleaseTrack.GA
 STORAGE_TYPE_PREFIX = 'PD_'
 
 
+def _IsAlpha(release_track):
+  return release_track == base.ReleaseTrack.ALPHA
+
+
+def _IsBetaOrNewer(release_track):
+  return release_track == base.ReleaseTrack.BETA or _IsAlpha(release_track)
+
+
 def _ParseActivationPolicy(policy):
   return policy.replace('-', '_').upper() if policy else None
 
@@ -123,7 +131,7 @@ class _BaseInstances(object):
       settings.availabilityType = args.availability_type.upper()
 
     # BETA args.
-    if release_track == base.ReleaseTrack.BETA:
+    if _IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
         # Resize limit should be settable if the original instance has resize
         # turned on, or if the instance to be created has resize flag.
@@ -138,6 +146,14 @@ class _BaseInstances(object):
               '--storage-auto-increase', 'To set the storage capacity limit '
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
+
+    # ALPHA args.
+    if _IsAlpha(release_track):
+      if args.IsSpecified('network'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        settings.ipConfiguration.privateNetwork = reducers.PrivateNetworkUrl(
+            args.network)
 
     return settings
 
@@ -183,7 +199,7 @@ class _BaseInstances(object):
           'non-Postgres instance.')
 
     # BETA args.
-    if release_track == base.ReleaseTrack.BETA:
+    if _IsBetaOrNewer(release_track):
       settings.userLabels = labels_util.ParseCreateArgs(
           args, sql_messages.Settings.UserLabelsValue)
 
@@ -238,7 +254,7 @@ class _BaseInstances(object):
         maintenance_window_hour=args.maintenance_window_hour))
 
     # BETA args.
-    if release_track == base.ReleaseTrack.BETA:
+    if _IsBetaOrNewer(release_track):
       labels_diff = labels_util.ExplicitNullificationDiff.FromUpdateArgs(args)
       labels_update = labels_diff.Apply(
           sql_messages.Settings.UserLabelsValue, instance.settings.userLabels)
@@ -299,8 +315,7 @@ class _BaseInstances(object):
     instance_resource.masterInstanceName = args.master_instance_name
 
     # BETA: Set the host port and return early if external master instance.
-    if release_track == base.ReleaseTrack.BETA and args.IsSpecified(
-        'source_ip_address'):
+    if _IsBetaOrNewer(release_track) and args.IsSpecified('source_ip_address'):
       on_premises_configuration = reducers.OnPremisesConfiguration(
           sql_messages, args.source_ip_address, args.source_port)
       instance_resource.onPremisesConfiguration = on_premises_configuration
@@ -325,8 +340,7 @@ class _BaseInstances(object):
               name=args.failover_replica_name))
 
     # BETA: Config for creating a replica of an external master instance.
-    if release_track == base.ReleaseTrack.BETA and args.IsSpecified(
-        'master_username'):
+    if _IsBetaOrNewer(release_track) and args.IsSpecified('master_username'):
       # Ensure that the master instance name is specified.
       if not args.IsSpecified('master_instance_name'):
         raise exceptions.RequiredArgumentException(

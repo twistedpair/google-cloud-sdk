@@ -85,16 +85,12 @@ def ValidateTriggerArgs(trigger_event, trigger_resource, retry_specified,
     FunctionsError.
   """
   # Check that Event Type is valid
-  if trigger_event:
-    trigger_provider = (
-        triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.ProviderForEvent(
-            trigger_event).label)
-    if not trigger_provider:
-      raise exceptions.FunctionsError(
-          'Unsupported trigger_event {}'.format(trigger_event))
-
+  trigger_provider = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.ProviderForEvent(
+      trigger_event)
+  trigger_provider_label = trigger_provider.label
+  if trigger_provider_label != triggers.UNADVERTISED_PROVIDER_LABEL:
     resource_type = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.Event(
-        trigger_provider, trigger_event).resource_type
+        trigger_provider_label, trigger_event).resource_type
     if trigger_resource is None and resource_type != triggers.Resources.PROJECT:
       raise exceptions.FunctionsError(
           'You must provide --trigger-resource when using '
@@ -132,15 +128,30 @@ def _GetEventTriggerEventParams(trigger_event, trigger_resource):
     trigger_resource.
   """
   trigger_provider = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.ProviderForEvent(
-      trigger_event).label
+      trigger_event)
+
+  trigger_provider_label = trigger_provider.label
+  result = {
+      'trigger_provider': trigger_provider_label,
+      'trigger_event': trigger_event,
+      'trigger_resource': trigger_resource,
+  }
+  if trigger_provider_label == triggers.UNADVERTISED_PROVIDER_LABEL:
+    return result
+
   resource_type = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.Event(
-      trigger_provider, trigger_event).resource_type
+      trigger_provider_label, trigger_event).resource_type
   if resource_type == triggers.Resources.TOPIC:
     trigger_resource = api_util.ValidatePubsubTopicNameOrRaise(
         trigger_resource)
   elif resource_type == triggers.Resources.BUCKET:
     trigger_resource = storage_util.BucketReference.FromBucketUrl(
         trigger_resource).bucket
+  elif resource_type in [
+      triggers.Resources.FIREBASE_DB,
+      triggers.Resources.FIRESTORE_DOC,
+      triggers.Resources.FIREBASE_ANALYTICS_EVENT]:
+    pass
   elif resource_type == triggers.Resources.PROJECT:
     if trigger_resource:
       properties.VALUES.core.project.Validate(trigger_resource)
@@ -149,11 +160,8 @@ def _GetEventTriggerEventParams(trigger_event, trigger_resource):
     # api_util.PROVIDER_EVENT_RESOURCE but forgot to update code here
     raise core_exceptions.InternalError()
   # checked if provided resource and path have correct format
-  return {
-      'trigger_provider': trigger_provider,
-      'trigger_event': trigger_event,
-      'trigger_resource': trigger_resource,
-  }
+  result['trigger_resource'] = trigger_resource
+  return result
 
 
 def GetTriggerEventParams(trigger_http, trigger_bucket, trigger_topic,
@@ -206,7 +214,12 @@ def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
   resource_type = triggers.INPUT_TRIGGER_PROVIDER_REGISTRY.Event(
       trigger_provider, trigger_event).resource_type
   params = {}
-  if resource_type.value.collection_id == 'cloudresourcemanager.projects':
+  if resource_type.value.collection_id in {
+      'google.firebase.database.ref',
+      'google.firestore.document',
+      'google.firebase.analytics.event'}:
+    return trigger_resource
+  elif resource_type.value.collection_id == 'cloudresourcemanager.projects':
     params['projectId'] = properties.VALUES.core.project.GetOrFail
   elif resource_type.value.collection_id == 'pubsub.projects.topics':
     params['projectsId'] = properties.VALUES.core.project.GetOrFail
@@ -222,14 +235,27 @@ def ConvertTriggerArgsToRelativeName(trigger_provider, trigger_event,
 
 
 def CreateEventTrigger(trigger_provider, trigger_event, trigger_resource):
+  """Create event trigger message.
+
+  Args:
+    trigger_provider: str, trigger provider label.
+    trigger_event: str, trigger event label.
+    trigger_resource: str, trigger resource name.
+
+  Returns:
+    A EventTrigger protobuf message.
+  """
   messages = api_util.GetApiMessagesModule()
   event_trigger = messages.EventTrigger()
   event_trigger.eventType = trigger_event
-  event_trigger.resource = (
-      ConvertTriggerArgsToRelativeName(
-          trigger_provider,
-          trigger_event,
-          trigger_resource))
+  if trigger_provider == triggers.UNADVERTISED_PROVIDER_LABEL:
+    event_trigger.resource = trigger_resource
+  else:
+    event_trigger.resource = (
+        ConvertTriggerArgsToRelativeName(
+            trigger_provider,
+            trigger_event,
+            trigger_resource))
   return event_trigger
 
 

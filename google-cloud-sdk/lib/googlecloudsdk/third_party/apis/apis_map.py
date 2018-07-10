@@ -140,6 +140,12 @@ MAP = {
             messages_modulepath='binaryauthorization_v1alpha1_messages',
             default_version=True
         ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.binaryauthorization.v1beta1',
+            client_classpath='binaryauthorization_v1beta1_client.BinaryauthorizationV1beta1',
+            messages_modulepath='binaryauthorization_v1beta1_messages',
+            default_version=False
+        ),
     },
     'bio': {
         'v1': APIDef(
@@ -284,11 +290,17 @@ MAP = {
         ),
     },
     'composer': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.composer.v1',
+            client_classpath='composer_v1_client.ComposerV1',
+            messages_modulepath='composer_v1_messages',
+            default_version=True
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.composer.v1beta1',
             client_classpath='composer_v1beta1_client.ComposerV1beta1',
             messages_modulepath='composer_v1beta1_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'compute': {
@@ -594,6 +606,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.servicenetworking.v1alpha',
             client_classpath='servicenetworking_v1alpha_client.ServicenetworkingV1alpha',
             messages_modulepath='servicenetworking_v1alpha_messages',
+            default_version=False
+        ),
+        'v1beta': APIDef(
+            class_path='googlecloudsdk.third_party.apis.servicenetworking.v1beta',
+            client_classpath='servicenetworking_v1beta_client.ServicenetworkingV1beta',
+            messages_modulepath='servicenetworking_v1beta_messages',
             default_version=True
         ),
     },
@@ -716,6 +734,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.vision.v1',
             client_classpath='vision_v1_client.VisionV1',
             messages_modulepath='vision_v1_messages',
+            default_version=True
+        ),
+    },
+    'vpcaccess': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.vpcaccess.v1alpha1',
+            client_classpath='vpcaccess_v1alpha1_client.VpcaccessV1alpha1',
+            messages_modulepath='vpcaccess_v1alpha1_messages',
             default_version=True
         ),
     },

@@ -285,7 +285,7 @@ subset of information which is returned.
         method_id=u'cloudtasks.projects.locations.queues.tasks.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'orderBy', u'pageSize', u'pageToken', u'responseView'],
+        query_params=[u'pageSize', u'pageToken', u'responseView'],
         relative_path=u'v2beta2/{+parent}/tasks',
         request_field='',
         request_type_name=u'CloudtasksProjectsLocationsQueuesTasksListRequest',

@@ -26,9 +26,9 @@ from googlecloudsdk.command_lib.iam import iam_util
 class Client(object):
   """A client for interacting with IAM."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or apis.GetClientInstance()
-    self.messages = messages or apis.GetMessagesModule()
+  def __init__(self, api_version=None):
+    self.client = apis.GetClientInstance(api_version)
+    self.messages = apis.GetMessagesModule(api_version)
 
   def Get(self, any_ref):
     """Gets the IamPolicy associated with a resource."""

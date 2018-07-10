@@ -17,9 +17,7 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 from googlecloudsdk.api_lib.container import api_adapter
-from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.command_lib.container import constants
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import text
@@ -187,34 +185,3 @@ def ParseUpdateOptionsBase(args, locations):
       locations=locations,
       enable_master_authorized_networks=args.enable_master_authorized_networks,
       master_authorized_networks=args.master_authorized_networks)
-
-
-def GetUseV1APIProperty():
-  """Returns whether v1 API should be used."""
-
-  new_set = properties.VALUES.container.use_v1_api.IsExplicitlySet()
-  if new_set:
-    new_val = properties.VALUES.container.use_v1_api.GetBool()
-
-  old_set = properties.VALUES.container.use_v1_api_client.IsExplicitlySet()
-  if old_set:
-    old_val = properties.VALUES.container.use_v1_api_client.GetBool()
-
-  # use_v1_api is set but use_v1_api_client is not set
-  if new_set and not old_set:
-    return new_val
-  # use_v1_api is not set but use_v1_api_client is set
-  elif not new_set and old_set:
-    return old_val
-  # both use_v1_api and use_v1_api_client are not set
-  elif not new_set and not old_set:
-    # default behavior is using non-v1 api
-    return False
-  # both use_v1_api and use_v1_api_client are set
-  else:
-    # if the values of use_v1_api and use_v1_api match, return either one
-    if new_val == old_val:
-      return new_val
-    else:
-      raise util.Error(
-          constants.CANNOT_SET_BOTH_USE_V1_API_PROPERTIES_WITH_DIFF_VALUES)

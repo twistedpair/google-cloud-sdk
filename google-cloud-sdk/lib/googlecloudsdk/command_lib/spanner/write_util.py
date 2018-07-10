@@ -404,31 +404,44 @@ def RowDataParser(data_value):
   Returns:
     An ordered dictionary, the keys of which are the column names and values
       are user input data value of the row to modify.
-
-  Raises:
-    ValueError: invalid column value.
   """
   data_dict = OrderedDict()
   column_names = re.findall(r'\,?(\w+)\=', data_value)
   for idx, name in enumerate(column_names):
+    start = data_value.index(name + '=')
     if idx + 1 == len(column_names):
-      # For the last column in the list, only name is needed as regex pattern.
-      name_pattern = name + r'\=(\S+)'
+      end = None
     else:
-      # For the other columns in the list, the value is between the current
-      # column name and next column name.
-      name_pattern = name + r'\=(\S+)\,\s*' + column_names[idx + 1]
-    value_match = re.findall(name_pattern, data_value)
+      end_pattern = r'\,\s*' + column_names[idx + 1] + r'\='
+      (end, _) = re.compile(end_pattern).search(data_value).span(0)
 
-    if not value_match:
-      raise ValueError('Missing column value in column: {}.'.format(name))
-
-    column_value = value_match[0]
+    [_, column_value] = data_value[start:end].split('=', 1)
+    column_value = _StripQuotes(column_value)
     if column_value.startswith('[') and column_value.endswith(']'):
       # When the column is array, '[1,2]' -> ['1', '2'].
       array_value = column_value[1:-1]
       column_value = array_value.split(',') if array_value else []
+      for i, value in enumerate(column_value):
+        column_value[i] = _StripQuotes(value)
 
     data_dict[name] = column_value
 
   return data_dict
+
+
+def _StripQuotes(str_value):
+  """Strip matching quote characters from the beginning and end of a value.
+
+  For example, "'testing'" -> 'testing' and '"testing"' -> 'testing'
+
+  Args:
+    str_value: String, the given value for a column.
+
+  Returns:
+    A string version of the given value without excess quotes.
+  """
+  if str_value.startswith('"') and str_value.endswith('"'):
+    return str_value[1:-1]
+  if str_value.startswith("'") and str_value.endswith("'"):
+    return str_value[1:-1]
+  return str_value

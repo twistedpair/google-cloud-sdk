@@ -98,6 +98,20 @@ def AddCreateRouterArgs(parser):
       'For more information see: https://tools.ietf.org/html/rfc6996.')
 
 
+def AddCreateRouterArgsForAlpha(parser):
+  """Adds common arguments for creating routers. It is only used in alpha."""
+
+  parser.add_argument(
+      '--description', help='An optional description of this router.')
+
+  parser.add_argument(
+      '--asn',
+      required=False,
+      type=int,
+      help='The optional BGP autonomous system number (ASN) for this router. '
+      'For more information see: https://tools.ietf.org/html/rfc6996.')
+
+
 def AddInterfaceArgs(parser, for_update=False):
   """Adds common arguments for routers add-interface or update-interface."""
 

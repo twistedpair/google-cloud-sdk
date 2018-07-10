@@ -415,13 +415,6 @@
         }
       }
     },
-    "ResetNodeRequest": {
-      "id": "ResetNodeRequest",
-      "description": "Request for ResetNode.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "StopNodeRequest": {
       "id": "StopNodeRequest",
       "description": "Request for StopNode.",
@@ -882,34 +875,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Reimages a node's OS."
-                },
-                "reset": {
-                  "id": "tpu.projects.locations.nodes.reset",
-                  "path": "v1/{+name}:reset",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/nodes/{nodesId}:reset",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "The resource name.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/nodes\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "ResetNodeRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Resets a node, which stops and starts the VM."
                 },
                 "stop": {
                   "id": "tpu.projects.locations.nodes.stop",

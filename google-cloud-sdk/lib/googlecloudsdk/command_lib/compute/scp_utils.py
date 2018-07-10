@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.compute import flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute import ssh_utils
 from googlecloudsdk.command_lib.compute.instances import flags as instance_flags
+from googlecloudsdk.command_lib.util.ssh import ip
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -70,7 +71,8 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
              recursive=False,
              compress=False,
              extra_flags=None,
-             release_track=None):
+             release_track=None,
+             ip_type=ip.IpTypeEnum.EXTERNAL):
     """SCP files between local and remote GCE instance.
 
     Run this method from subclasses' Run methods.
@@ -83,6 +85,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       compress: bool, Whether to use compression.
       extra_flags: [str] or None, extra flags to add to command invocation.
       release_track: obj, The current release track.
+      ip_type: IpTypeEnum, Specify using internal ip or external ip address.
 
     Raises:
       ssh_utils.NetworkError: Network issue which likely is due to failure
@@ -116,7 +119,10 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     project = self.GetProject(compute_holder.client, instance_ref.project)
 
     # Now replace the instance name with the actual IP/hostname
-    remote.host = ssh_utils.GetExternalIPAddress(instance)
+    if ip_type is ip.IpTypeEnum.INTERNAL:
+      remote.host = ssh_utils.GetInternalIPAddress(instance)
+    else:
+      remote.host = ssh_utils.GetExternalIPAddress(instance)
     if not remote.user:
       remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
     if args.plain:
@@ -160,6 +166,10 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
         poller.Poll(self.env, force_connect=True)
       except retry.WaitException:
         raise ssh_utils.NetworkError()
+
+    if ip_type is ip.IpTypeEnum.INTERNAL:
+      self.PreliminarilyVerifyInstance(instance.id, remote, identity_file,
+                                       options)
     return_code = cmd.Run(self.env, force_connect=True)
     if return_code:
       # Can't raise an exception because we don't want any "ERROR" message

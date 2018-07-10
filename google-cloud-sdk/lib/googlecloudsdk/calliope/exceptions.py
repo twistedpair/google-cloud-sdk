@@ -509,12 +509,7 @@ def HandleError(exc, command_path, known_error_handler=None):
   """
   known_exc, print_error = ConvertKnownError(exc)
   if known_exc:
-    msg = '({0}) {1}'.format(
-        console_attr.SafeText(command_path),
-        console_attr.SafeText(known_exc))
-    log.debug(msg, exc_info=sys.exc_info())
-    if print_error:
-      log.error(msg)
+    _LogKnownError(known_exc, command_path, print_error)
     # Uncaught errors will be handled in gcloud_main.
     if known_error_handler:
       known_error_handler(exc)
@@ -527,7 +522,17 @@ def HandleError(exc, command_path, known_error_handler=None):
     core_exceptions.reraise(exc)
 
 
+def _LogKnownError(known_exc, command_path, print_error):
+  msg = '({0}) {1}'.format(
+      console_attr.SafeText(command_path),
+      console_attr.SafeText(known_exc))
+  log.debug(msg, exc_info=sys.exc_info())
+  if print_error:
+    log.error(msg)
+
+
 def _Exit(exc):
   """This method exists so we can mock this out during testing to not exit."""
   # exit_code won't be defined in the KNOWN_ERRORs classes
   sys.exit(getattr(exc, 'exit_code', 1))
+

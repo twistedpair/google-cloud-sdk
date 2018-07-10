@@ -74,7 +74,14 @@ apis:
           path: projects/{projectId}/zones/{zoneId}/clusters/{clusterId}
   binaryauthorization:
     v1alpha1:
+      default: true
       discovery_doc: binaryauthorization_v1alpha1.json
+      resources:
+        projects.policy:
+          path: projects/{projectsId}/policy
+    v1beta1:
+      default: false
+      discovery_doc: binaryauthorization_v1beta1.json
       resources:
         projects.policy:
           path: projects/{projectsId}/policy
@@ -179,6 +186,9 @@ apis:
   composer:
     v1beta1:
       discovery_doc: composer_v1beta1.json
+    v1:
+      discovery_doc: composer_v1.json
+      default: true
   compute:
     alpha:
       discovery_doc: compute_alpha.json
@@ -360,6 +370,9 @@ apis:
   servicenetworking:
     v1alpha:
       discovery_doc: servicenetworking_v1alpha.json
+    v1beta:
+      discovery_doc: servicenetworking_v1beta.json
+      default: true
   serviceusage:
     v1beta1:
       discovery_doc: serviceusage_v1beta1.json
@@ -451,3 +464,6 @@ apis:
         infoTypes:
           path: infoTypes
           enable_uri_parsing: false
+  vpcaccess:
+    v1alpha1:
+      discovery_doc: vpcaccess_v1alpha1.json

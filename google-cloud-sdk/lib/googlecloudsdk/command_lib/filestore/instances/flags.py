@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- #
 # Copyright 2017 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +16,36 @@
 
 from __future__ import absolute_import
 from __future__ import unicode_literals
+from googlecloudsdk.api_lib.filestore import filestore_client
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.filestore import flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+
+INSTANCES_LIST_FORMAT_ALPHA = """\
+    table(
+      name.basename():label=INSTANCE_NAME:sort=1,
+      name.segment(3):label=LOCATION,
+      tier,
+      volumes[0].capacityGb:label=CAPACITY_GB,
+      volumes[0].name:label=FILE_SHARE_NAME,
+      networks[0].ipAddresses[0]:label=IP_ADDRESS,
+      state,
+      createTime.date()
+    )"""
 
 INSTANCES_LIST_FORMAT = """\
     table(
       name.basename():label=INSTANCE_NAME:sort=1,
       name.segment(3):label=LOCATION,
       tier,
-      volumes[0].capacityGb:label=CAPACITY_GB,
-      volumes[0].name:label=VOLUME_NAME,
+      fileShares[0].capacityGb:label=CAPACITY_GB,
+      fileShares[0].name:label=FILE_SHARE_NAME,
       networks[0].ipAddresses[0]:label=IP_ADDRESS,
       state,
       createTime.date()
     )"""
-
 
 NETWORK_ARG_SPEC = {
     'name': str,
@@ -37,14 +53,14 @@ NETWORK_ARG_SPEC = {
 }
 
 
-FILESHARE_ARG_SPEC = {
+FILE_SHARE_ARG_SPEC = {
     'name':
         str,
     'capacity':
         arg_parsers.BinarySize(
             default_unit='GB',
             lower_bound='1TB',
-            upper_bound='64TB',
+            upper_bound='65434GB',
             suggested_binary_size_scales=['GB', 'GiB', 'TB', 'TiB']
         ),
 }
@@ -103,6 +119,7 @@ def AddNetworkArg(parser):
       instance. For example, 10.0.0.0/29 or 192.168.0.0/29. The range you
       specify can't overlap with either existing subnets or assigned IP address
       ranges for other Cloud Filestore instances in the selected VPC network.
+
       """
   parser.add_argument(
       '--network',
@@ -112,14 +129,15 @@ def AddNetworkArg(parser):
       help=network_help)
 
 
-def AddFileshareArg(parser):
+def AddFileShareArg(parser, required=True):
   """Adds a --file-share flag to the given parser.
 
   Args:
     parser: argparse parser.
+    required: bool, passthrough to parser.add_argument.
   """
-  fileshare_help = """\
-      Fileshare configuration for an instance. Specifying both `name` and
+  file_share_help = """\
+      File share configuration for an instance. Specifying both `name` and
       `capacity` is required.
 
       *capacity*::: The desired size of the volume. The capacity must be a whole
@@ -128,10 +146,34 @@ def AddFileshareArg(parser):
       is 1TB. The minimum size for a premium instance is 2.5TB.
 
       *name*::: The desired logical name of the volume.
+
       """
   parser.add_argument(
       '--file-share',
-      type=arg_parsers.ArgDict(spec=FILESHARE_ARG_SPEC,
+      type=arg_parsers.ArgDict(spec=FILE_SHARE_ARG_SPEC,
                                required_keys=['name', 'capacity']),
-      required=True,
-      help=fileshare_help)
+      required=required,
+      help=file_share_help)
+
+
+def AddInstanceCreateArgs(parser, api_version):
+  """Add args for creating an instance."""
+  concept_parsers.ConceptParser([flags.GetInstancePresentationSpec(
+      'The instance to create.')]).AddToParser(parser)
+  AddDescriptionArg(parser)
+  messages = filestore_client.GetMessages(version=api_version)
+  GetTierArg(messages).choice_arg.AddToParser(parser)
+  AddAsyncFlag(parser, 'create')
+  AddFileShareArg(parser)
+  AddNetworkArg(parser)
+  labels_util.AddCreateLabelsFlags(parser)
+
+
+def AddInstanceUpdateArgs(parser):
+  """Add args for updating an instance."""
+  concept_parsers.ConceptParser([flags.GetInstancePresentationSpec(
+      'The instance to update.')]).AddToParser(parser)
+  AddDescriptionArg(parser)
+  AddAsyncFlag(parser, 'update')
+  labels_util.AddUpdateLabelsFlags(parser)
+  AddFileShareArg(parser, required=False)

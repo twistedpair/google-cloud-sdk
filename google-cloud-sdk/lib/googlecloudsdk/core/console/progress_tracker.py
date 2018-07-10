@@ -30,14 +30,6 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 
 
-_SPIN_MARKS = [
-    '|',
-    '/',
-    '-',
-    '\\',
-]
-
-
 def ProgressTracker(
     message=None, autotick=True, detail_message_callback=None, tick_delay=1,
     interruptable=True,
@@ -102,6 +94,7 @@ class _NormalProgressTracker(object):
     self._interruptable = interruptable
     self._aborted_message = aborted_message
     self._old_signal_handler = None
+    self._symbols = console_attr.GetConsoleAttr().GetProgressTrackerSymbols()
 
   @property
   def _autotick(self):
@@ -150,7 +143,8 @@ class _NormalProgressTracker(object):
       if not self._done:
         if self._is_tty:
           self._ticks += 1
-          self._Print(_SPIN_MARKS[self._ticks % len(_SPIN_MARKS)])
+          self._Print(self._symbols.spin_marks[
+              self._ticks % len(self._symbols.spin_marks)])
         else:
           self._PrintDot()
     return self._done
@@ -365,6 +359,7 @@ class _NormalCompletionProgressTracker(object):
     self.__autotick = autotick
     self._background_ttl = background_ttl
     self._ticks = 0
+    self._symbols = console_attr.GetConsoleAttr().GetProgressTrackerSymbols()
 
   def __enter__(self):
     if self._autotick:
@@ -388,7 +383,8 @@ class _NormalCompletionProgressTracker(object):
   def _Spin(self, unused_sig=None, unused_frame=None):
     """Rotates the spinner one tick and checks for timeout."""
     self._ticks += 1
-    self._WriteMark(_SPIN_MARKS[self._ticks % len(_SPIN_MARKS)])
+    self._WriteMark(self._symbols.spin_marks[
+        self._ticks % len(self._symbols.spin_marks)])
     self._timeout -= self._tick_delay
     if not self._TimedOut():
       return
