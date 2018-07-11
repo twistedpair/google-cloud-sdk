@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2015 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,35 +49,6 @@ def AddFileFlag(parser, input_type, action):
       '--file',
       help='The YAML file containing the {0} to {1}'.format(input_type, action),
       required=True)
-
-
-def AddTemplateSourceFlag(parser):
-  parser.add_argument(
-      '--source',
-      help="""The path to a YAML file containing a Dataproc WorkflowTemplate
-      resource. The provided YAML file must not contain id, version, or any
-      output-only fields.
-      Alternatively, you may omit this flag to read from the standard input.
-      For more information, see:
-      https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.locations.workflowTemplates#WorkflowTemplate
-      """,
-      # Allow reading from stdin.
-      required=False)
-
-
-def AddTemplateDestinationFlag(parser):
-  parser.add_argument(
-      '--destination',
-      help=
-      """The path to a YAML file to which the Dataproc WorkflowTemplate resource
-      will be exported. The exported template will not contain id, version, or
-      any output-only fields.
-      Alternatively, you may omit this flag to write to the standard output.
-      For more information, see:
-      https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.locations.workflowTemplates#WorkflowTemplate
-      """,
-      # Allow writing to stdout.
-      required=False)
 
 
 def AddJobFlag(parser, action):
