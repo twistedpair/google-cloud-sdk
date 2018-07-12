@@ -4,6 +4,10 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+## 208.0.2 (2018-07-12)
+
+*  Hotfix for `dev_appserver` crashes.
+
 
 ## 208.0.1 (2018-07-11)
 
