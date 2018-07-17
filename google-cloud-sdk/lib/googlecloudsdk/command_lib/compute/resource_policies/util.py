@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utility functions for Google Compute Engine resource policies."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import utils
@@ -72,11 +74,13 @@ def MakeDiskBackupSchedulePolicy(policy_ref, args, messages):
       args,
       messages.ResourcePolicyBackupSchedulePolicySnapshotProperties.LabelsValue,
       labels_dest='snapshot_labels')
-  if args.IsSpecified('guest_flush') or snapshot_labels:
+  storage_location = [args.storage_location] if args.storage_location else []
+  if (args.IsSpecified('guest_flush') or snapshot_labels or storage_location):
     snapshot_properties = (
         messages.ResourcePolicyBackupSchedulePolicySnapshotProperties(
             guestFlush=args.guest_flush,
-            labels=snapshot_labels))
+            labels=snapshot_labels,
+            storageLocations=storage_location))
   backup_policy = messages.ResourcePolicyBackupSchedulePolicy(
       retentionPolicy=
       messages.ResourcePolicyBackupSchedulePolicyRetentionPolicy(

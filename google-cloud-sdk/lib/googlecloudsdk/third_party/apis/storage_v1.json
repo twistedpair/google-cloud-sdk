@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20180622",
+ "revision": "20180711",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -760,7 +760,7 @@
     },
     "kmsKeyName": {
      "type": "string",
-     "description": "Cloud KMS Key used to encrypt this object, if the object is encrypted by such a key. Limited availability; usable only by enabled projects."
+     "description": "Cloud KMS Key used to encrypt this object, if the object is encrypted by such a key."
     },
     "md5Hash": {
      "type": "string",
@@ -3042,7 +3042,7 @@
       },
       "kmsKeyName": {
        "type": "string",
-       "description": "Resource name of the Cloud KMS key, of the form projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be used to encrypt the object. Overrides the object metadata's kms_key_name value, if any. Limited availability; usable only by enabled projects.",
+       "description": "Resource name of the Cloud KMS key, of the form projects/my-project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be used to encrypt the object. Overrides the object metadata's kms_key_name value, if any.",
        "location": "query"
       },
       "name": {

@@ -15,7 +15,9 @@
 """Convenience functions for dealing with alias IP ranges."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import exceptions
 
 _INVALID_FORMAT_MESSAGE_FOR_INSTANCE = (

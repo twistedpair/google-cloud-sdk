@@ -617,7 +617,7 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
@@ -1196,6 +1196,331 @@
                             "https://www.googleapis.com/auth/cloudiot"
                           ],
                           "description": "Lists the last few versions of the device state in descending order (i.e.:\nnewest first)."
+                        }
+                      }
+                    }
+                  }
+                },
+                "groups": {
+                  "methods": {
+                    "setIamPolicy": {
+                      "id": "cloudiot.projects.locations.registries.groups.setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudiot"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any\nexisting policy."
+                    },
+                    "getIamPolicy": {
+                      "id": "cloudiot.projects.locations.registries.groups.getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:getIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "GetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudiot"
+                      ],
+                      "description": "Gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset."
+                    },
+                    "testIamPermissions": {
+                      "id": "cloudiot.projects.locations.registries.groups.testIamPermissions",
+                      "path": "v1/{+resource}:testIamPermissions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}:testIamPermissions",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "TestIamPermissionsRequest"
+                      },
+                      "response": {
+                        "$ref": "TestIamPermissionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudiot"
+                      ],
+                      "description": "Returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "devices": {
+                      "methods": {
+                        "get": {
+                          "id": "cloudiot.projects.locations.registries.groups.devices.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "fieldMask": {
+                              "description": "The fields of the `Device` resource to be returned in the response. If the\nfield mask is unset or empty, all fields are returned.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "Device"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot"
+                          ],
+                          "description": "Gets details about a device."
+                        },
+                        "patch": {
+                          "id": "cloudiot.projects.locations.registries.groups.devices.patch",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}",
+                          "httpMethod": "PATCH",
+                          "parameters": {
+                            "name": {
+                              "description": "The resource path name. For example,\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/dev0` or\n`projects\/p1\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.\nWhen `name` is populated as a response from the service, it always ends\nin the device numeric ID.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "updateMask": {
+                              "description": "Only updates the `device` fields indicated by this mask.\nThe field mask must not be empty, and it must not contain fields that\nare immutable or only set by the server.\nMutable top-level fields: `credentials`, `blocked`, and `metadata`",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "Device"
+                          },
+                          "response": {
+                            "$ref": "Device"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot"
+                          ],
+                          "description": "Updates a device."
+                        },
+                        "list": {
+                          "id": "cloudiot.projects.locations.registries.groups.devices.list",
+                          "path": "v1/{+parent}/devices",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "The device registry path. Required. For example,\n`projects\/my-project\/locations\/us-central1\/registries\/my-registry`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+$",
+                              "type": "string"
+                            },
+                            "deviceNumIds": {
+                              "description": "A list of device numerical ids. If empty, it will ignore this field. This\nfield cannot hold more than 10,000 entries.",
+                              "location": "query",
+                              "repeated": true,
+                              "type": "string",
+                              "format": "uint64"
+                            },
+                            "deviceIds": {
+                              "description": "A list of device string identifiers. If empty, it will ignore this field.\nFor example, `['device0', 'device12']`. This field cannot hold more than\n10,000 entries.",
+                              "location": "query",
+                              "repeated": true,
+                              "type": "string"
+                            },
+                            "fieldMask": {
+                              "description": "The fields of the `Device` resource to be returned in the response. The\nfields `id`, and `num_id` are always returned by default, along with any\nother fields specified.",
+                              "location": "query",
+                              "type": "string",
+                              "format": "google-fieldmask"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of devices to return in the response. If this value\nis zero, the service will select a default size. A call may return fewer\nobjects than requested, but if there is a non-empty `page_token`, it\nindicates that more entries are available.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The value returned by the last `ListDevicesResponse`; indicates\nthat this is a continuation of a prior `ListDevices` call, and\nthat the system should return the next page of data.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListDevicesResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot"
+                          ],
+                          "description": "List devices in a device registry."
+                        },
+                        "modifyCloudToDeviceConfig": {
+                          "id": "cloudiot.projects.locations.registries.groups.devices.modifyCloudToDeviceConfig",
+                          "path": "v1/{+name}:modifyCloudToDeviceConfig",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}:modifyCloudToDeviceConfig",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
+                              "location": "path",
+                              "required": true,
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+\/devices\/[^\/]+$",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "ModifyCloudToDeviceConfigRequest"
+                          },
+                          "response": {
+                            "$ref": "DeviceConfig"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudiot"
+                          ],
+                          "description": "Modifies the configuration for the device, which is eventually sent from\nthe Cloud IoT Core servers. Returns the modified configuration version and\nits metadata."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "configVersions": {
+                          "methods": {
+                            "list": {
+                              "id": "cloudiot.projects.locations.registries.groups.devices.configVersions.list",
+                              "path": "v1/{+name}/configVersions",
+                              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}/configVersions",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+\/devices\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "numVersions": {
+                                  "description": "The number of versions to list. Versions are listed in decreasing order of\nthe version number. The maximum number of versions retained is 10. If this\nvalue is zero, it will return all the versions available.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "ListDeviceConfigVersionsResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/cloudiot"
+                              ],
+                              "description": "Lists the last few versions of the device configuration in descending\norder (i.e.: newest first)."
+                            }
+                          }
+                        },
+                        "states": {
+                          "methods": {
+                            "list": {
+                              "id": "cloudiot.projects.locations.registries.groups.devices.states.list",
+                              "path": "v1/{+name}/states",
+                              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}/states",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "name": {
+                                  "description": "The name of the device. For example,\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/device0` or\n`projects\/p0\/locations\/us-central1\/registries\/registry0\/devices\/{num_id}`.",
+                                  "location": "path",
+                                  "required": true,
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/registries\/[^\/]+\/groups\/[^\/]+\/devices\/[^\/]+$",
+                                  "type": "string"
+                                },
+                                "numStates": {
+                                  "description": "The number of states to list. States are listed in descending order of\nupdate time. The maximum number of states retained is 10. If this\nvalue is zero, it will return all the states available.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                }
+                              },
+                              "parameterOrder": [
+                                "name"
+                              ],
+                              "response": {
+                                "$ref": "ListDeviceStatesResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform",
+                                "https://www.googleapis.com/auth/cloudiot"
+                              ],
+                              "description": "Lists the last few versions of the device state in descending order (i.e.:\nnewest first)."
+                            }
+                          }
                         }
                       }
                     }

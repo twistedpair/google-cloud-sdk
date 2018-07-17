@@ -37,11 +37,13 @@ class Connector(_messages.Message):
       READY: Connector is deployed and ready to receive traffic.
       CREATING: An Insert operation is in progress. Transient condition.
       DELETING: A Delete operation is in progress. Transient condition.
+      ERROR: Connector is in a bad state, manual deletion recommended.
     """
     STATUS_UNSPECIFIED = 0
     READY = 1
     CREATING = 2
     DELETING = 3
+    ERROR = 4
 
   id = _messages.StringField(1)
   ipCidrRange = _messages.StringField(2)

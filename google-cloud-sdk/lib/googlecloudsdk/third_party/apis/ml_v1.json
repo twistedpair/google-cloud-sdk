@@ -514,7 +514,7 @@
       "type": "object",
       "properties": {
         "count": {
-          "description": "The number of accelerators to attach to the machines.",
+          "description": "The number of accelerators to attach to each machine running the job.",
           "type": "string",
           "format": "int64"
         },
@@ -524,7 +524,7 @@
             "Unspecified accelerator type. Default to no GPU.",
             "Nvidia tesla k80 GPU.",
             "Nvidia tesla P100 GPU.",
-            "Nvidia tesla V100 GPU."
+            "Nvidia tesla V100 GPU. Not supported for batch prediction."
           ],
           "type": "string",
           "enum": [
@@ -713,7 +713,7 @@
             "Unspecified accelerator type. Default to no GPU.",
             "Nvidia tesla k80 GPU.",
             "Nvidia tesla P100 GPU.",
-            "Nvidia tesla V100 GPU."
+            "Nvidia tesla V100 GPU. Not supported for batch prediction."
           ],
           "type": "array",
           "items": {
@@ -938,6 +938,17 @@
           "description": "Output only. The details of a failure or a cancellation.",
           "type": "string"
         },
+        "modelClass": {
+          "description": "class Model(object):\n  \"\"\"A Model performs predictions on a given list of instances.\n\n  The input instances are the raw values sent by the user. It is the\n  responsibility of a Model to translate these instances into\n  actual predictions.\n\n  The input instances and the output use python data types. The input\n  instances have been decoded prior to being passed to the predict\n  method. The output, which should use python data types is\n  encoded after being returned from the predict method.\n  \"\"\"\n\n  def predict(self, instances, **kwargs):\n    \"\"\"Returns predictions for the provided instances.\n\n    Instances are the decoded values from the request. Clients need not\n    worry about decoding json nor base64 decoding.\n\n    Args:\n      instances: A list of instances, as described in the API.\n      **kwargs: Additional keyword arguments, will be passed into the\n          client's predict method.\n\n    Returns:\n      A list of outputs containing the prediction results.\n    \"\"\"\n\n  @classmethod\n  def from_path(cls, model_path):\n    \"\"\"Creates a model using the given model path.\n\n    Path is useful, e.g., to load files from the exported directory\n    containing the model.\n\n    Args:\n      model_path: The local directory that contains the exported model\n          file along with any additional files uploaded when creating the\n          version resource.\n\n    Returns:\n      An instance implementing this Model class.\n    \"\"\"",
+          "type": "string"
+        },
+        "packageUris": {
+          "description": "Optional. The Google Cloud Storage location of the packages for custom\nprediction and any additional dependencies.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "labels": {
           "description": "Optional. One or more labels that you can add, to organize your model\nversions. Each label is a key-value pair, where both the key and the value\nare arbitrary strings that you supply.\nFor more information, see the documentation on\n<a href=\"\/ml-engine\/docs\/tensorflow\/resource-labels\">using labels<\/a>.",
           "type": "object",
@@ -1159,7 +1170,7 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {

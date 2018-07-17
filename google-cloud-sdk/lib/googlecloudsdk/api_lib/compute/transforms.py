@@ -42,7 +42,9 @@ Pythonicness of the Transform*() methods:
 """
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
@@ -148,7 +150,7 @@ def TransformMachineType(r, undefined=''):
   if not custom_cpu or not custom_ram:
     return r
   # Restricting output to 2 decimal places
-  custom_ram_gb = '{0:.2f}'.format(float(custom_ram) / (2 ** 10))
+  custom_ram_gb = '{0:.2f}'.format(float(custom_ram) / (2**10))
   return 'custom ({0} vCPU, {1} GiB)'.format(custom_cpu, custom_ram_gb)
 
 

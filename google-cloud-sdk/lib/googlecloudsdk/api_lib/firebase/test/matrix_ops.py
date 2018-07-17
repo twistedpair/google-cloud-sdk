@@ -16,7 +16,9 @@
 """Common test matrix operations used by Firebase Test Lab commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import collections
 import datetime
 import time

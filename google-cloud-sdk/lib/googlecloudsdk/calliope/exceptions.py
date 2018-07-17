@@ -22,6 +22,7 @@ from within calliope.
 """
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 import errno
@@ -175,7 +176,7 @@ def _TruncateToLineWidth(string, align, width, fill=''):
   Raises:
     ValueError, if provided fill is too long for the terminal.
   """
-  if len(fill) >= width / 2:
+  if len(fill) >= width // 2:
     # Either the caller provided a fill that's way too long, or the user has a
     # terminal that's way too narrow. In either case, we aren't going to be able
     # to make this look nice, but we don't want to throw an error because that
@@ -535,4 +536,3 @@ def _Exit(exc):
   """This method exists so we can mock this out during testing to not exit."""
   # exit_code won't be defined in the KNOWN_ERRORs classes
   sys.exit(getattr(exc, 'exit_code', 1))
-

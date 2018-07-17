@@ -399,7 +399,7 @@
           }
         },
         "diskType": {
-          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'\nCurrently restricted because of b\/36071127#comment27",
+          "description": "Type of the disk attached to each node (e.g. 'pd-standard' or 'pd-ssd')\n\nIf unspecified, the default disk type is 'pd-standard'",
           "type": "string"
         },
         "minCpuPlatform": {
@@ -2152,6 +2152,13 @@
         "responseObject": {
           "description": "API object returned in the response, in JSON. The ResponseObject is\nrecorded after conversion to the external type, and serialized as JSON.\nOmitted for non-resource requests.  Only logged at Response Level and\nhigher.\n+optional",
           "type": "any"
+        },
+        "annotations": {
+          "description": "Annotations is an unstructured key value map stored with an audit event\nthat may be set by plugins invoked in the request serving chain, including\nauthentication, authorization and admission plugins. Keys should uniquely\nidentify the informing component to avoid name collisions\n(e.g. podsecuritypolicy.admission.k8s.io\/policy). Values should be short.\nAnnotations are included in the Metadata level.\n+optional",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

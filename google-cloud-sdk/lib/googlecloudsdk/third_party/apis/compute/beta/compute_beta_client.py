@@ -4845,7 +4845,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetShieldedVmIntegrityPolicy(self, request, global_params=None):
-      r"""Sets the Shielded VM integrity policy for an instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Sets the Shielded VM integrity policy for a VM instance. You can only use this method on a running VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesSetShieldedVmIntegrityPolicyRequest) input message
@@ -5079,7 +5079,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdateShieldedVmConfig(self, request, global_params=None):
-      r"""Updates the Shielded VM config for an instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the Shielded VM config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeInstancesUpdateShieldedVmConfigRequest) input message
@@ -9682,6 +9682,32 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/removeRule',
         request_field='',
         request_type_name=u'ComputeSecurityPoliciesRemoveRuleRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a security policy. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeSecurityPoliciesSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.securityPolicies.setLabels',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/securityPolicies/{resource}/setLabels',
+        request_field=u'globalSetLabelsRequest',
+        request_type_name=u'ComputeSecurityPoliciesSetLabelsRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

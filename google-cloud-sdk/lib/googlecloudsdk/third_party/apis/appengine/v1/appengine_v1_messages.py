@@ -1186,6 +1186,16 @@ class EndpointsApiService(_messages.Message):
   rolloutStrategy = _messages.EnumField('RolloutStrategyValueValuesEnum', 3)
 
 
+class Entrypoint(_messages.Message):
+  r"""The entrypoint for the application.
+
+  Fields:
+    shell: The format should be a shell command that can be fed to bash -c.
+  """
+
+  shell = _messages.StringField(1)
+
+
 class ErrorHandler(_messages.Message):
   r"""Custom static error page to be served when an error occurs.
 
@@ -2688,6 +2698,7 @@ class Version(_messages.Message):
     endpointsApiService: Cloud Endpoints configuration.If
       endpoints_api_service is set, the Cloud Endpoints Extensible Service
       Proxy will be provided to serve the API implemented by the app.
+    entrypoint: The entrypoint for the application.
     env: App Engine execution environment for this version.Defaults to
       standard.
     envVariables: Environment variables available to the application.Only
@@ -2854,30 +2865,31 @@ class Version(_messages.Message):
   deployment = _messages.MessageField('Deployment', 8)
   diskUsageBytes = _messages.IntegerField(9)
   endpointsApiService = _messages.MessageField('EndpointsApiService', 10)
-  env = _messages.StringField(11)
-  envVariables = _messages.MessageField('EnvVariablesValue', 12)
-  errorHandlers = _messages.MessageField('ErrorHandler', 13, repeated=True)
-  handlers = _messages.MessageField('UrlMap', 14, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 15)
-  id = _messages.StringField(16)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 17, repeated=True)
-  instanceClass = _messages.StringField(18)
-  libraries = _messages.MessageField('Library', 19, repeated=True)
-  livenessCheck = _messages.MessageField('LivenessCheck', 20)
-  manualScaling = _messages.MessageField('ManualScaling', 21)
-  name = _messages.StringField(22)
-  network = _messages.MessageField('Network', 23)
-  nobuildFilesRegex = _messages.StringField(24)
-  readinessCheck = _messages.MessageField('ReadinessCheck', 25)
-  resources = _messages.MessageField('Resources', 26)
-  runtime = _messages.StringField(27)
-  runtimeApiVersion = _messages.StringField(28)
-  runtimeChannel = _messages.StringField(29)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 30)
-  threadsafe = _messages.BooleanField(31)
-  versionUrl = _messages.StringField(32)
-  vm = _messages.BooleanField(33)
-  zones = _messages.StringField(34, repeated=True)
+  entrypoint = _messages.MessageField('Entrypoint', 11)
+  env = _messages.StringField(12)
+  envVariables = _messages.MessageField('EnvVariablesValue', 13)
+  errorHandlers = _messages.MessageField('ErrorHandler', 14, repeated=True)
+  handlers = _messages.MessageField('UrlMap', 15, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 16)
+  id = _messages.StringField(17)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 18, repeated=True)
+  instanceClass = _messages.StringField(19)
+  libraries = _messages.MessageField('Library', 20, repeated=True)
+  livenessCheck = _messages.MessageField('LivenessCheck', 21)
+  manualScaling = _messages.MessageField('ManualScaling', 22)
+  name = _messages.StringField(23)
+  network = _messages.MessageField('Network', 24)
+  nobuildFilesRegex = _messages.StringField(25)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 26)
+  resources = _messages.MessageField('Resources', 27)
+  runtime = _messages.StringField(28)
+  runtimeApiVersion = _messages.StringField(29)
+  runtimeChannel = _messages.StringField(30)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 31)
+  threadsafe = _messages.BooleanField(32)
+  versionUrl = _messages.StringField(33)
+  vm = _messages.BooleanField(34)
+  zones = _messages.StringField(35, repeated=True)
 
 
 class Volume(_messages.Message):

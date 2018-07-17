@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags for the `compute sole-tenancy` related commands."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.py import encoding
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml

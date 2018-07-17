@@ -4,6 +4,56 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+
+## 209.0.0 (2018-07-17)
+
+### Breaking Changes
+
+*   **(Cloud DNS)** Removed deprecated `gcloud beta dnskeys` command group; please use
+  `gcloud beta dns-keys` instead.
+*   **(Kubernetes Engine)** Modified `gcloud container <clusters|node-pools> create` commands to create
+  clusters and node-pools with node autorepair enabled by default if they use
+  COS base image. Use the `--no-enable-autorepair` flag to disable this
+  behavior.
+
+
+### App Engine
+
+* Updated the Go SDK to version 1.9.67.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/go/release-notes
+* Updated the Python SDK to version 1.9.73.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+### Cloud Composer
+
+*   Promoted `gcloud composer` command group to GA.
+
+### Cloud Functions
+
+* Promoted `gcloud functions` commands to GA.
+
+### Cloud Tasks
+
+* Promoted `gcloud tasks` to beta.
+
+
+### Compute Engine
+
+* Promoted `--zones` flag of `gcloud compute instance-groups managed create` command to GA.
+* Promoted <get|set>-iam-policy and <add|remove>-iam-policy-bindings to
+  beta in the following commands groups:
+  * `gcloud compute disks`
+  * `gcloud compute images`
+  * `gcloud compute instance-templates`
+  * `gcloud compute instances`
+  * `gcloud compute snapshots`
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 ## 208.0.2 (2018-07-12)
 
 *  Hotfix for `dev_appserver` crashes.
@@ -18,30 +68,30 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Breaking Changes
 
-*   **(Kubernetes Engine)** Added warning that the default value of `--enable-ip-alias` will change for
-  `container clusters create` command. VPC native(ip alias enabled) clusters
+* **(Kubernetes Engine)** Added warning that the default value of
+  `--enable-ip-alias` will change for `gcloud container clusters create`
+  command. VPC native(ip alias enabled) clusters
   will become the default in the future. Use `--[no-]enable-ip-alias` flag
   to suppress this warning.
 
 
 ### Cloud SDK
 
-* gcloud TAB completion for commands, flags, and constant flag value choices is
+* `gcloud` TAB completion for commands, flags, and constant flag value choices is
   ~10x faster.
 
 ### App Engine
 
-
 * Updated the Python SDK to version 1.9.72.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  <https://cloud.google.com/appengine/docs/python/release-notes>
 
 ### Cloud Dataproc
 
-*   Added `gcloud beta dataproc workflow-templates export` to enable exporting
-    a workflow template to a YAML file.
 *   Added `gcloud beta dataproc workflow-templates import` to enable creating
     and updating workflow templates using a YAML file.
+*   Added `gcloud beta dataproc workflow-templates export` to enable exporting
+    a workflow template to a YAML file.
 *   Added `--parameters` flag to `gcloud beta dataproc workflow-templates
     instantiate` to enable parameterization of workflow templates.
 
@@ -49,8 +99,8 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 *   Released Cloud Datastore Emulator version 2.0.1.
     *   Improved backward compatibility with App Engine local development by
-    allowing special entity kinds written to Cloud Datastore to be whitelisted
-    for App Engine.
+        allowing special entity kinds written to Cloud Datastore to be
+        whitelisted for App Engine.
 
 ### Cloud Filestore
 
@@ -58,13 +108,13 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     let you create, configure, and manipulate Cloud Filestore instances.
     *   Run `gcloud filestore --help` to learn more.
     *   More information on Cloud Filestore can be found here:
-        [https://cloud.google.com/filestore/](https://cloud.google.com/filestore/)
+        <https://cloud.google.com/filestore/>
     *   Detailed documentation can be found here:
-       [https://cloud.google.com/filestore/docs/](https://cloud.google.com/filestore/docs/)
+       <https://cloud.google.com/filestore/docs/>
 
 ### Cloud Functions
 
-* Added `--runtime` flag to `gcloud beta functions deploy`.
+*   Added `--runtime` flag to `gcloud beta functions deploy`.
 *   Added the following flags to `gcloud beta functions deploy` for setting
     custom environment variables to functions:
     *   `--clear-env-vars`
@@ -76,39 +126,31 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Machine Learning Engine
 
-* Promoted the `--python-version` flag of `gcloud ml-engine versions create` to GA.
+* Promoted `--python-version` flag of `gcloud ml-engine versions create` to GA.
 
 ### Cloud Storage
-
 
 * Updated gsutil component to 4.33.
 
 ### Compute Engine
 
 *   Added the following flags to `gcloud compute instance-templates create` to integrate with KMS:
-  *   `--boot-disk-kms-key`
-  *   `--boot-disk-kms-keyring`
-  *   `--boot-disk-kms-location`
-  *   `--boot-disk-kms-project`
+    *   `--boot-disk-kms-key`
+    *   `--boot-disk-kms-keyring`
+    *   `--boot-disk-kms-location`
+    *   `--boot-disk-kms-project`
+*   Added `--use-serving-port` flag to `gcloud compute health-checks
+    <http|https|http2|ssl> create`.
+*   Promoted the following `source-instance` flags of `gcloud compute
+    instance-templates create` command to GA:
+    *   `--source-instance`
+    *   `--source-instance-zone`
+    *   `--configure-disk`
 *   Promoted `gcloud compute network-endpoint-groups` command group to beta.
 *   Promoted `--network-endpoint-group` and `--network-endpoint-group-zone`
-    flags to beta in following commands:
-  *   `gcloud compute backend-services add-backend`
-  *   `gcloud compute backend-services remove-backend`
-  *   `gcloud compute backend-services update-backend`
+    flags of `gcloud compute backend-services <add|remove|update>-backend` to beta.
 *   Promoted `--max-connections-per-endpoint` and `--max-rate-per-endpoint`
-    flags to beta in following commands:
-  *   `gcloud compute backend-services add-backend`
-  *   `gcloud compute backend-services update-backend`
-*   Added `--use-serving-port` flag to following commands:
-  *   `gcloud compute health-checks http create`
-  *   `gcloud compute health-checks https create`
-  *   `gcloud compute health-checks http2 create`
-  *   `gcloud compute health-checks ssl create`
-* Promoted the following `source-instance` flags of `gcloud compute instance-templates create` command to GA:
-  * `--source-instance`
-  * `--source-instance-zone`
-  * `--configure-disk`
+    flags of `gcloud compute backend-services <add|update>-backend` to beta.
 
 ### Kubernetes Engine
 

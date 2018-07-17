@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Provides common arguments for the ML Engine command surface."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import argparse
 import functools
 import itertools
@@ -30,6 +33,8 @@ from googlecloudsdk.command_lib.iam import completers as iam_completers
 from googlecloudsdk.command_lib.ml_engine import models_util
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.args import repeated
+from googlecloudsdk.command_lib.util.args import update_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -434,3 +439,52 @@ def AddVersionResourceArg(parser, verb):
       GetVersionResourceSpec(),
       'The Cloud ML Engine model {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddUserCodeArgs(parser):
+  """Add args that configure user prediction code."""
+  user_code_group = base.ArgumentGroup(
+      help="""\
+          Configure user code in prediction.
+
+          Cloud ML Engine allows a model to have user-provided prediction
+          code; these options configure that code.
+          """)
+  user_code_group.AddArgument(base.Argument(
+      '--model-class',
+      help="""\
+          The fully-qualified name of the custom Model class in the package
+          provided for custom prediction.
+
+          For example, `--model-class my_package.SequenceModel`.
+          """))
+  user_code_group.AddArgument(base.Argument(
+      '--package-uris',
+      type=arg_parsers.ArgList(),
+      metavar='PACKAGE_URI',
+      help="""\
+          Comma-separated list of Google Cloud Storage URIs (`gs://...`) for
+          user-supplied Python packages to use.
+          """))
+  user_code_group.AddToParser(parser)
+
+
+def AddUserCodeUpdateArgs(parser):
+  """Add args that configure user prediction code."""
+  user_code_group = parser.add_group(
+      help="""\
+          Configure user code in prediction.
+
+          Cloud ML Engine allows a model to have user-provided prediction
+          code; these options configure that code.
+          """)
+  repeated.AddPrimitiveArgs(
+      user_code_group, 'version', 'package-uris',
+      'user-supplied packages to use for prediction',
+      additional_help=('The values should be given as a comma-separated list '
+                       'of Google Cloud Storage URIs (`gs://...`).'))
+  update_util.AddClearableField(
+      user_code_group, 'model-class', 'custom Model class', 'version',
+      ('The fully-qualified name of the custom Model class in the package '
+       'provided for custom prediction.\n\n'
+       'For example, `my_package.SequenceModel`.'))

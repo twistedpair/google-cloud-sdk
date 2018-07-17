@@ -15,7 +15,9 @@
 """Classes to define multitype concept specs."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import operator
 import enum
 
@@ -78,19 +80,14 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
     self._concept_specs = concept_specs
     self._attributes = []
     self._attribute_to_types_map = {}
+    self.disable_auto_completers = True
 
     # If any names are repeated, rename the concept as
     # '{concept_name}_{attribute1}_{attribute2}_...'
     self._name_to_concepts = {}
-    names = [concept_spec.name for concept_spec in self._concept_specs]
     final_names = []
     for concept_spec in self._concept_specs:
-      if sum([concept_spec.name == n for n in names]) > 1:
-        name = '{}_{}'.format(
-            concept_spec.name,
-            '_'.join([a.name for a in concept_spec.attributes]))
-      else:
-        name = concept_spec.name
+      name = self._GetUniqueNameForSpec(concept_spec)
       final_names.append(name)
       self._name_to_concepts[name] = concept_spec
 
@@ -107,6 +104,15 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
         self._attribute_to_types_map.setdefault(attribute.name, []).append(
             (self.type_enum[self._ConceptToName(spec)]))
 
+  def _GetUniqueNameForSpec(self, concept_spec):
+    names = [spec.name for spec in self._concept_specs]
+    if sum([concept_spec.name == n for n in names]) > 1:
+      return '{}_{}'.format(
+          concept_spec.name,
+          '_'.join([a.name for a in concept_spec.attributes]))
+    else:
+      return concept_spec.name
+
   @property
   def name(self):
     return self._name
@@ -121,21 +127,23 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
       if spec == concept_spec:
         return name
 
-  # TODO(b/72941131): Add a fallthrough for attributes that are actively
-  # specified by giving a fully-qualified anchor in resource args.
-  def _GetAllSpecifiedAttributes(self, deps):
+  def _GetActivelySpecifiedAttributes(self, fallthroughs_map, parsed_args=None):
     """Get a list of attributes that are actively specified in runtime."""
     specified = []
+    final_map = {
+        attr: filter(operator.attrgetter('active'), fallthroughs)
+        for attr, fallthroughs in six.iteritems(fallthroughs_map)
+    }
     for attribute in self.attributes:
       try:
-        value = deps.Get(attribute.name)
+        value = deps_lib.Get(attribute.name, final_map, parsed_args=None)
       except deps_lib.AttributeNotFoundError:
         continue
       if value:
         specified.append(attribute)
     return specified
 
-  def _GetPossibleTypes(self, attributes):
+  def _GetPossibleTypes(self, attributes, type_filter=None):
     """Helper method to get all types that match a set of attributes."""
     # We can't just attempt to parse each subtype because we are distinguishing
     # between "actively" and "passively" specified attributes. A concept that is
@@ -146,6 +154,8 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
     possible_types = []
     for candidate in self.type_enum:
       possible = True
+      if type_filter and not type_filter(candidate):
+        possible = False
       for attribute in attributes:
         if candidate not in self._attribute_to_types_map.get(
             attribute.name, []):
@@ -155,12 +165,14 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
             (candidate, self._name_to_concepts[candidate.name]))
     return possible_types
 
-  def _GetActiveType(self, deps):
+  def _GetActiveType(self, fallthroughs_map, parsed_args=None,
+                     type_filter=None):
     """Helper method to get the type based on actively specified info."""
-    filtered_deps = deps_lib.FilteredDeps(deps, operator.attrgetter('active'))
-    actively_specified = self._GetAllSpecifiedAttributes(filtered_deps)
+    actively_specified = self._GetActivelySpecifiedAttributes(
+        fallthroughs_map, parsed_args=parsed_args)
 
-    active_types = self._GetPossibleTypes(actively_specified)
+    active_types = self._GetPossibleTypes(actively_specified,
+                                          type_filter=type_filter)
 
     if not active_types:
       raise ConflictingTypesError(actively_specified)
@@ -177,7 +189,7 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
         return active_type
     raise ConflictingTypesError(actively_specified)
 
-  def Initialize(self, deps):
+  def Initialize(self, fallthroughs_map, parsed_args=None, type_filter=None):
     """Initializes the concept.
 
     Determines which attributes are actively specified (i.e. on the command
@@ -198,7 +210,11 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
          specify, so fail.
 
     Args:
-      deps: googlecloudsdk.calliope.concepts.deps.Deps a deps object.
+      fallthroughs_map: {str: [deps_lib._FallthroughBase]}, a dict of finalized
+        fallthroughs for the resource.
+      parsed_args: the argparse namespace.
+      type_filter: a function object that takes a single type enum and returns
+        a boolean value (True if that type is acceptable, False if not).
 
     Raises:
       ConflictingTypesError, if more than one possible type exists.
@@ -209,9 +225,10 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
       A TypedConceptResult that stores the type of the parsed concept and the
         raw parsed concept (such as a resource reference).
     """
-    type_ = self._GetActiveType(deps)
+    type_ = self._GetActiveType(fallthroughs_map, parsed_args=parsed_args,
+                                type_filter=type_filter)
     return TypedConceptResult(
-        type_[1].Initialize(deps),
+        type_[1].Initialize(fallthroughs_map, parsed_args=parsed_args),
         type_[0])
 
 
@@ -227,3 +244,43 @@ class TypedConceptResult(object):
     """
     self.result = result
     self.type_ = type_
+
+
+class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
+  """A resource spec that contains multiple possible types."""
+
+  def IsAnchor(self, attribute):
+    """Convenience method."""
+    return any([attribute == spec.anchor
+                for spec in self._concept_specs])
+
+  def _GetUniqueNameForSpec(self, resource_spec):
+    """Overrides this functionality from generic multitype concept specs."""
+    # If all resources have different names, use their names.
+    resource_names = [spec.name for spec in self._concept_specs]
+    if len(set(resource_names)) == len(resource_names):
+      return resource_spec.name
+    # Otherwise, use the collection name.
+    collection_names = [spec.collection for spec in self._concept_specs]
+    if sum([resource_spec.collection == n for n in collection_names]) > 1:
+      raise ValueError('Attempting to create a multitype spec with duplicate '
+                       'collections. Collection name: [{}]'.format(
+                           resource_spec.collection))
+    else:
+      return resource_spec.collection
+
+  def _GetAttributeAnchorFallthroughs(self, anchor_fallthroughs, attribute):
+    """Helper to get anchor-dependent fallthroughs for a given attribute."""
+    anchor_based_fallthroughs = []
+    for spec in self._concept_specs:
+      # Only add fallthroughs for attributes that are not the anchor but do
+      # belong to the relevant concept.
+      if attribute not in spec.attributes or attribute == spec.anchor:
+        continue
+      parameter_name = spec.ParamName(attribute.name)
+      anchor_based_fallthroughs += [
+          deps_lib.FullySpecifiedAnchorFallthrough(
+              anchor_fallthrough, spec.collection_info,
+              parameter_name)
+          for anchor_fallthrough in anchor_fallthroughs]
+    return anchor_based_fallthroughs

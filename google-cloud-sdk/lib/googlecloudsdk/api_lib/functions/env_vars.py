@@ -15,6 +15,7 @@
 """A library for working with environment variables on functions."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.functions import util

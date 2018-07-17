@@ -16,7 +16,9 @@
 """Flags and helpers for the container related commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.container import util
@@ -614,19 +616,17 @@ def AddNodePoolClusterFlag(parser, help_text):
       action=actions.StoreProperty(properties.VALUES.container.cluster))
 
 
-# TODO(b/33344111): Add test coverage. This flag was added preemptively, but it
-# currently has inadequate testing.
-def AddEnableAutoRepairFlag(parser, for_node_pool=False, suppressed=False):
+def AddEnableAutoRepairFlag(parser, for_node_pool=False):
   """Adds a --enable-autorepair flag to parser."""
   if for_node_pool:
     help_text = """\
-Sets autorepair feature for a node-pool.
+Enable node autorepair feature for a node-pool.
 
   $ {command} node-pool-1 --cluster=example-cluster --enable-autorepair
 """
   else:
     help_text = """\
-Sets autorepair feature for a cluster's default node-pool(s).
+Enable node autorepair feature for a cluster's default node-pool(s).
 
   $ {command} example-cluster --enable-autorepair
 """
@@ -635,11 +635,8 @@ See https://cloud.google.com/kubernetes-engine/docs/node-auto-repair for \
 more info."""
 
   parser.add_argument(
-      '--enable-autorepair',
-      action='store_true',
-      default=None,
-      help=help_text,
-      hidden=suppressed)
+      '--enable-autorepair', action='store_true', default=None,
+      help=help_text)
 
 
 def AddEnableAutoUpgradeFlag(parser, for_node_pool=False, suppressed=False):
@@ -1574,16 +1571,6 @@ def WarnForUnspecifiedIpAllocationPolicy(args):
         'to suppress this warning.')
 
 
-# TODO(b/76157677): Drop this warning when changing the default value of the
-# flag.
-def WarnForUnspecifiedAutorepair(args):
-  if not args.IsSpecified('enable_autorepair'):
-    log.warning(
-        'Currently node auto repairs are disabled by default. In the future '
-        'this will change and they will be enabled by default. Use '
-        '`--[no-]enable-autorepair` flag  to suppress this warning.')
-
-
 def AddMachineTypeFlag(parser):
   """Adds --machine-type flag to the parser.
 
@@ -1630,8 +1617,8 @@ specified in the annotation.
       help=help_text)
 
 
-def AddResourceUsageBigqueryDatasetFlag(parser):
-  """Adds --resource-usage-bigquery-dataset flag to the parser."""
+def AddResourceUsageBigqueryDatasetFlag(parser, add_clear_flag=False):
+  """Adds flags about exporting cluster resource usage to BigQuery."""
 
   group = parser.add_mutually_exclusive_group(
       "Exports cluster's usage of cloud resources")
@@ -1653,3 +1640,10 @@ Example:
       '--resource-usage-bigquery-dataset',
       hidden=True,
       help=dataset_help_text)
+
+  if add_clear_flag:
+    group.add_argument(
+        '--clear-resource-usage-bigquery-dataset',
+        action='store_true',
+        hidden=True,
+        help='Disables exporting cluster resource usage to BigQuery.')

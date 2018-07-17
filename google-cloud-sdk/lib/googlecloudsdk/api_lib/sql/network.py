@@ -15,7 +15,9 @@
 """Common utility functions for network operations."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.core.util import times
 import ipaddress
 import six

@@ -16,7 +16,9 @@
 """Utilities for loading runtime defs from git."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import abc
 import contextlib
 import os

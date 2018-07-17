@@ -15,7 +15,9 @@
 """Functions for creating a client to talk to the App Engine Admin API."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.app import operations_util
 from googlecloudsdk.api_lib.app.api import appengine_api_client_base as base
 from googlecloudsdk.calliope import base as calliope_base

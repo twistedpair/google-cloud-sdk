@@ -36,6 +36,10 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
+    self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
+    self.projects_locations_models = self.ProjectsLocationsModelsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects = self.ProjectsService(self)
     self.speech = self.SpeechService(self)
 
   class OperationsService(base_api.BaseApiService):
@@ -76,6 +80,247 @@ service.
         response_type_name=u'Operation',
         supports_download=False,
     )
+
+  class ProjectsLocationsDatasetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets resource."""
+
+    _NAME = u'projects_locations_datasets'
+
+    def __init__(self, client):
+      super(SpeechV1p1beta1.ProjectsLocationsDatasetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Performs asynchronous data upload for AutoML: receive results via the.
+google.longrunning.Operations interface. Returns either an
+`Operation.error` or an `Operation.response` which contains
+a `Dataset` message.
+
+      Args:
+        request: (SpeechProjectsLocationsDatasetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets',
+        http_method=u'POST',
+        method_id=u'speech.projects.locations.datasets.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+parent}/datasets',
+        request_field=u'dataset',
+        request_type_name=u'SpeechProjectsLocationsDatasetsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get the dataset associated with the dataset resource.
+
+      Args:
+        request: (SpeechProjectsLocationsDatasetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Dataset) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}',
+        http_method=u'GET',
+        method_id=u'speech.projects.locations.datasets.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'includeModelInfo'],
+        relative_path=u'v1p1beta1/{+name}',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsDatasetsGetRequest',
+        response_type_name=u'Dataset',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Fetch the list of dataset associated with this project.
+
+      Args:
+        request: (SpeechProjectsLocationsDatasetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDatasetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets',
+        http_method=u'GET',
+        method_id=u'speech.projects.locations.datasets.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'includeModelInfo', u'pageSize', u'pageToken'],
+        relative_path=u'v1p1beta1/{+parent}/datasets',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsDatasetsListRequest',
+        response_type_name=u'ListDatasetsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsModelsService(base_api.BaseApiService):
+    """Service class for the projects_locations_models resource."""
+
+    _NAME = u'projects_locations_models'
+
+    def __init__(self, client):
+      super(SpeechV1p1beta1.ProjectsLocationsModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Performs asynchronous model training for AutoML: receive results via the.
+google.longrunning.Operations interface. Returns either an
+`Operation.error` or an `Operation.response` which contains a `Model`
+message.
+
+      Args:
+        request: (SpeechProjectsLocationsModelsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models',
+        http_method=u'POST',
+        method_id=u'speech.projects.locations.models.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'name'],
+        relative_path=u'v1p1beta1/{+parent}/models',
+        request_field=u'model',
+        request_type_name=u'SpeechProjectsLocationsModelsCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Deploy(self, request, global_params=None):
+      r"""Performs asynchronous model deployment of the model: receive results.
+via the google.longrunning.Operations interface. After the operation is
+completed this returns either an `Operation.error` in case of error or
+a `google.protobuf.Empty` if the deployment was successful.
+
+      Args:
+        request: (SpeechProjectsLocationsModelsDeployRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Deploy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Deploy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:deploy',
+        http_method=u'POST',
+        method_id=u'speech.projects.locations.models.deploy',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+name}:deploy',
+        request_field=u'deployModelRequest',
+        request_type_name=u'SpeechProjectsLocationsModelsDeployRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Evaluate(self, request, global_params=None):
+      r"""Performs asynchronous evaluation of the model: receive results.
+via the google.longrunning.Operations interface. After the operation is
+completed this returns either an `Operation.error` in case of error or
+a `EvaluateModelResponse` with the evaluation results.
+
+      Args:
+        request: (SpeechProjectsLocationsModelsEvaluateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Evaluate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Evaluate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:evaluate',
+        http_method=u'POST',
+        method_id=u'speech.projects.locations.models.evaluate',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+name}:evaluate',
+        request_field=u'evaluateModelRequest',
+        request_type_name=u'SpeechProjectsLocationsModelsEvaluateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Fetch the list of models associated with this project.
+
+      Args:
+        request: (SpeechProjectsLocationsModelsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListModelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/models',
+        http_method=u'GET',
+        method_id=u'speech.projects.locations.models.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1p1beta1/{+parent}/models',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsModelsListRequest',
+        response_type_name=u'ListModelsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(SpeechV1p1beta1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = u'projects'
+
+    def __init__(self, client):
+      super(SpeechV1p1beta1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class SpeechService(base_api.BaseApiService):
     """Service class for the speech resource."""

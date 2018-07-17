@@ -538,7 +538,7 @@ object.
         method_id=u'servicemanagement.services.projectSettings.patch',
         ordered_params=[u'serviceName', u'consumerProjectId'],
         path_params=[u'consumerProjectId', u'serviceName'],
-        query_params=[u'updateMask'],
+        query_params=[u'excludeFinalQuotaSettingsInResponse', u'updateMask'],
         relative_path=u'v1/services/{serviceName}/projectSettings/{consumerProjectId}',
         request_field=u'projectSettings',
         request_type_name=u'ServicemanagementServicesProjectSettingsPatchRequest',

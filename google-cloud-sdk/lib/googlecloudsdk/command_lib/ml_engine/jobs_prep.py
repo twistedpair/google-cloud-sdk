@@ -18,8 +18,11 @@ The main entry point is UploadPythonPackages, which takes in parameters derived
 from the command line arguments and returns a list of URLs to be given to the
 Cloud ML Engine API. See its docstring for details.
 """
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import abc
 import collections
 import contextlib

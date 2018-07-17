@@ -151,7 +151,7 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
@@ -201,7 +201,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "User labels.",
+          "description": "See <a href=\"\/pubsub\/docs\/labels\"> Creating and managing labels<\/a>.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -391,7 +391,7 @@
           "format": "google-duration"
         },
         "labels": {
-          "description": "User labels.",
+          "description": "See <a href=\"\/pubsub\/docs\/labels\"> Creating and managing labels<\/a>.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -559,7 +559,7 @@
           "format": "google-datetime"
         },
         "labels": {
-          "description": "User labels.",
+          "description": "See <a href=\"\/pubsub\/docs\/labels\"> Creating and managing labels<\/a>.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -595,7 +595,7 @@
           "type": "string"
         },
         "labels": {
-          "description": "User labels.",
+          "description": "See <a href=\"\/pubsub\/docs\/labels\"> Creating and managing labels<\/a>.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

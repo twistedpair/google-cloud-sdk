@@ -16,7 +16,9 @@
 """Utilities for `gcloud app update` command."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.app.api import appengine_app_update_api_client
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.core import log

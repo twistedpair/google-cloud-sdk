@@ -15,7 +15,9 @@
 """Reducer functions to generate instance props from prior state and flags."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import argparse
 from googlecloudsdk.api_lib.sql import api_util as common_api_util
 from googlecloudsdk.api_lib.sql import constants
@@ -221,7 +223,7 @@ def MachineType(instance=None, tier=None, memory=None, cpu=None):
     custom_type_string = _CustomMachineTypeString(
         cpu,
         # Converting from B to MiB.
-        int(memory / (2**20)))
+        memory // (2**20))
 
     # Updating the machine type that is set for the URIs.
     machine_type = custom_type_string

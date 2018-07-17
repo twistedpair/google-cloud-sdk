@@ -16,13 +16,13 @@
 """The gcloud interactive key bindings."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 import re
 import sys
 
 from googlecloudsdk.command_lib.interactive import browser
-from prompt_toolkit import enums
 from prompt_toolkit import keys
 from prompt_toolkit.key_binding import manager
 
@@ -99,13 +99,13 @@ class _KeyBinding(object):
     self.SetMode(event.cli)
 
 
-class _BrowseKeyBinding(_KeyBinding):
-  """The browse key binding."""
+class _WebHelpKeyBinding(_KeyBinding):
+  """The web help key binding."""
 
   def __init__(self, key):
-    super(_BrowseKeyBinding, self).__init__(
+    super(_WebHelpKeyBinding, self).__init__(
         key=key,
-        label='browse',
+        label='web-help',
         help_text=(
             'Opens a web browser tab/window to display the complete man page '
             'help for the current command. If there is no active web browser '
@@ -144,28 +144,6 @@ class _ContextKeyBinding(_KeyBinding):
   def Handle(self, event):
     event.cli.config.context = (
         event.cli.current_buffer.document.text_before_cursor)
-
-
-class _EditKeyBinding(_KeyBinding):
-  """The edit mode key binding."""
-
-  def __init__(self, key, toggle=True):
-    super(_EditKeyBinding, self).__init__(
-        key=key,
-        toggle=toggle,
-        status={False: 'vi', True: 'emacs'},
-        help_text=(
-            'Toggles the command line edit mode, either *emacs* or *vi*. The '
-            'default is determined by the *bash*(1) set -o vi|emacs setting.'
-        ),
-        metavar='EDIT-MODE',
-    )
-
-  def SetMode(self, cli):
-    if self.toggle:
-      cli.editing_mode = enums.EditingMode.EMACS
-    else:
-      cli.editing_mode = enums.EditingMode.VI
 
 
 class _HelpKeyBinding(_KeyBinding):
@@ -233,24 +211,24 @@ class KeyBindings(object):
 
   Attributes:
     bindings: The list of key bindings in left to right order.
-    browse_key: The browse key binding that pops up the full reference
-      doc in a browser.
-    edit_key: The emacs/vi edit mode key binding. True for emacs,
-      False for vi.
     help_key: The help visibility key binding. True for ON, false for
       OFF.
+    context_key: The command prefix context key that sets the context to the
+      command substring from the beginning of the input line to the current
+      cursor position.
+    web_help_key: The browse key binding that pops up the full reference
+      doc in a browser.
     quit_key: The key binding that exits the shell.
   """
 
-  def __init__(self, edit_mode=True, help_mode=True):
+  def __init__(self, help_mode=True):
     """Associates keys with handlers. Toggle states are reachable from here."""
 
     # The actual key bindings. Changing keys.Keys.* here automatically
     # propagates to the bottom toolbar labels.
     self.help_key = _HelpKeyBinding(keys.Keys.F2, toggle=help_mode)
-    self.edit_key = _EditKeyBinding(keys.Keys.F3, toggle=edit_mode)
     self.context_key = _ContextKeyBinding(keys.Keys.F7)
-    self.browse_key = _BrowseKeyBinding(keys.Keys.F8)
+    self.web_help_key = _WebHelpKeyBinding(keys.Keys.F8)
     self.quit_key = _QuitKeyBinding(keys.Keys.F9)
     self.interrupt_signal = _InterruptKeyBinding(keys.Keys.ControlC)
     self.stop_signal = _StopKeyBinding(keys.Keys.ControlZ)
@@ -258,9 +236,8 @@ class KeyBindings(object):
     # This is the order of binding label appearance in the bottom toolbar.
     self.bindings = [
         self.help_key,
-        self.edit_key,
         self.context_key,
-        self.browse_key,
+        self.web_help_key,
         self.quit_key,
         self.interrupt_signal,
         self.stop_signal,

@@ -254,7 +254,7 @@ class Binding(_messages.Message):
       * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
   members = _messages.StringField(1, repeated=True)

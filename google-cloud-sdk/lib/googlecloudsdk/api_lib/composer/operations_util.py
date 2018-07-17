@@ -15,49 +15,63 @@
 """Utilities for calling the Composer Operations API."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import sys
 
 from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.composer import util as command_util
 
 
-def GetService():
-  return api_util.GetClientInstance().projects_locations_operations
+# TODO(b/111385813): Refactor utils into a class
+def GetService(release_track=base.ReleaseTrack.GA):
+  return api_util.GetClientInstance(
+      release_track=release_track).projects_locations_operations
 
 
-def Delete(operation_resource):
+def Delete(operation_resource, release_track=base.ReleaseTrack.GA):
   """Calls the Composer Operations.Delete method.
 
   Args:
     operation_resource: Resource, the Composer operation resource to
         delete.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     Empty
   """
-  return GetService().Delete(api_util.GetMessagesModule()
-                             .ComposerProjectsLocationsOperationsDeleteRequest(
-                                 name=operation_resource.RelativeName()))
+  return GetService(release_track=release_track).Delete(
+      api_util.GetMessagesModule(release_track=release_track)
+      .ComposerProjectsLocationsOperationsDeleteRequest(
+          name=operation_resource.RelativeName()))
 
 
-def Get(operation_resource):
+def Get(operation_resource, release_track=base.ReleaseTrack.GA):
   """Calls the Composer Operations.Get method.
 
   Args:
     operation_resource: Resource, the Composer operation resource to
         retrieve.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     Operation: the requested operation
   """
-  return GetService().Get(api_util.GetMessagesModule()
-                          .ComposerProjectsLocationsOperationsGetRequest(
-                              name=operation_resource.RelativeName()))
+  return GetService(release_track=release_track).Get(
+      api_util.GetMessagesModule(release_track=release_track)
+      .ComposerProjectsLocationsOperationsGetRequest(
+          name=operation_resource.RelativeName()))
 
 
-def List(location_refs, page_size, limit=sys.maxsize):
+def List(location_refs,
+         page_size,
+         limit=sys.maxsize,
+         release_track=base.ReleaseTrack.GA):
   """Lists Composer Operations across all locations.
 
   Uses a hardcoded list of locations, as there is way to dynamically
@@ -71,14 +85,16 @@ def List(location_refs, page_size, limit=sys.maxsize):
       returned in a single list call.
     limit: An integer specifying the maximum number of operations to list.
         None if all available operations should be returned.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     list: a generator over Operations within the locations in `location_refs`.
   """
   return api_util.AggregateListResults(
-      api_util.GetMessagesModule()
+      api_util.GetMessagesModule(release_track=release_track)
       .ComposerProjectsLocationsOperationsListRequest,
-      GetService(),
+      GetService(release_track=release_track),
       location_refs,
       'operations',
       page_size,
@@ -86,7 +102,7 @@ def List(location_refs, page_size, limit=sys.maxsize):
       location_attribute='name')
 
 
-def WaitForOperation(operation, message):
+def WaitForOperation(operation, message, release_track=base.ReleaseTrack.GA):
   """Waits for an operation to complete.
 
   Polls the operation at least every 15 seconds, showing a progress indicator.
@@ -96,15 +112,22 @@ def WaitForOperation(operation, message):
     operation: Operation Message, the operation to poll
     message: str, a message to display with the progress indicator. For
         example, 'Waiting for deletion of [some resource]'.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
   """
   waiter.WaitFor(
-      _OperationPoller(), operation.name, message, wait_ceiling_ms=15 * 1000)
+      _OperationPoller(release_track=release_track),
+      operation.name,
+      message,
+      wait_ceiling_ms=15 * 1000)
 
 
 class _OperationPoller(waiter.CloudOperationPollerNoResources):
+  """ Class for polling Composer longrunning Operations. """
 
-  def __init__(self):
-    super(_OperationPoller, self).__init__(GetService(), lambda x: x)
+  def __init__(self, release_track=base.ReleaseTrack.GA):
+    super(_OperationPoller, self).__init__(
+        GetService(release_track=release_track), lambda x: x)
 
   def IsDone(self, operation):
     if operation.done:

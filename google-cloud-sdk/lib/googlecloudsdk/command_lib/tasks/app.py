@@ -15,7 +15,9 @@
 """Utilities for App Engine apps for `gcloud tasks` commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import appengine_api_client as app_engine_api
 from googlecloudsdk.calliope import base as calliope_base

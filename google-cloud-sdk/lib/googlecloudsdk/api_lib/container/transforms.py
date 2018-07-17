@@ -43,7 +43,9 @@ Pythonicness of the Transform*() methods:
 """
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.container import constants
 from googlecloudsdk.core.util import times
 

@@ -14,7 +14,9 @@
 # limitations under the License.
 
 """Flags for the compute resource-policies commands."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
@@ -107,14 +109,15 @@ def AddBackupScheduleArgs(parser):
       action='store_true',
       help='Create an application consistent snapshot by informing the OS to '
            'prepare for the snapshot process.')
+  compute_flags.AddStorageLocationFlag(snapshot_properties_group, 'snapshot')
 
 
-def AddResourcePoliciesArgs(parser, action, required=False):
+def AddResourcePoliciesArgs(parser, action, resource, required=False):
   parser.add_argument(
       '--resource-policies',
       metavar='RESOURCE_POLICY',
       type=arg_parsers.ArgList(),
       required=required,
-      help=('A list of resource policy names to be {} the instance. '
-            'The policies must exist in the same region as the instance.'
-            .format(action)))
+      help=('A list of resource policy names to be {action} the {resource}. '
+            'The policies must exist in the same region as the {resource}.'
+            .format(action=action, resource=resource)))

@@ -61,6 +61,16 @@ instance:
       attribute_name: instance
       help: The name of the Google Compute Engine instance.
 
+instance_template:
+  name: instance_template
+  collection: compute.instanceTemplates
+  attributes:
+    - *project
+    - &instance_template
+      parameter_name: instanceTemplate
+      attribute_name: instance_template
+      help: The name of the Google Compute Engine instance template.
+
 subnet:
   name: subnetwork
   collection: compute.subnetworks

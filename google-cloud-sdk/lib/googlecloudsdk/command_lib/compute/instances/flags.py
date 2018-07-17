@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags and helpers for the compute VM instances commands."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import functools
 
 from googlecloudsdk.api_lib.compute import constants
@@ -332,7 +335,8 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       unit of ``KB'' for kilobyte, ``MB'' for megabyte, ``GB'' for gigabyte,
       or ``TB'' for terabyte. For example, ``10GB'' will produce a 10 gigabyte
       disk. The minimum size a boot disk can have is 10 GB. Disk size must be a
-      multiple of 1 GB.
+      multiple of 1 GB. Limit your boot disk size to 2TB to account for MBR
+      partition table limitations.
       """)
 
   parser.add_argument(

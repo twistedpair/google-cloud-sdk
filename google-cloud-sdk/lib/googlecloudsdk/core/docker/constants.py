@@ -21,7 +21,10 @@ from __future__ import unicode_literals
 
 DEFAULT_REGISTRY = 'gcr.io'
 REGIONAL_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
-LAUNCHER_REGISTRIES = ['l.gcr.io', 'launcher.gcr.io', 'marketplace.gcr.io']
+AUTHENTICATED_LAUNCHER_REGISTRIES = ['marketplace.gcr.io']
+LAUNCHER_REGISTRIES = AUTHENTICATED_LAUNCHER_REGISTRIES + [
+    'l.gcr.io', 'launcher.gcr.io'
+]
 LAUNCHER_PROJECT = 'cloud-marketplace'
 KUBERNETES_PUSH = 'staging-k8s.gcr.io'
 KUBERNETES_READ_ONLY = 'k8s.gcr.io'
@@ -36,7 +39,8 @@ MIRROR_PROJECT = 'cloud-containers-mirror'
 # These are the registries to authenticatefor by default, during
 # `gcloud docker` and `gcloud auth configure-docker`
 DEFAULT_REGISTRIES_TO_AUTHENTICATE = (
-    [DEFAULT_REGISTRY] + REGIONAL_REGISTRIES + [KUBERNETES_PUSH])
+    [DEFAULT_REGISTRY] + REGIONAL_REGISTRIES + [KUBERNETES_PUSH] +
+    AUTHENTICATED_LAUNCHER_REGISTRIES)
 ALL_SUPPORTED_REGISTRIES = (
     DEFAULT_REGISTRIES_TO_AUTHENTICATE + LAUNCHER_REGISTRIES +
     MIRROR_REGISTRIES + [KUBERNETES_READ_ONLY])

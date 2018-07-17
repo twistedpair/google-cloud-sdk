@@ -32,7 +32,9 @@ To use in Run(args) methods:
 """
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import re
 
 from googlecloudsdk.core.resource import resource_expr_rewrite

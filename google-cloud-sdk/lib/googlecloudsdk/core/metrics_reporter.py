@@ -23,11 +23,22 @@ import os
 import pickle
 import sys
 
+# This file is unique because it is executed as a separate process on metrics
+# teardown. Because of this, googlecloudsdk.core is on the Python Path (because
+# the directory of the main script is always first on the Path). This happens
+# not to matter on Python2, but on Python3, there is a module named http.client
+# that is used by httplib2. When core is on the path, our http.py shadows this
+# module and the import fails. On Python2, this module doesn't exist so we just
+# hadn't hit this issue. Here, we remove the script's directory from the Path
+# because we never want to import anything from here as an absolute import (on
+# either Python2 or Python3).
+sys.path.pop(0)
+
+# pylint: disable=g-import-not-at-top
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core.util import files
 
 try:
-  # pylint:disable=g-import-not-at-top
   import httplib2
 except ImportError:
   # Do nothing if we can't import the lib.

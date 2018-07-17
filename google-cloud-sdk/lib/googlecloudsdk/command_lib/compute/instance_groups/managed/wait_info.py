@@ -21,34 +21,22 @@ _CURRENT_ACTION_TYPES = ['abandoning', 'creating', 'creatingWithoutRetries',
                          'verifying']
 
 
-_PENDING_ACTION_TYPES = ['creating', 'deleting', 'restarting', 'recreating']
-
-
 def IsGroupStable(igm_ref):
-  """Checks if IGM is has no current actions on instances.
+  """Checks if IGM is stable.
 
   Args:
     igm_ref: reference to the Instance Group Manager.
   Returns:
-    True if IGM has no current actions, false otherwise.
+    True if IGM is stable, false otherwise.
   """
+
+  # TODO(b/110828064): don't check for status existence once status API is v1
+  status = getattr(igm_ref, 'status', None)
+  if status is not None:
+    return status.isStable
+
   return not any(getattr(igm_ref.currentActions, action, 0)
                  for action in _CURRENT_ACTION_TYPES)
-
-
-def IsGroupStableAlpha(igm_ref):
-  """Checks if IGM is has no current or pending actions on instances.
-
-  Args:
-    igm_ref: reference to the Instance Group Manager.
-  Returns:
-    True if IGM has no current actions, false otherwise.
-  """
-  no_current_actions = not any(getattr(igm_ref.currentActions, action, 0)
-                               for action in _CURRENT_ACTION_TYPES)
-  no_pending_actions = not any(getattr(igm_ref.pendingActions, action, 0)
-                               for action in _PENDING_ACTION_TYPES)
-  return no_current_actions and no_pending_actions
 
 
 def CreateWaitText(igm_ref):
@@ -65,26 +53,6 @@ def CreateWaitText(igm_ref):
       igm_ref.currentActions,
       _CURRENT_ACTION_TYPES)
   return text + current_actions_text
-
-
-def CreateWaitTextAlpha(igm_ref):
-  """Creates text presented at each wait operation.
-
-  Args:
-    igm_ref: reference to the Instance Group Manager.
-  Returns:
-    A message with current and pending operations count for IGM.
-  """
-  text = 'Waiting for group to become stable'
-  current_actions_text = _CreateActionsText(
-      ', current operations: ',
-      igm_ref.currentActions,
-      _CURRENT_ACTION_TYPES)
-  pending_actions_text = _CreateActionsText(
-      ', pending operations: ',
-      igm_ref.pendingActions,
-      _PENDING_ACTION_TYPES)
-  return text + current_actions_text + pending_actions_text
 
 
 def _CreateActionsText(text, igm_field, action_types):

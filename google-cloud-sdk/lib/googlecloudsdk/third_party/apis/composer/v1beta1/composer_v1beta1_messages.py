@@ -134,14 +134,14 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       Apache Airflow config overrides. If a replacement config  overrides map
       is not included in `environment`, all config overrides  are cleared.  It
       is an error to provide both this mask and a mask specifying one or  more
-      individual config overrides.</td>  </tr>  <tr>
-      <td>config.softwareConfig.properties.<var>section</var>-<var>name
-      </var></td>  <td>Override the Apache Airflow property <var>name</var> in
-      the section  named <var>section</var>, preserving other properties. To
-      delete the  property override, include it in `updateMask` and omit its
-      mapping  in `environment.config.softwareConfig.properties`.  It is an
+      individual config overrides.</td>  </tr>  <tr>  <td>config.softwareConfi
+      g.airflowConfigOverrides.<var>section</var>-<var>name  </var></td>
+      <td>Override the Apache Airflow config property <var>name</var> in the
+      section named <var>section</var>, preserving other properties. To delete
+      the property override, include it in `updateMask` and omit its mapping
+      in `environment.config.softwareConfig.airflowConfigOverrides`.  It is an
       error to provide both a mask of this form and the
-      "config.softwareConfig.properties" mask.</td>  </tr>  <tr>
+      "config.softwareConfig.airflowConfigOverrides" mask.</td>  </tr>  <tr>
       <td>config.softwareConfig.envVariables</td>  <td>Replace all environment
       variables. If a replacement environment  variable map is not included in
       `environment`, all custom environment  variables  are cleared.  It is an
@@ -348,6 +348,10 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class MessageSet(_messages.Message):
+  r"""This is proto2's version of MessageSet."""
+
+
 class NodeConfig(_messages.Message):
   r"""The configuration information for the Kubernetes Engine nodes running
   the Apache Airflow software.
@@ -392,8 +396,9 @@ class NodeConfig(_messages.Message):
       Network]((/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
       `nodeConfig.subnetwork` must also be provided.
     oauthScopes: Optional. The set of Google API scopes to be made available
-      on all node VMs. If `oauth_scopes` is empty, defaults to
-      ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.
+      on all node VMs. Defaults to ["https://www.googleapis.com/auth/cloud-
+      platform"] and must be included in the list of specified scopes. Cannot
+      be updated.
     serviceAccount: Optional. The Google Cloud Platform Service Account to be
       used by the node VMs. If a service account is not specified, the
       "default" Compute Engine service account is used. Cannot be updated.
@@ -909,6 +914,63 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class StatusProto(_messages.Message):
+  r"""Wire-format for a Status object
+
+  Fields:
+    canonicalCode: The canonical error code (see codes.proto) that most
+      closely corresponds to this status. May be missing.
+    code: Numeric code drawn from the space specified below. Often, this is
+      the canonical error space, and code is drawn from util/task/codes.proto
+    message: Detail message
+    messageSet: message_set associates an arbitrary proto message with the
+      status.
+    payload: DEPRECATED.  This field was deprecated in 2011 with cl/20297133.
+      Java support for the field was moved to a proto1 backward compatibility
+      class in April 2017 with cl/142615857 and cl/154123203.  There was never
+      support for this field in Go; if set Go will ignore it. C++ stopped
+      setting StatusProto::payload in October 2015 with cl/106347055, and
+      stopped reading the field in October 2017 with cl/173324114.  In
+      general, newly written code should use only "message_set". If you need
+      to maintain backward compatibility with code written before 3/25/2011,
+      do the following:  - During the transition period, either (1) set both
+      "payload" and   "message_set", or (2) write the consumer of StatusProto
+      so that it can   forge a MessageSet object from "payload" if
+      "message_set" is missing.   The C++ util::Status implementation does
+      (2).  - Once all the consumers are converted to accept "message_set",
+      then   remove the use of "payload" on the producer side.
+    space: The following are usually only present when code != 0 Space to
+      which this status belongs
+  """
+
+  canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  code = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  message = _messages.StringField(3)
+  messageSet = _messages.MessageField('MessageSet', 4)
+  payload = _messages.MessageField('TypedMessage', 5)
+  space = _messages.StringField(6)
+
+
+class TypedMessage(_messages.Message):
+  r"""Message that groups a protocol type_id (as defined by MessageSet), with
+  an encoded message of that type.  Its use is similar to MessageSet, except
+  it represents a single (type, encoded message) instead of a set.  To fill
+  for known protocol type:   MyProtocolMsg proto;   TypedMessage typed_msg;
+  typed_msg.set_type_id(MyProtocolMsg::MESSAGE_TYPE_ID);
+  proto.AppendToCord(typed_msg.mutable_message());  To fill for unknown
+  protocol type:   ProtocolMessage proto;   TypedMessage typed_msg;
+  typed_msg.set_type_id(proto.GetMapper()->type_id());
+  proto.AppendToCord(typed_msg.mutable_message());
+
+  Fields:
+    message: Message bytes.
+    typeId: Identifier for the type.
+  """
+
+  message = _messages.BytesField(1)
+  typeId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

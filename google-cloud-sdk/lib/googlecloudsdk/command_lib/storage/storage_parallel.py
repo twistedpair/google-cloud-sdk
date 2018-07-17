@@ -36,8 +36,11 @@ current process). Afterwards, there will be objects at
 
 This removes the objects uploaded in the last code snippet.
 """
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import itertools
 
 from googlecloudsdk.api_lib.storage import storage_api

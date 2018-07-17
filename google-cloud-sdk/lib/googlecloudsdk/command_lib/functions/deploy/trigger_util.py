@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """'functions deploy' utilities for triggers."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import triggers
 from googlecloudsdk.api_lib.functions import util as api_util

@@ -16,7 +16,9 @@
 """Utilities to support long running operations."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import abc
 import time
 
@@ -254,13 +256,13 @@ def WaitFor(poller, operation_ref, message,
   except retry.WaitException:
     raise TimeoutError(
         'Operation {0} has not finished in {1} seconds. {2}'
-        .format(operation_ref, int(max_wait_ms / 1000), _TIMEOUT_MESSAGE))
+        .format(operation_ref, max_wait_ms // 1000, _TIMEOUT_MESSAGE))
   except retry.MaxRetrialsException as e:
     raise TimeoutError(
         'Operation {0} has not finished in {1} seconds '
         'after max {2} retrials. {3}'
         .format(operation_ref,
-                int(e.state.time_passed_ms / 1000),
+                e.state.time_passed_ms // 1000,
                 e.state.retrial,
                 _TIMEOUT_MESSAGE))
 
@@ -318,4 +320,3 @@ def PollUntilDone(poller, operation_ref,
 
 def _SleepMs(miliseconds):
   time.sleep(miliseconds / 1000)
-

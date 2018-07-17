@@ -44,11 +44,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -67,12 +62,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -490,7 +479,7 @@
       "type": "object",
       "properties": {
         "csvFileUri": {
-          "description": "The Google Cloud Storage URI of the input csv file.\n\nThe URI must start with gs:\/\/\n\nThe format of the input csv file should be one image per line.\nIn each line, there are 6 columns.\n1. image_uri\n2, image_id\n3. product_set_id\n4. product_id\n5, product_category\n6, product_display_name\n7, labels\n8. bounding_poly\n\nColumns 1, 3, 4, and 5 are required, other columns are optional. A new\nProductSet\/Product with the same id will be created on the fly\nif the ProductSet\/Product specified by product_set_id\/product_id does not\nexist.\n\nThe image_id field is optional but has to be unique if provided. If it is\nempty, we will automatically assign an unique id to the image.\n\nThe product_display_name field is optional. If it is empty, a space (\" \")\nis used as the place holder for the product display_name, which can\nbe updated later through the realtime API.\n\nIf the Product with product_id already exists, the fields\nproduct_display_name, product_category and labels are ignored.\n\nIf a Product doesn't exist and needs to be created on the fly, the\nproduct_display_name field refers to Product.display_name, the\nproduct_category field refers to Product.product_category, and the\nlabels field refers to Product.labels.\n\nLabels (optional) should be a line containing a list of comma-separated\nkey-value pairs, with the format\n    \"key_1=value_1,key_2=value_2,...,key_n=value_n\".\n\nThe bounding_poly (optional) field is used to identify one region of\ninterest from the image in the same manner as CreateReferenceImage. If no\nbounding_poly is specified, the system will try to detect regions of\ninterest automatically.\n\nNote that the pipeline will resize the image if the image resolution is too\nlarge to process (above 20MP).\n\nAlso note that at most one bounding_poly is allowed per line. If the image\ncontains multiple regions of interest, the csv should contain one line per\nregion of interest.\n\nThe bounding_poly column should contain an even number of comma-separated\nnumbers, with the format \"p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y\". Nonnegative\nintegers should be used for absolute bounding polygons, and float values\nin [0, 1] should be used for normalized bounding polygons.",
+          "description": "The Google Cloud Storage URI of the input csv file.\n\nThe URI must start with `gs:\/\/`.\n\nThe format of the input csv file should be one image per line.\nIn each line, there are 8 columns.\n\n1.  image-uri\n2.  image-id\n3.  product-set-id\n4.  product-id\n5.  product-category\n6.  product-display-name\n7.  labels\n8.  bounding-poly\n\nThe `image-uri`, `product-set-id`, `product-id`, and `product-category`\ncolumns are required. All other columns are optional.\n\nIf the `ProductSet` or `Product` specified by the `product-set-id` and\n`product-id` values does not exist, then the system will create a new\n`ProductSet` or `Product` for the image. In this case, the\n`product-display-name` column refers to\ndisplay_name, the\n`product-category` column refers to\nproduct_category, and the\n`labels` column refers to product_labels.\n\nThe `image-id` column is optional but must be unique if provided. If it is\nempty, the system will automatically assign a unique id to the image.\n\nThe `product-display-name` column is optional. If it is empty, the system\nsets the display_name field for the product to a\nspace (\" \"). You can update the `display_name` later by using the API.\n\nIf a `Product` with the specified `product-id` already exists, then the\nsystem ignores the `product-display-name`, `product-category`, and `labels`\ncolumns.\n\nThe `labels` column (optional) is a line containing a list of\ncomma-separated key-value pairs, in the following format:\n\n    \"key_1=value_1,key_2=value_2,...,key_n=value_n\"\n\nThe `bounding-poly` column (optional) identifies one region of\ninterest from the image in the same manner as `CreateReferenceImage`. If\nyou do not specify the `bounding-poly` column, then the system will try to\ndetect regions of interest automatically.\n\nAt most one `bounding-poly` column is allowed per line. If the image\ncontains multiple regions of interest, add a line to the CSV file that\nincludes the same product information, and the `bounding-poly` values for\neach region of interest.\n\nThe `bounding-poly` column must contain an even number of comma-separated\nnumbers, in the format \"p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y\". Use\nnon-negative integers for absolute bounding polygons, and float values\nin [0, 1] for normalized bounding polygons.\n\nThe system will resize the image if the image resolution is too\nlarge to process (larger than 20MP).",
           "type": "string"
         }
       }
@@ -703,47 +692,9 @@
       "description": "Parameters for a product search request.",
       "type": "object",
       "properties": {
-        "catalogName": {
-          "description": "The resource name of the catalog to search.\n\nFormat is: `productSearch\/catalogs\/CATALOG_NAME`.",
-          "type": "string"
-        },
-        "category": {
-          "description": "The category to search in.\nOptional. It is inferred by the system if it is not specified.\n[Deprecated] Use `product_category`.",
-          "enumDescriptions": [
-            "Default value used when a category is not specified.",
-            "Shoes category.",
-            "Bags category."
-          ],
-          "type": "string",
-          "enum": [
-            "PRODUCT_SEARCH_CATEGORY_UNSPECIFIED",
-            "SHOES",
-            "BAGS"
-          ]
-        },
-        "productCategory": {
-          "description": "The product category to search in.\nOptional. It is inferred by the system if it is not specified.\nSupported values are `bag`, `shoe`, `sunglasses`, `dress`, `outerwear`,\n`skirt`, `top`, `shorts`, and `pants`.",
-          "type": "string"
-        },
-        "normalizedBoundingPoly": {
-          "description": "The bounding polygon around the area of interest in the image.\nOptional. If it is not specified, system discretion will be applied.\n[Deprecated] Use `bounding_poly`.",
-          "$ref": "NormalizedBoundingPoly"
-        },
         "boundingPoly": {
           "description": "The bounding polygon around the area of interest in the image.\nOptional. If it is not specified, system discretion will be applied.",
           "$ref": "BoundingPoly"
-        },
-        "view": {
-          "description": "Specifies the verbosity of the  product search results.\nOptional. Defaults to `BASIC`.",
-          "enumDescriptions": [
-            "Product search results contain only `product_category` and `product_id`.\nDefault value.",
-            "Product search results contain `product_category`, `product_id`,\n`image_uri`, and `score`."
-          ],
-          "type": "string",
-          "enum": [
-            "BASIC",
-            "FULL"
-          ]
         },
         "productSet": {
           "description": "The resource name of a ProductSet to be searched for similar images.\n\nFormat is:\n`projects\/PROJECT_ID\/locations\/LOC_ID\/productSets\/PRODUCT_SET_ID`.",
@@ -759,20 +710,6 @@
         "filter": {
           "description": "The filtering expression. This can be used to restrict search results based\non Product labels. We currently support an AND of OR of key-value\nexpressions, where each expression within an OR must have the same key.\n\nFor example, \"(color = red OR color = blue) AND brand = Google\" is\nacceptable, but not \"(color = red OR brand = Google)\" or \"color: red\".",
           "type": "string"
-        }
-      }
-    },
-    "NormalizedBoundingPoly": {
-      "id": "NormalizedBoundingPoly",
-      "description": "A normalized bounding polygon around a portion of an image.",
-      "type": "object",
-      "properties": {
-        "vertices": {
-          "description": "Normalized vertices of the bounding polygon.",
-          "type": "array",
-          "items": {
-            "$ref": "NormalizedVertex"
-          }
         }
       }
     },
@@ -1815,7 +1752,7 @@
           }
         },
         "bestGuessLabels": {
-          "description": "Best guess text labels for the request image.",
+          "description": "The service's best guess as to the topic of the request image.\nInferred from similar images on the open web.",
           "type": "array",
           "items": {
             "$ref": "WebLabel"
@@ -1913,35 +1850,10 @@
       "description": "Results for a product search request.",
       "type": "object",
       "properties": {
-        "category": {
-          "description": "Product category.\n[Deprecated] Use `product_category`.",
-          "enumDescriptions": [
-            "Default value used when a category is not specified.",
-            "Shoes category.",
-            "Bags category."
-          ],
-          "type": "string",
-          "enum": [
-            "PRODUCT_SEARCH_CATEGORY_UNSPECIFIED",
-            "SHOES",
-            "BAGS"
-          ]
-        },
-        "productCategory": {
-          "description": "Product category.\nSupported values are `bag` and `shoe`.\n[Deprecated] `product_category` is provided in each Product.",
-          "type": "string"
-        },
         "indexTime": {
           "description": "Timestamp of the index which provided these results. Changes made after\nthis time are not reflected in the current results.",
           "type": "string",
           "format": "google-datetime"
-        },
-        "products": {
-          "description": "List of detected products.",
-          "type": "array",
-          "items": {
-            "$ref": "ProductInfo"
-          }
         },
         "results": {
           "description": "List of results, one for each product match.",
@@ -1949,26 +1861,6 @@
           "items": {
             "$ref": "Result"
           }
-        }
-      }
-    },
-    "ProductInfo": {
-      "id": "ProductInfo",
-      "description": "Information about a product.",
-      "type": "object",
-      "properties": {
-        "productId": {
-          "description": "Product ID.",
-          "type": "string"
-        },
-        "imageUri": {
-          "description": "The URI of the image which matched the query image.\n\nThis field is returned only if `view` is set to `FULL` in\nthe request.",
-          "type": "string"
-        },
-        "score": {
-          "description": "A confidence level on the match, ranging from 0 (no confidence) to\n1 (full confidence).\n\nThis field is returned only if `view` is set to `FULL` in\nthe request.",
-          "type": "number",
-          "format": "float"
         }
       }
     },
@@ -3199,7 +3091,7 @@
           }
         },
         "bestGuessLabels": {
-          "description": "Best guess text labels for the request image.",
+          "description": "The service's best guess as to the topic of the request image.\nInferred from similar images on the open web.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudVisionV1p2beta1WebDetectionWebLabel"
@@ -3525,113 +3417,6 @@
           "description": "Y coordinate.",
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVisionV1alpha1BatchOperationMetadata": {
-      "id": "GoogleCloudVisionV1alpha1BatchOperationMetadata",
-      "description": "Metadata for the batch operations such as the current state.\n\nThis is included in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "The current state of the batch operation.",
-          "enumDescriptions": [
-            "Invalid.",
-            "Request is created.",
-            "The batch request is running.",
-            "The batch is done and no item has been successfully processed.",
-            "The batch is done after the longrunning.Operations.CancelOperation has\nbeen called by the user.  Any records that were processed before the\ncancel command are output as specified in the request."
-          ],
-          "type": "string",
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "CREATED",
-            "RUNNING",
-            "DONE",
-            "CANCELLED"
-          ]
-        },
-        "createTime": {
-          "description": "The time when the batch request was submitted to the server.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "The time when the batch request is recently updated.\ngoogle.longrunning.Operation.done is set to true.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "GoogleCloudVisionV1alpha1ImportCatalogsResponse": {
-      "id": "GoogleCloudVisionV1alpha1ImportCatalogsResponse",
-      "description": "Response message for the `ImportCatalogs` method.\n\nThis message is returned by the\ngoogle.longrunning.Operations.GetOperation method in the returned\ngoogle.longrunning.Operation.response field.",
-      "type": "object",
-      "properties": {
-        "referenceImages": {
-          "description": "The list of reference_images that are imported successfully.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVisionV1alpha1ReferenceImage"
-          }
-        },
-        "statuses": {
-          "description": "The rpc status for each ImportCatalogs request, including errors.",
-          "type": "array",
-          "items": {
-            "$ref": "Status"
-          }
-        }
-      }
-    },
-    "GoogleCloudVisionV1alpha1ReferenceImage": {
-      "id": "GoogleCloudVisionV1alpha1ReferenceImage",
-      "description": "A `ReferenceImage` represents a product image and its associated metadata,\nsuch as product ID, category, and bounding box.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The resource name of the reference image.\n\nFormat is:\n`productSearch\/catalogs\/CATALOG_NUMBER\/referenceImages\/IMAGE_NUMBER`. This\nfield is ignored when creating a reference image.",
-          "type": "string"
-        },
-        "imageUri": {
-          "description": "The Google Cloud Storage URI of the reference image.\n\nRequired.",
-          "type": "string"
-        },
-        "productId": {
-          "description": "A user-defined ID for the product identified by the reference image.\nRequired. A `productId` can be associated with multiple reference images.\n\nRestricted to 255 characters matching the following regular expression:\n`[a-zA-Z0-9_-]+`",
-          "type": "string"
-        },
-        "category": {
-          "description": "The category for the product identified by the reference image.\nOptional. Inferred by the system if not specified in the create\nrequest.\n[Deprecated] Use `product_category`.",
-          "enumDescriptions": [
-            "Default value used when a category is not specified.",
-            "Shoes category.",
-            "Bags category."
-          ],
-          "type": "string",
-          "enum": [
-            "PRODUCT_SEARCH_CATEGORY_UNSPECIFIED",
-            "SHOES",
-            "BAGS"
-          ]
-        },
-        "productCategory": {
-          "description": "The category for the product identified by the reference image.\nOptional. Inferred by the system if not specified in the create\nrequest.\nSupported values are `bag` and `shoe`.",
-          "type": "string"
-        },
-        "boundingPoly": {
-          "description": "The bounding polygon around the area of interest in the reference image.\nOptional. Inferred by the system if not provided.\nIf `product_category` is specified in the create request without\n`bounding_poly`, the inferred bounding polygon is the entire image.\n\nThe provided shape is converted into a non-rotated rectangle. Once\nconverted, the small edge of the rectangle must be greater than or equal\nto 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is ok; 1:5\nis not).",
-          "$ref": "BoundingPoly"
-        },
-        "createTime": {
-          "description": "Resource creation timestamp. Output only.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "deleteTime": {
-          "description": "Resource deletion timestamp.\n\nThis timestamp indicates when the resource was marked for deletion.\nResources marked for deletion will continue to show up in product search\nresults until the index is rebuilt (currently daily).\n\nThe value of this field is 0 for resources that have NOT been deleted.\n\nOutput only.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -4264,7 +4049,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The FieldMask that specifies which fields\nto update.\nIf update_mask isn't specified, all mutable fields are to be updated.\nValid mask paths include `product_labels`, `display_name` and\n`description`.",
+                      "description": "The FieldMask that specifies which fields\nto update.\nIf update_mask isn't specified, all mutable fields are to be updated.\nValid mask paths include `product_labels`, `display_name`, and\n`description`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -4283,7 +4068,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
-                  "description": "Makes changes to a Product resource.\nOnly display_name, description and labels can be updated right now.\n\nIf labels are updated, the change will not be reflected in queries until\nthe next index time.\n\nPossible errors:\n\n* Returns NOT_FOUND if the Product does not exist.\n* Returns INVALID_ARGUMENT if display_name is present in update_mask but is\n  missing from the request or longer than 4096 characters.\n* Returns INVALID_ARGUMENT if description is present in update_mask but is\n  longer than 4096 characters.\n* Returns INVALID_ARGUMENT if product_category is present in update_mask."
+                  "description": "Makes changes to a Product resource.\nOnly the `display_name`, `description`, and `labels` fields can be updated\nright now.\n\nIf labels are updated, the change will not be reflected in queries until\nthe next index time.\n\nPossible errors:\n\n* Returns NOT_FOUND if the Product does not exist.\n* Returns INVALID_ARGUMENT if display_name is present in update_mask but is\n  missing from the request or longer than 4096 characters.\n* Returns INVALID_ARGUMENT if description is present in update_mask but is\n  longer than 4096 characters.\n* Returns INVALID_ARGUMENT if product_category is present in update_mask."
                 },
                 "delete": {
                   "id": "alpha_vision.projects.locations.products.delete",

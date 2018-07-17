@@ -15,7 +15,9 @@
 """Utilities for encryption functions on Windows."""
 # TODO(b/36051032) Create unittests for this module (which only run on Windows).
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import base64
 import ctypes
 from ctypes import windll  # pytype: disable=import-error

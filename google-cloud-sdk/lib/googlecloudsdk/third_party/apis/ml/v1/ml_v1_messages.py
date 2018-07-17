@@ -81,7 +81,8 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
     TypeValueValuesEnum: The available types of accelerators.
 
   Fields:
-    count: The number of accelerators to attach to the machines.
+    count: The number of accelerators to attach to each machine running the
+      job.
     type: The available types of accelerators.
   """
 
@@ -93,7 +94,8 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
         no GPU.
       NVIDIA_TESLA_K80: Nvidia tesla k80 GPU.
       NVIDIA_TESLA_P100: Nvidia tesla P100 GPU.
-      NVIDIA_TESLA_V100: Nvidia tesla V100 GPU.
+      NVIDIA_TESLA_V100: Nvidia tesla V100 GPU. Not supported for batch
+        prediction.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -1150,8 +1152,31 @@ class GoogleCloudMlV1Version(_messages.Message):
       predictable billing. Beware that latency and error rates will increase
       if the traffic exceeds that capability of the system to serve it based
       on the selected number of nodes.
+    modelClass: class Model(object):   " " "A Model performs predictions on a
+      given list of instances.    The input instances are the raw values sent
+      by the user. It is the   responsibility of a Model to translate these
+      instances into   actual predictions.    The input instances and the
+      output use python data types. The input   instances have been decoded
+      prior to being passed to the predict   method. The output, which should
+      use python data types is   encoded after being returned from the predict
+      method.   " " "    def predict(self, instances, **kwargs):     " "
+      "Returns predictions for the provided instances.      Instances are the
+      decoded values from the request. Clients need not     worry about
+      decoding json nor base64 decoding.      Args:       instances: A list of
+      instances, as described in the API.       **kwargs: Additional keyword
+      arguments, will be passed into the           client's predict method.
+      Returns:       A list of outputs containing the prediction results.
+      " " "    @classmethod   def from_path(cls, model_path):     " " "Creates
+      a model using the given model path.      Path is useful, e.g., to load
+      files from the exported directory     containing the model.      Args:
+      model_path: The local directory that contains the exported model
+      file along with any additional files uploaded when creating the
+      version resource.      Returns:       An instance implementing this
+      Model class.     " " "
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
+    packageUris: Optional. The Google Cloud Storage location of the packages
+      for custom prediction and any additional dependencies.
     pythonVersion: Optional. The version of Python used in prediction. If not
       set, the default version is '2.7'. Python '3.5' is available when
       `runtime_version` is set to '1.4' and above. Python '2.7' works with all
@@ -1244,10 +1269,12 @@ class GoogleCloudMlV1Version(_messages.Message):
   lastUseTime = _messages.StringField(10)
   machineType = _messages.StringField(11)
   manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 12)
-  name = _messages.StringField(13)
-  pythonVersion = _messages.StringField(14)
-  runtimeVersion = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
+  modelClass = _messages.StringField(13)
+  name = _messages.StringField(14)
+  packageUris = _messages.StringField(15, repeated=True)
+  pythonVersion = _messages.StringField(16)
+  runtimeVersion = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -1336,7 +1363,7 @@ class GoogleIamV1Binding(_messages.Message):
       * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
   members = _messages.StringField(1, repeated=True)

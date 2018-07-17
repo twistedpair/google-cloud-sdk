@@ -15,26 +15,38 @@
 """Utilities for calling the Composer API."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import itertools
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 import six
 
 COMPOSER_API_NAME = 'composer'
-COMPOSER_API_VERSION = 'v1beta1'
+COMPOSER_GA_API_VERSION = 'v1'
+COMPOSER_BETA_API_VERSION = 'v1beta1'
 
 DEFAULT_PAGE_SIZE = 30
 
 
-def GetClientInstance(version=COMPOSER_API_VERSION):
-  return apis.GetClientInstance(COMPOSER_API_NAME, version)
+def GetApiVersion(release_track=base.ReleaseTrack.GA):
+  if release_track == base.ReleaseTrack.BETA:
+    return COMPOSER_BETA_API_VERSION
+  return COMPOSER_GA_API_VERSION
 
 
-def GetMessagesModule(version=COMPOSER_API_VERSION):
-  return apis.GetMessagesModule(COMPOSER_API_NAME, version)
+def GetClientInstance(release_track=base.ReleaseTrack.GA):
+  return apis.GetClientInstance(
+      COMPOSER_API_NAME, GetApiVersion(release_track=release_track))
+
+
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
+  return apis.GetMessagesModule(
+      COMPOSER_API_NAME, GetApiVersion(release_track=release_track))
 
 
 def AggregateListResults(request_cls,

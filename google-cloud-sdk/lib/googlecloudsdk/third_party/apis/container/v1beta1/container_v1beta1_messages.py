@@ -268,7 +268,9 @@ class Cluster(_messages.Message):
       authorized networks feature.
     masterIpv4CidrBlock: The IP prefix in CIDR notation to use for the hosted
       master network. This prefix will be used for assigning private IP
-      addresses to the master or set of masters, as well as the ILB VIP.
+      addresses to the master or set of masters, as well as the ILB VIP. This
+      field is deprecated, use private_cluster_config.master_ipv4_cidr_block
+      instead.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options:  * `monitoring.googleapis.com` -
       the Google Cloud Monitoring service. * `none` - no metrics will be
@@ -300,7 +302,9 @@ class Cluster(_messages.Message):
     podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
     privateCluster: If this is a private cluster setup. Private clusters are
       clusters that, by default have no external IP addresses on the nodes and
-      where nodes and the master communicate over private IP addresses.
+      where nodes and the master communicate over private IP addresses. This
+      field is deprecated, use private_cluster_config.enabled instead.
+    privateClusterConfig: Configuration for private cluster.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related Google Compute Engine resources.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -413,14 +417,15 @@ class Cluster(_messages.Message):
   nodePools = _messages.MessageField('NodePool', 36, repeated=True)
   podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 37)
   privateCluster = _messages.BooleanField(38)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 39)
-  selfLink = _messages.StringField(40)
-  servicesIpv4Cidr = _messages.StringField(41)
-  status = _messages.EnumField('StatusValueValuesEnum', 42)
-  statusMessage = _messages.StringField(43)
-  subnetwork = _messages.StringField(44)
-  tpuIpv4CidrBlock = _messages.StringField(45)
-  zone = _messages.StringField(46)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 39)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 40)
+  selfLink = _messages.StringField(41)
+  servicesIpv4Cidr = _messages.StringField(42)
+  status = _messages.EnumField('StatusValueValuesEnum', 43)
+  statusMessage = _messages.StringField(44)
+  subnetwork = _messages.StringField(45)
+  tpuIpv4CidrBlock = _messages.StringField(46)
+  zone = _messages.StringField(47)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1356,11 +1361,10 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently. This field is only visible as GOOGLE_INTERNAL or
-      CONDITION_TRUSTED_TESTER.
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1375,7 +1379,7 @@ class GoogleIamV1Binding(_messages.Message):
       * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1443,10 +1447,12 @@ class GoogleIamV1Condition(_messages.Message):
       SECURITY_REALM: Any of the security realms in the IAMContext (go
         /security-realms). When used with IN, the condition indicates "any of
         the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". It is not permitted to
-        grant access based on the *absence* of a realm, so realm conditions
-        can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
+        of the realms match any of the given values". Note that a value can be
+        either a realm or a realm group (go/realm-groups). A match is
+        determined by a realm group membership check performed by a
+        RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
+        access based on the *absence* of a realm, so realm conditions can only
+        be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -2005,11 +2011,14 @@ class MaintenancePolicy(_messages.Message):
   cluster.
 
   Fields:
+    masterUpdateRestriction: Specifies additional restrictions applying to
+      when master updates may be performed.
     window: Specifies the maintenance window in which maintenance may be
       performed.
   """
 
-  window = _messages.MessageField('MaintenanceWindow', 1)
+  masterUpdateRestriction = _messages.MessageField('MasterUpdateRestriction', 1)
+  window = _messages.MessageField('MaintenanceWindow', 2)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -2087,6 +2096,67 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
+
+
+class MasterUpdateFreeze(_messages.Message):
+  r"""MasterUpdateFreeze defines freeze on master updates. Some customers want
+  to avoid master updates during time periods critical to their bussiness.  In
+  the future each k8s version will have a support window (see go/gke-
+  supported-versions-design). Then we will allow freezing master until ~2
+  weeks before we stop maintaing the version.  For now we approximate this: -
+  Freeze must last at most 13 weeks. - Only masters in newest and second
+  newest (minor) versions can be frozen. - After freeze user must give us 2
+  weeks before starting a new one. - User can end freeze early. - If user
+  ended a freeze early they can resume it (with 13 week duration   limit
+  counting from the original freeze time).  We will apply security updates
+  even to frozen masters.
+
+  Fields:
+    frozen: Indicates if the master version is currently frozen. When master
+      is frozen scheduled_freeze_end_time must be a future timestamp. When
+      master is not frozen scheduled_freeze_end_time must be a past timestamp
+      (frozen during last two weeks) or an empty string (not frozen during
+      last two weeks). You can only set this to true if max_freeze_end_time is
+      a future timestamp. When setting frozen to true you can set
+      scheduled_freeze_end_time to a future timestamp not later than
+      max_freeze_end_time. If you don't set scheduled_freeze_end_time when
+      setting frozen to true it will be set to max_freeze_end_time. After
+      scheduled_freeze_end_time this field automatically becomes false. If you
+      chage value of this field to false scheduled_freeze_end_time becomes
+      timestamp of the request. We still apply security updates to frozen
+      masters.
+    maxFreezeEndTime: [Output only] The time by which the master update freeze
+      must end, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text
+      format. In the future it will be end of support for master version - 2
+      weeks.  For now it is: - For clusters that weren't in a freeze during
+      last 2 weeks and are in one   of the two newest (minor) versions: now +
+      13 weeks. - For clusters that weren't in a freeze during last 2 weeks
+      and are in an   older version: empty - For clusters that were in a
+      freeze during last two weeks (including   currently frozen clusters):
+      start of the freeze + 13 weeks.
+    scheduledFreezeEndTime: The time at which the master update freeze is
+      scheduled to end, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
+      text format. Future timestamp means the freeze is ongoing. Past
+      timestamp means the freeze ended recently (the cluster is going through
+      period of recovering from the freeze). Empty string means cluster wasn't
+      affected by a freeze recently. This field can be set only to a timestamp
+      that is: - In the future and - Earlier than max_freeze_end_time.
+  """
+
+  frozen = _messages.BooleanField(1)
+  maxFreezeEndTime = _messages.StringField(2)
+  scheduledFreezeEndTime = _messages.StringField(3)
+
+
+class MasterUpdateRestriction(_messages.Message):
+  r"""MasterUpdateRestriction defines restrictions that apply only to
+  clusters' master updates.
+
+  Fields:
+    freeze: MasterUpdateFreeze defines freeze to master updates.
+  """
+
+  freeze = _messages.MessageField('MasterUpdateFreeze', 1)
 
 
 class Metric(_messages.Message):
@@ -2636,6 +2706,30 @@ class PodSecurityPolicyConfig(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class PrivateClusterConfig(_messages.Message):
+  r"""Configuration options for private clusters.
+
+  Fields:
+    enablePrivateEndpoint: Whether the master's internal IP address is used as
+      the cluster endpoint.
+    enablePrivateNodes: Whether nodes have only private IP addresses, and
+      communicate with the master via private networking.
+    masterIpv4CidrBlock: The IP prefix in CIDR notation to use for the hosted
+      master network. This prefix will be used for assigning private IP
+      addresses to the master or set of masters, as well as the ILB VIP.
+    privateEndpoint: Output only. The internal IP address of this cluster's
+      master endpoint.
+    publicEndpoint: Output only. The external IP address of this cluster's
+      master endpoint.
+  """
+
+  enablePrivateEndpoint = _messages.BooleanField(1)
+  enablePrivateNodes = _messages.BooleanField(2)
+  masterIpv4CidrBlock = _messages.StringField(3)
+  privateEndpoint = _messages.StringField(4)
+  publicEndpoint = _messages.StringField(5)
 
 
 class ResourceLimit(_messages.Message):

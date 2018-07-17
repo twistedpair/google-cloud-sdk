@@ -12,6 +12,186 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
+class DataErrors(_messages.Message):
+  r"""Different types of dataset errors and the stats associated with each
+  error.
+
+  Enums:
+    ErrorTypeValueValuesEnum: Type of the error.
+
+  Fields:
+    count: Number of records having errors associated with the enum.
+    errorType: Type of the error.
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""Type of the error.
+
+    Values:
+      ERROR_TYPE_UNSPECIFIED: Not specified.
+      UNSUPPORTED_AUDIO_FORMAT: Audio format not in the formats supported by
+        the cloud speech API
+      FILE_EXTENSION_MISMATCH_WITH_AUDIO_FORMAT: File format different from
+        what is specified in the file name extension
+      FILE_TOO_LARGE: File too large. Maximum allowed size is 50 MB.
+    """
+    ERROR_TYPE_UNSPECIFIED = 0
+    UNSUPPORTED_AUDIO_FORMAT = 1
+    FILE_EXTENSION_MISMATCH_WITH_AUDIO_FORMAT = 2
+    FILE_TOO_LARGE = 3
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 2)
+
+
+class DataStats(_messages.Message):
+  r"""Contains stats about the data which was uploaded and preprocessed to be
+  use by downstream pipelines like training, evals pipelines.
+
+  Fields:
+    dataErrors: Different types of data errors and the counts associated with
+      them.
+    testExampleCount: The number of examples used for testing.
+    trainingExampleCount: The number of examples used for training.
+  """
+
+  dataErrors = _messages.MessageField('DataErrors', 1, repeated=True)
+  testExampleCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  trainingExampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class Dataset(_messages.Message):
+  r"""Specifies the parameters needed for creating a dataset. In addition this
+  is also the message returned to the client by the `CreateDataset` method. It
+  is included in the `result.response` field of the `Operation` returned by
+  the `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Fields:
+    blockingOperationIds: Output only. All the blocking operations associated
+      with this dataset. Like (pre-processing, training-model, testing-model)
+    dataProcessingRegion: Location where the data should be processed. If not
+      specified then we will pick a location on behalf of the user for storing
+      and processing the data. Currently only us-central is supported.
+    dataStats: Output only. Stats assoiated with the data.
+    displayName: Required. Name of the data set for display.
+    languageCode: Required. The language of the supplied audio as a
+      [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
+      Example: "en-US". See [Language
+      Support](https://cloud.google.com/speech/docs/languages) for a list of
+      the currently supported language codes.
+    models: All the models (including models pending training) built using the
+      dataset.
+    name: Output only. Resource name of the dataset. Form :-
+      '/projects/{project_number}/locations/{location_id}/datasets/{dataset_id
+      }'
+    uri: URI that points to a file in csv file where each row has following
+      format. <gs_path_to_audio>,<gs_path_to_transcript>,<label> label can be
+      HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row to be
+      considered valid are :- 1. Each row must have at least a label and
+      <gs_path_to_transcript> 2. If a row is marked HUMAN_TRANSCRIBED, then
+      both <gs_path_to_audio> and <gs_path_to_transcript> needs to be
+      specified. 3. There has to be minimum 500 number of rows labelled
+      HUMAN_TRANSCRIBED if evaluation stats are required. 4. If
+      use_logged_data_for_training is set to true, then we ignore the rows
+      labelled as MACHINE_TRANSCRIBED. 5. There has to be minimum 100,000
+      words in the transcripts in order to provide sufficient textual training
+      data for the language model. Currently, only Google Cloud Storage URIs
+      are supported, which must be specified in the following format:
+      `gs://bucket_name/object_name` (other URI formats will be ignored). For
+      more information, see [Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris).
+    useLoggedData: If this is true, then use the previously logged data (for
+      the project) The logs data for this project will be preprocessed and
+      prepared for downstream pipelines (like training)
+  """
+
+  blockingOperationIds = _messages.StringField(1, repeated=True)
+  dataProcessingRegion = _messages.StringField(2)
+  dataStats = _messages.MessageField('DataStats', 3)
+  displayName = _messages.StringField(4)
+  languageCode = _messages.StringField(5)
+  models = _messages.MessageField('Model', 6, repeated=True)
+  name = _messages.StringField(7)
+  uri = _messages.StringField(8)
+  useLoggedData = _messages.BooleanField(9)
+
+
+class DeployModelRequest(_messages.Message):
+  r"""Message sent by the client for the `DeployModel` method."""
+
+
+class EvaluateModelRequest(_messages.Message):
+  r"""Message sent by the client for the `EvaluateModel` method."""
+
+
+class EvaluateModelResponse(_messages.Message):
+  r"""The only message returned to the client by the `EvaluateModel` method.
+  This is also returned as part of the Dataset message returned to the client
+  by the CreateDataset method. It is included in the `result.response` field
+  of the `Operation` returned by the `GetOperation` call of the
+  `google::longrunning::Operations` service.
+
+  Enums:
+    ModelTypeValueValuesEnum: Required. The type of model used in this
+      evaluation.
+
+  Fields:
+    modelType: Required. The type of model used in this evaluation.
+    wordErrorRate: Word error rate metric computed on the test set using the
+      AutoML model.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of model used in this evaluation.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: <no description>
+      DEFAULT: Model for audio that is not one of the specific models below.
+        This is a generic model and can be used in various scenarios but is
+        not necessarily the best in any particular scenario.
+      COMMAND_AND_SEARCH: Model for audio from short queries like voice
+        commands or voice search
+      PHONE_CALL: Model for phone call conversation type opf audio.
+      VIDEO: Model for audio that originated from from video or includes
+        multiple speakers.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    DEFAULT = 1
+    COMMAND_AND_SEARCH = 2
+    PHONE_CALL = 3
+    VIDEO = 4
+
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
+  wordErrorRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class ListDatasetsResponse(_messages.Message):
+  r"""A ListDatasetsResponse object.
+
+  Fields:
+    datasets: Repeated list of data sets containing details about each data
+      set.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  datasets = _messages.MessageField('Dataset', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListModelsResponse(_messages.Message):
+  r"""A ListModelsResponse object.
+
+  Fields:
+    models: Repeated list of models containing details about each model.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  models = _messages.MessageField('Model', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class LongRunningRecognizeRequest(_messages.Message):
   r"""The top-level message sent by the client for the `LongRunningRecognize`
   method.
@@ -24,6 +204,50 @@ class LongRunningRecognizeRequest(_messages.Message):
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
+
+
+class Model(_messages.Message):
+  r"""Specifies the model parameters needed for training a model. In addition
+  this is also the message returned to the client by the `CreateModel` method.
+  It is included in the `result.response` field of the `Operation` returned by
+  the `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Enums:
+    TrainingTypeValueValuesEnum: Required. Type of the training to perform.
+
+  Fields:
+    createTime: Output only. Timestamp when this model was created.
+    displayName: Required. Display name of the model to be trained.
+    evaluateModelResponses: Output only. Evaluation results associated with
+      this model. A model can contain multiple sub-models in which case the
+      evaluation results for all of those are available. If there are no sub
+      models then there would be just a single EvaluateModelResponse.
+    name: Output only. Resource name of the model. Format:
+      "projects/{project_id}/locations/{location_id}/models/{model_id}"
+    trainingType: Required. Type of the training to perform.
+  """
+
+  class TrainingTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of the training to perform.
+
+    Values:
+      TRAINING_TYPE_UNSPECIFIED: <no description>
+      CUSTOM_ADAPTATION_LANGUAGE_MODEL: Build adaptation language model based
+        on the users data. These models are built on top of the existing
+        prebuilt models (like phone_call, video etc.).
+      PREBUILT_MODEL: Output only. This is set to indicate that the model we
+        are talking about is a prebuilt model (for e.g in the context of
+        evaluations).
+    """
+    TRAINING_TYPE_UNSPECIFIED = 0
+    CUSTOM_ADAPTATION_LANGUAGE_MODEL = 1
+    PREBUILT_MODEL = 2
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  evaluateModelResponses = _messages.MessageField('EvaluateModelResponse', 3, repeated=True)
+  name = _messages.StringField(4)
+  trainingType = _messages.EnumField('TrainingTypeValueValuesEnum', 5)
 
 
 class Operation(_messages.Message):
@@ -549,6 +773,120 @@ class SpeechOperationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsDatasetsCreateRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsDatasetsCreateRequest object.
+
+  Fields:
+    dataset: A Dataset resource to be passed as the request body.
+    parent: Required. Resource name of the parent. Has the format :-
+      "projects/{project_id}/locations/{location_id}"
+  """
+
+  dataset = _messages.MessageField('Dataset', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SpeechProjectsLocationsDatasetsGetRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsDatasetsGetRequest object.
+
+  Fields:
+    includeModelInfo: If true then also include information about the models
+      built using this dataset.
+    name: The resource name of the dataset to retrieve. Form :-
+      '/projects/{project_number}/locations/{location_id}/datasets/{dataset_id
+      }'
+  """
+
+  includeModelInfo = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class SpeechProjectsLocationsDatasetsListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsDatasetsListRequest object.
+
+  Fields:
+    filter: Filter the response based on display_name of the dataset. For e.g
+      display_name=Foo The filter string is case sensitive
+    includeModelInfo: If true then also include information about the models
+      built using the datasets.
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. Resource name of the parent. Has the format :-
+      "projects/{project_id}/locations/{location_id}"
+  """
+
+  filter = _messages.StringField(1)
+  includeModelInfo = _messages.BooleanField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class SpeechProjectsLocationsModelsCreateRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsModelsCreateRequest object.
+
+  Fields:
+    model: A Model resource to be passed as the request body.
+    name: Required. Resource name of the dataset being used to create the
+      model.
+      '/projects/{project_id}/locations/{location_id}/datasets/{dataset_id}'
+    parent: Required. Resource name of the parent. Has the format :-
+      "projects/{project_id}/locations/{location_id}"
+  """
+
+  model = _messages.MessageField('Model', 1)
+  name = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SpeechProjectsLocationsModelsDeployRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsModelsDeployRequest object.
+
+  Fields:
+    deployModelRequest: A DeployModelRequest resource to be passed as the
+      request body.
+    name: Resource name of the model. Format:
+      "projects/{project_id}/locations/{location_id}/models/{model_id}"
+  """
+
+  deployModelRequest = _messages.MessageField('DeployModelRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SpeechProjectsLocationsModelsEvaluateRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsModelsEvaluateRequest object.
+
+  Fields:
+    evaluateModelRequest: A EvaluateModelRequest resource to be passed as the
+      request body.
+    name: Resource name of the model. Format:
+      "projects/{project_id}/locations/{location_id}/models/{model_id}"
+  """
+
+  evaluateModelRequest = _messages.MessageField('EvaluateModelRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SpeechProjectsLocationsModelsListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsModelsListRequest object.
+
+  Fields:
+    filter: Filter the response based on display_name of the model. For e.g
+      display_name=Foo The filter string is case sensitive
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. Resource name of the parent. Has the format :-
+      "projects/{project_id}/locations/{location_id}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SpeechRecognitionAlternative(_messages.Message):

@@ -16,6 +16,7 @@
 """Utilities for IAM commands to call IAM APIs."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager

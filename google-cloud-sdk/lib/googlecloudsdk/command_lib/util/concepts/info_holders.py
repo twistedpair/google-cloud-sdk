@@ -15,14 +15,13 @@
 """Classes for runtime handling of concept arguments."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import abc
-import copy
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.command_lib.util.concepts import completers
 from googlecloudsdk.core.util import text
@@ -175,54 +174,14 @@ class ResourceInfo(ConceptInfo):
     name = name[0].upper() + name[1:]
     return name.replace('_', ' ').replace('-', ' ')
 
+  def _IsAnchor(self, attribute):
+    return self.concept_spec.IsAnchor(attribute)
+
   def BuildFullFallthroughsMap(self):
-    """Builds map of all fallthroughs including arg names.
-
-    Fallthroughs are a list of objects that, when called, try different ways of
-    getting values for attributes (see googlecloudsdk.calliope.concepts.deps.
-    _Fallthrough). This method builds a map from the name of each attribute to
-    its fallthroughs, including the "primary" fallthrough representing its
-    corresponding argument value in parsed_args if any, and any fallthroughs
-    that were configured for the attribute beyond that.
-
-    Returns:
-      {str: [deps_lib._Fallthrough]}, a map from attribute name to its
-      fallthroughs.
-    """
-    fallthroughs_map = {}
-    for attribute in self.concept_spec.attributes:
-      # The only args that should be lists are anchor args for plural
-      # resources.
-      attribute_name = attribute.name
-      attribute_fallthroughs = []
-      plural = (attribute_name == self.concept_spec.anchor.name
-                and self.plural)
-
-      # Start the fallthroughs list with the primary associated arg for the
-      # attribute.
-      arg_name = self.attribute_to_args_map.get(attribute_name)
-      if arg_name:
-        attribute_fallthroughs.append(
-            deps_lib.ArgFallthrough(arg_name, plural=plural))
-
-      given_fallthroughs = self.fallthroughs_map.get(attribute_name, [])
-      for fallthrough in given_fallthroughs:
-        final_fallthrough = copy.deepcopy(fallthrough)
-        final_fallthrough.plural = plural
-        attribute_fallthroughs.append(final_fallthrough)
-      fallthroughs_map[attribute_name] = attribute_fallthroughs
-    anchor_fallthroughs = fallthroughs_map[self.concept_spec.anchor.name]
-    for attribute in self.concept_spec.attributes[:-1]:
-      parameter_name = self.concept_spec.ParamName(attribute.name)
-      anchor_based_fallthroughs = [
-          deps_lib.FullySpecifiedAnchorFallthrough(
-              anchor_fallthrough, self.concept_spec.collection_info,
-              parameter_name)
-          for anchor_fallthrough in anchor_fallthroughs]
-      fallthroughs_map[attribute.name] = (
-          anchor_based_fallthroughs + fallthroughs_map[attribute.name])
-
-    return fallthroughs_map
+    return self.concept_spec.BuildFullFallthroughsMap(
+        self.attribute_to_args_map,
+        self.fallthroughs_map,
+        plural=self.plural)
 
   def GetHints(self, attribute_name):
     """Gets a list of string hints for how to set an attribute.
@@ -237,7 +196,11 @@ class ResourceInfo(ConceptInfo):
       A list of hints for its fallthroughs, including its primary arg if any.
     """
     fallthroughs = self.BuildFullFallthroughsMap().get(attribute_name, [])
-    return [f.hint for f in fallthroughs]
+    hints = []
+    for f in fallthroughs:
+      if f.hint not in hints:
+        hints.append(f.hint)
+    return hints
 
   def GetGroupHelp(self):
     """Build group help for the argument group."""
@@ -287,9 +250,9 @@ class ResourceInfo(ConceptInfo):
       return True
     return False
 
-  def _GetHelpTextForAttribute(self, attribute, is_anchor=False):
+  def _GetHelpTextForAttribute(self, attribute):
     """Helper to get the help text for the attribute arg."""
-    if is_anchor:
+    if self._IsAnchor(attribute):
       help_text = ANCHOR_HELP if not self.plural else PLURAL_ANCHOR_HELP
     else:
       help_text = attribute.help_text
@@ -300,16 +263,19 @@ class ResourceInfo(ConceptInfo):
         plural=getattr(self.resource_spec, 'plural_name', None))
     return help_text.format(resource=expansion_name)
 
-  def _KwargsForAttribute(self, name, attribute, is_anchor=False):
+  def _IsRequiredArg(self, attribute):
+    return (self._IsAnchor(attribute)
+            and not self.fallthroughs_map.get(attribute.name, []))
+
+  def _KwargsForAttribute(self, name, attribute):
     """Constructs the kwargs for adding an attribute to argparse."""
     # Argument is modal if it's the anchor, unless there are fallthroughs.
     # If fallthroughs can ever be configured in the ResourceInfo object,
     # a more robust solution will be needed, e.g. a GetFallthroughsForAttribute
     # method.
-    required = is_anchor and not self.fallthroughs_map.get(attribute.name, [])
-    final_help_text = self._GetHelpTextForAttribute(
-        attribute, is_anchor=is_anchor)
-    plural = attribute == self.resource_spec.anchor and self.plural
+    required = self._IsRequiredArg(attribute)
+    final_help_text = self._GetHelpTextForAttribute(attribute)
+    plural = self._IsAnchor(attribute) and self.plural
     if attribute.completer:
       completer = attribute.completer
     elif not self.resource_spec.disable_auto_completers:
@@ -342,14 +308,12 @@ class ResourceInfo(ConceptInfo):
   def _GetAttributeArg(self, attribute):
     """Creates argument for a specific attribute."""
     name = self.attribute_to_args_map.get(attribute.name, None)
-    is_anchor = attribute == self.resource_spec.anchor
     # Return None for any false value.
     if not name:
       return None
     return base.Argument(
         name,
-        **self._KwargsForAttribute(name, attribute,
-                                   is_anchor=is_anchor))
+        **self._KwargsForAttribute(name, attribute))
 
   def GetAttributeArgs(self):
     """Generate args to add to the argument group."""
@@ -408,61 +372,69 @@ class ResourceInfo(ConceptInfo):
         resource argument was pluralized.
     """
     if not self._result_computed:
-      result = self._ParseUncached(parsed_args)
+      result = self.concept_spec.Parse(self.attribute_to_args_map,
+                                       self.fallthroughs_map,
+                                       parsed_args=parsed_args,
+                                       plural=self.plural,
+                                       allow_empty=self.allow_empty)
       self._result_computed = True
       self._result = result
     return self._result
-
-  def _ParseUncached(self, parsed_args=None):
-    """Lazy parsing function for resource.
-
-    Args:
-      parsed_args: the parsed Namespace.
-
-    Returns:
-      the initialized resource or a list of initialized resources if the
-        resource argument was pluralized.
-    """
-    fallthroughs_map = self.BuildFullFallthroughsMap()
-
-    if not self.plural:
-      try:
-        return self.concept_spec.Initialize(
-            deps_lib.Deps(fallthroughs_map, parsed_args=parsed_args))
-      except concepts.InitializationError:
-        if self.allow_empty:
-          return None
-        raise
-
-    anchor = self.concept_spec.anchor.name
-    anchor_fallthroughs = fallthroughs_map.get(anchor, [])
-
-    # Iterate through the values provided to the anchor argument, creating for
-    # each a separate parsed resource.
-    resources = []
-    for i, anchor_fallthrough in enumerate(anchor_fallthroughs):
-
-      try:
-        anchor_values = anchor_fallthrough.GetValue(parsed_args)
-      except deps_lib.FallthroughNotFoundError:
-        continue
-      for arg_value in anchor_values:
-        def F(return_value=arg_value):
-          return return_value
-        fallthrough = deps_lib.Fallthrough(F, anchor_fallthrough.hint,
-                                           active=anchor_fallthrough.active)
-        fallthroughs_map[anchor] = (
-            anchor_fallthroughs[:i] + [fallthrough] +
-            anchor_fallthroughs[i:])
-        resources.append(self.concept_spec.Initialize(deps_lib.Deps(
-            fallthroughs_map, parsed_args=parsed_args)))
-      return resources
-    if self.allow_empty:
-      return resources
-    return self.concept_spec.Initialize(deps_lib.Deps(
-        fallthroughs_map, parsed_args=parsed_args))
 
   def ClearCache(self):
     self._result = None
     self._result_computed = False
 
+
+class MultitypeResourceInfo(ResourceInfo):
+  """ResourceInfo object specifically for multitype resources."""
+
+  def _IsAnchor(self, attribute):
+    """Returns true if the attribute is an anchor."""
+    return self.concept_spec.IsAnchor(attribute)
+
+  def _GetAnchors(self):
+    return [a for a in self.concept_spec.attributes if self._IsAnchor(a)]
+
+  def _IsRequiredArg(self, attribute):
+    """Returns True if the attribute arg should be required."""
+    anchors = self._GetAnchors()
+    return anchors == [attribute] and not self.fallthroughs_map.get(
+        attribute.name, [])
+
+  @property
+  def args_required(self):
+    """True if resource is required & has a single anchor with no fallthroughs.
+
+    Returns:
+      bool, whether the argument group should be required.
+    """
+    if self.allow_empty:
+      return False
+
+    anchors = self._GetAnchors()
+    if len(anchors) != 1:
+      return False
+    anchor = anchors[0]
+    if self.fallthroughs_map.get(anchor.name, []):
+      return False
+    # There's only one anchor and it's got no fallthroughs.
+    return True
+
+  def GetGroupHelp(self):
+    base_text = super(MultitypeResourceInfo, self).GetGroupHelp()
+    all_types = [
+        type_.name for type_ in self.concept_spec.type_enum]  # pylint: disable=protected-access
+    return base_text + (' This resource can be one of the following types: '
+                        '[{}].'.format(', '.join(all_types)))
+
+  def _GetHelpTextForAttribute(self, attribute):
+    base_text = super(MultitypeResourceInfo, self)._GetHelpTextForAttribute(
+        attribute)
+    # pylint: disable=protected-access
+    relevant_types = [
+        type_.name for type_ in self.concept_spec._attribute_to_types_map.get(
+            attribute.name)]
+    # pylint: disable=protected-access
+    return base_text + (' This argument is used for the following types: [{}].'
+                        .format(', '.join(relevant_types)))

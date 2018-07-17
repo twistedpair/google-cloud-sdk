@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Api client adapter containers commands."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from os import linesep
 import time
 
@@ -1079,6 +1082,17 @@ class APIAdapter(object):
           enabled=options.enable_binauthz)
       update = self.messages.ClusterUpdate(
           desiredBinaryAuthorization=binary_authorization)
+    elif options.resource_usage_bigquery_dataset is not None:
+      bigquery_destination = self.messages.BigQueryDestination(
+          datasetId=options.resource_usage_bigquery_dataset)
+      export_config = self.messages.ResourceUsageExportConfig(
+          bigqueryDestination=bigquery_destination)
+      update = self.messages.ClusterUpdate(
+          desiredResourceUsageExportConfig=export_config)
+    elif options.clear_resource_usage_bigquery_dataset is not None:
+      export_config = self.messages.ResourceUsageExportConfig()
+      update = self.messages.ClusterUpdate(
+          desiredResourceUsageExportConfig=export_config)
 
     if (options.master_authorized_networks
         and not options.enable_master_authorized_networks):

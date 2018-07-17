@@ -15,7 +15,9 @@
 """Flags and helpers for the compute interconnects commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -23,6 +25,7 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _INTERCONNECT_TYPE_CHOICES_GA = {
     'DEDICATED': 'Dedicated private interconnect.',
+    'PARTNER': 'Partner interconnect. Only available to approved partners.',
 }
 
 _INTERCONNECT_TYPE_CHOICES_BETA_AND_ALPHA = {

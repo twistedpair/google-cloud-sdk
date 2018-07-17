@@ -15,6 +15,7 @@
 """Parameter info lib for resource completers."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import deps
@@ -48,9 +49,6 @@ class ResourceParameterInfo(parameter_info_lib.ParameterInfoByConvention):
       The program state value for parameter_name.
     """
     del check_properties  # Unused.
-    deps_obj = deps.Deps(
-        self.resource_info.BuildFullFallthroughsMap(),
-        parsed_args=self.parsed_args)
     attribute_name = (
         self.resource_info.resource_spec.AttributeName(parameter_name))
     current = properties.VALUES.core.disable_prompts.GetBool()
@@ -59,7 +57,10 @@ class ResourceParameterInfo(parameter_info_lib.ParameterInfoByConvention):
     # being run during completion.
     properties.VALUES.core.disable_prompts.Set(True)
     try:
-      return deps_obj.Get(attribute_name) if attribute_name else None
+      return deps.Get(
+          attribute_name,
+          self.resource_info.BuildFullFallthroughsMap(),
+          parsed_args=self.parsed_args) if attribute_name else None
     except deps.AttributeNotFoundError:
       return None
     finally:

@@ -358,7 +358,7 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
@@ -369,7 +369,7 @@
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is only visible as GOOGLE_INTERNAL or CONDITION_TRUSTED_TESTER.",
+          "description": "Unimplemented. The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
           "$ref": "Expr"
         }
       }
@@ -528,7 +528,7 @@
             "Default non-attribute.",
             "Either principal or (if present) authority selector.",
             "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". It is not permitted to grant access based on\nthe *absence* of a realm, so realm conditions can only be used in\na \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". Note that a value can be either a realm or a\nrealm group (go\/realm-groups). A match is determined by a realm group\nmembership check performed by a RealmAclRep object (go\/realm-acl-howto).\nIt is not permitted to grant access based on the *absence* of a realm, so\nrealm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN\nor DENY\/NOT_IN).",
             "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).",
             "What types of justifications have been supplied with this request.\nString values should match enum names from tech.iam.JustificationType,\ne.g. \"MANUAL_STRING\". It is not permitted to grant access based on\nthe *absence* of a justification, so justification conditions can only\nbe used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).\n\nMultiple justifications, e.g., a Buganizer ID and a manually-entered\nreason, are normal and supported.",
             "What type of credentials have been supplied with this request.\nString values should match enum names from\nsecurity_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY\nis supported.\nIt is not permitted to grant access based on the *absence* of a\ncredentials type, so the conditions can only be used in a \"positive\"\ncontext (e.g., ALLOW\/IN or DENY\/NOT_IN)."
@@ -2988,7 +2988,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
                       ],
-                      "description": "Creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby ExecuteStreamingSql to specify a subset\nof the query result to read.  The same session and read-only transaction\nmust be used by the PartitionQueryRequest used to create the\npartition tokens and the ExecuteSqlRequests that use the partition tokens.\nPartition tokens become invalid when the session used to create them\nis deleted or begins a new transaction."
+                      "description": "Creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby ExecuteStreamingSql to specify a subset\nof the query result to read.  The same session and read-only transaction\nmust be used by the PartitionQueryRequest used to create the\npartition tokens and the ExecuteSqlRequests that use the partition tokens.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the query, and\nthe whole operation must be restarted from the beginning."
                     },
                     "partitionRead": {
                       "id": "spanner.projects.instances.databases.sessions.partitionRead",
@@ -3017,7 +3017,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
                       ],
-                      "description": "Creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby StreamingRead to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe PartitionReadRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.\nPartition tokens become invalid when the session used to create them\nis deleted or begins a new transaction."
+                      "description": "Creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby StreamingRead to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe PartitionReadRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.  There are no ordering\nguarantees on rows returned among the returned partition tokens, or even\nwithin each individual StreamingRead call issued with a partition_token.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the read, and\nthe whole operation must be restarted from the beginning."
                     }
                   }
                 }

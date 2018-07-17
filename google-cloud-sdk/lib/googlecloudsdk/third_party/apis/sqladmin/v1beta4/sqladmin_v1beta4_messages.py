@@ -383,18 +383,26 @@ class ExportContext(_messages.Message):
   r"""Database instance export context.
 
   Messages:
-    CsvExportOptionsValue: Options for exporting data as CSV.
+    CsvExportOptionsValue: Options for exporting data as CSV. Exporting in CSV
+      format using the Cloud SQL Admin API is not supported for PostgreSQL
+      instances.
     SqlExportOptionsValue: Options for exporting data as SQL statements.
 
   Fields:
-    csvExportOptions: Options for exporting data as CSV.
-    databases: Databases (for example, guestbook) from which the export is
-      made. If fileType is SQL and no database is specified, all databases are
-      exported. If fileType is CSV, you can optionally specify at most one
-      database to export. If csvExportOptions.selectQuery also specifies the
-      database, this field will be ignored.
+    csvExportOptions: Options for exporting data as CSV. Exporting in CSV
+      format using the Cloud SQL Admin API is not supported for PostgreSQL
+      instances.
+    databases: Databases to be exported. MySQL instances: If fileType is SQL
+      and no database is specified, all databases are exported, except for the
+      mysql system database. If fileType is CSV, you can specify one database,
+      either by using this property or by using the
+      csvExportOptions.selectQuery property, which takes precedence over this
+      property. PostgreSQL instances: If fileType is SQL, you must specify one
+      database to be exported. A fileType of CSV is not supported for
+      PostgreSQL instances.
     fileType: The file type for the specified uri. SQL: The file contains SQL
-      statements. CSV: The file contains CSV data.
+      statements. CSV: The file contains CSV data. CSV is not supported for
+      PostgreSQL instances.
     kind: This is always sql#exportContext.
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
@@ -405,7 +413,8 @@ class ExportContext(_messages.Message):
   """
 
   class CsvExportOptionsValue(_messages.Message):
-    r"""Options for exporting data as CSV.
+    r"""Options for exporting data as CSV. Exporting in CSV format using the
+    Cloud SQL Admin API is not supported for PostgreSQL instances.
 
     Fields:
       selectQuery: The select query used to extract the data.
@@ -420,6 +429,7 @@ class ExportContext(_messages.Message):
       schemaOnly: Export only schemas.
       tables: Tables to export, or that were exported, from the specified
         database. If you specify tables, specify one and only one database.
+        For PostgreSQL instances, you can specify only one table.
     """
 
     schemaOnly = _messages.BooleanField(1)
@@ -494,26 +504,31 @@ class ImportContext(_messages.Message):
   r"""Database instance import context.
 
   Messages:
-    CsvImportOptionsValue: Options for importing data as CSV.
+    CsvImportOptionsValue: Options for importing data as CSV. Importing CSV
+      data using the Cloud SQL Admin API is not supported for PostgreSQL
+      instances.
 
   Fields:
-    csvImportOptions: Options for importing data as CSV.
-    database: The database (for example, guestbook) to which the import is
-      made. If fileType is SQL and no database is specified, it is assumed
-      that the database is specified in the file to be imported. If fileType
-      is CSV, it must be specified.
+    csvImportOptions: Options for importing data as CSV. Importing CSV data
+      using the Cloud SQL Admin API is not supported for PostgreSQL instances.
+    database: The target database for the import. If fileType is SQL, this
+      field is required only if the import file does not specify a database,
+      and is overridden by any database specification in the import file. If
+      fileType is CSV, one database must be specified.
     fileType: The file type for the specified uri. SQL: The file contains SQL
-      statements. CSV: The file contains CSV data.
+      statements. CSV: The file contains CSV data. Importing CSV data using
+      the Cloud SQL Admin API is not supported for PostgreSQL instances.
     importUser: The PostgreSQL user for this import operation. Defaults to
-      cloudsqlsuperuser. Used only for PostgreSQL instances.
+      cloudsqlsuperuser. PostgreSQL instances only.
     kind: This is always sql#importContext.
-    uri: A path to the file in Google Cloud Storage from which the import is
-      made. The URI is in the form gs://bucketName/fileName. Compressed gzip
-      files (.gz) are supported when fileType is SQL.
+    uri: A path to the file in Cloud Storage from which the import is made.
+      The URI is in the form gs://bucketName/fileName. Compressed gzip files
+      (.gz) are supported when fileType is SQL.
   """
 
   class CsvImportOptionsValue(_messages.Message):
-    r"""Options for importing data as CSV.
+    r"""Options for importing data as CSV. Importing CSV data using the Cloud
+    SQL Admin API is not supported for PostgreSQL instances.
 
     Fields:
       columns: The columns to which CSV data is imported. If not specified,

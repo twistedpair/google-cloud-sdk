@@ -89,6 +89,13 @@ class AuditEvent(_messages.Message):
   ster/staging/src/k8s.io/apiserver/pkg/apis/audit/v1beta1/generated.proto.
 
   Messages:
+    AnnotationsValue: Annotations is an unstructured key value map stored with
+      an audit event that may be set by plugins invoked in the request serving
+      chain, including authentication, authorization and admission plugins.
+      Keys should uniquely identify the informing component to avoid name
+      collisions (e.g. podsecuritypolicy.admission.k8s.io/policy). Values
+      should be short. Annotations are included in the Metadata level.
+      +optional
     OldRequestObjectValue: API object from the request, in JSON format. The
       RequestObject is recorded as-is in the request (possibly re-encoded as
       JSON), prior to version conversion, defaulting, admission or merging. It
@@ -102,6 +109,13 @@ class AuditEvent(_messages.Message):
       +optional
 
   Fields:
+    annotations: Annotations is an unstructured key value map stored with an
+      audit event that may be set by plugins invoked in the request serving
+      chain, including authentication, authorization and admission plugins.
+      Keys should uniquely identify the informing component to avoid name
+      collisions (e.g. podsecuritypolicy.admission.k8s.io/policy). Values
+      should be short. Annotations are included in the Metadata level.
+      +optional
     auditID: Unique audit ID, generated for each request.
     impersonatedUser: Impersonated user information. +optional
     metadata: ObjectMeta is included for interoperability with Kubernetes API
@@ -150,6 +164,36 @@ class AuditEvent(_messages.Message):
     verb: Verb is the kubernetes verb associated with the request.  For non-
       resource requests, this is identical to HttpMethod.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Annotations is an unstructured key value map stored with an audit
+    event that may be set by plugins invoked in the request serving chain,
+    including authentication, authorization and admission plugins. Keys should
+    uniquely identify the informing component to avoid name collisions (e.g.
+    podsecuritypolicy.admission.k8s.io/policy). Values should be short.
+    Annotations are included in the Metadata level. +optional
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OldRequestObjectValue(_messages.Message):
@@ -209,23 +253,24 @@ class AuditEvent(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  auditID = _messages.StringField(1)
-  impersonatedUser = _messages.MessageField('AuthnV1UserInfo', 2)
-  metadata = _messages.MessageField('ObjectMeta', 3)
-  objectRef = _messages.MessageField('AuditObjectReference', 4)
-  oldRequestObject = _messages.MessageField('OldRequestObjectValue', 5)
-  oldResponseObject = _messages.MessageField('OldResponseObjectValue', 6)
-  requestObject = _messages.MessageField('extra_types.JsonValue', 7)
-  requestReceivedTimestamp = _messages.StringField(8)
-  requestURI = _messages.StringField(9)
-  responseObject = _messages.MessageField('extra_types.JsonValue', 10)
-  responseStatus = _messages.MessageField('MetaV1Status', 11)
-  sourceIPs = _messages.StringField(12, repeated=True)
-  stage = _messages.StringField(13)
-  stageTimestamp = _messages.StringField(14)
-  timestamp = _messages.StringField(15)
-  user = _messages.MessageField('AuthnV1UserInfo', 16)
-  verb = _messages.StringField(17)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  auditID = _messages.StringField(2)
+  impersonatedUser = _messages.MessageField('AuthnV1UserInfo', 3)
+  metadata = _messages.MessageField('ObjectMeta', 4)
+  objectRef = _messages.MessageField('AuditObjectReference', 5)
+  oldRequestObject = _messages.MessageField('OldRequestObjectValue', 6)
+  oldResponseObject = _messages.MessageField('OldResponseObjectValue', 7)
+  requestObject = _messages.MessageField('extra_types.JsonValue', 8)
+  requestReceivedTimestamp = _messages.StringField(9)
+  requestURI = _messages.StringField(10)
+  responseObject = _messages.MessageField('extra_types.JsonValue', 11)
+  responseStatus = _messages.MessageField('MetaV1Status', 12)
+  sourceIPs = _messages.StringField(13, repeated=True)
+  stage = _messages.StringField(14)
+  stageTimestamp = _messages.StringField(15)
+  timestamp = _messages.StringField(16)
+  user = _messages.MessageField('AuthnV1UserInfo', 17)
+  verb = _messages.StringField(18)
 
 
 class AuditEventList(_messages.Message):
@@ -2407,7 +2452,6 @@ class NodeConfig(_messages.Message):
       size is 100GB.
     diskType: Type of the disk attached to each node (e.g. 'pd-standard' or
       'pd-ssd')  If unspecified, the default disk type is 'pd-standard'
-      Currently restricted because of b/36071127#comment27
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to

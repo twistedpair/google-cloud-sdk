@@ -384,7 +384,7 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {

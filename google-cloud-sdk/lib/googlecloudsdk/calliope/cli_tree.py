@@ -16,7 +16,9 @@
 """A module for the Cloud SDK CLI tree external representation."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import json
 import os
 import re

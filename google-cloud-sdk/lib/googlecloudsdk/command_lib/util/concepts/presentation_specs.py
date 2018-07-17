@@ -20,7 +20,9 @@ used for resource specs.
 """
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.command_lib.util.concepts import info_holders
 
@@ -208,7 +210,6 @@ class ResourcePresentationSpec(PresentationSpec):
             self.group == other.group)
 
 
-# TODO(b/72941131): Implement _GenerateInfo.
 class MultitypeConceptPresentationSpec(PresentationSpec):
   """Class that specifies how multitype concept arguments are presented."""
 
@@ -267,3 +268,36 @@ class MultitypeConceptPresentationSpec(PresentationSpec):
             self.plural == other.plural and
             self.required == other.required and
             self.group == other.group)
+
+  def _GenerateInfo(self, fallthroughs_map):
+    """Gets the info holder for the ConceptParser."""
+    del fallthroughs_map
+    raise NotImplementedError
+
+
+# Currently no other type of multitype concepts have been implemented.
+# This is subclassed to make it clear which functionality is definitely
+# resource-specific.
+class MultitypeResourcePresentationSpec(MultitypeConceptPresentationSpec):
+  """A resource-specific presentation spec."""
+
+  def _GenerateInfo(self, fallthroughs_map):
+    """Gets the MultitypeResourceInfo object for the ConceptParser.
+
+    Args:
+      fallthroughs_map: {str: [googlecloudsdk.calliope.concepts.deps.
+        _FallthroughBase]}, dict keyed by attribute name to lists of
+        fallthroughs.
+
+    Returns:
+      info_holders.MultitypeResourceInfo, the ResourceInfo object.
+    """
+    return info_holders.ResourceInfo(
+        self.name,
+        self.concept_spec,
+        self.group_help,
+        self.attribute_to_args_map,
+        fallthroughs_map,
+        required=self.required,
+        plural=self.plural,
+        group=self.group)

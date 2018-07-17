@@ -15,7 +15,9 @@
 """CRM API Operations utilities."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import time
 
 from apitools.base.py import encoding

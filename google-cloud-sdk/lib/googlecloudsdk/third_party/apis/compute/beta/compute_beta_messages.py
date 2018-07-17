@@ -1306,10 +1306,10 @@ class AttachedDiskInitializeParams(_messages.Message):
       instance, one of initializeParams.sourceImage or disks.source is
       required except for local SSD.  To create a disk with one of the public
       operating system images, specify the image by its family name. For
-      example, specify family/debian-8 to use the latest Debian 8 image:
-      projects/debian-cloud/global/images/family/debian-8   Alternatively, use
+      example, specify family/debian-9 to use the latest Debian 9 image:
+      projects/debian-cloud/global/images/family/debian-9   Alternatively, use
       a specific version of a public operating system image: projects/debian-
-      cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
+      cloud/global/images/debian-9-stretch-vYYYYMMDD   To create a disk with a
       custom image that you created, specify the image name in the following
       format: global/images/my-custom-image   You can also specify a custom
       image by its image family, which returns the latest version of the image
@@ -13102,6 +13102,21 @@ class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
   securityPolicy = _messages.StringField(3, required=True)
 
 
+class ComputeSecurityPoliciesSetLabelsRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesSetLabelsRequest object.
+
+  Fields:
+    globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name of the resource for this request.
+  """
+
+  globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeSecurityPoliciesTestIamPermissionsRequest(_messages.Message):
   r"""A ComputeSecurityPoliciesTestIamPermissionsRequest object.
 
@@ -16208,10 +16223,10 @@ class Disk(_messages.Message):
     sourceImage: The source image used to create this disk. If the source
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
-      name. For example, specify family/debian-8 to use the latest Debian 8
-      image: projects/debian-cloud/global/images/family/debian-8
+      name. For example, specify family/debian-9 to use the latest Debian 9
+      image: projects/debian-cloud/global/images/family/debian-9
       Alternatively, use a specific version of a public operating system
-      image: projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
+      image: projects/debian-cloud/global/images/debian-9-stretch-vYYYYMMDD
       To create a disk with a custom image that you created, specify the image
       name in the following format: global/images/my-custom-image   You can
       also specify a custom image by its image family, which returns the
@@ -19789,10 +19804,11 @@ class Instance(_messages.Message):
       SUSPENDED, and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
-    tags: A list of tags to apply to this instance. Tags are used to identify
-      valid sources or targets for network firewalls and are specified by the
-      client during instance creation. The tags can be later modified by the
-      setTags method. Each tag within the list must comply with RFC1035.
+    tags: Tags to apply to this instance. Tags are used to identify valid
+      sources or targets for network firewalls and are specified by the client
+      during instance creation. The tags can be later modified by the setTags
+      method. Each tag within the list must comply with RFC1035. Multiple tags
+      can be specified via the 'tags.items' field.
     zone: [Output Only] URL of the zone where the instance resides. You must
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
@@ -28129,6 +28145,7 @@ class Quota(_messages.Message):
       DISKS_TOTAL_GB: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
+      GPUS_ALL_REGIONS: <no description>
       HEALTH_CHECKS: <no description>
       IMAGES: <no description>
       INSTANCES: <no description>
@@ -28146,11 +28163,17 @@ class Quota(_messages.Message):
       NETWORK_ENDPOINT_GROUPS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
+      NVIDIA_P100_VWS_GPUS: <no description>
+      NVIDIA_P4_GPUS: <no description>
+      NVIDIA_P4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_P4_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_P4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
@@ -28183,50 +28206,57 @@ class Quota(_messages.Message):
     DISKS_TOTAL_GB = 6
     FIREWALLS = 7
     FORWARDING_RULES = 8
-    HEALTH_CHECKS = 9
-    IMAGES = 10
-    INSTANCES = 11
-    INSTANCE_GROUPS = 12
-    INSTANCE_GROUP_MANAGERS = 13
-    INSTANCE_TEMPLATES = 14
-    INTERCONNECTS = 15
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 16
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 17
-    INTERNAL_ADDRESSES = 18
-    IN_USE_ADDRESSES = 19
-    IN_USE_BACKUP_SCHEDULES = 20
-    LOCAL_SSD_TOTAL_GB = 21
-    NETWORKS = 22
-    NETWORK_ENDPOINT_GROUPS = 23
-    NVIDIA_K80_GPUS = 24
-    NVIDIA_P100_GPUS = 25
-    NVIDIA_V100_GPUS = 26
-    PREEMPTIBLE_CPUS = 27
-    PREEMPTIBLE_LOCAL_SSD_GB = 28
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 29
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 30
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 31
-    REGIONAL_AUTOSCALERS = 32
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 33
-    RESOURCE_POLICIES = 34
-    ROUTERS = 35
-    ROUTES = 36
-    SECURITY_POLICIES = 37
-    SECURITY_POLICY_RULES = 38
-    SNAPSHOTS = 39
-    SSD_TOTAL_GB = 40
-    SSL_CERTIFICATES = 41
-    STATIC_ADDRESSES = 42
-    SUBNETWORKS = 43
-    TARGET_HTTPS_PROXIES = 44
-    TARGET_HTTP_PROXIES = 45
-    TARGET_INSTANCES = 46
-    TARGET_POOLS = 47
-    TARGET_SSL_PROXIES = 48
-    TARGET_TCP_PROXIES = 49
-    TARGET_VPN_GATEWAYS = 50
-    URL_MAPS = 51
-    VPN_TUNNELS = 52
+    GPUS_ALL_REGIONS = 9
+    HEALTH_CHECKS = 10
+    IMAGES = 11
+    INSTANCES = 12
+    INSTANCE_GROUPS = 13
+    INSTANCE_GROUP_MANAGERS = 14
+    INSTANCE_TEMPLATES = 15
+    INTERCONNECTS = 16
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 17
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 18
+    INTERNAL_ADDRESSES = 19
+    IN_USE_ADDRESSES = 20
+    IN_USE_BACKUP_SCHEDULES = 21
+    LOCAL_SSD_TOTAL_GB = 22
+    NETWORKS = 23
+    NETWORK_ENDPOINT_GROUPS = 24
+    NVIDIA_K80_GPUS = 25
+    NVIDIA_P100_GPUS = 26
+    NVIDIA_P100_VWS_GPUS = 27
+    NVIDIA_P4_GPUS = 28
+    NVIDIA_P4_VWS_GPUS = 29
+    NVIDIA_V100_GPUS = 30
+    PREEMPTIBLE_CPUS = 31
+    PREEMPTIBLE_LOCAL_SSD_GB = 32
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 33
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 34
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 35
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 36
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 37
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 38
+    REGIONAL_AUTOSCALERS = 39
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 40
+    RESOURCE_POLICIES = 41
+    ROUTERS = 42
+    ROUTES = 43
+    SECURITY_POLICIES = 44
+    SECURITY_POLICY_RULES = 45
+    SNAPSHOTS = 46
+    SSD_TOTAL_GB = 47
+    SSL_CERTIFICATES = 48
+    STATIC_ADDRESSES = 49
+    SUBNETWORKS = 50
+    TARGET_HTTPS_PROXIES = 51
+    TARGET_HTTP_PROXIES = 52
+    TARGET_INSTANCES = 53
+    TARGET_POOLS = 54
+    TARGET_SSL_PROXIES = 55
+    TARGET_TCP_PROXIES = 56
+    TARGET_VPN_GATEWAYS = 57
+    URL_MAPS = 58
+    VPN_TUNNELS = 59
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -31180,8 +31210,13 @@ class SecurityPoliciesWafConfig(_messages.Message):
 
 class SecurityPolicy(_messages.Message):
   r"""A security policy is comprised of one or more rules. It can also be
-  associated with one or more 'targets'. Next available tag: 11 (==
-  resource_for beta.securityPolicies ==)
+  associated with one or more 'targets'. (== resource_for
+  beta.securityPolicies ==)
+
+  Messages:
+    LabelsValue: Labels to apply to this security policy resource. These can
+      be later modified by the setLabels method. Each label key/value must
+      comply with RFC1035. Label values may be empty.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -31199,6 +31234,16 @@ class SecurityPolicy(_messages.Message):
       is defined by the server.
     kind: [Output only] Type of the resource. Always compute#securityPolicyfor
       security policies
+    labelFingerprint: A fingerprint for the labels being applied to this
+      security policy, which is essentially a hash of the labels set used for
+      optimistic locking. The fingerprint is initially generated by Compute
+      Engine and changes after every request to modify or update labels. You
+      must always provide an up-to-date fingerprint hash in order to update or
+      change labels.  To see the latest fingerprint, make get() request to the
+      security policy.
+    labels: Labels to apply to this security policy resource. These can be
+      later modified by the setLabels method. Each label key/value must comply
+      with RFC1035. Label values may be empty.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -31213,14 +31258,42 @@ class SecurityPolicy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to apply to this security policy resource. These can be later
+    modified by the setLabels method. Each label key/value must comply with
+    RFC1035. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
   fingerprint = _messages.BytesField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default=u'compute#securityPolicy')
-  name = _messages.StringField(6)
-  rules = _messages.MessageField('SecurityPolicyRule', 7, repeated=True)
-  selfLink = _messages.StringField(8)
+  labelFingerprint = _messages.BytesField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  rules = _messages.MessageField('SecurityPolicyRule', 9, repeated=True)
+  selfLink = _messages.StringField(10)
 
 
 class SecurityPolicyList(_messages.Message):
@@ -31477,11 +31550,10 @@ class ShieldedVmConfig(_messages.Message):
   r"""A set of Shielded VM options.
 
   Fields:
-    enableIntegrityMonitoring: Defines whether the instance should have
-      integrity monitoring enabled.
-    enableSecureBoot: Defines whether the instance should have secure boot
-      enabled.
-    enableVtpm: Defines whether the instance should have the TPM enabled.
+    enableIntegrityMonitoring: Defines whether the instance has integrity
+      monitoring enabled.
+    enableSecureBoot: Defines whether the instance has Secure Boot enabled.
+    enableVtpm: Defines whether the instance has the vTPM enabled.
   """
 
   enableIntegrityMonitoring = _messages.BooleanField(1)
@@ -31490,11 +31562,12 @@ class ShieldedVmConfig(_messages.Message):
 
 
 class ShieldedVmIntegrityPolicy(_messages.Message):
-  r"""The policy describes how boot integrity measurements are evaluated.
+  r"""The policy describes the baseline against which VM instance boot
+  integrity is measured.
 
   Fields:
-    updateAutoLearnPolicy: Triggers an auto relearn event: the integrity
-      monitoring module copies existing guest measurements to the baseline.
+    updateAutoLearnPolicy: Updates the integrity policy baseline using the
+      measurements from the VM instance's most recent boot.
   """
 
   updateAutoLearnPolicy = _messages.BooleanField(1)

@@ -16,8 +16,9 @@
 """Common helper methods for Genomics commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
-import re
+
 import tempfile
 
 from apitools.base.protorpclite.messages import DecodeError
@@ -194,32 +195,3 @@ def GetQueryFields(referenced_fields, prefix):
     return None
   return ','.join(['nextPageToken'] +
                   ['.'.join([prefix, field]) for field in referenced_fields])
-
-
-def CanonicalizeOperationName(name):
-  """Returns a canonical form of an operation name and whether it is a v2 name.
-
-  Args:
-    name: An operation name, optionally including projects/, operations/, and a
-        project name.
-
-  Returns:
-    A tuple containing the canonicalized operation name and a bool which is true
-        if the name is a v2 operation name.
-  """
-  v2 = True
-
-  # Split name and strip API version if present.
-  parts = name.split('/')[-4:]
-  if len(parts) == 1:
-    parts.insert(0, 'operations')
-
-  if re.search('[a-zA-Z]', parts[-1]):
-    v2 = False
-  else:
-    if len(parts) == 2:
-      parts.insert(0, GetProjectId())
-    if len(parts) == 3:
-      parts.insert(0, 'projects')
-
-  return '/'.join(parts), v2

@@ -460,7 +460,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists log entries. Use this method to retrieve log entries from Stackdriver Logging. For ways to export log entries, see Exporting Logs.
+      r"""Lists log entries. Use this method to retrieve log entries from Logging. For ways to export log entries, see Exporting Logs.
 
       Args:
         request: (ListLogEntriesRequest) input message
@@ -486,7 +486,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Write(self, request, global_params=None):
-      r"""Writes log entries to Stackdriver Logging. This API method is the only way to send log entries to Stackdriver Logging. This method is used, directly or indirectly, by the Stackdriver Logging agent (fluentd) and all logging libraries configured to use Stackdriver Logging. A single request may contain log entries for a maximum of 1000 different resources (projects, organizations, billing accounts or folders).
+      r"""Writes log entries to Logging. This API method is the only way to send log entries to Logging. This method is used, directly or indirectly, by the Logging agent (fluentd) and all logging libraries configured to use Logging. A single request may contain log entries for a maximum of 1000 different resources (projects, organizations, billing accounts or folders).
 
       Args:
         request: (WriteLogEntriesRequest) input message
@@ -1122,7 +1122,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists the descriptors for monitored resource types used by Stackdriver Logging.
+      r"""Lists the descriptors for monitored resource types used by Logging.
 
       Args:
         request: (LoggingMonitoredResourceDescriptorsListRequest) input message

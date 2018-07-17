@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common classes and functions for forwarding rules."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
@@ -74,7 +77,7 @@ def GetGlobalTarget(resources, args, include_alpha=False):
   """Return the forwarding target for a globally scoped request."""
   _ValidateGlobalArgs(args, include_alpha)
   if args.target_http_proxy:
-    return flags.TARGET_HTTP_PROXY_ARG.ResolveAsResource(args, resources)
+    return flags.TargetHttpProxyArg().ResolveAsResource(args, resources)
 
   if args.target_https_proxy:
     return flags.TARGET_HTTPS_PROXY_ARG.ResolveAsResource(args, resources)
@@ -187,7 +190,8 @@ def GetRegionalTarget(client,
     target_ref = flags.BACKEND_SERVICE_ARG.ResolveAsResource(args, resources)
     target_region = target_ref.region
   elif args.target_http_proxy:
-    target_ref = flags.TARGET_HTTP_PROXY_ARG.ResolveAsResource(args, resources)
+    target_ref = flags.TargetHttpProxyArg(
+        include_alpha=include_alpha).ResolveAsResource(args, resources)
     target_region = region_arg
   elif args.target_https_proxy:
     target_ref = flags.TARGET_HTTPS_PROXY_ARG.ResolveAsResource(args, resources)

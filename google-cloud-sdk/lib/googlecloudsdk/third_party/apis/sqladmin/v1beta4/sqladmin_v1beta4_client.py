@@ -335,7 +335,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List all available database flags for Google Cloud SQL instances.
+      r"""List all available database flags for Cloud SQL instances.
 
       Args:
         request: (SqlFlagsListRequest) input message
@@ -475,7 +475,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Export(self, request, global_params=None):
-      r"""Exports data from a Cloud SQL instance to a Google Cloud Storage bucket as a MySQL dump file.
+      r"""Exports data from a Cloud SQL instance to a Cloud Storage bucket as a SQL dump or CSV file.
 
       Args:
         request: (SqlInstancesExportRequest) input message
@@ -553,7 +553,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports data into a Cloud SQL instance from a MySQL dump file in Google Cloud Storage.
+      r"""Imports data into a Cloud SQL instance from a SQL dump or CSV file in Cloud Storage.
 
       Args:
         request: (SqlInstancesImportRequest) input message

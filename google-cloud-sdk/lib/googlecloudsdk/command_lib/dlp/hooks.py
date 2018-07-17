@@ -16,6 +16,7 @@
 """Argument processors for DLP surface arguments."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 import os
@@ -25,6 +26,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
@@ -382,3 +384,33 @@ def GetIdentifyingFieldsArg():
                     type=arg_parsers.ArgList(),
                     help=help_text)
   ]
+
+
+def _PossiblyWriteRedactedResponseToOutputFile(value, parsed_args):
+  """Helper function for writing redacted contents to an output file."""
+  if not parsed_args.output_file:
+    return
+  with files.BinaryFileWriter(parsed_args.output_file) as outfile:
+    outfile.write(value)
+  log.status.Print('The redacted contents can be viewed in [{}]'.format(
+      parsed_args.output_file))
+
+
+def PossiblyWriteRedactedTextResponseToOutputFile(response, parsed_args):
+  """Write the contents of the redacted text file to parsed_args.output_file."""
+  _PossiblyWriteRedactedResponseToOutputFile(response.item.value, parsed_args)
+  return response
+
+
+def PossiblyWriteRedactedImageResponseToOutputFile(response, parsed_args):
+  """Write the redacted image to parsed_args.output_file."""
+  _PossiblyWriteRedactedResponseToOutputFile(response.redactedImage,
+                                             parsed_args)
+  return response
+
+
+def AddOutputFileFlag():
+  """Add --output-file to a redact command."""
+  return [base.Argument(
+      '--output-file',
+      help='Path to the file to write redacted contents to.')]

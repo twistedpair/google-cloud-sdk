@@ -15,7 +15,9 @@
 """Adapter to use externalized runtimes loaders from gcloud."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import os
 
 from gae_ext_runtime import ext_runtime

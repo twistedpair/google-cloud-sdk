@@ -52,7 +52,7 @@ class Binding(_messages.Message):
       that represents all the  users of that domain. For example, google.com
       or example.com.
     role: Role that is assigned to members. For example, roles/viewer,
-      roles/editor, or roles/owner. Required
+      roles/editor, or roles/owner.
   """
 
   members = _messages.StringField(1, repeated=True)
@@ -1630,15 +1630,16 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
       be used for those parameters.
 
   Fields:
-    instanceId: Optional. A tag that prevents multiple concurrent workflow
+    instanceId: Deprecated. Please use request_id field instead.
+    parameters: Optional. Map from parameter names to values that should be
+      used for those parameters.
+    requestId: Optional. A tag that prevents multiple concurrent workflow
       instances with the same tag from running. This mitigates risk of
       concurrent instances started due to retries.It is recommended to always
       set this value to a UUID
       (https://en.wikipedia.org/wiki/Universally_unique_identifier).The tag
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
-    parameters: Optional. Map from parameter names to values that should be
-      used for those parameters.
     version: Optional. The version of workflow template to instantiate. If
       specified, the workflow will be instantiated only if the current version
       of the workflow template has the supplied version.This option cannot be
@@ -1672,7 +1673,8 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
 
   instanceId = _messages.StringField(1)
   parameters = _messages.MessageField('ParametersValue', 2)
-  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  requestId = _messages.StringField(3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class Job(_messages.Message):

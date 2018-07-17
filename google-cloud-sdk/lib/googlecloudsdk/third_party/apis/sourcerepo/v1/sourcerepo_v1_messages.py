@@ -83,6 +83,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -97,11 +101,12 @@ class Binding(_messages.Message):
       * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -112,6 +117,30 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class ListReposResponse(_messages.Message):

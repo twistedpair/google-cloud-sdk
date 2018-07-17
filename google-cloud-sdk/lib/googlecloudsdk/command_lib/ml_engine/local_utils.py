@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for local ml-engine operations."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import json
 import os
 import subprocess
@@ -89,7 +92,7 @@ def RunPredict(model_dir, json_instances=None, text_instances=None,
 
   # Pass the instances to the process that actually runs local prediction.
   for instance in instances:
-    proc.stdin.write(json.dumps(instance) + '\n')
+    proc.stdin.write((json.dumps(instance) + '\n').encode('utf8'))
   proc.stdin.flush()
 
   # Get the results for the local prediction.

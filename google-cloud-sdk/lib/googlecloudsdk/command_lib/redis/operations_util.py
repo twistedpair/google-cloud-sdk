@@ -15,6 +15,7 @@
 """Utilities for `gcloud redis operations` commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 from six.moves import filter  # pylint: disable=redefined-builtin

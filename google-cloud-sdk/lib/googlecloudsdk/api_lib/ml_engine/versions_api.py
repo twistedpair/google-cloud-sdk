@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for dealing with ML versions API."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
@@ -44,7 +47,8 @@ class VersionsClient(object):
 
   _ALLOWED_YAML_FIELDS = set(['autoScaling', 'description', 'deploymentUri',
                               'runtimeVersion', 'manualScaling', 'labels',
-                              'machineType', 'framework', 'pythonVersion'])
+                              'machineType', 'framework', 'pythonVersion',
+                              'modelClass', 'packageUris'])
 
   def __init__(self, client=None, messages=None):
     self.client = client or GetClientInstance()
@@ -72,7 +76,8 @@ class VersionsClient(object):
             parent=model_ref.RelativeName(),
             version=version))
 
-  def Patch(self, version_ref, labels_update, description=None):
+  def Patch(self, version_ref, labels_update, description=None,
+            model_class_update=None, package_uris=None):
     """Update a version."""
     version = self.messages.GoogleCloudMlV1Version()
     update_mask = []
@@ -83,6 +88,14 @@ class VersionsClient(object):
     if description:
       version.description = description
       update_mask.append('description')
+
+    if model_class_update is not None and model_class_update.needs_update:
+      update_mask.append('modelClass')
+      version.modelClass = model_class_update.value
+
+    if package_uris is not None:
+      update_mask.append('packageUris')
+      version.packageUris = package_uris
 
     if not update_mask:
       raise NoFieldsSpecifiedError('No updates requested.')
@@ -126,7 +139,9 @@ class VersionsClient(object):
                    machine_type=None,
                    description=None,
                    framework=None,
-                   python_version=None):
+                   python_version=None,
+                   model_class=None,
+                   package_uris=None):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -148,6 +163,12 @@ class VersionsClient(object):
       framework: FrameworkValueValuesEnum, the ML framework used to train this
         version of the model.
       python_version: str, The version of Python used to train the model.
+      model_class: str, the FQN of a Python class implementing the Model
+        interface for custom prediction.
+      package_uris: list of str, Cloud Storage URIs containing user-supplied
+        Python code to use.
+
+
 
     Returns:
       A Version object (for the corresponding API version).
@@ -188,7 +209,9 @@ class VersionsClient(object):
         'machineType': machine_type,
         'description': description,
         'framework': framework,
-        'pythonVersion': python_version
+        'pythonVersion': python_version,
+        'modelClass': model_class,
+        'packageUris': package_uris
     }
     for field_name, value in additional_fields.items():
       if value is not None:

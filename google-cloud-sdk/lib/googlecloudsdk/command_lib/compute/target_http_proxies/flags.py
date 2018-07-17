@@ -15,9 +15,12 @@
 """Flags and helpers for the compute target-http-proxies commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -35,11 +38,47 @@ class TargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def TargetHttpProxyArgument(required=True, plural=False):
+class GlobalTargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalTargetHttpProxiesCompleter, self).__init__(
+        collection='compute.targetHttpProxies',
+        api_version='alpha',
+        list_command='alpha compute target-http-proxies list --global --uri',
+        **kwargs)
+
+
+class RegionTargetHttpProxiesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionTargetHttpProxiesCompleter, self).__init__(
+        collection='compute.regionTargetHttpProxies',
+        api_version='alpha',
+        list_command=
+        'alpha compute target-http-proxies list --filter=region:* --uri',
+        **kwargs)
+
+
+class TargetHttpProxiesCompleterAlpha(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(TargetHttpProxiesCompleterAlpha, self).__init__(
+        completers=[
+            GlobalTargetHttpProxiesCompleter, RegionTargetHttpProxiesCompleter
+        ],
+        **kwargs)
+
+
+def TargetHttpProxyArgument(required=True, plural=False, include_alpha=False):
   return compute_flags.ResourceArgument(
       resource_name='target HTTP proxy',
-      completer=TargetHttpProxiesCompleter,
+      completer=TargetHttpProxiesCompleterAlpha
+      if include_alpha else TargetHttpProxiesCompleter,
       plural=plural,
       custom_plural='target HTTP proxies',
       required=required,
-      global_collection='compute.targetHttpProxies')
+      global_collection='compute.targetHttpProxies',
+      regional_collection='compute.regionTargetHttpProxies'
+      if include_alpha else None,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if include_alpha else None)

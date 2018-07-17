@@ -16,7 +16,9 @@
 """Flags and helpers for the compute forwarding-rules commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import textwrap
 
 from googlecloudsdk.calliope import arg_parsers
@@ -215,14 +217,24 @@ SUBNET_ARG = compute_flags.ResourceArgument(
     region_explanation=('If not specified it will be set the'
                         ' region of the forwarding rule.'))
 
-TARGET_HTTP_PROXY_ARG = compute_flags.ResourceArgument(
-    name='--target-http-proxy',
-    required=False,
-    resource_name='http proxy',
-    global_collection='compute.targetHttpProxies',
-    short_help='The target HTTP proxy that will receive the traffic.',
-    detailed_help=('The target HTTP proxy that will receive the traffic. '
-                   'Acceptable values for --ports flag are: 80, 8080.'))
+
+def TargetHttpProxyArg(include_alpha=False):
+  """Return a resource argument for parsing a target http proxy."""
+
+  target_http_proxy_arg = compute_flags.ResourceArgument(
+      name='--target-http-proxy',
+      required=False,
+      resource_name='http proxy',
+      global_collection='compute.targetHttpProxies',
+      regional_collection='compute.regionTargetHttpProxies'
+      if include_alpha else None,
+      short_help='The target HTTP proxy that will receive the traffic.',
+      detailed_help=('The target HTTP proxy that will receive the traffic. '
+                     'Acceptable values for --ports flag are: 80, 8080.'),
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if include_alpha else None)
+  return target_http_proxy_arg
+
 
 TARGET_HTTPS_PROXY_ARG = compute_flags.ResourceArgument(
     name='--target-https-proxy',
@@ -371,7 +383,8 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
   del include_beta
   target = parser.add_mutually_exclusive_group(required=True)
 
-  TARGET_HTTP_PROXY_ARG.AddArgument(parser, mutex_group=target)
+  TargetHttpProxyArg(include_alpha=include_alpha).AddArgument(
+      parser, mutex_group=target)
   TARGET_HTTPS_PROXY_ARG.AddArgument(parser, mutex_group=target)
   TARGET_INSTANCE_ARG.AddArgument(parser, mutex_group=target)
   TARGET_POOL_ARG.AddArgument(parser, mutex_group=target)

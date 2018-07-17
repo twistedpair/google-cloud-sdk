@@ -16,7 +16,9 @@
 """Flags and helpers for the compute subnetworks commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -56,11 +58,12 @@ def SubnetworkResolver():
       'subnetwork', {compute_scope.ScopeEnum.REGION: 'compute.subnetworks'})
 
 
-def AddUpdateArgs(parser):
+def AddUpdateArgs(parser, include_alpha=False):
   """Add args to the parser for subnet update.
 
   Args:
     parser: The argparse parser.
+    include_alpha: Include alpha functionality.
   """
   updated_field = parser.add_mutually_exclusive_group()
 
@@ -103,3 +106,27 @@ def AddUpdateArgs(parser):
       help=('Enable/disable VPC flow logging for this subnet. More information '
             'for VPC flow logs can be found at '
             'https://cloud.google.com/vpc/docs/using-flow-logs.'))
+
+  if include_alpha:
+    updated_field.add_argument(
+        '--role',
+        choices={'ACTIVE': 'The ACTIVE subnet that is currently used.'},
+        type=lambda x: x.replace('-', '_').upper(),
+        help=('The role is set to ACTIVE to update a BACKUP reserved '
+              'address range to\nbe the new ACTIVE address range. Note '
+              'that the only supported value for\nthis flag is ACTIVE since '
+              'setting an address range to BACKUP is not\nsupported. '
+              '\n\nThis field is only valid when updating a reserved IP '
+              'address range used\nfor the purpose of Internal HTTP(S) Load '
+              'Balancer.'))
+
+    parser.add_argument(
+        '--drain-timeout',
+        type=arg_parsers.Duration(lower_bound='0s'),
+        default='0s',
+        help="""\
+        The drain timeout specifies the upper bound in seconds on the amount of
+        time allowed to drain connections from the current ACTIVE subnetwork to
+        the current BACKUP subnetwork. The drain timeout is only applicable when
+        the [--set-role-active] flag is being used.
+        """)

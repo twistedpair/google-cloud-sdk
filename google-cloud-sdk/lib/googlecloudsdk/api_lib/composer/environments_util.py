@@ -15,13 +15,18 @@
 """Utilities for calling the Composer Environments API."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from collections import OrderedDict
 from googlecloudsdk.api_lib.composer import util as api_util
+from googlecloudsdk.calliope import base
 
 
-def GetService():
-  return api_util.GetClientInstance().projects_locations_environments
+# TODO(b/111385813): Refactor utils into a class
+def GetService(release_track=base.ReleaseTrack.GA):
+  return api_util.GetClientInstance(
+      release_track).projects_locations_environments
 
 
 def Create(environment_ref,
@@ -36,7 +41,8 @@ def Create(environment_ref,
            service_account=None,
            oauth_scopes=None,
            tags=None,
-           disk_size_gb=None):
+           disk_size_gb=None,
+           release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Create method.
 
   Args:
@@ -62,11 +68,13 @@ def Create(environment_ref,
     oauth_scopes: [str], the user-provided OAuth scopes
     tags: [str], the user-provided networking tags
     disk_size_gb: int, the disk size of node VMs, in GB
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     Operation: the operation corresponding to the creation of the environment
   """
-  messages = api_util.GetMessagesModule()
+  messages = api_util.GetMessagesModule(release_track=release_track)
   config = messages.EnvironmentConfig()
   is_config_empty = True
   if node_count:
@@ -106,45 +114,53 @@ def Create(environment_ref,
     environment.labels = api_util.DictToMessage(
         labels, messages.Environment.LabelsValue)
 
-  return GetService().Create(
-      api_util.GetMessagesModule()
+  return GetService(release_track=release_track).Create(
+      api_util.GetMessagesModule(release_track=release_track)
       .ComposerProjectsLocationsEnvironmentsCreateRequest(
           environment=environment,
           parent=environment_ref.Parent().RelativeName()))
 
 
-def Delete(environment_ref):
+def Delete(environment_ref, release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Delete method.
 
   Args:
     environment_ref: Resource, the Composer environment resource to
         delete.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     Operation: the operation corresponding to the deletion of the environment
   """
-  return GetService().Delete(
-      api_util.GetMessagesModule()
+  return GetService(release_track=release_track).Delete(
+      api_util.GetMessagesModule(release_track=release_track)
       .ComposerProjectsLocationsEnvironmentsDeleteRequest(
           name=environment_ref.RelativeName()))
 
 
-def Get(environment_ref):
+def Get(environment_ref, release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Get method.
 
   Args:
     environment_ref: Resource, the Composer environment resource to
         retrieve.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     Environment: the requested environment
   """
-  return GetService().Get(api_util.GetMessagesModule()
-                          .ComposerProjectsLocationsEnvironmentsGetRequest(
-                              name=environment_ref.RelativeName()))
+  return GetService(release_track=release_track).Get(
+      api_util.GetMessagesModule(release_track=release_track)
+      .ComposerProjectsLocationsEnvironmentsGetRequest(
+          name=environment_ref.RelativeName()))
 
 
-def List(location_refs, page_size, limit=None):
+def List(location_refs,
+         page_size,
+         limit=None,
+         release_track=base.ReleaseTrack.GA):
   """Lists Composer Environments across all locations.
 
   Uses a hardcoded list of locations, as there is no way to dynamically
@@ -158,21 +174,26 @@ def List(location_refs, page_size, limit=None):
       returned in a single list call.
     limit: An integer specifying the maximum number of environments to list.
         None if all available environments should be returned.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     list: a generator over Environments in the locations in `location_refs`
   """
   return api_util.AggregateListResults(
-      api_util.GetMessagesModule()
+      api_util.GetMessagesModule(release_track=release_track)
       .ComposerProjectsLocationsEnvironmentsListRequest,
-      GetService(),
+      GetService(release_track=release_track),
       location_refs,
       'environments',
       page_size,
       limit=limit)
 
 
-def Patch(environment_ref, environment_patch, update_mask):
+def Patch(environment_ref,
+          environment_patch,
+          update_mask,
+          release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Update method.
 
   Args:
@@ -180,11 +201,14 @@ def Patch(environment_ref, environment_patch, update_mask):
     environment_patch: The Environment message specifying the patch associated
       with the update_mask.
     update_mask: A field mask defining the patch.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
   Returns:
     Operation: the operation corresponding to the environment update
   """
-  return GetService().Patch(api_util.GetMessagesModule()
-                            .ComposerProjectsLocationsEnvironmentsPatchRequest(
-                                name=environment_ref.RelativeName(),
-                                environment=environment_patch,
-                                updateMask=update_mask))
+  return GetService(release_track=release_track).Patch(
+      api_util.GetMessagesModule(release_track=release_track)
+      .ComposerProjectsLocationsEnvironmentsPatchRequest(
+          name=environment_ref.RelativeName(),
+          environment=environment_patch,
+          updateMask=update_mask))

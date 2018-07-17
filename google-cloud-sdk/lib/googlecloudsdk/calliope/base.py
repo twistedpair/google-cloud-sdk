@@ -17,7 +17,9 @@
 """
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import abc
 import collections
 from functools import wraps
@@ -883,6 +885,12 @@ def DisableUserProjectQuota():
   if not properties.VALUES.billing.quota_project.IsExplicitlySet():
     properties.VALUES.billing.quota_project.Set(
         properties.VALUES.billing.LEGACY)
+
+
+def EnableUserProjectQuota():
+  """Enable the quota header for current project."""
+  properties.VALUES.billing.quota_project.Set(
+      properties.VALUES.billing.CURRENT_PROJECT)
 
 
 def LogCommand(prog, args):

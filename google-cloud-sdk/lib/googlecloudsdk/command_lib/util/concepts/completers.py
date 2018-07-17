@@ -15,7 +15,9 @@
 """completers for resource library."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.protorpclite import messages
 
 from googlecloudsdk.api_lib.util import resource as resource_lib  # pylint: disable=unused-import

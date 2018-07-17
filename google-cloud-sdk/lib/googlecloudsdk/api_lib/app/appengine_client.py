@@ -16,7 +16,9 @@
 """Module used by gcloud to communicate with appengine services."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from __future__ import with_statement
 
 from googlecloudsdk.api_lib.app import util

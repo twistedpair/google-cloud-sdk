@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20180701",
+ "revision": "20180711",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1085,7 +1085,7 @@
     },
     "sourceImage": {
      "type": "string",
-     "description": "The source image to create this disk. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD.\n\nTo create a disk with one of the public operating system images, specify the image by its family name. For example, specify family/debian-8 to use the latest Debian 8 image:\nprojects/debian-cloud/global/images/family/debian-8\n\n\nAlternatively, use a specific version of a public operating system image:\nprojects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD\n\n\nTo create a disk with a custom image that you created, specify the image name in the following format:\nglobal/images/my-custom-image\n\n\nYou can also specify a custom image by its image family, which returns the latest version of the image in that family. Replace the image name with family/family-name:\nglobal/images/family/my-image-family\n\n\nIf the source image is deleted later, this field will not be set."
+     "description": "The source image to create this disk. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD.\n\nTo create a disk with one of the public operating system images, specify the image by its family name. For example, specify family/debian-9 to use the latest Debian 9 image:\nprojects/debian-cloud/global/images/family/debian-9\n\n\nAlternatively, use a specific version of a public operating system image:\nprojects/debian-cloud/global/images/debian-9-stretch-vYYYYMMDD\n\n\nTo create a disk with a custom image that you created, specify the image name in the following format:\nglobal/images/my-custom-image\n\n\nYou can also specify a custom image by its image family, which returns the latest version of the image in that family. Replace the image name with family/family-name:\nglobal/images/family/my-image-family\n\n\nIf the source image is deleted later, this field will not be set."
     },
     "sourceImageEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
@@ -3017,7 +3017,7 @@
     },
     "sourceImage": {
      "type": "string",
-     "description": "The source image used to create this disk. If the source image is deleted, this field will not be set.\n\nTo create a disk with one of the public operating system images, specify the image by its family name. For example, specify family/debian-8 to use the latest Debian 8 image:\nprojects/debian-cloud/global/images/family/debian-8\n\n\nAlternatively, use a specific version of a public operating system image:\nprojects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD\n\n\nTo create a disk with a custom image that you created, specify the image name in the following format:\nglobal/images/my-custom-image\n\n\nYou can also specify a custom image by its image family, which returns the latest version of the image in that family. Replace the image name with family/family-name:\nglobal/images/family/my-image-family"
+     "description": "The source image used to create this disk. If the source image is deleted, this field will not be set.\n\nTo create a disk with one of the public operating system images, specify the image by its family name. For example, specify family/debian-9 to use the latest Debian 9 image:\nprojects/debian-cloud/global/images/family/debian-9\n\n\nAlternatively, use a specific version of a public operating system image:\nprojects/debian-cloud/global/images/debian-9-stretch-vYYYYMMDD\n\n\nTo create a disk with a custom image that you created, specify the image name in the following format:\nglobal/images/my-custom-image\n\n\nYou can also specify a custom image by its image family, which returns the latest version of the image in that family. Replace the image name with family/family-name:\nglobal/images/family/my-image-family"
     },
     "sourceImageEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
@@ -5733,7 +5733,7 @@
     },
     "tags": {
      "$ref": "Tags",
-     "description": "A list of tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035."
+     "description": "Tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035. Multiple tags can be specified via the 'tags.items' field."
     },
     "zone": {
      "type": "string",
@@ -12023,6 +12023,7 @@
       "DISKS_TOTAL_GB",
       "FIREWALLS",
       "FORWARDING_RULES",
+      "GPUS_ALL_REGIONS",
       "HEALTH_CHECKS",
       "IMAGES",
       "INSTANCES",
@@ -12039,11 +12040,17 @@
       "NETWORKS",
       "NVIDIA_K80_GPUS",
       "NVIDIA_P100_GPUS",
+      "NVIDIA_P100_VWS_GPUS",
+      "NVIDIA_P4_GPUS",
+      "NVIDIA_P4_VWS_GPUS",
       "NVIDIA_V100_GPUS",
       "PREEMPTIBLE_CPUS",
       "PREEMPTIBLE_LOCAL_SSD_GB",
       "PREEMPTIBLE_NVIDIA_K80_GPUS",
       "PREEMPTIBLE_NVIDIA_P100_GPUS",
+      "PREEMPTIBLE_NVIDIA_P100_VWS_GPUS",
+      "PREEMPTIBLE_NVIDIA_P4_GPUS",
+      "PREEMPTIBLE_NVIDIA_P4_VWS_GPUS",
       "PREEMPTIBLE_NVIDIA_V100_GPUS",
       "REGIONAL_AUTOSCALERS",
       "REGIONAL_INSTANCE_GROUP_MANAGERS",
@@ -12068,6 +12075,13 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -14088,6 +14102,13 @@
      "type": "boolean",
      "description": "Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine (not terminated by a user). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted.\n\nBy default, this is set to true so an instance is automatically restarted if it is terminated by Compute Engine."
     },
+    "nodeAffinities": {
+     "type": "array",
+     "description": "A set of node affinity and anti-affinity.",
+     "items": {
+      "$ref": "SchedulingNodeAffinity"
+     }
+    },
     "onHostMaintenance": {
      "type": "string",
      "description": "Defines the maintenance behavior for this instance. For standard instances, the default behavior is MIGRATE. For preemptible instances, the default and only possible behavior is TERMINATE. For more information, see Setting Instance Scheduling Options.",
@@ -14103,6 +14124,38 @@
     "preemptible": {
      "type": "boolean",
      "description": "Defines whether the instance is preemptible. This can only be set during instance creation, it cannot be set or changed after the instance has been created."
+    }
+   }
+  },
+  "SchedulingNodeAffinity": {
+   "id": "SchedulingNodeAffinity",
+   "type": "object",
+   "description": "Node Affinity: the configuration of desired nodes onto which this Instance could be scheduled.",
+   "properties": {
+    "key": {
+     "type": "string",
+     "description": "Corresponds to the label key of Node resource."
+    },
+    "operator": {
+     "type": "string",
+     "description": "Defines the operation of node selection.",
+     "enum": [
+      "IN",
+      "NOT_IN",
+      "OPERATOR_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "values": {
+     "type": "array",
+     "description": "Corresponds to the label values of Node resource.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },

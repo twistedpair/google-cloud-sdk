@@ -15,7 +15,9 @@
 """services helper functions."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.services import exceptions
@@ -220,4 +222,4 @@ def _GetClientInstance():
   enable_resource_quota = (
       properties.VALUES.billing.quota_project.IsExplicitlySet())
   return apis.GetClientInstance(
-      'serviceusage', 'v1beta1', enable_resource_quota=enable_resource_quota)
+      'serviceusage', 'v1', enable_resource_quota=enable_resource_quota)

@@ -318,6 +318,9 @@ apis:
   iam:
     v1:
       discovery_doc: iam_v1.json
+  kubernetespolicy:
+    v1alpha1:
+      discovery_doc: kubernetespolicy_v1alpha1.json
   language:
     v1beta2:
       discovery_doc: language_v1beta2.json
@@ -376,6 +379,9 @@ apis:
   serviceusage:
     v1beta1:
       discovery_doc: serviceusage_v1beta1.json
+    v1:
+      discovery_doc: serviceusage_v1.json
+      default: true
   serviceuser:
     v1:
       discovery_doc: serviceuser_v1.json
@@ -449,8 +455,6 @@ apis:
       resources:
         images:
           path: images
-    v1alpha1:
-      discovery_doc: alpha_vision_v1alpha1.json
   dlp:
     v2:
       discovery_doc: dlp_v2.json

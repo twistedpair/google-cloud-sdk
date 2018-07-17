@@ -15,7 +15,9 @@
 """Facilities for getting a list of Cloud resources."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import itertools
 
 from googlecloudsdk.api_lib.compute import constants

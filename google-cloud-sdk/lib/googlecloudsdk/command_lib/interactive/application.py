@@ -16,6 +16,7 @@
 """The gcloud interactive application."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
@@ -41,6 +42,7 @@ from prompt_toolkit import application as pt_application
 from prompt_toolkit import auto_suggest
 from prompt_toolkit import buffer as pt_buffer
 from prompt_toolkit import document
+from prompt_toolkit import enums
 from prompt_toolkit import filters
 from prompt_toolkit import history as pt_history
 from prompt_toolkit import interface
@@ -115,7 +117,7 @@ def _GetJustifiedTokens(labels, width=80, justify=True):
     if not label_count:
       return []
     elif label_count > 1:
-      separator_width = (width - used_width) / (label_count - 1)
+      separator_width = (width - used_width) // (label_count - 1)
       if separator_width < 1:
         separator_width = 1
     else:
@@ -161,8 +163,7 @@ class Application(object):
     self.args = args
     self.coshell = cosh
     self.config = config
-    self.key_bindings = bindings.KeyBindings(
-        edit_mode=self.coshell.edit_mode == 'emacs')
+    self.key_bindings = bindings.KeyBindings()
 
     # Load the default CLI trees. On startup we ignore out of date trees. The
     # alternative is to regenerate them before the first prompt. This could be
@@ -299,6 +300,13 @@ class Application(object):
     doc = self.cli.run()
     return doc.text if doc else None
 
+  def SetModes(self):
+    """Called when coshell modes may have changed."""
+    if self.coshell.edit_mode == 'emacs':
+      self.cli.editing_mode = enums.EditingMode.EMACS
+    else:
+      self.cli.editing_mode = enums.EditingMode.VI
+
   def Run(self, text):
     """Runs the command(s) in text and waits for them to complete."""
     status = self.coshell.Run(text)
@@ -309,6 +317,7 @@ class Application(object):
 
   def Loop(self):
     """Loops Prompt-Run until ^D exit, or quit."""
+    self.coshell.SetModesCallback(self.SetModes)
     while True:
       try:
         text = self.Prompt()
@@ -317,7 +326,8 @@ class Application(object):
         self.Run(text)  # paradoxically ignored - coshell maintains $?
       except EOFError:
         # ctrl-d
-        break
+        if not self.coshell.ignore_eof:
+          break
       except KeyboardInterrupt:
         # ignore ctrl-c
         pass

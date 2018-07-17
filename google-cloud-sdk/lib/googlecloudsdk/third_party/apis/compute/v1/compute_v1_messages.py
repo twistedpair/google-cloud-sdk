@@ -1236,10 +1236,10 @@ class AttachedDiskInitializeParams(_messages.Message):
       instance, one of initializeParams.sourceImage or disks.source is
       required except for local SSD.  To create a disk with one of the public
       operating system images, specify the image by its family name. For
-      example, specify family/debian-8 to use the latest Debian 8 image:
-      projects/debian-cloud/global/images/family/debian-8   Alternatively, use
+      example, specify family/debian-9 to use the latest Debian 9 image:
+      projects/debian-cloud/global/images/family/debian-9   Alternatively, use
       a specific version of a public operating system image: projects/debian-
-      cloud/global/images/debian-8-jessie-vYYYYMMDD   To create a disk with a
+      cloud/global/images/debian-9-stretch-vYYYYMMDD   To create a disk with a
       custom image that you created, specify the image name in the following
       format: global/images/my-custom-image   You can also specify a custom
       image by its image family, which returns the latest version of the image
@@ -13676,10 +13676,10 @@ class Disk(_messages.Message):
     sourceImage: The source image used to create this disk. If the source
       image is deleted, this field will not be set.  To create a disk with one
       of the public operating system images, specify the image by its family
-      name. For example, specify family/debian-8 to use the latest Debian 8
-      image: projects/debian-cloud/global/images/family/debian-8
+      name. For example, specify family/debian-9 to use the latest Debian 9
+      image: projects/debian-cloud/global/images/family/debian-9
       Alternatively, use a specific version of a public operating system
-      image: projects/debian-cloud/global/images/debian-8-jessie-vYYYYMMDD
+      image: projects/debian-cloud/global/images/debian-9-stretch-vYYYYMMDD
       To create a disk with a custom image that you created, specify the image
       name in the following format: global/images/my-custom-image   You can
       also specify a custom image by its image family, which returns the
@@ -16871,10 +16871,11 @@ class Instance(_messages.Message):
       SUSPENDED, and TERMINATED.
     statusMessage: [Output Only] An optional, human-readable explanation of
       the status.
-    tags: A list of tags to apply to this instance. Tags are used to identify
-      valid sources or targets for network firewalls and are specified by the
-      client during instance creation. The tags can be later modified by the
-      setTags method. Each tag within the list must comply with RFC1035.
+    tags: Tags to apply to this instance. Tags are used to identify valid
+      sources or targets for network firewalls and are specified by the client
+      during instance creation. The tags can be later modified by the setTags
+      method. Each tag within the list must comply with RFC1035. Multiple tags
+      can be specified via the 'tags.items' field.
     zone: [Output Only] URL of the zone where the instance resides. You must
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
@@ -24058,6 +24059,7 @@ class Quota(_messages.Message):
       DISKS_TOTAL_GB: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
+      GPUS_ALL_REGIONS: <no description>
       HEALTH_CHECKS: <no description>
       IMAGES: <no description>
       INSTANCES: <no description>
@@ -24074,11 +24076,17 @@ class Quota(_messages.Message):
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
       NVIDIA_P100_GPUS: <no description>
+      NVIDIA_P100_VWS_GPUS: <no description>
+      NVIDIA_P4_GPUS: <no description>
+      NVIDIA_P4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_P4_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_P4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
@@ -24111,49 +24119,56 @@ class Quota(_messages.Message):
     DISKS_TOTAL_GB = 6
     FIREWALLS = 7
     FORWARDING_RULES = 8
-    HEALTH_CHECKS = 9
-    IMAGES = 10
-    INSTANCES = 11
-    INSTANCE_GROUPS = 12
-    INSTANCE_GROUP_MANAGERS = 13
-    INSTANCE_TEMPLATES = 14
-    INTERCONNECTS = 15
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 16
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 17
-    INTERNAL_ADDRESSES = 18
-    IN_USE_ADDRESSES = 19
-    IN_USE_BACKUP_SCHEDULES = 20
-    LOCAL_SSD_TOTAL_GB = 21
-    NETWORKS = 22
-    NVIDIA_K80_GPUS = 23
-    NVIDIA_P100_GPUS = 24
-    NVIDIA_V100_GPUS = 25
-    PREEMPTIBLE_CPUS = 26
-    PREEMPTIBLE_LOCAL_SSD_GB = 27
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 28
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 29
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 30
-    REGIONAL_AUTOSCALERS = 31
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 32
-    RESOURCE_POLICIES = 33
-    ROUTERS = 34
-    ROUTES = 35
-    SECURITY_POLICIES = 36
-    SECURITY_POLICY_RULES = 37
-    SNAPSHOTS = 38
-    SSD_TOTAL_GB = 39
-    SSL_CERTIFICATES = 40
-    STATIC_ADDRESSES = 41
-    SUBNETWORKS = 42
-    TARGET_HTTPS_PROXIES = 43
-    TARGET_HTTP_PROXIES = 44
-    TARGET_INSTANCES = 45
-    TARGET_POOLS = 46
-    TARGET_SSL_PROXIES = 47
-    TARGET_TCP_PROXIES = 48
-    TARGET_VPN_GATEWAYS = 49
-    URL_MAPS = 50
-    VPN_TUNNELS = 51
+    GPUS_ALL_REGIONS = 9
+    HEALTH_CHECKS = 10
+    IMAGES = 11
+    INSTANCES = 12
+    INSTANCE_GROUPS = 13
+    INSTANCE_GROUP_MANAGERS = 14
+    INSTANCE_TEMPLATES = 15
+    INTERCONNECTS = 16
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 17
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 18
+    INTERNAL_ADDRESSES = 19
+    IN_USE_ADDRESSES = 20
+    IN_USE_BACKUP_SCHEDULES = 21
+    LOCAL_SSD_TOTAL_GB = 22
+    NETWORKS = 23
+    NVIDIA_K80_GPUS = 24
+    NVIDIA_P100_GPUS = 25
+    NVIDIA_P100_VWS_GPUS = 26
+    NVIDIA_P4_GPUS = 27
+    NVIDIA_P4_VWS_GPUS = 28
+    NVIDIA_V100_GPUS = 29
+    PREEMPTIBLE_CPUS = 30
+    PREEMPTIBLE_LOCAL_SSD_GB = 31
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 32
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 33
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 34
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 35
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 36
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 37
+    REGIONAL_AUTOSCALERS = 38
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 39
+    RESOURCE_POLICIES = 40
+    ROUTERS = 41
+    ROUTES = 42
+    SECURITY_POLICIES = 43
+    SECURITY_POLICY_RULES = 44
+    SNAPSHOTS = 45
+    SSD_TOTAL_GB = 46
+    SSL_CERTIFICATES = 47
+    STATIC_ADDRESSES = 48
+    SUBNETWORKS = 49
+    TARGET_HTTPS_PROXIES = 50
+    TARGET_HTTP_PROXIES = 51
+    TARGET_INSTANCES = 52
+    TARGET_POOLS = 53
+    TARGET_SSL_PROXIES = 54
+    TARGET_TCP_PROXIES = 55
+    TARGET_VPN_GATEWAYS = 56
+    URL_MAPS = 57
+    VPN_TUNNELS = 58
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -26282,6 +26297,7 @@ class Scheduling(_messages.Message):
       instances. Preemptible instances cannot be automatically restarted.  By
       default, this is set to true so an instance is automatically restarted
       if it is terminated by Compute Engine.
+    nodeAffinities: A set of node affinity and anti-affinity.
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
@@ -26305,8 +26321,39 @@ class Scheduling(_messages.Message):
     TERMINATE = 1
 
   automaticRestart = _messages.BooleanField(1)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 2)
-  preemptible = _messages.BooleanField(3)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 2, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 3)
+  preemptible = _messages.BooleanField(4)
+
+
+class SchedulingNodeAffinity(_messages.Message):
+  r"""Node Affinity: the configuration of desired nodes onto which this
+  Instance could be scheduled.
+
+  Enums:
+    OperatorValueValuesEnum: Defines the operation of node selection.
+
+  Fields:
+    key: Corresponds to the label key of Node resource.
+    operator: Defines the operation of node selection.
+    values: Corresponds to the label values of Node resource.
+  """
+
+  class OperatorValueValuesEnum(_messages.Enum):
+    r"""Defines the operation of node selection.
+
+    Values:
+      IN: <no description>
+      NOT_IN: <no description>
+      OPERATOR_UNSPECIFIED: <no description>
+    """
+    IN = 0
+    NOT_IN = 1
+    OPERATOR_UNSPECIFIED = 2
+
+  key = _messages.StringField(1)
+  operator = _messages.EnumField('OperatorValueValuesEnum', 2)
+  values = _messages.StringField(3, repeated=True)
 
 
 class SerialPortOutput(_messages.Message):

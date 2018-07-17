@@ -15,7 +15,9 @@
 """Backend rewrite tool for Cloud Datastore operations."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import re
 
 from googlecloudsdk.api_lib.datastore import constants

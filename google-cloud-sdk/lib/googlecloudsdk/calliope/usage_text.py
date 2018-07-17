@@ -16,7 +16,9 @@
 """Generate usage text for displaying to the user."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import argparse
 from collections import OrderedDict
 import copy

@@ -22,8 +22,11 @@
       As the values user input are strings by default, the type conversion is
       necessary.
 """
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import abc
 from collections import OrderedDict
 import re

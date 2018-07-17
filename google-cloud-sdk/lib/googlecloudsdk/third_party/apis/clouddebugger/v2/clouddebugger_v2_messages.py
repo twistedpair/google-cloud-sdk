@@ -698,13 +698,17 @@ class SourceLocation(_messages.Message):
   r"""Represents a location in the source code.
 
   Fields:
+    column: Column within a line. The first column in a line as the value `1`.
+      Agents that do not support setting breakpoints on specific columns
+      ignore this field.
     line: Line inside the file. The first line in the file has the value `1`.
     path: Path to the source file within the source context of the target
       binary.
   """
 
-  line = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  path = _messages.StringField(2)
+  column = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  line = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  path = _messages.StringField(3)
 
 
 class StackFrame(_messages.Message):

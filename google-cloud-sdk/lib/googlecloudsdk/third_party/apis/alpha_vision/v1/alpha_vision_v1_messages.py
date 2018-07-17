@@ -282,7 +282,7 @@ class AlphaVisionProjectsLocationsProductsPatchRequest(_messages.Message):
     product: A Product resource to be passed as the request body.
     updateMask: The FieldMask that specifies which fields to update. If
       update_mask isn't specified, all mutable fields are to be updated. Valid
-      mask paths include `product_labels`, `display_name` and `description`.
+      mask paths include `product_labels`, `display_name`, and `description`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1187,126 +1187,6 @@ class GcsSource(_messages.Message):
   """
 
   uri = _messages.StringField(1)
-
-
-class GoogleCloudVisionV1alpha1BatchOperationMetadata(_messages.Message):
-  r"""Metadata for the batch operations such as the current state.  This is
-  included in the `metadata` field of the `Operation` returned by the
-  `GetOperation` call of the `google::longrunning::Operations` service.
-
-  Enums:
-    StateValueValuesEnum: The current state of the batch operation.
-
-  Fields:
-    createTime: The time when the batch request was submitted to the server.
-    state: The current state of the batch operation.
-    updateTime: The time when the batch request is recently updated.
-      google.longrunning.Operation.done is set to true.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of the batch operation.
-
-    Values:
-      STATE_UNSPECIFIED: Invalid.
-      CREATED: Request is created.
-      RUNNING: The batch request is running.
-      DONE: The batch is done and no item has been successfully processed.
-      CANCELLED: The batch is done after the
-        longrunning.Operations.CancelOperation has been called by the user.
-        Any records that were processed before the cancel command are output
-        as specified in the request.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATED = 1
-    RUNNING = 2
-    DONE = 3
-    CANCELLED = 4
-
-  createTime = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  updateTime = _messages.StringField(3)
-
-
-class GoogleCloudVisionV1alpha1ImportCatalogsResponse(_messages.Message):
-  r"""Response message for the `ImportCatalogs` method.  This message is
-  returned by the google.longrunning.Operations.GetOperation method in the
-  returned google.longrunning.Operation.response field.
-
-  Fields:
-    referenceImages: The list of reference_images that are imported
-      successfully.
-    statuses: The rpc status for each ImportCatalogs request, including
-      errors.
-  """
-
-  referenceImages = _messages.MessageField('GoogleCloudVisionV1alpha1ReferenceImage', 1, repeated=True)
-  statuses = _messages.MessageField('Status', 2, repeated=True)
-
-
-class GoogleCloudVisionV1alpha1ReferenceImage(_messages.Message):
-  r"""A `ReferenceImage` represents a product image and its associated
-  metadata, such as product ID, category, and bounding box.
-
-  Enums:
-    CategoryValueValuesEnum: The category for the product identified by the
-      reference image. Optional. Inferred by the system if not specified in
-      the create request. [Deprecated] Use `product_category`.
-
-  Fields:
-    boundingPoly: The bounding polygon around the area of interest in the
-      reference image. Optional. Inferred by the system if not provided. If
-      `product_category` is specified in the create request without
-      `bounding_poly`, the inferred bounding polygon is the entire image.  The
-      provided shape is converted into a non-rotated rectangle. Once
-      converted, the small edge of the rectangle must be greater than or equal
-      to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is ok; 1:5
-      is not).
-    category: The category for the product identified by the reference image.
-      Optional. Inferred by the system if not specified in the create request.
-      [Deprecated] Use `product_category`.
-    createTime: Resource creation timestamp. Output only.
-    deleteTime: Resource deletion timestamp.  This timestamp indicates when
-      the resource was marked for deletion. Resources marked for deletion will
-      continue to show up in product search results until the index is rebuilt
-      (currently daily).  The value of this field is 0 for resources that have
-      NOT been deleted.  Output only.
-    imageUri: The Google Cloud Storage URI of the reference image.  Required.
-    name: The resource name of the reference image.  Format is:
-      `productSearch/catalogs/CATALOG_NUMBER/referenceImages/IMAGE_NUMBER`.
-      This field is ignored when creating a reference image.
-    productCategory: The category for the product identified by the reference
-      image. Optional. Inferred by the system if not specified in the create
-      request. Supported values are `bag` and `shoe`.
-    productId: A user-defined ID for the product identified by the reference
-      image. Required. A `productId` can be associated with multiple reference
-      images.  Restricted to 255 characters matching the following regular
-      expression: `[a-zA-Z0-9_-]+`
-  """
-
-  class CategoryValueValuesEnum(_messages.Enum):
-    r"""The category for the product identified by the reference image.
-    Optional. Inferred by the system if not specified in the create request.
-    [Deprecated] Use `product_category`.
-
-    Values:
-      PRODUCT_SEARCH_CATEGORY_UNSPECIFIED: Default value used when a category
-        is not specified.
-      SHOES: Shoes category.
-      BAGS: Bags category.
-    """
-    PRODUCT_SEARCH_CATEGORY_UNSPECIFIED = 0
-    SHOES = 1
-    BAGS = 2
-
-  boundingPoly = _messages.MessageField('BoundingPoly', 1)
-  category = _messages.EnumField('CategoryValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  imageUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  productCategory = _messages.StringField(7)
-  productId = _messages.StringField(8)
 
 
 class GoogleCloudVisionV1p2beta1AnnotateFileResponse(_messages.Message):
@@ -2344,7 +2224,8 @@ class GoogleCloudVisionV1p2beta1WebDetection(_messages.Message):
   r"""Relevant information for the image from the Internet.
 
   Fields:
-    bestGuessLabels: Best guess text labels for the request image.
+    bestGuessLabels: The service's best guess as to the topic of the request
+      image. Inferred from similar images on the open web.
     fullMatchingImages: Fully matching images from the Internet. Can include
       resized copies of the query image.
     pagesWithMatchingImages: Web pages containing the matching images from the
@@ -2668,38 +2549,39 @@ class ImportProductSetsGcsSource(_messages.Message):
 
   Fields:
     csvFileUri: The Google Cloud Storage URI of the input csv file.  The URI
-      must start with gs://  The format of the input csv file should be one
-      image per line. In each line, there are 6 columns. 1. image_uri 2,
-      image_id 3. product_set_id 4. product_id 5, product_category 6,
-      product_display_name 7, labels 8. bounding_poly  Columns 1, 3, 4, and 5
-      are required, other columns are optional. A new ProductSet/Product with
-      the same id will be created on the fly if the ProductSet/Product
-      specified by product_set_id/product_id does not exist.  The image_id
-      field is optional but has to be unique if provided. If it is empty, we
-      will automatically assign an unique id to the image.  The
-      product_display_name field is optional. If it is empty, a space (" ") is
-      used as the place holder for the product display_name, which can be
-      updated later through the realtime API.  If the Product with product_id
-      already exists, the fields product_display_name, product_category and
-      labels are ignored.  If a Product doesn't exist and needs to be created
-      on the fly, the product_display_name field refers to
-      Product.display_name, the product_category field refers to
-      Product.product_category, and the labels field refers to Product.labels.
-      Labels (optional) should be a line containing a list of comma-separated
-      key-value pairs, with the format
-      "key_1=value_1,key_2=value_2,...,key_n=value_n".  The bounding_poly
-      (optional) field is used to identify one region of interest from the
-      image in the same manner as CreateReferenceImage. If no bounding_poly is
-      specified, the system will try to detect regions of interest
-      automatically.  Note that the pipeline will resize the image if the
-      image resolution is too large to process (above 20MP).  Also note that
-      at most one bounding_poly is allowed per line. If the image contains
-      multiple regions of interest, the csv should contain one line per region
-      of interest.  The bounding_poly column should contain an even number of
-      comma-separated numbers, with the format
-      "p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y". Nonnegative integers should be used
-      for absolute bounding polygons, and float values in [0, 1] should be
-      used for normalized bounding polygons.
+      must start with `gs://`.  The format of the input csv file should be one
+      image per line. In each line, there are 8 columns.  1.  image-uri 2.
+      image-id 3.  product-set-id 4.  product-id 5.  product-category 6.
+      product-display-name 7.  labels 8.  bounding-poly  The `image-uri`,
+      `product-set-id`, `product-id`, and `product-category` columns are
+      required. All other columns are optional.  If the `ProductSet` or
+      `Product` specified by the `product-set-id` and `product-id` values does
+      not exist, then the system will create a new `ProductSet` or `Product`
+      for the image. In this case, the `product-display-name` column refers to
+      display_name, the `product-category` column refers to product_category,
+      and the `labels` column refers to product_labels.  The `image-id` column
+      is optional but must be unique if provided. If it is empty, the system
+      will automatically assign a unique id to the image.  The `product-
+      display-name` column is optional. If it is empty, the system sets the
+      display_name field for the product to a space (" "). You can update the
+      `display_name` later by using the API.  If a `Product` with the
+      specified `product-id` already exists, then the system ignores the
+      `product-display-name`, `product-category`, and `labels` columns.  The
+      `labels` column (optional) is a line containing a list of comma-
+      separated key-value pairs, in the following format:
+      "key_1=value_1,key_2=value_2,...,key_n=value_n"  The `bounding-poly`
+      column (optional) identifies one region of interest from the image in
+      the same manner as `CreateReferenceImage`. If you do not specify the
+      `bounding-poly` column, then the system will try to detect regions of
+      interest automatically.  At most one `bounding-poly` column is allowed
+      per line. If the image contains multiple regions of interest, add a line
+      to the CSV file that includes the same product information, and the
+      `bounding-poly` values for each region of interest.  The `bounding-poly`
+      column must contain an even number of comma-separated numbers, in the
+      format "p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y". Use non-negative integers
+      for absolute bounding polygons, and float values in [0, 1] for
+      normalized bounding polygons.  The system will resize the image if the
+      image resolution is too large to process (larger than 20MP).
   """
 
   csvFileUri = _messages.StringField(1)
@@ -2989,16 +2871,6 @@ class LocationInfo(_messages.Message):
   latLng = _messages.MessageField('LatLng', 1)
 
 
-class NormalizedBoundingPoly(_messages.Message):
-  r"""A normalized bounding polygon around a portion of an image.
-
-  Fields:
-    vertices: Normalized vertices of the bounding polygon.
-  """
-
-  vertices = _messages.MessageField('NormalizedVertex', 1, repeated=True)
-
-
 class NormalizedVertex(_messages.Message):
   r"""A vertex represents a 2D point in the image. NOTE: the normalized vertex
   coordinates are relative to the original image and range from 0 to 1.
@@ -3260,137 +3132,44 @@ class Product(_messages.Message):
   productLabels = _messages.MessageField('KeyValue', 5, repeated=True)
 
 
-class ProductInfo(_messages.Message):
-  r"""Information about a product.
-
-  Fields:
-    imageUri: The URI of the image which matched the query image.  This field
-      is returned only if `view` is set to `FULL` in the request.
-    productId: Product ID.
-    score: A confidence level on the match, ranging from 0 (no confidence) to
-      1 (full confidence).  This field is returned only if `view` is set to
-      `FULL` in the request.
-  """
-
-  imageUri = _messages.StringField(1)
-  productId = _messages.StringField(2)
-  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-
-
 class ProductSearchParams(_messages.Message):
   r"""Parameters for a product search request.
-
-  Enums:
-    CategoryValueValuesEnum: The category to search in. Optional. It is
-      inferred by the system if it is not specified. [Deprecated] Use
-      `product_category`.
-    ViewValueValuesEnum: Specifies the verbosity of the  product search
-      results. Optional. Defaults to `BASIC`.
 
   Fields:
     boundingPoly: The bounding polygon around the area of interest in the
       image. Optional. If it is not specified, system discretion will be
       applied.
-    catalogName: The resource name of the catalog to search.  Format is:
-      `productSearch/catalogs/CATALOG_NAME`.
-    category: The category to search in. Optional. It is inferred by the
-      system if it is not specified. [Deprecated] Use `product_category`.
     filter: The filtering expression. This can be used to restrict search
       results based on Product labels. We currently support an AND of OR of
       key-value expressions, where each expression within an OR must have the
       same key.  For example, "(color = red OR color = blue) AND brand =
       Google" is acceptable, but not "(color = red OR brand = Google)" or
       "color: red".
-    normalizedBoundingPoly: The bounding polygon around the area of interest
-      in the image. Optional. If it is not specified, system discretion will
-      be applied. [Deprecated] Use `bounding_poly`.
     productCategories: The list of product categories to search in. Currently,
       we only consider the first category, and either "homegoods" or "apparel"
       should be specified.
-    productCategory: The product category to search in. Optional. It is
-      inferred by the system if it is not specified. Supported values are
-      `bag`, `shoe`, `sunglasses`, `dress`, `outerwear`, `skirt`, `top`,
-      `shorts`, and `pants`.
     productSet: The resource name of a ProductSet to be searched for similar
       images.  Format is:
       `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.
-    view: Specifies the verbosity of the  product search results. Optional.
-      Defaults to `BASIC`.
   """
 
-  class CategoryValueValuesEnum(_messages.Enum):
-    r"""The category to search in. Optional. It is inferred by the system if
-    it is not specified. [Deprecated] Use `product_category`.
-
-    Values:
-      PRODUCT_SEARCH_CATEGORY_UNSPECIFIED: Default value used when a category
-        is not specified.
-      SHOES: Shoes category.
-      BAGS: Bags category.
-    """
-    PRODUCT_SEARCH_CATEGORY_UNSPECIFIED = 0
-    SHOES = 1
-    BAGS = 2
-
-  class ViewValueValuesEnum(_messages.Enum):
-    r"""Specifies the verbosity of the  product search results. Optional.
-    Defaults to `BASIC`.
-
-    Values:
-      BASIC: Product search results contain only `product_category` and
-        `product_id`. Default value.
-      FULL: Product search results contain `product_category`, `product_id`,
-        `image_uri`, and `score`.
-    """
-    BASIC = 0
-    FULL = 1
-
   boundingPoly = _messages.MessageField('BoundingPoly', 1)
-  catalogName = _messages.StringField(2)
-  category = _messages.EnumField('CategoryValueValuesEnum', 3)
-  filter = _messages.StringField(4)
-  normalizedBoundingPoly = _messages.MessageField('NormalizedBoundingPoly', 5)
-  productCategories = _messages.StringField(6, repeated=True)
-  productCategory = _messages.StringField(7)
-  productSet = _messages.StringField(8)
-  view = _messages.EnumField('ViewValueValuesEnum', 9)
+  filter = _messages.StringField(2)
+  productCategories = _messages.StringField(3, repeated=True)
+  productSet = _messages.StringField(4)
 
 
 class ProductSearchResults(_messages.Message):
   r"""Results for a product search request.
 
-  Enums:
-    CategoryValueValuesEnum: Product category. [Deprecated] Use
-      `product_category`.
-
   Fields:
-    category: Product category. [Deprecated] Use `product_category`.
     indexTime: Timestamp of the index which provided these results. Changes
       made after this time are not reflected in the current results.
-    productCategory: Product category. Supported values are `bag` and `shoe`.
-      [Deprecated] `product_category` is provided in each Product.
-    products: List of detected products.
     results: List of results, one for each product match.
   """
 
-  class CategoryValueValuesEnum(_messages.Enum):
-    r"""Product category. [Deprecated] Use `product_category`.
-
-    Values:
-      PRODUCT_SEARCH_CATEGORY_UNSPECIFIED: Default value used when a category
-        is not specified.
-      SHOES: Shoes category.
-      BAGS: Bags category.
-    """
-    PRODUCT_SEARCH_CATEGORY_UNSPECIFIED = 0
-    SHOES = 1
-    BAGS = 2
-
-  category = _messages.EnumField('CategoryValueValuesEnum', 1)
-  indexTime = _messages.StringField(2)
-  productCategory = _messages.StringField(3)
-  products = _messages.MessageField('ProductInfo', 4, repeated=True)
-  results = _messages.MessageField('Result', 5, repeated=True)
+  indexTime = _messages.StringField(1)
+  results = _messages.MessageField('Result', 2, repeated=True)
 
 
 class ProductSet(_messages.Message):
@@ -3654,14 +3433,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -3697,17 +3474,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):
@@ -3858,7 +3633,8 @@ class WebDetection(_messages.Message):
   r"""Relevant information for the image from the Internet.
 
   Fields:
-    bestGuessLabels: Best guess text labels for the request image.
+    bestGuessLabels: The service's best guess as to the topic of the request
+      image. Inferred from similar images on the open web.
     fullMatchingImages: Fully matching images from the Internet. Can include
       resized copies of the query image.
     pagesWithMatchingImages: Web pages containing the matching images from the

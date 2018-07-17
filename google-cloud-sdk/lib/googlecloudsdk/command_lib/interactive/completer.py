@@ -16,6 +16,7 @@
 """The gcloud interactive shell completion."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 import time
@@ -292,4 +293,9 @@ class InteractiveCliCompleter(completion.Completer):
     if not self.event.completion_requested:
       return None, 0
     command = [arg.value for arg in args]
+    # If the input command line ended with a space then the split command line
+    # must end with an empty string if it doesn't already. This instructs the
+    # completer to complete the next arg.
+    if self.empty and command[-1]:
+      command.append('')
     return self.coshell.GetCompletions(command) or None, -len(command[-1])

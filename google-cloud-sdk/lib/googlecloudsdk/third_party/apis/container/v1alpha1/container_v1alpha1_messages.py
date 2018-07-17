@@ -213,6 +213,7 @@ class Cluster(_messages.Message):
   r"""A Google Kubernetes Engine cluster.
 
   Enums:
+    NodeSchedulingStrategyValueValuesEnum: Defines behaviour of k8s scheduler.
     StatusValueValuesEnum: [Output only] The current status of this cluster.
 
   Messages:
@@ -311,7 +312,9 @@ class Cluster(_messages.Message):
       authorized networks feature.
     masterIpv4CidrBlock: The IP prefix in CIDR notation to use for the hosted
       master network. This prefix will be used for assigning private IP
-      addresses to the master or set of masters, as well as the ILB VIP.
+      addresses to the master or set of masters, as well as the ILB VIP. This
+      field is deprecated, use private_cluster_config.master_ipv4_cidr_block
+      instead.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options:  * `monitoring.googleapis.com` -
       the Google Cloud Monitoring service. * `none` - no metrics will be
@@ -339,14 +342,18 @@ class Cluster(_messages.Message):
       `container_ipv4_cidr` range.
     nodePools: The node pools associated with this cluster. This field should
       not be set if "node_config" or "initial_node_count" are specified.
+    nodeSchedulingStrategy: Defines behaviour of k8s scheduler.
     podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
     privateCluster: If this is a private cluster setup. Private clusters are
       clusters that, by default have no external IP addresses on the nodes and
-      where nodes and the master communicate over private IP addresses.
+      where nodes and the master communicate over private IP addresses. This
+      field is deprecated, use private_cluster_config.enabled instead.
+    privateClusterConfig: Configuration for private cluster.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related GCE resources.
     resourceUsageExportConfig: Configuration for exporting resource usages.
       Resource usage export is disabled when this config unspecified.
+    securityProfile: User selected security profile
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
@@ -366,6 +373,21 @@ class Cluster(_messages.Message):
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field is deprecated, use location instead.
   """
+
+  class NodeSchedulingStrategyValueValuesEnum(_messages.Enum):
+    r"""Defines behaviour of k8s scheduler.
+
+    Values:
+      STRATEGY_UNSPECIFIED: Use default scheduling strategy.
+      PRIORITIZE_LEAST_UTILIZED: Least utilized nodes will be prioritized by
+        k8s scheduler.
+      PRIORITIZE_MEDIUM_UTILIZED: Nodes with medium utilization will be
+        prioritized by k8s scheduler. This option improves interoperability of
+        scheduler with cluster autoscaler.
+    """
+    STRATEGY_UNSPECIFIED = 0
+    PRIORITIZE_LEAST_UTILIZED = 1
+    PRIORITIZE_MEDIUM_UTILIZED = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output only] The current status of this cluster.
@@ -462,17 +484,20 @@ class Cluster(_messages.Message):
   nodeConfig = _messages.MessageField('NodeConfig', 40)
   nodeIpv4CidrSize = _messages.IntegerField(41, variant=_messages.Variant.INT32)
   nodePools = _messages.MessageField('NodePool', 42, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 43)
-  privateCluster = _messages.BooleanField(44)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 45)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 46)
-  selfLink = _messages.StringField(47)
-  servicesIpv4Cidr = _messages.StringField(48)
-  status = _messages.EnumField('StatusValueValuesEnum', 49)
-  statusMessage = _messages.StringField(50)
-  subnetwork = _messages.StringField(51)
-  tpuIpv4CidrBlock = _messages.StringField(52)
-  zone = _messages.StringField(53)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 43)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 44)
+  privateCluster = _messages.BooleanField(45)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 46)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 47)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 48)
+  securityProfile = _messages.MessageField('SecurityProfile', 49)
+  selfLink = _messages.StringField(50)
+  servicesIpv4Cidr = _messages.StringField(51)
+  status = _messages.EnumField('StatusValueValuesEnum', 52)
+  statusMessage = _messages.StringField(53)
+  subnetwork = _messages.StringField(54)
+  tpuIpv4CidrBlock = _messages.StringField(55)
+  zone = _messages.StringField(56)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -610,7 +635,10 @@ class ClusterUpdate(_messages.Message):
       picks the Kubernetes master version
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
+    desiredResourceUsageExportConfig: The desired configuration for exporting
+      resource usage.
     desiredUseIpAliases: The desired use of IP aliases in a cluster.
+    securityProfile: User may change security profile during update
   """
 
   concurrentNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -634,7 +662,9 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(19)
   desiredNodeVersion = _messages.StringField(20)
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 21)
-  desiredUseIpAliases = _messages.BooleanField(22)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 22)
+  desiredUseIpAliases = _messages.BooleanField(23)
+  securityProfile = _messages.MessageField('SecurityProfile', 24)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -1415,11 +1445,10 @@ class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: an
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently. This field is only visible as GOOGLE_INTERNAL or
-      CONDITION_TRUSTED_TESTER.
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -1434,7 +1463,7 @@ class GoogleIamV1Binding(_messages.Message):
       * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1502,10 +1531,12 @@ class GoogleIamV1Condition(_messages.Message):
       SECURITY_REALM: Any of the security realms in the IAMContext (go
         /security-realms). When used with IN, the condition indicates "any of
         the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". It is not permitted to
-        grant access based on the *absence* of a realm, so realm conditions
-        can only be used in a "positive" context (e.g., ALLOW/IN or
-        DENY/NOT_IN).
+        of the realms match any of the given values". Note that a value can be
+        either a realm or a realm group (go/realm-groups). A match is
+        determined by a realm group membership check performed by a
+        RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
+        access based on the *absence* of a realm, so realm conditions can only
+        be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -2123,11 +2154,14 @@ class MaintenancePolicy(_messages.Message):
   cluster.
 
   Fields:
+    masterUpdateRestriction: Specifies additional restrictions applying to
+      when master updates may be performed.
     window: Specifies the maintenance window in which maintenance may be
       performed.
   """
 
-  window = _messages.MessageField('MaintenanceWindow', 1)
+  masterUpdateRestriction = _messages.MessageField('MasterUpdateRestriction', 1)
+  window = _messages.MessageField('MaintenanceWindow', 2)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -2217,6 +2251,67 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
 
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
   enabled = _messages.BooleanField(2)
+
+
+class MasterUpdateFreeze(_messages.Message):
+  r"""MasterUpdateFreeze defines freeze on master updates. Some customers want
+  to avoid master updates during time periods critical to their bussiness.  In
+  the future each k8s version will have a support window (see go/gke-
+  supported-versions-design). Then we will allow freezing master until ~2
+  weeks before we stop maintaing the version.  For now we approximate this: -
+  Freeze must last at most 13 weeks. - Only masters in newest and second
+  newest (minor) versions can be frozen. - After freeze user must give us 2
+  weeks before starting a new one. - User can end freeze early. - If user
+  ended a freeze early they can resume it (with 13 week duration   limit
+  counting from the original freeze time).  We will apply security updates
+  even to frozen masters.
+
+  Fields:
+    frozen: Indicates if the master version is currently frozen. When master
+      is frozen scheduled_freeze_end_time must be a future timestamp. When
+      master is not frozen scheduled_freeze_end_time must be a past timestamp
+      (frozen during last two weeks) or an empty string (not frozen during
+      last two weeks). You can only set this to true if max_freeze_end is a
+      future timestamp. When setting frozen to true you can set
+      scheduled_freeze_end_time to a future timestamp not later than
+      max_freeze_end. If you don't set scheduled_freeze_end_time when setting
+      frozen to true it will be set to max_freeze_end. After
+      scheduled_freeze_end_time this field automatically becomes false. If you
+      chage value of this field to false scheduled_freeze_end_time becomes
+      timestamp of the request. We still apply security updates to frozen
+      masters.
+    maxFreezeEndTime: [Output only] The time by which the master update freeze
+      must end, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text
+      format. In the future it will be end of support for master version - 2
+      weeks.  For now it is: - For clusters that weren't in a freeze during
+      last 2 weeks and are in one   of the two newest (minor) versions: now +
+      13 weeks. - For clusters that weren't in a freeze during last 2 weeks
+      and are in an   older version: empty - For clusters that were in a
+      freeze during last two weeks (including   currently frozen clusters):
+      start of the freeze + 13 weeks.
+    scheduledFreezeEndTime: The time at which the master update freeze is
+      scheduled to end, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
+      text format. Future timestamp means the freeze is ongoing. Past
+      timestamp means the freeze ended recently (the cluster is going through
+      period of recovering from the freeze). Empty string means cluster wasn't
+      affected by a freeze recently. This field can be set only to a timestamp
+      that is: - In the future and - Earlier than max_freeze_end_time.
+  """
+
+  frozen = _messages.BooleanField(1)
+  maxFreezeEndTime = _messages.StringField(2)
+  scheduledFreezeEndTime = _messages.StringField(3)
+
+
+class MasterUpdateRestriction(_messages.Message):
+  r"""MasterUpdateRestriction defines restrictions that apply only to
+  clusters' master updates.
+
+  Fields:
+    freeze: MasterUpdateFreeze defines freeze to master updates.
+  """
+
+  freeze = _messages.MessageField('MasterUpdateFreeze', 1)
 
 
 class MaxPodsConstraint(_messages.Message):
@@ -2794,6 +2889,30 @@ class PodSecurityPolicyConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class PrivateClusterConfig(_messages.Message):
+  r"""Configuration options for private clusters.
+
+  Fields:
+    enablePrivateEndpoint: Whether the master's internal IP address is used as
+      the cluster endpoint.
+    enablePrivateNodes: Whether nodes have only private IP addresses, and
+      communicate with the master via private networking.
+    masterIpv4CidrBlock: The IP prefix in CIDR notation to use for the hosted
+      master network. This prefix will be used for assigning private IP
+      addresses to the master or set of masters, as well as the ILB VIP.
+    privateEndpoint: Output only. The internal IP address of this cluster's
+      endpoint.
+    publicEndpoint: Output only. The external IP address of this cluster's
+      endpoint.
+  """
+
+  enablePrivateEndpoint = _messages.BooleanField(1)
+  enablePrivateNodes = _messages.BooleanField(2)
+  masterIpv4CidrBlock = _messages.StringField(3)
+  privateEndpoint = _messages.StringField(4)
+  publicEndpoint = _messages.StringField(5)
+
+
 class ResourceLimit(_messages.Message):
   r"""Contains information about amount of some resource in the cluster. For
   memory, value should be in GB.
@@ -2848,6 +2967,22 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
   projectId = _messages.StringField(4)
   version = _messages.StringField(5)
   zone = _messages.StringField(6)
+
+
+class SecurityProfile(_messages.Message):
+  r"""User selected security profile
+
+  Fields:
+    disableRuntimeRules: Don't apply runtime rules. When set to true, no
+      objects/deployments will be installed in the cluster to enforce runtime
+      rules. This is useful to work with config-as-code systems
+    name: Name with version of selected security profile A security profile
+      name follows kebob-case (a-zA-Z*) and a version is like MAJOR.MINOR-
+      suffix suffix is ([a-zA-Z0-9\-_\.]+) e.g. default-1.0-gke.0
+  """
+
+  disableRuntimeRules = _messages.BooleanField(1)
+  name = _messages.StringField(2)
 
 
 class ServerConfig(_messages.Message):
@@ -3450,6 +3585,9 @@ class UpdateMasterRequest(_messages.Message):
       Specified in the format 'projects/*/locations/*/clusters/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840).
+    securityProfile: The security profile name that user must select in the
+      case the current security profile is not supported by the new master
+      version
     version: API request version that initiates this operation.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
@@ -3461,8 +3599,9 @@ class UpdateMasterRequest(_messages.Message):
   masterVersion = _messages.StringField(3)
   name = _messages.StringField(4)
   projectId = _messages.StringField(5)
-  version = _messages.StringField(6)
-  zone = _messages.StringField(7)
+  securityProfile = _messages.StringField(6)
+  version = _messages.StringField(7)
+  zone = _messages.StringField(8)
 
 
 class UpdateNodePoolRequest(_messages.Message):

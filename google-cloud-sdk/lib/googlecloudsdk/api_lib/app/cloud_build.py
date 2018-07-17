@@ -17,7 +17,9 @@
 """Utility methods to upload source to GCS and call Cloud Build service."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import gzip
 import operator
 import os

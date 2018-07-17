@@ -16,7 +16,9 @@
 """Utilities for the gcloud meta apis surface."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.protorpclite import messages
 from apitools.base.py import  exceptions as apitools_exc
 from apitools.base.py import list_pager

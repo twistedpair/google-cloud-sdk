@@ -15,7 +15,9 @@
 """Command util functions for gcloud container commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
@@ -41,12 +43,103 @@ def _NodePoolFromCluster(cluster, node_pool_name):
       node_pool_name))
 
 
-def ClusterUpgradeMessage(name, cluster=None, master=False, node_pool_name=None,
-                          new_version=None, concurrent_node_count=None):
+def _MasterUpgradeMessage(name, server_conf, cluster, new_version):
+  """Returns the prompt message during a master upgrade.
+
+  Args:
+    name: str, the name of the cluster being upgraded.
+    server_conf: the server config object.
+    cluster: the cluster object.
+    new_version: str, the name of the new version, if given.
+
+  Raises:
+    NodePoolError: if the node pool name can't be found in the cluster.
+
+  Returns:
+    str, a message about which nodes in the cluster will be upgraded and
+        to which version.
+  """
+  if cluster:
+    version_message = 'version [{}]'.format(cluster.currentMasterVersion)
+  else:
+    version_message = 'its current version'
+
+  if not new_version and server_conf:
+    new_version = server_conf.defaultClusterVersion
+
+  if new_version:
+    new_version_message = 'version [{}]'.format(new_version)
+  else:
+    new_version_message = 'the default cluster version'
+
+  return ('Master of cluster [{}] will be upgraded from {} to {}.'
+          .format(name, version_message, new_version_message))
+
+
+def _NodeUpgradeMessage(name, cluster, node_pool_name, new_version,
+                        concurrent_node_count):
+  """Returns the prompt message during a node upgrade.
+
+  Args:
+    name: str, the name of the cluster being upgraded.
+    cluster: the cluster object.
+    node_pool_name: str, the name of the node pool if the upgrade is for a
+        specific node pool.
+    new_version: str, the name of the new version, if given.
+    concurrent_node_count: int, the number of nodes to upgrade concurrently.
+
+  Raises:
+    NodePoolError: if the node pool name can't be found in the cluster.
+
+  Returns:
+    str, a message about which nodes in the cluster will be upgraded and
+        to which version.
+  """
+  node_message = 'All nodes'
+  current_version = None
+  if node_pool_name:
+    node_message = '{} in node pool [{}]'.format(node_message, node_pool_name)
+    if cluster:
+      current_version = _NodePoolFromCluster(cluster, node_pool_name).version
+  elif cluster:
+    node_message = '{} ({} {})'.format(
+        node_message,
+        cluster.currentNodeCount,
+        text.Pluralize(cluster.currentNodeCount, 'node'))
+    current_version = cluster.currentNodeVersion
+
+  if current_version:
+    version_message = 'version [{}]'.format(current_version)
+  else:
+    version_message = 'its current version'
+
+  if not new_version and cluster:
+    new_version = cluster.currentMasterVersion
+
+  if new_version:
+    new_version_message = 'version [{}]'.format(new_version)
+  else:
+    new_version_message = 'the master version'
+
+  concurrent_message = ''
+  if concurrent_node_count:
+    concurrent_message = ' {} {} will be upgraded at a time.'.format(
+        concurrent_node_count,
+        text.Pluralize(concurrent_node_count, 'node'))
+
+  return ('{} of cluster [{}] will be upgraded from {} to {}.{}'
+          .format(node_message, name, version_message,
+                  new_version_message, concurrent_message))
+
+
+def ClusterUpgradeMessage(name, server_conf=None, cluster=None, master=False,
+                          node_pool_name=None, new_version=None,
+                          concurrent_node_count=None):
   """Get a message to print during gcloud container clusters upgrade.
 
   Args:
     name: str, the name of the cluster being upgraded.
+    server_conf: the server config object.
     cluster: the cluster object.
     master: bool, if the upgrade applies to the master version.
     node_pool_name: str, the name of the node pool if the upgrade is for a
@@ -61,41 +154,16 @@ def ClusterUpgradeMessage(name, cluster=None, master=False, node_pool_name=None,
     str, a message about which nodes in the cluster will be upgraded and
         to which version.
   """
-  current_version = None
-  if new_version:
-    new_version_message = 'version [{}]'.format(new_version)
-  else:
-    new_version_message = 'master version'
   if master:
-    node_message = 'Master'
-    if cluster:
-      current_version = cluster.currentMasterVersion
-  elif node_pool_name:
-    node_message = 'All nodes in node pool [{}]'.format(node_pool_name)
-    if cluster:
-      current_version = _NodePoolFromCluster(cluster, node_pool_name).version
+    upgrade_message = _MasterUpgradeMessage(name, server_conf, cluster,
+                                            new_version)
   else:
-    if cluster:
-      node_message = 'All nodes ({} {})'.format(
-          cluster.currentNodeCount,
-          text.Pluralize(cluster.currentNodeCount, 'node'))
-      current_version = cluster.currentNodeVersion
-    else:
-      node_message = 'All nodes'
-  concurrent_message = ''
-  if not master and concurrent_node_count:
-    concurrent_message = '{} {} will be upgraded at a time. '.format(
-        concurrent_node_count,
-        text.Pluralize(concurrent_node_count, 'node'))
-  if current_version:
-    version_message = 'version [{}]'.format(current_version)
-  else:
-    version_message = 'its current version'
-  return ('{} of cluster [{}] will be upgraded from {} to {}. {}'
-          'This operation is long-running and will block other operations '
+    upgrade_message = _NodeUpgradeMessage(name, cluster, node_pool_name,
+                                          new_version, concurrent_node_count)
+
+  return ('{} This operation is long-running and will block other operations '
           'on the cluster (including delete) until it has run to completion.'
-          .format(node_message, name, version_message,
-                  new_version_message, concurrent_message))
+          .format(upgrade_message))
 
 
 def GetZone(args, ignore_property=False, required=True):

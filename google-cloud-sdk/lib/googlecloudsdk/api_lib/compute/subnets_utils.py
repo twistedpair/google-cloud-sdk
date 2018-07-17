@@ -15,7 +15,9 @@
 """Code that's shared between multiple subnets subcommands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import exceptions
 import six
 
@@ -25,7 +27,9 @@ def MakeSubnetworkUpdateRequest(client,
                                 enable_private_ip_google_access=None,
                                 add_secondary_ranges=None,
                                 remove_secondary_ranges=None,
-                                enable_flow_logs=None):
+                                enable_flow_logs=None,
+                                set_role_active=None,
+                                drain_timeout_seconds=None):
   """Make the appropriate update request for the args.
 
   Args:
@@ -38,6 +42,9 @@ def MakeSubnetworkUpdateRequest(client,
     remove_secondary_ranges: List of secondary ranges to remove from the
       subnetwork.
     enable_flow_logs: Enable/disable flow logging for this subnet.
+    set_role_active: Updates the role of a BACKUP subnet to ACTIVE.
+    drain_timeout_seconds: The maximum amount of time to drain connections from
+      the active subnet to the backup subnet with set_role_active=True.
 
   Returns:
     response, result of sending the update request for the subnetwork
@@ -102,6 +109,21 @@ def MakeSubnetworkUpdateRequest(client,
     subnetwork.enableFlowLogs = enable_flow_logs
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
+  elif set_role_active is not None:
+    subnetwork = client.MakeRequests([
+        (client.apitools_client.subnetworks, 'Get',
+         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
+    ])[0]
+
+    subnetwork.role = client.messages.Subnetwork.RoleValueValuesEnum.ACTIVE
+    patch_request = client.messages.ComputeSubnetworksPatchRequest(
+        project=subnet_ref.project,
+        subnetwork=subnet_ref.subnetwork,
+        region=subnet_ref.region,
+        subnetworkResource=subnetwork,
+        drainTimeoutSeconds=drain_timeout_seconds)
+    return client.MakeRequests([(client.apitools_client.subnetworks, 'Patch',
+                                 patch_request)])
 
   return client.MakeRequests([])
 

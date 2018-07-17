@@ -15,7 +15,9 @@
 """Useful commands for interacting with the Cloud Filestore API."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
 
 from googlecloudsdk.api_lib.compute import utils
@@ -398,4 +400,3 @@ class BetaFilestoreAdapter(object):
           'Must resize the file share to a larger capacity. Existing capacity: '
           '[{}]. New capacity requested: [{}].'.format(
               existing_file_share.capacityGb, new_capacity))
-

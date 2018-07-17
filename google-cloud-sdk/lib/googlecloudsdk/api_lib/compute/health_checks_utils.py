@@ -15,6 +15,7 @@
 """Code that's shared between multiple health-checks subcommands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
@@ -473,3 +474,15 @@ def _AddUseServingPortFlag(parser):
           Group, use the port specified with each endpoint.
         - When health checking other backends, use the port or named port of
           the backend service.""")
+
+
+def IsRegionalHealthCheckRef(health_check_ref):
+  """Returns True if the health check reference is regional."""
+
+  return health_check_ref.Collection() == 'compute.regionHealthChecks'
+
+
+def IsGlobalHealthCheckRef(health_check_ref):
+  """Returns True if the health check reference is global."""
+
+  return health_check_ref.Collection() == 'compute.healthChecks'

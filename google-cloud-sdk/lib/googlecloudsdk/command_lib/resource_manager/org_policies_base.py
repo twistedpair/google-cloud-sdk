@@ -15,7 +15,9 @@
 """Common constants and methods for Org Policies commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.resource_manager import org_policies
 
 

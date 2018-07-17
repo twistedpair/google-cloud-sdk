@@ -268,14 +268,16 @@
             "Invalid state.",
             "Connector is deployed and ready to receive traffic.",
             "An Insert operation is in progress. Transient condition.",
-            "A Delete operation is in progress. Transient condition."
+            "A Delete operation is in progress. Transient condition.",
+            "Connector is in a bad state, manual deletion recommended."
           ],
           "type": "string",
           "enum": [
             "STATUS_UNSPECIFIED",
             "READY",
             "CREATING",
-            "DELETING"
+            "DELETING",
+            "ERROR"
           ]
         }
       }

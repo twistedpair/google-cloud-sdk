@@ -82,12 +82,6 @@ MAP = {
             messages_modulepath='alpha_vision_v1_messages',
             default_version=True
         ),
-        'v1alpha1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.alpha_vision.v1alpha1',
-            client_classpath='alpha_vision_v1alpha1_client.AlphaVisionV1alpha1',
-            messages_modulepath='alpha_vision_v1alpha1_messages',
-            default_version=False
-        ),
     },
     'apikeys': {
         'v1': APIDef(
@@ -497,6 +491,14 @@ MAP = {
             default_version=True
         ),
     },
+    'kubernetespolicy': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.kubernetespolicy.v1alpha1',
+            client_classpath='kubernetespolicy_v1alpha1_client.KubernetespolicyV1alpha1',
+            messages_modulepath='kubernetespolicy_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'language': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.language.v1',
@@ -616,11 +618,17 @@ MAP = {
         ),
     },
     'serviceusage': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.serviceusage.v1',
+            client_classpath='serviceusage_v1_client.ServiceusageV1',
+            messages_modulepath='serviceusage_v1_messages',
+            default_version=True
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.serviceusage.v1beta1',
             client_classpath='serviceusage_v1beta1_client.ServiceusageV1beta1',
             messages_modulepath='serviceusage_v1beta1_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'serviceuser': {

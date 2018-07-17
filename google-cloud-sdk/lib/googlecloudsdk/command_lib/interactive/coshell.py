@@ -21,8 +21,8 @@ pipe. Only one command runs at a time. ^C interrupts and kills the currently
 running command but does not kill the coshell. The coshell process exits when
 the shell 'exit' command is executed. State is maintained by the coshell across
 commands, including the current working directory and local and environment
-variables. The "$ENV" file, if it exists, is sourced into the coshell at
-startup. This gives the caller the opportunity to set up aliases and default
+variables. ~/.bashrc or the $ENV file, if it exists, is sourced into the coshell
+at startup. This gives the caller the opportunity to set up aliases and default
 'set -o ...' shell modes.
 
 Usage:
@@ -40,10 +40,11 @@ This module contains three Coshell implementations:
   * _MinGWCoshell using MinGW bash or git bash
   * _WindowsCoshell using cmd.exe, does not support state across commands
 On the first instantiation Coshell.__init__() determines what implementation to
-use.  All subsequent instantiations will use the same implementation.
+use. All subsequent instantiations will use the same implementation.
 """
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 import abc
@@ -55,12 +56,15 @@ import subprocess
 import six
 
 
+COSHELL_VERSION = '1.1'
+
+
 _GET_COMPLETIONS_SHELL_FUNCTION = r"""
 __get_completions__() {
   # prints the completions for the (partial) command line "$@" followed by
   # a blank line
 
-  local command completion_function
+  local command completion_function last_word next_to_last_word
   local COMP_CWORD COMP_LINE COMP_POINT COMP_WORDS COMPREPLY=()
 
   (( $# )) || {
@@ -69,7 +73,6 @@ __get_completions__() {
   }
 
   command=$1
-  shift
   COMP_WORDS=("$@")
 
   # load bash-completion if necessary
@@ -111,11 +114,19 @@ __get_completions__() {
   # add '' to COMP_WORDS if the last character of the command line is a space
   [[ ${COMP_LINE[@]: -1} = ' ' ]] && COMP_WORDS+=('')
 
-  # index of the last word
+  # index and value of the last word
   COMP_CWORD=$(( ${#COMP_WORDS[@]} - 1 ))
+  last_word=${COMP_WORDS[$COMP_CWORD]}
+
+  # value of the next to last word
+  if (( COMP_CWORD >= 2 )); then
+    next_to_last_word=${COMP_WORDS[$((${COMP_CWORD}-1))]}
+  else
+    next_to_last_word=''
+  fi
 
   # execute the completion function
-  $completion_function
+  $completion_function "${command}" "${last_word}" "${next_to_last_word}"
 
   # print the completions to stdout
   printf '%s\n' "${COMPREPLY[@]}" ''
@@ -137,10 +148,13 @@ class _CoshellBase(six.with_metaclass(abc.ABCMeta, object)):
   Attributes:
     _edit_mode: The coshell edit mode, one of {'emacs', 'vi'}.
     _ignore_eof: True if the coshell should ignore EOF on stdin and not exit.
+    _set_modes_callback: Called when SetModesCallback() is called or when
+      mutable shell modes may have changed.
     _state_is_preserved: True if shell process state is preserved across Run().
   """
 
   def __init__(self, state_is_preserved=True):
+    self._set_modes_callback = None
     # Immutable coshell object properties.
     self._encoding = locale.getpreferredencoding()
     self._state_is_preserved = state_is_preserved
@@ -172,6 +186,19 @@ class _CoshellBase(six.with_metaclass(abc.ABCMeta, object)):
   def Close(self):
     """Closes the coshell connection and release any resources."""
     pass
+
+  def SetModesCallback(self, callback):
+    """Sets the callback function to be called when any mutable mode changed.
+
+    If callback is not None then it is called immediately to initialize the
+    caller.
+
+    Args:
+      callback: func() called when any mutable mode changed, None to disable.
+    """
+    self._set_modes_callback = callback
+    if callback:
+      callback()
 
   @abc.abstractmethod
   def Run(self, command, check_modes=True):
@@ -269,31 +296,54 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
     return int(status_string)
 
   def _GetModes(self):
-    """Syncs the user settable modes of interest to the Coshell."""
+    """Syncs the user settable modes of interest to the Coshell.
+
+    Calls self._set_modes_callback if it was specified and any mode changed.
+    """
+
+    changed = False
 
     # Get the caller $ENV emacs/vi mode.
     if self.Run('set -o | grep -q "^vi.*on"', check_modes=False) == 0:
-      self._edit_mode = 'vi'
+      if self._edit_mode != 'vi':
+        changed = True
+        self._edit_mode = 'vi'
     else:
-      self._edit_mode = 'emacs'
+      if self._edit_mode != 'emacs':
+        changed = True
+        self._edit_mode = 'emacs'
 
     # Get the caller $ENV ignoreeof setting.
+    ignore_eof = self._ignore_eof
     self._ignore_eof = self.Run(
         'set -o | grep -q "^ignoreeof.*on"', check_modes=False) == 0
+    if self._ignore_eof != ignore_eof:
+      changed = True
+
+    if changed and self._set_modes_callback:
+      self._set_modes_callback()
 
   def _GetUserConfigDefaults(self):
     """Consults the user shell config for defaults."""
 
     self._SendCommand(
+        # For rc file tests.
+        'COSHELL_VERSION={coshell_version};'
         # Set $? to $1.
         '_status() {{ return $1; }};'
-        # The $ENV file configures aliases and set -o modes.
-        '[ -f "$ENV" ] && . "$ENV";'
+        # The env rc files configures aliases and set -o modes.
+        'for rc in "$HOME/.bashrc" "$ENV"; do'
+        '  if [[ $rc && -f $rc ]]; then'
+        '    source "$rc";'
+        '    break;'
+        '  fi;'
+        'done;'
         # The exit command hits this trap, reaped by _GetStatus() in Run().
         "trap 'echo $?{exit} >&{fdstatus}' 0;"
         # This catches interrupts so commands die while the coshell stays alive.
         'trap ":" 2;{get_completions}'
-        .format(exit=self.SHELL_STATUS_EXIT,
+        .format(coshell_version=COSHELL_VERSION,
+                exit=self.SHELL_STATUS_EXIT,
                 fdstatus=self.SHELL_STATUS_FD,
                 get_completions=_GET_COMPLETIONS_SHELL_FUNCTION))
 

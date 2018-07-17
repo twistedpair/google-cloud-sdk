@@ -16,7 +16,9 @@
 # TODO(b/73491568) Refactor to use api_lib.util.waiter
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.core.console import progress_tracker as console_progress_tracker
 from googlecloudsdk.core.util import encoding

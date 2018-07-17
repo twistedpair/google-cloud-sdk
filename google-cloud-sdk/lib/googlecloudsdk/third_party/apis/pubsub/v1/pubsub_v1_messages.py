@@ -41,7 +41,7 @@ class Binding(_messages.Message):
       * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
   members = _messages.StringField(1, repeated=True)
@@ -55,10 +55,12 @@ class CreateSnapshotRequest(_messages.Message):
   subject to any SLA or deprecation policy.
 
   Messages:
-    LabelsValue: User labels.
+    LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
+      labels</a>.
 
   Fields:
-    labels: User labels.
+    labels: See <a href="/pubsub/docs/labels"> Creating and managing
+      labels</a>.
     subscription: The subscription whose backlog the snapshot retains.
       Specifically, the created snapshot is guaranteed to retain:  (a) The
       existing backlog on the subscription. More precisely, this is
@@ -72,7 +74,7 @@ class CreateSnapshotRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User labels.
+    r"""See <a href="/pubsub/docs/labels"> Creating and managing labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -946,7 +948,8 @@ class Snapshot(_messages.Message):
   deprecation policy.
 
   Messages:
-    LabelsValue: User labels.
+    LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
+      labels</a>.
 
   Fields:
     expireTime: The snapshot is guaranteed to exist up until this time. A
@@ -960,7 +963,8 @@ class Snapshot(_messages.Message):
       backlog as long as the snapshot exists -- will expire in 4 days. The
       service will refuse to create a snapshot that would expire in less than
       1 hour after creation.
-    labels: User labels.
+    labels: See <a href="/pubsub/docs/labels"> Creating and managing
+      labels</a>.
     name: The name of the snapshot.
     topic: The name of the topic from which this snapshot is retaining
       messages.
@@ -968,7 +972,7 @@ class Snapshot(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User labels.
+    r"""See <a href="/pubsub/docs/labels"> Creating and managing labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1063,7 +1067,8 @@ class Subscription(_messages.Message):
   r"""A subscription resource.
 
   Messages:
-    LabelsValue: User labels.
+    LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
+      labels</a>.
 
   Fields:
     ackDeadlineSeconds: This value is the maximum time after a subscriber
@@ -1082,7 +1087,8 @@ class Subscription(_messages.Message):
       value is also used to set the request timeout for the call to the push
       endpoint.  If the subscriber never acknowledges the message, the Pub/Sub
       system will eventually redeliver the message.
-    labels: User labels.
+    labels: See <a href="/pubsub/docs/labels"> Creating and managing
+      labels</a>.
     messageRetentionDuration: How long to retain unacknowledged messages in
       the subscription's backlog, from the moment a message is published. If
       `retain_acked_messages` is true, then this also configures the retention
@@ -1115,7 +1121,7 @@ class Subscription(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User labels.
+    r"""See <a href="/pubsub/docs/labels"> Creating and managing labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1174,10 +1180,12 @@ class Topic(_messages.Message):
   r"""A topic resource.
 
   Messages:
-    LabelsValue: User labels.
+    LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
+      labels</a>.
 
   Fields:
-    labels: User labels.
+    labels: See <a href="/pubsub/docs/labels"> Creating and managing
+      labels</a>.
     messageStoragePolicy: Policy constraining how messages published to the
       topic may be stored. It is determined when the topic is created based on
       the policy configured at the project level. It must not be set by the
@@ -1195,7 +1203,7 @@ class Topic(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""User labels.
+    r"""See <a href="/pubsub/docs/labels"> Creating and managing labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

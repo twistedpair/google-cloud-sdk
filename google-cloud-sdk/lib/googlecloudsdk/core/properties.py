@@ -18,6 +18,7 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
+
 import functools
 import os
 import re
@@ -1431,6 +1432,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.deploymentmanager = self._Add('deploymentmanager')
     self.discovery = self._Add('discovery')
     self.dns = self._Add('dns')
+    self.file = self._Add('file')
     self.genomics = self._Add('genomics')
     self.iam = self._Add('iam')
     self.language = self._Add('language')
@@ -1455,6 +1457,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.toolresults = self._Add('toolresults')
     self.tpu = self._Add('tpu')
     self.vision = self._Add('vision')
+    self.vpcaccess = self._Add('vpcaccess')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""

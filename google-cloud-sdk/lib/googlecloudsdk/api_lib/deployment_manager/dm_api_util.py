@@ -16,7 +16,9 @@
 """Common helper methods for DeploymentManager V2 Deployments."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions

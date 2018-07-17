@@ -15,7 +15,9 @@
 """API Library for gcloud tasks."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib import tasks
 from googlecloudsdk.core import exceptions

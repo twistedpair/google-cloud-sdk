@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for running training jobs locally."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import atexit
 import json
 import os

@@ -16,7 +16,9 @@
 """The Calliope command help document markdown generator."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import abc
 import io
 import re

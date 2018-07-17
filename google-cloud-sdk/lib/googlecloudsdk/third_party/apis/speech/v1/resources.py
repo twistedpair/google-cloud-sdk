@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://speech.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/speech/'
+DOCS_URL = 'https://cloud.google.com/speech-to-text/docs/quickstart-protocol'
 
 
 class Collections(enum.Enum):

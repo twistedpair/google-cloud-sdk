@@ -1437,6 +1437,10 @@
           "format": "int32"
         },
         "instanceId": {
+          "description": "Deprecated. Please use request_id field instead.",
+          "type": "string"
+        },
+        "requestId": {
           "description": "Optional. A tag that prevents multiple concurrent workflow instances with the same tag from running. This mitigates risk of concurrent instances started due to retries.It is recommended to always set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The tag must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
           "type": "string"
         },
@@ -1508,7 +1512,7 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to members. For example, roles\/viewer, roles\/editor, or roles\/owner. Required",
+          "description": "Role that is assigned to members. For example, roles\/viewer, roles\/editor, or roles\/owner.",
           "type": "string"
         },
         "members": {

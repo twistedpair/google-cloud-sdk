@@ -206,6 +206,7 @@
             "The zipped XCTest was built for the iOS simulator rather than for a\nphysical device.",
             "The .xctestrun file did not specify any test targets.",
             "One or more of the test targets defined in the .xctestrun file specifies\n\"UseDestinationArtifacts\", which is disallowed.",
+            "XC tests which run on physical devices must have\n\"IsAppHostedTestBundle\" == \"true\" in the xctestrun file.",
             "The APK is marked as \"testOnly\".\nNOT USED",
             "The input IPA could not be parsed.\nNOT USED",
             "APK contains no code.\nSee also\nhttps:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code",
@@ -236,6 +237,7 @@
             "BUILT_FOR_IOS_SIMULATOR",
             "NO_TESTS_IN_XC_TEST_ZIP",
             "USE_DESTINATION_ARTIFACTS",
+            "TEST_NOT_APP_HOSTED",
             "TEST_ONLY_APK",
             "MALFORMED_IPA",
             "NO_CODE_APK",
@@ -1339,7 +1341,7 @@
     },
     "AndroidRuntimeConfiguration": {
       "id": "AndroidRuntimeConfiguration",
-      "description": "Configuration that can be selected at the time a test is run.",
+      "description": "Android configuration that can be selected at the time a test is run.",
       "type": "object",
       "properties": {
         "locales": {
@@ -1424,6 +1426,10 @@
           "items": {
             "$ref": "IosVersion"
           }
+        },
+        "runtimeConfiguration": {
+          "description": "The set of supported runtime configurations.\n@OutputOnly",
+          "$ref": "IosRuntimeConfiguration"
         }
       }
     },
@@ -1480,6 +1486,27 @@
           "type": "array",
           "items": {
             "type": "string"
+          }
+        }
+      }
+    },
+    "IosRuntimeConfiguration": {
+      "id": "IosRuntimeConfiguration",
+      "description": "iOS configuration that can be selected at the time a test is run.",
+      "type": "object",
+      "properties": {
+        "locales": {
+          "description": "The set of available locales.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "Locale"
+          }
+        },
+        "orientations": {
+          "description": "The set of available orientations.\n@OutputOnly",
+          "type": "array",
+          "items": {
+            "$ref": "Orientation"
           }
         }
       }

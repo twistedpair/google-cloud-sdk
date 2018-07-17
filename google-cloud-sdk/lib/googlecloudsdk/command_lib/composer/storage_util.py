@@ -15,7 +15,9 @@
 """Common utility functions for Composer environment storage commands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import io
 import os.path
 import posixpath
@@ -26,6 +28,7 @@ from apitools.base.py import transfer
 from googlecloudsdk.api_lib.composer import environments_util as environments_api_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.composer import util as command_util
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
@@ -35,13 +38,15 @@ import six
 BUCKET_MISSING_MSG = 'Could not retrieve Cloud Storage bucket for environment.'
 
 
-def List(env_ref, gcs_subdir):
+def List(env_ref, gcs_subdir, release_track=base.ReleaseTrack.GA):
   """Lists all resources in one folder of bucket.
 
   Args:
     env_ref: googlecloudsdk.core.resources.Resource, Resource representing
         the Environment whose corresponding bucket to list.
     gcs_subdir: str, subdir of the Cloud Storage bucket which to list
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     list of Objects inside subdirectory of Cloud Storage bucket for environment
@@ -49,12 +54,12 @@ def List(env_ref, gcs_subdir):
   Raises:
     command_util.Error: if the storage bucket could not be retrieved
   """
-  bucket_ref = _GetStorageBucket(env_ref)
+  bucket_ref = _GetStorageBucket(env_ref, release_track=release_track)
   storage_client = storage_api.StorageClient()
   return storage_client.ListBucket(bucket_ref, prefix=gcs_subdir + '/')
 
 
-def Import(env_ref, sources, destination):
+def Import(env_ref, sources, destination, release_track=base.ReleaseTrack.GA):
   """Imports files and directories into a bucket.
 
   Args:
@@ -67,6 +72,8 @@ def Import(env_ref, sources, destination):
     destination: str, subdir of the Cloud Storage bucket into which to import
         `sources`. Must have a single trailing slash but no leading slash. For
         example, 'data/foo/bar/'.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     None
@@ -75,7 +82,7 @@ def Import(env_ref, sources, destination):
     command_util.Error: if the storage bucket could not be retrieved
     command_util.GsutilError: the gsutil command failed
   """
-  gcs_bucket = _GetStorageBucket(env_ref)
+  gcs_bucket = _GetStorageBucket(env_ref, release_track=release_track)
   destination_ref = storage_util.ObjectReference(gcs_bucket, destination)
 
   try:
@@ -92,7 +99,7 @@ def Import(env_ref, sources, destination):
     raise command_util.GsutilError('gsutil returned non-zero status code.')
 
 
-def Export(env_ref, sources, destination):
+def Export(env_ref, sources, destination, release_track=base.ReleaseTrack.GA):
   """Exports files and directories from an environment's Cloud Storage bucket.
 
   Args:
@@ -105,6 +112,8 @@ def Export(env_ref, sources, destination):
         bucket or directory object to which to export.
         Must have a single trailing slash but no leading slash. For
         example, 'dir/foo/bar/'.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
 
   Returns:
     None
@@ -114,7 +123,7 @@ def Export(env_ref, sources, destination):
       non-Cloud Storage destination that is not a local directory was provided.
     command_util.GsutilError: the gsutil command failed
   """
-  gcs_bucket = _GetStorageBucket(env_ref)
+  gcs_bucket = _GetStorageBucket(env_ref, release_track=release_track)
   source_refs = [
       storage_util.ObjectReference(gcs_bucket, source)
       for source in sources
@@ -140,7 +149,7 @@ def Export(env_ref, sources, destination):
     raise command_util.GsutilError('gsutil returned non-zero status code.')
 
 
-def Delete(env_ref, target, gcs_subdir):
+def Delete(env_ref, target, gcs_subdir, release_track=base.ReleaseTrack.GA):
   """Deletes objects in a folder of an environment's bucket.
 
   gsutil deletes directory marker objects even when told to delete just the
@@ -157,8 +166,10 @@ def Delete(env_ref, target, gcs_subdir):
         to delete.
     gcs_subdir: str, subdir of the Cloud Storage bucket in which to delete.
         Should not contain slashes, for example "dags".
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
   """
-  gcs_bucket = _GetStorageBucket(env_ref)
+  gcs_bucket = _GetStorageBucket(env_ref, release_track=release_track)
   target_ref = storage_util.ObjectReference(gcs_bucket,
                                             posixpath.join(gcs_subdir, target))
   try:
@@ -209,8 +220,8 @@ def _EnsureSubdirExists(bucket_ref, subdir):
           + 'fail, but importing will restore the directory.')
 
 
-def _GetStorageBucket(env_ref):
-  env = environments_api_util.Get(env_ref)
+def _GetStorageBucket(env_ref, release_track=base.ReleaseTrack.GA):
+  env = environments_api_util.Get(env_ref, release_track=release_track)
   if not env.config.dagGcsPrefix:
     raise command_util.Error(BUCKET_MISSING_MSG)
   try:

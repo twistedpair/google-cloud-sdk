@@ -931,7 +931,8 @@ Possible errors:
 
     def Patch(self, request, global_params=None):
       r"""Makes changes to a Product resource.
-Only display_name, description and labels can be updated right now.
+Only the `display_name`, `description`, and `labels` fields can be updated
+right now.
 
 If labels are updated, the change will not be reflected in queries until
 the next index time.

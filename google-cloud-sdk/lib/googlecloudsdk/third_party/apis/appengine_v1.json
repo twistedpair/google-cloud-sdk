@@ -609,6 +609,10 @@
         "endpointsApiService": {
           "description": "Cloud Endpoints configuration.If endpoints_api_service is set, the Cloud Endpoints Extensible Service Proxy will be provided to serve the API implemented by the app.",
           "$ref": "EndpointsApiService"
+        },
+        "entrypoint": {
+          "description": "The entrypoint for the application.",
+          "$ref": "Entrypoint"
         }
       }
     },
@@ -1393,6 +1397,17 @@
             "FIXED",
             "MANAGED"
           ]
+        }
+      }
+    },
+    "Entrypoint": {
+      "id": "Entrypoint",
+      "description": "The entrypoint for the application.",
+      "type": "object",
+      "properties": {
+        "shell": {
+          "description": "The format should be a shell command that can be fed to bash -c.",
+          "type": "string"
         }
       }
     },

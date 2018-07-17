@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Convenience functions for dealing with instances and instance templates."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import collections
 import re
 
@@ -121,7 +124,7 @@ def InterpretMachineType(machine_type, custom_cpu, custom_memory, ext=True):
     custom_type_string = GetNameForCustom(
         custom_cpu,
         # converting from B to MiB.
-        int(custom_memory / (2 ** 20)),
+        custom_memory // (2**20),
         ext)
 
     # Updating the machine type that is set for the URIs

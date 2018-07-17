@@ -16,7 +16,9 @@
 """Compute resource completers for the core.cache.completion_cache module."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 import os
 
 from googlecloudsdk.command_lib.resource_manager import completers as resource_manager_completers
@@ -177,6 +179,34 @@ class HealthChecksCompleter(ListCommandCompleter):
     super(HealthChecksCompleter, self).__init__(
         collection='compute.healthChecks',
         list_command='compute health-checks list --uri',
+        **kwargs)
+
+
+class HealthChecksCompleterAlpha(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(HealthChecksCompleterAlpha, self).__init__(
+        completers=[GlobalHealthChecksCompleter, RegionHealthChecksCompleter],
+        **kwargs)
+
+
+class GlobalHealthChecksCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalHealthChecksCompleter, self).__init__(
+        collection='compute.healthChecks',
+        api_version='alpha',
+        list_command='alpha compute health-checks list --global --uri',
+        **kwargs)
+
+
+class RegionHealthChecksCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionHealthChecksCompleter, self).__init__(
+        collection='compute.regionHealthChecks',
+        api_version='alpha',
+        list_command='alpha compute health-checks list --filter=region:* --uri',
         **kwargs)
 
 

@@ -582,6 +582,11 @@
           "description": "Line inside the file. The first line in the file has the value `1`.",
           "type": "integer",
           "format": "int32"
+        },
+        "column": {
+          "description": "Column within a line. The first column in a line as the value `1`.\nAgents that do not support setting breakpoints on specific columns ignore\nthis field.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

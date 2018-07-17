@@ -661,8 +661,7 @@ class Object(_messages.Message):
     kind: The kind of item this is. For objects, this is always
       storage#object.
     kmsKeyName: Cloud KMS Key used to encrypt this object, if the object is
-      encrypted by such a key. Limited availability; usable only by enabled
-      projects.
+      encrypted by such a key.
     md5Hash: MD5 hash of the data; encoded using base64. For more information
       about using the MD5 hash, see Hashes and ETags: Best Practices.
     mediaLink: Media download link.
@@ -2181,7 +2180,7 @@ class StorageObjectsInsertRequest(_messages.Message):
     kmsKeyName: Resource name of the Cloud KMS key, of the form projects/my-
       project/locations/global/keyRings/my-kr/cryptoKeys/my-key, that will be
       used to encrypt the object. Overrides the object metadata's kms_key_name
-      value, if any. Limited availability; usable only by enabled projects.
+      value, if any.
     name: Name of the object. Required when the object metadata is not
       otherwise provided. Overrides the object metadata's name value, if any.
       For information about how to URL encode object names to be path safe,

@@ -13,8 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Common utilities for Composer commands."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from collections import OrderedDict
 import contextlib
 import io
@@ -24,6 +27,7 @@ import re
 from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.api_lib.container import api_adapter as gke_api_adapter
 from googlecloudsdk.api_lib.container import util as gke_util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.composer import parsers
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -35,8 +39,6 @@ from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 import six
 
-COMPOSER_API_NAME = 'composer'
-COMPOSER_API_VERSION = 'v1beta1'
 GKE_API_VERSION = 'v1'
 
 KUBECONFIG_ENV_VAR_NAME = 'KUBECONFIG'
@@ -490,14 +492,17 @@ def BuildFullMapUpdate(clear, remove_keys, set_entries, initial_entries,
   ])
 
 
-def IsInRunningState(environment):
+def IsInRunningState(environment, release_track=base.ReleaseTrack.GA):
   """Returns whether an environment currently is in the RUNNING state.
 
   Args:
     environment: Environment, an object returned by an API call representing
         the environment to check.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+        which Composer client library will be used.
   """
   running_state = (
-      api_util.GetMessagesModule().Environment.StateValueValuesEnum.RUNNING)
+      api_util.GetMessagesModule(
+          release_track=release_track).Environment.StateValueValuesEnum.RUNNING)
 
   return environment.state == running_state

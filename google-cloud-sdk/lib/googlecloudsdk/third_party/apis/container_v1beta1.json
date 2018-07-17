@@ -258,12 +258,16 @@
           "$ref": "NetworkConfig"
         },
         "privateCluster": {
-          "description": "If this is a private cluster setup. Private clusters are clusters that, by\ndefault have no external IP addresses on the nodes and where nodes and the\nmaster communicate over private IP addresses.",
+          "description": "If this is a private cluster setup. Private clusters are clusters that, by\ndefault have no external IP addresses on the nodes and where nodes and the\nmaster communicate over private IP addresses.\nThis field is deprecated, use private_cluster_config.enabled instead.",
           "type": "boolean"
         },
         "masterIpv4CidrBlock": {
-          "description": "The IP prefix in CIDR notation to use for the hosted master network.\nThis prefix will be used for assigning private IP addresses to the\nmaster or set of masters, as well as the ILB VIP.",
+          "description": "The IP prefix in CIDR notation to use for the hosted master network.\nThis prefix will be used for assigning private IP addresses to the\nmaster or set of masters, as well as the ILB VIP.\nThis field is deprecated, use\nprivate_cluster_config.master_ipv4_cidr_block instead.",
           "type": "string"
+        },
+        "privateClusterConfig": {
+          "description": "Configuration for private cluster.",
+          "$ref": "PrivateClusterConfig"
         },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
@@ -959,6 +963,10 @@
         "window": {
           "description": "Specifies the maintenance window in which maintenance may be performed.",
           "$ref": "MaintenanceWindow"
+        },
+        "masterUpdateRestriction": {
+          "description": "Specifies additional restrictions applying to when master updates may be\nperformed.",
+          "$ref": "MasterUpdateRestriction"
         }
       }
     },
@@ -990,6 +998,36 @@
         "duration": {
           "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.",
           "type": "string"
+        }
+      }
+    },
+    "MasterUpdateRestriction": {
+      "id": "MasterUpdateRestriction",
+      "description": "MasterUpdateRestriction defines restrictions that apply only to clusters'\nmaster updates.",
+      "type": "object",
+      "properties": {
+        "freeze": {
+          "description": "MasterUpdateFreeze defines freeze to master updates.",
+          "$ref": "MasterUpdateFreeze"
+        }
+      }
+    },
+    "MasterUpdateFreeze": {
+      "id": "MasterUpdateFreeze",
+      "description": "MasterUpdateFreeze defines freeze on master updates. Some customers want to\navoid master updates during time periods critical to their bussiness.\n\nIn the future each k8s version will have a support window (see\ngo\/gke-supported-versions-design). Then we will allow freezing master until\n~2 weeks before we stop maintaing the version.\n\nFor now we approximate this:\n- Freeze must last at most 13 weeks.\n- Only masters in newest and second newest (minor) versions can be frozen.\n- After freeze user must give us 2 weeks before starting a new one.\n- User can end freeze early.\n- If user ended a freeze early they can resume it (with 13 week duration\n  limit counting from the original freeze time).\n\nWe will apply security updates even to frozen masters.",
+      "type": "object",
+      "properties": {
+        "maxFreezeEndTime": {
+          "description": "[Output only] The time by which the master update freeze must end, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.\nIn the future it will be end of support for master version - 2 weeks.\n\nFor now it is:\n- For clusters that weren't in a freeze during last 2 weeks and are in one\n  of the two newest (minor) versions: now + 13 weeks.\n- For clusters that weren't in a freeze during last 2 weeks and are in an\n  older version: empty\n- For clusters that were in a freeze during last two weeks (including\n  currently frozen clusters): start of the freeze + 13 weeks.",
+          "type": "string"
+        },
+        "scheduledFreezeEndTime": {
+          "description": "The time at which the master update freeze is scheduled to end, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.\nFuture timestamp means the freeze is ongoing. Past timestamp means the\nfreeze ended recently (the cluster is going through period of recovering\nfrom the freeze). Empty string means cluster wasn't affected by a freeze\nrecently.\nThis field can be set only to a timestamp that is:\n- In the future and\n- Earlier than max_freeze_end_time.",
+          "type": "string"
+        },
+        "frozen": {
+          "description": "Indicates if the master version is currently frozen.\nWhen master is frozen scheduled_freeze_end_time must be a future timestamp.\nWhen master is not frozen scheduled_freeze_end_time must be a past\ntimestamp (frozen during last two weeks) or an empty string (not frozen\nduring last two weeks).\nYou can only set this to true if max_freeze_end_time is a future timestamp.\nWhen setting frozen to true you can set scheduled_freeze_end_time to a\nfuture timestamp not later than max_freeze_end_time.\nIf you don't set scheduled_freeze_end_time when setting frozen to true it\nwill be set to max_freeze_end_time.\nAfter scheduled_freeze_end_time this field automatically becomes false.\nIf you chage value of this field to false scheduled_freeze_end_time becomes\ntimestamp of the request.\nWe still apply security updates to frozen masters.",
+          "type": "boolean"
         }
       }
     },
@@ -1065,6 +1103,33 @@
         },
         "subnetwork": {
           "description": "Output only. The name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc).\nExample: projects\/my-project\/regions\/us-central1\/subnetworks\/my-subnet",
+          "type": "string"
+        }
+      }
+    },
+    "PrivateClusterConfig": {
+      "id": "PrivateClusterConfig",
+      "description": "Configuration options for private clusters.",
+      "type": "object",
+      "properties": {
+        "enablePrivateNodes": {
+          "description": "Whether nodes have only private IP addresses, and communicate with the\nmaster via private networking.",
+          "type": "boolean"
+        },
+        "enablePrivateEndpoint": {
+          "description": "Whether the master's internal IP address is used as the cluster endpoint.",
+          "type": "boolean"
+        },
+        "masterIpv4CidrBlock": {
+          "description": "The IP prefix in CIDR notation to use for the hosted master network. This\nprefix will be used for assigning private IP addresses to the master or\nset of masters, as well as the ILB VIP.",
+          "type": "string"
+        },
+        "privateEndpoint": {
+          "description": "Output only. The internal IP address of this cluster's master endpoint.",
+          "type": "string"
+        },
+        "publicEndpoint": {
+          "description": "Output only. The external IP address of this cluster's master endpoint.",
           "type": "string"
         }
       }
@@ -2262,7 +2327,7 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
@@ -2273,7 +2338,7 @@
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.\nThis field is only visible as GOOGLE_INTERNAL or CONDITION_TRUSTED_TESTER.",
+          "description": "Unimplemented. The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
           "$ref": "Expr"
         }
       }
@@ -2432,7 +2497,7 @@
             "Default non-attribute.",
             "Either principal or (if present) authority selector.",
             "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". It is not permitted to grant access based on\nthe *absence* of a realm, so realm conditions can only be used in\na \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).",
+            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". Note that a value can be either a realm or a\nrealm group (go\/realm-groups). A match is determined by a realm group\nmembership check performed by a RealmAclRep object (go\/realm-acl-howto).\nIt is not permitted to grant access based on the *absence* of a realm, so\nrealm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN\nor DENY\/NOT_IN).",
             "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).",
             "What types of justifications have been supplied with this request.\nString values should match enum names from tech.iam.JustificationType,\ne.g. \"MANUAL_STRING\". It is not permitted to grant access based on\nthe *absence* of a justification, so justification conditions can only\nbe used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).\n\nMultiple justifications, e.g., a Buganizer ID and a manually-entered\nreason, are normal and supported.",
             "What type of credentials have been supplied with this request.\nString values should match enum names from\nsecurity_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY\nis supported.\nIt is not permitted to grant access based on the *absence* of a\ncredentials type, so the conditions can only be used in a \"positive\"\ncontext (e.g., ALLOW\/IN or DENY\/NOT_IN)."

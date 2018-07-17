@@ -15,7 +15,9 @@
 """Provides helper methods for dealing with JSON files for Bigtable IAM."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.api_lib.bigtable import instances
 from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.command_lib.iam import iam_util

@@ -14,7 +14,9 @@
 # limitations under the License.
 
 """SSH client utilities for key-generation, dispatching the ssh commands etc."""
+
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 import errno
