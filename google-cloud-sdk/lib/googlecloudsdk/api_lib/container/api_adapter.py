@@ -25,6 +25,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
 
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.container import constants as gke_constants
 from googlecloudsdk.api_lib.container import util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions
@@ -1511,6 +1512,9 @@ class APIAdapter(object):
     return (cluster.status ==
             self.messages.Cluster.StatusValueValuesEnum.DEGRADED)
 
+  def GetDegradedWarning(self, cluster):  # pylint: disable=unused-argument
+    return gke_constants.DEFAULT_DEGRADED_WARNING
+
   def GetOperationError(self, operation):
     return operation.statusMessage
 
@@ -1664,6 +1668,8 @@ class V1Beta1Adapter(V1Adapter):
 
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
+    if options.enable_autoprovisioning is not None:
+      cluster.autoscaling = self.CreateClusterAutoscalingCommon(options)
     if options.enable_stackdriver_kubernetes:
       if options.enable_cloud_logging and options.enable_cloud_monitoring:
         cluster.loggingService = 'logging.googleapis.com/kubernetes'
@@ -1851,6 +1857,14 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             resource=ProjectLocationCluster(cluster_ref.projectId,
                                             cluster_ref.zone,
                                             cluster_ref.clusterId)))
+
+  def GetDegradedWarning(self, cluster):
+    if cluster.conditions:
+      codes = [condition.code for condition in cluster.conditions]
+      messages = [condition.message for condition in cluster.conditions]
+      return ('Codes: {0}\n' 'Messages: {1}.').format(codes, messages)
+    else:
+      return gke_constants.DEFAULT_DEGRADED_WARNING
 
   def ListUsableSubnets(self, project_ref, network_project, filter_arg):
     """List usable subnets for a given project.

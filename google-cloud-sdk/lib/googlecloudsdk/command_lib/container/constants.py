@@ -15,12 +15,12 @@
 
 """Shared constants used by container commands."""
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
-DEGRADED_WARNING = (
-    "! Clusters in DEGRADED status are missing edit permissions on project.\n"
-    "Please refer to https://cloud.google.com/kubernetes-engine/docs/support\n"
-    "to fix this.\n"
-)
+
+DEGRADED_WARNING = ("Cluster {cluster_name} is DEGRADED with message:"
+                    " \"{cluster_degraded_warning}\".\n")
 
 EXPIRE_WARNING_DAYS = 14
 

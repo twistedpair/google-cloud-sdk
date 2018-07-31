@@ -83,7 +83,7 @@ def CheckIamPermissions(project_id):
   cloudbuild_service_name = 'cloudbuild.googleapis.com'
   if not services_api.IsServiceEnabled(project.projectId,
                                        cloudbuild_service_name):
-    prompt_message = ('The Google Cloud Container Builder service is not '
+    prompt_message = ('The Google Cloud Build service is not '
                       'enabled for this project. It is required for this '
                       'operation.\n')
     console_io.PromptContinue(prompt_message,

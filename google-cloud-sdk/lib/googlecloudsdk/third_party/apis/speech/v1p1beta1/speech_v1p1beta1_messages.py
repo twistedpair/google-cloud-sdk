@@ -596,6 +596,9 @@ class RecognitionMetadata(_messages.Message):
       'Nexus 5X' or 'Polycom SoundStation IP 6000' or 'POTS' or 'VoIP' or
       'Cardioid Microphone'.
     recordingDeviceType: The type of device the speech was recorded with.
+    tags: A freeform field to tag this input sample with. This can be used for
+      grouping the logs into separate buckets. This enables selective purging
+      of data based on the tags, and also for training models in AutoML.
   """
 
   class InteractionTypeValueValuesEnum(_messages.Enum):
@@ -689,6 +692,7 @@ class RecognitionMetadata(_messages.Message):
   originalMimeType = _messages.StringField(7)
   recordingDeviceName = _messages.StringField(8)
   recordingDeviceType = _messages.EnumField('RecordingDeviceTypeValueValuesEnum', 9)
+  tags = _messages.StringField(10, repeated=True)
 
 
 class RecognizeRequest(_messages.Message):

@@ -24,8 +24,10 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
 
 
+_SERVICES_LEGACY_LIST_COMMAND = ('services list --format=disable '
+                                 '--flatten=serviceName')
 _SERVICES_LIST_COMMAND = ('beta services list --format=disable '
-                          '--flatten=serviceName')
+                          '--flatten=config.name')
 
 
 class ConsumerServiceCompleter(completers.ListCommandCompleter):
@@ -34,6 +36,16 @@ class ConsumerServiceCompleter(completers.ListCommandCompleter):
     super(ConsumerServiceCompleter, self).__init__(
         collection=services_util.SERVICES_COLLECTION,
         list_command=_SERVICES_LIST_COMMAND,
+        flags=['enabled'],
+        **kwargs)
+
+
+class ConsumerServiceLegacyCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(ConsumerServiceLegacyCompleter, self).__init__(
+        collection=services_util.SERVICES_COLLECTION,
+        list_command=_SERVICES_LEGACY_LIST_COMMAND,
         flags=['enabled'],
         **kwargs)
 

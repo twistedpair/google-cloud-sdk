@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import operator
 import enum
 
@@ -87,7 +88,7 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
     self._name_to_concepts = {}
     final_names = []
     for concept_spec in self._concept_specs:
-      name = self._GetUniqueNameForSpec(concept_spec)
+      name = self._GetUniqueNameForSpec(concept_spec, final_names)
       final_names.append(name)
       self._name_to_concepts[name] = concept_spec
 
@@ -104,7 +105,8 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
         self._attribute_to_types_map.setdefault(attribute.name, []).append(
             (self.type_enum[self._ConceptToName(spec)]))
 
-  def _GetUniqueNameForSpec(self, concept_spec):
+  def _GetUniqueNameForSpec(self, concept_spec, final_names):
+    del final_names
     names = [spec.name for spec in self._concept_specs]
     if sum([concept_spec.name == n for n in names]) > 1:
       return '{}_{}'.format(
@@ -127,6 +129,30 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
       if spec == concept_spec:
         return name
 
+  def Parse(self, attribute_to_args_map, base_fallthroughs_map,
+            parsed_args=None, plural=False, allow_empty=False):
+    raise NotImplementedError
+
+
+class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
+  """A resource spec that contains multiple possible types."""
+
+  def IsAnchor(self, attribute):
+    """Convenience method."""
+    return any([attribute == spec.anchor for spec in self._concept_specs])
+
+  def IsLeafAnchor(self, attribute):
+    if not self.IsAnchor(attribute):
+      return False
+    # Not a leaf if it's a non-anchor attribute in at least one spec.
+    if any([attribute in spec.attributes and attribute.name != spec.anchor.name
+            for spec in self._concept_specs]):
+      return False
+    return True
+
+  def Pluralize(self, attribute, plural=False):
+    return plural and self.IsLeafAnchor(attribute)
+
   def _GetActivelySpecifiedAttributes(self, fallthroughs_map, parsed_args=None):
     """Get a list of attributes that are actively specified in runtime."""
     specified = []
@@ -136,7 +162,7 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
     }
     for attribute in self.attributes:
       try:
-        value = deps_lib.Get(attribute.name, final_map, parsed_args=None)
+        value = deps_lib.Get(attribute.name, final_map, parsed_args=parsed_args)
       except deps_lib.AttributeNotFoundError:
         continue
       if value:
@@ -189,6 +215,53 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
         return active_type
     raise ConflictingTypesError(actively_specified)
 
+  def _GetUniqueNameForSpec(self, resource_spec, final_names):
+    """Overrides this functionality from generic multitype concept specs."""
+    del final_names
+    # If all resources have different names, use their names.
+    resource_names = [spec.name for spec in self._concept_specs]
+    if len(set(resource_names)) == len(resource_names):
+      return resource_spec.name
+    # Otherwise, use the collection name.
+    other_collection_names = [
+        spec.collection for spec in self._concept_specs]
+    other_collection_names.pop(self._concept_specs.index(resource_spec))
+    if any([resource_spec.collection == n for n in other_collection_names]):
+      raise ValueError('Attempting to create a multitype spec with duplicate '
+                       'collections. Collection name: [{}]'.format(
+                           resource_spec.collection))
+    else:
+      return resource_spec.collection
+
+  def _GetAttributeAnchorFallthroughs(self, anchor_fallthroughs, attribute):
+    """Helper to get anchor-dependent fallthroughs for a given attribute."""
+    anchor_based_fallthroughs = []
+    for spec in self._concept_specs:
+      # Only add fallthroughs for attributes that are not the anchor but do
+      # belong to the relevant concept.
+      if attribute not in spec.attributes or attribute == spec.anchor:
+        continue
+      parameter_name = spec.ParamName(attribute.name)
+      anchor_based_fallthroughs += [
+          deps_lib.FullySpecifiedAnchorFallthrough(
+              anchor_fallthrough, spec.collection_info,
+              parameter_name)
+          for anchor_fallthrough in anchor_fallthroughs]
+    return anchor_based_fallthroughs
+
+  def _AnyAnchorIsSpecified(self, fallthroughs_map, parsed_args=None):
+    """Helper function to determine if any anchor arg was given."""
+    errors = []
+    for attribute in self.attributes:
+      if self.IsAnchor(attribute):
+        try:
+          deps_lib.Get(attribute.name, fallthroughs_map,
+                       parsed_args=parsed_args)
+          return True, []
+        except deps_lib.AttributeNotFoundError as e:
+          errors.append(str(e))
+    return False, errors
+
   def Initialize(self, fallthroughs_map, parsed_args=None, type_filter=None):
     """Initializes the concept.
 
@@ -225,11 +298,120 @@ class MultitypeConceptSpec(concepts.ConceptSpec):
       A TypedConceptResult that stores the type of the parsed concept and the
         raw parsed concept (such as a resource reference).
     """
-    type_ = self._GetActiveType(fallthroughs_map, parsed_args=parsed_args,
+    anchor_specified, errors = self._AnyAnchorIsSpecified(
+        fallthroughs_map, parsed_args=parsed_args)
+    if not anchor_specified:
+      raise concepts.InitializationError(
+          'The [{}] resource is not properly specified.\n{}'
+          .format(self.name, '\n'.join(errors)))
+    full_fallthroughs_map = copy.deepcopy(fallthroughs_map)
+    for attribute in self.attributes:
+      self._AddAnchorFallthroughs(attribute, full_fallthroughs_map)
+    type_ = self._GetActiveType(full_fallthroughs_map, parsed_args=parsed_args,
                                 type_filter=type_filter)
     return TypedConceptResult(
         type_[1].Initialize(fallthroughs_map, parsed_args=parsed_args),
         type_[0])
+
+  def _ParseFromPluralValue(self, attribute_to_args_map, base_fallthroughs_map,
+                            plural_attribute, parsed_args):
+    """Helper for parsing a list of results using a single anchor."""
+    attribute_name = plural_attribute.name
+    fallthroughs_map = self.BuildFullFallthroughsMap(
+        attribute_to_args_map, base_fallthroughs_map, plural=True,
+        with_anchor_fallthroughs=False)
+    current_fallthroughs = fallthroughs_map.get(attribute_name, [])
+    # Iterate through the values provided to the argument, creating for
+    # each a separate parsed resource.
+    parsed_resources = []
+    for fallthrough in current_fallthroughs:
+      try:
+        values = fallthrough.GetValue(parsed_args)
+      except deps_lib.FallthroughNotFoundError:
+        continue
+      for value in values:
+        # This will only be used as a temporary fallthrough in this loop
+        # iteration to return a single value for the anchor. Store it as a
+        # default kwarg value to avoid errors.
+        def ReturnCurrentValue(return_value=value):
+          return return_value
+        new_fallthrough = deps_lib.Fallthrough(ReturnCurrentValue,
+                                               fallthrough.hint,
+                                               active=fallthrough.active)
+        fallthroughs_map[attribute_name] = [new_fallthrough]
+
+        def _TypeFilter(type_):
+          concept_anchor = self._name_to_concepts.get(type_.name).anchor
+          return concept_anchor.name == plural_attribute.name
+
+        resource = self.Initialize(
+            fallthroughs_map, parsed_args=parsed_args, type_filter=_TypeFilter)
+        if resource.result is not None:
+          parsed_resources.append(resource)
+      # As soon as we find any set of values, we're done. No more fallthroughs.
+      break
+    return parsed_resources
+
+  def _ParsePlural(self, attribute_to_args_map, base_fallthroughs_map,
+                   parsed_args=None):
+    """Parses a list of resources."""
+    results = []
+    for attribute in self.attributes:
+      if self.IsLeafAnchor(attribute):
+        results += self._ParseFromPluralValue(
+            attribute_to_args_map, base_fallthroughs_map, attribute,
+            parsed_args=parsed_args)
+    if results:
+      return results
+    # If no resources were found from the "leaf" anchors, then we are looking
+    # for a single parent resource (whose anchor is a non-"leaf" anchor).
+    fallthroughs_map = self.BuildFullFallthroughsMap(
+        attribute_to_args_map, base_fallthroughs_map,
+        with_anchor_fallthroughs=False)
+    parent = self.Initialize(fallthroughs_map, parsed_args=parsed_args)
+    if parent:
+      return [parent]
+    return []
+
+  def Parse(self, attribute_to_args_map, base_fallthroughs_map,
+            parsed_args=None, plural=False, allow_empty=False):
+    """Lazy parsing function for resource.
+
+    Args:
+      attribute_to_args_map: {str: str}, A map of attribute names to the names
+        of their associated flags.
+      base_fallthroughs_map: {str: [deps_lib.Fallthrough]} A map of attribute
+        names to non-argument fallthroughs, including command-level
+        fallthroughs.
+      parsed_args: the parsed Namespace.
+      plural: bool, True if multiple resources can be parsed, False otherwise.
+      allow_empty: bool, True if resource parsing is allowed to return no
+        resource, otherwise False.
+
+    Returns:
+      A TypedConceptResult or a list of TypedConceptResult objects containing
+        the parsed resource or resources.
+    """
+    if not plural:
+      fallthroughs_map = self.BuildFullFallthroughsMap(
+          attribute_to_args_map, base_fallthroughs_map,
+          with_anchor_fallthroughs=False)
+      try:
+        return self.Initialize(fallthroughs_map, parsed_args=parsed_args)
+      except concepts.InitializationError:
+        if allow_empty:
+          return TypedConceptResult(None, None)
+        raise
+
+    try:
+      results = self._ParsePlural(attribute_to_args_map,
+                                  base_fallthroughs_map,
+                                  parsed_args=parsed_args)
+      return results
+    except concepts.InitializationError:
+      if allow_empty:
+        return []
+      raise
 
 
 class TypedConceptResult(object):
@@ -244,43 +426,3 @@ class TypedConceptResult(object):
     """
     self.result = result
     self.type_ = type_
-
-
-class MultitypeResourceSpec(MultitypeConceptSpec, concepts.ResourceSpec):
-  """A resource spec that contains multiple possible types."""
-
-  def IsAnchor(self, attribute):
-    """Convenience method."""
-    return any([attribute == spec.anchor
-                for spec in self._concept_specs])
-
-  def _GetUniqueNameForSpec(self, resource_spec):
-    """Overrides this functionality from generic multitype concept specs."""
-    # If all resources have different names, use their names.
-    resource_names = [spec.name for spec in self._concept_specs]
-    if len(set(resource_names)) == len(resource_names):
-      return resource_spec.name
-    # Otherwise, use the collection name.
-    collection_names = [spec.collection for spec in self._concept_specs]
-    if sum([resource_spec.collection == n for n in collection_names]) > 1:
-      raise ValueError('Attempting to create a multitype spec with duplicate '
-                       'collections. Collection name: [{}]'.format(
-                           resource_spec.collection))
-    else:
-      return resource_spec.collection
-
-  def _GetAttributeAnchorFallthroughs(self, anchor_fallthroughs, attribute):
-    """Helper to get anchor-dependent fallthroughs for a given attribute."""
-    anchor_based_fallthroughs = []
-    for spec in self._concept_specs:
-      # Only add fallthroughs for attributes that are not the anchor but do
-      # belong to the relevant concept.
-      if attribute not in spec.attributes or attribute == spec.anchor:
-        continue
-      parameter_name = spec.ParamName(attribute.name)
-      anchor_based_fallthroughs += [
-          deps_lib.FullySpecifiedAnchorFallthrough(
-              anchor_fallthrough, spec.collection_info,
-              parameter_name)
-          for anchor_fallthrough in anchor_fallthroughs]
-    return anchor_based_fallthroughs

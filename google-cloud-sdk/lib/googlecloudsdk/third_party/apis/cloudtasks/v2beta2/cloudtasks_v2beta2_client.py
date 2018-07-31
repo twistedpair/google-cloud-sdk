@@ -126,10 +126,9 @@ LeaseTasks.
 
 Tasks cannot be updated after creation; there is no UpdateTask command.
 
-* For [App Engine queues](google.cloud.tasks.v2beta2.AppEngineHttpTarget),
-  the maximum task size is 100KB.
-* For [pull queues](google.cloud.tasks.v2beta2.PullTarget), this
-  the maximum task size is 1MB.
+* For App Engine queues, the maximum task size is
+  100KB.
+* For pull queues, the maximum task size is 1MB.
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksCreateRequest) input message
@@ -269,6 +268,9 @@ due to performance considerations;
 response_view controls the
 subset of information which is returned.
 
+The tasks may be returned in any order. The ordering may change at any
+time.
+
       Args:
         request: (CloudtasksProjectsLocationsQueuesTasksListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -397,7 +399,7 @@ it was dispatched or not.
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](/tasks/docs/queue-yaml)
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml)
 before using this method.
 
       Args:
@@ -435,7 +437,7 @@ for 7 days.
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](/tasks/docs/queue-yaml)
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml)
 before using this method.
 
       Args:
@@ -494,8 +496,9 @@ before using this method.
 Returns an empty policy if the resource exists and does not have a policy
 set.
 
-Authorization requires the following [Google IAM](/iam) permission on the
-specified resource parent:
+Authorization requires the following
+[Google IAM](https://cloud.google.com/iam) permission on the specified
+resource parent:
 
 * `cloudtasks.queues.getIamPolicy`
 
@@ -565,7 +568,7 @@ it was dispatched or not.
 WARNING: Using this method may have unintended side effects if you are
 using an App Engine `queue.yaml` or `queue.xml` file to manage your queues.
 Read
-[Overview of Queue Management and queue.yaml](/tasks/docs/queue-yaml)
+[Overview of Queue Management and queue.yaml](https://cloud.google.com/tasks/docs/queue-yaml)
 before using this method.
 
       Args:
@@ -669,7 +672,7 @@ will be set to RUNNING.
 WARNING: Resuming many high-QPS queues at the same time can
 lead to target overloading. If you are resuming high-QPS
 queues, follow the 500/50/5 pattern described in
-[Managing Cloud Tasks Scaling Risks](/tasks/docs/manage-cloud-task-scaling).
+[Managing Cloud Tasks Scaling Risks](https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
 
       Args:
         request: (CloudtasksProjectsLocationsQueuesResumeRequest) input message
@@ -702,8 +705,9 @@ policy.
 Note: The Cloud Console does not check queue-level IAM permissions yet.
 Project-level permissions are required to use the Cloud Console.
 
-Authorization requires the following [Google IAM](/iam) permission on the
-specified resource parent:
+Authorization requires the following
+[Google IAM](https://cloud.google.com/iam) permission on the specified
+resource parent:
 
 * `cloudtasks.queues.setIamPolicy`
 

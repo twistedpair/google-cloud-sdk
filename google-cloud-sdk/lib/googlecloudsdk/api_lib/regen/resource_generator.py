@@ -15,9 +15,11 @@
 """Resource definition generator."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from collections import OrderedDict
 import json
 import re
 
@@ -53,7 +55,7 @@ class DiscoveryDoc(object):
   @classmethod
   def FromJson(cls, path):
     with files.FileReader(path) as f:
-      return cls(json.load(f))
+      return cls(json.load(f, object_pairs_hook=OrderedDict))
 
   @property
   def api_name(self):

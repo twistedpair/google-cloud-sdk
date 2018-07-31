@@ -64,10 +64,6 @@ class TokenRefreshError(UtilError):
   """Raised when there's an error refreshing tokens."""
 
 
-def Http():
-  return http.Http(response_encoding='utf8')
-
-
 def IsFullySpecified(image_name):
   return ':' in image_name or '@' in image_name
 
@@ -423,7 +419,7 @@ def GetDigestFromName(image_name):
   def ResolveV2Tag(tag):
     with v2_image.FromRegistry(
         basic_creds=CredentialProvider(), name=tag,
-        transport=Http()) as v2_img:
+        transport=http.Http()) as v2_img:
       if v2_img.exists():
         return v2_img.digest()
       return None
@@ -432,7 +428,7 @@ def GetDigestFromName(image_name):
     with v2_2_image.FromRegistry(
         basic_creds=CredentialProvider(),
         name=tag,
-        transport=Http(),
+        transport=http.Http(),
         accepted_mimes=v2_2_docker_http.SUPPORTED_MANIFEST_MIMES) as v2_2_img:
       if v2_2_img.exists():
         return v2_2_img.digest()
@@ -441,7 +437,7 @@ def GetDigestFromName(image_name):
   def ResolveManifestListTag(tag):
     with docker_image_list.FromRegistry(
         basic_creds=CredentialProvider(), name=tag,
-        transport=Http()) as manifest_list:
+        transport=http.Http()) as manifest_list:
       if manifest_list.exists():
         return manifest_list.digest()
       return None
@@ -479,7 +475,7 @@ def GetDockerDigestFromPrefix(digest):
   repository = ValidateRepositoryPath(repository_path)
   with v2_2_image.FromRegistry(
       basic_creds=CredentialProvider(), name=repository,
-      transport=Http()) as image:
+      transport=http.Http()) as image:
     matches = [d for d in image.manifests() if d.startswith(prefix)]
 
     if len(matches) == 1:

@@ -425,6 +425,13 @@
         "audioTopic": {
           "description": "Description of the content. Eg. \"Recordings of federal supreme court\nhearings from 2012\".",
           "type": "string"
+        },
+        "tags": {
+          "description": "A freeform field to tag this input sample with. This can be used for\ngrouping the logs into separate buckets. This enables selective purging of\ndata based on the tags, and also for training models in AutoML.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

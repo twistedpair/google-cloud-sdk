@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import abc
 import os
 import signal
 import sys
@@ -29,6 +30,9 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.console import multiline
+
+import six
 
 
 def ProgressTracker(
@@ -59,35 +63,33 @@ def ProgressTracker(
   elif style == properties.VALUES.core.InteractiveUXStyles.TESTING.name:
     return _StubProgressTracker(message, interruptable, aborted_message)
   else:
-    return _NormalProgressTracker(
+    is_tty = console_io.IsInteractive(error=True)
+    tracker_cls = (_NormalProgressTracker if is_tty
+                   else _NonInteractiveProgressTracker)
+    return tracker_cls(
         message, autotick, detail_message_callback, tick_delay, interruptable,
         aborted_message)
 
 
-class _NormalProgressTracker(object):
+class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
   """A context manager for telling the user about long-running progress."""
 
   def __init__(self, message, autotick, detail_message_callback, tick_delay,
                interruptable, aborted_message):
+    self._stream = sys.stderr
     if message is None:
       self._spinner_only = True
       self._message = ''
       self._prefix = ''
-      self._suffix = ''
     else:
       self._spinner_only = False
       self._message = message
       self._prefix = message + '...'
-      self._suffix = 'done.'
-    self._stream = sys.stderr
+    self._detail_message_callback = detail_message_callback
     self._ticks = 0
     self._done = False
     self._lock = threading.Lock()
-    self._detail_message_callback = detail_message_callback
-    self._multi_line = False
-    self._last_display_message = ''
     self._tick_delay = tick_delay
-    self._is_tty = console_io.IsInteractive(error=True)
     self._ticker = None
     self._output_enabled = log.IsUserOutputEnabled()
     # Don't bother autoticking if we aren't going to print anything.
@@ -108,7 +110,8 @@ class _NormalProgressTracker(object):
         return self._prefix + ' ' + detail_message + '...'
     return self._prefix
 
-  def __enter__(self):
+  def _SetUpSignalHandler(self):
+    """Sets up a signal handler for handling SIGINT."""
     def _CtrlCHandler(unused_signal, unused_frame):
       if self._interruptable:
         raise console_io.OperationCancelledError(self._aborted_message)
@@ -119,7 +122,21 @@ class _NormalProgressTracker(object):
       self._old_signal_handler = signal.signal(signal.SIGINT, _CtrlCHandler)
       self._restore_old_handler = True
     except ValueError:
-      self._restore_old_handler = False  # only works in the main thread
+      # Only works in the main thread. Gcloud does not run in the main thread
+      # in gcloud interactive.
+      self._restore_old_handler = False
+
+  def _TearDownSignalHandler(self):
+    if self._restore_old_handler:
+      try:
+        signal.signal(signal.SIGINT, self._old_signal_handler)
+      except ValueError:
+        pass  # only works in main thread
+
+  def __enter__(self):
+    # Setup signal handlers
+    self._SetUpSignalHandler()
+
     log.file_only_logger.info(self._GetPrefix())
     self._Print()
     if self._autotick:
@@ -131,104 +148,6 @@ class _NormalProgressTracker(object):
       self._ticker = threading.Thread(target=Ticker)
       self._ticker.start()
     return self
-
-  def Tick(self):
-    """Give a visual indication to the user that some progress has been made.
-
-    Output is sent to sys.stderr. Nothing is shown if output is not a TTY.
-
-    Returns:
-      Whether progress has completed.
-    """
-    with self._lock:
-      if not self._done:
-        if self._is_tty:
-          self._ticks += 1
-          self._Print(self._symbols.spin_marks[
-              self._ticks % len(self._symbols.spin_marks)])
-        else:
-          self._PrintDot()
-    return self._done
-
-  def _PrintDot(self):
-    """Print dots when not in a tty."""
-    if not self._output_enabled:
-      return
-    self._stream.write('.')
-
-  def _Print(self, message=''):
-    """Reprints the prefix followed by an optional message.
-
-    If there is a multiline message, we print the full message and every
-    time the Prefix Message is the same, we only reprint the last line to
-    account for a different 'message'. If there is a new message, we print
-    on a new line.
-
-    Args:
-      message: str, suffix of message
-    """
-    if self._spinner_only or not self._output_enabled:
-      return
-
-    display_message = self._GetPrefix()
-
-    # If we are not in a tty, _Print() is called exactly twice.  The first time
-    # it should print the prefix, the last time it should print just the 'done'
-    # message since we are not using any escape characters at all.
-    if not self._is_tty:
-      self._stream.write(message or display_message + '\n')
-      return
-
-    console_width = console_attr.ConsoleAttr().GetTermSize()[0] - 1
-    if console_width < 0:
-      console_width = 0
-    # The whole message will fit in the current console width and the previous
-    # line was not a multiline display so we can overwrite.
-    # If the previous and current messages are same we have multiline display
-    # so we only need the portion of text to rewrite on current line.
-    if ((len(display_message + message) <= console_width and not
-         self._multi_line) or display_message == self._last_display_message):
-      self._last_display_message = display_message
-      start_place = len(display_message) - (len(display_message)
-                                            % console_width)
-      if display_message:
-        display_message += message
-      # If size of the message is a multiple of the console_width, this will
-      # cause start place to begin at len(display_message) so we index the
-      # message from the end.
-      if start_place == 0:
-        start_place = -(console_width + len(message))
-      current_message = display_message[start_place:]
-      # We clear the current display and reprint the last line.
-      self._stream.write('\r' + console_width * ' ')
-      self._stream.write('\r' + current_message)
-    elif not console_width:
-      # This can happen if we're on a pseudo-TTY; ignore this to prevent
-      # hanging.
-      pass
-    else:  # If we have to do multiline display or a new message.
-      # If we have written something to the console before the new message,
-      # cursor will be at the end of the line so we need to go to the next line.
-      # If we are printing for the first time, the cursor will already be at
-      # a new line.
-      self._stream.write('\n' if self._last_display_message else '')
-      self._last_display_message = display_message
-      display_message += message
-      # We may or may not use multiline display
-      while display_message:
-        current_printing_message = display_message[:console_width]
-        display_message = display_message[console_width:]
-        # We print a new line if there is more to print in display_message.
-        self._stream.write(current_printing_message + ('\n' if display_message
-                                                       else ''))
-        # If there is still more to print, we will be using multiline display
-        # for future printing. We will not  want to erase the last line
-        # if a new line is able to fit in the whole console (first if).
-        # If self.multi_line was already True, we do not want to make it
-        # False
-        self._multi_line = (True if display_message or
-                            self._multi_line else False)
-        self._stream.flush()
 
   def __exit__(self, unused_ex_type, exc_value, unused_traceback):
     with self._lock:
@@ -246,11 +165,114 @@ class _NormalProgressTracker(object):
         self._Print('done.\n')
     if self._ticker:
       self._ticker.join()
-    if self._restore_old_handler:
-      try:
-        signal.signal(signal.SIGINT, self._old_signal_handler)
-      except ValueError:
-        pass  # only works in main thread
+    self._TearDownSignalHandler()
+
+  @abc.abstractmethod
+  def Tick(self):
+    """Give a visual indication to the user that some progress has been made.
+
+    Output is sent to sys.stderr. Nothing is shown if output is not a TTY.
+
+    Returns:
+      Whether progress has completed.
+    """
+    pass
+
+  @abc.abstractmethod
+  def _Print(self, message=''):
+    """Prints an update containing message to the output stream."""
+    pass
+
+
+class _NormalProgressTracker(_BaseProgressTracker):
+  """A context manager for telling the user about long-running progress."""
+
+  def __enter__(self):
+    self._SetupOutput()
+    return super(_NormalProgressTracker, self).__enter__()
+
+  def _SetupOutput(self):
+    def _FormattedCallback():
+      if self._detail_message_callback:
+        detail_message = self._detail_message_callback()
+        if detail_message:
+          return ' ' + detail_message + '...'
+      return None
+
+    self._console_output = multiline.SimpleSuffixConsoleOutput(self._stream)
+    self._console_message = self._console_output.AddMessage(
+        self._prefix, detail_message_callback=_FormattedCallback)
+
+  def Tick(self):
+    """Give a visual indication to the user that some progress has been made.
+
+    Output is sent to sys.stderr. Nothing is shown if output is not a TTY.
+
+    Returns:
+      Whether progress has completed.
+    """
+    with self._lock:
+      if not self._done:
+        self._ticks += 1
+        self._Print(self._symbols.spin_marks[
+            self._ticks % len(self._symbols.spin_marks)])
+    return self._done
+
+  def _Print(self, message=''):
+    """Reprints the prefix followed by an optional message.
+
+    If there is a multiline message, we print the full message and every
+    time the Prefix Message is the same, we only reprint the last line to
+    account for a different 'message'. If there is a new message, we print
+    on a new line.
+
+    Args:
+      message: str, suffix of message
+    """
+    if self._spinner_only or not self._output_enabled:
+      return
+
+    self._console_output.UpdateMessage(self._console_message, message)
+    self._console_output.UpdateConsole()
+
+
+class _NonInteractiveProgressTracker(_BaseProgressTracker):
+  """A context manager for telling the user about long-running progress."""
+
+  def Tick(self):
+    """Give a visual indication to the user that some progress has been made.
+
+    Output is sent to sys.stderr. Nothing is shown if output is not a TTY.
+
+    Returns:
+      Whether progress has completed.
+    """
+    with self._lock:
+      if not self._done:
+        self._Print('.')
+    return self._done
+
+  def _Print(self, message=''):
+    """Reprints the prefix followed by an optional message.
+
+    If there is a multiline message, we print the full message and every
+    time the Prefix Message is the same, we only reprint the last line to
+    account for a different 'message'. If there is a new message, we print
+    on a new line.
+
+    Args:
+      message: str, suffix of message
+    """
+    if self._spinner_only or not self._output_enabled:
+      return
+
+    # Since we are not in a tty, print will be called twice outside of normal
+    # ticking. The first time during __enter__, where the tracker message should
+    # be outputted. The second time is during __exit__, where a status updated
+    # contained in message will be outputted.
+    display_message = self._GetPrefix()
+    self._stream.write(message or display_message + '\n')
+    return
 
 
 class _NoOpProgressTracker(object):

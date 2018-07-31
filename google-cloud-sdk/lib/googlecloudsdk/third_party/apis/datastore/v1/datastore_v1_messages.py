@@ -212,6 +212,36 @@ class DatastoreProjectsImportRequest(_messages.Message):
   projectId = _messages.StringField(2, required=True)
 
 
+class DatastoreProjectsIndexesGetRequest(_messages.Message):
+  r"""A DatastoreProjectsIndexesGetRequest object.
+
+  Fields:
+    indexId: The resource ID of the index to get.
+    projectId: Project ID against which to make the request.
+  """
+
+  indexId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+
+
+class DatastoreProjectsIndexesListRequest(_messages.Message):
+  r"""A DatastoreProjectsIndexesListRequest object.
+
+  Fields:
+    filter: A string attribute.
+    pageSize: The maximum number of items to return.  If zero, then all
+      results will be returned.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    projectId: Project ID against which to make the request.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectId = _messages.StringField(4, required=True)
+
+
 class DatastoreProjectsLookupRequest(_messages.Message):
   r"""A DatastoreProjectsLookupRequest object.
 
@@ -433,10 +463,14 @@ class GoogleDatastoreAdminV1CommonMetadata(_messages.Message):
       OPERATION_TYPE_UNSPECIFIED: Unspecified.
       EXPORT_ENTITIES: ExportEntities.
       IMPORT_ENTITIES: ImportEntities.
+      CREATE_INDEX: CreateIndex.
+      DELETE_INDEX: DeleteIndex.
     """
     OPERATION_TYPE_UNSPECIFIED = 0
     EXPORT_ENTITIES = 1
     IMPORT_ENTITIES = 2
+    CREATE_INDEX = 3
+    DELETE_INDEX = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current state of the Operation.
@@ -683,6 +717,130 @@ class GoogleDatastoreAdminV1ImportEntitiesRequest(_messages.Message):
   entityFilter = _messages.MessageField('GoogleDatastoreAdminV1EntityFilter', 1)
   inputUrl = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
+
+
+class GoogleDatastoreAdminV1Index(_messages.Message):
+  r"""A minimal index definition. Next tag: 8
+
+  Enums:
+    AncestorValueValuesEnum: The index's ancestor mode.  Must not be
+      ANCESTOR_MODE_UNSPECIFIED. Required.
+    StateValueValuesEnum: The state of the index. Output only.
+
+  Fields:
+    ancestor: The index's ancestor mode.  Must not be
+      ANCESTOR_MODE_UNSPECIFIED. Required.
+    indexId: The resource ID of the index. Output only.
+    kind: The entity kind to which this index applies. Required.
+    projectId: Project ID. Output only.
+    properties: An ordered sequence of property names and their index
+      attributes. Required.
+    state: The state of the index. Output only.
+  """
+
+  class AncestorValueValuesEnum(_messages.Enum):
+    r"""The index's ancestor mode.  Must not be ANCESTOR_MODE_UNSPECIFIED.
+    Required.
+
+    Values:
+      ANCESTOR_MODE_UNSPECIFIED: The ancestor mode is unspecified.
+      NONE: Do not include the entity's ancestors in the index.
+      ALL_ANCESTORS: Include all the entity's ancestors in the index.
+    """
+    ANCESTOR_MODE_UNSPECIFIED = 0
+    NONE = 1
+    ALL_ANCESTORS = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of the index. Output only.
+
+    Values:
+      STATE_UNSPECIFIED: The state is unspecified.
+      CREATING: The index is being created, and cannot be used by queries.
+        There is an active long-running operation for the index. The index is
+        updated when writing an entity. Some index data may exist.
+      READY: The index is ready to be used. The index is updated when writing
+        an entity. The index is fully populated from all stored entities it
+        applies to.
+      DELETING: The index is being deleted, and cannot be used by queries.
+        There is an active long-running operation for the index. The index is
+        not updated when writing an entity. Some index data may exist.
+      ERROR: The index was being created or deleted, but something went wrong.
+        The index cannot by used by queries. There is no active long-running
+        operation for the index, and the most recently finished long-running
+        operation failed. The index is not updated when writing an entity.
+        Some index data may exist.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+    ERROR = 4
+
+  ancestor = _messages.EnumField('AncestorValueValuesEnum', 1)
+  indexId = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  projectId = _messages.StringField(4)
+  properties = _messages.MessageField('GoogleDatastoreAdminV1IndexedProperty', 5, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleDatastoreAdminV1IndexOperationMetadata(_messages.Message):
+  r"""Metadata for Index operations.
+
+  Fields:
+    common: Metadata common to all Datastore Admin operations.
+    indexId: The index resource ID that this operation is acting on.
+    progressEntities: An estimate of the number of entities processed.
+  """
+
+  common = _messages.MessageField('GoogleDatastoreAdminV1CommonMetadata', 1)
+  indexId = _messages.StringField(2)
+  progressEntities = _messages.MessageField('GoogleDatastoreAdminV1Progress', 3)
+
+
+class GoogleDatastoreAdminV1IndexedProperty(_messages.Message):
+  r"""Next tag: 3
+
+  Enums:
+    DirectionValueValuesEnum: The indexed property's direction.  Must not be
+      DIRECTION_UNSPECIFIED. Required.
+
+  Fields:
+    direction: The indexed property's direction.  Must not be
+      DIRECTION_UNSPECIFIED. Required.
+    name: The property name to index. Required.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""The indexed property's direction.  Must not be DIRECTION_UNSPECIFIED.
+    Required.
+
+    Values:
+      DIRECTION_UNSPECIFIED: The direction is unspecified.
+      ASCENDING: The property's values are indexed so as to support sequencing
+        in ascending order and also query by <, >, <=, >=, and =.
+      DESCENDING: The property's values are indexed so as to support
+        sequencing in descending order and also query by <, >, <=, >=, and =.
+    """
+    DIRECTION_UNSPECIFIED = 0
+    ASCENDING = 1
+    DESCENDING = 2
+
+  direction = _messages.EnumField('DirectionValueValuesEnum', 1)
+  name = _messages.StringField(2)
+
+
+class GoogleDatastoreAdminV1ListIndexesResponse(_messages.Message):
+  r"""The response for google.datastore.admin.v1.DatastoreAdmin.ListIndexes.
+
+  Fields:
+    indexes: The indexes.
+    nextPageToken: The standard List next-page token.
+  """
+
+  indexes = _messages.MessageField('GoogleDatastoreAdminV1Index', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleDatastoreAdminV1Progress(_messages.Message):
@@ -1572,14 +1730,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1615,17 +1771,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):

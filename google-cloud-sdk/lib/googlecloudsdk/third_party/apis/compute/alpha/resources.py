@@ -122,20 +122,6 @@ class Collections(enum.Enum):
       [u'project', u'healthCheck'],
       True
   )
-  HOSTTYPES = (
-      'hostTypes',
-      'projects/{project}/zones/{zone}/hostTypes/{hostType}',
-      {},
-      [u'project', u'zone', u'hostType'],
-      True
-  )
-  HOSTS = (
-      'hosts',
-      'projects/{project}/zones/{zone}/hosts/{host}',
-      {},
-      [u'project', u'zone', u'host'],
-      True
-  )
   HTTPHEALTHCHECKS = (
       'httpHealthChecks',
       'projects/{project}/global/httpHealthChecks/{httpHealthCheck}',

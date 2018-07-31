@@ -4,7 +4,7 @@
  "id": "storage:v1",
  "name": "storage",
  "version": "v1",
- "revision": "20180711",
+ "revision": "20180720",
  "title": "Cloud Storage JSON API",
  "description": "Stores and retrieves potentially large, immutable data objects.",
  "ownerDomain": "google.com",
@@ -1643,7 +1643,7 @@
      "id": "storage.buckets.patch",
      "path": "b/{bucket}",
      "httpMethod": "PATCH",
-     "description": "Updates a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate. This method supports patch semantics.",
+     "description": "Patches a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate.",
      "parameters": {
       "bucket": {
        "type": "string",

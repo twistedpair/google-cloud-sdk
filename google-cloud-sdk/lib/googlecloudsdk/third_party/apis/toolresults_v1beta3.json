@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20180711",
+ "revision": "20180720",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -1265,6 +1265,7 @@
      "description": "Type of issue. Required.",
      "enum": [
       "anr",
+      "availableDeepLinks",
       "compatibleWithOrchestrator",
       "completeRoboScriptExecution",
       "failedToInstall",
@@ -1272,11 +1273,14 @@
       "incompleteRoboScriptExecution",
       "launcherActivityNotFound",
       "nativeCrash",
+      "nonSdkApiUsageViolation",
       "startActivityNotFound",
       "unspecifiedType",
       "unusedRoboDirective"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",

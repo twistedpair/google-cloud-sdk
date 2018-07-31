@@ -257,6 +257,11 @@ apis:
     v1:
       discovery_doc: datastore_v1.json
       default: true
+      resources:
+        projects:
+          path: projects/{projectId}
+        projects.indexes:
+          path: projects/{projectId}/indexes/{indexId}
 
   deploymentmanager:
     alpha:
@@ -290,6 +295,12 @@ apis:
       default: true
     v1beta1:
       discovery_doc: file_v1beta1.json
+  firestore:
+    v1beta1:
+      discovery_doc: firestore_v1beta1.json
+      default: true
+    v1:
+      discovery_doc: firestore_v1.json
   genomics:
     v1:
       discovery_doc: genomics_v1.json

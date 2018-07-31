@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/cloud-scheduler/",
+  "documentationLink": "https://cloud.google.com/scheduler/",
   "protocol": "rest",
   "rootUrl": "https://cloudscheduler.googleapis.com/",
   "servicePath": "",
@@ -304,7 +304,7 @@
           "type": "string"
         },
         "headers": {
-          "description": "HTTP request headers.\n\nThis map contains the header field names and values. Headers can be set\nwhen the job is created.\n\nCloud Scheduler sets some headers to default values:\n\n* `User-Agent`: By default, this header is\n  `\"AppEngine-Google; (+http:\/\/code.google.com\/appengine)\"`.\n  This header can be modified, but Cloud Scheduler will append\n  `\"AppEngine-Google; (+http:\/\/code.google.com\/appengine)\"` to the\n  modified `User-Agent`.\n\nIf the job has an AppEngineHttpTarget.body, Cloud Scheduler sets the\nfollowing headers:\n\n* `Content-Type`: By default, the `Content-Type` header is set to\n  `\"application\/octet-stream\"`. The default can be overridden by explictly\n  setting `Content-Type` to a particular media type when the job is\n  created.\n  For example, `Content-Type` can be set to `\"application\/json\"`.\n* `Content-Length`: This is computed by Cloud Scheduler. This value is\n  output only. It cannot be changed.\n\nThe headers below are output only. They cannot be set or overridden:\n\n* `X-Google-*`: For Google internal use only.\n* `X-AppEngine-*`: For Google internal use only. See\n  [Reading request\n  headers](\/appengine\/docs\/python\/taskqueue\/push\/creating-handlers#reading_request_headers).\n\nIn addition, some App Engine headers, which contain\njob-specific information, are also be sent to the job handler; see\n[request headers](\/appengine\/docs\/python\/taskqueue\/push\/creating-handlers#reading_request_headers).",
+          "description": "HTTP request headers.\n\nThis map contains the header field names and values. Headers can be set\nwhen the job is created.\n\nCloud Scheduler sets some headers to default values:\n\n* `User-Agent`: By default, this header is\n  `\"AppEngine-Google; (+http:\/\/code.google.com\/appengine)\"`.\n  This header can be modified, but Cloud Scheduler will append\n  `\"AppEngine-Google; (+http:\/\/code.google.com\/appengine)\"` to the\n  modified `User-Agent`.\n\nIf the job has an AppEngineHttpTarget.body, Cloud Scheduler sets the\nfollowing headers:\n\n* `Content-Type`: By default, the `Content-Type` header is set to\n  `\"application\/octet-stream\"`. The default can be overridden by explictly\n  setting `Content-Type` to a particular media type when the job is\n  created.\n  For example, `Content-Type` can be set to `\"application\/json\"`.\n* `Content-Length`: This is computed by Cloud Scheduler. This value is\n  output only. It cannot be changed.\n\nThe headers below are output only. They cannot be set or overridden:\n\n* `X-Google-*`: For Google internal use only.\n* `X-AppEngine-*`: For Google internal use only. See\n  [Reading request headers](https:\/\/cloud.google.com\/appengine\/docs\/python\/taskqueue\/push\/creating-handlers#reading_request_headers).\n\nIn addition, some App Engine headers, which contain\njob-specific information, are also be sent to the job handler; see\n[request headers](https:\/\/cloud.google.com\/appengine\/docs\/python\/taskqueue\/push\/creating-handlers#reading_request_headers).",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -319,23 +319,23 @@
     },
     "AppEngineRouting": {
       "id": "AppEngineRouting",
-      "description": "App Engine Routing.\n\nFor more information about services, versions, and instances see\n[An Overview of App Engine](\/appengine\/docs\/python\/an-overview-of-app-engine),\n[Microservices Architecture on Google App Engine](\/appengine\/docs\/python\/microservices-on-app-engine),\n[App Engine Standard request routing](\/appengine\/docs\/standard\/python\/how-requests-are-routed), and\n[App Engine Flex request routing] (\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
+      "description": "App Engine Routing.\n\nFor more information about services, versions, and instances see\n[An Overview of App Engine](https:\/\/cloud.google.com\/appengine\/docs\/python\/an-overview-of-app-engine),\n[Microservices Architecture on Google App Engine](https:\/\/cloud.google.com\/appengine\/docs\/python\/microservices-on-app-engine),\n[App Engine Standard request routing](https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/how-requests-are-routed), and\n[App Engine Flex request routing](https:\/\/cloud.google.com\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
       "type": "object",
       "properties": {
         "service": {
-          "description": "App service.\n\nBy default, the job is sent to the service which is the default\nservice when the job is attempted (\"default\").",
+          "description": "App service.\n\nBy default, the job is sent to the service which is the default\nservice when the job is attempted.",
           "type": "string"
         },
         "version": {
-          "description": "App version.\n\nBy default, the job is sent to the version which is the default\nversion when the job is attempted (\"default\").",
+          "description": "App version.\n\nBy default, the job is sent to the version which is the default\nversion when the job is attempted.",
           "type": "string"
         },
         "instance": {
-          "description": "App instance.\n\nBy default, the job is sent to an instance which is available when\nthe job is attempted.\n\nRequests can only be sent to a specific instance if\n[manual scaling is used in App Engine Standard](\/appengine\/docs\/python\/an-overview-of-app-engine?hl=en_US#scaling_types_and_instance_classes).\nApp Engine Flex does not support instances. For more information, see\n[App Engine Standard request routing](\/appengine\/docs\/standard\/python\/how-requests-are-routed) and\n[App Engine Flex request routing](\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
+          "description": "App instance.\n\nBy default, the job is sent to an instance which is available when\nthe job is attempted.\n\nRequests can only be sent to a specific instance if\n[manual scaling is used in App Engine Standard](https:\/\/cloud.google.com\/appengine\/docs\/python\/an-overview-of-app-engine?hl=en_US#scaling_types_and_instance_classes).\nApp Engine Flex does not support instances. For more information, see\n[App Engine Standard request routing](https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/how-requests-are-routed) and\n[App Engine Flex request routing](https:\/\/cloud.google.com\/appengine\/docs\/flexible\/python\/how-requests-are-routed).",
           "type": "string"
         },
         "host": {
-          "description": "Output only. The host that the job is sent to.\n\nFor more information about how App Engine requests are routed, see\n[here](\/appengine\/docs\/standard\/python\/how-requests-are-routed).\n\nThe host is constructed as:\n\n\n* `host = [application_domain_name]`<\/br>\n  `| [service] + '.' + [application_domain_name]`<\/br>\n  `| [version] + '.' + [application_domain_name]`<\/br>\n  `| [version_dot_service]+ '.' + [application_domain_name]`<\/br>\n  `| [instance] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_service] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version_dot_service] + '.' + [application_domain_name]`\n\n* `application_domain_name` = The domain name of the app, for\n  example <app-id>.appspot.com, which is associated with the\n  job's project ID.\n\n* `service =` AppEngineRouting.service\n\n* `version =` AppEngineRouting.version\n\n* `version_dot_service =`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\n* `instance =` AppEngineRouting.instance\n\n* `instance_dot_service =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.service\n\n* `instance_dot_version =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.version\n\n* `instance_dot_version_dot_service =`\n  AppEngineRouting.instance `+ '.' +`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\nIf AppEngineRouting.service is empty, then the job will be sent\nto the service which is the default service when the job is attempted.\n\nIf AppEngineRouting.version is empty, then the job will be sent\nto the version which is the default version when the job is attempted.\n\nIf AppEngineRouting.instance is empty, then the job will be sent\nto an instance which is available when the job is attempted.\n\nWhen AppEngineRouting.service is \"default\",\nAppEngineRouting.version is \"default\", and\nAppEngineRouting.instance is empty, AppEngineRouting.host is\nshortened to just the `application_domain_name`.\n\nIf AppEngineRouting.service, AppEngineRouting.version, or\nAppEngineRouting.instance is invalid, then the job will be sent\nto the default version of the default service when the job is attempted.",
+          "description": "Output only. The host that the job is sent to.\n\nFor more information about how App Engine requests are routed, see\n[here](https:\/\/cloud.google.com\/appengine\/docs\/standard\/python\/how-requests-are-routed).\n\nThe host is constructed as:\n\n\n* `host = [application_domain_name]`<\/br>\n  `| [service] + '.' + [application_domain_name]`<\/br>\n  `| [version] + '.' + [application_domain_name]`<\/br>\n  `| [version_dot_service]+ '.' + [application_domain_name]`<\/br>\n  `| [instance] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_service] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version] + '.' + [application_domain_name]`<\/br>\n  `| [instance_dot_version_dot_service] + '.' + [application_domain_name]`\n\n* `application_domain_name` = The domain name of the app, for\n  example <app-id>.appspot.com, which is associated with the\n  job's project ID.\n\n* `service =` AppEngineRouting.service\n\n* `version =` AppEngineRouting.version\n\n* `version_dot_service =`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\n* `instance =` AppEngineRouting.instance\n\n* `instance_dot_service =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.service\n\n* `instance_dot_version =`\n  AppEngineRouting.instance `+ '.' +` AppEngineRouting.version\n\n* `instance_dot_version_dot_service =`\n  AppEngineRouting.instance `+ '.' +`\n  AppEngineRouting.version `+ '.' +` AppEngineRouting.service\n\nIf AppEngineRouting.service is empty, then the job will be sent\nto the service which is the default service when the job is attempted.\n\nIf AppEngineRouting.version is empty, then the job will be sent\nto the version which is the default version when the job is attempted.\n\nIf AppEngineRouting.instance is empty, then the job will be sent\nto an instance which is available when the job is attempted.\n\nIf AppEngineRouting.service, AppEngineRouting.version, or\nAppEngineRouting.instance is invalid, then the job will be sent\nto the default version of the default service when the job is attempted.",
           "type": "string"
         }
       }
@@ -477,11 +477,11 @@
     },
     "PubsubMessage": {
       "id": "PubsubMessage",
-      "description": "A message data and its attributes. The message payload must not be empty;\nit must contain either a non-empty data field, or at least one attribute.",
+      "description": "A message that is published by publishers and consumed by subscribers. The\nmessage must contain either a non-empty data field or at least one attribute.",
       "type": "object",
       "properties": {
         "data": {
-          "description": "The message payload.",
+          "description": "The message data field. If this field is empty, the message must contain\nat least one attribute.",
           "type": "string",
           "format": "byte"
         },

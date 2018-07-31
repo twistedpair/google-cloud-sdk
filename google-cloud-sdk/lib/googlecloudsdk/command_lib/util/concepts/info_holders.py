@@ -267,6 +267,9 @@ class ResourceInfo(ConceptInfo):
     return (self._IsAnchor(attribute)
             and not self.fallthroughs_map.get(attribute.name, []))
 
+  def _IsPluralArg(self, attribute):
+    return self._IsAnchor(attribute) and self.plural
+
   def _KwargsForAttribute(self, name, attribute):
     """Constructs the kwargs for adding an attribute to argparse."""
     # Argument is modal if it's the anchor, unless there are fallthroughs.
@@ -275,7 +278,7 @@ class ResourceInfo(ConceptInfo):
     # method.
     required = self._IsRequiredArg(attribute)
     final_help_text = self._GetHelpTextForAttribute(attribute)
-    plural = self._IsAnchor(attribute) and self.plural
+    plural = self._IsPluralArg(attribute)
     if attribute.completer:
       completer = attribute.completer
     elif not self.resource_spec.disable_auto_completers:
@@ -401,6 +404,9 @@ class MultitypeResourceInfo(ResourceInfo):
     anchors = self._GetAnchors()
     return anchors == [attribute] and not self.fallthroughs_map.get(
         attribute.name, [])
+
+  def _IsPluralArg(self, attribute):
+    return self.concept_spec.Pluralize(attribute, plural=self.plural)
 
   @property
   def args_required(self):

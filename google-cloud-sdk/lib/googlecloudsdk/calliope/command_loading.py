@@ -458,11 +458,10 @@ def _ImplementationsFromModule(mod_file, module_attributes, is_command):
 
   # Collect all the registered groups and commands.
   for command_or_group in module_attributes:
-    if issubclass(type(command_or_group), type):
-      if issubclass(command_or_group, base.Command):
-        commands.append(command_or_group)
-      elif issubclass(command_or_group, base.Group):
-        groups.append(command_or_group)
+    if getattr(command_or_group, 'IS_COMMAND', False):
+      commands.append(command_or_group)
+    elif getattr(command_or_group, 'IS_COMMAND_GROUP', False):
+      groups.append(command_or_group)
 
   if is_command:
     if groups:

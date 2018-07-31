@@ -463,6 +463,20 @@ MAP = {
             default_version=False
         ),
     },
+    'firestore': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.firestore.v1',
+            client_classpath='firestore_v1_client.FirestoreV1',
+            messages_modulepath='firestore_v1_messages',
+            default_version=False
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.firestore.v1beta1',
+            client_classpath='firestore_v1beta1_client.FirestoreV1beta1',
+            messages_modulepath='firestore_v1beta1_messages',
+            default_version=True
+        ),
+    },
     'genomics': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.genomics.v1',

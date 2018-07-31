@@ -74,9 +74,12 @@ class AuthenticatorGroupsConfig(_messages.Message):
   Fields:
     enabled: Whether this cluster should return group membership lookups
       during authentication using a group of security groups.
+    securityGroup: The name of the security group-of-groups to be used. Only
+      relevant if enabled = true.
   """
 
   enabled = _messages.BooleanField(1)
+  securityGroup = _messages.StringField(2)
 
 
 class AuthorizationLoggingOptions(_messages.Message):

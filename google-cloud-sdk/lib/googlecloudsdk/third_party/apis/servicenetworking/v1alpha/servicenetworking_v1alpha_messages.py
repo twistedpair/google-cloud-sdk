@@ -1151,9 +1151,11 @@ class MetricDescriptor(_messages.Message):
       not be supported.
     name: The resource name of the metric descriptor.
     type: The metric type, including its DNS name prefix. The type is not URL-
-      encoded.  All user-defined custom metric types have the DNS name
-      `custom.googleapis.com`.  Metric types should use a natural hierarchical
-      grouping. For example:      "custom.googleapis.com/invoice/paid/amount"
+      encoded.  All user-defined metric types have the DNS name
+      `custom.googleapis.com` or `external.googleapis.com`.  Metric types
+      should use a natural hierarchical grouping. For example:
+      "custom.googleapis.com/invoice/paid/amount"
+      "external.googleapis.com/prometheus/up"
       "appengine.googleapis.com/http/server/response_latencies"
     unit: The unit in which the metric value is reported. It is only
       applicable if the `value_type` is `INT64`, `DOUBLE`, or `DISTRIBUTION`.

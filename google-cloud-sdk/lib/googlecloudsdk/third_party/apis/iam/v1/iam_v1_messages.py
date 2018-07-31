@@ -8,6 +8,7 @@ to Google and make API calls.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'iam'
@@ -108,6 +109,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -125,8 +130,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class BindingDelta(_messages.Message):
@@ -139,6 +145,8 @@ class BindingDelta(_messages.Message):
 
   Fields:
     action: The action that was performed on a Binding. Required
+    condition: Unimplemented. The condition that is associated with this
+      binding. This field is logged only for Cloud Audit Logging.
     member: A single identity requesting access for a Cloud Platform resource.
       Follows the same format of Binding.members. Required
     role: Role that is assigned to `members`. For example, `roles/viewer`,
@@ -158,8 +166,9 @@ class BindingDelta(_messages.Message):
     REMOVE = 2
 
   action = _messages.EnumField('ActionValueValuesEnum', 1)
-  member = _messages.StringField(2)
-  role = _messages.StringField(3)
+  condition = _messages.MessageField('Expr', 2)
+  member = _messages.StringField(3)
+  role = _messages.StringField(4)
 
 
 class CreateRoleRequest(_messages.Message):
@@ -252,6 +261,30 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class IamOrganizationsRolesCreateRequest(_messages.Message):
@@ -749,6 +782,182 @@ class IamRolesListRequest(_messages.Message):
   parent = _messages.StringField(3)
   showDeleted = _messages.BooleanField(4)
   view = _messages.EnumField('ViewValueValuesEnum', 5)
+
+
+class LintPolicyRequest(_messages.Message):
+  r"""The request to lint a Cloud IAM policy object. LintPolicy is currently
+  functional only for `lint_object` of type `condition`.
+
+  Messages:
+    ContextValue: `context` contains additional *permission-controlled* data
+      that any lint unit may depend on, in form of `{key: value}` pairs.
+      Currently, this field is non-operational and it will not be used during
+      the lint operation.
+
+  Fields:
+    binding: Binding object to be linted. The functionality of linting a
+      binding is not yet implemented and if this field is set, it returns
+      NOT_IMPLEMENTED error.
+    condition: google.iam.v1.Binding.condition object to be linted.
+    context: `context` contains additional *permission-controlled* data that
+      any lint unit may depend on, in form of `{key: value}` pairs. Currently,
+      this field is non-operational and it will not be used during the lint
+      operation.
+    fullResourceName: The full resource name of the policy this lint request
+      is about.  The name follows the Google Cloud Platform (GCP) resource
+      format. For example, a GCP project with ID `my-project` will be named
+      `//cloudresourcemanager.googleapis.com/projects/my-project`.  The
+      resource name is not used to read the policy instance from the Cloud IAM
+      database. The candidate policy for lint has to be provided in the same
+      request object.
+    policy: Policy object to be linted. The functionality of linting a policy
+      is not yet implemented and if this field is set, it returns
+      NOT_IMPLEMENTED error.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ContextValue(_messages.Message):
+    r"""`context` contains additional *permission-controlled* data that any
+    lint unit may depend on, in form of `{key: value}` pairs. Currently, this
+    field is non-operational and it will not be used during the lint
+    operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a ContextValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ContextValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  binding = _messages.MessageField('Binding', 1)
+  condition = _messages.MessageField('Expr', 2)
+  context = _messages.MessageField('ContextValue', 3)
+  fullResourceName = _messages.StringField(4)
+  policy = _messages.MessageField('Policy', 5)
+
+
+class LintPolicyResponse(_messages.Message):
+  r"""The response of a lint operation. An empty response indicates the
+  operation was able to fully execute and no lint issue was found.
+
+  Fields:
+    lintResults: List of lint results sorted by a composite <severity,
+      binding_ordinal> key, descending order of severity and ascending order
+      of binding_ordinal. There is no certain order among the same keys.  For
+      cross-binding results (only if the input object to lint is instance of
+      google.iam.v1.Policy), there will be a google.iam.admin.v1.LintResult
+      for each of the involved bindings, and the associated debug_message may
+      enumerate the other involved binding ordinal number(s).
+  """
+
+  lintResults = _messages.MessageField('LintResult', 1, repeated=True)
+
+
+class LintResult(_messages.Message):
+  r"""Structured response of a single validation unit.
+
+  Enums:
+    LevelValueValuesEnum: The validation unit level.
+    SeverityValueValuesEnum: The validation unit severity.
+
+  Fields:
+    bindingOrdinal: 0-based index ordinality of the binding in the input
+      object associated with this result. This field is populated only if the
+      input object to lint is of type google.iam.v1.Policy, which can comprise
+      more than one binding. It is set to -1 if the result is not associated
+      with any particular binding and only targets the policy as a whole, such
+      as results about policy size violations.
+    debugMessage: Human readable debug message associated with the issue.
+    fieldName: The name of the field for which this lint result is about,
+      relative to the input object to lint in the request.  For nested
+      messages, `field_name` consists of names of the embedded fields
+      separated by period character. For instance, if the lint request is on a
+      google.iam.v1.Policy and this lint result is about a condition
+      expression of one of the input policy bindings, the field would be
+      populated as `bindings.condition.expression`.  This field does not
+      identify the ordinality of the repetitive fields (for instance bindings
+      in a policy).
+    level: The validation unit level.
+    locationOffset: 0-based character position of problematic construct within
+      the object identified by `field_name`. Currently, this is populated only
+      for condition expression.
+    severity: The validation unit severity.
+    validationUnitName: The validation unit name, for instance
+      "lintValidationUnits/ConditionComplexityCheck".
+  """
+
+  class LevelValueValuesEnum(_messages.Enum):
+    r"""The validation unit level.
+
+    Values:
+      LEVEL_UNSPECIFIED: Level is unspecified.
+      POLICY: A validation unit which operates on a policy. It is executed
+        only if the input object to lint is of type google.iam.v1.Policy.
+      BINDING: A validation unit which operates on an individual binding. It
+        is executed in both cases where the input object to lint is of type
+        google.iam.v1.Policy or google.iam.v1.Binding.
+      CONDITION: A validation unit which operates on an individual condition
+        within a binding. It is executed in all three cases where the input
+        object to lint is of type google.iam.v1.Policy, google.iam.v1.Binding
+        or google.iam.v1.Binding.condition.
+    """
+    LEVEL_UNSPECIFIED = 0
+    POLICY = 1
+    BINDING = 2
+    CONDITION = 3
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The validation unit severity.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Severity is unspecified.
+      ERROR: A validation unit returns an error only for critical issues. If
+        an attempt is made to set the problematic policy without rectifying
+        the critical issue, it causes the `setPolicy` operation to fail.
+      WARNING: Any issue which is severe enough but does not cause an error.
+        For example, suspicious constructs in the input object will not
+        necessarily fail `setPolicy`, but there is a high likelihood that they
+        won't behave as expected during policy evaluation in `checkPolicy`.
+        This includes the following common scenarios:  - Unsatisfiable
+        condition: Expired timestamp in date/time condition. - Ineffective
+        condition: Condition on a <member, role> pair which is   granted
+        unconditionally in another binding of the same policy.
+      NOTICE: Reserved for the issues that are not severe as
+        `ERROR`/`WARNING`, but need special handling. For instance, messages
+        about skipped validation units are issued as `NOTICE`.
+      INFO: Any informative statement which is not severe enough to raise
+        `ERROR`/`WARNING`/`NOTICE`, like auto-correction recommendations on
+        the input content. Note that current version of the linter does not
+        utilize `INFO`.
+      DEPRECATED: Deprecated severity level.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    ERROR = 1
+    WARNING = 2
+    NOTICE = 3
+    INFO = 4
+    DEPRECATED = 5
+
+  bindingOrdinal = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  debugMessage = _messages.StringField(2)
+  fieldName = _messages.StringField(3)
+  level = _messages.EnumField('LevelValueValuesEnum', 4)
+  locationOffset = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+  validationUnitName = _messages.StringField(7)
 
 
 class ListRolesResponse(_messages.Message):

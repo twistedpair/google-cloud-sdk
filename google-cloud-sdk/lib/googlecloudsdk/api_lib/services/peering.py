@@ -34,7 +34,8 @@ def CreateConnection(project_number, service, network, reserved_ranges):
     reserved_ranges: The IP CIDR ranges for peering service to use.
 
   Raises:
-    exceptions.PeerServicePermissionDeniedException: when the peering API fails.
+    exceptions.CreateConnectionsPermissionDeniedException: when the create
+        connection API fails.
     apitools_exceptions.HttpError: Another miscellaneous error with the peering
         service.
 
@@ -54,7 +55,41 @@ def CreateConnection(project_number, service, network, reserved_ranges):
     return client.services_connections.Create(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
-    exceptions.ReraiseError(e, exceptions.PeerServicePermissionDeniedException)
+    exceptions.ReraiseError(
+        e, exceptions.CreateConnectionsPermissionDeniedException)
+
+
+def ListConnections(project_number, service, network):
+  """Make API call to list connections of a network for a specific service.
+
+  Args:
+    project_number: The number of the project for which to peer the service.
+    service: The name of the service to peer with.
+    network: The network in consumer project to peer with.
+
+  Raises:
+    exceptions.ListConnectionsPermissionDeniedException: when the list
+    connections API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the peering
+        service.
+
+  Returns:
+    The result of the peering operation
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  # The API only takes project number, so we cannot use resource parser.
+  request = messages.ServicenetworkingServicesConnectionsListRequest(
+      parent='services/' + service,
+      network='projects/{0}/global/networks/{1}'.format(project_number,
+                                                        network))
+  try:
+    return client.services_connections.List(request).connections
+  except (apitools_exceptions.HttpForbiddenError,
+          apitools_exceptions.HttpNotFoundError) as e:
+    exceptions.ReraiseError(e,
+                            exceptions.ListConnectionsPermissionDeniedException)
 
 
 def GetOperation(name):

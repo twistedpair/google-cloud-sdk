@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://binaryauthorization.googleapis.com/v1beta1/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/binary-authorization/'
 
 
 class Collections(enum.Enum):

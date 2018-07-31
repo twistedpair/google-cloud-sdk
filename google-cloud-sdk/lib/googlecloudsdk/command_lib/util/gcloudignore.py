@@ -31,12 +31,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import fnmatch
 import os
-import re
 
 import enum
 
+from googlecloudsdk.command_lib.util import glob
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -71,10 +70,6 @@ class InternalParserError(Exception):
   """An internal error in gcloudignore parsing."""
 
 
-class InvalidLineError(InternalParserError):
-  """Error indicating that a line of the ignore file was invalid."""
-
-
 class BadFileError(InternalParserError):
   """Error indicating that a provided file was invalid."""
 
@@ -84,7 +79,7 @@ class BadIncludedFileError(exceptions.Error):
 
 
 class Match(enum.Enum):
-  """Indicates whether a ignore pattern matches or explicitly includes a path.
+  """Indicates whether an ignore pattern matches or explicitly includes a path.
 
   INCLUDE: path matches, and is included
   IGNORE: path matches, and is ignored
@@ -94,91 +89,6 @@ class Match(enum.Enum):
   INCLUDE = 1
   IGNORE = 2
   NO_MATCH = 3
-
-
-def _HandleSpaces(line):
-  """Handles spaces in a line.
-
-  In particular, deals with trailing spaces (which are stripped unless
-  escaped) and escaped spaces throughout the line (which are unescaped).
-
-  Args:
-    line: str, the line
-
-  Returns:
-    str, the line with spaces handled
-  """
-  def _Rstrip(line):
-    """Strips unescaped trailing spaces."""
-    # First, make the string into "tokens": a backslash followed by any
-    # character is one token; any other character is a token on its own.
-    tokens = []
-    i = 0
-    while i < len(line):
-      curr = line[i]
-      if curr == '\\':
-        if i + 1 >= len(line):
-          tokens.append(curr)
-          break  # Pass through trailing backslash
-        tokens.append(curr + line[i+1])
-        i += 2
-      else:
-        tokens.append(curr)
-        i += 1
-
-    # Then, strip the trailing space tokens.
-    res = []
-    only_seen_spaces = True
-    for curr in reversed(tokens):
-      if only_seen_spaces and curr == ' ':
-        continue
-      only_seen_spaces = False
-      res.append(curr)
-
-    return ''.join(reversed(res))
-
-  def _UnescapeSpaces(line):
-    """Unescapes all spaces in a line."""
-    return line.replace('\\ ', ' ')
-
-  return _UnescapeSpaces(_Rstrip(line))
-
-
-def _Unescape(line):
-  r"""Unescapes a line.
-
-  The escape character is '\'. An escaped backslash turns into one backslash;
-  any other escaped character is ignored.
-
-  Args:
-    line: str, the line to unescape
-
-  Returns:
-    str, the unescaped line
-
-  """
-  return re.sub(r'\\([^\\])', r'\1', line).replace('\\\\', '\\')
-
-
-def _GetPathPrefixes(path):
-  """Returns all prefixes for the given path, inclusive.
-
-  That is, for 'foo/bar/baz', returns ['', 'foo', 'foo/bar' 'foo/bar/baz'].
-
-  Args:
-    path: str, the path for which to get prefixes.
-
-  Returns:
-    list of str, the prefixes.
-  """
-  path_prefixes = [path]
-  path_reminder = True
-  # Apparently which one is empty when operating on top-level directory depends
-  # on your configuration.
-  while path and path_reminder:
-    path, path_reminder = os.path.split(path)
-    path_prefixes.insert(0, path)
-  return path_prefixes
 
 
 class Pattern(object):
@@ -197,70 +107,9 @@ class Pattern(object):
     self.negated = negated
     self.must_be_dir = must_be_dir
 
-  def _MatchesHelper(self, pattern_parts, path):
-    """Determines whether the given pattern matches the given path.
-
-    Args:
-      pattern_parts: list of str, the list of pattern parts that must all match
-        the path.
-      path: str, the path to match.
-
-    Returns:
-      bool, whether the patch matches the pattern_parts (Matches() will convert
-        this into a Match value).
-    """
-    # This method works right-to-left. It checks that the right-most pattern
-    # part matches the right-most path part, and that the remaining pattern
-    # matches the remaining path.
-    if not pattern_parts:
-      # We've reached the end of the pattern! Success.
-      return True
-    if path is None:
-      # Distinguish between '*' and '/*'. The former should match '' (the root
-      # directory) but the latter should not.
-      return False
-
-    pattern_part = pattern_parts[-1]
-    remaining_pattern = pattern_parts[:-1]
-    if path:  # normpath turns '' into '.', which confuses fnmatch later
-      path = os.path.normpath(path)
-    remaining_path, path_part = os.path.split(path)
-    if not path_part:
-      # See note above.
-      remaining_path = None
-
-    if pattern_part == '**':
-      # If the path would match the remaining pattern_parts after skipping 0-all
-      # of the trailing path parts, the whole pattern matches.
-      #
-      # That is, if we have `<pattern>/**` as a pattern and `foo/bar` as our
-      # path, if any of ``, `foo`, and `foo/bar` match `<pattern>`, we return
-      # true.
-      path_prefixes = _GetPathPrefixes(path)
-      # '**' patterns only match against the full path (essentially, they have
-      # an implicit '/' at the front of the pattern). An empty string at the
-      # beginning of remaining_pattern simulates this.
-      #
-      # pylint: disable=g-explicit-bool-comparison
-      # In this case, it's much clearer to show what we're checking for.
-      if not (remaining_pattern and remaining_pattern[0] == ''):
-        remaining_pattern.insert(0, '')
-      # pylint: enable=g-explicit-bool-comparison
-      return any(self._MatchesHelper(remaining_pattern, prefix) for prefix
-                 in path_prefixes)
-
-    if not fnmatch.fnmatch(path_part, pattern_part):
-      # If the current pattern part doesn't match the current path part, the
-      # whole pattern can't match the whole path. Give up!
-      return False
-
-    return self._MatchesHelper(remaining_pattern, remaining_path)
-
   def Matches(self, path, is_dir=False):
     """Returns a Match for this pattern and the given path."""
-    if self.must_be_dir and not is_dir:
-      return Match.NO_MATCH
-    if self._MatchesHelper(self.pattern.split('/'), path):
+    if self.pattern.Matches(path, is_dir=is_dir):
       return Match.INCLUDE if self.negated else Match.IGNORE
     else:
       return Match.NO_MATCH
@@ -282,25 +131,13 @@ class Pattern(object):
         invalid consecutive stars).
     """
     if line.startswith('#'):
-      raise InvalidLineError('Line [{}] begins with `#`.'.format(line))
+      raise glob.InvalidLineError('Line [{}] begins with `#`.'.format(line))
     if line.startswith('!'):
       line = line[1:]
       negated = True
     else:
       negated = False
-    if line.endswith('/'):
-      line = line[:-1]
-      must_be_dir = True
-    else:
-      must_be_dir = False
-    line = _HandleSpaces(line)
-    if re.search(_ENDS_IN_ODD_NUMBER_SLASHES_RE, line):
-      raise InvalidLineError(
-          'Line [{}] ends in an odd number of [\\]s.'.format(line))
-    line = _Unescape(line)
-    if not line:
-      raise InvalidLineError('Line [{}] is blank.'.format(line))
-    return cls(line, negated=negated, must_be_dir=must_be_dir)
+    return cls(glob.Glob.FromString(line), negated=negated)
 
 
 class FileChooser(object):
@@ -338,7 +175,7 @@ class FileChooser(object):
     Returns:
       bool, whether the file should be uploaded
     """
-    path_prefixes = _GetPathPrefixes(path)[1:]  # root dir can't be matched
+    path_prefixes = glob.GetPathPrefixes(path)[1:]  # root dir can't be matched
     for path_prefix in path_prefixes:
       prefix_match = Match.NO_MATCH
       for pattern in self.patterns:
@@ -408,11 +245,10 @@ class FileChooser(object):
         if line[1:].lstrip().startswith(cls._INCLUDE_DIRECTIVE):
           patterns.extend(cls._GetIncludedPatterns(line, dirname, recurse))
         continue  # lines beginning with '#' are comments
-      line_with_spaces_gone = _HandleSpaces(line)
-      if (not line_with_spaces_gone or
-          re.search(_ENDS_IN_ODD_NUMBER_SLASHES_RE, line_with_spaces_gone)):
-        continue  # blank line or trailing / both get ignored
-      patterns.append(Pattern.FromString(line))
+      try:
+        patterns.append(Pattern.FromString(line))
+      except glob.InvalidLineError:
+        pass  # Ignore invalid lines
     return cls(patterns)
 
   @classmethod

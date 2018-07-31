@@ -1439,6 +1439,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.logging = self._Add('logging')
     self.manager = self._Add('manager')
     self.ml = self._Add('ml')
+    self.monitoring = self._Add('monitoring')
     self.oslogin = self._Add('oslogin')
     self.pubsub = self._Add('pubsub')
     self.replicapoolupdater = self._Add('replicapoolupdater')

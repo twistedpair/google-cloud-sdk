@@ -2255,6 +2255,8 @@ class BackendService(_messages.Message):
       resides. This field is not applicable to global backend services. You
       must specify this field as part of the HTTP request URL. It is not
       settable as a field in the request body.
+    securityPolicy: [Output Only] The resource URL for the security policy
+      associated with this backend service.
     selfLink: [Output Only] Server-defined URL for the resource.
     sessionAffinity: Type of session affinity to use. The default is NONE.
       When the load balancing scheme is EXTERNAL, can be NONE, CLIENT_IP, or
@@ -2337,9 +2339,10 @@ class BackendService(_messages.Message):
   portName = _messages.StringField(16)
   protocol = _messages.EnumField('ProtocolValueValuesEnum', 17)
   region = _messages.StringField(18)
-  selfLink = _messages.StringField(19)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 20)
-  timeoutSec = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  securityPolicy = _messages.StringField(19)
+  selfLink = _messages.StringField(20)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 21)
+  timeoutSec = _messages.IntegerField(22, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -4244,6 +4247,33 @@ class ComputeBackendServicesPatchRequest(_messages.Message):
   backendServiceResource = _messages.MessageField('BackendService', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeBackendServicesSetSecurityPolicyRequest(_messages.Message):
+  r"""A ComputeBackendServicesSetSecurityPolicyRequest object.
+
+  Fields:
+    backendService: Name of the BackendService resource to which the security
+      policy should be set. The name should conform to RFC1035.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicyReference: A SecurityPolicyReference resource to be passed
+      as the request body.
+  """
+
+  backendService = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
 
 
 class ComputeBackendServicesUpdateRequest(_messages.Message):
@@ -7398,6 +7428,20 @@ class ComputeInstancesSetTagsRequest(_messages.Message):
   requestId = _messages.StringField(3)
   tags = _messages.MessageField('Tags', 4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
+  r"""A ComputeInstancesSimulateMaintenanceEventRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
 
 
 class ComputeInstancesStartRequest(_messages.Message):
@@ -10988,6 +11032,198 @@ class ComputeRoutesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeSecurityPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesAddRuleRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  securityPolicy = _messages.StringField(2, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 3)
+
+
+class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesDeleteRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to delete.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeSecurityPoliciesGetRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to get.
+  """
+
+  project = _messages.StringField(1, required=True)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeSecurityPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesGetRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to get from the security policy.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeSecurityPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesInsertRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: A SecurityPolicy resource to be passed as the request
+      body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.MessageField('SecurityPolicy', 3)
+
+
+class ComputeSecurityPoliciesListRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+
+
+class ComputeSecurityPoliciesPatchRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesPatchRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyResource: A SecurityPolicy resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyResource = _messages.MessageField('SecurityPolicy', 4)
+
+
+class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesPatchRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+
+
+class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeSecurityPoliciesRemoveRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to remove from the security policy.
+    project: Project ID for this request.
+    securityPolicy: Name of the security policy to update.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
+
+
 class ComputeSnapshotsDeleteRequest(_messages.Message):
   r"""A ComputeSnapshotsDeleteRequest object.
 
@@ -13522,14 +13758,17 @@ class CustomerEncryptionKey(_messages.Message):
   r"""Represents a customer-supplied encryption key
 
   Fields:
+    kmsKeyName: The name of the encryption key that is stored in Google Cloud
+      KMS.
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
       RFC 4648 base64 to either encrypt or decrypt this resource.
     sha256: [Output only] The RFC 4648 base64 encoded SHA-256 hash of the
       customer-supplied encryption key that protects this resource.
   """
 
-  rawKey = _messages.StringField(1)
-  sha256 = _messages.StringField(2)
+  kmsKeyName = _messages.StringField(1)
+  rawKey = _messages.StringField(2)
+  sha256 = _messages.StringField(3)
 
 
 class CustomerEncryptionKeyProtectedDisk(_messages.Message):
@@ -13649,7 +13888,7 @@ class Disk(_messages.Message):
       format.
     licenseCodes: Integer license codes indicating which licenses are attached
       to this disk.
-    licenses: Any applicable publicly visible licenses.
+    licenses: A list of publicly visible licenses. Reserved for Google's use.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -14768,6 +15007,10 @@ class Firewall(_messages.Message):
       INGRESS. Note: For INGRESS traffic, it is NOT supported to specify
       destinationRanges; For EGRESS traffic, it is NOT supported to specify
       sourceRanges OR sourceTags.
+    disabled: Denotes whether the firewall rule is disabled, i.e not applied
+      to the network it is associated with. When set to true, the firewall
+      rule is not enforced and the network behaves as if it did not exist. If
+      this is unspecified, the firewall rule will be enabled.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#firewall for
@@ -14893,17 +15136,18 @@ class Firewall(_messages.Message):
   description = _messages.StringField(4)
   destinationRanges = _messages.StringField(5, repeated=True)
   direction = _messages.EnumField('DirectionValueValuesEnum', 6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(8, default=u'compute#firewall')
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(12)
-  sourceRanges = _messages.StringField(13, repeated=True)
-  sourceServiceAccounts = _messages.StringField(14, repeated=True)
-  sourceTags = _messages.StringField(15, repeated=True)
-  targetServiceAccounts = _messages.StringField(16, repeated=True)
-  targetTags = _messages.StringField(17, repeated=True)
+  disabled = _messages.BooleanField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(9, default=u'compute#firewall')
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  priority = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(13)
+  sourceRanges = _messages.StringField(14, repeated=True)
+  sourceServiceAccounts = _messages.StringField(15, repeated=True)
+  sourceTags = _messages.StringField(16, repeated=True)
+  targetServiceAccounts = _messages.StringField(17, repeated=True)
+  targetTags = _messages.StringField(18, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -26354,6 +26598,257 @@ class SchedulingNodeAffinity(_messages.Message):
   key = _messages.StringField(1)
   operator = _messages.EnumField('OperatorValueValuesEnum', 2)
   values = _messages.StringField(3, repeated=True)
+
+
+class SecurityPolicy(_messages.Message):
+  r"""A security policy is comprised of one or more rules. It can also be
+  associated with one or more 'targets'. (== resource_for v1.securityPolicies
+  ==) (== resource_for beta.securityPolicies ==)
+
+  Fields:
+    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
+      format.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    fingerprint: Specifies a fingerprint for this resource, which is
+      essentially a hash of the metadata's contents and used for optimistic
+      locking. The fingerprint is initially generated by Compute Engine and
+      changes after every request to modify or update metadata. You must
+      always provide an up-to-date fingerprint hash in order to update or
+      change metadata.  To see the latest fingerprint, make get() request to
+      the security policy.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output only] Type of the resource. Always compute#securityPolicyfor
+      security policies
+    name: Name of the resource. Provided by the client when the resource is
+      created. The name must be 1-63 characters long, and comply with RFC1035.
+      Specifically, the name must be 1-63 characters long and match the
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
+      character must be a lowercase letter, and all following characters must
+      be a dash, lowercase letter, or digit, except the last character, which
+      cannot be a dash.
+    rules: A list of rules that belong to this policy. There must always be a
+      default rule (rule with priority 2147483647 and match "*"). If no rules
+      are provided when creating a security policy, a default rule with action
+      "allow" will be added.
+    selfLink: [Output Only] Server-defined URL for the resource.
+  """
+
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  fingerprint = _messages.BytesField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#securityPolicy')
+  name = _messages.StringField(6)
+  rules = _messages.MessageField('SecurityPolicyRule', 7, repeated=True)
+  selfLink = _messages.StringField(8)
+
+
+class SecurityPolicyList(_messages.Message):
+  r"""A SecurityPolicyList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of SecurityPolicy resources.
+    kind: [Output Only] Type of resource. Always compute#securityPolicyList
+      for listsof securityPolicies
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('SecurityPolicy', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#securityPolicyList')
+  nextPageToken = _messages.StringField(4)
+  warning = _messages.MessageField('WarningValue', 5)
+
+
+class SecurityPolicyReference(_messages.Message):
+  r"""A SecurityPolicyReference object.
+
+  Fields:
+    securityPolicy: A string attribute.
+  """
+
+  securityPolicy = _messages.StringField(1)
+
+
+class SecurityPolicyRule(_messages.Message):
+  r"""Represents a rule that describes one or more match conditions along with
+  the action to be taken when traffic matches this condition (allow or deny).
+
+  Fields:
+    action: The Action to preform when the client connection triggers the
+      rule. Can currently be either "allow" or "deny()" where valid values for
+      status are 403, 404, and 502.
+    description: An optional description of this resource. Provide this
+      property when you create the resource.
+    kind: [Output only] Type of the resource. Always
+      compute#securityPolicyRule for security policy rules
+    match: A match condition that incoming traffic is evaluated against. If it
+      evaluates to true, the corresponding ?action? is enforced.
+    preview: If set to true, the specified action is not enforced.
+    priority: An integer indicating the priority of a rule in the list. The
+      priority must be a positive value between 0 and 2147483647. Rules are
+      evaluated in the increasing order of priority.
+  """
+
+  action = _messages.StringField(1)
+  description = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'compute#securityPolicyRule')
+  match = _messages.MessageField('SecurityPolicyRuleMatcher', 4)
+  preview = _messages.BooleanField(5)
+  priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class SecurityPolicyRuleMatcher(_messages.Message):
+  r"""Represents a match condition that incoming traffic is evaluated against.
+  Exactly one field must be specified.
+
+  Enums:
+    VersionedExprValueValuesEnum: Preconfigured versioned expression. If this
+      field is specified, config must also be specified. Available
+      preconfigured expressions along with their requirements are: SRC_IPS_V1
+      - must specify the corresponding src_ip_range field in config.
+
+  Fields:
+    config: The configuration options available when specifying
+      versioned_expr. This field must be specified if versioned_expr is
+      specified and cannot be specified if versioned_expr is not specified.
+    versionedExpr: Preconfigured versioned expression. If this field is
+      specified, config must also be specified. Available preconfigured
+      expressions along with their requirements are: SRC_IPS_V1 - must specify
+      the corresponding src_ip_range field in config.
+  """
+
+  class VersionedExprValueValuesEnum(_messages.Enum):
+    r"""Preconfigured versioned expression. If this field is specified, config
+    must also be specified. Available preconfigured expressions along with
+    their requirements are: SRC_IPS_V1 - must specify the corresponding
+    src_ip_range field in config.
+
+    Values:
+      SRC_IPS_V1: <no description>
+    """
+    SRC_IPS_V1 = 0
+
+  config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
+  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 2)
+
+
+class SecurityPolicyRuleMatcherConfig(_messages.Message):
+  r"""A SecurityPolicyRuleMatcherConfig object.
+
+  Fields:
+    srcIpRanges: CIDR IP address range.
+  """
+
+  srcIpRanges = _messages.StringField(1, repeated=True)
 
 
 class SerialPortOutput(_messages.Message):

@@ -35,8 +35,73 @@ class DatastoreV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_indexes = self.ProjectsIndexesService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsIndexesService(base_api.BaseApiService):
+    """Service class for the projects_indexes resource."""
+
+    _NAME = u'projects_indexes'
+
+    def __init__(self, client):
+      super(DatastoreV1.ProjectsIndexesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets an index.
+
+      Args:
+        request: (DatastoreProjectsIndexesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleDatastoreAdminV1Index) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'datastore.projects.indexes.get',
+        ordered_params=[u'projectId', u'indexId'],
+        path_params=[u'indexId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1/projects/{projectId}/indexes/{indexId}',
+        request_field='',
+        request_type_name=u'DatastoreProjectsIndexesGetRequest',
+        response_type_name=u'GoogleDatastoreAdminV1Index',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the indexes that match the specified filters.  Datastore uses an.
+eventually consistent query to fetch the list of indexes and may
+occasionally return stale results.
+
+      Args:
+        request: (DatastoreProjectsIndexesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleDatastoreAdminV1ListIndexesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'datastore.projects.indexes.list',
+        ordered_params=[u'projectId'],
+        path_params=[u'projectId'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/projects/{projectId}/indexes',
+        request_field='',
+        request_type_name=u'DatastoreProjectsIndexesListRequest',
+        response_type_name=u'GoogleDatastoreAdminV1ListIndexesResponse',
+        supports_download=False,
+    )
 
   class ProjectsOperationsService(base_api.BaseApiService):
     """Service class for the projects_operations resource."""

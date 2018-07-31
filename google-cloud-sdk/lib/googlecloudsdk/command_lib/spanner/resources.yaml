@@ -17,6 +17,7 @@ instance:
       attribute_name: instance
       help: |
         The name of the Cloud Spanner instance.
+      property: spanner/instance
 
 database:
   name: database
@@ -24,7 +25,7 @@ database:
   attributes:
     - *project
     - *instance
-    - &repository
+    - &database
       parameter_name: databasesId
       attribute_name: database
       help: |

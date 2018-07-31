@@ -34,7 +34,11 @@ class ListServicesPermissionDeniedException(Error):
   pass
 
 
-class PeerServicePermissionDeniedException(Error):
+class CreateConnectionsPermissionDeniedException(Error):
+  pass
+
+
+class ListConnectionsPermissionDeniedException(Error):
   pass
 
 

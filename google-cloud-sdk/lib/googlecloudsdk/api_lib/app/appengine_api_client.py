@@ -641,6 +641,18 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     log.debug('Converted YAML to JSON: "{0}"'.format(
         json.dumps(json_version_resource, indent=2, sort_keys=True)))
 
+    entrypoint = service_config.parsed.entrypoint
+    if entrypoint:
+      json_version_resource['entrypoint'] = {}
+      # hack: this undoes the effect of the appinfo validation library
+      # which prepends `exec ` to the entrypoint. ideally, we would instead find
+      # a way to relax the validation requirement so it only prepends 'exec '
+      # for flex deployments.
+      if entrypoint.startswith('exec '):
+        entrypoint = entrypoint[len('exec '):]
+      json_version_resource['entrypoint'][
+          'shell'] = entrypoint
+
     json_version_resource['deployment'] = {}
     # Add the deployment manifest information.
     json_version_resource['deployment']['files'] = manifest

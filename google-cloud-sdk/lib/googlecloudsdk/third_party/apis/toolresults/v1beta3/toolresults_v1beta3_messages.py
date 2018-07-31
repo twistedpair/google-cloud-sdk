@@ -1274,6 +1274,7 @@ class TestIssue(_messages.Message):
 
     Values:
       anr: <no description>
+      availableDeepLinks: <no description>
       compatibleWithOrchestrator: <no description>
       completeRoboScriptExecution: <no description>
       failedToInstall: <no description>
@@ -1281,21 +1282,24 @@ class TestIssue(_messages.Message):
       incompleteRoboScriptExecution: <no description>
       launcherActivityNotFound: <no description>
       nativeCrash: <no description>
+      nonSdkApiUsageViolation: <no description>
       startActivityNotFound: <no description>
       unspecifiedType: <no description>
       unusedRoboDirective: <no description>
     """
     anr = 0
-    compatibleWithOrchestrator = 1
-    completeRoboScriptExecution = 2
-    failedToInstall = 3
-    fatalException = 4
-    incompleteRoboScriptExecution = 5
-    launcherActivityNotFound = 6
-    nativeCrash = 7
-    startActivityNotFound = 8
-    unspecifiedType = 9
-    unusedRoboDirective = 10
+    availableDeepLinks = 1
+    compatibleWithOrchestrator = 2
+    completeRoboScriptExecution = 3
+    failedToInstall = 4
+    fatalException = 5
+    incompleteRoboScriptExecution = 6
+    launcherActivityNotFound = 7
+    nativeCrash = 8
+    nonSdkApiUsageViolation = 9
+    startActivityNotFound = 10
+    unspecifiedType = 11
+    unusedRoboDirective = 12
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

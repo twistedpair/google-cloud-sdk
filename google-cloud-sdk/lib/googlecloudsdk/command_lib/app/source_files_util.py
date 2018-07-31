@@ -44,6 +44,12 @@ _PHP_GCLOUDIGNORE = '\n'.join([
     'vendor/'
 ])
 
+_PYTHON_GCLOUDIGNORE = '\n'.join([
+    gcloudignore.DEFAULT_IGNORE_FILE,
+    '# Python pycache:',
+    '__pycache__/'
+])
+
 
 _GCLOUDIGNORE_REGISTRY = {
     runtime_registry.RegistryEntry(
@@ -51,8 +57,7 @@ _GCLOUDIGNORE_REGISTRY = {
     runtime_registry.RegistryEntry(
         env.PHP_TI_RUNTIME_EXPR, {env.STANDARD}): _PHP_GCLOUDIGNORE,
     runtime_registry.RegistryEntry(
-        env.PYTHON_TI_RUNTIME_EXPR, {env.STANDARD}):
-    gcloudignore.DEFAULT_IGNORE_FILE,
+        env.PYTHON_TI_RUNTIME_EXPR, {env.STANDARD}): _PYTHON_GCLOUDIGNORE,
 }
 
 

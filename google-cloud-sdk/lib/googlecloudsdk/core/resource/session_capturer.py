@@ -36,7 +36,6 @@ from googlecloudsdk.core.resource import yaml_printer
 from googlecloudsdk.core.util import files
 
 import six
-from six.moves import builtins
 from six.moves import StringIO
 
 
@@ -63,6 +62,7 @@ class _StreamCapturerBase(io.IOBase):
 
   # pylint: disable=super-init-not-called, All this is about to be deleted.
   def __init__(self, real_stream):
+    super(_StreamCapturerBase, self).__init__()
     self._real_stream = real_stream
     self._capturing_stream = StringIO()
 
@@ -115,7 +115,7 @@ class FileIoCapturerBase(object):  # pytype: disable=ignored-abstractmethod
   def __init__(self):
     self._outputs = []
     self._private_outputs = []
-    self._real_open = builtins.open
+    self._real_open = io.open
     self._mocks = (
         _Mock(io, 'open', new=self.Open),
         _Mock(files, 'PrivatizeFile', new=lambda x: None)

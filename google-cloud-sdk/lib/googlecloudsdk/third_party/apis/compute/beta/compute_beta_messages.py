@@ -16194,7 +16194,7 @@ class Disk(_messages.Message):
       format.
     licenseCodes: Integer license codes indicating which licenses are attached
       to this disk.
-    licenses: Any applicable publicly visible licenses.
+    licenses: A list of publicly visible licenses. Reserved for Google's use.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -20856,10 +20856,10 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
     MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
       You can specify either RESTART to restart existing instances or REPLACE
       to delete and create new instances from the target template. If you
-      specify a code>RESTART, the Updater will attempt to perform that action
-      only. However, if the Updater determines that the minimal action you
-      specify is not enough to perform the update, it might perform a more
-      disruptive action.
+      specify a RESTART, the Updater will attempt to perform that action only.
+      However, if the Updater determines that the minimal action you specify
+      is not enough to perform the update, it might perform a more disruptive
+      action.
     TypeValueValuesEnum:
 
   Fields:
@@ -20886,19 +20886,18 @@ class InstanceGroupManagerUpdatePolicy(_messages.Message):
       instance becomes available. This value must be from range [0, 3600].
     minimalAction: Minimal action to be taken on an instance. You can specify
       either RESTART to restart existing instances or REPLACE to delete and
-      create new instances from the target template. If you specify a
-      code>RESTART, the Updater will attempt to perform that action only.
-      However, if the Updater determines that the minimal action you specify
-      is not enough to perform the update, it might perform a more disruptive
-      action.
+      create new instances from the target template. If you specify a RESTART,
+      the Updater will attempt to perform that action only. However, if the
+      Updater determines that the minimal action you specify is not enough to
+      perform the update, it might perform a more disruptive action.
     type: A TypeValueValuesEnum attribute.
   """
 
   class MinimalActionValueValuesEnum(_messages.Enum):
     r"""Minimal action to be taken on an instance. You can specify either
     RESTART to restart existing instances or REPLACE to delete and create new
-    instances from the target template. If you specify a code>RESTART, the
-    Updater will attempt to perform that action only. However, if the Updater
+    instances from the target template. If you specify a RESTART, the Updater
+    will attempt to perform that action only. However, if the Updater
     determines that the minimal action you specify is not enough to perform
     the update, it might perform a more disruptive action.
 
@@ -31210,8 +31209,8 @@ class SecurityPoliciesWafConfig(_messages.Message):
 
 class SecurityPolicy(_messages.Message):
   r"""A security policy is comprised of one or more rules. It can also be
-  associated with one or more 'targets'. (== resource_for
-  beta.securityPolicies ==)
+  associated with one or more 'targets'. (== resource_for v1.securityPolicies
+  ==) (== resource_for beta.securityPolicies ==)
 
   Messages:
     LabelsValue: Labels to apply to this security policy resource. These can
@@ -31489,10 +31488,8 @@ class SecurityPolicyRuleMatcher(_messages.Message):
 
     Values:
       SRC_IPS_V1: <no description>
-      VERSIONED_EXPR_UNSPECIFIED: <no description>
     """
     SRC_IPS_V1 = 0
-    VERSIONED_EXPR_UNSPECIFIED = 1
 
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
   expr = _messages.MessageField('Expr', 2)
@@ -31893,6 +31890,11 @@ class SslCertificate(_messages.Message):
   from the user. (== resource_for beta.sslCertificates ==) (== resource_for
   v1.sslCertificates ==)
 
+  Enums:
+    TypeValueValuesEnum: (Optional) Specifies the type of SSL certificate,
+      either "SELF_MANAGED" or "MANAGED". If not specified, the certificate is
+      self-managed and the fields certificate and private_key are used.
+
   Fields:
     certificate: A local certificate file. The certificate must be in PEM
       format. The certificate chain must be no greater than 5 certs long. The
@@ -31901,10 +31903,12 @@ class SslCertificate(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    expireTime: [Output Only] Expire time of the certificate. RFC3339
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#sslCertificate
       for SSL certificates.
+    managed: Configuration and status of a managed SSL certificate.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -31915,16 +31919,41 @@ class SslCertificate(_messages.Message):
     privateKey: A write-only private key in PEM format. Only insert requests
       will include this field.
     selfLink: [Output only] Server-defined URL for the resource.
+    selfManaged: Configuration and status of a self-managed SSL certificate.
+    subjectAlternativeNames: [Output Only] Domains associated with the
+      certificate via Subject Alternative Name.
+    type: (Optional) Specifies the type of SSL certificate, either
+      "SELF_MANAGED" or "MANAGED". If not specified, the certificate is self-
+      managed and the fields certificate and private_key are used.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""(Optional) Specifies the type of SSL certificate, either
+    "SELF_MANAGED" or "MANAGED". If not specified, the certificate is self-
+    managed and the fields certificate and private_key are used.
+
+    Values:
+      MANAGED: <no description>
+      SELF_MANAGED: <no description>
+      TYPE_UNSPECIFIED: <no description>
+    """
+    MANAGED = 0
+    SELF_MANAGED = 1
+    TYPE_UNSPECIFIED = 2
 
   certificate = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
   description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#sslCertificate')
-  name = _messages.StringField(6)
-  privateKey = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
+  expireTime = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#sslCertificate')
+  managed = _messages.MessageField('SslCertificateManagedSslCertificate', 7)
+  name = _messages.StringField(8)
+  privateKey = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  selfManaged = _messages.MessageField('SslCertificateSelfManagedSslCertificate', 11)
+  subjectAlternativeNames = _messages.StringField(12, repeated=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
 
 
 class SslCertificateList(_messages.Message):
@@ -32049,6 +32078,112 @@ class SslCertificateList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class SslCertificateManagedSslCertificate(_messages.Message):
+  r"""Configuration and status of a managed SSL certificate.
+
+  Enums:
+    StatusValueValuesEnum: [Output only] Status of the managed certificate
+      resource.
+
+  Messages:
+    DomainStatusValue: [Output only] Detailed statuses of the domains
+      specified for managed certificate resource.
+
+  Fields:
+    domainStatus: [Output only] Detailed statuses of the domains specified for
+      managed certificate resource.
+    domains: The domains for which a managed SSL certificate will be
+      generated. Currently only single-domain certs are supported.
+    status: [Output only] Status of the managed certificate resource.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output only] Status of the managed certificate resource.
+
+    Values:
+      ACTIVE: <no description>
+      MANAGED_CERTIFICATE_STATUS_UNSPECIFIED: <no description>
+      PROVISIONING: <no description>
+      PROVISIONING_FAILED: <no description>
+      PROVISIONING_FAILED_PERMANENTLY: <no description>
+      RENEWAL_FAILED: <no description>
+    """
+    ACTIVE = 0
+    MANAGED_CERTIFICATE_STATUS_UNSPECIFIED = 1
+    PROVISIONING = 2
+    PROVISIONING_FAILED = 3
+    PROVISIONING_FAILED_PERMANENTLY = 4
+    RENEWAL_FAILED = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DomainStatusValue(_messages.Message):
+    r"""[Output only] Detailed statuses of the domains specified for managed
+    certificate resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a DomainStatusValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DomainStatusValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DomainStatusValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        r"""ValueValueValuesEnum enum type.
+
+        Values:
+          ACTIVE: <no description>
+          DOMAIN_STATUS_UNSPECIFIED: <no description>
+          FAILED_CAA_CHECKING: <no description>
+          FAILED_CAA_FORBIDDEN: <no description>
+          FAILED_NOT_VISIBLE: <no description>
+          FAILED_RATE_LIMITED: <no description>
+          PROVISIONING: <no description>
+        """
+        ACTIVE = 0
+        DOMAIN_STATUS_UNSPECIFIED = 1
+        FAILED_CAA_CHECKING = 2
+        FAILED_CAA_FORBIDDEN = 3
+        FAILED_NOT_VISIBLE = 4
+        FAILED_RATE_LIMITED = 5
+        PROVISIONING = 6
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  domainStatus = _messages.MessageField('DomainStatusValue', 1)
+  domains = _messages.StringField(2, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class SslCertificateSelfManagedSslCertificate(_messages.Message):
+  r"""Configuration and status of a self-managed SSL certificate.
+
+  Fields:
+    certificate: A local certificate file. The certificate must be in PEM
+      format. The certificate chain must be no greater than 5 certs long. The
+      chain must include at least one intermediate cert.
+    privateKey: A write-only private key in PEM format. Only insert requests
+      will include this field.
+  """
+
+  certificate = _messages.StringField(1)
+  privateKey = _messages.StringField(2)
 
 
 class SslPoliciesList(_messages.Message):

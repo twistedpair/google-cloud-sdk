@@ -87,13 +87,16 @@ def BatchEnableApiCall(project, services):
                             exceptions.EnableServicePermissionDeniedException)
 
 
-def DisableApiCall(project, service):
+def DisableApiCall(project, service, force=False):
   """Make API call to disable a specific service.
 
   Args:
     project: The project for which to enable the service.
     service: The identifier of the service to disable, for example
       'serviceusage.googleapis.com'.
+    force: disable the service even if there are enabled services which depend
+      on it. This also disables the services which depend on the service to be
+      disabled.
 
   Raises:
     exceptions.EnableServicePermissionDeniedException: when disabling API fails.
@@ -106,7 +109,10 @@ def DisableApiCall(project, service):
   messages = client.MESSAGES_MODULE
 
   request = messages.ServiceusageServicesDisableRequest(
-      name=_PROJECT_SERVICE_RESOURCE % (project, service))
+      name=_PROJECT_SERVICE_RESOURCE % (project, service),
+      disableServiceRequest=messages.DisableServiceRequest(
+          disableDependentServices=force,),
+  )
   try:
     return client.services.Disable(request)
   except (apitools_exceptions.HttpForbiddenError,

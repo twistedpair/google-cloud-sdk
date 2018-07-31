@@ -7,14 +7,14 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Binary Authorization API",
-  "description": "",
+  "description": "The management interface for Binary Authorization, a system providing policy control for images deployed to Kubernetes Engine clusters.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/binary-authorization/",
   "protocol": "rest",
   "rootUrl": "https://binaryauthorization.googleapis.com/",
   "servicePath": "",
@@ -190,14 +190,12 @@
           "description": "Required. The action when a pod creation is denied by the admission rule.",
           "enumDescriptions": [
             "Mandatory.",
-            "Enforce the admission rule by blocking the pod creation.",
-            "Dryrun mode: Audit logging only.  This will allow the pod creation as if\nthe admission request had specified break-glass."
+            "Enforce the admission rule by blocking the pod creation."
           ],
           "type": "string",
           "enum": [
             "ENFORCEMENT_MODE_UNSPECIFIED",
-            "ENFORCED_BLOCK_AND_AUDIT_LOG",
-            "DRYRUN_AUDIT_LOG_ONLY"
+            "ENFORCED_BLOCK_AND_AUDIT_LOG"
           ]
         }
       }
@@ -241,6 +239,10 @@
           "items": {
             "$ref": "AttestorPublicKey"
           }
+        },
+        "delegationServiceAccountEmail": {
+          "description": "Output only. This field will contain the service account email address\nthat this Attestor will use as the principal when querying Container\nAnalysis. Attestor administrators must grant this service account the\nIAM role needed to read attestations from the note_reference in\nContainer Analysis (`containeranalysis.notes.occurrences.viewer`).\n\nThis email address is fixed for the lifetime of the Attestor, but callers\nshould not make any other assumptions about the service account email;\nfuture versions may use an email based on a different naming pattern.",
+          "type": "string"
         }
       }
     },
@@ -265,7 +267,7 @@
     },
     "ListAttestorsResponse": {
       "id": "ListAttestorsResponse",
-      "description": "Response message for BinauthzManagementService.ListAttestors][].",
+      "description": "Response message for BinauthzManagementService.ListAttestors.",
       "type": "object",
       "properties": {
         "attestors": {
@@ -329,7 +331,7 @@
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.\nRequired",
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
@@ -338,6 +340,33 @@
           "items": {
             "type": "string"
           }
+        },
+        "condition": {
+          "description": "Unimplemented. The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "type": "string"
+        },
+        "title": {
+          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "type": "string"
         }
       }
     },

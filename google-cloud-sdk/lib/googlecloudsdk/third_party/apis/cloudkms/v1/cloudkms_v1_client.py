@@ -51,6 +51,64 @@ class CloudkmsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AsymmetricDecrypt(self, request, global_params=None):
+      r"""Decrypts data that was encrypted with a public key retrieved from.
+GetPublicKey corresponding to a CryptoKeyVersion with
+CryptoKey.purpose ASYMMETRIC_DECRYPT.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecryptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AsymmetricDecryptResponse) The response message.
+      """
+      config = self.GetMethodConfig('AsymmetricDecrypt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AsymmetricDecrypt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:asymmetricDecrypt',
+        http_method=u'POST',
+        method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.asymmetricDecrypt',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:asymmetricDecrypt',
+        request_field=u'asymmetricDecryptRequest',
+        request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecryptRequest',
+        response_type_name=u'AsymmetricDecryptResponse',
+        supports_download=False,
+    )
+
+    def AsymmetricSign(self, request, global_params=None):
+      r"""Signs data using a CryptoKeyVersion with CryptoKey.purpose.
+ASYMMETRIC_SIGN, producing a signature that can be verified with the public
+key retrieved from GetPublicKey.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSignRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AsymmetricSignResponse) The response message.
+      """
+      config = self.GetMethodConfig('AsymmetricSign')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AsymmetricSign.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:asymmetricSign',
+        http_method=u'POST',
+        method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.asymmetricSign',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:asymmetricSign',
+        request_field=u'asymmetricSignRequest',
+        request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSignRequest',
+        response_type_name=u'AsymmetricSignResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Create a new CryptoKeyVersion in a CryptoKey.
 
@@ -147,6 +205,36 @@ RestoreCryptoKeyVersion may be called to reverse the process.
         supports_download=False,
     )
 
+    def GetPublicKey(self, request, global_params=None):
+      r"""Returns the public key for the given CryptoKeyVersion. The.
+CryptoKey.purpose must be
+ASYMMETRIC_SIGN or
+ASYMMETRIC_DECRYPT.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PublicKey) The response message.
+      """
+      config = self.GetMethodConfig('GetPublicKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetPublicKey.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}/publicKey',
+        http_method=u'GET',
+        method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.getPublicKey',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/publicKey',
+        request_field='',
+        request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKeyRequest',
+        response_type_name=u'PublicKey',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists CryptoKeyVersions.
 
@@ -166,7 +254,7 @@ RestoreCryptoKeyVersion may be called to reverse the process.
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'pageSize', u'pageToken', u'view'],
         relative_path=u'v1/{+parent}/cryptoKeyVersions',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest',
@@ -253,7 +341,8 @@ and destroy_time will be cleared.
     def Create(self, request, global_params=None):
       r"""Create a new CryptoKey within a KeyRing.
 
-CryptoKey.purpose is required.
+CryptoKey.purpose and CryptoKey.version_template.algorithm are
+required.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest) input message
@@ -280,7 +369,8 @@ CryptoKey.purpose is required.
     )
 
     def Decrypt(self, request, global_params=None):
-      r"""Decrypts data that was protected by Encrypt.
+      r"""Decrypts data that was protected by Encrypt. The CryptoKey.purpose.
+must be ENCRYPT_DECRYPT.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysDecryptRequest) input message
@@ -308,6 +398,8 @@ CryptoKey.purpose is required.
 
     def Encrypt(self, request, global_params=None):
       r"""Encrypts data, so that it can only be recovered by a call to Decrypt.
+The CryptoKey.purpose must be
+ENCRYPT_DECRYPT.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysEncryptRequest) input message
@@ -409,7 +501,7 @@ set.
         method_id=u'cloudkms.projects.locations.keyRings.cryptoKeys.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'pageSize', u'pageToken', u'versionView'],
         relative_path=u'v1/{+parent}/cryptoKeys',
         request_field='',
         request_type_name=u'CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest',
@@ -507,6 +599,8 @@ may "fail open" without warning.
 
     def UpdatePrimaryVersion(self, request, global_params=None):
       r"""Update the version of a CryptoKey that will be used in Encrypt.
+
+Returns an error if called on an asymmetric key.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysUpdatePrimaryVersionRequest) input message

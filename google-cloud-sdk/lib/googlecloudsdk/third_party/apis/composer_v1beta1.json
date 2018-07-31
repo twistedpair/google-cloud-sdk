@@ -438,63 +438,6 @@
           "format": "google-datetime"
         }
       }
-    },
-    "StatusProto": {
-      "id": "StatusProto",
-      "description": "Wire-format for a Status object",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "Numeric code drawn from the space specified below. Often, this is the\ncanonical error space, and code is drawn from util\/task\/codes.proto",
-          "type": "integer",
-          "format": "int32"
-        },
-        "space": {
-          "description": "The following are usually only present when code != 0\nSpace to which this status belongs",
-          "type": "string"
-        },
-        "message": {
-          "description": "Detail message",
-          "type": "string"
-        },
-        "canonicalCode": {
-          "description": "The canonical error code (see codes.proto) that most closely\ncorresponds to this status. May be missing.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "payload": {
-          "description": "DEPRECATED.\n\nThis field was deprecated in 2011 with cl\/20297133.  Java support\nfor the field was moved to a proto1 backward compatibility class\nin April 2017 with cl\/142615857 and cl\/154123203.  There was\nnever support for this field in Go; if set Go will ignore it.\nC++ stopped setting StatusProto::payload in October 2015 with cl\/106347055,\nand stopped reading the field in October 2017 with cl\/173324114.\n\nIn general, newly written code should use only \"message_set\". If you need\nto maintain backward compatibility with code written before 3\/25\/2011, do\nthe following:\n\n- During the transition period, either (1) set both \"payload\" and\n  \"message_set\", or (2) write the consumer of StatusProto so that it can\n  forge a MessageSet object from \"payload\" if \"message_set\" is missing.\n  The C++ util::Status implementation does (2).\n\n- Once all the consumers are converted to accept \"message_set\", then\n  remove the use of \"payload\" on the producer side.",
-          "$ref": "TypedMessage"
-        },
-        "messageSet": {
-          "description": "message_set associates an arbitrary proto message with the status.",
-          "$ref": "MessageSet"
-        }
-      }
-    },
-    "TypedMessage": {
-      "id": "TypedMessage",
-      "description": "Message that groups a protocol type_id (as defined by MessageSet),\nwith an encoded message of that type.  Its use is similar to\nMessageSet, except it represents a single (type, encoded message)\ninstead of a set.\n\nTo fill for known protocol type:\n  MyProtocolMsg proto;\n  TypedMessage typed_msg;\n  typed_msg.set_type_id(MyProtocolMsg::MESSAGE_TYPE_ID);\n  proto.AppendToCord(typed_msg.mutable_message());\n\nTo fill for unknown protocol type:\n  ProtocolMessage proto;\n  TypedMessage typed_msg;\n  typed_msg.set_type_id(proto.GetMapper()->type_id());\n  proto.AppendToCord(typed_msg.mutable_message());",
-      "type": "object",
-      "properties": {
-        "typeId": {
-          "description": "Identifier for the type.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "Message bytes.",
-          "type": "string",
-          "format": "byte"
-        }
-      }
-    },
-    "MessageSet": {
-      "id": "MessageSet",
-      "description": "This is proto2's version of MessageSet.",
-      "type": "object",
-      "properties": {
-      }
     }
   },
   "resources": {

@@ -44,10 +44,11 @@ class AppEngineHttpTarget(_messages.Message):
       headers below are output only. They cannot be set or overridden:  *
       `X-Google-*`: For Google internal use only. * `X-AppEngine-*`: For
       Google internal use only. See   [Reading request
-      headers](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).  In addition, some App Engine
-      headers, which contain job-specific information, are also be sent to the
-      job handler; see [request headers](/appengine/docs/python/taskqueue/push
+      headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
+      /creating-handlers#reading_request_headers).  In addition, some App
+      Engine headers, which contain job-specific information, are also be sent
+      to the job handler; see [request
+      headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
       /creating-handlers#reading_request_headers).
 
   Fields:
@@ -71,10 +72,12 @@ class AppEngineHttpTarget(_messages.Message):
       only. It cannot be changed.  The headers below are output only. They
       cannot be set or overridden:  * `X-Google-*`: For Google internal use
       only. * `X-AppEngine-*`: For Google internal use only. See   [Reading
-      request   headers](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).  In addition, some App Engine
-      headers, which contain job-specific information, are also be sent to the
-      job handler; see [request headers](/appengine/docs/python/taskqueue/push
+      request
+      headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
+      /creating-handlers#reading_request_headers).  In addition, some App
+      Engine headers, which contain job-specific information, are also be sent
+      to the job handler; see [request
+      headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
       /creating-handlers#reading_request_headers).
     httpMethod: The HTTP method to use for the request. PATCH and OPTIONS are
       not permitted.
@@ -126,10 +129,11 @@ class AppEngineHttpTarget(_messages.Message):
     below are output only. They cannot be set or overridden:  * `X-Google-*`:
     For Google internal use only. * `X-AppEngine-*`: For Google internal use
     only. See   [Reading request
-    headers](/appengine/docs/python/taskqueue/push/creating-
-    handlers#reading_request_headers).  In addition, some App Engine headers,
-    which contain job-specific information, are also be sent to the job
-    handler; see [request headers](/appengine/docs/python/taskqueue/push
+    headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
+    /creating-handlers#reading_request_headers).  In addition, some App Engine
+    headers, which contain job-specific information, are also be sent to the
+    job handler; see [request
+    headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
     /creating-handlers#reading_request_headers).
 
     Messages:
@@ -161,19 +165,23 @@ class AppEngineHttpTarget(_messages.Message):
 
 class AppEngineRouting(_messages.Message):
   r"""App Engine Routing.  For more information about services, versions, and
-  instances see [An Overview of App Engine](/appengine/docs/python/an-
-  overview-of-app-engine), [Microservices Architecture on Google App
-  Engine](/appengine/docs/python/microservices-on-app-engine), [App Engine
-  Standard request routing](/appengine/docs/standard/python/how-requests-are-
-  routed), and [App Engine Flex request routing]
-  (/appengine/docs/flexible/python/how-requests-are-routed).
+  instances see [An Overview of App
+  Engine](https://cloud.google.com/appengine/docs/python/an-overview-of-app-
+  engine), [Microservices Architecture on Google App
+  Engine](https://cloud.google.com/appengine/docs/python/microservices-on-app-
+  engine), [App Engine Standard request
+  routing](https://cloud.google.com/appengine/docs/standard/python/how-
+  requests-are-routed), and [App Engine Flex request
+  routing](https://cloud.google.com/appengine/docs/flexible/python/how-
+  requests-are-routed).
 
   Fields:
     host: Output only. The host that the job is sent to.  For more information
       about how App Engine requests are routed, see
-      [here](/appengine/docs/standard/python/how-requests-are-routed).  The
-      host is constructed as:   * `host = [application_domain_name]`</br>   `|
-      [service] + '.' + [application_domain_name]`</br>   `| [version] + '.' +
+      [here](https://cloud.google.com/appengine/docs/standard/python/how-
+      requests-are-routed).  The host is constructed as:   * `host =
+      [application_domain_name]`</br>   `| [service] + '.' +
+      [application_domain_name]`</br>   `| [version] + '.' +
       [application_domain_name]`</br>   `| [version_dot_service]+ '.' +
       [application_domain_name]`</br>   `| [instance] + '.' +
       [application_domain_name]`</br>   `| [instance_dot_service] + '.' +
@@ -195,26 +203,25 @@ class AppEngineRouting(_messages.Message):
       AppEngineRouting.version is empty, then the job will be sent to the
       version which is the default version when the job is attempted.  If
       AppEngineRouting.instance is empty, then the job will be sent to an
-      instance which is available when the job is attempted.  When
-      AppEngineRouting.service is "default", AppEngineRouting.version is
-      "default", and AppEngineRouting.instance is empty, AppEngineRouting.host
-      is shortened to just the `application_domain_name`.  If
+      instance which is available when the job is attempted.  If
       AppEngineRouting.service, AppEngineRouting.version, or
       AppEngineRouting.instance is invalid, then the job will be sent to the
       default version of the default service when the job is attempted.
     instance: App instance.  By default, the job is sent to an instance which
       is available when the job is attempted.  Requests can only be sent to a
       specific instance if [manual scaling is used in App Engine
-      Standard](/appengine/docs/python/an-overview-of-app-
-      engine?hl=en_US#scaling_types_and_instance_classes). App Engine Flex
+      Standard](https://cloud.google.com/appengine/docs/python/an-overview-of-
+      app-engine?hl=en_US#scaling_types_and_instance_classes). App Engine Flex
       does not support instances. For more information, see [App Engine
-      Standard request routing](/appengine/docs/standard/python/how-requests-
-      are-routed) and [App Engine Flex request
-      routing](/appengine/docs/flexible/python/how-requests-are-routed).
+      Standard request
+      routing](https://cloud.google.com/appengine/docs/standard/python/how-
+      requests-are-routed) and [App Engine Flex request
+      routing](https://cloud.google.com/appengine/docs/flexible/python/how-
+      requests-are-routed).
     service: App service.  By default, the job is sent to the service which is
-      the default service when the job is attempted ("default").
+      the default service when the job is attempted.
     version: App version.  By default, the job is sent to the version which is
-      the default version when the job is attempted ("default").
+      the default version when the job is attempted.
   """
 
   host = _messages.StringField(1)
@@ -618,8 +625,8 @@ class Location(_messages.Message):
 
 
 class PubsubMessage(_messages.Message):
-  r"""A message data and its attributes. The message payload must not be
-  empty; it must contain either a non-empty data field, or at least one
+  r"""A message that is published by publishers and consumed by subscribers.
+  The message must contain either a non-empty data field or at least one
   attribute.
 
   Messages:
@@ -627,7 +634,8 @@ class PubsubMessage(_messages.Message):
 
   Fields:
     attributes: Optional attributes for this message.
-    data: The message payload.
+    data: The message data field. If this field is empty, the message must
+      contain at least one attribute.
     messageId: ID of this message, assigned by the server when the message is
       published. Guaranteed to be unique within the topic. This value may be
       read by a subscriber that receives a `PubsubMessage` via a `Pull` call

@@ -92,7 +92,7 @@ def RunPredict(model_dir, json_instances=None, text_instances=None,
 
   # Pass the instances to the process that actually runs local prediction.
   for instance in instances:
-    proc.stdin.write((json.dumps(instance) + '\n').encode('utf8'))
+    proc.stdin.write(json.dumps(instance) + '\n')
   proc.stdin.flush()
 
   # Get the results for the local prediction.

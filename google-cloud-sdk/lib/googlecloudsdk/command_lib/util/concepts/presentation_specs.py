@@ -210,23 +210,27 @@ class ResourcePresentationSpec(PresentationSpec):
             self.group == other.group)
 
 
-class MultitypeConceptPresentationSpec(PresentationSpec):
-  """Class that specifies how multitype concept arguments are presented."""
+# Currently no other type of multitype concepts have been implemented.
+class MultitypeResourcePresentationSpec(PresentationSpec):
+  """A resource-specific presentation spec."""
 
   def _GetAttributeToArgsMap(self, flag_name_overrides):
     # Create a rename map for the attributes to their flags.
     attribute_to_args_map = {}
+    leaf_anchors = [a for a in self._concept_spec.attributes
+                    if self._concept_spec.IsLeafAnchor(a)]
     for attribute in self._concept_spec.attributes:
+      is_anchor = [attribute] == leaf_anchors
       name = self.GetFlagName(
           attribute.name, self.name, flag_name_overrides=flag_name_overrides,
-          prefixes=self.prefixes)
+          prefixes=self.prefixes, is_anchor=is_anchor)
       if name:
         attribute_to_args_map[attribute.name] = name
     return attribute_to_args_map
 
   @staticmethod
   def GetFlagName(attribute_name, presentation_name, flag_name_overrides=None,
-                  prefixes=False):
+                  prefixes=False, is_anchor=False):
     """Gets the flag name for a given attribute name.
 
     Returns a flag name for an attribute, adding prefixes as necessary or using
@@ -239,6 +243,7 @@ class MultitypeConceptPresentationSpec(PresentationSpec):
       flag_name_overrides: {str: str}, a dict of attribute names to exact string
         of the flag name to use for the attribute. None if no overrides.
       prefixes: bool, whether to use the resource name as a prefix for the flag.
+      is_anchor: bool, True if this is the anchor flag, False otherwise.
 
     Returns:
       (str) the name of the flag.
@@ -246,40 +251,14 @@ class MultitypeConceptPresentationSpec(PresentationSpec):
     flag_name_overrides = flag_name_overrides or {}
     if attribute_name in flag_name_overrides:
       return flag_name_overrides.get(attribute_name)
+    if is_anchor:
+      return presentation_name
     if attribute_name == 'project':
       return ''
 
-    # If the presentation spec's overall name is the same as the attribute,
-    # treat this attibute like an "anchor" in a resource argument.
-    if (util.NormalizeFormat(presentation_name) ==
-        util.NormalizeFormat(attribute_name)):
-      return presentation_name
     if prefixes:
       return util.FlagNameFormat('-'.join([presentation_name, attribute_name]))
     return util.FlagNameFormat(attribute_name)
-
-  def __eq__(self, other):
-    if not isinstance(other, type(self)):
-      return False
-    return (self.name == other.name and
-            self.concept_spec == other.concept_spec and
-            self.group_help == other.group_help and
-            self.prefixes == other.prefixes and
-            self.plural == other.plural and
-            self.required == other.required and
-            self.group == other.group)
-
-  def _GenerateInfo(self, fallthroughs_map):
-    """Gets the info holder for the ConceptParser."""
-    del fallthroughs_map
-    raise NotImplementedError
-
-
-# Currently no other type of multitype concepts have been implemented.
-# This is subclassed to make it clear which functionality is definitely
-# resource-specific.
-class MultitypeResourcePresentationSpec(MultitypeConceptPresentationSpec):
-  """A resource-specific presentation spec."""
 
   def _GenerateInfo(self, fallthroughs_map):
     """Gets the MultitypeResourceInfo object for the ConceptParser.
@@ -292,7 +271,7 @@ class MultitypeResourcePresentationSpec(MultitypeConceptPresentationSpec):
     Returns:
       info_holders.MultitypeResourceInfo, the ResourceInfo object.
     """
-    return info_holders.ResourceInfo(
+    return info_holders.MultitypeResourceInfo(
         self.name,
         self.concept_spec,
         self.group_help,
@@ -301,3 +280,14 @@ class MultitypeResourcePresentationSpec(MultitypeConceptPresentationSpec):
         required=self.required,
         plural=self.plural,
         group=self.group)
+
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return False
+    return (self.name == other.name and
+            self.concept_spec == other.concept_spec and
+            self.group_help == other.group_help and
+            self.prefixes == other.prefixes and
+            self.plural == other.plural and
+            self.required == other.required and
+            self.group == other.group)

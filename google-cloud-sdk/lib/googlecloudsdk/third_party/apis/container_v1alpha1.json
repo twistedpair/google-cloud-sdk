@@ -1328,6 +1328,10 @@
         "enabled": {
           "description": "Whether this cluster should return group membership lookups\nduring authentication using a group of security groups.",
           "type": "boolean"
+        },
+        "securityGroup": {
+          "description": "The name of the security group-of-groups to be used. Only relevant\nif enabled = true.",
+          "type": "string"
         }
       }
     },

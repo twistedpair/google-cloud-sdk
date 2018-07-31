@@ -13,6 +13,50 @@ from apitools.base.py import extra_types
 package = 'cloudkms'
 
 
+class AsymmetricDecryptRequest(_messages.Message):
+  r"""Request message for KeyManagementService.AsymmetricDecrypt.
+
+  Fields:
+    ciphertext: Required. The data encrypted with the named CryptoKeyVersion's
+      public key using OAEP.
+  """
+
+  ciphertext = _messages.BytesField(1)
+
+
+class AsymmetricDecryptResponse(_messages.Message):
+  r"""Response message for KeyManagementService.AsymmetricDecrypt.
+
+  Fields:
+    plaintext: The decrypted data originally encrypted with the matching
+      public key.
+  """
+
+  plaintext = _messages.BytesField(1)
+
+
+class AsymmetricSignRequest(_messages.Message):
+  r"""Request message for KeyManagementService.AsymmetricSign.
+
+  Fields:
+    digest: Required. The digest of the data to sign. The digest must be
+      produced with the same digest algorithm as specified by the key
+      version's algorithm.
+  """
+
+  digest = _messages.MessageField('Digest', 1)
+
+
+class AsymmetricSignResponse(_messages.Message):
+  r"""Response message for KeyManagementService.AsymmetricSign.
+
+  Fields:
+    signature: The created signature.
+  """
+
+  signature = _messages.BytesField(1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -85,6 +129,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -102,8 +150,9 @@ class Binding(_messages.Message):
       `roles/editor`, or `roles/owner`.
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CloudkmsProjectsLocationsGetRequest(_messages.Message):
@@ -147,6 +196,36 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest(_messages.Message
   parent = _messages.StringField(3, required=True)
 
 
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricDecryptRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetric
+  DecryptRequest object.
+
+  Fields:
+    asymmetricDecryptRequest: A AsymmetricDecryptRequest resource to be passed
+      as the request body.
+    name: Required. The resource name of the CryptoKeyVersion to use for
+      decryption.
+  """
+
+  asymmetricDecryptRequest = _messages.MessageField('AsymmetricDecryptRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetricSignRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsAsymmetric
+  SignRequest object.
+
+  Fields:
+    asymmetricSignRequest: A AsymmetricSignRequest resource to be passed as
+      the request body.
+    name: Required. The resource name of the CryptoKeyVersion to use for
+      signing.
+  """
+
+  asymmetricSignRequest = _messages.MessageField('AsymmetricSignRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreateRequest(_messages.Message):
   r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsCreateRequest
@@ -178,6 +257,17 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsDestroyRequest
   name = _messages.StringField(2, required=True)
 
 
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicKeyRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetPublicK
+  eyRequest object.
+
+  Fields:
+    name: The name of the CryptoKeyVersion public key to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsGetRequest
   object.
@@ -194,6 +284,9 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_m
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest
   object.
 
+  Enums:
+    ViewValueValuesEnum: The fields to include in the response.
+
   Fields:
     pageSize: Optional limit on the number of CryptoKeyVersions to include in
       the response. Further CryptoKeyVersions can subsequently be obtained by
@@ -204,11 +297,23 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_m
       ListCryptoKeyVersionsResponse.next_page_token.
     parent: Required. The resource name of the CryptoKey to list, in the
       format `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
+    view: The fields to include in the response.
   """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""The fields to include in the response.
+
+    Values:
+      CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED: <no description>
+      FULL: <no description>
+    """
+    CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED = 0
+    FULL = 1
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest(_messages.Message):
@@ -299,6 +404,10 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysGetRequest(_messages.Message):
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest object.
 
+  Enums:
+    VersionViewValueValuesEnum: The fields of the primary version to include
+      in the response.
+
   Fields:
     pageSize: Optional limit on the number of CryptoKeys to include in the
       response.  Further CryptoKeys can subsequently be obtained by including
@@ -308,11 +417,23 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysListRequest(_messages.Message):
       ListCryptoKeysResponse.next_page_token.
     parent: Required. The resource name of the KeyRing to list, in the format
       `projects/*/locations/*/keyRings/*`.
+    versionView: The fields of the primary version to include in the response.
   """
+
+  class VersionViewValueValuesEnum(_messages.Enum):
+    r"""The fields of the primary version to include in the response.
+
+    Values:
+      CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED: <no description>
+      FULL: <no description>
+    """
+    CRYPTO_KEY_VERSION_VIEW_UNSPECIFIED = 0
+    FULL = 1
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  versionView = _messages.EnumField('VersionViewValueValuesEnum', 4)
 
 
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysPatchRequest(_messages.Message):
@@ -470,7 +591,6 @@ class CryptoKey(_messages.Message):
 
   Enums:
     PurposeValueValuesEnum: The immutable purpose of this CryptoKey.
-      Currently, the only acceptable purpose is ENCRYPT_DECRYPT.
 
   Messages:
     LabelsValue: Labels with user-defined metadata. For more information, see
@@ -486,29 +606,41 @@ class CryptoKey(_messages.Message):
       automatically:  1. Create a new version of this CryptoKey. 2. Mark the
       new version as primary.  Key rotations performed manually via
       CreateCryptoKeyVersion and UpdateCryptoKeyPrimaryVersion do not affect
-      next_rotation_time.
+      next_rotation_time.  Keys with purpose ENCRYPT_DECRYPT support automatic
+      rotation. For other keys, this field must be omitted.
     primary: Output only. A copy of the "primary" CryptoKeyVersion that will
       be used by Encrypt when this CryptoKey is given in EncryptRequest.name.
       The CryptoKey's primary version can be updated via
-      UpdateCryptoKeyPrimaryVersion.
-    purpose: The immutable purpose of this CryptoKey. Currently, the only
-      acceptable purpose is ENCRYPT_DECRYPT.
+      UpdateCryptoKeyPrimaryVersion.  All keys with purpose ENCRYPT_DECRYPT
+      have a primary. For other keys, this field will be omitted.
+    purpose: The immutable purpose of this CryptoKey.
     rotationPeriod: next_rotation_time will be advanced by this period when
       the service automatically rotates a key. Must be at least one day.  If
-      rotation_period is set, next_rotation_time must also be set.
+      rotation_period is set, next_rotation_time must also be set.  Keys with
+      purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this
+      field must be omitted.
+    versionTemplate: A template describing settings for new CryptoKeyVersion
+      instances. The properties of new CryptoKeyVersion instances created by
+      either CreateCryptoKeyVersion or auto-rotation are controlled by this
+      template.
   """
 
   class PurposeValueValuesEnum(_messages.Enum):
-    r"""The immutable purpose of this CryptoKey. Currently, the only
-    acceptable purpose is ENCRYPT_DECRYPT.
+    r"""The immutable purpose of this CryptoKey.
 
     Values:
       CRYPTO_KEY_PURPOSE_UNSPECIFIED: Not specified.
       ENCRYPT_DECRYPT: CryptoKeys with this purpose may be used with Encrypt
         and Decrypt.
+      ASYMMETRIC_SIGN: CryptoKeys with this purpose may be used with
+        AsymmetricSign and GetPublicKey.
+      ASYMMETRIC_DECRYPT: CryptoKeys with this purpose may be used with
+        AsymmetricDecrypt and GetPublicKey.
     """
     CRYPTO_KEY_PURPOSE_UNSPECIFIED = 0
     ENCRYPT_DECRYPT = 1
+    ASYMMETRIC_SIGN = 2
+    ASYMMETRIC_DECRYPT = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -542,39 +674,107 @@ class CryptoKey(_messages.Message):
   primary = _messages.MessageField('CryptoKeyVersion', 5)
   purpose = _messages.EnumField('PurposeValueValuesEnum', 6)
   rotationPeriod = _messages.StringField(7)
+  versionTemplate = _messages.MessageField('CryptoKeyVersionTemplate', 8)
 
 
 class CryptoKeyVersion(_messages.Message):
   r"""A CryptoKeyVersion represents an individual cryptographic key, and the
-  associated key material.  It can be used for cryptographic operations either
-  directly, or via its parent CryptoKey, in which case the server will choose
-  the appropriate version for the operation.  For security reasons, the raw
-  cryptographic key material represented by a CryptoKeyVersion can never be
-  viewed or exported. It can only be used to encrypt or decrypt data when an
-  authorized user or application invokes Cloud KMS.
+  associated key material.  An ENABLED version can be used for cryptographic
+  operations.  For security reasons, the raw cryptographic key material
+  represented by a CryptoKeyVersion can never be viewed or exported. It can
+  only be used to encrypt, decrypt, or sign data when an authorized user or
+  application invokes Cloud KMS.
 
   Enums:
+    AlgorithmValueValuesEnum: Output only. The CryptoKeyVersionAlgorithm that
+      this CryptoKeyVersion supports.
+    ProtectionLevelValueValuesEnum: Output only. The ProtectionLevel
+      describing how crypto operations are performed with this
+      CryptoKeyVersion.
     StateValueValuesEnum: The current state of the CryptoKeyVersion.
 
   Fields:
+    algorithm: Output only. The CryptoKeyVersionAlgorithm that this
+      CryptoKeyVersion supports.
+    attestation: Output only. Statement that was generated and signed by the
+      HSM at key creation time. Use this statement to verify attributes of the
+      key as stored on the HSM, independently of Google. Only provided for key
+      versions with protection_level HSM.
     createTime: Output only. The time at which this CryptoKeyVersion was
       created.
     destroyEventTime: Output only. The time this CryptoKeyVersion's key
       material was destroyed. Only present if state is DESTROYED.
     destroyTime: Output only. The time this CryptoKeyVersion's key material is
       scheduled for destruction. Only present if state is DESTROY_SCHEDULED.
+    generateTime: Output only. The time this CryptoKeyVersion's key material
+      was generated.
     name: Output only. The resource name for this CryptoKeyVersion in the
       format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*`.
+    protectionLevel: Output only. The ProtectionLevel describing how crypto
+      operations are performed with this CryptoKeyVersion.
     state: The current state of the CryptoKeyVersion.
   """
+
+  class AlgorithmValueValuesEnum(_messages.Enum):
+    r"""Output only. The CryptoKeyVersionAlgorithm that this CryptoKeyVersion
+    supports.
+
+    Values:
+      CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
+      GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
+      RSA_SIGN_PKCS1_2048_SHA256: RSASSA-PKCS1-v1_5 with a 2048 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_3072_SHA256: RSASSA-PKCS1-v1_5 with a 3072 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_4096_SHA256: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
+        SHA256 digest.
+      RSA_DECRYPT_OAEP_2048_SHA256: RSAES-OAEP 2048 bit key with a SHA256
+        digest.
+      RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
+        digest.
+      EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
+      EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+    """
+    CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
+    GOOGLE_SYMMETRIC_ENCRYPTION = 1
+    RSA_SIGN_PSS_2048_SHA256 = 2
+    RSA_SIGN_PSS_3072_SHA256 = 3
+    RSA_SIGN_PSS_4096_SHA256 = 4
+    RSA_SIGN_PKCS1_2048_SHA256 = 5
+    RSA_SIGN_PKCS1_3072_SHA256 = 6
+    RSA_SIGN_PKCS1_4096_SHA256 = 7
+    RSA_DECRYPT_OAEP_2048_SHA256 = 8
+    RSA_DECRYPT_OAEP_3072_SHA256 = 9
+    EC_SIGN_P256_SHA256 = 10
+    EC_SIGN_P384_SHA384 = 11
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""Output only. The ProtectionLevel describing how crypto operations are
+    performed with this CryptoKeyVersion.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current state of the CryptoKeyVersion.
 
     Values:
       CRYPTO_KEY_VERSION_STATE_UNSPECIFIED: Not specified.
-      ENABLED: This version may be used in Encrypt and Decrypt requests.
+      PENDING_GENERATION: This version is still being generated. It may not be
+        used, enabled, disabled, or destroyed yet. Cloud KMS will
+        automatically mark this version ENABLED as soon as the version is
+        ready.
+      ENABLED: This version may be used for cryptographic operations.
       DISABLED: This version may not be used, but the key material is still
         available, and the version can be placed back into the ENABLED state.
       DESTROYED: This version is destroyed, and the key material is no longer
@@ -584,16 +784,99 @@ class CryptoKeyVersion(_messages.Message):
         the DISABLED state.
     """
     CRYPTO_KEY_VERSION_STATE_UNSPECIFIED = 0
-    ENABLED = 1
-    DISABLED = 2
-    DESTROYED = 3
-    DESTROY_SCHEDULED = 4
+    PENDING_GENERATION = 1
+    ENABLED = 2
+    DISABLED = 3
+    DESTROYED = 4
+    DESTROY_SCHEDULED = 5
 
-  createTime = _messages.StringField(1)
-  destroyEventTime = _messages.StringField(2)
-  destroyTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
+  attestation = _messages.MessageField('KeyOperationAttestation', 2)
+  createTime = _messages.StringField(3)
+  destroyEventTime = _messages.StringField(4)
+  destroyTime = _messages.StringField(5)
+  generateTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+
+
+class CryptoKeyVersionTemplate(_messages.Message):
+  r"""A CryptoKeyVersionTemplate specifies the properties to use when creating
+  a new CryptoKeyVersion, either manually with CreateCryptoKeyVersion or
+  automatically as a result of auto-rotation.
+
+  Enums:
+    AlgorithmValueValuesEnum: Required. Algorithm to use when creating a
+      CryptoKeyVersion based on this template.  For backwards compatibility,
+      GOOGLE_SYMMETRIC_ENCRYPTION is implied if both this field is omitted and
+      CryptoKey.purpose is ENCRYPT_DECRYPT.
+    ProtectionLevelValueValuesEnum: ProtectionLevel to use when creating a
+      CryptoKeyVersion based on this template. Immutable. Defaults to
+      SOFTWARE.
+
+  Fields:
+    algorithm: Required. Algorithm to use when creating a CryptoKeyVersion
+      based on this template.  For backwards compatibility,
+      GOOGLE_SYMMETRIC_ENCRYPTION is implied if both this field is omitted and
+      CryptoKey.purpose is ENCRYPT_DECRYPT.
+    protectionLevel: ProtectionLevel to use when creating a CryptoKeyVersion
+      based on this template. Immutable. Defaults to SOFTWARE.
+  """
+
+  class AlgorithmValueValuesEnum(_messages.Enum):
+    r"""Required. Algorithm to use when creating a CryptoKeyVersion based on
+    this template.  For backwards compatibility, GOOGLE_SYMMETRIC_ENCRYPTION
+    is implied if both this field is omitted and CryptoKey.purpose is
+    ENCRYPT_DECRYPT.
+
+    Values:
+      CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED: Not specified.
+      GOOGLE_SYMMETRIC_ENCRYPTION: Creates symmetric encryption keys.
+      RSA_SIGN_PSS_2048_SHA256: RSASSA-PSS 2048 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_3072_SHA256: RSASSA-PSS 3072 bit key with a SHA256 digest.
+      RSA_SIGN_PSS_4096_SHA256: RSASSA-PSS 4096 bit key with a SHA256 digest.
+      RSA_SIGN_PKCS1_2048_SHA256: RSASSA-PKCS1-v1_5 with a 2048 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_3072_SHA256: RSASSA-PKCS1-v1_5 with a 3072 bit key and a
+        SHA256 digest.
+      RSA_SIGN_PKCS1_4096_SHA256: RSASSA-PKCS1-v1_5 with a 4096 bit key and a
+        SHA256 digest.
+      RSA_DECRYPT_OAEP_2048_SHA256: RSAES-OAEP 2048 bit key with a SHA256
+        digest.
+      RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
+        digest.
+      EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
+      EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
+    """
+    CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED = 0
+    GOOGLE_SYMMETRIC_ENCRYPTION = 1
+    RSA_SIGN_PSS_2048_SHA256 = 2
+    RSA_SIGN_PSS_3072_SHA256 = 3
+    RSA_SIGN_PSS_4096_SHA256 = 4
+    RSA_SIGN_PKCS1_2048_SHA256 = 5
+    RSA_SIGN_PKCS1_3072_SHA256 = 6
+    RSA_SIGN_PKCS1_4096_SHA256 = 7
+    RSA_DECRYPT_OAEP_2048_SHA256 = 8
+    RSA_DECRYPT_OAEP_3072_SHA256 = 9
+    EC_SIGN_P256_SHA256 = 10
+    EC_SIGN_P384_SHA384 = 11
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
+    template. Immutable. Defaults to SOFTWARE.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+
+  algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
 
 
 class DecryptRequest(_messages.Message):
@@ -625,15 +908,36 @@ class DestroyCryptoKeyVersionRequest(_messages.Message):
   r"""Request message for KeyManagementService.DestroyCryptoKeyVersion."""
 
 
+class Digest(_messages.Message):
+  r"""A Digest holds a cryptographic message digest.
+
+  Fields:
+    sha256: A message digest produced with the SHA-256 algorithm.
+    sha384: A message digest produced with the SHA-384 algorithm.
+    sha512: A message digest produced with the SHA-512 algorithm.
+  """
+
+  sha256 = _messages.BytesField(1)
+  sha384 = _messages.BytesField(2)
+  sha512 = _messages.BytesField(3)
+
+
 class EncryptRequest(_messages.Message):
   r"""Request message for KeyManagementService.Encrypt.
 
   Fields:
     additionalAuthenticatedData: Optional data that, if specified, must also
       be provided during decryption through
-      DecryptRequest.additional_authenticated_data.  Must be no larger than
-      64KiB.
+      DecryptRequest.additional_authenticated_data.  The maximum size depends
+      on the key version's protection_level. For SOFTWARE keys, the AAD must
+      be no larger than 64KiB. For HSM keys, the combined length of the
+      plaintext and additional_authenticated_data fields must be no larger
+      than 8KiB.
     plaintext: Required. The data to encrypt. Must be no larger than 64KiB.
+      The maximum size depends on the key version's protection_level. For
+      SOFTWARE keys, the plaintext must be no larger than 64KiB. For HSM keys,
+      the combined length of the plaintext and additional_authenticated_data
+      fields must be no larger than 8KiB.
   """
 
   additionalAuthenticatedData = _messages.BytesField(1)
@@ -650,6 +954,58 @@ class EncryptResponse(_messages.Message):
 
   ciphertext = _messages.BytesField(1)
   name = _messages.StringField(2)
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
+class KeyOperationAttestation(_messages.Message):
+  r"""Contains an HSM-generated attestation about a key operation.
+
+  Enums:
+    FormatValueValuesEnum: Output only. The format of the attestation data.
+
+  Fields:
+    content: Output only. The attestation data provided by the HSM when the
+      key operation was performed.
+    format: Output only. The format of the attestation data.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""Output only. The format of the attestation data.
+
+    Values:
+      ATTESTATION_FORMAT_UNSPECIFIED: <no description>
+      CAVIUM_V1_COMPRESSED: Cavium HSM attestation compressed with gzip. Note
+        that this format is defined by Cavium and subject to change at any
+        time.
+    """
+    ATTESTATION_FORMAT_UNSPECIFIED = 0
+    CAVIUM_V1_COMPRESSED = 1
+
+  content = _messages.BytesField(1)
+  format = _messages.EnumField('FormatValueValuesEnum', 2)
 
 
 class KeyRing(_messages.Message):
@@ -805,6 +1161,17 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LocationMetadata(_messages.Message):
+  r"""Cloud KMS metadata for the given google.cloud.location.Location.
+
+  Fields:
+    hsmAvailable: Indicates that CryptoKeys with protection_level HSM can be
+      created in this location.
+  """
+
+  hsmAvailable = _messages.BooleanField(1)
+
+
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
@@ -845,6 +1212,20 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class PublicKey(_messages.Message):
+  r"""The public key for a given CryptoKeyVersion. Obtained via GetPublicKey.
+
+  Fields:
+    pem: The public key, encoded in PEM format. For more information, see the
+      [RFC 7468](https://tools.ietf.org/html/rfc7468) sections for [General
+      Considerations](https://tools.ietf.org/html/rfc7468#section-2) and
+      [Textual Encoding of Subject Public Key Info]
+      (https://tools.ietf.org/html/rfc7468#section-13).
+  """
+
+  pem = _messages.StringField(1)
 
 
 class RestoreCryptoKeyVersionRequest(_messages.Message):

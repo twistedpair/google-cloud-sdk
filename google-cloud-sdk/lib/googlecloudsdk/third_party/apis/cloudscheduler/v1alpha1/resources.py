@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://cloudscheduler.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://cloud.google.com/cloud-scheduler/'
+DOCS_URL = 'https://cloud.google.com/scheduler/'
 
 
 class Collections(enum.Enum):

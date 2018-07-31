@@ -38,6 +38,10 @@ class Binding(_messages.Message):
   r"""Associates members with a role.
 
   Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. members can have the following values: allUsers: A special
       identifier that represents anyone who is  on the internet; with or
@@ -55,8 +59,9 @@ class Binding(_messages.Message):
       roles/editor, or roles/owner.
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CancelJobRequest(_messages.Message):
@@ -1303,6 +1308,30 @@ class EncryptionConfig(_messages.Message):
   gcePdKmsKeyName = _messages.StringField(1)
 
 
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example: title: "User account presence"
+  description: "Determines whether the request has a user account" expression:
+  "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class GceClusterConfig(_messages.Message):
   r"""Common config settings for resources of Compute Engine cluster
   instances, applicable to all instances in the cluster.
@@ -2541,8 +2570,8 @@ class RegexValidation(_messages.Message):
 
   Fields:
     regexes: Required. RE2 regular expressions used to validate the
-      parameter's value. The provided value must match the regexes in its
-      entirety, e.g. substring matches are not enough.
+      parameter's value. The value must match the regex in its entirety
+      (substring matches are not sufficient).
   """
 
   regexes = _messages.StringField(1, repeated=True)
@@ -2935,44 +2964,43 @@ class SubmitJobRequest(_messages.Message):
 
 class TemplateParameter(_messages.Message):
   r"""A configurable parameter that replaces one or more fields in the
-  template.
+  template. Parameterizable fields: - Labels - File uris - Job properties -
+  Job arguments - Script variables - Main class (in HadoopJob and SparkJob) -
+  Zone (in ClusterSelector)
 
   Fields:
-    description: Optional. User-friendly description of the parameter. Must
-      not exceed 1024 characters.
-    fields: Required. Paths to all fields that this parameter replaces. Each
-      field may appear in at most one Parameter's fields list.Field path
-      syntax:A field path is similar to a FieldMask. For example, a field path
-      that references the zone field of the template's cluster selector would
-      look like:placement.clusterSelector.zoneThe only differences between
-      field paths and standard field masks are that: Values in maps can be
-      referenced by key.Example: placement.clusterSelector.clusterLabels'key'
-      Jobs in the jobs list can be referenced by step id.Example: jobs'step-
-      id'.hadoopJob.mainJarFileUri Items in repeated fields can be referenced
-      by zero-based index.Example: jobs'step-id'.sparkJob.args0NOTE: Maps and
-      repeated fields may not be parameterized in their entirety. Only
-      individual map values and items in repeated fields may be referenced.
-      For example, the following field paths are invalid: -
-      placement.clusterSelector.clusterLabels - jobs'step-
-      id'.sparkJob.argsParameterizable fields:Only certain types of fields may
-      be parameterized, specifically: - Labels - File uris - Job properties -
-      Job arguments - Script variables - Main class (in HadoopJob and
-      SparkJob) - Zone (in ClusterSelector)Examples of parameterizable
-      fields:Labels:labels'key' placement.managedCluster.labels'key'
-      placement.clusterSelector.clusterLabels'key' jobs'step-
-      id'.labels'key'File uris:jobs'step-id'.hadoopJob.mainJarFileUri jobs
-      'step-id'.hiveJob.queryFileUri jobs'step-
-      id'.pySparkJob.mainPythonFileUri jobs'step-id'.hadoopJob.jarFileUris0
-      jobs'step-id'.hadoopJob.archiveUris0 jobs'step-id'.hadoopJob.fileUris0
-      jobs'step-id'.pySparkJob.pythonFileUris0Other:jobs'step-
-      id'.hadoopJob.properties'key' jobs'step-id'.hadoopJob.args0 jobs'step-
-      id'.hiveJob.scriptVariables'key' jobs'step-id'.hadoopJob.mainJarFileUri
-      placement.clusterSelector.zone
-    name: Required. User-friendly parameter name. This name is used as a key
-      when providing a value for this parameter when the template is
-      instantiated. Must contain only capital letters (A-Z), numbers (0-9),
-      and underscores (_), and must not start with a number. The maximum
-      length is 40 characters.
+    description: Optional. Brief description of the parameter. Must not exceed
+      1024 characters.
+    fields: Required. Paths to all fields that the parameter replaces. A field
+      is allowed to appear in at most one parameter's list of field paths.A
+      field path is similar in syntax to a google.protobuf.FieldMask. For
+      example, a field path that references the zone field of a workflow
+      template's cluster selector would be specified as
+      <code>placement.clusterSelector.zone</code>.Also, field paths can
+      reference fields using the following syntax: Values in maps can be
+      referenced by key. Examples<br> labels'key'
+      placement.clusterSelector.clusterLabels'key'
+      placement.managedCluster.labels'key'
+      placement.clusterSelector.clusterLabels'key' jobsstep-id.labels'key'
+      Jobs in the jobs list can be referenced by step-id. Examples:<br>
+      jobsstep-id.hadoopJob.mainJarFileUri jobsstep-id.hiveJob.queryFileUri
+      jobsstep-id.pySparkJob.mainPythonFileUri jobsstep-
+      id.hadoopJob.jarFileUris0 jobsstep-id.hadoopJob.archiveUris0 jobsstep-
+      id.hadoopJob.fileUris0 jobsstep-id.pySparkJob.pythonFileUris0 Items in
+      repeated fields can be referenced by a zero-based index. Example:<br>
+      jobsstep-id.sparkJob.args0 Other examples: jobsstep-
+      id.hadoopJob.properties'key' jobsstep-id.hadoopJob.args0 jobsstep-
+      id.hiveJob.scriptVariables'key' jobsstep-id.hadoopJob.mainJarFileUri
+      placement.clusterSelector.zoneIt may not be possible to parameterize
+      maps and repeated fields in their entirety since only individual map
+      values and individual items in repeated fields can be referenced. For
+      example, the following field paths are invalid:
+      placement.clusterSelector.clusterLabels jobsstep-id.sparkJob.args
+    name: Required. Parameter name. The parameter name is used as the key, and
+      paired with the parameter value, which are passed to the template when
+      the template is instantiated. The name must contain only capital letters
+      (A-Z), numbers (0-9), and underscores (_), and must not start with a
+      number. The maximum length is 40 characters.
     validation: Optional. Validation rules to be applied to this parameter's
       value.
   """
@@ -3011,7 +3039,7 @@ class ValueValidation(_messages.Message):
   r"""Validation based on a list of allowed values.
 
   Fields:
-    values: Required. List of allowed values for this parameter.
+    values: Required. List of allowed values for the parameter.
   """
 
   values = _messages.StringField(1, repeated=True)
@@ -3169,7 +3197,7 @@ class WorkflowTemplate(_messages.Message):
       https://cloud.google.com/apis/design/resource_names of the form
       projects/{project_id}/regions/{region}/workflowTemplates/{template_id}
     parameters: Optional. Template parameters whose values are substituted
-      into the template. Values for these parameters must be provided when the
+      into the template. Values for parameters must be provided when the
       template is instantiated.
     placement: Required. WorkflowTemplate scheduling information.
     updateTime: Output only. The time template was last updated.

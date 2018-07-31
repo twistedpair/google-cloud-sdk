@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20180711",
+ "revision": "20180724",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -3258,7 +3258,7 @@
     },
     "licenses": {
      "type": "array",
-     "description": "Any applicable publicly visible licenses.",
+     "description": "A list of publicly visible licenses. Reserved for Google's use.",
      "items": {
       "type": "string"
      }
@@ -7199,7 +7199,7 @@
     },
     "minimalAction": {
      "type": "string",
-     "description": "Minimal action to be taken on an instance. You can specify either RESTART to restart existing instances or REPLACE to delete and create new instances from the target template. If you specify a code\u003eRESTART, the Updater will attempt to perform that action only. However, if the Updater determines that the minimal action you specify is not enough to perform the update, it might perform a more disruptive action.",
+     "description": "Minimal action to be taken on an instance. You can specify either RESTART to restart existing instances or REPLACE to delete and create new instances from the target template. If you specify a RESTART, the Updater will attempt to perform that action only. However, if the Updater determines that the minimal action you specify is not enough to perform the update, it might perform a more disruptive action.",
      "enum": [
       "REPLACE",
       "RESTART"
@@ -16355,7 +16355,7 @@
   "SecurityPolicy": {
    "id": "SecurityPolicy",
    "type": "object",
-   "description": "A security policy is comprised of one or more rules. It can also be associated with one or more 'targets'. (== resource_for beta.securityPolicies ==)",
+   "description": "A security policy is comprised of one or more rules. It can also be associated with one or more 'targets'. (== resource_for v1.securityPolicies ==) (== resource_for beta.securityPolicies ==)",
    "properties": {
     "creationTimestamp": {
      "type": "string",
@@ -16583,11 +16583,9 @@
      "type": "string",
      "description": "Preconfigured versioned expression. If this field is specified, config must also be specified. Available preconfigured expressions along with their requirements are: SRC_IPS_V1 - must specify the corresponding src_ip_range field in config.",
      "enum": [
-      "SRC_IPS_V1",
-      "VERSIONED_EXPR_UNSPECIFIED"
+      "SRC_IPS_V1"
      ],
      "enumDescriptions": [
-      "",
       ""
      ]
     }
@@ -16971,6 +16969,10 @@
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
     },
+    "expireTime": {
+     "type": "string",
+     "description": "[Output Only] Expire time of the certificate. RFC3339"
+    },
     "id": {
      "type": "string",
      "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
@@ -16980,6 +16982,10 @@
      "type": "string",
      "description": "[Output Only] Type of the resource. Always compute#sslCertificate for SSL certificates.",
      "default": "compute#sslCertificate"
+    },
+    "managed": {
+     "$ref": "SslCertificateManagedSslCertificate",
+     "description": "Configuration and status of a managed SSL certificate."
     },
     "name": {
      "type": "string",
@@ -16993,6 +16999,31 @@
     "selfLink": {
      "type": "string",
      "description": "[Output only] Server-defined URL for the resource."
+    },
+    "selfManaged": {
+     "$ref": "SslCertificateSelfManagedSslCertificate",
+     "description": "Configuration and status of a self-managed SSL certificate."
+    },
+    "subjectAlternativeNames": {
+     "type": "array",
+     "description": "[Output Only] Domains associated with the certificate via Subject Alternative Name.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "type": {
+     "type": "string",
+     "description": "(Optional) Specifies the type of SSL certificate, either \"SELF_MANAGED\" or \"MANAGED\". If not specified, the certificate is self-managed and the fields certificate and private_key are used.",
+     "enum": [
+      "MANAGED",
+      "SELF_MANAGED",
+      "TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -17105,6 +17136,80 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "SslCertificateManagedSslCertificate": {
+   "id": "SslCertificateManagedSslCertificate",
+   "type": "object",
+   "description": "Configuration and status of a managed SSL certificate.",
+   "properties": {
+    "domainStatus": {
+     "type": "object",
+     "description": "[Output only] Detailed statuses of the domains specified for managed certificate resource.",
+     "additionalProperties": {
+      "type": "string",
+      "enum": [
+       "ACTIVE",
+       "DOMAIN_STATUS_UNSPECIFIED",
+       "FAILED_CAA_CHECKING",
+       "FAILED_CAA_FORBIDDEN",
+       "FAILED_NOT_VISIBLE",
+       "FAILED_RATE_LIMITED",
+       "PROVISIONING"
+      ],
+      "enumDescriptions": [
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       ""
+      ]
+     }
+    },
+    "domains": {
+     "type": "array",
+     "description": "The domains for which a managed SSL certificate will be generated. Currently only single-domain certs are supported.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "status": {
+     "type": "string",
+     "description": "[Output only] Status of the managed certificate resource.",
+     "enum": [
+      "ACTIVE",
+      "MANAGED_CERTIFICATE_STATUS_UNSPECIFIED",
+      "PROVISIONING",
+      "PROVISIONING_FAILED",
+      "PROVISIONING_FAILED_PERMANENTLY",
+      "RENEWAL_FAILED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "SslCertificateSelfManagedSslCertificate": {
+   "id": "SslCertificateSelfManagedSslCertificate",
+   "type": "object",
+   "description": "Configuration and status of a self-managed SSL certificate.",
+   "properties": {
+    "certificate": {
+     "type": "string",
+     "description": "A local certificate file. The certificate must be in PEM format. The certificate chain must be no greater than 5 certs long. The chain must include at least one intermediate cert."
+    },
+    "privateKey": {
+     "type": "string",
+     "description": "A write-only private key in PEM format. Only insert requests will include this field."
     }
    }
   },

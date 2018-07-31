@@ -195,16 +195,21 @@ def PrintWorkflowMetadata(metadata, status, operations, errors):
     metadata: Dataproc WorkflowMetadata message object, contains the latest
         states of a workflow template.
     status: Dictionary, stores all jobs' status in the current workflow
-        template.
+        template, as well as the status of the overarching workflow.
     operations: Dictionary, stores cluster operation status for the workflow
         template.
     errors: Dictionary, stores errors from the current workflow template.
   """
-  if metadata.template not in status or metadata.state != status[metadata.
-                                                                 template]:
-    log.status.Print('WorkflowTemplate [{0}] {1}'.format(
-        metadata.template, metadata.state))
-    status[metadata.template] = metadata.state
+  # Key chosen to avoid collision with job ids, which are at least 3 characters.
+  template_key = 'wt'
+  if template_key not in status or metadata.state != status[template_key]:
+    if metadata.template is not None:
+      log.status.Print('WorkflowTemplate [{0}] {1}'.format(
+          metadata.template, metadata.state))
+    else:
+      # Workflows instantiated inline do not store an id in their metadata.
+      log.status.Print('WorkflowTemplate {0}'.format(metadata.state))
+    status[template_key] = metadata.state
   if metadata.createCluster != operations['createCluster']:
     if hasattr(metadata.createCluster,
                'error') and metadata.createCluster.error is not None:

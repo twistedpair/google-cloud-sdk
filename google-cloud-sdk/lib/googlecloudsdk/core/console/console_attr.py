@@ -277,6 +277,8 @@ class ConsoleAttr(object):
     self._get_raw_key = [console_attr_os.GetRawKeyFunction()]
     self._term_size = console_attr_os.GetTermSize()
 
+    self._display_width_cache = {}
+
   def _GetConsoleEncoding(self):
     """Gets the encoding as declared by the stdout stream.
 
@@ -448,6 +450,11 @@ class ConsoleAttr(object):
     if not isinstance(buf, six.string_types):
       # Handle non-string objects like Colorizer().
       return len(buf)
+
+    cached = self._display_width_cache.get(buf, None)
+    if cached is not None:
+      return cached
+
     width = 0
     max_width = 0
     i = 0
@@ -464,6 +471,8 @@ class ConsoleAttr(object):
         width += GetCharacterDisplayWidth(buf[i])
         i += 1
     max_width = max(width, max_width)
+
+    self._display_width_cache[buf] = max_width
     return max_width
 
   def SplitIntoNormalAndControl(self, buf):

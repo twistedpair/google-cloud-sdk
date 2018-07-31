@@ -5,7 +5,7 @@
   "name": "datastore",
   "version": "v1",
   "revision": "0",
-  "title": "Google Cloud Datastore API",
+  "title": "Cloud Datastore API",
   "description": "Accesses the schemaless NoSQL database to provide fully managed, robust, scalable storage for your application.\n",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -42,11 +42,6 @@
       ],
       "location": "query"
     },
-    "bearer_token": {
-      "type": "string",
-      "description": "OAuth bearer token.",
-      "location": "query"
-    },
     "callback": {
       "type": "string",
       "description": "JSONP",
@@ -65,12 +60,6 @@
     "oauth_token": {
       "type": "string",
       "description": "OAuth 2.0 token for the current user.",
-      "location": "query"
-    },
-    "pp": {
-      "type": "boolean",
-      "description": "Pretty-print response.",
-      "default": "true",
       "location": "query"
     },
     "prettyPrint": {
@@ -270,6 +259,107 @@
         "entityFilter": {
           "description": "Optionally specify which kinds\/namespaces are to be imported. If provided,\nthe list must be a subset of the EntityFilter used in creating the export,\notherwise a FAILED_PRECONDITION error will be returned. If no filter is\nspecified then all entities from the export are imported.",
           "$ref": "GoogleDatastoreAdminV1EntityFilter"
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1Index": {
+      "id": "GoogleDatastoreAdminV1Index",
+      "description": "A minimal index definition.\nNext tag: 8",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "Project ID.\nOutput only.",
+          "type": "string"
+        },
+        "indexId": {
+          "description": "The resource ID of the index.\nOutput only.",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The entity kind to which this index applies.\nRequired.",
+          "type": "string"
+        },
+        "ancestor": {
+          "description": "The index's ancestor mode.  Must not be ANCESTOR_MODE_UNSPECIFIED.\nRequired.",
+          "enumDescriptions": [
+            "The ancestor mode is unspecified.",
+            "Do not include the entity's ancestors in the index.",
+            "Include all the entity's ancestors in the index."
+          ],
+          "type": "string",
+          "enum": [
+            "ANCESTOR_MODE_UNSPECIFIED",
+            "NONE",
+            "ALL_ANCESTORS"
+          ]
+        },
+        "properties": {
+          "description": "An ordered sequence of property names and their index attributes.\nRequired.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDatastoreAdminV1IndexedProperty"
+          }
+        },
+        "state": {
+          "description": "The state of the index.\nOutput only.",
+          "enumDescriptions": [
+            "The state is unspecified.",
+            "The index is being created, and cannot be used by queries.\nThere is an active long-running operation for the index.\nThe index is updated when writing an entity.\nSome index data may exist.",
+            "The index is ready to be used.\nThe index is updated when writing an entity.\nThe index is fully populated from all stored entities it applies to.",
+            "The index is being deleted, and cannot be used by queries.\nThere is an active long-running operation for the index.\nThe index is not updated when writing an entity.\nSome index data may exist.",
+            "The index was being created or deleted, but something went wrong.\nThe index cannot by used by queries.\nThere is no active long-running operation for the index,\nand the most recently finished long-running operation failed.\nThe index is not updated when writing an entity.\nSome index data may exist."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "READY",
+            "DELETING",
+            "ERROR"
+          ]
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1IndexedProperty": {
+      "id": "GoogleDatastoreAdminV1IndexedProperty",
+      "description": "Next tag: 3",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The property name to index.\nRequired.",
+          "type": "string"
+        },
+        "direction": {
+          "description": "The indexed property's direction.  Must not be DIRECTION_UNSPECIFIED.\nRequired.",
+          "enumDescriptions": [
+            "The direction is unspecified.",
+            "The property's values are indexed so as to support sequencing in\nascending order and also query by <, >, <=, >=, and =.",
+            "The property's values are indexed so as to support sequencing in\ndescending order and also query by <, >, <=, >=, and =."
+          ],
+          "type": "string",
+          "enum": [
+            "DIRECTION_UNSPECIFIED",
+            "ASCENDING",
+            "DESCENDING"
+          ]
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1ListIndexesResponse": {
+      "id": "GoogleDatastoreAdminV1ListIndexesResponse",
+      "description": "The response for\ngoogle.datastore.admin.v1.DatastoreAdmin.ListIndexes.",
+      "type": "object",
+      "properties": {
+        "indexes": {
+          "description": "The indexes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleDatastoreAdminV1Index"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
         }
       }
     },
@@ -1325,13 +1415,17 @@
           "enumDescriptions": [
             "Unspecified.",
             "ExportEntities.",
-            "ImportEntities."
+            "ImportEntities.",
+            "CreateIndex.",
+            "DeleteIndex."
           ],
           "type": "string",
           "enum": [
             "OPERATION_TYPE_UNSPECIFIED",
             "EXPORT_ENTITIES",
-            "IMPORT_ENTITIES"
+            "IMPORT_ENTITIES",
+            "CREATE_INDEX",
+            "DELETE_INDEX"
           ]
         },
         "labels": {
@@ -1418,6 +1512,25 @@
         },
         "inputUrl": {
           "description": "The location of the import metadata file. This will be the same value as\nthe google.datastore.admin.v1.ExportEntitiesResponse.output_url field.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDatastoreAdminV1IndexOperationMetadata": {
+      "id": "GoogleDatastoreAdminV1IndexOperationMetadata",
+      "description": "Metadata for Index operations.",
+      "type": "object",
+      "properties": {
+        "common": {
+          "description": "Metadata common to all Datastore Admin operations.",
+          "$ref": "GoogleDatastoreAdminV1CommonMetadata"
+        },
+        "progressEntities": {
+          "description": "An estimate of the number of entities processed.",
+          "$ref": "GoogleDatastoreAdminV1Progress"
+        },
+        "indexId": {
+          "description": "The index resource ID that this operation is acting on.",
           "type": "string"
         }
       }
@@ -1802,6 +1915,82 @@
                 "https://www.googleapis.com/auth/datastore"
               ],
               "description": "Starts asynchronous cancellation on a long-running operation.  The server\nmakes a best effort to cancel the operation, but success is not\nguaranteed.  If the server doesn't support this method, it returns\n`google.rpc.Code.UNIMPLEMENTED`.  Clients can use\nOperations.GetOperation or\nother methods to check whether the cancellation succeeded or whether the\noperation completed despite cancellation. On successful cancellation,\nthe operation is not deleted; instead, it becomes an operation with\nan Operation.error value with a google.rpc.Status.code of 1,\ncorresponding to `Code.CANCELLED`."
+            }
+          }
+        },
+        "indexes": {
+          "methods": {
+            "get": {
+              "id": "datastore.projects.indexes.get",
+              "path": "v1/projects/{projectId}/indexes/{indexId}",
+              "flatPath": "v1/projects/{projectId}/indexes/{indexId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "projectId": {
+                  "description": "Project ID against which to make the request.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "indexId": {
+                  "description": "The resource ID of the index to get.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "indexId"
+              ],
+              "response": {
+                "$ref": "GoogleDatastoreAdminV1Index"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/datastore"
+              ],
+              "description": "Gets an index."
+            },
+            "list": {
+              "id": "datastore.projects.indexes.list",
+              "path": "v1/projects/{projectId}/indexes",
+              "flatPath": "v1/projects/{projectId}/indexes",
+              "httpMethod": "GET",
+              "parameters": {
+                "projectId": {
+                  "description": "Project ID against which to make the request.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "filter": {
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "The maximum number of items to return.  If zero, then all results will be\nreturned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "The next_page_token value returned from a previous List request, if any.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId"
+              ],
+              "response": {
+                "$ref": "GoogleDatastoreAdminV1ListIndexesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/datastore"
+              ],
+              "description": "Lists the indexes that match the specified filters.  Datastore uses an\neventually consistent query to fetch the list of indexes and may\noccasionally return stale results."
             }
           }
         }

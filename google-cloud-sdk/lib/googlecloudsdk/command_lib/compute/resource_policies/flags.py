@@ -34,7 +34,8 @@ def MakeResourcePolicyArg():
 
 def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
                           cadence_help, supports_hourly=False,
-                          has_restricted_start_times=False):
+                          has_restricted_start_times=False,
+                          supports_weekly=False):
   """Add Cycle Frequency args for Resource Policies."""
   freq_group = parser.add_argument_group('Cycle Frequency Group.',
                                          required=True, mutex=True)
@@ -44,7 +45,8 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
         16:00 and 20:00 UTC. See $ gcloud topic datetimes for information on
         time formats. For example, `--start-time="03:00-05"`
         (which gets converted to 08:00 UTC)."""
-  freq_flags_group = freq_group.add_group('From flags')
+  freq_flags_group = freq_group.add_group(
+      'From flags' if supports_weekly else '')
   freq_flags_group.add_argument(
       '--start-time', required=True,
       type=arg_parsers.Datetime.Parse,
@@ -55,13 +57,7 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
       dest='daily_cycle',
       action='store_true',
       help='{} occurs daily at START_TIME.'.format(cadence_help))
-  base.ChoiceArgument(
-      '--weekly-{}'.format(flag_suffix),
-      dest='weekly_cycle',
-      choices=['monday', 'tuesday', 'wednesday', 'thursday', 'friday',
-               'saturday', 'sunday'],
-      help_str='{} occurs weekly on WEEKLY_{} at START_TIME.'.format(
-          cadence_help, flag_suffix.upper())).AddToParser(cadence_group)
+
   if supports_hourly:
     cadence_group.add_argument(
         '--hourly-{}'.format(flag_suffix),
@@ -71,20 +67,28 @@ def AddCycleFrequencyArgs(parser, flag_suffix, start_time_help,
         help='{} occurs every n hours starting at START_TIME.'.format(
             cadence_help))
 
-  freq_file_group = freq_group.add_group('From file')
-  freq_file_group.add_argument(
-      '--weekly-{}-from-file'.format(flag_suffix),
-      dest='weekly_cycle_from_file',
-      type=arg_parsers.BufferedFileInput(),
-      help="""\
-      A file which defines a weekly cadence with multiple days and start times.
-      The format is a JSON/YAML file containing a list of objects with the
-      following fields:
+  if supports_weekly:
+    base.ChoiceArgument(
+        '--weekly-{}'.format(flag_suffix),
+        dest='weekly_cycle',
+        choices=['monday', 'tuesday', 'wednesday', 'thursday', 'friday',
+                 'saturday', 'sunday'],
+        help_str='{} occurs weekly on WEEKLY_{} at START_TIME.'.format(
+            cadence_help, flag_suffix.upper())).AddToParser(cadence_group)
+    freq_file_group = freq_group.add_group('From file')
+    freq_file_group.add_argument(
+        '--weekly-{}-from-file'.format(flag_suffix),
+        dest='weekly_cycle_from_file',
+        type=arg_parsers.BufferedFileInput(),
+        help="""\
+        A file which defines a weekly cadence with multiple days and start
+        times. The format is a JSON/YAML file containing a list of objects with
+        the following fields:
 
-      day: Day of the week with the same choices as --weekly-{}.
-      startTime: Start time of the snapshot schedule with the same format
-          as --start-time.
-      """.format(flag_suffix))
+        day: Day of the week with the same choices as --weekly-{}.
+        startTime: Start time of the snapshot schedule with the same format
+            as --start-time.
+        """.format(flag_suffix))
 
 
 def AddCommonArgs(parser):

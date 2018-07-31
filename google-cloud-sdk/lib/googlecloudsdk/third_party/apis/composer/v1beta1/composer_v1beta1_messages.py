@@ -348,10 +348,6 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
-class MessageSet(_messages.Message):
-  r"""This is proto2's version of MessageSet."""
-
-
 class NodeConfig(_messages.Message):
   r"""The configuration information for the Kubernetes Engine nodes running
   the Apache Airflow software.
@@ -914,63 +910,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class StatusProto(_messages.Message):
-  r"""Wire-format for a Status object
-
-  Fields:
-    canonicalCode: The canonical error code (see codes.proto) that most
-      closely corresponds to this status. May be missing.
-    code: Numeric code drawn from the space specified below. Often, this is
-      the canonical error space, and code is drawn from util/task/codes.proto
-    message: Detail message
-    messageSet: message_set associates an arbitrary proto message with the
-      status.
-    payload: DEPRECATED.  This field was deprecated in 2011 with cl/20297133.
-      Java support for the field was moved to a proto1 backward compatibility
-      class in April 2017 with cl/142615857 and cl/154123203.  There was never
-      support for this field in Go; if set Go will ignore it. C++ stopped
-      setting StatusProto::payload in October 2015 with cl/106347055, and
-      stopped reading the field in October 2017 with cl/173324114.  In
-      general, newly written code should use only "message_set". If you need
-      to maintain backward compatibility with code written before 3/25/2011,
-      do the following:  - During the transition period, either (1) set both
-      "payload" and   "message_set", or (2) write the consumer of StatusProto
-      so that it can   forge a MessageSet object from "payload" if
-      "message_set" is missing.   The C++ util::Status implementation does
-      (2).  - Once all the consumers are converted to accept "message_set",
-      then   remove the use of "payload" on the producer side.
-    space: The following are usually only present when code != 0 Space to
-      which this status belongs
-  """
-
-  canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  code = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  message = _messages.StringField(3)
-  messageSet = _messages.MessageField('MessageSet', 4)
-  payload = _messages.MessageField('TypedMessage', 5)
-  space = _messages.StringField(6)
-
-
-class TypedMessage(_messages.Message):
-  r"""Message that groups a protocol type_id (as defined by MessageSet), with
-  an encoded message of that type.  Its use is similar to MessageSet, except
-  it represents a single (type, encoded message) instead of a set.  To fill
-  for known protocol type:   MyProtocolMsg proto;   TypedMessage typed_msg;
-  typed_msg.set_type_id(MyProtocolMsg::MESSAGE_TYPE_ID);
-  proto.AppendToCord(typed_msg.mutable_message());  To fill for unknown
-  protocol type:   ProtocolMessage proto;   TypedMessage typed_msg;
-  typed_msg.set_type_id(proto.GetMapper()->type_id());
-  proto.AppendToCord(typed_msg.mutable_message());
-
-  Fields:
-    message: Message bytes.
-    typeId: Identifier for the type.
-  """
-
-  message = _messages.BytesField(1)
-  typeId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 encoding.AddCustomJsonFieldMapping(

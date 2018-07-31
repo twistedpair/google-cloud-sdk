@@ -299,8 +299,7 @@ def RunGsutilCommand(command_name,
                      err_func=log.file_only_logger.debug):
   """Runs the specified gsutil command and returns the command's exit code.
 
-  This is more reliable than storage_api.StorageClient.CopyFilesToGcs especially
-  for large files.
+  WARNING: This is not compatible with python 3 and should no longer be used.
 
   Args:
     command_name: The gsutil command to run.

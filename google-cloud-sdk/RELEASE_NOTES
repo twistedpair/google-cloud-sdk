@@ -5,7 +5,84 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 209.0.0 (2018-07-17)
+## 210.0.0 (2018-07-31)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Removed deprecated `gcloud compute interconnects patch`. Use `gcloud compute interconnects update` instead.
+*   **(Container Builder)** Deprecated `container-builder-local`; use `cloud-build-local` instead.
+*   **(Container Builder)** Deprecated `gcloud container builds` command group; use `gcloud builds`
+    instead.
+    *  `gcloud builds` retains the functionality of `gcloud container builds`.
+        Existing `gcloud container builds` commands will continue to work during
+        the deprecation period but will be deleted from a future release.
+    *   Renamed the `containers.build_timeout` property as `builds.timeout` in
+        `gcloud builds`.
+    *   Renamed the `container.build_check_tag` property as `builds.check_tag`
+        in `gcloud builds`.
+*   **(Kubernetes Engine)** Starting in version 1.12, `gcloud container clusters create` will have basic
+    authentication and client certificate issuance disabled by default. These
+    functionalities can be enabled (or disabled) manually using the
+    `--[no-]enable-basic-auth` and `--[no-]issue-client-certificate` flags,
+    respectively.
+
+
+### App Engine
+
+
+* Removed automated app.yaml generation from `gcloud app deploy`. The deprecated
+  `gcloud beta app gen-config` command is still available separately for now.
+
+### Cloud Bigtable
+
+* Fixed `cbt deleterow` and `cbt deletecolumn` to not return errors during argument checking.
+
+### Cloud Build
+
+*   Renamed the `container-builder-local` binary as `cloud-build-local` with no
+    functional changes. Initial release is version `0.4.0`.
+*   Released initial `cloud-build-local` package installers for deb and RPM.
+
+### Cloud Endpoints
+
+*   Added warnings when validating service config for a service which does not
+    yet exist. (Previously, this would silently create the service.)
+
+### Cloud IoT
+
+*   Promoted the following commands to beta:
+    *   `gcloud registries add-iam-policy-binding`
+    *   `gcloud registries remove-iam-policy-binding`
+
+### Cloud Services
+
+* gcloud beta services disable now supports force option. If specified, the
+  disable call will proceed even if there are enabled services which depend on
+  the service to be disabled. Forcing the call means that the services which
+  depend on the service to be disabled will also be disabled.
+
+
+
+### Compute Engine
+
+* Promoted `sole-tenancy` commands to GA.
+* Promoted `--internal-ip` flag of `gcloud compute ssh` to GA.
+* Added `list-nodes` command to `gcloud compute sole-tenancy node-groups` for showing node information.
+* Added `--use-serving-port` flag to `gcloud compute health-checks tcp create` command.
+* Promoted `--enable-logging` flag of `gcloud compute firewall-rules <create|update>` to beta.
+* Promoted `gcloud compute networks subnets list-usable` to GA.
+
+### Container Builder
+
+*   Deprecated `gcloud container builds`; use `gcloud builds` instead. The
+    existing `container builds` commands will continue to work during the
+    deprecation period but will be deleted from a future release.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 209.0.0 (2018-07-18)
 
 ### Breaking Changes
 
@@ -21,14 +98,14 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Go SDK to version 1.9.67.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/go/release-notes
+  <https://cloud.google.com/appengine/docs/go/release-notes>
 * Updated the Python SDK to version 1.9.73.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  <https://cloud.google.com/appengine/docs/python/release-notes>
 
 ### Cloud Composer
 
-*   Promoted `gcloud composer` command group to GA.
+*   Promoted `gcloud composer` commands to GA.
 
 ### Cloud Functions
 
@@ -36,19 +113,19 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Tasks
 
-* Promoted `gcloud tasks` to beta.
+* Promoted `gcloud tasks` commands to beta.
 
 
 ### Compute Engine
 
-* Promoted `--zones` flag of `gcloud compute instance-groups managed create` command to GA.
-* Promoted <get|set>-iam-policy and <add|remove>-iam-policy-bindings to
-  beta in the following commands groups:
-  * `gcloud compute disks`
-  * `gcloud compute images`
-  * `gcloud compute instance-templates`
-  * `gcloud compute instances`
-  * `gcloud compute snapshots`
+*   Promoted `--zones` flag of `gcloud compute instance-groups managed create` command to GA.
+*   Promoted `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to
+    beta in the following commands groups:
+    *   `gcloud compute disks`
+    *   `gcloud compute images`
+    *   `gcloud compute instance-templates`
+    *   `gcloud compute instances`
+    *   `gcloud compute snapshots`
 
 
 
@@ -4136,7 +4213,7 @@ disabled on existing clusters via the
 
 *   `gcloud container builds submit` now takes a `--substitutions` flag for
     user-defined templating; see
-    <https://cloud.google.com/container-builder/docs/api/build-requests#substitutions>
+    <https://cloud.google.com/cloud-build/docs/api/build-requests#substitutions>
     for more details.
 
 ### Google Cloud SQL
@@ -5698,7 +5775,7 @@ The alpha commands will remain, as is, until at least March of 2017.
 
 *   The `gcloud alpha container builds` command group creates and manages
     builds using the Google Container Builder service. See
-    https://cloud.google.com/container-builder/docs/ for API documentation.
+    https://cloud.google.com/cloud-build/docs/ for API documentation.
 
 ### Google Cloud Dataproc
 

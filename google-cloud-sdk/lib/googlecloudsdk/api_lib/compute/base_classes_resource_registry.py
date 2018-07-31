@@ -182,30 +182,6 @@ RESOURCE_REGISTRY = {
             type:label=PROTOCOL
           )
         """,),
-    'compute.hosts':
-        resource_info.ResourceInfo(
-            cache_command='compute sole-tenancy hosts list',
-            list_format="""
-          table(
-            name,
-            zone.basename(),
-            instances.len():label=INSTANCES,
-            status
-          )
-        """,),
-    'compute.hostTypes':
-        resource_info.ResourceInfo(
-            cache_command='compute sole-tenancy host-types list',
-            list_format="""
-          table(
-            name,
-            zone.basename(),
-            guestCpus:label=CPUs,
-            memoryMb,
-            localSsdGb,
-            deprecated.state:label=DEPRECATED
-          )
-        """,),
     'compute.httpHealthChecks':
         resource_info.ResourceInfo(
             cache_command='compute http-health-checks list',

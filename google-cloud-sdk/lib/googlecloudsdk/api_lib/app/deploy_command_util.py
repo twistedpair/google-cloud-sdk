@@ -40,12 +40,10 @@ from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import exceptions as s_exceptions
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
-from googlecloudsdk.command_lib.app import exceptions as app_exc
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store as c_store
@@ -668,45 +666,3 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
 
 DEFAULT_DEPLOYABLE = 'app.yaml'
 
-
-def CreateAppYamlForAppDirectory(directory):
-  """Ensures that an app.yaml exists or creates it if necessary.
-
-  Attempt to fingerprint the directory and create one. This is an interactive
-  process. If this does not raise an error, the app.yaml is guaranteed to exist
-  once this is done.
-
-  Args:
-    directory: str, The path to the directory to create the app.yaml in.
-
-  Raises:
-    NoAppIdentifiedError, If the application type could not be identified, or
-        if a yaml file could not be generated based on the state of the source.
-
-  Returns:
-    str, The path to the created app.yaml file.
-  """
-  console_io.PromptContinue(
-      'Deployment to Google App Engine requires an app.yaml file. '
-      'This command will run `gcloud beta app gen-config` to generate an '
-      'app.yaml file for you in the current directory (if the current '
-      'directory does not contain an App Engine service, please answer '
-      '"no").', cancel_on_no=True)
-  # This indicates we don't have an app.yaml, we do not want to generate
-  # docker files (we will do that in a single place later), and that we don't
-  # want to persist the dockerfiles.
-  params = ext_runtime.Params(appinfo=None, deploy=False, custom=False)
-  configurator = fingerprinter.IdentifyDirectory(directory, params=params)
-  if configurator is None:
-    raise app_exc.NoAppIdentifiedError(
-        'Could not identify an app in the current directory.\n\n'
-        'Please prepare an app.yaml file for your application manually '
-        'and deploy again.')
-  configurator.MaybeWriteAppYaml()
-  yaml_path = os.path.join(directory, DEFAULT_DEPLOYABLE)
-  if not os.path.exists(yaml_path):
-    raise app_exc.NoAppIdentifiedError(
-        'Failed to create an app.yaml for your app.\n\n'
-        'Please prepare an app.yaml file for your application manually '
-        'and deploy again.')
-  return yaml_path

@@ -1059,11 +1059,11 @@
       "type": "object",
       "properties": {
         "enableNodeAutoprovisioning": {
-          "description": "Enables automatic node pool creation and deletion.\nContains global constraints regarding minimum and maximum",
+          "description": "Enables automatic node pool creation and deletion.",
           "type": "boolean"
         },
         "resourceLimits": {
-          "description": "amount of resources in the cluster.",
+          "description": "Contains global constraints regarding minimum and maximum\namount of resources in the cluster.",
           "type": "array",
           "items": {
             "$ref": "ResourceLimit"

@@ -616,7 +616,7 @@ def AddNodePoolClusterFlag(parser, help_text):
       action=actions.StoreProperty(properties.VALUES.container.cluster))
 
 
-def AddEnableAutoRepairFlag(parser, for_node_pool=False):
+def AddEnableAutoRepairFlag(parser, for_node_pool=False, for_create=False):
   """Adds a --enable-autorepair flag to parser."""
   if for_node_pool:
     help_text = """\
@@ -624,11 +624,19 @@ Enable node autorepair feature for a node-pool.
 
   $ {command} node-pool-1 --cluster=example-cluster --enable-autorepair
 """
+    if for_create:
+      help_text += """
+Node autorepair is enabled by default for node pools using COS as a base image.
+"""
   else:
     help_text = """\
 Enable node autorepair feature for a cluster's default node-pool(s).
 
   $ {command} example-cluster --enable-autorepair
+"""
+    if for_create:
+      help_text += """
+Node autorepair is enabled by default for clusters using COS as a base image.
 """
   help_text += """
 See https://cloud.google.com/kubernetes-engine/docs/node-auto-repair for \

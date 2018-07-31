@@ -919,11 +919,11 @@ class BatchUpdateIngressRulesResponse(_messages.Message):
 
 
 class BuildInfo(_messages.Message):
-  r"""Google Cloud Container Builder build information.
+  r"""Google Cloud Build information.
 
   Fields:
-    cloudBuildId: The Google Cloud Container Builder build id. Example:
-      "f966068f-08b2-42c8-bdfe-74137dff2bf9"
+    cloudBuildId: The Google Cloud Build id. Example: "f966068f-08b2-42c8
+      -bdfe-74137dff2bf9"
   """
 
   cloudBuildId = _messages.StringField(1)
@@ -1078,14 +1078,14 @@ class Deployment(_messages.Message):
       credentials supplied with this call.
 
   Fields:
-    build: Google Cloud Container Builder build information. Only applicable
-      for instances running in the App Engine flexible environment.
-    cloudBuildOptions: Options for any Google Cloud Container Builder builds
-      created as a part of this deployment.Note that this is orthogonal to the
-      build parameter, where the deployment depends on an already existing
-      cloud build. These options will only be used if a new build is created,
-      such as when deploying to the App Engine flexible environment using
-      files or zip.
+    build: Google Cloud Build build information. Only applicable for instances
+      running in the App Engine flexible environment.
+    cloudBuildOptions: Options for any Google Cloud Build builds created as a
+      part of this deployment.Note that this is orthogonal to the build
+      parameter, where the deployment depends on an already existing cloud
+      build. These options will only be used if a new build is created, such
+      as when deploying to the App Engine flexible environment using files or
+      zip.
     container: The Docker image for the container that runs the version. Only
       applicable for instances running in the App Engine flexible environment.
     files: Manifest of the files stored in Google Cloud Storage that are

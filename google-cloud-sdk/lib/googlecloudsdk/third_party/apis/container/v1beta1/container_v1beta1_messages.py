@@ -435,8 +435,9 @@ class ClusterAutoscaling(_messages.Message):
 
   Fields:
     enableNodeAutoprovisioning: Enables automatic node pool creation and
-      deletion. Contains global constraints regarding minimum and maximum
-    resourceLimits: amount of resources in the cluster.
+      deletion.
+    resourceLimits: Contains global constraints regarding minimum and maximum
+      amount of resources in the cluster.
   """
 
   enableNodeAutoprovisioning = _messages.BooleanField(1)

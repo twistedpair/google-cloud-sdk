@@ -25,7 +25,6 @@ from __future__ import unicode_literals
 import collections
 import os
 
-from googlecloudsdk.api_lib.app import deploy_command_util
 from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.command_lib.app import exceptions
@@ -36,11 +35,19 @@ _STANDARD_APP_YAML_URL = (
 _FLEXIBLE_APP_YAML_URL = (
     'https://cloud.google.com/'
     'appengine/docs/flexible/python/configuring-your-app-with-app-yaml')
+
+APP_YAML_INSTRUCTIONS = (
+    'using the directions at {flex} (App Engine Flexible Environment) or {std} '
+    '(App Engine Standard Environment) under the tab for your language.'
+).format(flex=_FLEXIBLE_APP_YAML_URL, std=_STANDARD_APP_YAML_URL)
+
 FINGERPRINTING_WARNING = (
-    'As an alternative, create an app.yaml file yourself using the '
-    'directions at {flex} (App Engine Flexible Environment) or {std} (App '
-    'Engine Standard Environment) under the tab for your language.').format(
-        flex=_FLEXIBLE_APP_YAML_URL, std=_STANDARD_APP_YAML_URL)
+    'As an alternative, create an app.yaml file yourself ' +
+    APP_YAML_INSTRUCTIONS)
+NO_YAML_ERROR = (
+    'An app.yaml (or appengine-web.xml) file is required to deploy this '
+    'directory as an App Engine application. Create an app.yaml file '
+    + APP_YAML_INSTRUCTIONS)
 
 
 class Service(object):
@@ -175,35 +182,19 @@ def AppengineWebMatcher(path, stager):
 
 
 def UnidentifiedDirMatcher(path, stager):
-  """Generate a Service from a potential app directory.
-
-  This function is a path matcher that returns if and only if:
-  - `path` points to an `<app-dir>` where the fingerprinter identifies a runtime
-    and the user opts in to writing an `app.yaml` into `<app-dir>.
-
-  If the runtime and environment match an entry in the stager, the service will
-  be staged into a directory.
+  """Points out to the user that they need an app.yaml to deploy.
 
   Args:
     path: str, Unsanitized absolute path, may point to a directory or a file of
         any type. There is no guarantee that it exists.
-    stager: staging.Stager, stager that will be invoked if there is a runtime
-        and environment match.
-
-  Raises:
-    staging.StagingCommandFailedError, staging command failed.
-
+    stager: staging.Stager, stager that will not be invoked.
   Returns:
-    Service, fully populated with entries that respect a potentially
-        staged deployable service, or None if the path does not fulfill the
-        requirements described above.
+    None
   """
+  del stager
   if os.path.isdir(path):
-    log.warning(
-        'Automatic app detection is deprecated and will soon be removed. ' +
-        FINGERPRINTING_WARNING)
-    yaml = deploy_command_util.CreateAppYamlForAppDirectory(path)
-    return ServiceYamlMatcher(yaml, stager)
+    log.error(NO_YAML_ERROR)
+  return None
 
 
 def GetPathMatchers():
@@ -253,7 +244,7 @@ class Services(object):
     self._services[service.service_id] = service
 
   def GetAll(self):
-    """Retreive the service info objects in the order they were added.
+    """Retrieve the service info objects in the order they were added.
 
     Returns:
       List[Service], list of services.

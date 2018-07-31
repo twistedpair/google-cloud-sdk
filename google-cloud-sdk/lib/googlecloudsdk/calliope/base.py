@@ -84,10 +84,10 @@ class ReleaseTrack(object):
       'ALPHA', 'alpha',
       '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
       'This command is currently in ALPHA and may change without notice. '
-      'Usually, users of ALPHA commands and flags need to apply for access, '
-      'agree to applicable terms, and have their projects whitelisted. '
-      'Contact Google or sign up on a product\'s page for ALPHA access. '
-      'Product pages can be found at https://cloud.google.com/products/.')
+      'If this command fails with API permission errors despite specifying '
+      'the right project, you will have to apply for early access and have your'
+      ' projects registered on the API whitelist to use it. To do so, contact '
+      'Support at https://cloud.google.com/support/.')
   _ALL = [GA, BETA, ALPHA]
 
   @staticmethod
@@ -476,6 +476,8 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
 class Group(_Common):
   """Group is a base class for groups to implement."""
 
+  IS_COMMAND_GROUP = True
+
   _allow_py3 = True
   _command_suggestions = {}
 
@@ -509,6 +511,8 @@ class Command(six.with_metaclass(abc.ABCMeta, _Common)):
         common initialization among commands.
     _uri_cache_enabled: bool, The URI cache enabled state.
   """
+
+  IS_COMMAND = True
 
   def __init__(self, cli, context):
     super(Command, self).__init__(is_group=False)

@@ -26,9 +26,19 @@ class Collections(enum.Enum):
 
   PROJECTS = (
       'projects',
-      'projects/{projectsId}',
+      'projects/{projectId}',
       {},
-      [u'projectsId'],
+      [u'projectId'],
+      True
+  )
+  PROJECTS_INDEXES = (
+      'projects.indexes',
+      'projects/{projectId}/indexes/{indexId}',
+      {
+          '':
+              'projects/{projectId}/indexes/{indexId}',
+      },
+      [u'projectId', u'indexId'],
       True
   )
   PROJECTS_OPERATIONS = (
