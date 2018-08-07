@@ -206,7 +206,8 @@ class CommandBuilder(object):
             return self._HandleResponse(response, args)
 
         response = self._HandleResponse(response, args)
-        log.DeletedResource(ref.Name(), kind=self.resource_type)
+        log.DeletedResource(self._GetDisplayName(ref, args),
+                            kind=self.resource_type)
         return response
 
     return Command
@@ -252,7 +253,7 @@ class CommandBuilder(object):
             return self._HandleResponse(response, args)
 
         response = self._HandleResponse(response, args)
-        log.CreatedResource(ref.Name() if ref else None,
+        log.CreatedResource(self._GetDisplayName(ref, args),
                             kind=self.resource_type)
         return response
 
@@ -285,7 +286,8 @@ class CommandBuilder(object):
       def Run(self_, args):
         ref = self.arg_generator.GetRequestResourceRef(args)
         response = self._WaitForOperation(
-            ref, resource_ref=None, extract_resource_result=False)
+            ref, resource_ref=None, extract_resource_result=False,
+            args=args)
         response = self._HandleResponse(response, args)
         return response
 
@@ -532,7 +534,8 @@ class CommandBuilder(object):
     ref = self.arg_generator.GetRequestResourceRef(args)
     if self.spec.input.confirmation_prompt:
       console_io.PromptContinue(
-          self._Format(self.spec.input.confirmation_prompt, ref),
+          self._Format(self.spec.input.confirmation_prompt, ref,
+                       self._GetDisplayName(ref, args)),
           throw_if_unattended=True, cancel_on_no=True)
 
     if self.spec.request.issue_request_hook:
@@ -543,10 +546,12 @@ class CommandBuilder(object):
       # We are going to make the request, but there is custom code to create it.
       request = self.spec.request.create_request_hook(ref, args)
     else:
+      parse_resource = self.spec.request.parse_resource_into_request
       request = self.arg_generator.CreateRequest(
           args, self.spec.request.static_fields,
           self.spec.request.resource_method_params,
-          use_relative_name=self.spec.request.use_relative_name)
+          use_relative_name=self.spec.request.use_relative_name,
+          parse_resource_into_request=parse_resource)
       for hook in self.spec.request.modify_request_hooks:
         request = hook(ref, args, request)
 
@@ -640,7 +645,8 @@ class CommandBuilder(object):
         getattr(operation, self.spec.async.response_name_field),
         collection=self.spec.async.collection)
     if request_string:
-      log.status.Print(self._Format(request_string, resource_ref))
+      log.status.Print(self._Format(request_string, resource_ref,
+                                    self._GetDisplayName(resource_ref, args)))
     if args.async:
       log.status.Print(self._Format(
           'Check operation [{{{}}}] for status.'
@@ -648,10 +654,10 @@ class CommandBuilder(object):
       return operation
 
     return self._WaitForOperation(
-        operation_ref, resource_ref, extract_resource_result)
+        operation_ref, resource_ref, extract_resource_result, args=args)
 
   def _WaitForOperation(self, operation_ref, resource_ref,
-                        extract_resource_result):
+                        extract_resource_result, args=None):
     poller = AsyncOperationPoller(
         self.spec, resource_ref if extract_resource_result else None)
     progress_string = self._Format(
@@ -659,7 +665,9 @@ class CommandBuilder(object):
             yaml_command_schema.NAME_FORMAT_KEY),
         operation_ref)
     return waiter.WaitFor(
-        poller, operation_ref, self._Format(progress_string, resource_ref))
+        poller, operation_ref, self._Format(
+            progress_string, resource_ref,
+            self._GetDisplayName(resource_ref, args) if args else None))
 
   def _HandleResponse(self, response, args=None):
     """Process the API response.
@@ -725,23 +733,25 @@ class CommandBuilder(object):
           return obj
     return self._FindPopulatedAttribute(obj, attributes[1:])
 
-  def _Format(self, format_string, resource_ref):
+  def _Format(self, format_string, resource_ref, display_name=None):
     """Formats a string with all the attributes of the given resource ref.
 
     Args:
       format_string: str, The format string.
       resource_ref: resources.Resource, The resource reference to extract
         attributes from.
+      display_name: the display name for the resource.
 
     Returns:
       str, The formatted string.
     """
     if resource_ref:
       d = resource_ref.AsDict()
-      d[yaml_command_schema.NAME_FORMAT_KEY] = resource_ref.Name()
+      d[yaml_command_schema.NAME_FORMAT_KEY] = (
+          display_name or resource_ref.Name())
       d[yaml_command_schema.REL_NAME_FORMAT_KEY] = resource_ref.RelativeName()
     else:
-      d = {}
+      d = {yaml_command_schema.NAME_FORMAT_KEY: display_name}
     d[yaml_command_schema.RESOURCE_TYPE_FORMAT_KEY] = self.resource_type
     return format_string.format(**d)
 
@@ -779,6 +789,12 @@ class CommandBuilder(object):
         'API can be found at: {}'.format(
             self.method.collection.api_name, self.method.collection.api_version,
             self.method.collection.docs_url))
+
+  def _GetDisplayName(self, resource_ref, args):
+    if (self.spec.arguments.resource
+        and self.spec.arguments.resource.display_name_hook):
+      return self.spec.arguments.resource.display_name_hook(resource_ref, args)
+    return resource_ref.Name() if resource_ref else None
 
 
 class AsyncOperationPoller(waiter.OperationPoller):

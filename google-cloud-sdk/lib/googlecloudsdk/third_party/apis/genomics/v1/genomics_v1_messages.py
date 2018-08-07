@@ -1164,10 +1164,12 @@ class GenomicsOperationsListRequest(_messages.Message):
       determine if a   particular event has occurred. * error&#58; If the
       pipeline is running, this value is NULL.  Once the   pipeline finishes,
       the value is the standard Google error code. * labels.key or labels."key
-      with space" where key is a label key.  In v1 and v1alpha2, the following
-      filter fields are supported&#58;  * projectId&#58; Required. Corresponds
-      to   OperationMetadata.projectId. * createTime&#58; The time this job
-      was created, in seconds from the
+      with space" where key is a label key. * done&#58; If the pipeline is
+      running, this value is false. Once the   pipeline finishes, the value is
+      true.  In v1 and v1alpha2, the following filter fields are
+      supported&#58;  * projectId&#58; Required. Corresponds to
+      OperationMetadata.projectId. * createTime&#58; The time this job was
+      created, in seconds from the
       [epoch](http://en.wikipedia.org/wiki/Unix_time). Can use `>=` and/or
       `<=`   operators. * status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`,
       or `CANCELED`. Only   one status may be specified. * labels.key where

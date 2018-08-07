@@ -1742,6 +1742,7 @@ class Job(_messages.Message):
       <code>job_id</code>.
     scheduling: Optional. Job scheduling configuration.
     sparkJob: Job is a Spark job.
+    sparkRJob: Job is a SparkR job.
     sparkSqlJob: Job is a SparkSql job.
     status: Output only. The job status. Additional application-specific
       status information may be contained in the <code>type_job</code> and
@@ -1792,10 +1793,11 @@ class Job(_messages.Message):
   reference = _messages.MessageField('JobReference', 9)
   scheduling = _messages.MessageField('JobScheduling', 10)
   sparkJob = _messages.MessageField('SparkJob', 11)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 12)
-  status = _messages.MessageField('JobStatus', 13)
-  statusHistory = _messages.MessageField('JobStatus', 14, repeated=True)
-  yarnApplications = _messages.MessageField('YarnApplication', 15, repeated=True)
+  sparkRJob = _messages.MessageField('SparkRJob', 12)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 13)
+  status = _messages.MessageField('JobStatus', 14)
+  statusHistory = _messages.MessageField('JobStatus', 15, repeated=True)
+  yarnApplications = _messages.MessageField('YarnApplication', 16, repeated=True)
 
 
 class JobPlacement(_messages.Message):
@@ -2287,6 +2289,7 @@ class OrderedJob(_messages.Message):
     pysparkJob: Job is a Pyspark job.
     scheduling: Optional. Job scheduling configuration.
     sparkJob: Job is a Spark job.
+    sparkRJob: Job is a SparkR job.
     sparkSqlJob: Job is a SparkSql job.
     stepId: Required. The step id. The id must be unique among all jobs within
       the template.The step id is used as prefix for job id, as job goog-
@@ -2333,8 +2336,9 @@ class OrderedJob(_messages.Message):
   pysparkJob = _messages.MessageField('PySparkJob', 6)
   scheduling = _messages.MessageField('JobScheduling', 7)
   sparkJob = _messages.MessageField('SparkJob', 8)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 9)
-  stepId = _messages.StringField(10)
+  sparkRJob = _messages.MessageField('SparkRJob', 9)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 10)
+  stepId = _messages.StringField(11)
 
 
 class ParameterValidation(_messages.Message):
@@ -2718,6 +2722,70 @@ class SparkJob(_messages.Message):
   mainClass = _messages.StringField(6)
   mainJarFileUri = _messages.StringField(7)
   properties = _messages.MessageField('PropertiesValue', 8)
+
+
+class SparkRJob(_messages.Message):
+  r"""A Cloud Dataproc job for running Apache SparkR
+  (https://spark.apache.org/docs/latest/sparkr.html) applications on YARN.
+
+  Messages:
+    PropertiesValue: Optional. A mapping of property names to values, used to
+      configure SparkR. Properties that conflict with values set by the Cloud
+      Dataproc API may be overwritten. Can include properties set in
+      /etc/spark/conf/spark-defaults.conf and classes in user code.
+
+  Fields:
+    archiveUris: Optional. HCFS URIs of archives to be extracted in the
+      working directory of of Spark drivers and tasks. Supported file types:
+      .jar, .tar, .tar.gz, .tgz, and .zip.
+    args: Optional. The arguments to pass to the driver. Do not include
+      arguments, such as --conf, that can be set as job properties, since a
+      collision may occur that causes an incorrect job submission.
+    fileUris: Optional. HCFS URIs of files to be copied to the working
+      directory of R drivers and distributed tasks. Useful for naively
+      parallel tasks.
+    loggingConfig: Optional. The runtime log config for job execution.
+    mainRFileUri: Required. The HCFS URI of the main R file to use as the
+      driver. Must be a .R file.
+    properties: Optional. A mapping of property names to values, used to
+      configure SparkR. Properties that conflict with values set by the Cloud
+      Dataproc API may be overwritten. Can include properties set in
+      /etc/spark/conf/spark-defaults.conf and classes in user code.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. A mapping of property names to values, used to configure
+    SparkR. Properties that conflict with values set by the Cloud Dataproc API
+    may be overwritten. Can include properties set in /etc/spark/conf/spark-
+    defaults.conf and classes in user code.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  args = _messages.StringField(2, repeated=True)
+  fileUris = _messages.StringField(3, repeated=True)
+  loggingConfig = _messages.MessageField('LoggingConfig', 4)
+  mainRFileUri = _messages.StringField(5)
+  properties = _messages.MessageField('PropertiesValue', 6)
 
 
 class SparkSqlJob(_messages.Message):

@@ -651,7 +651,7 @@ class Color(_messages.Message):
   alpha:alpha];      }       static Color* toProto(UIColor* color) {
   CGFloat red, green, blue, alpha;          if (![color getRed:&red
   green:&green blue:&blue alpha:&alpha]) {            return nil;          }
-  Color* result = [Color alloc] init];          [result setRed:red];
+  Color* result = [[Color alloc] init];          [result setRed:red];
   [result setGreen:green];          [result setBlue:blue];          if (alpha
   <= 0.9999) {            [result setAlpha:floatWrapperWithValue(alpha)];
   }          [result autorelease];          return result;     }     // ...

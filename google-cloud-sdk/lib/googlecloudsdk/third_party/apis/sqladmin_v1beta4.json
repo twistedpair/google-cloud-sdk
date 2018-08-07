@@ -5,9 +5,9 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20180720",
- "title": "Cloud SQL Administration API",
- "description": "Creates and configures Cloud SQL instances, which provide fully-managed MySQL databases.",
+ "revision": "20180727",
+ "title": "Cloud SQL Admin API",
+ "description": "Cloud SQL provides the Cloud SQL Admin API, a REST API for administering your instances programmatically.",
  "ownerDomain": "google.com",
  "ownerName": "Google",
  "icons": {
@@ -742,7 +742,7 @@
     },
     "uri": {
      "type": "string",
-     "description": "A path to the file in Cloud Storage from which the import is made. The URI is in the form gs://bucketName/fileName. Compressed gzip files (.gz) are supported when fileType is SQL."
+     "description": "Path to the import file in Cloud Storage, in the form gs://bucketName/fileName. Compressed gzip files (.gz) are supported when fileType is SQL. The instance must have write permissions to the bucket and read access to the file."
     }
    }
   },
@@ -941,7 +941,7 @@
     },
     "zone": {
      "type": "string",
-     "description": "The preferred Compute Engine zone (e.g. us-centra1-a, us-central1-b, etc.)."
+     "description": "The preferred Compute Engine zone (e.g. us-central1-a, us-central1-b, etc.)."
     }
    }
   },

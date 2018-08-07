@@ -650,6 +650,10 @@
           "description": "Job is a Pig job.",
           "$ref": "PigJob"
         },
+        "sparkRJob": {
+          "description": "Job is a SparkR job.",
+          "$ref": "SparkRJob"
+        },
         "sparkSqlJob": {
           "description": "Job is a SparkSql job.",
           "$ref": "SparkSqlJob"
@@ -1011,6 +1015,49 @@
         }
       }
     },
+    "SparkRJob": {
+      "id": "SparkRJob",
+      "description": "A Cloud Dataproc job for running Apache SparkR (https:\/\/spark.apache.org\/docs\/latest\/sparkr.html) applications on YARN.",
+      "type": "object",
+      "properties": {
+        "mainRFileUri": {
+          "description": "Required. The HCFS URI of the main R file to use as the driver. Must be a .R file.",
+          "type": "string"
+        },
+        "args": {
+          "description": "Optional. The arguments to pass to the driver. Do not include arguments, such as --conf, that can be set as job properties, since a collision may occur that causes an incorrect job submission.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileUris": {
+          "description": "Optional. HCFS URIs of files to be copied to the working directory of R drivers and distributed tasks. Useful for naively parallel tasks.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "archiveUris": {
+          "description": "Optional. HCFS URIs of archives to be extracted in the working directory of of Spark drivers and tasks. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "description": "Optional. A mapping of property names to values, used to configure SparkR. Properties that conflict with values set by the Cloud Dataproc API may be overwritten. Can include properties set in \/etc\/spark\/conf\/spark-defaults.conf and classes in user code.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "loggingConfig": {
+          "description": "Optional. The runtime log config for job execution.",
+          "$ref": "LoggingConfig"
+        }
+      }
+    },
     "SparkSqlJob": {
       "id": "SparkSqlJob",
       "description": "A Cloud Dataproc job for running Apache Spark SQL (http:\/\/spark.apache.org\/sql\/) queries.",
@@ -1332,6 +1379,10 @@
         "pigJob": {
           "description": "Job is a Pig job.",
           "$ref": "PigJob"
+        },
+        "sparkRJob": {
+          "description": "Job is a SparkR job.",
+          "$ref": "SparkRJob"
         },
         "sparkSqlJob": {
           "description": "Job is a SparkSql job.",

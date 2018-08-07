@@ -28,9 +28,9 @@ import tarfile
 
 from apitools.base.py import encoding
 from docker import docker
-from googlecloudsdk.api_lib.app import util
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.command_lib.app import source_files_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -102,7 +102,7 @@ def _GetDockerignoreExclusions(source_dir, gen_files):
   return exclude
 
 
-def _GetIncludedPaths(source_dir, exclude, skip_files=None):
+def _GetIncludedPaths(source_dir, exclude, info=None):
   """Helper function to filter paths in root using dockerignore and skip_files.
 
   We iterate separately to filter on skip_files in order to preserve expected
@@ -112,8 +112,7 @@ def _GetIncludedPaths(source_dir, exclude, skip_files=None):
   Args:
     source_dir: the path to the root directory.
     exclude: the .dockerignore file exclusions.
-    skip_files: the regex for files to skip. If None, only dockerignore is used
-        to filter.
+    info: yaml_parsing.ServiceYamlInfo, used to calculate files to skip.
 
   Returns:
     Set of paths (relative to source_dir) to include.
@@ -123,14 +122,18 @@ def _GetIncludedPaths(source_dir, exclude, skip_files=None):
   root = os.path.abspath(source_dir)
   # Get set of all paths other than exclusions from dockerignore.
   paths = docker.utils.exclude_paths(root, exclude)
-  # Also filter on the ignore regex from the app.yaml.
-  if skip_files:
-    included_paths = set(util.FileIterator(source_dir, skip_files))
+  # Also filter on the ignore regex from .gcloudignore or skip_files.
+  if info:
+    skip_files = info.parsed.skip_files.regex
+    runtime = info.parsed.runtime if info.parsed.runtime else ''
+    included_paths = source_files_util.GetSourceFileIterator(
+        source_dir, skip_files, info.HasExplicitSkipFiles(), runtime,
+        info.env)
     paths.intersection_update(included_paths)
   return paths
 
 
-def UploadSource(source_dir, object_ref, gen_files=None, skip_files=None):
+def UploadSource(source_dir, object_ref, gen_files=None, info=None):
   """Upload a gzipped tarball of the source directory to GCS.
 
   Note: To provide parity with docker's behavior, we must respect .dockerignore.
@@ -141,8 +144,7 @@ def UploadSource(source_dir, object_ref, gen_files=None, skip_files=None):
       upload the source tarball to.
     gen_files: dict of filename to (str) contents of generated config and
       source context files.
-    skip_files: optional, a parsed regex for paths and files to skip, from
-      the service yaml.
+    info: yaml_parsing.ServiceYamlInfo, used to calculate files to skip.
 
   Raises:
     UploadFailedError: when the source fails to upload to GCS.
@@ -151,7 +153,7 @@ def UploadSource(source_dir, object_ref, gen_files=None, skip_files=None):
   dockerignore_contents = _GetDockerignoreExclusions(source_dir, gen_files)
   included_paths = _GetIncludedPaths(source_dir,
                                      dockerignore_contents,
-                                     skip_files)
+                                     info)
 
   # We can't use tempfile.NamedTemporaryFile here because ... Windows.
   # See https://bugs.python.org/issue14243. There are small cleanup races

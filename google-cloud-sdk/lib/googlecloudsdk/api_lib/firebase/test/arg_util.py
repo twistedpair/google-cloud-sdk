@@ -337,17 +337,18 @@ def AddIosTestArgs(parser):
       help="""\
       A list of ``DIMENSION=VALUE'' pairs which specify a target device to test
       against. This flag may be repeated to specify multiple devices. The device
-      dimensions are: *model* and *version*. If any dimensions are omitted, they
-      will use a default value. The default value for each dimension can be
-      found with the ``list'' command for that dimension, such as
-      `$ {parent_command} models list`. Omitting this flag entirely will run
-      tests against a single device using defaults for every dimension.
+      dimensions are: *model*, *version*, *locale*, and *orientation*. If any
+      dimensions are omitted, they will use a default value. The default value,
+      and all possible values, for each dimension can be found with the
+      ``list'' command for that dimension, such as `$ {parent_command} models
+      list`. Omitting this flag entirely will run tests against a single device
+      using defaults for every dimension.
 
       Examples:\n
       ```
       --device model=iphone8plus
       --device version=11.2
-      --device model=ipadmini4,version=11.2
+      --device model=ipadmini4,version=11.2,locale=zh_CN,orientation=landscape
       ```
       """)
   parser.add_argument(
@@ -436,12 +437,12 @@ def AddMatrixArgs(parser):
       help="""\
       A list of ``DIMENSION=VALUE'' pairs which specify a target device to test
       against. This flag may be repeated to specify multiple devices. The four
-      device dimensions are: *model*, *version*, *locale*, and
-      *orientation*. If any dimensions are omitted, they will use a default
-      value. The default value for each dimension can be found with the ``list''
-      command for that dimension, such as `$ {parent_command} models list`.
-      *--device* is now the preferred way to specify test devices and may not
-      be used in conjunction with *--devices-ids*, *--os-version-ids*,
+      device dimensions are: *model*, *version*, *locale*, and *orientation*. If
+      any dimensions are omitted, they will use a default value. The default
+      value, and all possible values, for each dimension can be found with the
+      ``list'' command for that dimension, such as `$ {parent_command} models
+      list`. *--device* is now the preferred way to specify test devices and may
+      not be used in conjunction with *--devices-ids*, *--os-version-ids*,
       *--locales*, or *--orientations*. Omitting all of the preceding
       dimension-related flags will run tests against a single device using
       defaults for all four device dimensions.

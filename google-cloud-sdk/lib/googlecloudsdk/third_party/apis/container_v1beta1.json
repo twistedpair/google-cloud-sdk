@@ -1098,11 +1098,11 @@
       "type": "object",
       "properties": {
         "network": {
-          "description": "Output only. The name of the Google Compute Engine\nnetwork(\/compute\/docs\/networks-and-firewalls#networks).\nExample: projects\/my-project\/global\/networks\/my-network",
+          "description": "Output only. The relative name of the Google Compute Engine\nnetwork(\/compute\/docs\/networks-and-firewalls#networks) to which\nthe cluster is connected.\nExample: projects\/my-project\/global\/networks\/my-network",
           "type": "string"
         },
         "subnetwork": {
-          "description": "Output only. The name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc).\nExample: projects\/my-project\/regions\/us-central1\/subnetworks\/my-subnet",
+          "description": "Output only. The relative name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc) to which the cluster is connected.\nExample: projects\/my-project\/regions\/us-central1\/subnetworks\/my-subnet",
           "type": "string"
         }
       }

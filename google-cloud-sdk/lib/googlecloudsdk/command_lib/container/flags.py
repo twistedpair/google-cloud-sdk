@@ -639,7 +639,7 @@ Enable node autorepair feature for a cluster's default node-pool(s).
 Node autorepair is enabled by default for clusters using COS as a base image.
 """
   help_text += """
-See https://cloud.google.com/kubernetes-engine/docs/node-auto-repair for \
+See https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-repair for \
 more info."""
 
   parser.add_argument(
@@ -662,7 +662,7 @@ Sets autoupgrade feature for a cluster's default node-pool(s).
   $ {command} example-cluster --enable-autoupgrade
 """
   help_text += """
-See https://cloud.google.com/kubernetes-engine/docs/node-managament for more \
+See https://cloud.google.com/kubernetes-engine/docs/node-management for more \
 info."""
 
   parser.add_argument(
@@ -785,6 +785,25 @@ instead, create or update your cluster with the option
       default=None,
       hidden=hidden,
       help=help_text)
+
+
+def AddAuthenticatorSecurityGroupFlags(parser, hidden=True):
+  """Adds --security-group to parser."""
+  help_text = """\
+The name of the RBAC security group for use with Google security groups
+in Kubernetes RBAC
+(https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
+
+To include group membership as part of the claims issued by Google
+during authentication, a group must be designated as a security group by
+including it as a direct member of this group.
+
+If unspecified, no groups will be returned for use with RBAC."""
+  parser.add_argument(
+      '--security-group',
+      help=help_text,
+      default=None,
+      hidden=hidden)
 
 
 def AddStartIpRotationFlag(parser, hidden=False):
@@ -1637,8 +1656,6 @@ resources is exported. A table will be created in the specified dataset to
 store cluster resource usage. The resulting table can be joined with BigQuery
 Billing Export to produce a fine-grained cost breakdown.
 
-Resource usage export to BigQuery is disabled if this flag is omitted.
-
 Example:
 
   $ {command} example-cluster --resource-usage-bigquery-dataset=example_bigquery_dataset_name
@@ -1646,12 +1663,10 @@ Example:
 
   group.add_argument(
       '--resource-usage-bigquery-dataset',
-      hidden=True,
       help=dataset_help_text)
 
   if add_clear_flag:
     group.add_argument(
         '--clear-resource-usage-bigquery-dataset',
         action='store_true',
-        hidden=True,
         help='Disables exporting cluster resource usage to BigQuery.')

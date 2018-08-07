@@ -703,10 +703,12 @@ class GenomicsProjectsOperationsListRequest(_messages.Message):
       determine if a   particular event has occurred. * error&#58; If the
       pipeline is running, this value is NULL.  Once the   pipeline finishes,
       the value is the standard Google error code. * labels.key or labels."key
-      with space" where key is a label key.  In v1 and v1alpha2, the following
-      filter fields are supported&#58;  * projectId&#58; Required. Corresponds
-      to   OperationMetadata.projectId. * createTime&#58; The time this job
-      was created, in seconds from the
+      with space" where key is a label key. * done&#58; If the pipeline is
+      running, this value is false. Once the   pipeline finishes, the value is
+      true.  In v1 and v1alpha2, the following filter fields are
+      supported&#58;  * projectId&#58; Required. Corresponds to
+      OperationMetadata.projectId. * createTime&#58; The time this job was
+      created, in seconds from the
       [epoch](http://en.wikipedia.org/wiki/Unix_time). Can use `>=` and/or
       `<=`   operators. * status&#58; Can be `RUNNING`, `SUCCESS`, `FAILURE`,
       or `CANCELED`. Only   one status may be specified. * labels.key where
@@ -1108,6 +1110,11 @@ class Pipeline(_messages.Message):
       also specify additional environment variables but cannot delete an entry
       from this map (though they can overwrite it with a different value).
     resources: The resources required for execution.
+    timeout: The maximum amount of time to give the pipeline to complete.
+      This includes the time spent waiting for a worker to be allocated.  If
+      the pipeline fails to complete before the timeout, it will be cancelled
+      and the error code will be set to DEADLINE_EXCEEDED.  If unspecified, it
+      will default to 7 days.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1140,6 +1147,7 @@ class Pipeline(_messages.Message):
   actions = _messages.MessageField('Action', 1, repeated=True)
   environment = _messages.MessageField('EnvironmentValue', 2)
   resources = _messages.MessageField('Resources', 3)
+  timeout = _messages.StringField(4)
 
 
 class PullStartedEvent(_messages.Message):

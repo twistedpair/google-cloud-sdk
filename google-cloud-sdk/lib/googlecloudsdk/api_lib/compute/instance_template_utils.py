@@ -102,8 +102,7 @@ def CreateNetworkInterfaceMessage(
 
 
 def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
-                                   network_interface_arg, region,
-                                   support_network_tier):
+                                   network_interface_arg, region):
   """Create network interface messages.
 
   Args:
@@ -112,7 +111,6 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
     messages: creates resources.
     network_interface_arg: CLI argument specifying network interfaces.
     region: region of the subnetwork.
-    support_network_tier: indicates if network tier is supported.
   Returns:
     list, items are NetworkInterfaceMessages.
   """
@@ -124,10 +122,7 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
       if address == '':
         address = EPHEMERAL_ADDRESS
 
-      if support_network_tier:
-        network_tier = interface.get('network-tier', None)
-      else:
-        network_tier = None
+      network_tier = interface.get('network-tier', None)
 
       result.append(CreateNetworkInterfaceMessage(
           resources, scope_lister, messages, interface.get('network', None),

@@ -23,7 +23,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 _DETAILED_SOURCE_SNAPSHOT_HELP = """\
-      A source snapshot used to create the disks. It is safe to
+      Source snapshot used to create the disks. It is safe to
       delete a snapshot after a disk has been created from the
       snapshot. In such cases, the disks will no longer reference
       the deleted snapshot. To get a list of snapshots in your
@@ -96,5 +96,5 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     plural=False,
     required=False,
     global_collection='compute.snapshots',
-    short_help='A source snapshot used to create the disks.',
+    short_help='Source snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_SNAPSHOT_HELP,)

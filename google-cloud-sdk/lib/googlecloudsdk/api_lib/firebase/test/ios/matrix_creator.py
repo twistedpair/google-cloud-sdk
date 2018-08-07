@@ -141,8 +141,8 @@ class MatrixCreator(object):
     return self._messages.IosDevice(
         iosModelId=device_map['model'],
         iosVersionId=device_map['version'],
-        locale='en_US',  # TODO(b/78015882): add real locale/orientation support
-        orientation='portrait')
+        locale=device_map['locale'],
+        orientation=device_map['orientation'])
 
   def _BuildTestMatrixRequest(self, request_id):
     """Build a TestingProjectsTestMatricesCreateRequest for a test matrix.

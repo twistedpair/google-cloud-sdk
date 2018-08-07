@@ -529,24 +529,3 @@ def ValidateDeviceList(args, catalog_mgr):
       device_spec['locale'] = catalog_mgr.GetDefaultLocale()
     if 'orientation' not in device_spec:
       device_spec['orientation'] = catalog_mgr.GetDefaultOrientation()
-
-
-def ValidateIosDeviceList(args, catalog_mgr):
-  """Validates that --device contains a valid set of iOS dimensions & values."""
-  if not args.device:
-    return
-
-  for device_spec in args.device:
-    for (dim, val) in device_spec.items():
-      device_spec[dim] = catalog_mgr.ValidateDimensionAndValue(dim, val)
-
-    # Fill in any missing dimensions with default dimension values
-    if 'model' not in device_spec:
-      device_spec['model'] = catalog_mgr.GetDefaultModel()
-    if 'version' not in device_spec:
-      device_spec['version'] = catalog_mgr.GetDefaultVersion()
-    # TODO(b/78015882): add proper support for locales and orientations
-    # if 'locale' not in device_spec:
-    #   device_spec['locale'] = catalog_mgr.GetDefaultLocale()
-    # if 'orientation' not in device_spec:
-    #   device_spec['orientation'] = catalog_mgr.GetDefaultOrientation()

@@ -21,10 +21,12 @@ from __future__ import unicode_literals
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import resource_arg_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
 
@@ -74,7 +76,8 @@ class DeclarativeArgumentGenerator(object):
                     static_fields=None,
                     resource_method_params=None,
                     use_relative_name=True,
-                    override_method=None):
+                    override_method=None,
+                    parse_resource_into_request=True):
     """Generates the request object for the method call from the parsed args.
 
     Args:
@@ -89,6 +92,8 @@ class DeclarativeArgumentGenerator(object):
       use_relative_name: Use ref.RelativeName() if True otherwise ref.Name().
       override_method: APIMethod, The method other than self.method, this is
         used when the command has more than one API call.
+      parse_resource_into_request: bool, True if the resource reference should
+        be automatically parsed into the request.
 
     Returns:
       The apitools message to be send to the method.
@@ -107,11 +112,12 @@ class DeclarativeArgumentGenerator(object):
       return message
 
     # For each method path field, get the value from the resource reference.
-    arg_utils.ParseResourceIntoMessage(
-        ref, self.method, message,
-        resource_method_params=resource_method_params,
-        request_id_field=self.resource_arg.request_id_field,
-        use_relative_name=use_relative_name)
+    if parse_resource_into_request:
+      arg_utils.ParseResourceIntoMessage(
+          ref, self.method, message,
+          resource_method_params=resource_method_params,
+          request_id_field=self.resource_arg.request_id_field,
+          use_relative_name=use_relative_name)
     return message
 
   def GetRequestResourceRef(self, namespace):
@@ -157,6 +163,22 @@ class DeclarativeArgumentGenerator(object):
     message = self.method.GetRequestType()
     return [arg.Generate(message) for arg in self.arg_info]
 
+  def _GetAnchorArgName(self):
+    """Get the anchor argument name for the resource spec."""
+    if self.resource_arg.name_override:
+      flag_name = self.resource_arg.name_override
+    elif hasattr(self.resource_spec, 'anchor'):
+      flag_name = self.resource_spec.anchor.name
+    else:
+      flag_name = self.resource_arg.name or self.resource_spec.name
+
+    anchor_arg_is_flag = (
+        not self.resource_arg.is_positional or self.method.IsList())
+    anchor_arg_name = (
+        '--' + flag_name if anchor_arg_is_flag
+        else flag_name)
+    return anchor_arg_name
+
   def _GenerateResourceArg(self):
     """Generates the flags to add to the parser that appear in the method path.
 
@@ -169,26 +191,26 @@ class DeclarativeArgumentGenerator(object):
     # The anchor arg is positional unless explicitly overridden by the
     # attributes or for list commands (where everything should be a flag since
     # the parent resource collection is being used).
-    anchor_arg_is_flag = (
-        not self.resource_arg.is_positional or self.method.IsList())
-    if self.resource_arg.name_override:
-      flag_name = self.resource_arg.name_override
-    else:
-      flag_name = self.resource_spec.anchor.name
-
-    anchor_arg_name = (
-        '--' + flag_name if anchor_arg_is_flag
-        else flag_name)
+    anchor_arg_name = self._GetAnchorArgName()
     no_gen = {n: '' for n in resource_arg_schema.IGNORED_FIELDS}
     no_gen.update({n: '' for n in self.resource_arg.removed_flags})
-    command_level_fallthroughs = self.resource_arg.command_level_fallthroughs
-    concept = concept_parsers.ConceptParser.ForResource(
+    command_level_fallthroughs = {}
+    concept_parsers.UpdateFallthroughsMap(
+        command_level_fallthroughs,
         anchor_arg_name,
-        self.resource_spec,
-        self.resource_arg.group_help,
-        prefixes=False,
-        required=True,
-        flag_name_overrides=no_gen,
+        self.resource_arg.command_level_fallthroughs)
+    presentation_spec_class = presentation_specs.ResourcePresentationSpec
+    if isinstance(self.resource_spec, multitype.MultitypeResourceSpec):
+      presentation_spec_class = (
+          presentation_specs.MultitypeResourcePresentationSpec)
+    concept = concept_parsers.ConceptParser(
+        [presentation_spec_class(
+            anchor_arg_name,
+            self.resource_spec,
+            self.resource_arg.group_help,
+            prefixes=False,
+            required=True,
+            flag_name_overrides=no_gen)],
         command_level_fallthroughs=command_level_fallthroughs)
     return [concept]
 
@@ -215,8 +237,11 @@ class DeclarativeArgumentGenerator(object):
     if not self.resource_arg:
       return
 
-    return arg_utils.GetFromNamespace(
-        namespace.CONCEPTS, self.resource_spec.anchor.name).Parse()
+    result = arg_utils.GetFromNamespace(
+        namespace.CONCEPTS, self._GetAnchorArgName()).Parse()
+    if isinstance(result, multitype.TypedConceptResult):
+      result = result.result
+    return result
 
 
 class AutoArgumentGenerator(object):

@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.container.binauthz import apis
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -68,47 +67,10 @@ def GetAuthorityNotePresentationSpec(group_help,
   )
 
 
-# TODO(b/110900216): Remove when migrating to v1alpha2.
-def _GetAuthorityResourceSpec():
-  return concepts.ResourceSpec(
-      'binaryauthorization.projects.attestationAuthorities',
-      resource_name='authority',
-      api_version=apis.V1_ALPHA1,
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
-      attestationAuthoritiesId=concepts.ResourceParameterAttributeConfig(
-          name='name',
-          help_text='The ID of the {resource}.',
-      )
-  )
-
-
-# TODO(b/110900216): Remove when migrating to v1alpha2.
-def GetAuthorityPresentationSpec(group_help,
-                                 base_name='authority',
-                                 required=True,
-                                 positional=True,
-                                 use_global_project_flag=True):
-  """Construct a resource spec for an attestation authority flag."""
-  flag_overrides = None
-  if not use_global_project_flag:
-    flag_overrides = {
-        'project': _FormatArgName('{}-project'.format(base_name), positional),
-    }
-  return presentation_specs_lib.ResourcePresentationSpec(
-      name=_FormatArgName(base_name, positional),
-      concept_spec=_GetAuthorityResourceSpec(),
-      group_help=group_help,
-      required=required,
-      flag_name_overrides=flag_overrides,
-  )
-
-
 def _GetAttestorResourceSpec():
   return concepts.ResourceSpec(
       'binaryauthorization.projects.attestors',
       resource_name='attestor',
-      # TODO(b/110900216): Remove when migrating to v1alpha2.
-      api_version=apis.V1_BETA1,
       projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
       attestorsId=concepts.ResourceParameterAttributeConfig(
           name='name',

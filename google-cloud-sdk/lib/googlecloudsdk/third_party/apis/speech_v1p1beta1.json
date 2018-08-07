@@ -557,6 +557,45 @@
         }
       }
     },
+    "ListLogDataStatsResponse": {
+      "id": "ListLogDataStatsResponse",
+      "description": "Message received by the client for the `ListLogDataStats` method.",
+      "type": "object",
+      "properties": {
+        "logDataEnabled": {
+          "description": "Output only. True if user has opted in for log data collection.",
+          "type": "boolean"
+        },
+        "logDataStats": {
+          "description": "The stats for each bucket.",
+          "type": "array",
+          "items": {
+            "$ref": "LogBucketStats"
+          }
+        },
+        "totalCount": {
+          "description": "The overall count for log data (including all bucket data).",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "LogBucketStats": {
+      "id": "LogBucketStats",
+      "description": "Stats for log data within a bucket.",
+      "type": "object",
+      "properties": {
+        "bucketName": {
+          "description": "The display name for the bucket in which logs are collected.",
+          "type": "string"
+        },
+        "count": {
+          "description": "Number of audio samples that have been collected in this bucket.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "Dataset": {
       "id": "Dataset",
       "description": "Specifies the parameters needed for creating a dataset. In addition this\nis also the message returned to the client by the `CreateDataset` method.\nIt is included in the `result.response` field of the `Operation`\nreturned by the `GetOperation` call of the `google::longrunning::Operations`\nservice.",
@@ -590,6 +629,10 @@
           "description": "Output only. Stats assoiated with the data.",
           "$ref": "DataStats"
         },
+        "hasSufficientData": {
+          "description": "Output only. True if the data is sufficient to create custom models.",
+          "type": "boolean"
+        },
         "blockingOperationIds": {
           "description": "Output only. All the blocking operations associated with this dataset.\nLike (pre-processing, training-model, testing-model)",
           "type": "array",
@@ -603,6 +646,16 @@
           "items": {
             "$ref": "Model"
           }
+        },
+        "createTime": {
+          "description": "Output only. The timestamp this dataset is created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp this dataset is last updated.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -856,6 +909,35 @@
       "resources": {
         "locations": {
           "resources": {
+            "log_data_stats": {
+              "methods": {
+                "list": {
+                  "id": "speech.projects.locations.log_data_stats.list",
+                  "path": "v1p1beta1/{+parent}/log_data_stats",
+                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data_stats",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Resource name of the parent. Has the format :-\n\"projects\/{project_id}\/locations\/{location_id}\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListLogDataStatsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List all log data stats associated with this project."
+                }
+              }
+            },
             "datasets": {
               "methods": {
                 "create": {

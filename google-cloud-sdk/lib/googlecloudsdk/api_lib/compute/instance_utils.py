@@ -402,8 +402,7 @@ def CreateNetworkInterfaceMessage(resources,
 
 
 def CreateNetworkInterfaceMessages(resources, compute_client,
-                                   network_interface_arg, instance_refs,
-                                   support_network_tier):
+                                   network_interface_arg, instance_refs):
   """Create network interface messages.
 
   Args:
@@ -412,7 +411,6 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
     network_interface_arg: CLI argument specyfying network interfaces.
     instance_refs: reference to instances that will own the generated
                    interfaces.
-    support_network_tier: indicates if network tier is supported.
   Returns:
     list, items are NetworkInterfaceMessages.
   """
@@ -421,10 +419,7 @@ def CreateNetworkInterfaceMessages(resources, compute_client,
     for interface in network_interface_arg:
       address = interface.get('address', None)
       no_address = 'no-address' in interface
-      if support_network_tier:
-        network_tier = interface.get('network-tier', None)
-      else:
-        network_tier = None
+      network_tier = interface.get('network-tier', None)
 
       result.append(CreateNetworkInterfaceMessage(
           resources, compute_client, interface.get('network', None),
@@ -512,7 +507,8 @@ def CreatePersistentAttachedDiskMessages(
 
 def CreatePersistentCreateDiskMessages(compute_client,
                                        resources, csek_keys, create_disks,
-                                       instance_ref, enable_kms=False):
+                                       instance_ref, enable_kms=False,
+                                       enable_snapshots=False):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
   Args:
@@ -528,9 +524,11 @@ def CreatePersistentCreateDiskMessages(compute_client,
              * image-family - the image family name,
              * image-project - the project name that has the image,
              * auto-delete - whether disks is deleted when VM is deleted,
-             * device-name - device name on VM.
+             * device-name - device name on VM,
+             * source-snapshot - the snapshot to initialize from.
     instance_ref: reference to the instance that will own the new disks.
     enable_kms: True if KMS keys are supported for the disk.
+    enable_snapshots: True if snapshot initialization is supported for the disk.
   Returns:
     list of API messages for attached disks
   """
@@ -563,7 +561,6 @@ def CreatePersistentCreateDiskMessages(compute_client,
 
       disk_type_uri = disk_type_ref.SelfLink()
     else:
-      disk_type_ref = None
       disk_type_uri = None
 
     img = disk.get('image')
@@ -597,16 +594,27 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if enable_kms:
       disk_key = kms_utils.MaybeGetKmsKeyFromDict(disk, messages, disk_key)
 
+    initialize_params = messages.AttachedDiskInitializeParams(
+        diskName=name,
+        sourceImage=image_uri,
+        diskSizeGb=disk_size_gb,
+        diskType=disk_type_uri,
+        sourceImageEncryptionKey=image_key)
+
+    if enable_snapshots:
+      snapshot_name = disk.get('source-snapshot')
+      attached_snapshot_uri = ResolveSnapshotURI(
+          snapshot=snapshot_name, user_project=instance_ref.project,
+          resource_parser=resources)
+      if attached_snapshot_uri:
+        initialize_params.sourceImage = None
+        initialize_params.sourceSnapshot = attached_snapshot_uri
+
     create_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=False,
         deviceName=disk.get('device-name'),
-        initializeParams=messages.AttachedDiskInitializeParams(
-            diskName=name,
-            sourceImage=image_uri,
-            diskSizeGb=disk_size_gb,
-            diskType=disk_type_uri,
-            sourceImageEncryptionKey=image_key),
+        initializeParams=initialize_params,
         mode=mode,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
         diskEncryptionKey=disk_key)
@@ -639,7 +647,7 @@ def CreateAcceleratorConfigMessages(msgs, accelerator_type_ref,
 def CreateDefaultBootAttachedDiskMessage(
     compute_client, resources, disk_type, disk_device_name, disk_auto_delete,
     disk_size_gb, require_csek_key_create, image_uri, instance_ref,
-    csek_keys=None, kms_args=None, enable_kms=False):
+    csek_keys=None, kms_args=None, enable_kms=False, snapshot_uri=None):
   """Returns an AttachedDisk message for creating a new boot disk."""
   messages = compute_client.messages
   compute = compute_client.apitools_client
@@ -654,7 +662,6 @@ def CreateDefaultBootAttachedDiskMessage(
         })
     disk_type_uri = disk_type_ref.SelfLink()
   else:
-    disk_type_ref = None
     disk_type_uri = None
 
   if csek_keys:
@@ -705,15 +712,21 @@ def CreateDefaultBootAttachedDiskMessage(
     if kms_key:
       kwargs_disk = {'diskEncryptionKey': kms_key}
 
+  initialize_params = messages.AttachedDiskInitializeParams(
+      sourceImage=image_uri,
+      diskSizeGb=disk_size_gb,
+      diskType=disk_type_uri,
+      **kwargs_init_parms)
+
+  if snapshot_uri:
+    initialize_params.sourceImage = None
+    initialize_params.sourceSnapshot = snapshot_uri
+
   return messages.AttachedDisk(
       autoDelete=disk_auto_delete,
       boot=True,
       deviceName=effective_boot_disk_name,
-      initializeParams=messages.AttachedDiskInitializeParams(
-          sourceImage=image_uri,
-          diskSizeGb=disk_size_gb,
-          diskType=disk_type_uri,
-          **kwargs_init_parms),
+      initializeParams=initialize_params,
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
       type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT,
       **kwargs_disk)
@@ -853,34 +866,7 @@ def GetInstanceRefs(args, client, holder):
 
 def GetNetworkInterfaces(
     args, client, holder, instance_refs, skip_defaults):
-  if (skip_defaults and not args.IsSpecified('network') and not
-      IsAnySpecified(
-          args, 'address', 'no_address', 'no_public_ptr',
-          'no_public_ptr_domain', 'private_network_ip', 'public_ptr',
-          'public_ptr_domain', 'subnet',)):
-    return []
-  return [
-      CreateNetworkInterfaceMessage(
-          resources=holder.resources,
-          compute_client=client,
-          network=args.network,
-          subnet=args.subnet,
-          private_network_ip=args.private_network_ip,
-          no_address=args.no_address,
-          address=args.address,
-          instance_refs=instance_refs,
-          no_public_ptr=args.no_public_ptr,
-          public_ptr=args.public_ptr,
-          no_public_ptr_domain=args.no_public_ptr_domain,
-          public_ptr_domain=args.public_ptr_domain,
-      )
-  ]
-
-
-def GetNetworkInterfacesBeta(args, client, holder, instance_refs,
-                             skip_defaults):
-  """Returns a list of network interface messages."""
-
+  """Get network interfaces."""
   if (skip_defaults and not args.IsSpecified('network') and not IsAnySpecified(
       args,
       'address',
@@ -1036,3 +1022,12 @@ def GetAccelerators(args, client, resource_parser, instance_ref):
     return CreateAcceleratorConfigMessages(
         client.messages, accelerator_type_ref, accelerator_count)
   return []
+
+
+def ResolveSnapshotURI(user_project, snapshot, resource_parser):
+  if user_project and snapshot and resource_parser:
+    snapshot_ref = resource_parser.Parse(snapshot,
+                                         collection='compute.snapshots',
+                                         params={'project': user_project})
+    return snapshot_ref.SelfLink()
+  return None

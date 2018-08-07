@@ -160,23 +160,23 @@ OPERATION_NAME = base.Argument('operation', help='Name of the operation.')
 CONFIG = base.Argument(
     '--config',
     help="""\
-Path to the job configuration file. The file should be a YAML document (JSON
+Path to the job configuration file. This file should be a YAML document (JSON
 also accepted) containing a Job resource as defined in the API (all fields are
 optional): https://cloud.google.com/ml/reference/rest/v1/projects.jobs
 
-If an option is specified both in the configuration file *and* via command line
+If an option is specified both in the configuration file **and** via command line
 arguments, the command line arguments override the configuration file.
 """)
 JOB_NAME = base.Argument('job', help='Name of the job.')
 MODULE_NAME = base.Argument(
     '--module-name',
     required=True,
-    help='Name of the module to run')
+    help='Name of the module to run.')
 PACKAGE_PATH = base.Argument(
     '--package-path',
     help="""\
 Path to a Python package to build. This should point to a directory containing
-the Python source for the job. It will be built using setuptools (which must be
+the Python source for the job. It will be built using *setuptools* (which must be
 installed) using its *parent* directory as context. If the parent directory
 contains a `setup.py` file, the build will use that; otherwise, it will use a
 simple built-in one.
@@ -199,7 +199,7 @@ MACHINE_TYPE = base.Argument(
     '--machine-type',
     required=False,
     help="""\
-The type of machine on which to serve the model. Currently only applies to
+Type of machine on which to serve the model. Currently only applies to
 online prediction. Currently supported machine_types are:
 
 * `mls1-c1-m2` - A virtual machine with 1 core and 2 Gb RAM (default).
@@ -209,7 +209,7 @@ ALPHA_MACHINE_TYPE = base.Argument(
     '--machine-type',
     required=False,
     help="""\
-The type of machine on which to serve the model. Currently only applies to
+Type of machine on which to serve the model. Currently only applies to
 online prediction. Currently supported machine_types are:
 
 * `mls1-c1-m2` - A virtual machine with 1 core and 2 Gb RAM (default).
@@ -236,10 +236,10 @@ def GetJobDirFlag(upload_help=True, allow_local=False):
     base.Argument() for the corresponding `--job-dir` flag.
   """
   help_ = """\
-A {dir_type} in which to store training outputs and other data
+{dir_type} in which to store training outputs and other data
 needed for training.
 
-This path will be passed to your TensorFlow program as `--job_dir` command-line
+This path will be passed to your TensorFlow program as the `--job_dir` command-line
 arg. The benefit of specifying this field is that Cloud ML Engine will validate
 the path for use in training.
 """.format(dir_type=('Google Cloud Storage path' +
@@ -278,8 +278,8 @@ VERSION_NAME = base.Argument('version', help='Name of the model version.')
 RUNTIME_VERSION = base.Argument(
     '--runtime-version',
     help=(
-        'The Google Cloud ML Engine runtime version for this job. Defaults '
-        'to a stable version, which is defined in the documentation along '
+        'Google Cloud ML Engine runtime version for this job. Defaults '
+        'to a stable version, which is defined in documentation along '
         'with the list of supported versions: '
         'https://cloud.google.com/ml-engine/docs/tensorflow/runtime-version-list'  # pylint: disable=line-too-long
     ))
@@ -320,7 +320,7 @@ FRAMEWORK_MAPPER = arg_utils.ChoiceEnumMapper(
 
 def AddPythonVersionFlag(parser, context):
   help_str = (
-      'The version of Python used {context}. If not set, the default '
+      'Version of Python used {context}. If not set, the default '
       'version is 2.7. Python 3.5 is available when `runtime_version` is '
       'set to 1.4 and above. Python 2.7 works with all supported runtime '
       'versions.').format(context=context)

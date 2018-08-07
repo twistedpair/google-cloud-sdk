@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.calliope.concepts import util as resource_util
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.apis import registry
@@ -54,7 +55,18 @@ IGNORED_FIELDS = {
 }
 
 
-class YAMLResourceArgument(object):
+class YAMLConceptArgument(object):
+
+  @classmethod
+  def FromData(cls, data):
+    if not data:
+      return None
+    if 'resources' in data['spec']:
+      return YAMLMultitypeResourceArgument.FromData(data)
+    return YAMLResourceArgument.FromData(data)
+
+
+class YAMLResourceArgument(YAMLConceptArgument):
   """Encapsulates the spec for the resource arg of a declarative command."""
 
   @classmethod
@@ -71,12 +83,33 @@ class YAMLResourceArgument(object):
         disable_auto_completers=data['spec'].get(
             'disable_auto_completers', True),
         arg_name=data.get('arg_name'),
-        command_level_fallthroughs=data.get('command_level_fallthroughs', {})
+        command_level_fallthroughs=data.get('command_level_fallthroughs', {}),
+        display_name_hook=data.get('display_name_hook')
     )
+
+  @classmethod
+  def FromSpecData(cls, data):
+    """Create a resource argument with no command-level information configured.
+
+    Given just the reusable resource specification (such as attribute names
+    and fallthroughs, it can be used to generate a ResourceSpec. Not suitable
+    for adding directly to a command as a solo argument.
+
+    Args:
+      data: the yaml resource definition.
+
+    Returns:
+      YAMLResourceArgument with no group help or flag name information.
+    """
+    if not data:
+      return None
+
+    return cls(data, None)
 
   def __init__(self, data, group_help, is_positional=True, removed_flags=None,
                is_parent_resource=False, disable_auto_completers=True,
-               arg_name=None, command_level_fallthroughs=None):
+               arg_name=None, command_level_fallthroughs=None,
+               display_name_hook=None):
     self.name = data['name'] if arg_name is None else arg_name
     self.name_override = arg_name
     self.request_id_field = data.get('request_id_field')
@@ -93,6 +126,8 @@ class YAMLResourceArgument(object):
     self._attribute_data = data['attributes']
     self._disable_auto_completers = disable_auto_completers
     self._plural_name = data.get('plural_name')
+    self.display_name_hook = (
+        util.Hook.FromPath(display_name_hook) if display_name_hook else None)
 
     attribute_names = [a['attribute_name'] for a in self._attribute_data]
     for removed in self.removed_flags:
@@ -268,3 +303,88 @@ def _CreateAttribute(data):
       completion_request_params=final_params)
 
   return (data['parameter_name'], attribute)
+
+
+class YAMLMultitypeResourceArgument(YAMLConceptArgument):
+  """Encapsulates the spec for the resource arg of a declarative command."""
+
+  @classmethod
+  def FromData(cls, data):
+    if not data:
+      return None
+
+    return cls(
+        data['spec'],
+        data['help_text'],
+        is_positional=data.get('is_positional', True),
+        is_parent_resource=data.get('is_parent_resource', False),
+        removed_flags=data.get('removed_flags'),
+        arg_name=data.get('arg_name'),
+        command_level_fallthroughs=data.get('command_level_fallthroughs', {}),
+        display_name_hook=data.get('display_name_hook')
+    )
+
+  def __init__(self, data, group_help, is_positional=True, removed_flags=None,
+               is_parent_resource=False, disable_auto_completers=True,
+               arg_name=None, command_level_fallthroughs=None,
+               display_name_hook=None):
+    self.name = data['name'] if arg_name is None else arg_name
+    self.name_override = arg_name
+    self.request_id_field = data.get('request_id_field')
+
+    self.group_help = group_help
+    self.is_positional = is_positional
+    self.is_parent_resource = is_parent_resource
+    self.removed_flags = removed_flags or []
+    self.command_level_fallthroughs = _GenerateFallthroughsMap(
+        command_level_fallthroughs)
+    self._plural_name = data.get('plural_name')
+    self._resources = data.get('resources') or []
+    if not disable_auto_completers:
+      raise ValueError('disable_auto_completers must be True for '
+                       'multitype resource argument [{}]'.format(self.name))
+    self.display_name_hook = (
+        util.Hook.FromPath(display_name_hook) if display_name_hook else None)
+
+  def GenerateResourceSpec(self, resource_collection=None):
+    """Creates a concept spec for the resource argument.
+
+    Args:
+      resource_collection: registry.APICollection, The collection that the
+        resource arg must be for. This simply does some extra validation to
+        ensure that resource arg is for the correct collection and api_version.
+        If not specified, the resource arg will just be loaded based on the
+        collection it specifies.
+
+    Returns:
+      multitype.MultitypeResourceSpec, The generated specification that can be
+      added to a parser.
+    """
+    name = self.name
+    resource_specs = []
+    collections = []
+    # Need to find a matching collection for validation, if the collection
+    # is specified.
+    for sub_resource in self._resources:
+      sub_resource_arg = YAMLResourceArgument.FromSpecData(sub_resource)
+      sub_resource_spec = sub_resource_arg.GenerateResourceSpec()
+      resource_specs.append(sub_resource_spec)
+      # pylint: disable=protected-access
+      collections.append((sub_resource_arg._full_collection_name,
+                          sub_resource_arg._api_version))
+      # pylint: enable=protected-access
+    if resource_collection:
+      resource_collection_tuple = (resource_collection.full_name,
+                                   resource_collection.api_version)
+      if (resource_collection_tuple not in collections and
+          (resource_collection_tuple[0], None) not in collections):
+        raise util.InvalidSchemaError(
+            'Collection names do not match for resource argument specification '
+            '[{}]. Expected [{} version {}], and no contained resources '
+            'matched. Given collections: [{}]'
+            .format(self.name, resource_collection.full_name,
+                    resource_collection.api_version,
+                    ', '.join(sorted(
+                        ['{} {}'.format(coll, vers)
+                         for (coll, vers) in collections]))))
+    return multitype.MultitypeResourceSpec(name, *resource_specs)

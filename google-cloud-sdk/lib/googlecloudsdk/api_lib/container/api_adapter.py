@@ -357,7 +357,8 @@ class CreateClusterOptions(object):
                enable_tpu=None,
                default_max_pods_per_node=None,
                enable_managed_pod_identity=None,
-               resource_usage_bigquery_dataset=None):
+               resource_usage_bigquery_dataset=None,
+               security_group=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -422,6 +423,7 @@ class CreateClusterOptions(object):
     self.default_max_pods_per_node = default_max_pods_per_node
     self.enable_managed_pod_identity = enable_managed_pod_identity
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
+    self.security_group = security_group
 
 
 class UpdateClusterOptions(object):
@@ -919,6 +921,13 @@ class APIAdapter(object):
       cluster.masterAuth.clientCertificateConfig = (
           self.messages.ClientCertificateConfig(
               issueClientCertificate=options.issue_client_certificate))
+
+    if options.security_group is not None:
+      # The presence of the --security_group="foo" flag implies enabled=True.
+      cluster.authenticatorGroupsConfig = (
+          self.messages.AuthenticatorGroupsConfig(
+              enabled=True,
+              securityGroup=options.security_group))
 
     self.ParseIPAliasOptions(options, cluster)
     self.ParseAllowRouteOverlapOptions(options, cluster)

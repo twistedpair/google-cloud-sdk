@@ -70,5 +70,5 @@ def TargetPoolArgumentForAddRemoveInstances(required=True, help_suffix='.'):
       required=required,
       regional_collection='compute.targetPools',
       short_help='The name of the target pool{0}'.format(help_suffix),
-      region_explanation=('If not specified it will be set the'
+      region_explanation=('If not specified, it will be set to the'
                           ' region of the instances.'))

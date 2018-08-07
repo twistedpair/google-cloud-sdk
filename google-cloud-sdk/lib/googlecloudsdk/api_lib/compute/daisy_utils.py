@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import time
+
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
@@ -39,6 +41,64 @@ from googlecloudsdk.core.console import console_io
 
 
 _BUILDER = 'gcr.io/compute-image-tools/daisy:release'
+
+
+class FilteredLogTailer(cb_logs.LogTailer):
+  """Subclass of LogTailer that allows for filtering."""
+
+  def _PrintLogLine(self, text):
+    """Override PrintLogLine method to use self.filter."""
+    if self.filter:
+      output_lines = text.splitlines()
+      for line in output_lines:
+        for match in self.filter:
+          if line.startswith(match):
+            self.out.Print(line)
+            break
+    else:
+      self.out.Print(text)
+
+
+class DaisyCloudBuildClient(cb_logs.CloudBuildClient):
+  """Subclass of CloudBuildClient that allows filtering."""
+
+  def StreamWithFilter(self, build_ref, output_filter=None):
+    """Stream the logs for a build using whitelist filter.
+
+    Args:
+      build_ref: Build reference, The build whose logs shall be streamed.
+      output_filter: List of strings, The output will only be shown if the
+        line starts with one of the strings in the list.
+
+    Raises:
+      NoLogsBucketException: If the build does not specify a logsBucket.
+
+    Returns:
+      Build message, The completed or terminated build as read for the final
+      poll.
+    """
+    build = self.GetBuild(build_ref)
+    log_tailer = FilteredLogTailer.FromBuild(build)
+    log_tailer.filter = output_filter
+
+    statuses = self.messages.Build.StatusValueValuesEnum
+    working_statuses = [
+        statuses.QUEUED,
+        statuses.WORKING,
+    ]
+
+    while build.status in working_statuses:
+      log_tailer.Poll()
+      time.sleep(1)
+      build = self.GetBuild(build_ref)
+
+    # Poll the logs one final time to ensure we have everything. We know this
+    # final poll will get the full log contents because GCS is strongly
+    # consistent and Container Builder waits for logs to finish pushing before
+    # marking the build complete.
+    log_tailer.Poll(is_last=True)
+
+    return build
 
 
 class FailedBuildException(core_exceptions.Error):
@@ -183,7 +243,7 @@ def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None):
 
 
 def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
-                  user_zone=None):
+                  user_zone=None, output_filter=None):
   """Run a build with Daisy on Google Cloud Builder.
 
   Args:
@@ -196,6 +256,9 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
     tags: A list of strings for adding tags to the Argo build.
     user_zone: The GCP zone to tell Daisy to do work in. If unspecified,
       defaults to wherever the Argo runner happens to be.
+    output_filter: A list of strings indicating what lines from the log should
+      be output. Only lines that start with one of the strings in output_filter
+      will be displayed.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -257,7 +320,8 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
 
   # Otherwise, logs are streamed from GCS.
   with execution_utils.CtrlCSection(mash_handler):
-    build = cb_logs.CloudBuildClient(client, messages).Stream(build_ref)
+    build = DaisyCloudBuildClient(client, messages).StreamWithFilter(
+        build_ref, output_filter=output_filter)
 
   if build.status == messages.Build.StatusValueValuesEnum.TIMEOUT:
     log.status.Print(

@@ -2181,12 +2181,13 @@ class NetworkConfig(_messages.Message):
   r"""NetworkConfig reports the relative names of network & subnetwork.
 
   Fields:
-    network: Output only. The name of the Google Compute Engine
-      network(/compute/docs/networks-and-firewalls#networks). Example:
-      projects/my-project/global/networks/my-network
-    subnetwork: Output only. The name of the Google Compute Engine
-      [subnetwork](/compute/docs/vpc). Example: projects/my-project/regions
-      /us-central1/subnetworks/my-subnet
+    network: Output only. The relative name of the Google Compute Engine
+      network(/compute/docs/networks-and-firewalls#networks) to which the
+      cluster is connected. Example: projects/my-project/global/networks/my-
+      network
+    subnetwork: Output only. The relative name of the Google Compute Engine
+      [subnetwork](/compute/docs/vpc) to which the cluster is connected.
+      Example: projects/my-project/regions/us-central1/subnetworks/my-subnet
   """
 
   network = _messages.StringField(1)

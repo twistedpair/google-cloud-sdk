@@ -12,13 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Library that handles importing files for Deployment Manager."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import glob
 import os
 import posixpath
 import re
@@ -26,6 +26,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.deployment_manager import exceptions
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import yaml
+import googlecloudsdk.core.properties
 from googlecloudsdk.core.util import files
 
 import requests
@@ -36,6 +37,7 @@ IMPORTS = 'imports'
 PATH = 'path'
 NAME = 'name'
 OUTPUTS = 'outputs'
+POSIX_PATH_SEPARATOR = '/'
 
 
 class _BaseImport(object):
@@ -199,6 +201,33 @@ class _ImportUrl(_BaseImport):
     return url
 
 
+def _SanitizeWindowsPathsGlobs(filename_list, native_separator=os.sep):
+  r"""Clean up path separators for globbing-resolved filenames.
+
+  Python's globbing library resolves wildcards with OS-native path separators,
+  however users could use POSIX paths even for configs in a Windows environment.
+  This can result in multi-separator-character paths where /foo/bar/* will
+  return a path match like /foo/bar\\baz.yaml.
+  This function will make paths separators internally consistent.
+
+  Args:
+    filename_list: List of filenames resolved using python's glob library.
+    native_separator: OS native path separator. Override for testing only.
+
+  Returns:
+    List of filenames edited to have consistent path separator characters.
+  """
+  if native_separator == POSIX_PATH_SEPARATOR:
+    return filename_list
+  sanitized_paths = []
+  for f in filename_list:
+    if POSIX_PATH_SEPARATOR in f:
+      sanitized_paths.append(f.replace(native_separator, POSIX_PATH_SEPARATOR))
+    else:
+      sanitized_paths.append(f)
+  return sanitized_paths
+
+
 def _IsUrl(resource_handle):
   """Returns true if the passed resource_handle is a url."""
   parsed = six.moves.urllib.parse.urlparse(resource_handle)
@@ -241,11 +270,17 @@ def _BuildImportObject(config=None, template=None,
                                'composite type was specified.')
 
 
-def _GetYamlImports(import_object):
+def _GetYamlImports(import_object, globbing_enabled=False):
   """Extract the import section of a file.
+
+  If the glob_imports config is set to true, expand any globs (e.g. *.jinja).
+  Named imports cannot be used with globs that expand to more than one file.
+  If globbing is disabled or a glob pattern does not expand to match any files,
+  importer will use the literal string as the file path.
 
   Args:
     import_object: The object in which to look for imports.
+    globbing_enabled: If true, will resolved glob patterns dynamically.
 
   Returns:
     A list of dictionary objects, containing the keys 'path' and 'name' for each
@@ -255,20 +290,46 @@ def _GetYamlImports(import_object):
    ConfigError: If we cannont read the file, the yaml is malformed, or
        the import object does not contain a 'path' field.
   """
+  prev_working_dir = os.getcwd()
+  parent_dir = None
+  if not _IsUrl(import_object.full_path):
+    parent_dir = os.path.dirname(import_object.full_path)
   content = import_object.GetContent()
   yaml_content = yaml.load(content)
   imports = []
   if yaml_content and IMPORTS in yaml_content:
-    imports = yaml_content[IMPORTS]
+    raw_imports = yaml_content[IMPORTS]
     # Validate the yaml imports, and make sure the optional name is set.
-    for i in imports:
+    for i in raw_imports:
       if PATH not in i:
         raise exceptions.ConfigError(
-            'Missing required field %s in import in file %s.'
-            % (PATH, import_object.full_path))
+            'Missing required field %s in import in file %s.' %
+            (PATH, import_object.full_path))
+      glob_matches = []
+      # Only expand globs if config set and the path is a local fs reference.
+      if globbing_enabled and parent_dir and not _IsUrl(i[PATH]):
+        # Briefly set our working dir to the root config's for resolving globs.
+        os.chdir(parent_dir)
+        # TODO(b/111880973): Replace with gcloud glob supporting ** wildcards.
+        glob_matches = glob.glob(i[PATH])
+        glob_matches = _SanitizeWindowsPathsGlobs(glob_matches)
+        os.chdir(prev_working_dir)
+        # Multiple file case.
+        if len(glob_matches) > 1:
+          if NAME in i:
+            raise exceptions.ConfigError(
+                ('Cannot use import name %s for path glob in file %s that'
+                 ' matches multiple objects.') % (i[NAME],
+                                                  import_object.full_path))
+          imports.extend([{NAME: g, PATH: g} for g in glob_matches])
+          continue
+      # Single file case. (URL, discrete file, or single glob match)
+      if len(glob_matches) == 1:
+        i[PATH] = glob_matches[0]
       # Populate the name field.
       if NAME not in i:
         i[NAME] = i[PATH]
+      imports.append(i)
   return imports
 
 
@@ -285,7 +346,10 @@ def _GetImportObjects(parent_object):
     ConfigError: If we cannont read the file, the yaml is malformed, or
        the import object does not contain a 'path' field.
   """
-  yaml_imports = _GetYamlImports(parent_object)
+  globbing_enabled = googlecloudsdk.core.properties.VALUES \
+      .deployment_manager.glob_imports.GetBool()
+  yaml_imports = _GetYamlImports(
+      parent_object, globbing_enabled=globbing_enabled)
 
   child_objects = []
 

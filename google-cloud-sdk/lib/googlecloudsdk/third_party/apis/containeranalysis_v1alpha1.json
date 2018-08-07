@@ -1308,7 +1308,7 @@
       "type": "object",
       "properties": {
         "publicKey": {
-          "description": "Public key of the builder which can be used to verify that the related\nfindings are valid and unchanged. If `key_type` is empty, this defaults\nto PEM encoded public keys.\n\nThis field may be empty if `key_id` references an external key.\n\nFor Cloud Container Builder based signatures, this is a PEM encoded public\nkey. To verify the Cloud Container Builder signature, place the contents of\nthis field into a file (public.pem). The signature field is base64-decoded\ninto its binary representation in signature.bin, and the provenance bytes\nfrom `BuildDetails` are base64-decoded into a binary representation in\nsigned.bin. OpenSSL can then verify the signature:\n`openssl sha256 -verify public.pem -signature signature.bin signed.bin`",
+          "description": "Public key of the builder which can be used to verify that the related\nfindings are valid and unchanged. If `key_type` is empty, this defaults\nto PEM encoded public keys.\n\nThis field may be empty if `key_id` references an external key.\n\nFor Cloud Build based signatures, this is a PEM encoded public\nkey. To verify the Cloud Build signature, place the contents of\nthis field into a file (public.pem). The signature field is base64-decoded\ninto its binary representation in signature.bin, and the provenance bytes\nfrom `BuildDetails` are base64-decoded into a binary representation in\nsigned.bin. OpenSSL can then verify the signature:\n`openssl sha256 -verify public.pem -signature signature.bin signed.bin`",
           "type": "string"
         },
         "signature": {
@@ -2540,7 +2540,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name of the ScanConfig in the form\nprojects\/{project_id}\/scanConfigs\/{scan_config_id}\ninstead.",
+                  "description": "The name of the ScanConfig in the form\nprojects\/{project_id}\/scanConfigs\/{scan_config_id}",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/scanConfigs\/[^\/]+$",
@@ -2565,7 +2565,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "This containers the project Id i.e.: projects\/{project_id}\ninstead.",
+                  "description": "This containers the project Id i.e.: projects\/{project_id}",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -2606,7 +2606,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The scan config to update of the form\nprojects\/{project_id}\/scanConfigs\/{scan_config_id}.\ninstead.",
+                  "description": "The scan config to update of the form\nprojects\/{project_id}\/scanConfigs\/{scan_config_id}.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/scanConfigs\/[^\/]+$",

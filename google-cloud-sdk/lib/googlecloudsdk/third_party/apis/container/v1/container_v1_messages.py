@@ -749,6 +749,7 @@ class Cluster(_messages.Message):
     network: The name of the Google Compute Engine [network](/compute/docs
       /networks-and-firewalls#networks) to which the cluster is connected. If
       left unspecified, the `default` network will be used.
+    networkConfig: Configuration for cluster networking.
     networkPolicy: Configuration options for the NetworkPolicy feature.
     nodeConfig: Parameters used in creating the cluster's nodes. See
       `nodeConfig` for the description of its properties. For requests, this
@@ -861,17 +862,18 @@ class Cluster(_messages.Message):
   monitoringService = _messages.StringField(25)
   name = _messages.StringField(26)
   network = _messages.StringField(27)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 28)
-  nodeConfig = _messages.MessageField('NodeConfig', 29)
-  nodeIpv4CidrSize = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 31, repeated=True)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 32)
-  selfLink = _messages.StringField(33)
-  servicesIpv4Cidr = _messages.StringField(34)
-  status = _messages.EnumField('StatusValueValuesEnum', 35)
-  statusMessage = _messages.StringField(36)
-  subnetwork = _messages.StringField(37)
-  zone = _messages.StringField(38)
+  networkConfig = _messages.MessageField('NetworkConfig', 28)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 29)
+  nodeConfig = _messages.MessageField('NodeConfig', 30)
+  nodeIpv4CidrSize = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 32, repeated=True)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 33)
+  selfLink = _messages.StringField(34)
+  servicesIpv4Cidr = _messages.StringField(35)
+  status = _messages.EnumField('StatusValueValuesEnum', 36)
+  statusMessage = _messages.StringField(37)
+  subnetwork = _messages.StringField(38)
+  zone = _messages.StringField(39)
 
 
 class ClusterStatus(_messages.Message):
@@ -2378,6 +2380,23 @@ class MetaV1Status(_messages.Message):
 
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   message = _messages.StringField(2)
+
+
+class NetworkConfig(_messages.Message):
+  r"""NetworkConfig reports the relative names of network & subnetwork.
+
+  Fields:
+    network: Output only. The relative name of the Google Compute Engine
+      network(/compute/docs/networks-and-firewalls#networks) to which the
+      cluster is connected. Example: projects/my-project/global/networks/my-
+      network
+    subnetwork: Output only. The relative name of the Google Compute Engine
+      [subnetwork](/compute/docs/vpc) to which the cluster is connected.
+      Example: projects/my-project/regions/us-central1/subnetworks/my-subnet
+  """
+
+  network = _messages.StringField(1)
+  subnetwork = _messages.StringField(2)
 
 
 class NetworkPolicy(_messages.Message):

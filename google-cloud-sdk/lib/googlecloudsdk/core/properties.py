@@ -251,6 +251,7 @@ class _Sections(object):
     self.container = _SectionContainer()
     self.core = _SectionCore()
     self.dataproc = _SectionDataproc()
+    self.deployment_manager = _SectionDeploymentManager()
     self.devshell = _SectionDevshell()
     self.emulator = _SectionEmulator()
     self.experimental = _SectionExperimental()
@@ -280,6 +281,7 @@ class _Sections(object):
         self.container,
         self.core,
         self.dataproc,
+        self.deployment_manager,
         self.devshell,
         self.emulator,
         self.experimental,
@@ -1295,6 +1297,19 @@ class _SectionDataproc(_Section):
             'from other Cloud Dataproc regions.'))
 
 
+class _SectionDeploymentManager(_Section):
+  """Contains the properties for the 'deployment_manager' section."""
+
+  def __init__(self):
+    super(_SectionDeploymentManager, self).__init__('deployment_manager')
+    self.glob_imports = self._AddBool(
+        'glob_imports',
+        default=False,
+        help_text=(
+            'Enable import path globbing. Uses glob patterns to match multiple '
+            'imports in a config file.'))
+
+
 class _SectionInteractive(_Section):
   """Contains the properties for the 'interactive' section."""
 
@@ -1433,6 +1448,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.discovery = self._Add('discovery')
     self.dns = self._Add('dns')
     self.file = self._Add('file')
+    self.firestore = self._Add('firestore')
     self.genomics = self._Add('genomics')
     self.iam = self._Add('iam')
     self.language = self._Add('language')

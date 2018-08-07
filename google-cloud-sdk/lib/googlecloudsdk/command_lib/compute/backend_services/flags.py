@@ -512,13 +512,21 @@ def AddPortName(parser):
       """)
 
 
-def AddProtocol(parser, default='HTTP', choices=None):
+def AddProtocol(parser, default='HTTP'):
   parser.add_argument(
       '--protocol',
-      choices=choices or ['HTTP', 'HTTPS', 'SSL', 'TCP', 'UDP'],
       default=default,
       type=lambda x: x.upper(),
-      help='The protocol for incoming requests.')
+      help="""\
+      Protocol for incoming requests.
+
+      If the load-balancing-scheme is `INTERNAL`, the protocol must be one of:
+      `TCP`, `UDP`.
+
+      If the load-balancing-scheme is `EXTERNAL`, the protocol must be one of:
+      `HTTP`, `HTTPS`, `HTTP2`, `SSL`, `TCP`, `UDP`.
+      """
+  )
 
 
 def AddConnectionDrainOnFailover(parser, default):

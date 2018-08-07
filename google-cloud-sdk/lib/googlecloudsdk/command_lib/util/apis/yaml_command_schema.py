@@ -103,6 +103,8 @@ class Request(object):
           'request.method was not specified and there is no default for this '
           'command type.')
     self.resource_method_params = data.get('resource_method_params', {})
+    self.parse_resource_into_request = data.get(
+        'parse_resource_into_request', True)
     self.static_fields = data.get('static_fields', {})
     self.modify_request_hooks = [
         util.Hook.FromPath(p) for p in data.get('modify_request_hooks', [])]
@@ -175,7 +177,7 @@ class Arguments(object):
   """Everything about cli arguments are registered in this section."""
 
   def __init__(self, data):
-    self.resource = resource_arg_schema.YAMLResourceArgument.FromData(
+    self.resource = resource_arg_schema.YAMLConceptArgument.FromData(
         data.get('resource'))
     self.additional_arguments_hook = util.Hook.FromData(
         data, 'additional_arguments_hook')

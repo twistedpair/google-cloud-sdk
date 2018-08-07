@@ -3389,15 +3389,16 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       scanning files that have not been modified since the last time the
       JobTrigger executed. This will be based on the time of the execution of
       the last run of the JobTrigger.
-    endTime: Exclude files newer than this value. If set to zero, no upper
-      time limit is applied.
-    startTime: Exclude files older than this value.
+    endTime: Exclude files or rows newer than this value. If set to zero, no
+      upper time limit is applied.
+    startTime: Exclude files or rows older than this value.
     timestampField: Specification of the field containing the timestamp of
-      scanned items. Required for data sources like Datastore or BigQuery. The
-      valid data types of the timestamp field are: for BigQuery - timestamp,
-      date, datetime; for Datastore - timestamp. Datastore entity will be
-      scanned if the timestamp property does not exist or its value is empty
-      or invalid.
+      scanned items. Used for data sources like Datastore or BigQuery. If not
+      specified for BigQuery, table last modification timestamp is checked
+      against given time span. The valid data types of the timestamp field
+      are: for BigQuery - timestamp, date, datetime; for Datastore -
+      timestamp. Datastore entity will be scanned if the timestamp property
+      does not exist or its value is empty or invalid.
   """
 
   enableAutoPopulationOfTimespanConfig = _messages.BooleanField(1)

@@ -73,9 +73,9 @@ apis:
         projects.zones.clusters:
           path: projects/{projectId}/zones/{zoneId}/clusters/{clusterId}
   binaryauthorization:
-    v1alpha1:
+    v1alpha2:
       default: true
-      discovery_doc: binaryauthorization_v1alpha1.json
+      discovery_doc: binaryauthorization_v1alpha2.json
       resources:
         projects.policy:
           path: projects/{projectsId}/policy

@@ -128,10 +128,10 @@ MAP = {
         ),
     },
     'binaryauthorization': {
-        'v1alpha1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.binaryauthorization.v1alpha1',
-            client_classpath='binaryauthorization_v1alpha1_client.BinaryauthorizationV1alpha1',
-            messages_modulepath='binaryauthorization_v1alpha1_messages',
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.binaryauthorization.v1alpha2',
+            client_classpath='binaryauthorization_v1alpha2_client.BinaryauthorizationV1alpha2',
+            messages_modulepath='binaryauthorization_v1alpha2_messages',
             default_version=True
         ),
         'v1beta1': APIDef(

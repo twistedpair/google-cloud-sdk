@@ -15,6 +15,8 @@
 """Interconnect."""
 
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
 
 
@@ -79,6 +81,11 @@ class Interconnect(object):
             self._messages.ComputeInterconnectsGetRequest(
                 project=self.ref.project, interconnect=self.ref.Name()))
 
+  def _MakeGetDiagnosticsRequestTuple(self):
+    return (self._client.interconnects, 'GetDiagnostics',
+            self._messages.ComputeInterconnectsGetDiagnosticsRequest(
+                project=self.ref.project, interconnect=self.ref.Name()))
+
   @property
   def _messages(self):
     return self._compute_client.messages
@@ -113,6 +120,13 @@ class Interconnect(object):
 
   def Describe(self, only_generate_request=False):
     requests = [self._MakeDescribeRequestTuple()]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def GetDiagnostics(self, only_generate_request=False):
+    requests = [self._MakeGetDiagnosticsRequestTuple()]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
       return resources[0]

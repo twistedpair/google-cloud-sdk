@@ -157,7 +157,6 @@ def FileIterator(base, skip_files):
     Paths of files found, relative to base.
   """
   dirs = ['']
-  contains_skipped_modules = False
 
   while dirs:
     current_dir = dirs.pop()
@@ -169,24 +168,14 @@ def FileIterator(base, skip_files):
       if os.path.isfile(fullname):
         if ShouldSkip(skip_files, name):
           log.info('Ignoring file [%s]: File matches ignore regex.', name)
-          contains_skipped_modules = True
         else:
           yield name
       elif os.path.isdir(fullname):
         if ShouldSkip(skip_files, name):
           log.info('Ignoring directory [%s]: Directory matches ignore regex.',
                    name)
-          contains_skipped_modules = True
         else:
           dirs.append(name)
-
-  if contains_skipped_modules:
-    log.status.Print(
-        'Some files were skipped. Pass `--verbosity=info` to see which ones.')
-    log_path = log.GetLogFilePath()
-    if log_path:
-      log.status.Print(('You may also view the gcloud log file, found at\n'
-                        '[{0}].').format(log_path))
 
 
 def RetryWithBackoff(func, retry_notify_func,

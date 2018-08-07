@@ -5,6 +5,49 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 211.0.0 (2018-08-07)
+
+### App Engine
+
+* Removed automated app.yaml generation from `gcloud app deploy`. The deprecated
+  `gcloud beta app gen-config` command is still available separately for now.
+* `gcloud app deploy` now supports `.gcloudignore` for all deployments.
+   `.gcloudignore` supersedes the `skip_files` section in app.yaml. Read more
+   about `.gcloudignore` by running `gcloud topic gcloudignore`.
+
+### Cloud Datastore
+
+* Added `gcloud beta datastore indexes describe`.
+* Added `gcloud beta datastore indexes list`.
+
+### Cloud Deployment Manager
+
+*   Added config key which enables globbing in the `gcloud deployment-manager deployments <create|update>` command. Config files can now use glob patterns in import paths.
+    *   This feature can be enabled by setting the config property `deployment_manager/glob_imports` to true: `gcloud config set deployment_manager/glob_imports True`.
+    *   Imports with a path pattern that match multiple files cannot be named.
+    *   When referencing a template in a resource type field, its full name is still required.
+    *   More information on globbing is available at <http://man7.org/linux/man-pages/man7/glob.7.html>.
+    *   More information on deployment-manager configurations is available at <https://cloud.google.com/deployment-manager/docs/configuration/>.
+
+### Cloud Services
+
+* gcloud beta services disable now supports force option. If specified, the
+  disable call will proceed even if there are enabled services which depend on
+  the service to be disabled. Forcing the call means that the services which
+  depend on the service to be disabled will also be disabled.
+* Promoted `gcloud services vpc-peerings` to beta.
+
+### Compute Engine
+
+* Promoted `--network-tier` flag of `gcloud compute <addresses|forwarding-rules> create` to GA.
+* Promoted `--default-network-tier` flag of `gcloud compute project-info update` to GA.
+* Promoted `--network-tier` flag of `gcloud compute instances <add-access-config|create>` to GA.
+* Promoted `--network-tier` flag of `gcloud compute instance-templates <create>` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 210.0.0 (2018-07-31)
 
 ### Breaking Changes

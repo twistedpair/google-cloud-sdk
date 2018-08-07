@@ -1844,6 +1844,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       disks.
 
   Fields:
+    description: An optional description. Provide this property when creating
+      the disk.
     diskName: Specifies the disk name. If not specified, the default is to use
       the name of the instance. If the disk with the instance name exists
       already in the given zone/region, a new name will be automatically
@@ -1929,15 +1931,16 @@ class AttachedDiskInitializeParams(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  diskName = _messages.StringField(1)
-  diskSizeGb = _messages.IntegerField(2)
-  diskStorageType = _messages.EnumField('DiskStorageTypeValueValuesEnum', 3)
-  diskType = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  sourceImage = _messages.StringField(6)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
-  sourceSnapshot = _messages.StringField(8)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
+  description = _messages.StringField(1)
+  diskName = _messages.StringField(2)
+  diskSizeGb = _messages.IntegerField(3)
+  diskStorageType = _messages.EnumField('DiskStorageTypeValueValuesEnum', 4)
+  diskType = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  sourceImage = _messages.StringField(7)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
+  sourceSnapshot = _messages.StringField(9)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
 
 
 class AuditConfig(_messages.Message):

@@ -87,13 +87,11 @@ def GetGlobalTarget(resources, args, include_alpha=False):
     return flags.TARGET_TCP_PROXY_ARG.ResolveAsResource(args, resources)
 
 
-def _ValidateRegionalArgs(args, allow_global_target, include_alpha=False):
+def _ValidateRegionalArgs(args, include_alpha=False):
   """Validate the regional forwarding rules args.
 
   Args:
       args: The arguments given to the create/set-target command.
-      allow_global_target: True if the regional forwarding rule can have global
-      target in current api version.
       include_alpha: Should alpha functionality be included?
   """
 
@@ -106,24 +104,6 @@ def _ValidateRegionalArgs(args, allow_global_target, include_alpha=False):
   # rule can have global target. The request may not specify network tier
   # because it can be set as default project setting, so here let backend do
   # validation.
-  if not allow_global_target:
-    if args.target_http_proxy:
-      raise exceptions.ToolException(
-          'You cannot specify [--target-http-proxy] for a regional '
-          'forwarding rule.')
-    if getattr(args, 'target_https_proxy', None):
-      raise exceptions.ToolException(
-          'You cannot specify [--target-https-proxy] for a regional '
-          'forwarding rule.')
-    if getattr(args, 'target_ssl_proxy', None):
-      raise exceptions.ToolException(
-          'You cannot specify [--target-ssl-proxy] for a regional '
-          'forwarding rule.')
-    if getattr(args, 'target_tcp_proxy', None):
-      raise exceptions.ToolException(
-          'You cannot specify [--target-tcp-proxy] for a regional '
-          'forwarding rule.')
-
   if args.target_instance_zone and not args.target_instance:
     raise exceptions.ToolException(
         'You cannot specify [--target-instance-zone] unless you are '
@@ -151,10 +131,9 @@ def GetRegionalTarget(client,
                       resources,
                       args,
                       forwarding_rule_ref=None,
-                      allow_global_target=False,
                       include_alpha=False):
   """Return the forwarding target for a regionally scoped request."""
-  _ValidateRegionalArgs(args, allow_global_target, include_alpha)
+  _ValidateRegionalArgs(args, include_alpha)
   if forwarding_rule_ref:
     region_arg = forwarding_rule_ref.region
     project_arg = forwarding_rule_ref.project

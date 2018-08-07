@@ -314,14 +314,14 @@ class BuildSignature(_messages.Message):
     publicKey: Public key of the builder which can be used to verify that the
       related findings are valid and unchanged. If `key_type` is empty, this
       defaults to PEM encoded public keys.  This field may be empty if
-      `key_id` references an external key.  For Cloud Container Builder based
-      signatures, this is a PEM encoded public key. To verify the Cloud
-      Container Builder signature, place the contents of this field into a
-      file (public.pem). The signature field is base64-decoded into its binary
-      representation in signature.bin, and the provenance bytes from
-      `BuildDetails` are base64-decoded into a binary representation in
-      signed.bin. OpenSSL can then verify the signature: `openssl sha256
-      -verify public.pem -signature signature.bin signed.bin`
+      `key_id` references an external key.  For Cloud Build based signatures,
+      this is a PEM encoded public key. To verify the Cloud Build signature,
+      place the contents of this field into a file (public.pem). The signature
+      field is base64-decoded into its binary representation in signature.bin,
+      and the provenance bytes from `BuildDetails` are base64-decoded into a
+      binary representation in signed.bin. OpenSSL can then verify the
+      signature: `openssl sha256 -verify public.pem -signature signature.bin
+      signed.bin`
     signature: Signature of the related `BuildProvenance`, encoded in a base64
       string.
   """
@@ -720,7 +720,7 @@ class ContaineranalysisProjectsScanConfigsGetRequest(_messages.Message):
 
   Fields:
     name: The name of the ScanConfig in the form
-      projects/{project_id}/scanConfigs/{scan_config_id} instead.
+      projects/{project_id}/scanConfigs/{scan_config_id}
   """
 
   name = _messages.StringField(1, required=True)
@@ -734,7 +734,6 @@ class ContaineranalysisProjectsScanConfigsListRequest(_messages.Message):
     pageSize: The number of items to return.
     pageToken: The page token to use for the next request.
     parent: This containers the project Id i.e.: projects/{project_id}
-      instead.
   """
 
   filter = _messages.StringField(1)
@@ -748,7 +747,7 @@ class ContaineranalysisProjectsScanConfigsPatchRequest(_messages.Message):
 
   Fields:
     name: The scan config to update of the form
-      projects/{project_id}/scanConfigs/{scan_config_id}. instead.
+      projects/{project_id}/scanConfigs/{scan_config_id}.
     scanConfig: A ScanConfig resource to be passed as the request body.
     updateMask: The fields to update.
   """

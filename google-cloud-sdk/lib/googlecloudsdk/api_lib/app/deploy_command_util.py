@@ -424,8 +424,7 @@ def BuildAndPushDockerImage(
 
   try:
     cloud_build.UploadSource(image.dockerfile_dir, object_ref,
-                             gen_files=gen_files,
-                             skip_files=service.parsed.skip_files.regex)
+                             gen_files=gen_files, info=service)
   except (OSError, IOError) as err:
     if platforms.OperatingSystem.IsWindows():
       if err.filename and len(err.filename) > _WINDOWS_MAX_PATH:

@@ -164,6 +164,28 @@ def LoadCommonType(impl_paths, path, release_track,
       impl_paths[0], release_track, implementations)()
 
 
+def Cache(func):
+  cached_results = {}
+  def ReturnCachedOrCallFunc(*args):
+    try:
+      return cached_results[args]
+    except KeyError:
+      result = func(*args)
+      cached_results[args] = result
+      return result
+  return ReturnCachedOrCallFunc
+
+
+@Cache
+def _SafeLoadYamlFile(path):
+  return yaml.safe_load(pkg_resources.GetResourceFromFile(path))
+
+
+@Cache
+def _CustomLoadYamlFile(path):
+  return CreateYamlLoader(path).load(pkg_resources.GetResourceFromFile(path))
+
+
 def _GetAllImplementations(impl_paths, path, construction_id, is_command,
                            yaml_command_translator):
   """Gets all the release track command implementations.
@@ -200,8 +222,7 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
         raise CommandLoadFailure(
             '.'.join(path),
             Exception('Command groups cannot be implemented in yaml'))
-      data = CreateYamlLoader(impl_file).load(
-          pkg_resources.GetResourceFromFile(impl_file))
+      data = _CustomLoadYamlFile(impl_file)
       implementations.extend((_ImplementationsFromYaml(
           path, data, yaml_command_translator)))
     else:
@@ -224,9 +245,10 @@ def CreateYamlLoader(impl_path):
   # TODO(b/64147277) Allow for importing from other places.
   common_file_path = os.path.join(os.path.dirname(impl_path), '__init__.yaml')
   common_data = None
-  if os.path.exists(common_file_path):
-    common_data = yaml.safe_load(
-        pkg_resources.GetResourceFromFile(common_file_path))
+  try:
+    common_data = _SafeLoadYamlFile(common_file_path)
+  except IOError:
+    pass
 
   class Constructor(yaml.Constructor):
     """A custom yaml constructor.
@@ -374,7 +396,7 @@ def CreateYamlLoader(impl_path):
       yaml_path = os.path.join(root, *parts[0].split('.'))
       yaml_path += '.yaml'
       try:
-        data = yaml.safe_load(pkg_resources.GetResourceFromFile(yaml_path))
+        data = _SafeLoadYamlFile(yaml_path)
       except IOError as e:
         raise LayoutException(
             'Failed to load Yaml reference file [{}]: {}'.format(yaml_path, e))

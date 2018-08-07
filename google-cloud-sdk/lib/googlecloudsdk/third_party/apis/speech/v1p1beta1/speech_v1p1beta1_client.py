@@ -37,6 +37,7 @@ class SpeechV1p1beta1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
+    self.projects_locations_log_data_stats = self.ProjectsLocationsLogDataStatsService(self)
     self.projects_locations_models = self.ProjectsLocationsModelsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -172,6 +173,43 @@ a `Dataset` message.
         request_field='',
         request_type_name=u'SpeechProjectsLocationsDatasetsListRequest',
         response_type_name=u'ListDatasetsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLogDataStatsService(base_api.BaseApiService):
+    """Service class for the projects_locations_log_data_stats resource."""
+
+    _NAME = u'projects_locations_log_data_stats'
+
+    def __init__(self, client):
+      super(SpeechV1p1beta1.ProjectsLocationsLogDataStatsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List all log data stats associated with this project.
+
+      Args:
+        request: (SpeechProjectsLocationsLogDataStatsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLogDataStatsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data_stats',
+        http_method=u'GET',
+        method_id=u'speech.projects.locations.log_data_stats.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+parent}/log_data_stats',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsLogDataStatsListRequest',
+        response_type_name=u'ListLogDataStatsResponse',
         supports_download=False,
     )
 

@@ -69,11 +69,14 @@ class Dataset(_messages.Message):
   Fields:
     blockingOperationIds: Output only. All the blocking operations associated
       with this dataset. Like (pre-processing, training-model, testing-model)
+    createTime: Output only. The timestamp this dataset is created.
     dataProcessingRegion: Location where the data should be processed. If not
       specified then we will pick a location on behalf of the user for storing
       and processing the data. Currently only us-central is supported.
     dataStats: Output only. Stats assoiated with the data.
     displayName: Required. Name of the data set for display.
+    hasSufficientData: Output only. True if the data is sufficient to create
+      custom models.
     languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Example: "en-US". See [Language
@@ -84,6 +87,7 @@ class Dataset(_messages.Message):
     name: Output only. Resource name of the dataset. Form :-
       '/projects/{project_number}/locations/{location_id}/datasets/{dataset_id
       }'
+    updateTime: Output only. The timestamp this dataset is last updated.
     uri: URI that points to a file in csv file where each row has following
       format. <gs_path_to_audio>,<gs_path_to_transcript>,<label> label can be
       HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row to be
@@ -106,14 +110,17 @@ class Dataset(_messages.Message):
   """
 
   blockingOperationIds = _messages.StringField(1, repeated=True)
-  dataProcessingRegion = _messages.StringField(2)
-  dataStats = _messages.MessageField('DataStats', 3)
-  displayName = _messages.StringField(4)
-  languageCode = _messages.StringField(5)
-  models = _messages.MessageField('Model', 6, repeated=True)
-  name = _messages.StringField(7)
-  uri = _messages.StringField(8)
-  useLoggedData = _messages.BooleanField(9)
+  createTime = _messages.StringField(2)
+  dataProcessingRegion = _messages.StringField(3)
+  dataStats = _messages.MessageField('DataStats', 4)
+  displayName = _messages.StringField(5)
+  hasSufficientData = _messages.BooleanField(6)
+  languageCode = _messages.StringField(7)
+  models = _messages.MessageField('Model', 8, repeated=True)
+  name = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  uri = _messages.StringField(11)
+  useLoggedData = _messages.BooleanField(12)
 
 
 class DeployModelRequest(_messages.Message):
@@ -179,6 +186,21 @@ class ListDatasetsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLogDataStatsResponse(_messages.Message):
+  r"""Message received by the client for the `ListLogDataStats` method.
+
+  Fields:
+    logDataEnabled: Output only. True if user has opted in for log data
+      collection.
+    logDataStats: The stats for each bucket.
+    totalCount: The overall count for log data (including all bucket data).
+  """
+
+  logDataEnabled = _messages.BooleanField(1)
+  logDataStats = _messages.MessageField('LogBucketStats', 2, repeated=True)
+  totalCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class ListModelsResponse(_messages.Message):
   r"""A ListModelsResponse object.
 
@@ -190,6 +212,18 @@ class ListModelsResponse(_messages.Message):
 
   models = _messages.MessageField('Model', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class LogBucketStats(_messages.Message):
+  r"""Stats for log data within a bucket.
+
+  Fields:
+    bucketName: The display name for the bucket in which logs are collected.
+    count: Number of audio samples that have been collected in this bucket.
+  """
+
+  bucketName = _messages.StringField(1)
+  count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class LongRunningRecognizeRequest(_messages.Message):
@@ -827,6 +861,17 @@ class SpeechProjectsLocationsDatasetsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class SpeechProjectsLocationsLogDataStatsListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsLogDataStatsListRequest object.
+
+  Fields:
+    parent: Required. Resource name of the parent. Has the format :-
+      "projects/{project_id}/locations/{location_id}"
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class SpeechProjectsLocationsModelsCreateRequest(_messages.Message):

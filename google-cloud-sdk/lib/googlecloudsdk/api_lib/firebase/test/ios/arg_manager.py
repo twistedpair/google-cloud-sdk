@@ -132,7 +132,7 @@ class IosArgsManager(object):
     arg_validate.ValidateArgsForTestType(args, test_type, self._typed_arg_rules,
                                          self._shared_arg_rules,
                                          all_test_args_set)
-    arg_validate.ValidateIosDeviceList(args, self._catalog_mgr)
+    arg_validate.ValidateDeviceList(args, self._catalog_mgr)
     arg_validate.ValidateResultsBucket(args)
     arg_validate.ValidateResultsDir(args)
 

@@ -115,7 +115,10 @@ DEFAULT_PARAMS = {'project': properties.VALUES.core.project.Get,
 
 def GetFromNamespace(namespace, arg_name, fallback=None, use_defaults=False):
   """Gets the given argument from the namespace."""
-  value = getattr(namespace, arg_name.replace('-', '_'), None)
+  if arg_name.startswith('--'):
+    arg_name = arg_name[2:]
+  normalized_arg_name = arg_name.replace('-', '_')
+  value = getattr(namespace, normalized_arg_name, None)
   if not value and fallback:
     value = fallback()
   if not value and use_defaults:

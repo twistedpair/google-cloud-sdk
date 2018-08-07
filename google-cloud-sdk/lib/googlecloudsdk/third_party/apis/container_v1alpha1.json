@@ -307,6 +307,10 @@
           "description": "Configuration for private cluster.",
           "$ref": "PrivateClusterConfig"
         },
+        "databaseEncryption": {
+          "description": "Configuration of etcd encryption.",
+          "$ref": "DatabaseEncryption"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -399,7 +403,7 @@
           "type": "string"
         },
         "databaseEncryptionKeyId": {
-          "description": "ResourceID of a CloudKMS key to be used for the encryption of secrets in\netcd. Ex.\nprojects\/kms-project\/locations\/global\/keyRings\/ring-1\/cryptoKeys\/key-1",
+          "description": "Resource name of a CloudKMS key to be used for the encryption of secrets in\netcd. Ex.\nprojects\/kms-project\/locations\/global\/keyRings\/ring-1\/cryptoKeys\/key-1\nDeprecated, use database_encryption instead.",
           "type": "string"
         },
         "conditions": {
@@ -1274,15 +1278,15 @@
       "type": "object",
       "properties": {
         "network": {
-          "description": "Output only. The name of the Google Compute Engine\nnetwork(\/compute\/docs\/networks-and-firewalls#networks).",
+          "description": "Output only. The relative name of the Google Compute Engine\nnetwork(\/compute\/docs\/networks-and-firewalls#networks) to which\nthe cluster is connected.\nExample: projects\/my-project\/global\/networks\/my-network",
           "type": "string"
         },
         "subnetwork": {
-          "description": "Output only. The name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc).",
+          "description": "Output only. The relative name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc) to which the cluster is connected.\nExample: projects\/my-project\/regions\/us-central1\/subnetworks\/my-subnet",
           "type": "string"
         },
         "enableSharedNetwork": {
-          "description": "Enable the ability to reference subnets belonging to other projects.",
+          "description": "Deprecated: This flag doesn't need to be flipped for using shared VPC and\nit has no effect.",
           "type": "boolean"
         }
       }
@@ -1373,6 +1377,31 @@
         },
         "publicEndpoint": {
           "description": "Output only. The external IP address of this cluster's endpoint.",
+          "type": "string"
+        }
+      }
+    },
+    "DatabaseEncryption": {
+      "id": "DatabaseEncryption",
+      "description": "Configuration of etcd encryption.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Denotes the state of etcd encryption.",
+          "enumDescriptions": [
+            "Should never be set",
+            "Secrets in etcd are encrypted.",
+            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to GCE level full disk encryption."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "ENCRYPTED",
+            "DECRYPTED"
+          ]
+        },
+        "keyName": {
+          "description": "Name of CloudKMS key to use for the encryption of secrets in etcd.\nEx. projects\/my-project\/locations\/global\/keyRings\/my-ring\/cryptoKeys\/my-key",
           "type": "string"
         }
       }
@@ -1734,6 +1763,10 @@
         "desiredImageProject": {
           "description": "The project containing the desired image to use for this node.\nThis is used to create clusters using a custom image.",
           "type": "string"
+        },
+        "desiredDatabaseEncryption": {
+          "description": "Configuration of etcd encryption.",
+          "$ref": "DatabaseEncryption"
         }
       }
     },

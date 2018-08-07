@@ -243,6 +243,10 @@
           "description": "Configure the maintenance policy for this cluster.",
           "$ref": "MaintenancePolicy"
         },
+        "networkConfig": {
+          "description": "Configuration for cluster networking.",
+          "$ref": "NetworkConfig"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -918,6 +922,21 @@
         },
         "duration": {
           "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.\nDuration will be in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt)\nformat \"PTnHnMnS\".",
+          "type": "string"
+        }
+      }
+    },
+    "NetworkConfig": {
+      "id": "NetworkConfig",
+      "description": "NetworkConfig reports the relative names of network & subnetwork.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Output only. The relative name of the Google Compute Engine\nnetwork(\/compute\/docs\/networks-and-firewalls#networks) to which\nthe cluster is connected.\nExample: projects\/my-project\/global\/networks\/my-network",
+          "type": "string"
+        },
+        "subnetwork": {
+          "description": "Output only. The relative name of the Google Compute Engine\n[subnetwork](\/compute\/docs\/vpc) to which the cluster is connected.\nExample: projects\/my-project\/regions\/us-central1\/subnetworks\/my-subnet",
           "type": "string"
         }
       }

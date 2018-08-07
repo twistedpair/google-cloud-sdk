@@ -586,23 +586,26 @@ def GetFlags(arg, optional=False):
   if optional:
     flags.add('--help')
 
-  def _GetFlagsHelper(arg):
+  def _GetFlagsHelper(arg, level=0, required=True):
     """GetFlags() helper that adds to flags."""
     if arg.is_hidden:
       return
     if arg.is_group:
+      if level and required:
+        # level==0 is always required
+        required = arg.is_required
       for arg in arg.arguments:
-        _GetFlagsHelper(arg)
+        _GetFlagsHelper(arg, level=level + 1, required=required)
     else:
       show_inverted = getattr(arg, 'show_inverted', None)
       if show_inverted:
         arg = show_inverted
+      # A singleton optional flag in a required group is technically required
+      # but is treated as optional here. We shouldn't see this in practice.
       if (arg.option_strings and
           not arg.is_positional and
           not arg.is_global and
-          (not optional or (
-              not getattr(arg, 'is_required', False) and
-              not getattr(arg, 'required', False)))):
+          (not optional or not required or not arg.is_required)):
         flags.add(sorted(arg.option_strings)[0])
 
   _GetFlagsHelper(arg)

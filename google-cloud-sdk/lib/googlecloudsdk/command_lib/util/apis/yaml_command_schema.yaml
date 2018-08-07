@@ -124,6 +124,50 @@ definitions:
            fieldName: {type: string}
            value: {type: string}
 
+  resource_spec:
+    type: object
+    additionalProperties: false
+    required: [name, collection, attributes]
+    properties:
+      # The name of the resource argument, used for messaging.
+      name: {type: string}
+      # The pluralized name if default rules won't work.
+      plural_name: {type: string}
+      # The full collection name of the resource argument.
+      collection: {type: string}
+      # The api version this spec refers to. If empty, it applies to any
+      # version.
+      api_version: {type: string}
+      # The field in the create request that should hold the name of the
+      # resource being created (since create requests don't have the resource
+      # id as an API parameter.
+      request_id_field: {$ref: "#/definitions/attribute"}
+      # The set of attributes that map to the API parameters for this resource's
+      # collection.
+      attributes:
+        type: array
+        items: {$ref: "#/definitions/resource_attribute"}
+      # If False, allows the resource to create automatic completers for
+      # each argument. True by default.
+      disable_auto_completers: {type: boolean}
+
+  multitype_resource_spec:
+    type: object
+    additionalProperties: false
+    required: [name, resources]
+    properties:
+      # The name of the resource argument, used for messaging.
+      name: {type: string}
+      # The pluralized name if default rules won't work.
+      plural_name: {type: string}
+      # All resource specs contained in this one.
+      # The parsed result will have a "type_" attribute whose name is either the
+      # name of the resource spec (if all sub-resource specs are unique) or the
+      # collection name otherwise (such as 'projects.zones.instances'). Note:
+      # All resources used in this spec must have names.
+      resources:
+        type: array
+        items: {$ref: "#/definitions/resource_spec"}
 
   argument:
     oneOf:
@@ -257,7 +301,6 @@ definitions:
             items: {$ref: "#/definitions/argument"}
             minItems: 1
 
-
 type: object
 additionalProperties: false
 required: [request, help_text, arguments]
@@ -339,6 +382,13 @@ properties:
         type: object
         patternProperties:
           .*: {type: string}
+      # False if the resource reference should not be auto-parsed into the
+      # request message. NOTE: if you mark this False, you need to add a hook
+      # that handles the result of parsing the resource argument for the
+      # command. For example, if the resource is multi-type, you may want to
+      # define an issue_request_hook that issues different requests based on
+      # the parsed type of the resource.
+      parse_resource_into_request: {type: boolean}
       # A mapping of request field names to static values to insert into the
       # request. Specifying simple values here accomplishes the same as a
       # a custom request generator, but is simpler. For example, if you had an
@@ -536,31 +586,20 @@ properties:
           # file in command_lib.
           # (ex !REF googlecloudsdk.command_lib.pubsub.resources:topic)
           spec:
-            type: object
-            additionalProperties: false
-            required: [name, collection, attributes]
-            properties:
-              # The name of the resource argument, used for messaging.
-              name: {type: string}
-              # The pluralized name if default rules won't work.
-              plural_name: {type: string}
-              # The full collection name of the resource argument.
-              collection: {type: string}
-              # The api version this spec refers to. If empty, it applies to any
-              # version.
-              api_version: {type: string}
-              # The field in the create request that should hold the name of the
-              # resource being created (since create requests don't have the
-              # resource id as an API parameter.
-              request_id_field: {$ref: "#/definitions/attribute"}
-              # The set of attributes that map to the API parameters for this
-              # resources collection.
-              attributes:
-                type: array
-                items: {$ref: "#/definitions/resource_attribute"}
-              # If False, allows the resource to create automatic completers for
-              # each argument. True by default.
-              disable_auto_completers: {type: boolean}
+            oneOf:
+              # A regular resource arg
+              - $ref: "#/definitions/resource_spec"
+              # A multitype resource arg
+              - $ref: "#/definitions/multitype_resource_spec"
+          # A hook to get the display name of the parsed resource. Used for
+          # logging. Takes two arguments: the resource ref and a parsed args
+          # namespace.
+          # Example:
+          # def DisplayNameHook(resource_ref, args):
+          #   if args.CONCEPTS.xyz.Parse().type_.name == 'parentType':
+          #     return 'name not specified'
+          #   return resource_ref.Name()
+          display_name_hook: {$ref: "#/definitions/python_hook"}
       # Enumerates the API fields that need to be set and information
       # about each argument to generate.
       params:
@@ -573,7 +612,7 @@ properties:
     additionalProperties: false
     properties:
       # An optional confirmation prompt to show before actually performing the
-      # operation. The string may have named format substiutions in it which
+      # operation. The string may have named format substitutions in it which
       # will be replaced with attributes of the resource being operated on.
       confirmation_prompt: {type: string}
 

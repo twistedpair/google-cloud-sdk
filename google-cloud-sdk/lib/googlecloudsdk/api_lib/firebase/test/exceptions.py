@@ -101,15 +101,6 @@ class InvalidDimensionNameError(TestingError):
         "['model', 'version', 'locale', 'orientation']".format(d=dim_name))
 
 
-class InvalidIosDimensionNameError(TestingError):
-  """An invalid ios test matrix dimension name was encountered."""
-
-  def __init__(self, dim_name):
-    super(InvalidIosDimensionNameError,
-          self).__init__("'{d}' is not a valid dimension name. Must be one of: "
-                         "['model', 'version']".format(d=dim_name))
-
-
 class TestExecutionNotFoundError(TestingError):
   """A test execution ID was not found within a test matrix."""
 

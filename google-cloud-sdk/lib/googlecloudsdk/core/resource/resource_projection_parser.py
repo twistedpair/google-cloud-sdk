@@ -362,9 +362,6 @@ class Parser(object):
 
     Raises:
       ExpressionSyntaxError: The expression has a syntax error.
-
-    Returns:
-      The parsed key.
     """
     key = self._lex.Key()
     attribute = self._Attribute(self._projection.PROJECT)

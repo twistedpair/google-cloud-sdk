@@ -102,6 +102,7 @@ class ConceptParser(object):
         prefixes=prefixes,
         group=group)
     fallthroughs_map = {}
+    UpdateFallthroughsMap(fallthroughs_map, name, command_level_fallthroughs)
     for attribute_name, fallthroughs in six.iteritems(
         command_level_fallthroughs or {}):
       key = '{}.{}'.format(presentation_spec.name, attribute_name)
@@ -273,3 +274,12 @@ class ConceptParser(object):
       fallthroughs_map[attribute.name] = fallthroughs + attribute.fallthroughs
 
     return presentation_spec._GenerateInfo(fallthroughs_map)  # pylint: disable=protected-access
+
+
+def UpdateFallthroughsMap(fallthroughs_map, resource_arg_name,
+                          command_level_fallthroughs):
+  """Helper to add a single resource's command level fallthroughs."""
+  for attribute_name, fallthroughs in six.iteritems(
+      command_level_fallthroughs or {}):
+    key = '{}.{}'.format(resource_arg_name, attribute_name)
+    fallthroughs_map[key] = fallthroughs

@@ -19,14 +19,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.container.binauthz import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
 PROJECTS_COLLECTION = 'binaryauthorization.projects'
 PROJECTS_POLICY_COLLECTION = 'binaryauthorization.projects.policy'
 PROJECTS_ATTESTORS_COLLECTION = 'binaryauthorization.projects.attestors'
-PROJECTS_AUTHORITIES_COLLECTION = 'binaryauthorization.projects.attestationAuthorities'
 
 
 def GetProjectRef():
@@ -48,18 +46,6 @@ def GetPolicyRef():
 def GetAttestorRef(attestor_name):
   return resources.REGISTRY.Parse(
       attestor_name,
-      # TODO(b/110900216): Remove when migrating to v1alpha2.
-      api_version=apis.V1_BETA1,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection=PROJECTS_ATTESTORS_COLLECTION,
-  )
-
-
-# TODO(b/110900216): Remove when migrating to v1alpha2.
-def GetAuthorityRef(authority_name):
-  return resources.REGISTRY.Parse(
-      authority_name,
-      api_version=apis.V1_ALPHA1,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection=PROJECTS_AUTHORITIES_COLLECTION,
   )

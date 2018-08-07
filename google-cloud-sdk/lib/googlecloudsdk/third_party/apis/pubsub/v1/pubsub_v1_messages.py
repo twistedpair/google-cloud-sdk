@@ -435,8 +435,8 @@ class PubsubProjectsSnapshotsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListSnapshotsResponse`;
       indicates that this is a continuation of a prior `ListSnapshots` call,
       and that the system should return the next page of data.
-    project: The name of the cloud project that snapshots belong to. Format is
-      `projects/{project}`.
+    project: The name of the project in which to list snapshots. Format is
+      `projects/{project-id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -543,8 +543,8 @@ class PubsubProjectsSubscriptionsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListSubscriptionsResponse`;
       indicates that this is a continuation of a prior `ListSubscriptions`
       call, and that the system should return the next page of data.
-    project: The name of the cloud project that subscriptions belong to.
-      Format is `projects/{project}`.
+    project: The name of the project in which to list subscriptions. Format is
+      `projects/{project-id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -695,8 +695,8 @@ class PubsubProjectsTopicsListRequest(_messages.Message):
     pageToken: The value returned by the last `ListTopicsResponse`; indicates
       that this is a continuation of a prior `ListTopics` call, and that the
       system should return the next page of data.
-    project: The name of the cloud project that topics belong to. Format is
-      `projects/{project}`.
+    project: The name of the project in which to list topics. Format is
+      `projects/{project-id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -811,8 +811,7 @@ class PullRequest(_messages.Message):
       immediately even if it there are no messages available to return in the
       `Pull` response. Otherwise, the system may wait (for a bounded amount of
       time) until at least one message is available, rather than returning no
-      messages. The client may cancel the request if it does not wish to wait
-      any longer for the response.
+      messages.
   """
 
   maxMessages = _messages.IntegerField(1, variant=_messages.Variant.INT32)

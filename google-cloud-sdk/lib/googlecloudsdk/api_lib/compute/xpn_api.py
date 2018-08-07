@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.compute import client_adapter
+from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.core import exceptions
 
@@ -190,5 +190,6 @@ class XpnClient(object):
         host_project, associated_project, xpn_resource_type=xpn_types.PROJECT)
 
 
-def GetXpnClient(api_version=_DEFAULT_API_VERSION):
-  return XpnClient(client_adapter.ClientAdapter(api_version))
+def GetXpnClient(release_track):
+  holder = base_classes.ComputeApiHolder(release_track)
+  return XpnClient(holder.client)

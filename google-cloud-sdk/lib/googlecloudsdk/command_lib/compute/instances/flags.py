@@ -209,7 +209,7 @@ def MakeSourceInstanceTemplateArg():
                   '`--source-instance-template` will be used instead.'))
 
 
-def AddImageArgs(parser):
+def AddImageArgs(parser, enable_snapshots=False):
   """Adds arguments related to images for instances and instance-templates."""
 
   def AddImageHelp():
@@ -246,6 +246,17 @@ def AddImageArgs(parser):
 
       By default, ``{default_image_family}'' is assumed for this flag.
       """.format(default_image_family=constants.DEFAULT_IMAGE_FAMILY))
+  if enable_snapshots:
+    image_group.add_argument(
+        '--source-snapshot',
+        help="""\
+        The name of the source disk snapshot that the instance boot disk
+        will be created from. You can provide this as a full URL
+        to the snapshot or just the snapshot name. For example, the following
+        are valid values:
+          * https://www.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
+          * snapshot
+        """)
 
 
 def AddCanIpForwardArgs(parser):
@@ -411,7 +422,7 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       help=disk_help)
 
 
-def AddCreateDiskArgs(parser, enable_kms=False):
+def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False):
   """Adds create-disk argument for instances and instance-templates."""
 
   disk_help = """\
@@ -515,6 +526,17 @@ def AddCreateDiskArgs(parser, enable_kms=False):
     spec['kms-project'] = str
     spec['kms-location'] = str
     spec['kms-keyring'] = str
+
+  if enable_snapshots:
+    disk_help += """
+      *source-snapshot*::: The source disk snapshot that will be used to
+      create the disk. You can provide this as a full URL
+      to the snapshot or just the snapshot name. For example, the following
+      are valid values:
+        * https://www.googleapis.com/compute/v1/projects/myproject/global/snapshots/snapshot
+        * snapshot
+      """
+    spec['source-snapshot'] = str
 
   parser.add_argument(
       '--create-disk',
@@ -622,12 +644,12 @@ def GetAddressRef(resources, address, region):
       })
 
 
-def ValidateDiskFlags(args, enable_kms=False):
+def ValidateDiskFlags(args, enable_kms=False, enable_snapshots=False):
   """Validates the values of all disk-related flags."""
   ValidateDiskCommonFlags(args)
   ValidateDiskAccessModeFlags(args)
   ValidateDiskBootFlags(args, enable_kms=enable_kms)
-  ValidateCreateDiskFlags(args)
+  ValidateCreateDiskFlags(args, enable_snapshots=enable_snapshots)
 
 
 def ValidateDiskCommonFlags(args):
@@ -734,7 +756,7 @@ def ValidateDiskBootFlags(args, enable_kms=False):
             'boot disk.')
 
 
-def ValidateCreateDiskFlags(args):
+def ValidateCreateDiskFlags(args, enable_snapshots=False):
   """Validates the values of create-disk related flags."""
   require_csek_key_create = getattr(args, 'require_csek_key_create', None)
   csek_key_file = getattr(args, 'csek_key_file', None)
@@ -758,16 +780,30 @@ def ValidateCreateDiskFlags(args):
 
     image_value = disk.get('image')
     image_family_value = disk.get('image-family')
-    if image_value and image_family_value:
-      raise exceptions.ToolException(
-          'Cannot specify [image] and [image-family] for a [--create-disk]. '
-          'The fields are mutually exclusive.')
+    source_snapshot = disk.get('source-snapshot')
+    disk_source = set()
+    if image_value:
+      disk_source.add(image_value)
+    if image_family_value:
+      disk_source.add(image_family_value)
+    if source_snapshot:
+      disk_source.add(source_snapshot)
+
+    source_error_message = (
+        'Cannot specify [image] and [image-family] for a '
+        '[--create-disk]. The fields are mutually exclusive.')
+    if enable_snapshots:
+      source_error_message = (
+          'Must specify exactly one of [image], [image-family] or '
+          '[source-snapshot] for a [--create-disk]. '
+          'These fields are mutually exclusive.')
+    if len(disk_source) > 1:
+      raise exceptions.ToolException(source_error_message)
 
 
 def AddAddressArgs(parser,
                    instances=True,
-                   multiple_network_interface_cards=True,
-                   support_network_tier=False):
+                   multiple_network_interface_cards=True):
   """Adds address arguments for instances and instance-templates."""
   addresses = parser.add_mutually_exclusive_group()
   addresses.add_argument(
@@ -798,16 +834,15 @@ def AddAddressArgs(parser,
   if instances:
     multiple_network_interface_cards_spec['private-network-ip'] = str
 
-  if support_network_tier:
-    def ValidateNetworkTier(network_tier_input):
-      network_tier = network_tier_input.upper()
-      if network_tier in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
-        return network_tier
-      else:
-        raise exceptions.InvalidArgumentException(
-            '--network-interface', 'Invalid value for network-tier')
+  def ValidateNetworkTier(network_tier_input):
+    network_tier = network_tier_input.upper()
+    if network_tier in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
+      return network_tier
+    else:
+      raise exceptions.InvalidArgumentException(
+          '--network-interface', 'Invalid value for network-tier')
 
-    multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
+  multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
 
   if multiple_network_interface_cards:
     multiple_network_interface_cards_spec['aliases'] = str
@@ -830,8 +865,7 @@ def AddAddressArgs(parser,
         Mutually exclusive with address. If neither key is present the
         instance will get an ephemeral IP.
         """
-    if support_network_tier:
-      network_interface_help += """
+    network_interface_help += """
         *network-tier*::: Specifies the network tier of the interface.
         ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
         value is `PREMIUM`.
@@ -1524,6 +1558,7 @@ def ValidateKonletArgs(args):
 
 
 def ValidateLocalSsdFlags(args):
+  """Validate local ssd flags."""
   for local_ssd in args.local_ssd or []:
     interface = local_ssd.get('interface')
     if interface and interface not in LOCAL_SSD_INTERFACES:

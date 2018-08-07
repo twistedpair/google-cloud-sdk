@@ -76,18 +76,18 @@ _ACCELERATOR_MAP = arg_utils.ChoiceEnumMapper(
     required=True)
 
 _SCALE_TIER_CHOICES = {
-    'BASIC': ('basic', ('A single worker instance. This tier is suitable for '
+    'BASIC': ('basic', ('Single worker instance. This tier is suitable for '
                         'learning how to use Cloud ML Engine, and for '
                         'experimenting with new models using small datasets.')),
     'STANDARD_1': ('standard-1', 'Many workers and a few parameter servers.'),
     'PREMIUM_1': ('premium-1',
-                  'A large number of workers with many parameter servers.'),
-    'BASIC_GPU': ('basic-gpu', 'A single worker instance with a GPU.'),
-    'BASIC_TPU': ('basic-tpu', 'A single worker instance with a Cloud TPU.'),
+                  'Large number of workers with many parameter servers.'),
+    'BASIC_GPU': ('basic-gpu', 'Single worker instance with a GPU.'),
+    'BASIC_TPU': ('basic-tpu', 'Single worker instance with a Cloud TPU.'),
     'CUSTOM': ('custom', """\
-The CUSTOM tier is not a set tier, but rather enables you to use your own
+CUSTOM tier is not a set tier, but rather enables you to use your own
 cluster specification. When you use this tier, set values to configure your
-processing cluster according to these guidelines (using the --config flag):
+processing cluster according to these guidelines (using the `--config` flag):
 
 * You _must_ set `TrainingInput.masterType` to specify the type of machine to
   use for your master node. This is the only required setting.
@@ -110,7 +110,7 @@ _TRAINING_SCALE_TIER_MAPPER = arg_utils.ChoiceEnumMapper(
     jobs.GetMessagesModule()
     .GoogleCloudMlV1TrainingInput.ScaleTierValueValuesEnum,
     custom_mappings=_SCALE_TIER_CHOICES,
-    help_str=('Specifies the machine types, the number of replicas for workers '
+    help_str=('Specify the machine types, the number of replicas for workers, '
               'and parameter servers.'),
     default=None)
 

@@ -2296,17 +2296,17 @@
       "type": "object",
       "properties": {
         "startTime": {
-          "description": "Exclude files older than this value.",
+          "description": "Exclude files or rows older than this value.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "Exclude files newer than this value.\nIf set to zero, no upper time limit is applied.",
+          "description": "Exclude files or rows newer than this value.\nIf set to zero, no upper time limit is applied.",
           "type": "string",
           "format": "google-datetime"
         },
         "timestampField": {
-          "description": "Specification of the field containing the timestamp of scanned items.\nRequired for data sources like Datastore or BigQuery.\nThe valid data types of the timestamp field are:\nfor BigQuery - timestamp, date, datetime;\nfor Datastore - timestamp.\nDatastore entity will be scanned if the timestamp property does not exist\nor its value is empty or invalid.",
+          "description": "Specification of the field containing the timestamp of scanned items.\nUsed for data sources like Datastore or BigQuery.\nIf not specified for BigQuery, table last modification timestamp\nis checked against given time span.\nThe valid data types of the timestamp field are:\nfor BigQuery - timestamp, date, datetime;\nfor Datastore - timestamp.\nDatastore entity will be scanned if the timestamp property does not exist\nor its value is empty or invalid.",
           "$ref": "GooglePrivacyDlpV2FieldId"
         },
         "enableAutoPopulationOfTimespanConfig": {
