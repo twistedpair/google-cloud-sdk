@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
 import time
 
 from googlecloudsdk.calliope import parser_completer
@@ -26,8 +27,6 @@ from googlecloudsdk.command_lib.interactive import parser
 from googlecloudsdk.command_lib.meta import generate_cli_trees
 from googlecloudsdk.core import module_util
 from prompt_toolkit import completion
-from prompt_toolkit import document
-from prompt_toolkit.contrib import completers
 import six
 
 
@@ -87,8 +86,8 @@ class InteractiveCliCompleter(completion.Completer):
     self.completer_cache = {}
     self.manpage_generator = manpage_generator
     self.parser = interactive_parser
-    self.path_completer = completers.PathCompleter(expanduser=True)
     self.empty = False
+    self.last = ''
     generate_cli_trees.CliTreeGenerator.MemoizeFailures(True)
 
   def IsSuppressed(self, info):
@@ -110,7 +109,8 @@ class InteractiveCliCompleter(completion.Completer):
     args = self.parser.ParseCommand(doc.text_before_cursor)
     if not args:
       return
-    self.empty = doc.text_before_cursor and doc.text_before_cursor[-1].isspace()
+    self.last = doc.text_before_cursor[-1] if doc.text_before_cursor else ''
+    self.empty = self.last.isspace()
     self.event = event
 
     for completer in (
@@ -121,21 +121,13 @@ class InteractiveCliCompleter(completion.Completer):
     ):
       choices, offset = completer(args)
       if choices is not None:
-        for choice in sorted(choices):
-          display = choice
-          if choice.endswith('/'):
-            choice = choice[:-1]
-          yield completion.Completion(
-              choice, display=display, start_position=offset)
-        return
-
-    if event.completion_requested:
-      # default to path completions
-      choices = self.path_completer.get_completions(
-          document.Document('' if self.empty else args[-1].value), event)
-      if choices:
-        for choice in choices:
-          yield choice
+        if offset is None:
+          # The choices are already completion.Completion objects.
+          for choice in choices:
+            yield choice
+        else:
+          for choice in sorted(choices):
+            yield completion.Completion(choice, start_position=offset)
         return
 
   def CommandCompleter(self, args):
@@ -252,7 +244,10 @@ class InteractiveCliCompleter(completion.Completer):
     elif arg.token_type == parser.ArgTokenType.FLAG:
       flag = arg.tree
       if flag.get(parser.LOOKUP_TYPE) != 'bool':
-        return self.ArgCompleter(args, flag, '')
+        completions, offset = self.ArgCompleter(args, flag, '')
+        if not self.empty and self.last != '=':
+          completions = [' ' + c for c in completions]
+        return completions, offset
 
     elif arg.value.startswith('-'):
       return [k for k, v in six.iteritems(arg.tree[parser.LOOKUP_FLAGS])
@@ -298,4 +293,42 @@ class InteractiveCliCompleter(completion.Completer):
     # completer to complete the next arg.
     if self.empty and command[-1]:
       command.append('')
-    return self.coshell.GetCompletions(command) or None, -len(command[-1])
+    completions = self.coshell.GetCompletions(command)
+    if not completions:
+      return None, None
+
+    # Make path completions play nice with dropdowns. Add trailing '/' for dirs
+    # in the dropdown but not the completion. User types '/' to select a dir
+    # and ' ' to select a path.
+    #
+    # NOTE: '/' instead of os.path.sep since the coshell is bash even on Windows
+    last = command[-1]
+    offset = -len(last)
+    prefix = last if last.endswith('/') else os.path.dirname(last)
+    chop = len(prefix) if prefix else 0
+
+    def _Mark(c):
+      """Returns completion c with a trailing '/' if it is a dir."""
+      if not c.endswith('/') and os.path.isdir(c):
+        return c + '/'
+      return c
+
+    def _Display(c):
+      """Returns the annotated dropdown display spelling of completion c."""
+      c = _Mark(c)[chop:]
+      if prefix and c.startswith('/'):
+        # Some shell completers insert an '/' that spoils the dropdown.
+        c = c[1:]
+      return c
+
+    if not os.path.isdir(prefix) and not self.coshell.GetPwd():
+      # The prefix is not a dir or we have a bogus coshell pwd. Treat the
+      # completions as normal strings.
+      return completions, offset
+    if len(completions) == 1:
+      # No dropdown for singletons so just return the marked completion.
+      choice = _Mark(completions[0])
+      return [completion.Completion(choice, start_position=offset)], None
+    # Return completion objects with annotated choices for the dropdown.
+    return [completion.Completion(c, display=_Display(c), start_position=offset)
+            for c in completions], None

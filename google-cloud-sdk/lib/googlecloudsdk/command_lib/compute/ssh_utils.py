@@ -34,7 +34,6 @@ from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.api_lib.oslogin import client as oslogin_client
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -260,24 +259,6 @@ def _MetadataHasBlockProjectSshKeys(metadata):
                      if item.key == constants.SSH_KEYS_BLOCK_METADATA_KEY]
   if not matching_values:
     return False
-  return matching_values[0].lower() == 'true'
-
-
-def _MetadataHasOsloginEnable(metadata):
-  """Return true if the metadata has 'oslogin-enable' set and 'true'.
-
-  Args:
-    metadata: Instance or Project metadata.
-
-  Returns:
-    True if Enabled, False if Disabled, None if key is not present.
-  """
-  if not (metadata and metadata.items):
-    return None
-  matching_values = [item.value for item in metadata.items
-                     if item.key == constants.OSLOGIN_ENABLE_METADATA_KEY]
-  if not matching_values:
-    return None
   return matching_values[0].lower() == 'true'
 
 
@@ -545,46 +526,6 @@ class BaseSSHHelper(object):
         keys_newly_added = self.EnsureSSHKeyIsInInstance(
             compute_client, user, instance)
     return keys_newly_added
-
-  def CheckForOsloginAndGetUser(self, instance,
-                                project, requested_user, release_track):
-    """Checks instance/project metadata for oslogin and update username."""
-    # Instance metadata has priority
-    use_oslogin = False
-    oslogin_enabled = _MetadataHasOsloginEnable(instance.metadata)
-    if oslogin_enabled is None:
-      project_metadata = project.commonInstanceMetadata
-      oslogin_enabled = _MetadataHasOsloginEnable(project_metadata)
-
-    if not oslogin_enabled:
-      return requested_user, use_oslogin
-
-    # Connect to the oslogin API and add public key to oslogin user account.
-    oslogin = oslogin_client.OsloginClient(release_track)
-    if not oslogin:
-      log.warning(
-          'OS Login is enabled on Instance/Project, but is not available '
-          'in the {0} version of gcloud.'.format(release_track.id))
-      return requested_user, use_oslogin
-    public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
-    user_email = properties.VALUES.core.account.Get()
-    login_profile = oslogin.ImportSshPublicKey(user_email, public_key)
-    use_oslogin = True
-
-    # Get the username for the oslogin user. If the username is the same as the
-    # default user, return that one. Otherwise, return the 'primary' username.
-    # If no 'primary' exists, return the first username.
-    oslogin_user = None
-    for pa in login_profile.loginProfile.posixAccounts:
-      oslogin_user = oslogin_user or pa.username
-      if pa.username == requested_user:
-        return requested_user, use_oslogin
-      elif pa.primary:
-        oslogin_user = pa.username
-
-    log.warning('Using OS Login user [{0}] instead of default user [{1}]'
-                .format(oslogin_user, requested_user))
-    return oslogin_user, use_oslogin
 
   def GetConfig(self, host_key_alias, strict_host_key_checking=None):
     """Returns a dict of default `ssh-config(5)` options on the OpenSSH format.

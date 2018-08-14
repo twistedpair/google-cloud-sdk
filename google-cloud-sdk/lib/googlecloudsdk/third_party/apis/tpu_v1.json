@@ -303,7 +303,8 @@
             "TPU node is being repaired and may be unusable. Details can be\nfound in the `help_description` field.",
             "7 - Reserved. Was SUSPENDED.\nTPU node is stopped.",
             "TPU node is currently stopping.",
-            "TPU node is currently starting."
+            "TPU node is currently starting.",
+            "TPU node has been preempted. Only applies to Preemptible TPU Nodes."
           ],
           "type": "string",
           "enum": [
@@ -316,7 +317,8 @@
             "REPAIRING",
             "STOPPED",
             "STOPPING",
-            "STARTING"
+            "STARTING",
+            "PREEMPTED"
           ]
         },
         "healthDescription": {

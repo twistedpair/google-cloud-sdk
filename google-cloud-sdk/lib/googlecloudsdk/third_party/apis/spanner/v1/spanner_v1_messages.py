@@ -113,6 +113,138 @@ class AuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
+class Backup(_messages.Message):
+  r"""A Backup object.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the backup.
+
+  Messages:
+    LabelsValue: The labels for the backup.  Labels are useful for organizing
+      cloud resources, by allowing customer specific metadata to be attached
+      to resources. See https://goo.gl/xmQnxf for more information on and
+      examples of labels.   * Label keys must be between 1 and 63 characters
+      long and must conform to    the following regular expression:
+      `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be between 0 and 63
+      characters long and must conform    to the regular expression
+      `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels can be
+      associated with a given resource.  If you plan to use labels in your own
+      code, please note that additional characters may be allowed in the
+      future. And so you are advised to use an internal label representation,
+      such as JSON, which doesn't rely upon specific characters being
+      disallowed.  For example, representing labels as the string: `name + "_"
+      + value` would prove problematic if we were to allow "_" in a future
+      release.
+
+  Fields:
+    createTime: Output only. Time the CreateBackup request was received. The
+      backup will contain an externally consistent copy of the database at the
+      point in time specified by `create_time`.
+    creatingProgress: Output only. The progress of the backup while in the
+      `CREATING` state.
+    database: Required for the CreateBackup operation. Name of the database
+      from which this backup was created. This needs to be in the same
+      instance as the backup. Values are of the form
+      `projects/<project>/instances/<instance>/databases/<database>`.
+    expireTime: Required for the CreateBackup operation. The expiration time
+      of the backup, with microseconds granularity that must be at least 6
+      hours and at most 366 days from `create_time`. The exact `create_time`
+      is determined by the system when processing the backup creation request,
+      and is approximately the time at which the request is submitted. Once
+      the `expire_time` has passed, Cloud Spanner will delete the backup and
+      free the resources used by the backup.
+    labels: The labels for the backup.  Labels are useful for organizing cloud
+      resources, by allowing customer specific metadata to be attached to
+      resources. See https://goo.gl/xmQnxf for more information on and
+      examples of labels.   * Label keys must be between 1 and 63 characters
+      long and must conform to    the following regular expression:
+      `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be between 0 and 63
+      characters long and must conform    to the regular expression
+      `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels can be
+      associated with a given resource.  If you plan to use labels in your own
+      code, please note that additional characters may be allowed in the
+      future. And so you are advised to use an internal label representation,
+      such as JSON, which doesn't rely upon specific characters being
+      disallowed.  For example, representing labels as the string: `name + "_"
+      + value` would prove problematic if we were to allow "_" in a future
+      release.
+    name: Required. A globally unique identifier for the backup which cannot
+      be changed.  Values are of the form
+      `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]`. The
+      final segment of the name must be between 6 and 30 characters in length.
+      The backup is stored in the location(s) specified in the instance
+      configuration of the instance containing the backup, identified by the
+      prefix of the backup name of the form
+      `projects/<project>/instances/<instance>`.
+    referencingDatabases: Output only. The names of the restored databases
+      referencing the backup, preventing the backup from being deleted. When a
+      restored database from the backup enters the `READY` state, the
+      reference to the backup will be removed.
+    sizeBytes: Output only. Size of the backup in bytes.
+    state: Output only. The current state of the backup.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: Not specified.
+      CREATING: The pending backup is still being created. Operations on the
+        backup may fail with `FAILED_PRECONDITION` in this state.
+      READY: The backup is complete and ready for use.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels for the backup.  Labels are useful for organizing cloud
+    resources, by allowing customer specific metadata to be attached to
+    resources. See https://goo.gl/xmQnxf for more information on and examples
+    of labels.   * Label keys must be between 1 and 63 characters long and
+    must conform to    the following regular expression:
+    `[a-z]([-a-z0-9]*[a-z0-9])?`.  * Label values must be between 0 and 63
+    characters long and must conform    to the regular expression
+    `([a-z]([-a-z0-9]*[a-z0-9])?)?`.  * No more than 64 labels can be
+    associated with a given resource.  If you plan to use labels in your own
+    code, please note that additional characters may be allowed in the future.
+    And so you are advised to use an internal label representation, such as
+    JSON, which doesn't rely upon specific characters being disallowed.  For
+    example, representing labels as the string: `name + "_" + value` would
+    prove problematic if we were to allow "_" in a future release.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  creatingProgress = _messages.MessageField('OperationProgress', 2)
+  database = _messages.StringField(3)
+  expireTime = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  referencingDatabases = _messages.StringField(7, repeated=True)
+  sizeBytes = _messages.IntegerField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+
+
 class BeginTransactionRequest(_messages.Message):
   r"""The request for BeginTransaction.
 
@@ -372,6 +504,32 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(2)
 
 
+class CreateBackupRequest(_messages.Message):
+  r"""A CreateBackupRequest object.
+
+  Fields:
+    backup: Required. The backup to create.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+
+
+class CreateDatabaseFromBackupRequest(_messages.Message):
+  r"""A CreateDatabaseFromBackupRequest object.
+
+  Fields:
+    backup: Required. Name of the backup from which to restore.  Values are of
+      the form `projects/<project>/instances/<instance>/backups/<backup>`.
+    name: Required. Name of the database to create and restore to. This
+      database must not already exist. The instance must be consistent with
+      destination_parent. Values are of the form
+      `projects/<project>/instances/<instance>/databases/<database>`.
+  """
+
+  backup = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class CreateDatabaseMetadata(_messages.Message):
   r"""Metadata type for the operation returned by CreateDatabase.
 
@@ -490,10 +648,13 @@ class Database(_messages.Message):
     StateValueValuesEnum: Output only. The current database state.
 
   Fields:
+    creatingProgress: A OperationProgress attribute.
     name: Required. The name of the database. Values are of the form
       `projects/<project>/instances/<instance>/databases/<database>`, where
       `<database>` is as specified in the `CREATE DATABASE` statement. This
       name can be passed to other API methods to identify the database.
+    readyOptimizingProgress: A OperationProgress attribute.
+    restoreInfo: A RestoreInfo attribute.
     state: Output only. The current database state.
   """
 
@@ -505,13 +666,18 @@ class Database(_messages.Message):
       CREATING: The database is still being created. Operations on the
         database may fail with `FAILED_PRECONDITION` in this state.
       READY: The database is fully created and ready for use.
+      READY_OPTIMIZING: <no description>
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     READY = 2
+    READY_OPTIMIZING = 3
 
-  name = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  creatingProgress = _messages.MessageField('OperationProgress', 1)
+  name = _messages.StringField(2)
+  readyOptimizingProgress = _messages.MessageField('OperationProgress', 3)
+  restoreInfo = _messages.MessageField('RestoreInfo', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Delete(_messages.Message):
@@ -980,6 +1146,19 @@ class KeySet(_messages.Message):
   ranges = _messages.MessageField('KeyRange', 3, repeated=True)
 
 
+class ListBackupsResponse(_messages.Message):
+  r"""A ListBackupsResponse object.
+
+  Fields:
+    backups: The list of matching backups.
+    nextPageToken: `next_page_token` can be sent in a subsequent ListBackups
+      call to fetch more of the matching backups.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListDatabasesResponse(_messages.Message):
   r"""The response for ListDatabases.
 
@@ -1192,6 +1371,20 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OperationProgress(_messages.Message):
+  r"""A OperationProgress object.
+
+  Fields:
+    endTime: A string attribute.
+    progressPercent: A integer attribute.
+    startTime: A string attribute.
+  """
+
+  endTime = _messages.StringField(1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
 
 
 class PartialResultSet(_messages.Message):
@@ -1746,6 +1939,36 @@ class ReadWrite(_messages.Message):
 
 
 
+class RestoreInfo(_messages.Message):
+  r"""A RestoreInfo object.
+
+  Enums:
+    SourceTypeValueValuesEnum: The type of the restore source.
+
+  Fields:
+    source: Name of the source (e.g. backup) from which the database was
+      restored. The source might no longer exist.
+    sourceCreateTime: Create time of the restore source.
+    sourceDatabase: Name of the database associated with the restore source.
+    sourceType: The type of the restore source.
+  """
+
+  class SourceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the restore source.
+
+    Values:
+      UNSPECIFIED: No restore associated.
+      BACKUP: A backup was used as the source of the restore.
+    """
+    UNSPECIFIED = 0
+    BACKUP = 1
+
+  source = _messages.StringField(1)
+  sourceCreateTime = _messages.StringField(2)
+  sourceDatabase = _messages.StringField(3)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 4)
+
+
 class ResultSet(_messages.Message):
   r"""Results from Read or ExecuteSql.
 
@@ -2075,6 +2298,168 @@ class SpannerProjectsInstanceConfigsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsCreateRequest object.
+
+  Fields:
+    createBackupRequest: A CreateBackupRequest resource to be passed as the
+      request body.
+    parent: Required. The name of the instance in which the backup will be
+      created. This must be the same instance that contains the source
+      database of the backup. The backup will be stored in the location(s)
+      specified in the instance configuration of this instance. Values are of
+      the form `projects/<project>/instances/<instance>`.
+  """
+
+  createBackupRequest = _messages.MessageField('CreateBackupRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesBackupsDeleteRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the backup to delete. Values are of the form
+      `projects/<project>/instances/<instance>/backups/<backup>`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesBackupsGetIamPolicyRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The Cloud Spanner resource for which the policy is
+      being retrieved. The format is `projects/<project
+      ID>/instances/<instance ID>` for instance resources and
+      `projects/<project ID>/instances/<instance ID>/databases/<database ID>`
+      for database resources.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesBackupsGetRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsGetRequest object.
+
+  Fields:
+    name: Required. Name of the backup. Values are of the form
+      `projects/<project>/instances/<instance>/backups/<backup>`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <. Filter rules are case insensitive.  The fields eligible
+      for filtering are:   * `name`   * `database_name`   * `labels.key` where
+      key is the name of a label   * `state`   * `create_time` (and values are
+      of the format YYYY-MM-DDTHH:MM:SSZ)   * `expire_time` (and values are of
+      the format YYYY-MM-DDTHH:MM:SSZ)   * `size_bytes`  To filter on multiple
+      expressions, provide each separate expression within parentheses. By
+      default, each expression is an AND expression. However, you can include
+      AND and OR expressions explicitly.  Some examples of using filters are:
+      * `name:Howl` --> The backup's name contains the string "howl".   *
+      `database_name:prod` --> The backup's name contains the string "prod".
+      * `labels.env:*` --> The backup has the label "env".   *
+      `state:CREATING` --> The backup is pending creation.   * `state:READY`
+      --> The backup is fully created and ready for use.   * `(name:howl) AND
+      (create_time < 2018-03-28T14:50:00Z)`          --> The backup name
+      contains the string "howl" and create_time              of the backup is
+      before 2018-03-28T14:50:00Z.   * `size_bytes > 10000000000` --> The
+      backup size is greater than 10GB
+    orderBy: An expression for specifying the sort order of the results of the
+      request. The string value should follow SQL syntax: comma separated list
+      of fields in Backup. Fields supported are:    * name    * database    *
+      expire_time    * create_time    * size_bytes    * state    *
+      creating_progress.progress_percent    * creating_progress.start_time
+      * creating_progress.end_time  For example, "foo,bar". The default
+      sorting order is ascending. To specify descending order for a field, a
+      suffix " desc" should be appended to the field name. For example, "foo
+      desc,bar". Redundant space characters in the syntax are insigificant.
+      "foo, bar desc" and " foo , bar desc" are equivalent.  If order_by is
+      empty, results will be sorted by `create_time` in descending order
+      starting from the most recently created backup.
+    pageSize: Number of instances to be returned in the response. If 0 or
+      less, defaults to the server's maximum allowed page size.
+    pageToken: If non-empty, `page_token` should contain a next_page_token
+      from a previous ListBackupsResponse to the same `parent` and with the
+      same `filter`.
+    parent: Required. The instance to list backups from.  Values are of the
+      form `projects/<project>/instances/<instance>`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class SpannerProjectsInstancesBackupsPatchRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsPatchRequest object.
+
+  Fields:
+    name: Required. A globally unique identifier for the backup which cannot
+      be changed.  Values are of the form
+      `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]`. The
+      final segment of the name must be between 6 and 30 characters in length.
+      The backup is stored in the location(s) specified in the instance
+      configuration of the instance containing the backup, identified by the
+      prefix of the backup name of the form
+      `projects/<project>/instances/<instance>`.
+    updateBackupRequest: A UpdateBackupRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateBackupRequest = _messages.MessageField('UpdateBackupRequest', 2)
+
+
+class SpannerProjectsInstancesBackupsSetIamPolicyRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The Cloud Spanner resource for which the policy is
+      being set. The format is `projects/<project ID>/instances/<instance ID>`
+      for instance resources and `projects/<project ID>/instances/<instance
+      ID>/databases/<database ID>` for databases resources.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class SpannerProjectsInstancesBackupsTestIamPermissionsRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesBackupsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The Cloud Spanner resource for which permissions are
+      being tested. The format is `projects/<project ID>/instances/<instance
+      ID>` for instance resources and `projects/<project
+      ID>/instances/<instance ID>/databases/<database ID>` for database
+      resources.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class SpannerProjectsInstancesCreateRequest(_messages.Message):
   r"""A SpannerProjectsInstancesCreateRequest object.
 
@@ -2086,6 +2471,22 @@ class SpannerProjectsInstancesCreateRequest(_messages.Message):
   """
 
   createInstanceRequest = _messages.MessageField('CreateInstanceRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesDatabasesCreateFromBackupRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesCreateFromBackupRequest object.
+
+  Fields:
+    createDatabaseFromBackupRequest: A CreateDatabaseFromBackupRequest
+      resource to be passed as the request body.
+    parent: Required. The name of the instance in which to create the restored
+      database. This instance must be in the same project and have the same
+      instance configuration as the instance containing the source backup.
+      Values are of the form `projects/<project>/instances/<instance>.
+  """
+
+  createDatabaseFromBackupRequest = _messages.MessageField('CreateDatabaseFromBackupRequest', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -3012,6 +3413,22 @@ class Type(_messages.Message):
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
   structType = _messages.MessageField('StructType', 3)
+
+
+class UpdateBackupRequest(_messages.Message):
+  r"""A UpdateBackupRequest object.
+
+  Fields:
+    backup: Required. The backup to update.
+    updateMask: Required. A mask specifying which fields in the Backup
+      resource should be updated. This mask is relative to the Backup
+      resource, not to the request message. The field mask must always be
+      specified; this prevents any future fields from being erased
+      accidentally by clients that do not know about them.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  updateMask = _messages.StringField(2)
 
 
 class UpdateDatabaseDdlMetadata(_messages.Message):

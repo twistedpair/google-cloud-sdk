@@ -13,6 +13,32 @@ from apitools.base.py import extra_types
 package = 'cloudshell'
 
 
+class AuthorizeEnvironmentRequest(_messages.Message):
+  r"""Request message for AuthorizeEnvironment.
+
+  Fields:
+    accessToken: The OAuth access token that should be sent to the
+      environment.
+  """
+
+  accessToken = _messages.StringField(1)
+
+
+class CloudshellUsersEnvironmentsAuthorizeRequest(_messages.Message):
+  r"""A CloudshellUsersEnvironmentsAuthorizeRequest object.
+
+  Fields:
+    authorizeEnvironmentRequest: A AuthorizeEnvironmentRequest resource to be
+      passed as the request body.
+    name: Name of the resource that should receive the token, for example
+      `users/me/environments/default` or
+      `users/someone@example.com/environments/default`.
+  """
+
+  authorizeEnvironmentRequest = _messages.MessageField('AuthorizeEnvironmentRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudshellUsersEnvironmentsGetRequest(_messages.Message):
   r"""A CloudshellUsersEnvironmentsGetRequest object.
 
@@ -407,7 +433,17 @@ class StartEnvironmentMetadata(_messages.Message):
 
 
 class StartEnvironmentRequest(_messages.Message):
-  r"""Request message for StartEnvironment."""
+  r"""Request message for StartEnvironment.
+
+  Fields:
+    accessToken: The initial access token passed to the environment. If this
+      is present and valid, the environment will be pre-authenticated with
+      gcloud so that the user can run gcloud commands in Cloud Shell without
+      having to log in. This code can be updated later by calling
+      AuthorizeEnvironment.
+  """
+
+  accessToken = _messages.StringField(1)
 
 
 class StartEnvironmentResponse(_messages.Message):

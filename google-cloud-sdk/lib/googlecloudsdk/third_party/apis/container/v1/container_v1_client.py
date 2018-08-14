@@ -290,6 +290,33 @@ policies defined by GKE.
         supports_download=False,
     )
 
+    def AuditPolicy(self, request, global_params=None):
+      r"""Check if provided events require write to Cloud Audit Logging and/or Gin,.
+depending on policies defined by GKE.
+
+      Args:
+        request: (ContainerMasterProjectsLocationsAuditPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckAuditPolicyResponse) The response message.
+      """
+      config = self.GetMethodConfig('AuditPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AuditPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'container.masterProjects.locations.auditPolicy',
+        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
+        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
+        query_params=[],
+        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/auditPolicy',
+        request_field=u'checkAuditPolicyRequest',
+        request_type_name=u'ContainerMasterProjectsLocationsAuditPolicyRequest',
+        response_type_name=u'CheckAuditPolicyResponse',
+        supports_download=False,
+    )
+
     def Authenticate(self, request, global_params=None):
       r"""Processes a request to authenticate a token. If it is able to authenticate.
 the token, the email for the authorized user is also returned.

@@ -242,10 +242,12 @@ class Cluster(_messages.Message):
       master endpoint.
     currentNodeCount: [Output only] The number of nodes currently in the
       cluster.
-    currentNodeVersion: [Output only] The current version of the node software
-      components. If they are currently at multiple versions because they're
-      in the process of being upgraded, this reflects the minimum version of
-      all nodes.
+    currentNodeVersion: [Output only] Deprecated, use [NodePool.version
+      ](/kubernetes-
+      engine/docs/reference/rest/v1alpha1/projects.zones.clusters.nodePool)
+      instead. The current version of the node software components. If they
+      are currently at multiple versions because they're in the process of
+      being upgraded, this reflects the minimum version of all nodes.
     databaseEncryption: Configuration of etcd encryption.
     databaseEncryptionKeyId: Resource name of a CloudKMS key to be used for
       the encryption of secrets in etcd. Ex. projects/kms-
@@ -374,6 +376,8 @@ class Cluster(_messages.Message):
     tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
+    verticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
+      configuration.
     zone: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field is deprecated, use location instead.
@@ -503,7 +507,8 @@ class Cluster(_messages.Message):
   statusMessage = _messages.StringField(54)
   subnetwork = _messages.StringField(55)
   tpuIpv4CidrBlock = _messages.StringField(56)
-  zone = _messages.StringField(57)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 57)
+  zone = _messages.StringField(58)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -645,6 +650,8 @@ class ClusterUpdate(_messages.Message):
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
     desiredUseIpAliases: The desired use of IP aliases in a cluster.
+    desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
+      configuration.
     securityProfile: User may change security profile during update
   """
 
@@ -672,7 +679,8 @@ class ClusterUpdate(_messages.Message):
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 22)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 23)
   desiredUseIpAliases = _messages.BooleanField(24)
-  securityProfile = _messages.MessageField('SecurityProfile', 25)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 25)
+  securityProfile = _messages.MessageField('SecurityProfile', 26)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -2235,8 +2243,8 @@ class MasterAuth(_messages.Message):
     clientCertificate: [Output only] Base64-encoded public certificate used by
       clients to authenticate to the cluster endpoint.
     clientCertificateConfig: Configuration for client certificate
-      authentication on the cluster.  If no configuration is specified, a
-      client certificate is issued.
+      authentication on the cluster. For clusters before v1.12, if no
+      configuration is specified, a client certificate is issued.
     clientKey: [Output only] Base64-encoded private key used by clients to
       authenticate to the cluster endpoint.
     clusterCaCertificate: [Output only] Base64-encoded public certificate that
@@ -2528,6 +2536,7 @@ class NodeConfig(_messages.Message):
     preemptible: Whether the nodes are created as preemptible VM instances.
       See: https://cloud.google.com/compute/docs/instances/preemptible for
       more inforamtion about preemptible VM instances.
+    sandboxConfig: Sandbox configuration for this node.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. If no Service Account is specified, the "default" service
       account is used.
@@ -2620,10 +2629,11 @@ class NodeConfig(_messages.Message):
   nodeImageConfig = _messages.MessageField('CustomImageConfig', 12)
   oauthScopes = _messages.StringField(13, repeated=True)
   preemptible = _messages.BooleanField(14)
-  serviceAccount = _messages.StringField(15)
-  tags = _messages.StringField(16, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 17, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 18)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 15)
+  serviceAccount = _messages.StringField(16)
+  tags = _messages.StringField(17, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 18, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 19)
 
 
 class NodeManagement(_messages.Message):
@@ -3008,6 +3018,17 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
   projectId = _messages.StringField(4)
   version = _messages.StringField(5)
   zone = _messages.StringField(6)
+
+
+class SandboxConfig(_messages.Message):
+  r"""SandboxConfig contains configurations of the sandbox to use for the
+  node.
+
+  Fields:
+    sandboxType: Type of the sandbox to use for the node (e.g. 'gvisor')
+  """
+
+  sandboxType = _messages.StringField(1)
 
 
 class SecurityProfile(_messages.Message):
@@ -3698,12 +3719,75 @@ class UsableSubnetwork(_messages.Message):
     ipCidrRange: The range of internal addresses that are owned by this
       subnetwork.
     network: Network Name.
+    secondaryIpRanges: Secondary IP ranges.
+    statusMessage: A human readable status message representing the reasons
+      for cases where the caller cannot use the secondary ranges under the
+      subnet. For example if the secondary_ip_ranges is empty due to a
+      permission issue, an insufficient permission message will be given by
+      status_message.
     subnetwork: Subnetwork Name.
   """
 
   ipCidrRange = _messages.StringField(1)
   network = _messages.StringField(2)
-  subnetwork = _messages.StringField(3)
+  secondaryIpRanges = _messages.MessageField('UsableSubnetworkSecondaryRange', 3, repeated=True)
+  statusMessage = _messages.StringField(4)
+  subnetwork = _messages.StringField(5)
+
+
+class UsableSubnetworkSecondaryRange(_messages.Message):
+  r"""Secondary IP range of a usable subnetwork.
+
+  Enums:
+    StatusValueValuesEnum: This field is to determine the status of the
+      secondary range programmably.
+
+  Fields:
+    ipCidrRange: The range of IP addresses belonging to this subnetwork
+      secondary range.
+    rangeName: The name associated with this subnetwork secondary range, used
+      when adding an alias IP range to a VM instance.
+    status: This field is to determine the status of the secondary range
+      programmably.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""This field is to determine the status of the secondary range
+    programmably.
+
+    Values:
+      UNKNOWN: UNKNOWN is the zero value of the Status enum. It's not a valid
+        status.
+      UNUSED: UNUSED denotes that this range is unclaimed by any cluster.
+      IN_USE_SERVICE: IN_USE_SERVICE denotes that this range is claimed by a
+        cluster for services. It cannot be used for other clusters.
+      IN_USE_SHAREABLE_POD: IN_USE_SHAREABLE_POD denotes this range was
+        created by the network admin and is currently claimed by a cluster for
+        pods. It can only be used by other clusters as a pod range.
+      IN_USE_MANAGED_POD: IN_USE_MANAGED_POD denotes this range was created by
+        GKE and is claimed for pods. It cannot be used for other clusters.
+    """
+    UNKNOWN = 0
+    UNUSED = 1
+    IN_USE_SERVICE = 2
+    IN_USE_SHAREABLE_POD = 3
+    IN_USE_MANAGED_POD = 4
+
+  ipCidrRange = _messages.StringField(1)
+  rangeName = _messages.StringField(2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class VerticalPodAutoscaling(_messages.Message):
+  r"""VerticalPodAutoscaling contains global, per-cluster information required
+  by Vertical Pod Autoscaler to automatically adjust the resources of pods
+  controlled by it.
+
+  Fields:
+    enabled: Enables vertical pod autoscaling.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class WorkloadMetadataConfig(_messages.Message):

@@ -270,6 +270,7 @@ class CheckInRequest(_messages.Message):
     deadlineExpired: The deadline has expired and the worker needs more time.
     event: A workflow specific event occurred.
     result: The operation has finished with the given result.
+    workerStatus: Data about the status of the worker VM.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -300,6 +301,7 @@ class CheckInRequest(_messages.Message):
   deadlineExpired = _messages.MessageField('Empty', 1)
   event = _messages.MessageField('EventValue', 2)
   result = _messages.MessageField('Status', 3)
+  workerStatus = _messages.MessageField('WorkerStatus', 4)
 
 
 class CheckInResponse(_messages.Message):
@@ -491,6 +493,18 @@ class Disk(_messages.Message):
   sizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   sourceImage = _messages.StringField(3)
   type = _messages.StringField(4)
+
+
+class DiskStatus(_messages.Message):
+  r"""The status of a disk on a VM.
+
+  Fields:
+    freeSpaceBytes: Free disk space.
+    totalSpaceBytes: Total disk space.
+  """
+
+  freeSpaceBytes = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
+  totalSpaceBytes = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
 
 
 class Empty(_messages.Message):
@@ -1558,6 +1572,52 @@ class WorkerReleasedEvent(_messages.Message):
 
   instance = _messages.StringField(1)
   zone = _messages.StringField(2)
+
+
+class WorkerStatus(_messages.Message):
+  r"""The status of the worker VM.
+
+  Messages:
+    AttachedDisksValue: Status of attached disks.
+
+  Fields:
+    attachedDisks: Status of attached disks.
+    bootDisk: Status of the boot disk.
+    freeRamBytes: Free RAM.
+    totalRamBytes: Total RAM.
+    uptimeSeconds: System uptime.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttachedDisksValue(_messages.Message):
+    r"""Status of attached disks.
+
+    Messages:
+      AdditionalProperty: An additional property for a AttachedDisksValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AttachedDisksValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttachedDisksValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A DiskStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('DiskStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attachedDisks = _messages.MessageField('AttachedDisksValue', 1)
+  bootDisk = _messages.MessageField('DiskStatus', 2)
+  freeRamBytes = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  totalRamBytes = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  uptimeSeconds = _messages.IntegerField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

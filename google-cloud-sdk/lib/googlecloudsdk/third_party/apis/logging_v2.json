@@ -1094,6 +1094,10 @@
           "description": "Stackdriver Trace identifier for this request.",
           "type": "string"
         },
+        "traceSampled": {
+          "description": "If true, the value in the 'trace_id' field was sampled for storage in a trace backend.",
+          "type": "boolean"
+        },
         "sourceReference": {
           "description": "Source code for the application that handled this request. There can be more than one source reference per deployed application if source code is distributed among multiple repositories.",
           "type": "array",

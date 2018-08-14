@@ -1670,3 +1670,21 @@ Example:
         '--clear-resource-usage-bigquery-dataset',
         action='store_true',
         help='Disables exporting cluster resource usage to BigQuery.')
+
+
+def AddVerticalPodAutoscalingFlag(parser, hidden=False):
+  """Adds vertical pod autoscaling related flag to the parser.
+
+  VerticalPodAutoscaling related flag is: --enable-vertical-pod-autoscaling
+
+  Args:
+    parser: A given parser.
+    hidden: If true, suppress help text for added options.
+  """
+
+  parser.add_argument(
+      '--enable-vertical-pod-autoscaling',
+      default=None,
+      help='Enables vertical pod autoscaling for a cluster.',
+      hidden=hidden,
+      action='store_true')

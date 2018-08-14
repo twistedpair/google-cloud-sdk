@@ -569,6 +569,60 @@
         "deadlineExpired": {
           "description": "The deadline has expired and the worker needs more time.",
           "$ref": "Empty"
+        },
+        "workerStatus": {
+          "description": "Data about the status of the worker VM.",
+          "$ref": "WorkerStatus"
+        }
+      }
+    },
+    "WorkerStatus": {
+      "id": "WorkerStatus",
+      "description": "The status of the worker VM.",
+      "type": "object",
+      "properties": {
+        "uptimeSeconds": {
+          "description": "System uptime.",
+          "type": "string",
+          "format": "int64"
+        },
+        "freeRamBytes": {
+          "description": "Free RAM.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "totalRamBytes": {
+          "description": "Total RAM.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "bootDisk": {
+          "description": "Status of the boot disk.",
+          "$ref": "DiskStatus"
+        },
+        "attachedDisks": {
+          "description": "Status of attached disks.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "DiskStatus"
+          }
+        }
+      }
+    },
+    "DiskStatus": {
+      "id": "DiskStatus",
+      "description": "The status of a disk on a VM.",
+      "type": "object",
+      "properties": {
+        "freeSpaceBytes": {
+          "description": "Free disk space.",
+          "type": "string",
+          "format": "uint64"
+        },
+        "totalSpaceBytes": {
+          "description": "Total disk space.",
+          "type": "string",
+          "format": "uint64"
         }
       }
     },

@@ -361,6 +361,17 @@ STAGING_BUCKET = base.Argument(
         path.
         """)
 
+SIGNATURE_NAME = base.Argument(
+    '--signature-name',
+    required=False,
+    type=str,
+    help="""\
+    The name of the signature defined in the SavedModel to use for
+    this job. Defaults to DEFAULT_SERVING_SIGNATURE_DEF_KEY in
+    https://www.tensorflow.org/api_docs/python/tf/saved_model/signature_constants,
+    which is "serving_default". Only applies to TensorFlow models.
+    """)
+
 
 def GetSummarizeFlag():
   return base.Argument(

@@ -2736,7 +2736,7 @@ class SparkRJob(_messages.Message):
 
   Fields:
     archiveUris: Optional. HCFS URIs of archives to be extracted in the
-      working directory of of Spark drivers and tasks. Supported file types:
+      working directory of Spark drivers and tasks. Supported file types:
       .jar, .tar, .tar.gz, .tgz, and .zip.
     args: Optional. The arguments to pass to the driver. Do not include
       arguments, such as --conf, that can be set as job properties, since a

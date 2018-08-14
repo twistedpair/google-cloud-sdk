@@ -290,10 +290,9 @@ def _GetYamlImports(import_object, globbing_enabled=False):
    ConfigError: If we cannont read the file, the yaml is malformed, or
        the import object does not contain a 'path' field.
   """
-  prev_working_dir = os.getcwd()
   parent_dir = None
   if not _IsUrl(import_object.full_path):
-    parent_dir = os.path.dirname(import_object.full_path)
+    parent_dir = os.path.dirname(os.path.abspath(import_object.full_path))
   content = import_object.GetContent()
   yaml_content = yaml.load(content)
   imports = []
@@ -308,12 +307,11 @@ def _GetYamlImports(import_object, globbing_enabled=False):
       glob_matches = []
       # Only expand globs if config set and the path is a local fs reference.
       if globbing_enabled and parent_dir and not _IsUrl(i[PATH]):
-        # Briefly set our working dir to the root config's for resolving globs.
-        os.chdir(parent_dir)
-        # TODO(b/111880973): Replace with gcloud glob supporting ** wildcards.
-        glob_matches = glob.glob(i[PATH])
-        glob_matches = _SanitizeWindowsPathsGlobs(glob_matches)
-        os.chdir(prev_working_dir)
+        # Set our working dir to the import_object's for resolving globs.
+        with files.ChDir(parent_dir):
+          # TODO(b/111880973): Replace with gcloud glob supporting ** wildcards.
+          glob_matches = glob.glob(i[PATH])
+          glob_matches = _SanitizeWindowsPathsGlobs(glob_matches)
         # Multiple file case.
         if len(glob_matches) > 1:
           if NAME in i:

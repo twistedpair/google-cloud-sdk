@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20180727",
+ "revision": "20180803",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1108,18 +1108,6 @@
      "type": "string",
      "description": "Specifies the size of the disk in base-2 GB.",
      "format": "int64"
-    },
-    "diskStorageType": {
-     "type": "string",
-     "description": "[Deprecated] Storage type of the disk.",
-     "enum": [
-      "HDD",
-      "SSD"
-     ],
-     "enumDescriptions": [
-      "",
-      ""
-     ]
     },
     "diskType": {
      "type": "string",
@@ -9257,7 +9245,7 @@
     },
     "availabilityZone": {
      "type": "string",
-     "description": "[Output Only] Availability zone for this location. Within a metropolitan area (metro), maintenance will not be simultaneously scheduled in more than one availability zone. Example: \"zone1\" or \"zone2\"."
+     "description": "[Output Only] Availability zone for this InterconnectLocation. Within a metropolitan area (metro), maintenance will not be simultaneously scheduled in more than one availability zone. Example: \"zone1\" or \"zone2\"."
     },
     "city": {
      "type": "string",

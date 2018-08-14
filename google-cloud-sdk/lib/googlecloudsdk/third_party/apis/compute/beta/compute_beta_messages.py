@@ -1274,9 +1274,6 @@ class AttachedDiskInitializeParams(_messages.Message):
   mutually exclusive with the source property; you can only define one or the
   other, but not both.
 
-  Enums:
-    DiskStorageTypeValueValuesEnum: [Deprecated] Storage type of the disk.
-
   Messages:
     LabelsValue: Labels to apply to this disk. These can be later modified by
       the disks.setLabels method. This field is only applicable for persistent
@@ -1288,7 +1285,6 @@ class AttachedDiskInitializeParams(_messages.Message):
       already in the given zone/region, a new name will be automatically
       generated.
     diskSizeGb: Specifies the size of the disk in base-2 GB.
-    diskStorageType: [Deprecated] Storage type of the disk.
     diskType: Specifies the disk type to use to create the instance. If not
       specified, the default is pd-standard, specified using the full URL. For
       example: https://www.googleapis.com/compute/v1/projects/project/zones/zo
@@ -1324,16 +1320,6 @@ class AttachedDiskInitializeParams(_messages.Message):
       keys.
   """
 
-  class DiskStorageTypeValueValuesEnum(_messages.Enum):
-    r"""[Deprecated] Storage type of the disk.
-
-    Values:
-      HDD: <no description>
-      SSD: <no description>
-    """
-    HDD = 0
-    SSD = 1
-
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels to apply to this disk. These can be later modified by the
@@ -1362,11 +1348,10 @@ class AttachedDiskInitializeParams(_messages.Message):
 
   diskName = _messages.StringField(1)
   diskSizeGb = _messages.IntegerField(2)
-  diskStorageType = _messages.EnumField('DiskStorageTypeValueValuesEnum', 3)
-  diskType = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  sourceImage = _messages.StringField(6)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
+  diskType = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  sourceImage = _messages.StringField(5)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
 
 
 class AuditConfig(_messages.Message):
@@ -23317,10 +23302,10 @@ class InterconnectLocation(_messages.Message):
   Fields:
     address: [Output Only] The postal address of the Point of Presence, each
       line in the address is separated by a newline character.
-    availabilityZone: [Output Only] Availability zone for this location.
-      Within a metropolitan area (metro), maintenance will not be
-      simultaneously scheduled in more than one availability zone. Example:
-      "zone1" or "zone2".
+    availabilityZone: [Output Only] Availability zone for this
+      InterconnectLocation. Within a metropolitan area (metro), maintenance
+      will not be simultaneously scheduled in more than one availability zone.
+      Example: "zone1" or "zone2".
     city: [Output Only] Metropolitan area designator that indicates which city
       an interconnect is located. For example: "Chicago, IL", "Amsterdam,
       Netherlands".

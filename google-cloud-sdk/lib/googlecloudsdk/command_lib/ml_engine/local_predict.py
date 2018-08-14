@@ -19,6 +19,7 @@ conventions of Cloud SDK do not apply here.
 """
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
@@ -144,6 +145,8 @@ def main():
                       help=('The ML framework used to train this version of '
                             'the model. If not specified, defaults to '
                             '`tensorflow`'))
+  parser.add_argument('--signature-name', required=False,
+                      help='Tensorflow signature to select input/output map.')
   args, _ = parser.parse_known_args()
 
   _verify_ml_libs(args.framework)
@@ -160,7 +163,8 @@ def main():
 
   predictions = prediction_lib.local_predict(model_dir=args.model_dir,
                                              instances=instances,
-                                             framework=args.framework)
+                                             framework=args.framework,
+                                             signature_name=args.signature_name)
   print(json.dumps(predictions))
 
 

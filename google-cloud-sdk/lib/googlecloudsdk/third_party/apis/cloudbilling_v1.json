@@ -945,6 +945,9 @@
           "response": {
             "$ref": "ListServicesResponse"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
           "description": "Lists all public cloud services."
         }
       }
@@ -1000,6 +1003,9 @@
               "response": {
                 "$ref": "ListSkusResponse"
               },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
               "description": "Lists all publicly available SKUs for a given cloud service."
             }
           }

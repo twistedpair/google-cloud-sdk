@@ -268,7 +268,7 @@
           "type": "string"
         },
         "currentNodeVersion": {
-          "description": "[Output only] The current version of the node software components.\nIf they are currently at multiple versions because they're in the process\nof being upgraded, this reflects the minimum version of all nodes.",
+          "description": "[Output only] Deprecated, use\n[NodePool.version](\/kubernetes-engine\/docs\/reference\/rest\/v1\/projects.zones.clusters.nodePool)\ninstead. The current version of the node software components. If they are\ncurrently at multiple versions because they're in the process of being\nupgraded, this reflects the minimum version of all nodes.",
           "type": "string"
         },
         "createTime": {
@@ -499,7 +499,7 @@
           "type": "string"
         },
         "clientCertificateConfig": {
-          "description": "Configuration for client certificate authentication on the cluster.  If no\nconfiguration is specified, a client certificate is issued.",
+          "description": "Configuration for client certificate authentication on the cluster. For\nclusters before v1.12, if no configuration is specified, a client\ncertificate is issued.",
           "$ref": "ClientCertificateConfig"
         },
         "clusterCaCertificate": {
@@ -2266,6 +2266,55 @@
       "description": "Response sent to audit log requests.",
       "type": "object",
       "properties": {
+      }
+    },
+    "CheckAuditPolicyRequest": {
+      "id": "CheckAuditPolicyRequest",
+      "description": "A request to check whether user action (auditItem) described in\nAuditPolicyCheckData requires writing to Cloud Audit Logging or Gin Logging.",
+      "type": "object",
+      "properties": {
+        "auditItem": {
+          "description": "Subset of AuditEvent fields required to check Audit Policy.",
+          "$ref": "CheckAuditPolicyData"
+        },
+        "zone": {
+          "description": "The zone of this master's cluster.\nThis field is deprecated. Use location instead.",
+          "type": "string"
+        }
+      }
+    },
+    "CheckAuditPolicyData": {
+      "id": "CheckAuditPolicyData",
+      "description": "Subset of AuditEvent fields required to check Audit Policy.",
+      "type": "object",
+      "properties": {
+        "verb": {
+          "description": "Verb is the kubernetes verb associated with the request.  For non-resource\nrequests, this is identical to HttpMethod.",
+          "type": "string"
+        },
+        "user": {
+          "description": "Authenticated user information.",
+          "$ref": "AuthnV1UserInfo"
+        },
+        "objectRef": {
+          "description": "Object reference this request is targeted at. Does not apply for List-type\nrequests, or non-resource requests.\n+optional",
+          "$ref": "AuditObjectReference"
+        }
+      }
+    },
+    "CheckAuditPolicyResponse": {
+      "id": "CheckAuditPolicyResponse",
+      "description": "A response to CheckAuditPolicy.",
+      "type": "object",
+      "properties": {
+        "calRequired": {
+          "description": "write to Cloud Audit Logging required",
+          "type": "boolean"
+        },
+        "ginRequired": {
+          "description": "write to Gin required",
+          "type": "boolean"
+        }
       }
     },
     "AuthenticateRequest": {
@@ -5260,6 +5309,55 @@
                 "https://www.googleapis.com/auth/userinfo.email"
               ],
               "description": "Audits the provided events to Cloud Audit Logging and\/or Gin, depending on\npolicies defined by GKE."
+            },
+            "auditPolicy": {
+              "id": "container.masterProjects.locations.auditPolicy",
+              "path": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/auditPolicy",
+              "flatPath": "v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/auditPolicy",
+              "httpMethod": "POST",
+              "parameters": {
+                "masterProjectId": {
+                  "description": "The hosted master project in which this master resides.  This can be\neither a [project ID or project\nnumber](https:\/\/support.google.com\/cloud\/answer\/6158840).",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "location": {
+                  "description": "The location of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "projectNumber": {
+                  "description": "The project number for which the request is being authorized.  This is\nthe project in which this master's cluster resides.\n\nThis is an int64, so it must be a project number, not a project ID.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string",
+                  "format": "int64"
+                },
+                "clusterId": {
+                  "description": "The name of this master's cluster.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "masterProjectId",
+                "location",
+                "projectNumber",
+                "clusterId"
+              ],
+              "request": {
+                "$ref": "CheckAuditPolicyRequest"
+              },
+              "response": {
+                "$ref": "CheckAuditPolicyResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/userinfo.email"
+              ],
+              "description": "Check if provided events require write to Cloud Audit Logging and\/or Gin,\ndepending on policies defined by GKE."
             },
             "authenticate": {
               "id": "container.masterProjects.locations.authenticate",

@@ -26,6 +26,7 @@ import sys
 from googlecloudsdk.calliope import cli_tree
 
 from googlecloudsdk.command_lib.interactive import bindings
+from googlecloudsdk.command_lib.interactive import bindings_vi
 from googlecloudsdk.command_lib.interactive import completer
 from googlecloudsdk.command_lib.interactive import coshell
 from googlecloudsdk.command_lib.interactive import layout
@@ -157,6 +158,7 @@ class Application(object):
     coshell: The shell coprocess object.
     key_bindings: The key_bindings object holding the key binding list and
       toggle states.
+    key_bindings_registry: The key bindings registry.
   """
 
   def __init__(self, cosh=None, args=None, config=None):
@@ -164,6 +166,7 @@ class Application(object):
     self.coshell = cosh
     self.config = config
     self.key_bindings = bindings.KeyBindings()
+    self.key_bindings_registry = self.key_bindings.MakeRegistry()
 
     # Load the default CLI trees. On startup we ignore out of date trees. The
     # alternative is to regenerate them before the first prompt. This could be
@@ -237,6 +240,7 @@ class Application(object):
         output=shortcuts.create_output(),
     )
     self.key_bindings.Initialize(self.cli)
+    bindings_vi.LoadViBindings(self.key_bindings_registry)
 
   def _CreatePromptApplication(self, config, multiline):
     """Creates a shell prompt Application."""
@@ -260,7 +264,7 @@ class Application(object):
         clipboard=None,
         erase_when_done=False,
         get_title=None,
-        key_bindings_registry=self.key_bindings.MakeRegistry(),
+        key_bindings_registry=self.key_bindings_registry,
         mouse_support=False,
         reverse_vi_search_direction=True,
         style=interactive_style.GetDocumentStyle(),

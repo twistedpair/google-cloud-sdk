@@ -358,7 +358,8 @@ class CreateClusterOptions(object):
                default_max_pods_per_node=None,
                enable_managed_pod_identity=None,
                resource_usage_bigquery_dataset=None,
-               security_group=None):
+               security_group=None,
+               enable_vertical_pod_autoscaling=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -424,6 +425,7 @@ class CreateClusterOptions(object):
     self.enable_managed_pod_identity = enable_managed_pod_identity
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
     self.security_group = security_group
+    self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
 
 
 class UpdateClusterOptions(object):
@@ -447,7 +449,8 @@ class UpdateClusterOptions(object):
                enable_autoprovisioning=None,
                enable_pod_security_policy=None,
                enable_binauthz=None,
-               concurrent_node_count=None):
+               concurrent_node_count=None,
+               enable_vertical_pod_autoscaling=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -467,6 +470,7 @@ class UpdateClusterOptions(object):
     self.enable_pod_security_policy = enable_pod_security_policy
     self.enable_binauthz = enable_binauthz
     self.concurrent_node_count = concurrent_node_count
+    self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
 
 
 class SetMasterAuthOptions(object):
@@ -719,14 +723,14 @@ class APIAdapter(object):
     with progress_tracker.ProgressTracker(message, autotick=True,
                                           detail_message_callback=
                                           lambda: detail_message):
-      start_time = time.clock()
-      while timeout_s > (time.clock() - start_time):
+      start_time = time.time()
+      while timeout_s > (time.time() - start_time):
         try:
           operation = self.GetOperation(operation_ref)
           if self.IsOperationFinished(operation):
             # Success!
             log.info('Operation %s succeeded after %.3f seconds',
-                     operation, (time.clock() - start_time))
+                     operation, (time.time() - start_time))
             break
           detail_message = operation.detail
         except apitools_exceptions.HttpError as error:
@@ -751,87 +755,8 @@ class APIAdapter(object):
 
   def CreateClusterCommon(self, cluster_ref, options):
     """Returns a CreateCluster operation."""
-    node_config = self.messages.NodeConfig()
-    if options.node_machine_type:
-      node_config.machineType = options.node_machine_type
-    if options.node_disk_size_gb:
-      node_config.diskSizeGb = options.node_disk_size_gb
-    if options.disk_type:
-      node_config.diskType = options.disk_type
-    if options.node_source_image:
-      raise util.Error('cannot specify node source image in container v1 api')
-
-    NodeIdentityOptionsToNodeConfig(options, node_config)
-
-    if options.local_ssd_count:
-      node_config.localSsdCount = options.local_ssd_count
-
-    if options.tags:
-      node_config.tags = options.tags
-    else:
-      node_config.tags = []
-
-    if options.image_type:
-      node_config.imageType = options.image_type
-
-    custom_config = self.messages.CustomImageConfig()
-    if options.image:
-      custom_config.image = options.image
-    if options.image_project:
-      custom_config.imageProject = options.image_project
-    if options.image_family:
-      custom_config.imageFamily = options.image_family
-    if options.image or options.image_project or options.image_family:
-      node_config.nodeImageConfig = custom_config
-
-    _AddNodeLabelsToNodeConfig(node_config, options)
-    self._AddNodeTaintsToNodeConfig(node_config, options)
-
-    if options.preemptible:
-      node_config.preemptible = options.preemptible
-
-    if options.accelerators is not None:
-      type_name = options.accelerators['type']
-      # Accelerator count defaults to 1.
-      count = int(options.accelerators.get('count', 1))
-      node_config.accelerators = [
-          self.messages.AcceleratorConfig(acceleratorType=type_name,
-                                          acceleratorCount=count)
-      ]
-
-    if options.min_cpu_platform is not None:
-      node_config.minCpuPlatform = options.min_cpu_platform
-
-    _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
-
-    max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
-    pools = (options.num_nodes + max_nodes_per_pool - 1) // max_nodes_per_pool
-    if pools == 1:
-      pool_names = ['default-pool']  # pool consistency with server default
-    else:
-      # default-pool-0, -1, ...
-      pool_names = ['default-pool-{0}'.format(i) for i in range(0, pools)]
-
-    pools = []
-    per_pool = (options.num_nodes + len(pool_names) - 1) // len(pool_names)
-    to_add = options.num_nodes
-    for name in pool_names:
-      nodes = per_pool if (to_add > per_pool) else to_add
-      autoscaling = None
-      if options.enable_autoscaling:
-        autoscaling = self.messages.NodePoolAutoscaling(
-            enabled=options.enable_autoscaling,
-            minNodeCount=options.min_nodes,
-            maxNodeCount=options.max_nodes)
-      pools.append(
-          self.messages.NodePool(
-              name=name,
-              initialNodeCount=nodes,
-              config=node_config,
-              autoscaling=autoscaling,
-              version=options.node_version,
-              management=self._GetNodeManagement(options)))
-      to_add -= nodes
+    node_config = self.ParseNodeConfig(options)
+    pools = self.ParseNodePools(options, node_config)
 
     cluster = self.messages.Cluster(
         name=cluster_ref.clusterId,
@@ -862,18 +787,8 @@ class APIAdapter(object):
           disable_network_policy=(
               NETWORK_POLICY not in options.addons))
       cluster.addonsConfig = addons
-    if options.enable_master_authorized_networks:
-      authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
-          enabled=options.enable_master_authorized_networks)
-      if options.master_authorized_networks:
-        for network in options.master_authorized_networks:
-          authorized_networks.cidrBlocks.append(self.messages.CidrBlock(
-              cidrBlock=network))
-      cluster.masterAuthorizedNetworksConfig = authorized_networks
-    elif options.master_authorized_networks:
-      # Raise error if use --master-authorized-networks without
-      # --enable-master-authorized-networks.
-      raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
+
+    self.ParseMasterAuthorizedNetworkOptions(options, cluster)
 
     if options.enable_kubernetes_alpha:
       cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
@@ -905,13 +820,7 @@ class APIAdapter(object):
                   startTime=options.maintenance_window)))
       cluster.maintenancePolicy = policy
 
-    if options.labels is not None:
-      labels = self.messages.Cluster.ResourceLabelsValue()
-      props = []
-      for k, v in sorted(six.iteritems(options.labels)):
-        props.append(labels.AdditionalProperty(key=k, value=v))
-      labels.additionalProperties = props
-      cluster.resourceLabels = labels
+    self.ParseResourceLabels(options, cluster)
 
     if options.enable_pod_security_policy is not None:
       cluster.podSecurityPolicyConfig = self.messages.PodSecurityPolicyConfig(
@@ -933,7 +842,124 @@ class APIAdapter(object):
     self.ParseAllowRouteOverlapOptions(options, cluster)
     self.ParsePrivateClusterOptions(options, cluster)
     self.ParseTpuOptions(options, cluster)
+    if options.enable_vertical_pod_autoscaling is not None:
+      cluster.verticalPodAutoscaling = self.messages.VerticalPodAutoscaling(
+          enabled=options.enable_vertical_pod_autoscaling)
     return cluster
+
+  def ParseNodeConfig(self, options):
+    """Creates node config based on node config options."""
+    node_config = self.messages.NodeConfig()
+    if options.node_machine_type:
+      node_config.machineType = options.node_machine_type
+    if options.node_disk_size_gb:
+      node_config.diskSizeGb = options.node_disk_size_gb
+    if options.disk_type:
+      node_config.diskType = options.disk_type
+    if options.node_source_image:
+      raise util.Error('cannot specify node source image in container v1 api')
+
+    NodeIdentityOptionsToNodeConfig(options, node_config)
+
+    if options.local_ssd_count:
+      node_config.localSsdCount = options.local_ssd_count
+
+    if options.tags:
+      node_config.tags = options.tags
+    else:
+      node_config.tags = []
+
+    if options.image_type:
+      node_config.imageType = options.image_type
+
+    self.ParseCustomNodeConfig(options, node_config)
+
+    _AddNodeLabelsToNodeConfig(node_config, options)
+    self._AddNodeTaintsToNodeConfig(node_config, options)
+
+    if options.preemptible:
+      node_config.preemptible = options.preemptible
+
+    self.ParseAcceleratorOptions(options, node_config)
+
+    if options.min_cpu_platform is not None:
+      node_config.minCpuPlatform = options.min_cpu_platform
+
+    _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
+
+    return node_config
+
+  def ParseCustomNodeConfig(self, options, node_config):
+    """Parses custom node config options."""
+    custom_config = self.messages.CustomImageConfig()
+    if options.image:
+      custom_config.image = options.image
+    if options.image_project:
+      custom_config.imageProject = options.image_project
+    if options.image_family:
+      custom_config.imageFamily = options.image_family
+    if options.image or options.image_project or options.image_family:
+      node_config.nodeImageConfig = custom_config
+
+  def ParseNodePools(self, options, node_config):
+    """Creates a list of node pools for the cluster by parsing options.
+
+    Args:
+      options: cluster creation options
+      node_config: node configuration for nodes in the node pools
+    Returns:
+      List of node pools.
+    """
+    max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
+    pools = (options.num_nodes + max_nodes_per_pool - 1) // max_nodes_per_pool
+    if pools == 1:
+      pool_names = ['default-pool']  # pool consistency with server default
+    else:
+      # default-pool-0, -1, ...
+      pool_names = ['default-pool-{0}'.format(i) for i in range(0, pools)]
+
+    pools = []
+    per_pool = (options.num_nodes + len(pool_names) - 1) // len(pool_names)
+    to_add = options.num_nodes
+    for name in pool_names:
+      nodes = per_pool if (to_add > per_pool) else to_add
+      autoscaling = None
+      if options.enable_autoscaling:
+        autoscaling = self.messages.NodePoolAutoscaling(
+            enabled=options.enable_autoscaling,
+            minNodeCount=options.min_nodes,
+            maxNodeCount=options.max_nodes)
+      pools.append(
+          self.messages.NodePool(
+              name=name,
+              initialNodeCount=nodes,
+              config=node_config,
+              autoscaling=autoscaling,
+              version=options.node_version,
+              management=self._GetNodeManagement(options)))
+      to_add -= nodes
+    return pools
+
+  def ParseAcceleratorOptions(self, options, node_config):
+    """Parses accrelerator options for the nodes in the cluster."""
+    if options.accelerators is not None:
+      type_name = options.accelerators['type']
+      # Accelerator count defaults to 1.
+      count = int(options.accelerators.get('count', 1))
+      node_config.accelerators = [
+          self.messages.AcceleratorConfig(acceleratorType=type_name,
+                                          acceleratorCount=count)
+      ]
+
+  def ParseResourceLabels(self, options, cluster):
+    """Parses resource labels options for the cluster."""
+    if options.labels is not None:
+      labels = self.messages.Cluster.ResourceLabelsValue()
+      props = []
+      for k, v in sorted(six.iteritems(options.labels)):
+        props.append(labels.AdditionalProperty(key=k, value=v))
+      labels.additionalProperties = props
+      cluster.resourceLabels = labels
 
   def ParseIPAliasOptions(self, options, cluster):
     """Parses the options for IP Alias."""
@@ -1021,6 +1047,21 @@ class APIAdapter(object):
     if options.enable_tpu:
       cluster.enableTpu = options.enable_tpu
 
+  def ParseMasterAuthorizedNetworkOptions(self, options, cluster):
+    """Parses the options for master authorized networks."""
+    if options.enable_master_authorized_networks:
+      authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
+          enabled=options.enable_master_authorized_networks)
+      if options.master_authorized_networks:
+        for network in options.master_authorized_networks:
+          authorized_networks.cidrBlocks.append(self.messages.CidrBlock(
+              cidrBlock=network))
+      cluster.masterAuthorizedNetworksConfig = authorized_networks
+    elif options.master_authorized_networks:
+      # Raise error if use --master-authorized-networks without
+      # --enable-master-authorized-networks.
+      raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
+
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
     req = self.messages.CreateClusterRequest(
@@ -1092,6 +1133,11 @@ class APIAdapter(object):
           enabled=options.enable_binauthz)
       update = self.messages.ClusterUpdate(
           desiredBinaryAuthorization=binary_authorization)
+    elif options.enable_vertical_pod_autoscaling is not None:
+      vertical_pod_autoscaling = self.messages.VerticalPodAutoscaling(
+          enabled=options.enable_vertical_pod_autoscaling)
+      update = self.messages.ClusterUpdate(
+          desiredVerticalPodAutoscaling=vertical_pod_autoscaling)
     elif options.resource_usage_bigquery_dataset is not None:
       bigquery_destination = self.messages.BigQueryDestination(
           datasetId=options.resource_usage_bigquery_dataset)

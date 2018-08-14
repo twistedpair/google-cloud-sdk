@@ -311,8 +311,8 @@ def SubmitPrediction(jobs_client, job,
                      model_dir=None, model=None, version=None,
                      input_paths=None, data_format=None, output_path=None,
                      region=None, runtime_version=None, max_worker_count=None,
-                     batch_size=None, labels=None, accelerator_count=None,
-                     accelerator_type=None):
+                     batch_size=None, signature_name=None, labels=None,
+                     accelerator_count=None, accelerator_type=None):
   """Submit a prediction job."""
   _ValidateSubmitPredictionArgs(model_dir, version)
 
@@ -331,6 +331,7 @@ def SubmitPrediction(jobs_client, job,
       runtime_version=runtime_version,
       max_worker_count=max_worker_count,
       batch_size=batch_size,
+      signature_name=signature_name,
       labels=labels,
       accelerator_count=accelerator_count,
       accelerator_type=_ACCELERATOR_MAP.GetEnumForChoice(accelerator_type)

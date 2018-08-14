@@ -768,7 +768,7 @@
             "",
             "Model for audio that is not one of the specific models below. This is\na generic model and can be used in various scenarios but is not\nnecessarily the best in any particular scenario.",
             "Model for audio from short queries like voice commands or voice search",
-            "Model for phone call conversation type opf audio.",
+            "Model for phone call conversation type op audio.",
             "Model for audio that originated from from video or includes multiple\nspeakers."
           ],
           "type": "string",
@@ -779,6 +779,10 @@
             "PHONE_CALL",
             "VIDEO"
           ]
+        },
+        "isEnhancedModel": {
+          "description": "If true then it means we are referring to the results of an enhanced\nversion of the model_type. Currently only PHONE_CALL model_type has an\nenhanced version.",
+          "type": "boolean"
         }
       }
     },

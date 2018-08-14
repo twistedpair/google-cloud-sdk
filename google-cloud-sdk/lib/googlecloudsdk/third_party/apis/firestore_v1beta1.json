@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20180727",
+  "revision": "20180803",
   "title": "Cloud Firestore API",
   "description": "",
   "ownerDomain": "google.com",

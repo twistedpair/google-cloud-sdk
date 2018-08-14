@@ -143,6 +143,9 @@ class EvaluateModelResponse(_messages.Message):
       evaluation.
 
   Fields:
+    isEnhancedModel: If true then it means we are referring to the results of
+      an enhanced version of the model_type. Currently only PHONE_CALL
+      model_type has an enhanced version.
     modelType: Required. The type of model used in this evaluation.
     wordErrorRate: Word error rate metric computed on the test set using the
       AutoML model.
@@ -158,7 +161,7 @@ class EvaluateModelResponse(_messages.Message):
         not necessarily the best in any particular scenario.
       COMMAND_AND_SEARCH: Model for audio from short queries like voice
         commands or voice search
-      PHONE_CALL: Model for phone call conversation type opf audio.
+      PHONE_CALL: Model for phone call conversation type op audio.
       VIDEO: Model for audio that originated from from video or includes
         multiple speakers.
     """
@@ -168,8 +171,9 @@ class EvaluateModelResponse(_messages.Message):
     PHONE_CALL = 3
     VIDEO = 4
 
-  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
-  wordErrorRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  isEnhancedModel = _messages.BooleanField(1)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 2)
+  wordErrorRate = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class ListDatasetsResponse(_messages.Message):

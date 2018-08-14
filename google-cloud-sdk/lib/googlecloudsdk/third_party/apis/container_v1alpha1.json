@@ -311,6 +311,10 @@
           "description": "Configuration of etcd encryption.",
           "$ref": "DatabaseEncryption"
         },
+        "verticalPodAutoscaling": {
+          "description": "Cluster-level Vertical Pod Autoscaling configuration.",
+          "$ref": "VerticalPodAutoscaling"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -332,7 +336,7 @@
           "type": "string"
         },
         "currentNodeVersion": {
-          "description": "[Output only] The current version of the node software components.\nIf they are currently at multiple versions because they're in the process\nof being upgraded, this reflects the minimum version of all nodes.",
+          "description": "[Output only] Deprecated, use\n[NodePool.version](\/kubernetes-engine\/docs\/reference\/rest\/v1alpha1\/projects.zones.clusters.nodePool)\ninstead. The current version of the node software components.\nIf they are currently at multiple versions because they're in the process\nof being upgraded, this reflects the minimum version of all nodes.",
           "type": "string"
         },
         "createTime": {
@@ -511,6 +515,10 @@
             "$ref": "LocalSsdVolumeConfig"
           }
         },
+        "sandboxConfig": {
+          "description": "Sandbox configuration for this node.",
+          "$ref": "SandboxConfig"
+        },
         "enableAuditLogging": {
           "description": "Whether to enable execve audit logging on the nodes.",
           "type": "boolean"
@@ -634,6 +642,17 @@
         }
       }
     },
+    "SandboxConfig": {
+      "id": "SandboxConfig",
+      "description": "SandboxConfig contains configurations of the sandbox to use for the node.",
+      "type": "object",
+      "properties": {
+        "sandboxType": {
+          "description": "Type of the sandbox to use for the node (e.g. 'gvisor')",
+          "type": "string"
+        }
+      }
+    },
     "MasterAuth": {
       "id": "MasterAuth",
       "description": "The authentication information for accessing the master endpoint.\nAuthentication can be done using HTTP basic auth or using client\ncertificates.",
@@ -648,7 +667,7 @@
           "type": "string"
         },
         "clientCertificateConfig": {
-          "description": "Configuration for client certificate authentication on the cluster.  If no\nconfiguration is specified, a client certificate is issued.",
+          "description": "Configuration for client certificate authentication on the cluster. For\nclusters before v1.12, if no configuration is specified, a client\ncertificate is issued.",
           "$ref": "ClientCertificateConfig"
         },
         "clusterCaCertificate": {
@@ -1406,6 +1425,17 @@
         }
       }
     },
+    "VerticalPodAutoscaling": {
+      "id": "VerticalPodAutoscaling",
+      "description": "VerticalPodAutoscaling contains global, per-cluster information\nrequired by Vertical Pod Autoscaler to automatically adjust\nthe resources of pods controlled by it.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables vertical pod autoscaling.",
+          "type": "boolean"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -1739,6 +1769,10 @@
         "desiredResourceUsageExportConfig": {
           "description": "The desired configuration for exporting resource usage.",
           "$ref": "ResourceUsageExportConfig"
+        },
+        "desiredVerticalPodAutoscaling": {
+          "description": "Cluster-level Vertical Pod Autoscaling configuration.",
+          "$ref": "VerticalPodAutoscaling"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
@@ -3074,6 +3108,50 @@
         "ipCidrRange": {
           "description": "The range of internal addresses that are owned by this subnetwork.",
           "type": "string"
+        },
+        "secondaryIpRanges": {
+          "description": "Secondary IP ranges.",
+          "type": "array",
+          "items": {
+            "$ref": "UsableSubnetworkSecondaryRange"
+          }
+        },
+        "statusMessage": {
+          "description": "A human readable status message representing the reasons for cases where\nthe caller cannot use the secondary ranges under the subnet. For example if\nthe secondary_ip_ranges is empty due to a permission issue, an insufficient\npermission message will be given by status_message.",
+          "type": "string"
+        }
+      }
+    },
+    "UsableSubnetworkSecondaryRange": {
+      "id": "UsableSubnetworkSecondaryRange",
+      "description": "Secondary IP range of a usable subnetwork.",
+      "type": "object",
+      "properties": {
+        "rangeName": {
+          "description": "The name associated with this subnetwork secondary range, used when adding\nan alias IP range to a VM instance.",
+          "type": "string"
+        },
+        "ipCidrRange": {
+          "description": "The range of IP addresses belonging to this subnetwork secondary range.",
+          "type": "string"
+        },
+        "status": {
+          "description": "This field is to determine the status of the secondary range programmably.",
+          "enumDescriptions": [
+            "UNKNOWN is the zero value of the Status enum. It's not a valid status.",
+            "UNUSED denotes that this range is unclaimed by any cluster.",
+            "IN_USE_SERVICE denotes that this range is claimed by a cluster for\nservices. It cannot be used for other clusters.",
+            "IN_USE_SHAREABLE_POD denotes this range was created by the network admin\nand is currently claimed by a cluster for pods. It can only be used by\nother clusters as a pod range.",
+            "IN_USE_MANAGED_POD denotes this range was created by GKE and is claimed\nfor pods. It cannot be used for other clusters."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "UNUSED",
+            "IN_USE_SERVICE",
+            "IN_USE_SHAREABLE_POD",
+            "IN_USE_MANAGED_POD"
+          ]
         }
       }
     }

@@ -481,6 +481,8 @@ class Projector(object):
         flag = self._projection.DEFAULT
       else:
         flag = self._projection.PROJECT
+      if hasattr(obj, 'MakeSerializable'):
+        obj = obj.MakeSerializable()
       return self._Project(obj, self._projection.Tree(), flag)
     obj = self._Project(obj, self._projection.GetEmpty(),
                         self._projection.PROJECT)

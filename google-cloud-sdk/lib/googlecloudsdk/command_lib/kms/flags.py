@@ -26,7 +26,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
-
 KEY_RING_COLLECTION = 'cloudkms.projects.locations.keyRings'
 LOCATION_COLLECTION = 'cloudkms.projects.locations'
 
@@ -34,14 +33,16 @@ LOCATION_COLLECTION = 'cloudkms.projects.locations'
 CRYPTO_KEY_COLLECTION = 'cloudkms.projects.locations.keyRings.cryptoKeys'
 CRYPTO_KEY_VERSION_COLLECTION = '%s.cryptoKeyVersions' % CRYPTO_KEY_COLLECTION
 
-
 # list command aggregators
 
 
 class ListCommandParameterInfo(parameter_info_lib.ParameterInfoByConvention):
 
-  def GetFlag(self, parameter_name, parameter_value=None,
-              check_properties=True, for_update=False):
+  def GetFlag(self,
+              parameter_name,
+              parameter_value=None,
+              check_properties=True,
+              for_update=False):
     return super(ListCommandParameterInfo, self).GetFlag(
         parameter_name,
         parameter_value=parameter_value,
@@ -105,7 +106,6 @@ class KeyVersionCompleter(ListCommandCompleter):
 
 # completers by parameter name convention
 
-
 COMPLETERS_BY_CONVENTION = {
     'location': (LocationCompleter, False),
     'keyring': (KeyRingCompleter, False),
@@ -130,9 +130,7 @@ def AddKeyRingFlag(parser, resource='resource'):
 
 def AddCryptoKeyFlag(parser, help_text=None):
   parser.add_argument(
-      '--key',
-      completer=KeyCompleter,
-      help=help_text or 'The containing key.')
+      '--key', completer=KeyCompleter, help=help_text or 'The containing key.')
 
 
 def AddKeyResourceFlags(parser, help_text=None):
@@ -228,10 +226,10 @@ def AddProtectionLevelFlag(parser):
       help='Protection level of the key.')
 
 
-def AddAttesationFileFlag(parser):
+def AddAttestationFileFlag(parser):
   parser.add_argument(
       '--attestation-file',
-      help='Path to the attestation file for the given crypto operation.')
+      help='Path to the output attestation file.')
 
 
 def AddDefaultAlgorithmFlag(parser):

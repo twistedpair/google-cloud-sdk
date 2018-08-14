@@ -33,6 +33,7 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import pkg_resources
+from jsonschema import exceptions as jsonschema_exceptions
 from jsonschema import validators
 import six
 
@@ -539,7 +540,10 @@ def ReadYaml(message_type, stream, schema_path=None):
   parsed_yaml = yaml.load(stream)
   if schema_path:
     # If a schema is provided, validate against it.
-    _ValidateYaml(parsed_yaml, schema_path)
+    try:
+      _ValidateYaml(parsed_yaml, schema_path)
+    except jsonschema_exceptions.ValidationError as e:
+      raise exceptions.ParseError('Validation Error: [{0}]'.format(e.message))
   try:
     message = encoding.PyValueToMessage(message_type, parsed_yaml)
   except Exception as e:

@@ -93,6 +93,16 @@ class DeploymentsSummary(SummaryResolver):
     self.deployments.append(occ)
 
 
+class DiscoverySummary(SummaryResolver):
+  """DiscoveryResolver has information about vulnerability discovery."""
+
+  def __init__(self):
+    self.discovery = []
+
+  def add_record(self, occ):
+    self.discovery.append(occ)
+
+
 class ContainerAndAnalysisData(container_data_util.ContainerData):
   """Class defining container and analysis data.
 
@@ -108,6 +118,7 @@ class ContainerAndAnalysisData(container_data_util.ContainerData):
     self.image_basis_summary = ImageBasesSummary()
     self.build_details_summary = BuildsSummary()
     self.deployment_summary = DeploymentsSummary()
+    self.discovery_summary = DiscoverySummary()
 
   def add_record(self, occurrence):
     messages = apis.GetMessagesModule('containeranalysis', 'v1alpha1')
@@ -122,9 +133,13 @@ class ContainerAndAnalysisData(container_data_util.ContainerData):
     elif (occurrence.kind ==
           messages.Occurrence.KindValueValuesEnum.DEPLOYABLE):
       self.deployment_summary.add_record(occurrence)
+    elif (occurrence.kind ==
+          messages.Occurrence.KindValueValuesEnum.DISCOVERY):
+      self.discovery_summary.add_record(occurrence)
 
   def resolveSummaries(self):
     self.package_vulnerability_summary.resolve()
     self.image_basis_summary.resolve()
     self.build_details_summary.resolve()
     self.deployment_summary.resolve()
+    self.discovery_summary.resolve()

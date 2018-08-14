@@ -147,7 +147,8 @@ class Database(_messages.Message):
   Fields:
     charset: The MySQL charset value.
     collation: The MySQL collation value.
-    etag: HTTP 1.1 Entity tag for the resource.
+    etag: This field is deprecated and will be removed from a future version
+      of the API.
     instance: The name of the Cloud SQL instance. This does not include the
       project ID.
     kind: This is always sql#database.
@@ -195,23 +196,24 @@ class DatabaseInstance(_messages.Message):
       property is applicable only to Second Generation instances.
 
   Fields:
-    backendType: FIRST_GEN: Basic Cloud SQL instance that runs in a Google-
-      managed container. SECOND_GEN: A newer Cloud SQL backend that runs in a
-      Compute Engine VM. EXTERNAL: A MySQL server that is not managed by
-      Google.
+    backendType: FIRST_GEN: First Generation instance. MySQL only. SECOND_GEN:
+      Second Generation instance or PostgreSQL instance. EXTERNAL: A database
+      server that is not managed by Google. This property is read-only; use
+      the tier property in the settings object to determine the database type
+      and Second or First Generation.
     connectionName: Connection name of the Cloud SQL instance used in
       connection strings.
     currentDiskSize: The current disk usage of the instance in bytes. This
       property has been deprecated. Users should use the
       "cloudsql.googleapis.com/database/disk/bytes_used" metric in Cloud
-      Monitoring API instead. Please see https://groups.google.com/d/msg
-      /google-cloud-sql-announce/I_7-F9EBhT0/BtvFtdFeAgAJ for details.
+      Monitoring API instead. Please see this announcement for details.
     databaseVersion: The database engine type and version. The databaseVersion
       field can not be changed after instance creation. MySQL Second
       Generation instances: MYSQL_5_7 (default) or MYSQL_5_6. PostgreSQL
       instances: POSTGRES_9_6 MySQL First Generation instances: MYSQL_5_6
       (default) or MYSQL_5_5
-    etag: HTTP 1.1 Entity tag for the resource.
+    etag: This field is deprecated and will be removed from a future version
+      of the API. Use the settings.settingsVersion field instead.
     failoverReplica: The name and status of the failover replica. This
       property is applicable only to Second Generation instances.
     gceZone: The Compute Engine zone that the instance is currently serving
@@ -948,8 +950,7 @@ class Settings(_messages.Message):
       turn off after 15 minutes of inactivity. Instances with PER_PACKAGE
       pricing turn off after 12 hours of inactivity.
     authorizedGaeApplications: The App Engine app IDs that can access this
-      instance. This property is only applicable to First Generation
-      instances.
+      instance. First Generation instances only.
     availabilityType: Availability type (PostgreSQL instances only). Potential
       values: ZONAL: The instance serves data from only one zone. Outages in
       that zone affect data accessibility. REGIONAL: The instance can serve
@@ -995,8 +996,11 @@ class Settings(_messages.Message):
     storageAutoResizeLimit: The maximum size to which storage capacity can be
       automatically increased. The default value is 0, which specifies that
       there is no limit. Applies only to Second Generation instances.
-    tier: The tier of service for this instance, for example D1, D2. For more
-      information, see pricing.
+    tier: The tier (or machine type) for this instance, for example
+      db-n1-standard-1 (MySQL instances) or db-custom-1-3840 (PostgreSQL
+      instances). For MySQL instances, this property determines whether the
+      instance is First or Second Generation. For more information, see
+      Instance Settings.
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """
@@ -1808,7 +1812,8 @@ class User(_messages.Message):
   r"""A Cloud SQL user resource.
 
   Fields:
-    etag: HTTP 1.1 Entity tag for the resource.
+    etag: This field is deprecated and will be removed from a future version
+      of the API.
     host: The host name from which the user can connect. For insert
       operations, host defaults to an empty string. For update operations,
       host is specified as part of the request URL. The host name cannot be
@@ -1818,7 +1823,7 @@ class User(_messages.Message):
       the URL.
     kind: This is always sql#user.
     name: The name of the user in the Cloud SQL instance. Can be omitted for
-      update since it is already specified on the URL.
+      update since it is already specified in the URL.
     password: The password for the user.
     project: The project ID of the project containing the Cloud SQL database.
       The Google apps domain is prefixed if applicable. Can be omitted for

@@ -1039,7 +1039,7 @@
           }
         },
         "archiveUris": {
-          "description": "Optional. HCFS URIs of archives to be extracted in the working directory of of Spark drivers and tasks. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "description": "Optional. HCFS URIs of archives to be extracted in the working directory of Spark drivers and tasks. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
           "type": "array",
           "items": {
             "type": "string"

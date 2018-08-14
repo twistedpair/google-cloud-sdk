@@ -205,6 +205,10 @@
       "description": "Request message for StartEnvironment.",
       "type": "object",
       "properties": {
+        "accessToken": {
+          "description": "The initial access token passed to the environment. If this is present and\nvalid, the environment will be pre-authenticated with gcloud so that the\nuser can run gcloud commands in Cloud Shell without having to log in. This\ncode can be updated later by calling AuthorizeEnvironment.",
+          "type": "string"
+        }
       }
     },
     "Operation": {
@@ -269,6 +273,24 @@
         }
       }
     },
+    "AuthorizeEnvironmentRequest": {
+      "id": "AuthorizeEnvironmentRequest",
+      "description": "Request message for AuthorizeEnvironment.",
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "description": "The OAuth access token that should be sent to the environment.",
+          "type": "string"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "CreatePublicKeyRequest": {
       "id": "CreatePublicKeyRequest",
       "description": "Request message for CreatePublicKey.",
@@ -278,13 +300,6 @@
           "description": "Key that should be added to the environment.",
           "$ref": "PublicKey"
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
       }
     },
     "StartEnvironmentMetadata": {
@@ -413,6 +428,34 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Starts an existing environment, allowing clients to connect to it. The\nreturned operation will contain an instance of StartEnvironmentMetadata in\nits metadata field. Users can wait for the environment to start by polling\nthis operation via GetOperation. Once the environment has finished starting\nand is ready to accept connections, the operation will contain a\nStartEnvironmentResponse in its response field."
+            },
+            "authorize": {
+              "id": "cloudshell.users.environments.authorize",
+              "path": "v1alpha1/{+name}:authorize",
+              "flatPath": "v1alpha1/users/{usersId}/environments/{environmentsId}:authorize",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Name of the resource that should receive the token, for example\n`users\/me\/environments\/default` or\n`users\/someone@example.com\/environments\/default`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^users\/[^\/]+\/environments\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "AuthorizeEnvironmentRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Sends an access token to a running environment on behalf of a user. When\nthis completes, the environment will be authorized to run gcloud commands\nwithout requiring the user to manually authenticate."
             }
           }
           ,

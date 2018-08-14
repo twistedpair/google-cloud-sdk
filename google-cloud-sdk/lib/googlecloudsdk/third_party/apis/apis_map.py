@@ -609,6 +609,14 @@ MAP = {
             default_version=True
         ),
     },
+    'serverless': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.serverless.v1alpha1',
+            client_classpath='serverless_v1alpha1_client.ServerlessV1alpha1',
+            messages_modulepath='serverless_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'servicemanagement': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.servicemanagement.v1',

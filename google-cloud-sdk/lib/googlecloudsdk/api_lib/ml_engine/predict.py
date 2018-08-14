@@ -34,13 +34,14 @@ class HttpRequestFailError(core_exceptions.Error):
   pass
 
 
-def Predict(model_or_version_ref, instances):
+def Predict(model_or_version_ref, instances, signature_name=None):
   """Performs online prediction on the input data file.
 
   Args:
       model_or_version_ref: a Resource representing either a model or a version.
       instances: a list of JSON or UTF-8 encoded instances to perform
           prediction on.
+      signature_name: name of input/output signature in the TF meta graph.
 
   Returns:
       A json object that contains predictions.
@@ -52,8 +53,11 @@ def Predict(model_or_version_ref, instances):
   url = model_or_version_ref.SelfLink() + ':predict'
   # Construct the body for the predict request.
   headers = {'Content-Type': 'application/json'}
+  content = {'instances': instances}
+  if signature_name:
+    content['signature_name'] = signature_name
   try:
-    body = json.dumps({'instances': instances}, sort_keys=True)
+    body = json.dumps(content, sort_keys=True)
   except (UnicodeDecodeError, TypeError):
     # Python 2: UnicodeDecode Error, Python 3: TypeError
     raise InstancesEncodeError('Instances cannot be JSON encoded, probably '

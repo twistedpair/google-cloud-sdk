@@ -206,10 +206,15 @@ class Cluster(_messages.Message):
       master endpoint.
     currentNodeCount: [Output only] The number of nodes currently in the
       cluster.
-    currentNodeVersion: [Output only] The current version of the node software
-      components. If they are currently at multiple versions because they're
-      in the process of being upgraded, this reflects the minimum version of
-      all nodes.
+    currentNodeVersion: [Output only] Deprecated, use [NodePool.version
+      ](/kubernetes-
+      engine/docs/reference/rest/v1beta1/projects.zones.clusters.nodePool)
+      instead. The current version of the node software components. If they
+      are currently at multiple versions because they're in the process of
+      being upgraded, this reflects the minimum version of all nodes.
+    defaultMaxPodsConstraint: The default constraint on the maximum number of
+      pods that can be run simultaneously on a node in the node pool of this
+      cluster. Only honored if cluster created with IP Alias support.
     description: An optional description of this cluster.
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
       cluster. This includes alpha API groups (e.g. v1beta1) and features that
@@ -321,6 +326,8 @@ class Cluster(_messages.Message):
     tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
+    verticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
+      configuration.
     zone: [Output only] The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field is deprecated, use location instead.
@@ -388,44 +395,46 @@ class Cluster(_messages.Message):
   currentMasterVersion = _messages.StringField(7)
   currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   currentNodeVersion = _messages.StringField(9)
-  description = _messages.StringField(10)
-  enableKubernetesAlpha = _messages.BooleanField(11)
-  enableTpu = _messages.BooleanField(12)
-  endpoint = _messages.StringField(13)
-  expireTime = _messages.StringField(14)
-  initialClusterVersion = _messages.StringField(15)
-  initialNodeCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(17, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 18)
-  labelFingerprint = _messages.StringField(19)
-  legacyAbac = _messages.MessageField('LegacyAbac', 20)
-  location = _messages.StringField(21)
-  locations = _messages.StringField(22, repeated=True)
-  loggingService = _messages.StringField(23)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 24)
-  masterAuth = _messages.MessageField('MasterAuth', 25)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 26)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 27)
-  masterIpv4CidrBlock = _messages.StringField(28)
-  monitoringService = _messages.StringField(29)
-  name = _messages.StringField(30)
-  network = _messages.StringField(31)
-  networkConfig = _messages.MessageField('NetworkConfig', 32)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 33)
-  nodeConfig = _messages.MessageField('NodeConfig', 34)
-  nodeIpv4CidrSize = _messages.IntegerField(35, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 36, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 37)
-  privateCluster = _messages.BooleanField(38)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 39)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 40)
-  selfLink = _messages.StringField(41)
-  servicesIpv4Cidr = _messages.StringField(42)
-  status = _messages.EnumField('StatusValueValuesEnum', 43)
-  statusMessage = _messages.StringField(44)
-  subnetwork = _messages.StringField(45)
-  tpuIpv4CidrBlock = _messages.StringField(46)
-  zone = _messages.StringField(47)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 10)
+  description = _messages.StringField(11)
+  enableKubernetesAlpha = _messages.BooleanField(12)
+  enableTpu = _messages.BooleanField(13)
+  endpoint = _messages.StringField(14)
+  expireTime = _messages.StringField(15)
+  initialClusterVersion = _messages.StringField(16)
+  initialNodeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(18, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 19)
+  labelFingerprint = _messages.StringField(20)
+  legacyAbac = _messages.MessageField('LegacyAbac', 21)
+  location = _messages.StringField(22)
+  locations = _messages.StringField(23, repeated=True)
+  loggingService = _messages.StringField(24)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 25)
+  masterAuth = _messages.MessageField('MasterAuth', 26)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 27)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 28)
+  masterIpv4CidrBlock = _messages.StringField(29)
+  monitoringService = _messages.StringField(30)
+  name = _messages.StringField(31)
+  network = _messages.StringField(32)
+  networkConfig = _messages.MessageField('NetworkConfig', 33)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 34)
+  nodeConfig = _messages.MessageField('NodeConfig', 35)
+  nodeIpv4CidrSize = _messages.IntegerField(36, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 37, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 38)
+  privateCluster = _messages.BooleanField(39)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 40)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 41)
+  selfLink = _messages.StringField(42)
+  servicesIpv4Cidr = _messages.StringField(43)
+  status = _messages.EnumField('StatusValueValuesEnum', 44)
+  statusMessage = _messages.StringField(45)
+  subnetwork = _messages.StringField(46)
+  tpuIpv4CidrBlock = _messages.StringField(47)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
+  zone = _messages.StringField(49)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -559,6 +568,8 @@ class ClusterUpdate(_messages.Message):
       picks the Kubernetes master version
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
+    desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
+      configuration.
   """
 
   concurrentNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -582,6 +593,7 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(19)
   desiredNodeVersion = _messages.StringField(20)
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 21)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 22)
 
 
 class ClusterUpdateOptions(_messages.Message):
@@ -2043,8 +2055,8 @@ class MasterAuth(_messages.Message):
     clientCertificate: [Output only] Base64-encoded public certificate used by
       clients to authenticate to the cluster endpoint.
     clientCertificateConfig: Configuration for client certificate
-      authentication on the cluster.  If no configuration is specified, a
-      client certificate is issued.
+      authentication on the cluster. For clusters before v1.12, if no
+      configuration is specified, a client certificate is issued.
     clientKey: [Output only] Base64-encoded private key used by clients to
       authenticate to the cluster endpoint.
     clusterCaCertificate: [Output only] Base64-encoded public certificate that
@@ -2158,6 +2170,16 @@ class MasterUpdateRestriction(_messages.Message):
   """
 
   freeze = _messages.MessageField('MasterUpdateFreeze', 1)
+
+
+class MaxPodsConstraint(_messages.Message):
+  r"""Constraints applied to pods.
+
+  Fields:
+    maxPodsPerNode: Constraint enforced on the max num of pods per node.
+  """
+
+  maxPodsPerNode = _messages.IntegerField(1)
 
 
 class Metric(_messages.Message):
@@ -2457,6 +2479,8 @@ class NodePool(_messages.Message):
       instance groups](/compute/docs/instance-groups/creating-groups-of-
       managed-instances) associated with this node pool.
     management: NodeManagement configuration for this NodePool.
+    maxPodsConstraint: The constraint on the maximum number of pods that can
+      be run simultaneously on a node in the node pool.
     name: The name of the node pool.
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
@@ -2498,11 +2522,12 @@ class NodePool(_messages.Message):
   initialNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(4, repeated=True)
   management = _messages.MessageField('NodeManagement', 5)
-  name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  statusMessage = _messages.StringField(9)
-  version = _messages.StringField(10)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 6)
+  name = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  statusMessage = _messages.StringField(10)
+  version = _messages.StringField(11)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -3440,13 +3465,76 @@ class UsableSubnetwork(_messages.Message):
       subnetwork.
     network: Network Name. Example: projects/my-project/global/networks/my-
       network
+    secondaryIpRanges: Secondary IP ranges.
+    statusMessage: A human readable status message representing the reasons
+      for cases where the caller cannot use the secondary ranges under the
+      subnet. For example if the secondary_ip_ranges is empty due to a
+      permission issue, an insufficient permission message will be given by
+      status_message.
     subnetwork: Subnetwork Name. Example: projects/my-project/regions/us-
       central1/subnetworks/my-subnet
   """
 
   ipCidrRange = _messages.StringField(1)
   network = _messages.StringField(2)
-  subnetwork = _messages.StringField(3)
+  secondaryIpRanges = _messages.MessageField('UsableSubnetworkSecondaryRange', 3, repeated=True)
+  statusMessage = _messages.StringField(4)
+  subnetwork = _messages.StringField(5)
+
+
+class UsableSubnetworkSecondaryRange(_messages.Message):
+  r"""Secondary IP range of a usable subnetwork.
+
+  Enums:
+    StatusValueValuesEnum: This field is to determine the status of the
+      secondary range programmably.
+
+  Fields:
+    ipCidrRange: The range of IP addresses belonging to this subnetwork
+      secondary range.
+    rangeName: The name associated with this subnetwork secondary range, used
+      when adding an alias IP range to a VM instance.
+    status: This field is to determine the status of the secondary range
+      programmably.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""This field is to determine the status of the secondary range
+    programmably.
+
+    Values:
+      UNKNOWN: UNKNOWN is the zero value of the Status enum. It's not a valid
+        status.
+      UNUSED: UNUSED denotes that this range is unclaimed by any cluster.
+      IN_USE_SERVICE: IN_USE_SERVICE denotes that this range is claimed by a
+        cluster for services. It cannot be used for other clusters.
+      IN_USE_SHAREABLE_POD: IN_USE_SHAREABLE_POD denotes this range was
+        created by the network admin and is currently claimed by a cluster for
+        pods. It can only be used by other clusters as a pod range.
+      IN_USE_MANAGED_POD: IN_USE_MANAGED_POD denotes this range was created by
+        GKE and is claimed for pods. It cannot be used for other clusters.
+    """
+    UNKNOWN = 0
+    UNUSED = 1
+    IN_USE_SERVICE = 2
+    IN_USE_SHAREABLE_POD = 3
+    IN_USE_MANAGED_POD = 4
+
+  ipCidrRange = _messages.StringField(1)
+  rangeName = _messages.StringField(2)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
+class VerticalPodAutoscaling(_messages.Message):
+  r"""VerticalPodAutoscaling contains global, per-cluster information required
+  by Vertical Pod Autoscaler to automatically adjust the resources of pods
+  controlled by it.
+
+  Fields:
+    enabled: Enables vertical pod autoscaling.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class WorkloadMetadataConfig(_messages.Message):

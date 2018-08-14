@@ -5,6 +5,30 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 212.0.0 (2018-08-14)
+
+### Cloud Build
+
+-   `cloud-build-local` release 0.4.1 fixes a bug in build step status reporting
+    for timed out builds. For details, see
+    https://github.com/GoogleCloudPlatform/cloud-build-local/releases
+
+### Cloud Machine Learning Engine API
+
+Added '--signature-name' flag to 'gcloud ml-engine predict' and 'gcloud ml-engine jobs prediction create' to specify custom TensorFlow signature to use in prediction.
+
+### Kubernetes Engine
+
+*   Added `gcloud beta container binauthz` command group to help manage Binary
+    Authorization policy.
+    *   Binary Authorization enforcement can be enabled for your Google
+        Kubernetes Engine clusters by passing the `--enable-binauthz` flag to
+        `gcloud beta container create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 211.0.0 (2018-08-07)
 
 ### App Engine

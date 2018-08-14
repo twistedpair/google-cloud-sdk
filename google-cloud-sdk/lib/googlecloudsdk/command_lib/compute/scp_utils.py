@@ -130,8 +130,9 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     if args.plain:
       use_oslogin = False
     else:
-      remote.user, use_oslogin = self.CheckForOsloginAndGetUser(
-          instance, project, remote.user, release_track)
+      public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
+      remote.user, use_oslogin = ssh.CheckForOsloginAndGetUser(
+          instance, project, remote.user, public_key, release_track)
 
     identity_file = None
     options = None

@@ -150,8 +150,12 @@ class Parser(object):
   def _AngrySnakeCase(self, key):
     """Returns an ANGRY_SNAKE_CASE string representation of a parsed key.
 
+    For key input [A, B, C] the headings [C, C_B, C_B_A] are generated. The
+    first heading not in self._snake_headings is added to self._snake_headings
+    and returned.
+
     Args:
-        key: A parsed resource key.
+        key: A parsed resource key and/or list of strings.
 
     Returns:
       The ANGRY_SNAKE_CASE string representation of key, adding components
@@ -195,11 +199,12 @@ class Parser(object):
 
     # Add or update the terminal node.
     tree = projection.tree
-    # self.key == [] => . or a function on the entire object.
     name = key[-1] if key else ''
     name_in_tree = name in tree
+    # key == [] => . or a function on the entire object.
     if name_in_tree:
       # Already added.
+      attribute = tree[name].attribute
       if (not self.__key_attributes_only and
           any([col for col in self._projection.Columns() if col.key == key])):
         # A duplicate column. A projection can only have one attribute object
@@ -208,9 +213,7 @@ class Parser(object):
         # duplicate keys (e.g., table columns with the same key but different
         # transforms). The attribute copy, with attribute_add merged in, is
         # added to the projection columns but not the projection tree.
-        attribute = copy.copy(tree[name].attribute)
-      else:
-        attribute = tree[name].attribute
+        attribute = copy.copy(attribute)
       if not self.__key_attributes_only or not attribute.order:
         # Only an attributes_only attribute with explicit :sort=N can be hidden.
         attribute.hidden = False
@@ -254,7 +257,7 @@ class Parser(object):
       attribute.wrap = attribute_add.wrap
     elif attribute.wrap is None:
       attribute.wrap = False
-    self._projection.AddAlias(attribute.label, key)
+    self._projection.AddAlias(attribute.label, key, attribute)
 
     if not self.__key_attributes_only or attribute.hidden:
       # This key is in the projection.
@@ -331,7 +334,7 @@ class Parser(object):
         if not value:
           raise resource_exceptions.ExpressionSyntaxError(
               'Cannot unset alias [{0}].'.format(self._lex.Annotate(here)))
-        self._projection.AddAlias(value, key)
+        self._projection.AddAlias(value, key, attribute)
       elif name == 'align':
         if value not in resource_projection_spec.ALIGNMENTS:
           raise resource_exceptions.ExpressionSyntaxError(
@@ -358,20 +361,26 @@ class Parser(object):
   def _ParseKey(self):
     """Parses a key and optional attributes from the expression.
 
+    The parsed key is appended to the ordered list of keys via _AddKey().
     Transform functions and key attributes are also handled here.
 
     Raises:
       ExpressionSyntaxError: The expression has a syntax error.
     """
-    key = self._lex.Key()
-    attribute = self._Attribute(self._projection.PROJECT)
+    key, attribute = self._lex.KeyWithAttribute()
     if self._lex.IsCharacter('(', eoi_ok=True):
-      func_name = key.pop()
-      attribute.transform = self._lex.Transform(func_name,
-                                                self._projection.active)
-      func_name = attribute.transform.name
+      add_transform = self._lex.Transform(key.pop(), self._projection.active)
     else:
-      func_name = None
+      add_transform = None
+    if attribute and not key:
+      attribute = copy.copy(attribute)
+    else:
+      attribute = self._Attribute(self._projection.PROJECT)
+    if not attribute.transform:
+      attribute.transform = add_transform
+    elif add_transform:
+      # Compose the alias attribute.transform with add_transforms.
+      attribute.transform._transforms.extend(add_transform._transforms)  # pylint: disable=protected-access
     self._lex.SkipSpace()
     if self._lex.IsCharacter(':'):
       self._ParseKeyAttributes(key, attribute)
@@ -386,11 +395,14 @@ class Parser(object):
       defaults = resource_projection_spec.ProjectionSpec(
           symbols={resource_projection_spec.GLOBAL_RESTRICTION_NAME:
                    EvalGlobalRestriction})
-      if not resource_filter.Compile(attribute.transform.conditional,
-                                     defaults=defaults).Evaluate(conditionals):
+      if not resource_filter.Compile(
+          attribute.transform.conditional,
+          defaults=defaults).Evaluate(conditionals):
         return
-    if func_name and attribute.label is None and not key:
-      attribute.label = self._AngrySnakeCase([func_name])
+    if attribute.label is None and not key and attribute.transform:
+      attribute.label = self._AngrySnakeCase(
+          [attribute.transform.name] +
+          attribute.transform._transforms[0].args)  # pylint: disable=protected-access
     self._AddKey(key, attribute)
 
   def _ParseKeys(self):

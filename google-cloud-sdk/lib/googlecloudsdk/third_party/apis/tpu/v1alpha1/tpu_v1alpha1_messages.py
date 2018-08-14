@@ -268,6 +268,8 @@ class Node(_messages.Message):
       STOPPED: 7 - Reserved. Was SUSPENDED. TPU node is stopped.
       STOPPING: TPU node is currently stopping.
       STARTING: TPU node is currently starting.
+      PREEMPTED: TPU node has been preempted. Only applies to Preemptible TPU
+        Nodes.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -279,6 +281,7 @@ class Node(_messages.Message):
     STOPPED = 7
     STOPPING = 8
     STARTING = 9
+    PREEMPTED = 10
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

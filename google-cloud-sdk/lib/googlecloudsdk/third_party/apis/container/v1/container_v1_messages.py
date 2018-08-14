@@ -618,6 +618,48 @@ class CertificateSigningRequestStatus(_messages.Message):
   conditions = _messages.MessageField('CertificateSigningRequestCondition', 2, repeated=True)
 
 
+class CheckAuditPolicyData(_messages.Message):
+  r"""Subset of AuditEvent fields required to check Audit Policy.
+
+  Fields:
+    objectRef: Object reference this request is targeted at. Does not apply
+      for List-type requests, or non-resource requests. +optional
+    user: Authenticated user information.
+    verb: Verb is the kubernetes verb associated with the request.  For non-
+      resource requests, this is identical to HttpMethod.
+  """
+
+  objectRef = _messages.MessageField('AuditObjectReference', 1)
+  user = _messages.MessageField('AuthnV1UserInfo', 2)
+  verb = _messages.StringField(3)
+
+
+class CheckAuditPolicyRequest(_messages.Message):
+  r"""A request to check whether user action (auditItem) described in
+  AuditPolicyCheckData requires writing to Cloud Audit Logging or Gin Logging.
+
+  Fields:
+    auditItem: Subset of AuditEvent fields required to check Audit Policy.
+    zone: The zone of this master's cluster. This field is deprecated. Use
+      location instead.
+  """
+
+  auditItem = _messages.MessageField('CheckAuditPolicyData', 1)
+  zone = _messages.StringField(2)
+
+
+class CheckAuditPolicyResponse(_messages.Message):
+  r"""A response to CheckAuditPolicy.
+
+  Fields:
+    calRequired: write to Cloud Audit Logging required
+    ginRequired: write to Gin required
+  """
+
+  calRequired = _messages.BooleanField(1)
+  ginRequired = _messages.BooleanField(2)
+
+
 class CidrBlock(_messages.Message):
   r"""CidrBlock contains an optional name and one CIDR block.
 
@@ -678,10 +720,12 @@ class Cluster(_messages.Message):
       master endpoint.
     currentNodeCount: [Output only] The number of nodes currently in the
       cluster.
-    currentNodeVersion: [Output only] The current version of the node software
-      components. If they are currently at multiple versions because they're
-      in the process of being upgraded, this reflects the minimum version of
-      all nodes.
+    currentNodeVersion: [Output only] Deprecated, use [NodePool.version
+      ](/kubernetes-
+      engine/docs/reference/rest/v1/projects.zones.clusters.nodePool) instead.
+      The current version of the node software components. If they are
+      currently at multiple versions because they're in the process of being
+      upgraded, this reflects the minimum version of all nodes.
     description: An optional description of this cluster.
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
       cluster. This includes alpha API groups (e.g. v1alpha1) and features
@@ -1041,6 +1085,29 @@ class CompleteIPRotationRequest(_messages.Message):
   projectId = _messages.StringField(3)
   version = _messages.StringField(4)
   zone = _messages.StringField(5)
+
+
+class ContainerMasterProjectsLocationsAuditPolicyRequest(_messages.Message):
+  r"""A ContainerMasterProjectsLocationsAuditPolicyRequest object.
+
+  Fields:
+    checkAuditPolicyRequest: A CheckAuditPolicyRequest resource to be passed
+      as the request body.
+    clusterId: The name of this master's cluster.
+    location: The location of this master's cluster.
+    masterProjectId: The hosted master project in which this master resides.
+      This can be either a [project ID or project
+      number](https://support.google.com/cloud/answer/6158840).
+    projectNumber: The project number for which the request is being
+      authorized.  This is the project in which this master's cluster resides.
+      This is an int64, so it must be a project number, not a project ID.
+  """
+
+  checkAuditPolicyRequest = _messages.MessageField('CheckAuditPolicyRequest', 1)
+  clusterId = _messages.StringField(2, required=True)
+  location = _messages.StringField(3, required=True)
+  masterProjectId = _messages.StringField(4, required=True)
+  projectNumber = _messages.IntegerField(5, required=True)
 
 
 class ContainerMasterProjectsLocationsAuditRequest(_messages.Message):
@@ -2311,8 +2378,8 @@ class MasterAuth(_messages.Message):
     clientCertificate: [Output only] Base64-encoded public certificate used by
       clients to authenticate to the cluster endpoint.
     clientCertificateConfig: Configuration for client certificate
-      authentication on the cluster.  If no configuration is specified, a
-      client certificate is issued.
+      authentication on the cluster. For clusters before v1.12, if no
+      configuration is specified, a client certificate is issued.
     clientKey: [Output only] Base64-encoded private key used by clients to
       authenticate to the cluster endpoint.
     clusterCaCertificate: [Output only] Base64-encoded public certificate that

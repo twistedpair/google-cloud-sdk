@@ -25,6 +25,7 @@ import os
 import re
 import enum
 
+from googlecloudsdk.api_lib.oslogin import client as oslogin_client
 from googlecloudsdk.command_lib.util import gaia
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -40,6 +41,7 @@ import six
 
 
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
+OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 
 
 class InvalidKeyError(core_exceptions.Error):
@@ -641,6 +643,80 @@ def GetDefaultSshUsername(warn_on_account_user=False):
   return user
 
 
+def _MetadataHasOsloginEnable(metadata):
+  """Return true if the metadata has 'oslogin-enable' set and 'true'.
+
+  Args:
+    metadata: Instance or Project metadata.
+
+  Returns:
+    True if Enabled, False if Disabled, None if key is not present.
+  """
+  if not (metadata and metadata.items):
+    return None
+  matching_values = [item.value for item in metadata.items
+                     if item.key == OSLOGIN_ENABLE_METADATA_KEY]
+  if not matching_values:
+    return None
+  return matching_values[0].lower() == 'true'
+
+
+def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
+                              release_track):
+  """Check instance/project metadata for oslogin and return updated username.
+
+  Check to see if OS Login is enabled in metadata and if it is, return
+  the OS Login user and a boolean value indicating if OS Login is being used.
+
+  Args:
+    instance: instance, The object representing the instance we are
+      connecting to.
+    project: project, The object representing the current project.
+    requested_user: str, The default or requested username to connect as.
+    public_key: str, The public key of the user connecting.
+    release_track: release_track, The object representing the release track.
+
+  Returns:
+    tuple, A string containing the oslogin username and a boolean indicating
+      wheather oslogin is being used.
+  """
+  # Instance metadata has priority
+  use_oslogin = False
+  oslogin_enabled = _MetadataHasOsloginEnable(instance.metadata)
+  if oslogin_enabled is None:
+    project_metadata = project.commonInstanceMetadata
+    oslogin_enabled = _MetadataHasOsloginEnable(project_metadata)
+
+  if not oslogin_enabled:
+    return requested_user, use_oslogin
+
+  # Connect to the oslogin API and add public key to oslogin user account.
+  oslogin = oslogin_client.OsloginClient(release_track)
+  if not oslogin:
+    log.warning(
+        'OS Login is enabled on Instance/Project, but is not available '
+        'in the {0} version of gcloud.'.format(release_track.id))
+    return requested_user, use_oslogin
+  user_email = properties.VALUES.core.account.Get()
+  login_profile = oslogin.ImportSshPublicKey(user_email, public_key)
+  use_oslogin = True
+
+  # Get the username for the oslogin user. If the username is the same as the
+  # default user, return that one. Otherwise, return the 'primary' username.
+  # If no 'primary' exists, return the first username.
+  oslogin_user = None
+  for pa in login_profile.loginProfile.posixAccounts:
+    oslogin_user = oslogin_user or pa.username
+    if pa.username == requested_user:
+      return requested_user, use_oslogin
+    elif pa.primary:
+      oslogin_user = pa.username
+
+  log.warning('Using OS Login user [{0}] instead of default user [{1}]'
+              .format(oslogin_user, requested_user))
+  return oslogin_user, use_oslogin
+
+
 def ParseAndSubstituteSSHFlags(args, remote, ip_address):
   """Obtain extra flags from the command arguments."""
   extra_flags = []
@@ -1152,7 +1228,7 @@ class SSHPoller(object):
     """Poll a remote for connectivity within the given timeout.
 
     The SSH command may prompt the user. It is recommended to wrap this call in
-    a progress tracker. If this method returns, a connection was succesfully
+    a progress tracker. If this method returns, a connection was successfully
     established. If not, this method will raise.
 
     Args:

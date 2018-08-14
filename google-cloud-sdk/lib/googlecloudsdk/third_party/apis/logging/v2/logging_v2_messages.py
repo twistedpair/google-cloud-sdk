@@ -2764,6 +2764,8 @@ class RequestLog(_messages.Message):
     taskQueueName: Queue name of the request, in the case of an offline
       request.
     traceId: Stackdriver Trace identifier for this request.
+    traceSampled: If true, the value in the 'trace_id' field was sampled for
+      storage in a trace backend.
     urlMapEntry: File or class that handled the request.
     userAgent: User agent that made the request.
     versionId: Version of the application that handled this request.
@@ -2798,10 +2800,11 @@ class RequestLog(_messages.Message):
   taskName = _messages.StringField(26)
   taskQueueName = _messages.StringField(27)
   traceId = _messages.StringField(28)
-  urlMapEntry = _messages.StringField(29)
-  userAgent = _messages.StringField(30)
-  versionId = _messages.StringField(31)
-  wasLoadingRequest = _messages.BooleanField(32)
+  traceSampled = _messages.BooleanField(29)
+  urlMapEntry = _messages.StringField(30)
+  userAgent = _messages.StringField(31)
+  versionId = _messages.StringField(32)
+  wasLoadingRequest = _messages.BooleanField(33)
 
 
 class SourceLocation(_messages.Message):

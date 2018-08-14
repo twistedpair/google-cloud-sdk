@@ -234,14 +234,74 @@
           "enumDescriptions": [
             "Not specified.",
             "The database is still being created. Operations on the database may fail\nwith `FAILED_PRECONDITION` in this state.",
-            "The database is fully created and ready for use."
+            "The database is fully created and ready for use.",
+            ""
           ],
           "type": "string",
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
-            "READY"
+            "READY",
+            "READY_OPTIMIZING"
           ]
+        },
+        "creatingProgress": {
+          "$ref": "OperationProgress"
+        },
+        "readyOptimizingProgress": {
+          "$ref": "OperationProgress"
+        },
+        "restoreInfo": {
+          "$ref": "RestoreInfo"
+        }
+      }
+    },
+    "OperationProgress": {
+      "id": "OperationProgress",
+      "type": "object",
+      "properties": {
+        "progressPercent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "RestoreInfo": {
+      "id": "RestoreInfo",
+      "type": "object",
+      "properties": {
+        "sourceType": {
+          "description": "The type of the restore source.",
+          "enumDescriptions": [
+            "No restore associated.",
+            "A backup was used as the source of the restore."
+          ],
+          "type": "string",
+          "enum": [
+            "UNSPECIFIED",
+            "BACKUP"
+          ]
+        },
+        "source": {
+          "description": "Name of the source (e.g. backup) from which the database was\nrestored. The source might no longer exist.",
+          "type": "string"
+        },
+        "sourceCreateTime": {
+          "description": "Create time of the restore source.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "sourceDatabase": {
+          "description": "Name of the database associated with the restore source.",
+          "type": "string"
         }
       }
     },
@@ -734,6 +794,123 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "CreateBackupRequest": {
+      "id": "CreateBackupRequest",
+      "type": "object",
+      "properties": {
+        "backup": {
+          "description": "Required. The backup to create.",
+          "$ref": "Backup"
+        }
+      }
+    },
+    "Backup": {
+      "id": "Backup",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. A globally unique identifier for the backup which\ncannot be changed.  Values are of the form\n`projects\/<project>\/instances\/<instance>\/backups\/a-z*[a-z0-9]`.\nThe final segment of the name must be between 6 and 30 characters\nin length.\n\nThe backup is stored in the location(s) specified in the instance\nconfiguration of the instance containing the backup, identified\nby the prefix of the backup name of the form\n`projects\/<project>\/instances\/<instance>`.",
+          "type": "string"
+        },
+        "database": {
+          "description": "Required for the CreateBackup operation.\nName of the database from which this backup was\ncreated. This needs to be in the same instance as the backup.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/databases\/<database>`.",
+          "type": "string"
+        },
+        "expireTime": {
+          "description": "Required for the CreateBackup operation.\nThe expiration time of the backup, with microseconds\ngranularity that must be at least 6 hours and at most 366 days\nfrom `create_time`. The exact `create_time` is determined by the\nsystem when processing the backup creation request, and is\napproximately the time at which the request is submitted. Once\nthe `expire_time` has passed, Cloud Spanner will delete the\nbackup and free the resources used by the backup.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "The labels for the backup.\n\nLabels are useful for organizing cloud resources, by allowing\ncustomer specific metadata to be attached to resources. See\nhttps:\/\/goo.gl\/xmQnxf for more information on and examples of\nlabels.\n\n * Label keys must be between 1 and 63 characters long and must conform to\n   the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.\n * Label values must be between 0 and 63 characters long and must conform\n   to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.\n * No more than 64 labels can be associated with a given resource.\n\nIf you plan to use labels in your own code, please note that additional\ncharacters may be allowed in the future. And so you are advised to use an\ninternal label representation, such as JSON, which doesn't rely upon\nspecific characters being disallowed.  For example, representing labels\nas the string: `name + \"_\" + value` would prove problematic if we were to\nallow \"_\" in a future release.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "createTime": {
+          "description": "Output only. Time the CreateBackup\nrequest was received. The backup will contain an externally\nconsistent copy of the database at the point in time specified by\n`create_time`.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "sizeBytes": {
+          "description": "Output only. Size of the backup in bytes.",
+          "type": "string",
+          "format": "int64"
+        },
+        "state": {
+          "description": "Output only. The current state of the backup.",
+          "enumDescriptions": [
+            "Not specified.",
+            "The pending backup is still being created. Operations on the\nbackup may fail with `FAILED_PRECONDITION` in this state.",
+            "The backup is complete and ready for use."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "READY"
+          ]
+        },
+        "creatingProgress": {
+          "description": "Output only. The progress of the backup while in the `CREATING` state.",
+          "$ref": "OperationProgress"
+        },
+        "referencingDatabases": {
+          "description": "Output only. The names of the restored databases referencing the backup,\npreventing the backup from being deleted. When a restored database\nfrom the backup enters the `READY` state, the reference to the backup\nwill be removed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "UpdateBackupRequest": {
+      "id": "UpdateBackupRequest",
+      "type": "object",
+      "properties": {
+        "backup": {
+          "description": "Required. The backup to update.",
+          "$ref": "Backup"
+        },
+        "updateMask": {
+          "description": "Required. A mask specifying which fields in the Backup resource\nshould be updated. This mask is relative to the Backup resource,\nnot to the request message. The field mask must always be\nspecified; this prevents any future fields from being erased\naccidentally by clients that do not know about them.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
+    "ListBackupsResponse": {
+      "id": "ListBackupsResponse",
+      "type": "object",
+      "properties": {
+        "backups": {
+          "description": "The list of matching backups.",
+          "type": "array",
+          "items": {
+            "$ref": "Backup"
+          }
+        },
+        "nextPageToken": {
+          "description": "`next_page_token` can be sent in a subsequent\nListBackups call to fetch more\nof the matching backups.",
+          "type": "string"
+        }
+      }
+    },
+    "CreateDatabaseFromBackupRequest": {
+      "id": "CreateDatabaseFromBackupRequest",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. Name of the database to create and restore to. This\ndatabase must not already exist. The instance must be consistent\nwith destination_parent. Values are of the form\n`projects\/<project>\/instances\/<instance>\/databases\/<database>`.",
+          "type": "string"
+        },
+        "backup": {
+          "description": "Required. Name of the backup from which to restore.  Values\nare of the form\n`projects\/<project>\/instances\/<instance>\/backups\/<backup>`.",
+          "type": "string"
         }
       }
     },
@@ -2446,7 +2623,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Sets the access control policy on a database resource. Replaces any\nexisting policy.\n\nAuthorization requires `spanner.databases.setIamPolicy` permission on\nresource."
+                  "description": "Sets the access control policy on a database resource.\nReplaces any existing policy.\n\nAuthorization requires `spanner.databases.setIamPolicy`\npermission on resource."
                 },
                 "getIamPolicy": {
                   "id": "spanner.projects.instances.databases.getIamPolicy",
@@ -2475,7 +2652,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Gets the access control policy for a database resource. Returns an empty\npolicy if a database exists but does not have a policy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\nresource."
+                  "description": "Gets the access control policy for a database resource.\nReturns an empty policy if a database exists but does\nnot have a policy set.\n\nAuthorization requires `spanner.databases.getIamPolicy` permission on\nresource."
                 },
                 "testIamPermissions": {
                   "id": "spanner.projects.instances.databases.testIamPermissions",
@@ -2504,7 +2681,36 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/spanner.admin"
                   ],
-                  "description": "Returns permissions that the caller has on the specified database resource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will result in\na NOT_FOUND error if the user has `spanner.databases.list` permission on\nthe containing Cloud Spanner instance. Otherwise returns an empty set of\npermissions."
+                  "description": "Returns permissions that the caller has on the specified database resource.\n\nAttempting this RPC on a non-existent Cloud Spanner database will\nresult in a NOT_FOUND error if the user has\n`spanner.databases.list` permission on the containing Cloud\nSpanner instance. Otherwise returns an empty set of permissions."
+                },
+                "createFromBackup": {
+                  "id": "spanner.projects.instances.databases.createFromBackup",
+                  "path": "v1/{+parent}/databases:createFromBackup",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases:createFromBackup",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the instance in which to create the\nrestored database. This instance must be in the same project and\nhave the same instance configuration as the instance containing\nthe source backup. Values are of the form\n`projects\/<project>\/instances\/<instance>.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "CreateDatabaseFromBackupRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
                 }
               }
               ,
@@ -3020,6 +3226,254 @@
                       "description": "Creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby StreamingRead to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe PartitionReadRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.  There are no ordering\nguarantees on rows returned among the returned partition tokens, or even\nwithin each individual StreamingRead call issued with a partition_token.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the read, and\nthe whole operation must be restarted from the beginning."
                     }
                   }
+                }
+              }
+            },
+            "backups": {
+              "methods": {
+                "setIamPolicy": {
+                  "id": "spanner.projects.instances.backups.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The Cloud Spanner resource for which the policy is being set. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for databases resources.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
+                },
+                "getIamPolicy": {
+                  "id": "spanner.projects.instances.backups.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:getIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The Cloud Spanner resource for which the policy is being retrieved. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for database resources.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "GetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
+                },
+                "testIamPermissions": {
+                  "id": "spanner.projects.instances.backups.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The Cloud Spanner resource for which permissions are being tested. The format is `projects\/<project ID>\/instances\/<instance ID>` for instance resources and `projects\/<project ID>\/instances\/<instance ID>\/databases\/<database ID>` for database resources.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
+                },
+                "create": {
+                  "id": "spanner.projects.instances.backups.create",
+                  "path": "v1/{+parent}/backups",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the instance in which the backup will be\ncreated. This must be the same instance that contains the source\ndatabase of the backup. The backup will be stored in the\nlocation(s) specified in the instance configuration of this\ninstance. Values are of the form\n`projects\/<project>\/instances\/<instance>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "CreateBackupRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
+                },
+                "get": {
+                  "id": "spanner.projects.instances.backups.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the backup.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/backups\/<backup>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Backup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
+                },
+                "patch": {
+                  "id": "spanner.projects.instances.backups.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. A globally unique identifier for the backup which\ncannot be changed.  Values are of the form\n`projects\/<project>\/instances\/<instance>\/backups\/a-z*[a-z0-9]`.\nThe final segment of the name must be between 6 and 30 characters\nin length.\n\nThe backup is stored in the location(s) specified in the instance\nconfiguration of the instance containing the backup, identified\nby the prefix of the backup name of the form\n`projects\/<project>\/instances\/<instance>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "UpdateBackupRequest"
+                  },
+                  "response": {
+                    "$ref": "Backup"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
+                },
+                "delete": {
+                  "id": "spanner.projects.instances.backups.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups/{backupsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the backup to delete.\nValues are of the form\n`projects\/<project>\/instances\/<instance>\/backups\/<backup>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/backups\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
+                },
+                "list": {
+                  "id": "spanner.projects.instances.backups.list",
+                  "path": "v1/{+parent}/backups",
+                  "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/backups",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The instance to list backups from.  Values are of the\nform `projects\/<project>\/instances\/<instance>`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that filters resources listed in the response.\nThe expression must specify the field name, a comparison operator,\nand the value that you want to use for filtering. The value must be a\nstring, a number, or a boolean. The comparison operator must be\neither =, !=, >, or <. Filter rules are case insensitive.\n\nThe fields eligible for filtering are:\n  * `name`\n  * `database_name`\n  * `labels.key` where key is the name of a label\n  * `state`\n  * `create_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)\n  * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)\n  * `size_bytes`\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. By default, each expression is an AND expression. However,\nyou can include AND and OR expressions explicitly.\n\nSome examples of using filters are:\n\n  * `name:Howl` --> The backup's name contains the string \"howl\".\n  * `database_name:prod` --> The backup's name contains the string \"prod\".\n  * `labels.env:*` --> The backup has the label \"env\".\n  * `state:CREATING` --> The backup is pending creation.\n  * `state:READY` --> The backup is fully created and ready for use.\n  * `(name:howl) AND (create_time < 2018-03-28T14:50:00Z)`\n         --> The backup name contains the string \"howl\" and create_time\n             of the backup is before 2018-03-28T14:50:00Z.\n  * `size_bytes > 10000000000` --> The backup size is greater than 10GB",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "An expression for specifying the sort order of the results of the request.\nThe string value should follow SQL syntax: comma separated list of fields\nin Backup. Fields supported are:\n   * name\n   * database\n   * expire_time\n   * create_time\n   * size_bytes\n   * state\n   * creating_progress.progress_percent\n   * creating_progress.start_time\n   * creating_progress.end_time\n\nFor example, \"foo,bar\". The default sorting order is ascending. To specify\ndescending order for a field, a suffix \" desc\" should be appended to the\nfield name. For example, \"foo desc,bar\". Redundant space characters in the\nsyntax are insigificant. \"foo, bar desc\" and \" foo , bar desc\" are\nequivalent.\n\nIf order_by is empty, results will be sorted by `create_time` in descending\norder starting from the most recently created backup.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Number of instances to be returned in the response. If 0 or\nless, defaults to the server's maximum allowed page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "If non-empty, `page_token` should contain a\nnext_page_token from a\nprevious ListBackupsResponse to the same `parent` and with the same\n`filter`.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListBackupsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/spanner.admin"
+                  ],
+                  "description": ""
                 }
               }
             }

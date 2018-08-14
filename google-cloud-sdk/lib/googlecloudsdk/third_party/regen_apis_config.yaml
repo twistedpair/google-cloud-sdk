@@ -378,6 +378,9 @@ apis:
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
+  serverless:
+    v1alpha1:
+      discovery_doc: serverless_v1alpha1.json
   servicemanagement:
     v1:
       discovery_doc: servicemanagement_v1.json

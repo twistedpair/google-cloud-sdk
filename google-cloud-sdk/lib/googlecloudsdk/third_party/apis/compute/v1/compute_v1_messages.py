@@ -20308,10 +20308,10 @@ class InterconnectLocation(_messages.Message):
   Fields:
     address: [Output Only] The postal address of the Point of Presence, each
       line in the address is separated by a newline character.
-    availabilityZone: [Output Only] Availability zone for this location.
-      Within a metropolitan area (metro), maintenance will not be
-      simultaneously scheduled in more than one availability zone. Example:
-      "zone1" or "zone2".
+    availabilityZone: [Output Only] Availability zone for this
+      InterconnectLocation. Within a metropolitan area (metro), maintenance
+      will not be simultaneously scheduled in more than one availability zone.
+      Example: "zone1" or "zone2".
     city: [Output Only] Metropolitan area designator that indicates which city
       an interconnect is located. For example: "Chicago, IL", "Amsterdam,
       Netherlands".

@@ -117,6 +117,35 @@ able to connect to the environment using the corresponding private key.
       self._upload_configs = {
           }
 
+    def Authorize(self, request, global_params=None):
+      r"""Sends an access token to a running environment on behalf of a user. When.
+this completes, the environment will be authorized to run gcloud commands
+without requiring the user to manually authenticate.
+
+      Args:
+        request: (CloudshellUsersEnvironmentsAuthorizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Authorize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Authorize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/users/{usersId}/environments/{environmentsId}:authorize',
+        http_method=u'POST',
+        method_id=u'cloudshell.users.environments.authorize',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:authorize',
+        request_field=u'authorizeEnvironmentRequest',
+        request_type_name=u'CloudshellUsersEnvironmentsAuthorizeRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets an environment. Returns NOT_FOUND if the environment does not exist.
 

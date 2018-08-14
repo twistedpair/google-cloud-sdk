@@ -548,7 +548,7 @@ class Lexer(object):
       required = not sep.isspace()
     return args
 
-  def Key(self):
+  def KeyWithAttribute(self):
     """Parses a resource key from the expression.
 
     A resource key is a '.' separated list of names with optional [] slice or
@@ -572,16 +572,19 @@ class Lexer(object):
       ExpressionKeyError: The expression has a key syntax error.
 
     Returns:
-      The parsed key which is a list of string, int and/or None elements.
+      (key, attribute) The parsed key and attribute. attribute is the alias
+        attribute if there was an alias expansion, None otherwise.
     """
     key = []
+    attribute = None
     while not self.EndOfInput():
       here = self.GetPosition()
       name = self.Token(_RESERVED_OPERATOR_CHARS, space=False)
       if name:
         is_function = self.IsCharacter('(', peek=True, eoi_ok=True)
         if not key and not is_function and name in self._defaults.aliases:
-          key.extend(self._defaults.aliases[name])
+          k, attribute = self._defaults.aliases[name]
+          key.extend(k)
         else:
           key.append(name)
       elif not self.IsCharacter('[', peek=True):
@@ -610,6 +613,11 @@ class Lexer(object):
         # Dangling '.' is not allowed.
         raise resource_exceptions.ExpressionSyntaxError(
             'Non-empty key name expected [{0}].'.format(self.Annotate()))
+    return key, attribute
+
+  def Key(self):
+    """Parses a resource key from the expression and returns the parsed key."""
+    key, _ = self.KeyWithAttribute()
     return key
 
   def _ParseSynthesize(self, args):
