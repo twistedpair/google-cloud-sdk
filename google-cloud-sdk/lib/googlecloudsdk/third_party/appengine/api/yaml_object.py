@@ -23,12 +23,11 @@
 
 
 
+from ruamel import yaml
 from googlecloudsdk.third_party.appengine.api import validation
-from googlecloudsdk.third_party.appengine.api import yaml_listener
 from googlecloudsdk.third_party.appengine.api import yaml_builder
 from googlecloudsdk.third_party.appengine.api import yaml_errors
-
-import yaml
+from googlecloudsdk.third_party.appengine.api import yaml_listener
 
 
 class _ObjectMapper(object):
@@ -56,6 +55,7 @@ class _ObjectMapper(object):
     if key in self.seen:
       raise yaml_errors.DuplicateAttribute("Duplicate attribute '%s'." % key)
     self.seen.add(key)
+
 
 class _ObjectSequencer(object):
   """Wrapper used for building sequences from a yaml file to a list.
@@ -291,7 +291,7 @@ def BuildObjects(default_class, stream, loader=yaml.loader.SafeLoader):
   handler = yaml_builder.BuilderHandler(builder)
   listener = yaml_listener.EventListener(handler)
 
-  listener.Parse(stream, loader)
+  listener.Parse(stream, loader, version=(1, 1))
   return handler.GetResults()
 
 

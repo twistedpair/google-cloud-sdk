@@ -288,6 +288,10 @@
           "description": "Message for detecting output from deidentification transformations that\nsupport reversing.",
           "$ref": "GooglePrivacyDlpV2SurrogateType"
         },
+        "storedType": {
+          "description": "Load an existing `StoredInfoType` resource for use in\n`InspectDataSource`. Not currently supported in `InspectContent`.",
+          "$ref": "GooglePrivacyDlpV2StoredType"
+        },
         "detectionRules": {
           "description": "Set of detection rules to apply to all findings of this CustomInfoType.\nRules are applied in order that they are specified. Not supported for the\n`surrogate_type` CustomInfoType.",
           "type": "array",
@@ -299,7 +303,7 @@
     },
     "GooglePrivacyDlpV2Dictionary": {
       "id": "GooglePrivacyDlpV2Dictionary",
-      "description": "Custom information type based on a dictionary of words or phrases. This can\nbe used to match sensitive information specific to the data, such as a list\nof employee IDs or job titles.\n\nDictionary words are case-insensitive and all characters other than letters\nand digits in the unicode [Basic Multilingual\nPlane](https:\/\/en.wikipedia.org\/wiki\/Plane_%28Unicode%29#Basic_Multilingual_Plane)\nwill be replaced with whitespace when scanning for matches, so the\ndictionary phrase \"Sam Johnson\" will match all three phrases \"sam johnson\",\n\"Sam, Johnson\", and \"Sam (Johnson)\". Additionally, the characters\nsurrounding any match must be of a different type than the adjacent\ncharacters within the word, so letters must be next to non-letters and\ndigits next to non-digits. For example, the dictionary word \"jen\" will\nmatch the first three letters of the text \"jen123\" but will return no\nmatches for \"jennifer\".\n\nDictionary words containing a large number of characters that are not\nletters or digits may result in unexpected findings because such characters\nare treated as whitespace.",
+      "description": "Custom information type based on a dictionary of words or phrases. This can\nbe used to match sensitive information specific to the data, such as a list\nof employee IDs or job titles.\n\nDictionary words are case-insensitive and all characters other than letters\nand digits in the unicode [Basic Multilingual\nPlane](https:\/\/en.wikipedia.org\/wiki\/Plane_%28Unicode%29#Basic_Multilingual_Plane)\nwill be replaced with whitespace when scanning for matches, so the\ndictionary phrase \"Sam Johnson\" will match all three phrases \"sam johnson\",\n\"Sam, Johnson\", and \"Sam (Johnson)\". Additionally, the characters\nsurrounding any match must be of a different type than the adjacent\ncharacters within the word, so letters must be next to non-letters and\ndigits next to non-digits. For example, the dictionary word \"jen\" will\nmatch the first three letters of the text \"jen123\" but will return no\nmatches for \"jennifer\".\n\nDictionary words containing a large number of characters that are not\nletters or digits may result in unexpected findings because such characters\nare treated as whitespace. The\n[limits](https:\/\/cloud.google.com\/dlp\/limits) page contains details about\nthe size limits of dictionaries. For dictionaries that do not fit within\nthese constraints, consider using `LargeCustomDictionaryConfig` in the\n`StoredInfoType` API.",
       "type": "object",
       "properties": {
         "wordList": {
@@ -353,6 +357,22 @@
       "description": "Message for detecting output from deidentification transformations\nsuch as\n[`CryptoReplaceFfxFpeConfig`](\/dlp\/docs\/reference\/rest\/v2\/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).\nThese types of transformations are\nthose that perform pseudonymization, thereby producing a \"surrogate\" as\noutput. This should be used in conjunction with a field on the\ntransformation such as `surrogate_info_type`. This CustomInfoType does\nnot support the use of `detection_rules`.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GooglePrivacyDlpV2StoredType": {
+      "id": "GooglePrivacyDlpV2StoredType",
+      "description": "CustomInfoType implementation that loads an\nexisting `StoredInfoType` resource for scanning in `InspectDataSource`. Not\ncurrently supported in `InspectContent`.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name of the requested `StoredInfoType`, for example\n`organizations\/433245324\/storedInfoTypes\/432452342` or\n`projects\/project-id\/storedInfoTypes\/432452342`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Timestamp indicating when the version of the `StoredInfoType` used for\ninspection was created. Output-only field, populated by the system.",
+          "type": "string",
+          "format": "google-datetime"
+        }
       }
     },
     "GooglePrivacyDlpV2DetectionRule": {
@@ -2202,9 +2222,14 @@
           "$ref": "GooglePrivacyDlpV2FileSet"
         },
         "bytesLimitPerFile": {
-          "description": "Max number of bytes to scan from a file. If a scanned file's size is bigger\nthan this value then the rest of the bytes are omitted.",
+          "description": "Max number of bytes to scan from a file. If a scanned file's size is bigger\nthan this value then the rest of the bytes are omitted. Only one\nof bytes_limit_per_file and bytes_limit_per_file_percent can be specified.",
           "type": "string",
           "format": "int64"
+        },
+        "bytesLimitPerFilePercent": {
+          "description": "Max percentage of bytes to scan from a file. The rest are omitted. The\nnumber of bytes scanned is rounded down. Must be between 0 and 100,\ninclusively. Both 0 and 100 means no limit. Defaults to 0. Only one\nof bytes_limit_per_file and bytes_limit_per_file_percent can be specified.",
+          "type": "integer",
+          "format": "int32"
         },
         "fileTypes": {
           "description": "List of file type groups to include in the scan.\nIf empty, all files are scanned and available data format processors\nare applied.",
@@ -2271,9 +2296,14 @@
           }
         },
         "rowsLimit": {
-          "description": "Max number of rows to scan. If the table has more rows than this value, the\nrest of the rows are omitted. If not set, or if set to 0, all rows will be\nscanned. Cannot be used in conjunction with TimespanConfig.",
+          "description": "Max number of rows to scan. If the table has more rows than this value, the\nrest of the rows are omitted. If not set, or if set to 0, all rows will be\nscanned. Only one of rows_limit and rows_limit_percent can be specified.\nCannot be used in conjunction with TimespanConfig.",
           "type": "string",
           "format": "int64"
+        },
+        "rowsLimitPercent": {
+          "description": "Max percentage of rows to scan. The rest are omitted. The number of rows\nscanned is rounded down. Must be between 0 and 100, inclusively. Both 0 and\n100 means no limit. Defaults to 0. Only one of rows_limit and\nrows_limit_percent can be specified. Cannot be used in conjunction with\nTimespanConfig.",
+          "type": "integer",
+          "format": "int32"
         },
         "sampleMethod": {
           "enumDescriptions": [
@@ -3359,6 +3389,182 @@
       "type": "object",
       "properties": {
       }
+    },
+    "GooglePrivacyDlpV2CreateStoredInfoTypeRequest": {
+      "id": "GooglePrivacyDlpV2CreateStoredInfoTypeRequest",
+      "description": "Request message for CreateStoredInfoType.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "Configuration of the storedInfoType to create.",
+          "$ref": "GooglePrivacyDlpV2StoredInfoTypeConfig"
+        },
+        "storedInfoTypeId": {
+          "description": "The storedInfoType ID can contain uppercase and lowercase letters,\nnumbers, and hyphens; that is, it must match the regular\nexpression: `[a-zA-Z\\\\d-]+`. The maximum length is 100\ncharacters. Can be empty to allow the system to generate one.",
+          "type": "string"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2StoredInfoTypeConfig": {
+      "id": "GooglePrivacyDlpV2StoredInfoTypeConfig",
+      "description": "Configuration for a StoredInfoType.",
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "description": "Display name of the StoredInfoType (max 256 characters).",
+          "type": "string"
+        },
+        "description": {
+          "description": "Description of the StoredInfoType (max 256 characters).",
+          "type": "string"
+        },
+        "largeCustomDictionary": {
+          "description": "StoredInfoType where findings are defined by a dictionary of phrases.",
+          "$ref": "GooglePrivacyDlpV2LargeCustomDictionaryConfig"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2LargeCustomDictionaryConfig": {
+      "id": "GooglePrivacyDlpV2LargeCustomDictionaryConfig",
+      "description": "Configuration for a custom dictionary created from a data source of any size\nup to the maximum size defined in the\n[limits](https:\/\/cloud.google.com\/dlp\/limits) page. The artifacts of\ndictionary creation are stored in the specified Google Cloud Storage\nlocation. Consider using `CustomInfoType.Dictionary` for smaller dictionaries\nthat satisfy the size requirements.",
+      "type": "object",
+      "properties": {
+        "outputPath": {
+          "description": "Location to store dictionary artifacts in Google Cloud Storage. These files\nwill only be accessible by project owners and the DLP API. If any of these\nartifacts are modified, the dictionary is considered invalid and can no\nlonger be used.",
+          "$ref": "GooglePrivacyDlpV2CloudStoragePath"
+        },
+        "cloudStorageFileSet": {
+          "description": "Set of files containing newline-delimited lists of dictionary phrases.",
+          "$ref": "GooglePrivacyDlpV2CloudStorageFileSet"
+        },
+        "bigQueryField": {
+          "description": "Field in a BigQuery table where each cell represents a dictionary phrase.",
+          "$ref": "GooglePrivacyDlpV2BigQueryField"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2CloudStorageFileSet": {
+      "id": "GooglePrivacyDlpV2CloudStorageFileSet",
+      "description": "Message representing a set of files in Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "url": {
+          "description": "The url, in the format `gs:\/\/<bucket>\/<path>`. Trailing wildcard in the\npath is allowed.",
+          "type": "string"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2BigQueryField": {
+      "id": "GooglePrivacyDlpV2BigQueryField",
+      "description": "Message defining a field of a BigQuery table.",
+      "type": "object",
+      "properties": {
+        "table": {
+          "description": "Source table of the field.",
+          "$ref": "GooglePrivacyDlpV2BigQueryTable"
+        },
+        "field": {
+          "description": "Designated field in the BigQuery table.",
+          "$ref": "GooglePrivacyDlpV2FieldId"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2StoredInfoType": {
+      "id": "GooglePrivacyDlpV2StoredInfoType",
+      "description": "StoredInfoType resource message that contains information about the current\nversion and any pending updates.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Resource name.",
+          "type": "string"
+        },
+        "currentVersion": {
+          "description": "Current version of the stored info type.",
+          "$ref": "GooglePrivacyDlpV2StoredInfoTypeVersion"
+        },
+        "pendingVersions": {
+          "description": "Pending versions of the stored info type. Empty if no versions are\npending.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2StoredInfoTypeVersion"
+          }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2StoredInfoTypeVersion": {
+      "id": "GooglePrivacyDlpV2StoredInfoTypeVersion",
+      "description": "Version of a StoredInfoType, including the configuration used to build it,\ncreate timestamp, and current state.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "StoredInfoType configuration.",
+          "$ref": "GooglePrivacyDlpV2StoredInfoTypeConfig"
+        },
+        "createTime": {
+          "description": "Create timestamp of the version. Read-only, determined by the system\nwhen the version is created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Stored info type version state. Read-only, updated by the system\nduring dictionary creation.",
+          "enumDescriptions": [
+            "",
+            "StoredInfoType version is being created.",
+            "StoredInfoType version is ready for use.",
+            "StoredInfoType creation failed. All relevant error messages are returned in\nthe `StoredInfoTypeVersion` message.",
+            "StoredInfoType is no longer valid because artifacts stored in\nuser-controlled storage were modified. To fix an invalid StoredInfoType,\nuse the `UpdateStoredInfoType` method to create a new version."
+          ],
+          "type": "string",
+          "enum": [
+            "STORED_INFO_TYPE_STATE_UNSPECIFIED",
+            "PENDING",
+            "READY",
+            "FAILED",
+            "INVALID"
+          ]
+        },
+        "errors": {
+          "description": "Errors that occurred when creating this storedInfoType version, or\nanomalies detected in the storedInfoType data that render it unusable. Only\nthe five most recent errors will be displayed, with the most recent error\nappearing first.\n<p>For example, some of the data for stored custom dictionaries is put in\nthe user's Google Cloud Storage bucket, and if this data is modified or\ndeleted by the user or another system, the dictionary becomes invalid.\n<p>If any errors occur, fix the problem indicated by the error message and\nuse the UpdateStoredInfoType API method to create another version of the\nstoredInfoType to continue using it, reusing the same `config` if it was\nnot the source of the error.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2Error"
+          }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2UpdateStoredInfoTypeRequest": {
+      "id": "GooglePrivacyDlpV2UpdateStoredInfoTypeRequest",
+      "description": "Request message for UpdateStoredInfoType.",
+      "type": "object",
+      "properties": {
+        "config": {
+          "description": "Updated configuration for the storedInfoType. If not provided, a new\nversion of the storedInfoType will be created with the existing\nconfiguration.",
+          "$ref": "GooglePrivacyDlpV2StoredInfoTypeConfig"
+        },
+        "updateMask": {
+          "description": "Mask to control which fields get updated.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2ListStoredInfoTypesResponse": {
+      "id": "GooglePrivacyDlpV2ListStoredInfoTypesResponse",
+      "description": "Response message for ListStoredInfoTypes.",
+      "type": "object",
+      "properties": {
+        "storedInfoTypes": {
+          "description": "List of storedInfoTypes, up to page_size in ListStoredInfoTypesRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2StoredInfoType"
+          }
+        },
+        "nextPageToken": {
+          "description": "If the next page is available then the next page token to be used\nin following ListStoredInfoTypes request.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -4087,6 +4293,152 @@
               "description": "Starts asynchronous cancellation on a long-running DlpJob. The server\nmakes a best effort to cancel the DlpJob, but success is not\nguaranteed.\nSee https:\/\/cloud.google.com\/dlp\/docs\/inspecting-storage and\nhttps:\/\/cloud.google.com\/dlp\/docs\/compute-risk-analysis to learn more."
             }
           }
+        },
+        "storedInfoTypes": {
+          "methods": {
+            "create": {
+              "id": "dlp.projects.storedInfoTypes.create",
+              "path": "v2/{+parent}/storedInfoTypes",
+              "flatPath": "v2/projects/{projectsId}/storedInfoTypes",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GooglePrivacyDlpV2CreateStoredInfoTypeRequest"
+              },
+              "response": {
+                "$ref": "GooglePrivacyDlpV2StoredInfoType"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Creates a pre-built StoredInfoType to be used for inspecting storage in\nInspectDataSource."
+            },
+            "patch": {
+              "id": "dlp.projects.storedInfoTypes.patch",
+              "path": "v2/{+name}",
+              "flatPath": "v2/projects/{projectsId}/storedInfoTypes/{storedInfoTypesId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Resource name of organization and storedInfoType to be updated, for\nexample `organizations\/433245324\/storedInfoTypes\/432452342` or\nprojects\/project-id\/storedInfoTypes\/432452342.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GooglePrivacyDlpV2UpdateStoredInfoTypeRequest"
+              },
+              "response": {
+                "$ref": "GooglePrivacyDlpV2StoredInfoType"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates the StoredInfoType by creating a new version. The existing version\nwill continue to be used until the new version is ready."
+            },
+            "get": {
+              "id": "dlp.projects.storedInfoTypes.get",
+              "path": "v2/{+name}",
+              "flatPath": "v2/projects/{projectsId}/storedInfoTypes/{storedInfoTypesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name of the organization and storedInfoType to be read, for\nexample `organizations\/433245324\/storedInfoTypes\/432452342` or\nprojects\/project-id\/storedInfoTypes\/432452342.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GooglePrivacyDlpV2StoredInfoType"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets a StoredInfoType."
+            },
+            "list": {
+              "id": "dlp.projects.storedInfoTypes.list",
+              "path": "v2/{+parent}/storedInfoTypes",
+              "flatPath": "v2/projects/{projectsId}/storedInfoTypes",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageToken": {
+                  "description": "Optional page token to continue retrieval. Comes from previous call\nto `ListStoredInfoTypes`.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional size of the page, can be limited by server. If zero server returns\na page of max size 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GooglePrivacyDlpV2ListStoredInfoTypesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists StoredInfoTypes."
+            },
+            "delete": {
+              "id": "dlp.projects.storedInfoTypes.delete",
+              "path": "v2/{+name}",
+              "flatPath": "v2/projects/{projectsId}/storedInfoTypes/{storedInfoTypesId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Resource name of the organization and storedInfoType to be deleted, for\nexample `organizations\/433245324\/storedInfoTypes\/432452342` or\nprojects\/project-id\/storedInfoTypes\/432452342.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/storedInfoTypes\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes a StoredInfoType."
+            }
+          }
         }
       }
     },
@@ -4412,6 +4764,152 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a DeidentifyTemplate.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid to learn\nmore."
+            }
+          }
+        },
+        "storedInfoTypes": {
+          "methods": {
+            "create": {
+              "id": "dlp.organizations.storedInfoTypes.create",
+              "path": "v2/{+parent}/storedInfoTypes",
+              "flatPath": "v2/organizations/{organizationsId}/storedInfoTypes",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "GooglePrivacyDlpV2CreateStoredInfoTypeRequest"
+              },
+              "response": {
+                "$ref": "GooglePrivacyDlpV2StoredInfoType"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Creates a pre-built StoredInfoType to be used for inspecting storage in\nInspectDataSource."
+            },
+            "patch": {
+              "id": "dlp.organizations.storedInfoTypes.patch",
+              "path": "v2/{+name}",
+              "flatPath": "v2/organizations/{organizationsId}/storedInfoTypes/{storedInfoTypesId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Resource name of organization and storedInfoType to be updated, for\nexample `organizations\/433245324\/storedInfoTypes\/432452342` or\nprojects\/project-id\/storedInfoTypes\/432452342.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GooglePrivacyDlpV2UpdateStoredInfoTypeRequest"
+              },
+              "response": {
+                "$ref": "GooglePrivacyDlpV2StoredInfoType"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates the StoredInfoType by creating a new version. The existing version\nwill continue to be used until the new version is ready."
+            },
+            "get": {
+              "id": "dlp.organizations.storedInfoTypes.get",
+              "path": "v2/{+name}",
+              "flatPath": "v2/organizations/{organizationsId}/storedInfoTypes/{storedInfoTypesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Resource name of the organization and storedInfoType to be read, for\nexample `organizations\/433245324\/storedInfoTypes\/432452342` or\nprojects\/project-id\/storedInfoTypes\/432452342.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GooglePrivacyDlpV2StoredInfoType"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets a StoredInfoType."
+            },
+            "list": {
+              "id": "dlp.organizations.storedInfoTypes.list",
+              "path": "v2/{+parent}/storedInfoTypes",
+              "flatPath": "v2/organizations/{organizationsId}/storedInfoTypes",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The parent resource name, for example projects\/my-project-id or\norganizations\/my-org-id.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageToken": {
+                  "description": "Optional page token to continue retrieval. Comes from previous call\nto `ListStoredInfoTypes`.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional size of the page, can be limited by server. If zero server returns\na page of max size 100.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GooglePrivacyDlpV2ListStoredInfoTypesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists StoredInfoTypes."
+            },
+            "delete": {
+              "id": "dlp.organizations.storedInfoTypes.delete",
+              "path": "v2/{+name}",
+              "flatPath": "v2/organizations/{organizationsId}/storedInfoTypes/{storedInfoTypesId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "Resource name of the organization and storedInfoType to be deleted, for\nexample `organizations\/433245324\/storedInfoTypes\/432452342` or\nprojects\/project-id\/storedInfoTypes\/432452342.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/storedInfoTypes\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleProtobufEmpty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes a StoredInfoType."
             }
           }
         }

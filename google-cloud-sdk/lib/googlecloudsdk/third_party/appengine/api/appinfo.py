@@ -157,6 +157,7 @@ _PENDING_LATENCY_REGEX = r'^(\d+((\.\d{1,3})?s|ms)|automatic)$'
 _IDLE_TIMEOUT_REGEX = r'^[\d]+(s|m)$'
 
 GCE_RESOURCE_NAME_REGEX = r'^[a-z]([a-z\d-]{0,61}[a-z\d])?$'
+VPC_ACCESS_CONNECTOR_NAME_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
 
 ALTERNATE_HOSTNAME_SEPARATOR = '-dot-'
 
@@ -245,6 +246,7 @@ RESOURCES = 'resources'
 LIVENESS_CHECK = 'liveness_check'
 READINESS_CHECK = 'readiness_check'
 NETWORK = 'network'
+VPC_ACCESS_CONNECTOR = 'vpc_access_connector'
 VERSION = 'version'
 MAJOR_VERSION = 'major_version'
 MINOR_VERSION = 'minor_version'
@@ -295,7 +297,6 @@ MAXIMUM_CONCURRENT_REQUEST = 'max_concurrent_requests'
 # Attributes for Managed VMs (only) AutomaticScaling. These are very
 # different than Standard App Engine because scaling settings are
 # mapped to Cloud Autoscaler (as opposed to the clone scheduler). See
-# AutoscalingConfig in
 MIN_NUM_INSTANCES = 'min_num_instances'
 MAX_NUM_INSTANCES = 'max_num_instances'
 COOL_DOWN_PERIOD_SEC = 'cool_down_period_sec'
@@ -395,6 +396,9 @@ STANDARD_MAX_INSTANCES = 'max_instances'
 STANDARD_TARGET_CPU_UTILIZATION = 'target_cpu_utilization'
 STANDARD_TARGET_THROUGHPUT_UTILIZATION = 'target_throughput_utilization'
 
+# Attributes for `VpcAccessConnector`.
+VPC_ACCESS_CONNECTOR_NAME = 'name'
+
 
 class _VersionedLibrary(object):
   """A versioned library supported by App Engine."""
@@ -490,6 +494,8 @@ _SUPPORTED_LIBRARIES = [
         'A full-featured web application framework for Python.',
         ['1.2', '1.3', '1.4', '1.5', '1.9', '1.11'],
         latest_version='1.4',
+        deprecated_versions=['1.2', '1.3', '1.5', '1.9'],
+        # TODO(b/78247136) Deprecate 1.4 and update latest_version to 1.11
         ),
     _VersionedLibrary(
         'enum',
@@ -549,7 +555,7 @@ _SUPPORTED_LIBRARIES = [
         'A Pythonic binding for the C libraries libxml2 and libxslt.',
         ['2.3', '2.3.5', '3.7.3'],
         latest_version='3.7.3',
-        experimental_versions=['2.3.5'],
+        deprecated_versions=['2.3', '2.3.5'],
         ),
     _VersionedLibrary(
         'markupsafe',
@@ -571,7 +577,7 @@ _SUPPORTED_LIBRARIES = [
         'A Python DB API v2.0 compatible interface to MySQL.',
         ['1.2.4b4', '1.2.4', '1.2.5'],
         latest_version='1.2.5',
-        experimental_versions=['1.2.4b4', '1.2.4', '1.2.5']
+        deprecated_versions=['1.2.4b4', '1.2.4'],
         ),
     _VersionedLibrary(
         'numpy',
@@ -601,9 +607,9 @@ _SUPPORTED_LIBRARIES = [
         'https://pypi.python.org/pypi/pytz?',
         'A library for cross-platform timezone calculations',
         ['2016.4', '2017.2', '2017.3'],
-        latest_version='2017.2',
-        default_version='2017.2',
-        hidden_versions=['2017.3'],
+        latest_version='2017.3',
+        default_version='2017.3',
+        deprecated_versions=['2016.4', '2017.2'],
         ),
     _VersionedLibrary(
         'crcmod',
@@ -634,6 +640,8 @@ _SUPPORTED_LIBRARIES = [
         'A library of cryptography functions such as random number generation.',
         ['2.3', '2.6', '2.6.1'],
         latest_version='2.6',
+        deprecated_versions=['2.3'],
+        # TODO(b/78247136) Deprecate 2.6 and update latest_version to 2.6.1
         ),
     _VersionedLibrary(
         'setuptools',
@@ -641,6 +649,7 @@ _SUPPORTED_LIBRARIES = [
         'A library that provides package and module discovery capabilities.',
         ['0.6c11', '36.6.0'],
         latest_version='36.6.0',
+        deprecated_versions=['0.6c11'],
         ),
     _VersionedLibrary(
         'six',
@@ -670,8 +679,9 @@ _SUPPORTED_LIBRARIES = [
         'A lightweight Python web framework.',
         ['2.3', '2.5.1', '2.5.2'],
         latest_version='2.5.2',
+        # Keep default version at 2.3 because apps in production depend on it.
         default_version='2.3',
-        deprecated_versions=['2.3']
+        deprecated_versions=['2.5.1']
         ),
     _VersionedLibrary(
         'webob',
@@ -679,6 +689,7 @@ _SUPPORTED_LIBRARIES = [
         'A library that provides wrappers around the WSGI request environment.',
         ['1.1.1', '1.2.3'],
         latest_version='1.2.3',
+        # Keep default version at 1.1.1 because apps in production depend on it.
         default_version='1.1.1',
         ),
     _VersionedLibrary(
@@ -763,9 +774,9 @@ _MAX_URL_LENGTH = 2047
 # We allow certain headers to be larger than the normal limit of 8192 bytes.
 _MAX_HEADER_SIZE_FOR_EXEMPTED_HEADERS = 10240
 
-_CANNED_RUNTIMES = ('contrib-dart', 'dart', 'go', 'php', 'php55', 'php7',
+_CANNED_RUNTIMES = ('contrib-dart', 'dart', 'go', 'php', 'php55', 'php72',
                     'python', 'python27', 'python-compat', 'java', 'java7',
-                    'vm', 'custom', 'nodejs', 'ruby')
+                    'java8', 'vm', 'custom', 'nodejs', 'ruby')
 _all_runtimes = _CANNED_RUNTIMES
 
 
@@ -1972,6 +1983,15 @@ class Network(validation.Validated):
   }
 
 
+class VpcAccessConnector(validation.Validated):
+  """Class representing the VPC Access connector configuration."""
+
+  ATTRIBUTES = {
+      VPC_ACCESS_CONNECTOR_NAME:
+          validation.Regex(VPC_ACCESS_CONNECTOR_NAME_REGEX),
+  }
+
+
 class AppInclude(validation.Validated):
   """Class representing the contents of an included `app.yaml` file.
 
@@ -2245,6 +2265,7 @@ class AppInfoExternal(validation.Validated):
       LIVENESS_CHECK: validation.Optional(LivenessCheck),
       READINESS_CHECK: validation.Optional(ReadinessCheck),
       NETWORK: validation.Optional(Network),
+      VPC_ACCESS_CONNECTOR: validation.Optional(VpcAccessConnector),
       ZONES: validation.Optional(validation.Repeated(validation.TYPE_STR)),
       BUILTINS: validation.Optional(validation.Repeated(BuiltinHandler)),
       INCLUDES: validation.Optional(validation.Type(list)),
@@ -2690,12 +2711,12 @@ def ParseExpiration(expiration):
 
 
 #####################################################################
-# These regexps must be the same as those in apphosting/client/app_config.cc
-# and java/com/google/appengine/tools/admin/AppVersionUpload.java
-# java/com/google/apphosting/admin/legacy/LegacyAppInfo.java,
-# apphosting/client/app_config_old.cc,
-# apphosting/api/app_config/app_config_server2.cc
+# These regexps must be the same as those in:
+#   - apphosting/api/app_config/filepath_validator.cc
+#   - java/com/google/appengine/tools/admin/AppVersionUpload.java
+#   - java/com/google/apphosting/admin/legacy/LegacyAppInfo.java
 
+# LINT.IfChange
 # Forbid `.`, `..`, and leading `-`, `_ah/` or `/`
 _file_path_negative_1_re = re.compile(r'\.\.|^\./|\.$|/\./|^-|^_ah/|^/')
 
@@ -2741,3 +2762,4 @@ def ValidFilename(filename):
   if _file_path_negative_3_re.search(filename) is not None:
     return 'Any spaces must be in the middle of a filename: %s' % filename
   return ''
+# LINT.ThenChange(

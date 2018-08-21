@@ -91,7 +91,12 @@ class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
     self._lock = threading.Lock()
     self._tick_delay = tick_delay
     self._ticker = None
-    self._output_enabled = log.IsUserOutputEnabled()
+    console_width = console_attr.ConsoleAttr().GetTermSize()[0]
+    if console_width < 0:
+      # This can happen if we're on a pseudo-TTY. Set it to 0 and also
+      # turn off output to prevent hanging.
+      console_width = 0
+    self._output_enabled = log.IsUserOutputEnabled() and console_width != 0
     # Don't bother autoticking if we aren't going to print anything.
     self.__autotick = autotick and self._output_enabled
     self._interruptable = interruptable

@@ -224,7 +224,7 @@ def CalculateExtendedSourceContexts(source_directory):
 
   # Now find any remote URLs that match a Google-hosted source context.
   source_contexts = []
-  for remote_name, remote_url in remote_urls.iteritems():
+  for remote_name, remote_url in remote_urls.items():
     source_context = _ParseSourceContext(
         remote_name, remote_url, source_revision)
     # Only add this to the list if it parsed correctly, and hasn't been seen.

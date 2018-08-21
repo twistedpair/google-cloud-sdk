@@ -60,6 +60,17 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  ORGANIZATIONS_STOREDINFOTYPES = (
+      'organizations.storedInfoTypes',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/storedInfoTypes/'
+              '{storedInfoTypesId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',
@@ -118,6 +129,16 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/jobTriggers/{jobTriggersId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_STOREDINFOTYPES = (
+      'projects.storedInfoTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/storedInfoTypes/{storedInfoTypesId}',
       },
       [u'name'],
       True

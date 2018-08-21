@@ -53,7 +53,7 @@ indexes:
 # information in docstrings.  If you must communicate internal information in
 # this source file, please place them in comments only.
 
-import yaml
+from ruamel import yaml
 
 import copy
 import itertools
@@ -72,6 +72,7 @@ from googlecloudsdk.third_party.appengine.datastore import datastore_pb
 # sync.  Please refer to
 # java/com/google/appengine/tools/development/datastore-indexes.xsd
 # for the list of these files.
+
 
 class Property(validation.Validated):
   """Representation for a property of an index as it appears in YAML.
@@ -106,7 +107,7 @@ class Property(validation.Validated):
     super(Property, self).CheckInitialized()
 
 
-def _PropertyPresenter(dumper, prop):
+def PropertyPresenter(dumper, prop):
   """A PyYaml presenter for Property.
 
   It differs from the default by not outputting 'mode: null' and direction when
@@ -131,8 +132,6 @@ def _PropertyPresenter(dumper, prop):
     del prop_copy.direction
 
   return dumper.represent_object(prop_copy)
-
-yaml.add_representer(Property, _PropertyPresenter)
 
 
 class Index(validation.Validated):
@@ -182,6 +181,10 @@ class IndexDefinitions(validation.Validated):
       appinfo.APPLICATION: validation.Optional(appinfo.APPLICATION_RE_STRING),
       'indexes': validation.Optional(validation.Repeated(Index)),
   }
+
+
+index_yaml = yaml.YAML(typ='unsafe')
+index_yaml.representer.add_representer(Property, PropertyPresenter)
 
 
 def ParseIndexDefinitions(document, open_fn=None):

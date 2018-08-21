@@ -246,7 +246,7 @@ class CreateServiceAccountRequest(_messages.Message):
       project, must be 6-30 characters long, and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])` to comply with RFC1035.
     serviceAccount: The ServiceAccount resource to create. Currently, only the
-      following values are user assignable: `display_name` .
+      following values are user assignable: `display_name`, and `description`.
   """
 
   accountId = _messages.StringField(1)
@@ -1273,10 +1273,10 @@ class ServiceAccount(_messages.Message):
   value can be the `email` address or the `unique_id` of the service account.
 
   Fields:
-    displayName: Optional. A user-specified description of the service
-      account.  Must be fewer than 100 UTF-8 bytes.
+    displayName: Optional. A user-specified name for the service account. Must
+      be less than or equal to 100 UTF-8 bytes.
     email: @OutputOnly The email address of the service account.
-    etag: Used to perform a consistent read-modify-write.
+    etag: Optional. Not currently used.
     name: The resource name of the service account in the following format:
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Requests using `-`
       as a wildcard for the `PROJECT_ID` will infer the project from the

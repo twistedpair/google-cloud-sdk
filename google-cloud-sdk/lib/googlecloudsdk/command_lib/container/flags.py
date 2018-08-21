@@ -970,12 +970,11 @@ Example:
       help=help_text)
 
 
-def AddDiskTypeFlag(parser, suppressed=False):
+def AddDiskTypeFlag(parser):
   """Adds a --disk-type flag to the given parser.
 
   Args:
     parser: A given parser.
-    suppressed: Whether or not to suppress help text.
   """
   help_text = """\
 Type of the node VM boot disk. Defaults to pd-standard.
@@ -983,7 +982,6 @@ Type of the node VM boot disk. Defaults to pd-standard.
   parser.add_argument(
       '--disk-type',
       help=help_text,
-      hidden=suppressed,
       choices=['pd-standard', 'pd-ssd'])
 
 
@@ -1246,18 +1244,55 @@ Multiple locations can be specified, separated by commas. For example:
 """)
 
 
-def AddLoggingServiceFlag(parser):
+def AddLoggingServiceFlag(parser, enable_kubernetes):
   """Adds a --logging-service flag to the parser.
 
   Args:
     parser: A given parser.
+    enable_kubernetes: Mention Kubernetes-native resource model in help string
+  """
+  help_str = """\
+Logging service to use for the cluster. Options are:
+"logging.googleapis.com" (the Google Cloud Logging service),
+"none" (logs will not be exported from the cluster)
+"""
+
+  if enable_kubernetes:
+    help_str = """\
+Logging service to use for the cluster. Options are:
+"logging.googleapis.com/kubernetes" (the Google Cloud Logging
+service with Kubernetes-native resource model enabled),
+"logging.googleapis.com" (the Google Cloud Logging service),
+"none" (logs will not be exported from the cluster)
+"""
+
+  parser.add_argument('--logging-service', help=help_str)
+
+
+def AddMonitoringServiceFlag(parser, enable_kubernetes):
+  """Adds a --monitoring-service flag to the parser.
+
+  Args:
+    parser: A given parser.
+    enable_kubernetes: Mention Kubernetes-native resource model in help string
   """
 
-  parser.add_argument(
-      '--logging-service',
-      help='The logging service to use for the cluster. Options are: '
-      '"logging.googleapis.com" (the Google Cloud Logging service), '
-      '"none" (logs will not be exported from the cluster)')
+  help_str = """\
+Monitoring service to use for the cluster. Options are:
+"monitoring.googleapis.com" (the Google Cloud Monitoring service),
+"none" (no metrics will be exported from the cluster)
+"""
+
+  if enable_kubernetes:
+    help_str = """\
+Monitoring service to use for the cluster. Options are:
+"monitoring.googleapis.com/kubernetes" (the Google Cloud
+Monitoring service with Kubernetes-native resource model enabled),
+"monitoring.googleapis.com" (the Google Cloud Monitoring service),
+"none" (no metrics will be exported from the cluster)
+"""
+
+  parser.add_argument('--monitoring-service', help=help_str)
 
 
 def AddNodeIdentityFlags(parser, example_target, new_behavior=True):
@@ -1688,3 +1723,30 @@ def AddVerticalPodAutoscalingFlag(parser, hidden=False):
       help='Enables vertical pod autoscaling for a cluster.',
       hidden=hidden,
       action='store_true')
+
+
+# TODO(b/112194849): Explain limitation to the sandbox pods and the nodes.
+def AddSandboxFlag(parser, hidden=False):
+  """Adds a --sandbox flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+  type_validator = arg_parsers.RegexpValidator(
+      r'^gvisor$', 'Type must be "gvisor"')
+  parser.add_argument(
+      '--sandbox',
+      type=arg_parsers.ArgDict(
+          spec={'type': type_validator},
+          required_keys=['type'],
+          max_length=1),
+      metavar='type=TYPE',
+      hidden=hidden,
+      help="""\
+Enables the requested sandbox on all nodes in the node-pool. Example:
+
+  $ {command} node-pool-1 --cluster=example-cluster --sandbox type=gvisor
+
+The only supported type is 'gvisor'.
+      """)

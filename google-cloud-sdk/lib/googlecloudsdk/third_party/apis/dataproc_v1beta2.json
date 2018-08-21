@@ -236,7 +236,7 @@
           "type": "string"
         },
         "metrics": {
-          "description": "Contains cluster daemon metrics such as HDFS and YARN stats.Beta Feature: This report is available for testing purposes only. It may be changed before final release.",
+          "description": "Output only. Contains cluster daemon metrics such as HDFS and YARN stats.Beta Feature: This report is available for testing purposes only. It may be changed before final release.",
           "$ref": "ClusterMetrics"
         }
       }
@@ -451,6 +451,27 @@
           "type": "object",
           "additionalProperties": {
             "type": "string"
+          }
+        },
+        "optionalComponents": {
+          "description": "The set of optional components to activate on the cluster.",
+          "enumDescriptions": [
+            "Unspecified component.",
+            "The Jupyter Notebook.",
+            "The Hive Web HCatalog (the REST service for accessing HCatalog).",
+            "The Zeppelin notebook.",
+            "The Anaconda python distribution."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "JUPYTER",
+              "HIVE_WEBHCAT",
+              "ZEPPELIN",
+              "ANACONDA"
+            ]
           }
         }
       }

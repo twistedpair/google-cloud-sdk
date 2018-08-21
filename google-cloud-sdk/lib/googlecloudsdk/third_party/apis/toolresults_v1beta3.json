@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20180803",
+ "revision": "20180813",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -1007,17 +1007,9 @@
    "description": "A stacktrace.",
    "externalTypeName": "google.devtools.toolresults.v1.StackTrace",
    "properties": {
-    "clusterId": {
-     "type": "string",
-     "description": "Exception cluster ID"
-    },
     "exception": {
      "type": "string",
      "description": "The stack trace message.\n\nRequired"
-    },
-    "reportId": {
-     "type": "string",
-     "description": "Exception report ID"
     }
    }
   },

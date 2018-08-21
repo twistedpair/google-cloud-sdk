@@ -96,11 +96,11 @@ class Dataset(_messages.Message):
       both <gs_path_to_audio> and <gs_path_to_transcript> needs to be
       specified. 3. There has to be minimum 500 number of rows labelled
       HUMAN_TRANSCRIBED if evaluation stats are required. 4. If
-      use_logged_data_for_training is set to true, then we ignore the rows
-      labelled as MACHINE_TRANSCRIBED. 5. There has to be minimum 100,000
-      words in the transcripts in order to provide sufficient textual training
-      data for the language model. Currently, only Google Cloud Storage URIs
-      are supported, which must be specified in the following format:
+      use_logged_data is set to true, then we ignore the rows labelled as
+      MACHINE_TRANSCRIBED. 5. There has to be minimum 100,000 words in the
+      transcripts in order to provide sufficient textual training data for the
+      language model. Currently, only Google Cloud Storage URIs are supported,
+      which must be specified in the following format:
       `gs://bucket_name/object_name` (other URI formats will be ignored). For
       more information, see [Request
       URIs](https://cloud.google.com/storage/docs/reference-uris).

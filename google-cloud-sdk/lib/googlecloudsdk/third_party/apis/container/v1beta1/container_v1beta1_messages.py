@@ -38,6 +38,8 @@ class AddonsConfig(_messages.Message):
     httpLoadBalancing: Configuration for the HTTP (L7) load balancing
       controller addon, which makes it easy to set up HTTP load balancers for
       services in a cluster.
+    istioConfig: Configuration for Istio, an open platform to connect, manage,
+      and secure microservices.
     kubernetesDashboard: Configuration for the Kubernetes Dashboard.
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
@@ -46,8 +48,9 @@ class AddonsConfig(_messages.Message):
 
   horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
   httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 3)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 4)
+  istioConfig = _messages.MessageField('IstioConfig', 3)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 4)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 5)
 
 
 class AuditConfig(_messages.Message):
@@ -200,6 +203,7 @@ class Cluster(_messages.Message):
       cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `10.96.0.0/14`). Leave blank to have one
       automatically chosen or specify a `/14` block in `10.0.0.0/8`.
+    conditions: Which conditions caused the current cluster state.
     createTime: [Output only] The time the cluster was created, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     currentMasterVersion: [Output only] The current software version of the
@@ -391,50 +395,51 @@ class Cluster(_messages.Message):
   autoscaling = _messages.MessageField('ClusterAutoscaling', 3)
   binaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
   clusterIpv4Cidr = _messages.StringField(5)
-  createTime = _messages.StringField(6)
-  currentMasterVersion = _messages.StringField(7)
-  currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(9)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 10)
-  description = _messages.StringField(11)
-  enableKubernetesAlpha = _messages.BooleanField(12)
-  enableTpu = _messages.BooleanField(13)
-  endpoint = _messages.StringField(14)
-  expireTime = _messages.StringField(15)
-  initialClusterVersion = _messages.StringField(16)
-  initialNodeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(18, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 19)
-  labelFingerprint = _messages.StringField(20)
-  legacyAbac = _messages.MessageField('LegacyAbac', 21)
-  location = _messages.StringField(22)
-  locations = _messages.StringField(23, repeated=True)
-  loggingService = _messages.StringField(24)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 25)
-  masterAuth = _messages.MessageField('MasterAuth', 26)
-  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 27)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 28)
-  masterIpv4CidrBlock = _messages.StringField(29)
-  monitoringService = _messages.StringField(30)
-  name = _messages.StringField(31)
-  network = _messages.StringField(32)
-  networkConfig = _messages.MessageField('NetworkConfig', 33)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 34)
-  nodeConfig = _messages.MessageField('NodeConfig', 35)
-  nodeIpv4CidrSize = _messages.IntegerField(36, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 37, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 38)
-  privateCluster = _messages.BooleanField(39)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 40)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 41)
-  selfLink = _messages.StringField(42)
-  servicesIpv4Cidr = _messages.StringField(43)
-  status = _messages.EnumField('StatusValueValuesEnum', 44)
-  statusMessage = _messages.StringField(45)
-  subnetwork = _messages.StringField(46)
-  tpuIpv4CidrBlock = _messages.StringField(47)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
-  zone = _messages.StringField(49)
+  conditions = _messages.MessageField('StatusCondition', 6, repeated=True)
+  createTime = _messages.StringField(7)
+  currentMasterVersion = _messages.StringField(8)
+  currentNodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(10)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 11)
+  description = _messages.StringField(12)
+  enableKubernetesAlpha = _messages.BooleanField(13)
+  enableTpu = _messages.BooleanField(14)
+  endpoint = _messages.StringField(15)
+  expireTime = _messages.StringField(16)
+  initialClusterVersion = _messages.StringField(17)
+  initialNodeCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(19, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 20)
+  labelFingerprint = _messages.StringField(21)
+  legacyAbac = _messages.MessageField('LegacyAbac', 22)
+  location = _messages.StringField(23)
+  locations = _messages.StringField(24, repeated=True)
+  loggingService = _messages.StringField(25)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 26)
+  masterAuth = _messages.MessageField('MasterAuth', 27)
+  masterAuthorizedNetworks = _messages.MessageField('MasterAuthorizedNetworks', 28)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 29)
+  masterIpv4CidrBlock = _messages.StringField(30)
+  monitoringService = _messages.StringField(31)
+  name = _messages.StringField(32)
+  network = _messages.StringField(33)
+  networkConfig = _messages.MessageField('NetworkConfig', 34)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 35)
+  nodeConfig = _messages.MessageField('NodeConfig', 36)
+  nodeIpv4CidrSize = _messages.IntegerField(37, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 38, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 39)
+  privateCluster = _messages.BooleanField(40)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 41)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 42)
+  selfLink = _messages.StringField(43)
+  servicesIpv4Cidr = _messages.StringField(44)
+  status = _messages.EnumField('StatusValueValuesEnum', 45)
+  statusMessage = _messages.StringField(46)
+  subnetwork = _messages.StringField(47)
+  tpuIpv4CidrBlock = _messages.StringField(48)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 49)
+  zone = _messages.StringField(50)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1880,6 +1885,32 @@ class IPAllocationPolicy(_messages.Message):
   useIpAliases = _messages.BooleanField(13)
 
 
+class IstioConfig(_messages.Message):
+  r"""Configuration options for Istio addon.
+
+  Enums:
+    AuthValueValuesEnum: The specified Istio auth mode, either none, or mutual
+      TLS.
+
+  Fields:
+    auth: The specified Istio auth mode, either none, or mutual TLS.
+    disabled: Whether Istio is enabled for this cluster.
+  """
+
+  class AuthValueValuesEnum(_messages.Enum):
+    r"""The specified Istio auth mode, either none, or mutual TLS.
+
+    Values:
+      AUTH_NONE: auth not enabled
+      AUTH_MUTUAL_TLS: auth mutual TLS enabled
+    """
+    AUTH_NONE = 0
+    AUTH_MUTUAL_TLS = 1
+
+  auth = _messages.EnumField('AuthValueValuesEnum', 1)
+  disabled = _messages.BooleanField(2)
+
+
 class KubernetesDashboard(_messages.Message):
   r"""Configuration for the Kubernetes Dashboard.
 
@@ -2272,12 +2303,12 @@ class NodeConfig(_messages.Message):
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
       reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
-      "configure-sh"  "gci-update-strategy"  "gci-ensure-gke-docker"
-      "instance-template"  "kube-env"  "startup-script"  "user-data"  Values
-      are free-form strings, and only have meaning as interpreted by the image
-      running in the instance. The only restriction placed on them is that
-      each value's size must be less than or equal to 32 KB.  The total size
-      of all keys and values must be less than 512 KB.
+      "configure-sh"  "enable-oslogin"  "gci-ensure-gke-docker"  "gci-update-
+      strategy"  "instance-template"  "kube-env"  "startup-script"  "user-
+      data"  Values are free-form strings, and only have meaning as
+      interpreted by the image running in the instance. The only restriction
+      placed on them is that each value's size must be less than or equal to
+      32 KB.  The total size of all keys and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2313,12 +2344,12 @@ class NodeConfig(_messages.Message):
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
       reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
-      "configure-sh"  "gci-update-strategy"  "gci-ensure-gke-docker"
-      "instance-template"  "kube-env"  "startup-script"  "user-data"  Values
-      are free-form strings, and only have meaning as interpreted by the image
-      running in the instance. The only restriction placed on them is that
-      each value's size must be less than or equal to 32 KB.  The total size
-      of all keys and values must be less than 512 KB.
+      "configure-sh"  "enable-oslogin"  "gci-ensure-gke-docker"  "gci-update-
+      strategy"  "instance-template"  "kube-env"  "startup-script"  "user-
+      data"  Values are free-form strings, and only have meaning as
+      interpreted by the image running in the instance. The only restriction
+      placed on them is that each value's size must be less than or equal to
+      32 KB.  The total size of all keys and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -2393,13 +2424,13 @@ class NodeConfig(_messages.Message):
     in length. These are reflected as part of a URL in the metadata server.
     Additionally, to avoid ambiguity, keys must not conflict with any other
     metadata keys for the project or be one of the reserved keys:  "cluster-
-    location"  "cluster-name"  "cluster-uid"  "configure-sh"  "gci-update-
-    strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-env"
-    "startup-script"  "user-data"  Values are free-form strings, and only have
-    meaning as interpreted by the image running in the instance. The only
-    restriction placed on them is that each value's size must be less than or
-    equal to 32 KB.  The total size of all keys and values must be less than
-    512 KB.
+    location"  "cluster-name"  "cluster-uid"  "configure-sh"  "enable-oslogin"
+    "gci-ensure-gke-docker"  "gci-update-strategy"  "instance-template"
+    "kube-env"  "startup-script"  "user-data"  Values are free-form strings,
+    and only have meaning as interpreted by the image running in the instance.
+    The only restriction placed on them is that each value's size must be less
+    than or equal to 32 KB.  The total size of all keys and values must be
+    less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2470,6 +2501,7 @@ class NodePool(_messages.Message):
   Fields:
     autoscaling: Autoscaler configuration for this NodePool. Autoscaler is
       enabled only if a valid configuration is present.
+    conditions: Which conditions caused the current node pool state.
     config: The node configuration of the pool.
     initialNodeCount: The initial node count for the pool. You must ensure
       that your Compute Engine <a href="/compute/docs/resource-
@@ -2518,16 +2550,17 @@ class NodePool(_messages.Message):
     ERROR = 6
 
   autoscaling = _messages.MessageField('NodePoolAutoscaling', 1)
-  config = _messages.MessageField('NodeConfig', 2)
-  initialNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(4, repeated=True)
-  management = _messages.MessageField('NodeManagement', 5)
-  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 6)
-  name = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  version = _messages.StringField(11)
+  conditions = _messages.MessageField('StatusCondition', 2, repeated=True)
+  config = _messages.MessageField('NodeConfig', 3)
+  initialNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(5, repeated=True)
+  management = _messages.MessageField('NodeManagement', 6)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 7)
+  name = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  statusMessage = _messages.StringField(11)
+  version = _messages.StringField(12)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -2592,6 +2625,7 @@ class Operation(_messages.Message):
     StatusValueValuesEnum: The current status of the operation.
 
   Fields:
+    clusterConditions: Which conditions caused the current cluster state.
     detail: Detailed operation progress, if available.
     endTime: [Output only] The time the operation completed, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
@@ -2600,6 +2634,7 @@ class Operation(_messages.Message):
       [region](/compute/docs/regions-zones/regions-zones#available) in which
       the cluster resides.
     name: The server-assigned ID for the operation.
+    nodepoolConditions: Which conditions caused the current node pool state.
     operationType: The operation type.
     progress: [Output only] Progress information for an operation.
     selfLink: Server-defined URL for the resource.
@@ -2670,18 +2705,20 @@ class Operation(_messages.Message):
     DONE = 3
     ABORTING = 4
 
-  detail = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  location = _messages.StringField(3)
-  name = _messages.StringField(4)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
-  progress = _messages.MessageField('OperationProgress', 6)
-  selfLink = _messages.StringField(7)
-  startTime = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  targetLink = _messages.StringField(11)
-  zone = _messages.StringField(12)
+  clusterConditions = _messages.MessageField('StatusCondition', 1, repeated=True)
+  detail = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  location = _messages.StringField(4)
+  name = _messages.StringField(5)
+  nodepoolConditions = _messages.MessageField('StatusCondition', 6, repeated=True)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 7)
+  progress = _messages.MessageField('OperationProgress', 8)
+  selfLink = _messages.StringField(9)
+  startTime = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  statusMessage = _messages.StringField(12)
+  targetLink = _messages.StringField(13)
+  zone = _messages.StringField(14)
 
 
 class OperationProgress(_messages.Message):

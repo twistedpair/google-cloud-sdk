@@ -274,12 +274,15 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
 
   CheckIamPermissions(project_id)
 
-  timeout_str = '{0}s'.format(args.timeout)
+  # Make Daisy time out before gcloud by shaving off 2% from the timeout time,
+  # up to a max of 5m (300s).
+  two_percent = int(args.timeout * 0.02)
+  daisy_timeout = args.timeout - min(two_percent, 300)
 
   daisy_bucket = daisy_bucket or GetAndCreateDaisyBucket()
 
   daisy_args = ['-gcs_path=gs://{0}/'.format(daisy_bucket),
-                '-default_timeout={0}'.format(timeout_str),
+                '-default_timeout={0}s'.format(daisy_timeout),
                 '-variables={0}'.format(variables),
                 workflow,
                ]
@@ -299,7 +302,7 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
           ),
       ],
       tags=build_tags,
-      timeout=timeout_str,
+      timeout='{0}s'.format(args.timeout),
   )
   if args.log_location:
     gcs_log_dir = resources.REGISTRY.Parse(

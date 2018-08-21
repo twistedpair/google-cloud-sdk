@@ -38,6 +38,7 @@ class DlpV2(base_api.BaseApiClient):
     self.infoTypes = self.InfoTypesService(self)
     self.organizations_deidentifyTemplates = self.OrganizationsDeidentifyTemplatesService(self)
     self.organizations_inspectTemplates = self.OrganizationsInspectTemplatesService(self)
+    self.organizations_storedInfoTypes = self.OrganizationsStoredInfoTypesService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_content = self.ProjectsContentService(self)
     self.projects_deidentifyTemplates = self.ProjectsDeidentifyTemplatesService(self)
@@ -45,6 +46,7 @@ class DlpV2(base_api.BaseApiClient):
     self.projects_image = self.ProjectsImageService(self)
     self.projects_inspectTemplates = self.ProjectsInspectTemplatesService(self)
     self.projects_jobTriggers = self.ProjectsJobTriggersService(self)
+    self.projects_storedInfoTypes = self.ProjectsStoredInfoTypesService(self)
     self.projects = self.ProjectsService(self)
 
   class InfoTypesService(base_api.BaseApiService):
@@ -389,6 +391,153 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
         request_field=u'googlePrivacyDlpV2UpdateInspectTemplateRequest',
         request_type_name=u'DlpOrganizationsInspectTemplatesPatchRequest',
         response_type_name=u'GooglePrivacyDlpV2InspectTemplate',
+        supports_download=False,
+    )
+
+  class OrganizationsStoredInfoTypesService(base_api.BaseApiService):
+    """Service class for the organizations_storedInfoTypes resource."""
+
+    _NAME = u'organizations_storedInfoTypes'
+
+    def __init__(self, client):
+      super(DlpV2.OrganizationsStoredInfoTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a pre-built StoredInfoType to be used for inspecting storage in.
+InspectDataSource.
+
+      Args:
+        request: (DlpOrganizationsStoredInfoTypesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2StoredInfoType) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/storedInfoTypes',
+        http_method=u'POST',
+        method_id=u'dlp.organizations.storedInfoTypes.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v2/{+parent}/storedInfoTypes',
+        request_field=u'googlePrivacyDlpV2CreateStoredInfoTypeRequest',
+        request_type_name=u'DlpOrganizationsStoredInfoTypesCreateRequest',
+        response_type_name=u'GooglePrivacyDlpV2StoredInfoType',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a StoredInfoType.
+
+      Args:
+        request: (DlpOrganizationsStoredInfoTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/storedInfoTypes/{storedInfoTypesId}',
+        http_method=u'DELETE',
+        method_id=u'dlp.organizations.storedInfoTypes.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'DlpOrganizationsStoredInfoTypesDeleteRequest',
+        response_type_name=u'GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a StoredInfoType.
+
+      Args:
+        request: (DlpOrganizationsStoredInfoTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2StoredInfoType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/storedInfoTypes/{storedInfoTypesId}',
+        http_method=u'GET',
+        method_id=u'dlp.organizations.storedInfoTypes.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'DlpOrganizationsStoredInfoTypesGetRequest',
+        response_type_name=u'GooglePrivacyDlpV2StoredInfoType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists StoredInfoTypes.
+
+      Args:
+        request: (DlpOrganizationsStoredInfoTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListStoredInfoTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/storedInfoTypes',
+        http_method=u'GET',
+        method_id=u'dlp.organizations.storedInfoTypes.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/storedInfoTypes',
+        request_field='',
+        request_type_name=u'DlpOrganizationsStoredInfoTypesListRequest',
+        response_type_name=u'GooglePrivacyDlpV2ListStoredInfoTypesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the StoredInfoType by creating a new version. The existing version.
+will continue to be used until the new version is ready.
+
+      Args:
+        request: (DlpOrganizationsStoredInfoTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2StoredInfoType) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/organizations/{organizationsId}/storedInfoTypes/{storedInfoTypesId}',
+        http_method=u'PATCH',
+        method_id=u'dlp.organizations.storedInfoTypes.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field=u'googlePrivacyDlpV2UpdateStoredInfoTypeRequest',
+        request_type_name=u'DlpOrganizationsStoredInfoTypesPatchRequest',
+        response_type_name=u'GooglePrivacyDlpV2StoredInfoType',
         supports_download=False,
     )
 
@@ -1173,6 +1322,153 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
         request_field=u'googlePrivacyDlpV2UpdateJobTriggerRequest',
         request_type_name=u'DlpProjectsJobTriggersPatchRequest',
         response_type_name=u'GooglePrivacyDlpV2JobTrigger',
+        supports_download=False,
+    )
+
+  class ProjectsStoredInfoTypesService(base_api.BaseApiService):
+    """Service class for the projects_storedInfoTypes resource."""
+
+    _NAME = u'projects_storedInfoTypes'
+
+    def __init__(self, client):
+      super(DlpV2.ProjectsStoredInfoTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a pre-built StoredInfoType to be used for inspecting storage in.
+InspectDataSource.
+
+      Args:
+        request: (DlpProjectsStoredInfoTypesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2StoredInfoType) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/storedInfoTypes',
+        http_method=u'POST',
+        method_id=u'dlp.projects.storedInfoTypes.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v2/{+parent}/storedInfoTypes',
+        request_field=u'googlePrivacyDlpV2CreateStoredInfoTypeRequest',
+        request_type_name=u'DlpProjectsStoredInfoTypesCreateRequest',
+        response_type_name=u'GooglePrivacyDlpV2StoredInfoType',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a StoredInfoType.
+
+      Args:
+        request: (DlpProjectsStoredInfoTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/storedInfoTypes/{storedInfoTypesId}',
+        http_method=u'DELETE',
+        method_id=u'dlp.projects.storedInfoTypes.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'DlpProjectsStoredInfoTypesDeleteRequest',
+        response_type_name=u'GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a StoredInfoType.
+
+      Args:
+        request: (DlpProjectsStoredInfoTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2StoredInfoType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/storedInfoTypes/{storedInfoTypesId}',
+        http_method=u'GET',
+        method_id=u'dlp.projects.storedInfoTypes.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field='',
+        request_type_name=u'DlpProjectsStoredInfoTypesGetRequest',
+        response_type_name=u'GooglePrivacyDlpV2StoredInfoType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists StoredInfoTypes.
+
+      Args:
+        request: (DlpProjectsStoredInfoTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListStoredInfoTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/storedInfoTypes',
+        http_method=u'GET',
+        method_id=u'dlp.projects.storedInfoTypes.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v2/{+parent}/storedInfoTypes',
+        request_field='',
+        request_type_name=u'DlpProjectsStoredInfoTypesListRequest',
+        response_type_name=u'GooglePrivacyDlpV2ListStoredInfoTypesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the StoredInfoType by creating a new version. The existing version.
+will continue to be used until the new version is ready.
+
+      Args:
+        request: (DlpProjectsStoredInfoTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2StoredInfoType) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v2/projects/{projectsId}/storedInfoTypes/{storedInfoTypesId}',
+        http_method=u'PATCH',
+        method_id=u'dlp.projects.storedInfoTypes.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v2/{+name}',
+        request_field=u'googlePrivacyDlpV2UpdateStoredInfoTypeRequest',
+        request_type_name=u'DlpProjectsStoredInfoTypesPatchRequest',
+        response_type_name=u'GooglePrivacyDlpV2StoredInfoType',
         supports_download=False,
     )
 

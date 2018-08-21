@@ -43,7 +43,38 @@ builder.  See yaml_object.py.
 
 import re
 
-import yaml
+from ruamel import yaml
+
+
+class SortedDict(dict):
+  """Represents a dict with a particular key order for yaml representing."""
+
+  def __init__(self, keys, data):
+    super(SortedDict, self).__init__()
+    self.keys = keys
+    self.update(data)
+
+  def ordered_items(self):  # pylint: disable=invalid-name
+    result = []
+    for key in self.keys:
+      if self.get(key) is not None:
+        result.append((key, self.get(key)))
+    return result
+
+
+class ItemDumper(yaml.SafeDumper):
+  """For dumping validation.Items. Respects SortedDict key ordering."""
+
+  def represent_mapping(self, tag, mapping, flow_style=None):
+    if hasattr(mapping, 'ordered_items'):
+      return super(ItemDumper, self).represent_mapping(
+          tag, mapping.ordered_items(), flow_style=flow_style)
+    return super(ItemDumper, self).represent_mapping(
+        tag, mapping, flow_style=flow_style)
+
+
+ItemDumper.add_representer(
+    SortedDict, ItemDumper.represent_dict)
 
 
 class Error(Exception):
@@ -221,7 +252,7 @@ class ValidatedBase(object):
     """
     return yaml.dump(self.ToDict(),
                      default_flow_style=False,
-                     Dumper=yaml.SafeDumper)
+                     Dumper=ItemDumper)
 
   def GetWarnings(self):
     """Return all the warnings we've got, along with their associated fields.

@@ -2697,13 +2697,18 @@ def _RunInTransactionInternal(options, mode, function, *args, **kwargs):
   transactional_conn = None
   try:
     # Loop one extra time because the initial try is not counted.
-    for _ in range(0, retries + 1):
+    for i in range(0, retries + 1):
       transactional_conn = conn.new_transaction(options, previous_transaction,
                                                 mode)
       _SetConnection(transactional_conn)
       ok, result = _DoOneTry(function, args, kwargs)
       if ok:
         return result
+
+      if i < retries:
+        # Pass a second arg for the unit test.  We may put the entity
+        # group there eventually.
+        logging.warning('Transaction collision. Retrying... %s', '')
 
       if mode == datastore_rpc.TransactionMode.READ_WRITE:
         # Only read-write transactions support setting previous_transaction.
@@ -2717,7 +2722,7 @@ def _RunInTransactionInternal(options, mode, function, *args, **kwargs):
     try:
       transactional_conn.rollback()
     except Exception:  # pylint: disable=broad-except
-       # ignore errors on rollback
+      # ignore errors on rollback
       logging.exception('Exception sending Rollback:')
 
   # We ran out of retries. give up. :(
@@ -2753,9 +2758,6 @@ def _DoOneTry(function, args, kwargs):
     if _GetConnection().commit():
       return True, result
     else:
-      # Pass a second arg for the unit test.  We may put the entity
-      # group there eventually.
-      logging.warning('Transaction collision. Retrying... %s', '')
       return False, None
 
 

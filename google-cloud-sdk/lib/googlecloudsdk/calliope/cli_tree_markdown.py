@@ -209,7 +209,7 @@ class CliTreeMarkdownGenerator(markdown.MarkdownGenerator):
     try:
       return [Argument(a) for a in
               command[cli_tree.LOOKUP_CONSTRAINTS][cli_tree.LOOKUP_ARGUMENTS]]
-    except KeyError:
+    except (KeyError, TypeError):
       return []
 
   def GetArgDetails(self, arg):

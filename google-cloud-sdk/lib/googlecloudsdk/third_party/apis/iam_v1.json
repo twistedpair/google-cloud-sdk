@@ -149,11 +149,11 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Optional. A user-specified description of the service account.  Must be\nfewer than 100 UTF-8 bytes.",
+          "description": "Optional. A user-specified name for the service account. Must be\nless than or equal to 100 UTF-8 bytes.",
           "type": "string"
         },
         "etag": {
-          "description": "Used to perform a consistent read-modify-write.",
+          "description": "Optional. Not currently used.",
           "type": "string",
           "format": "byte"
         },
@@ -173,7 +173,7 @@
           "type": "string"
         },
         "serviceAccount": {
-          "description": "The ServiceAccount resource to create.\nCurrently, only the following values are user assignable:\n`display_name` .",
+          "description": "The ServiceAccount resource to\ncreate. Currently, only the following values are user assignable:\n`display_name`, and `description`.",
           "$ref": "ServiceAccount"
         }
       }
@@ -1084,7 +1084,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory."
+              "description": "Updates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name`, `description`."
             },
             "delete": {
               "id": "iam.projects.serviceAccounts.delete",

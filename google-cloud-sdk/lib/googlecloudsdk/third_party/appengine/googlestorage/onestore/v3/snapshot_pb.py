@@ -17,7 +17,12 @@
 from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 import abc
 import array
-import thread
+try:
+  from thread import allocate_lock as _Lock
+except ImportError:
+  from threading import Lock as _Lock
+
+if hasattr(__builtins__, 'xrange'): range = xrange
 
 if hasattr(ProtocolBuffer, 'ExtendableProtocolMessage'):
   _extension_runtime = True
@@ -110,7 +115,7 @@ class Snapshot(ProtocolBuffer.ProtocolMessage):
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
-      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
+      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError()
       d.skipData(tt)
 
 
@@ -121,7 +126,7 @@ class Snapshot(ProtocolBuffer.ProtocolMessage):
 
 
   def _BuildTagLookupTable(sparse, maxtag, default=None):
-    return tuple([sparse.get(i, default) for i in xrange(0, 1+maxtag)])
+    return tuple([sparse.get(i, default) for i in range(0, 1+maxtag)])
 
   kts = 1
 

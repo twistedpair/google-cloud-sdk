@@ -463,6 +463,19 @@ class BuildTrigger(_messages.Message):
     filename: Path, from the source root, to a file whose contents is used for
       the template.
     id: Output only. Unique identifier of the trigger.
+    ignoredFiles: ignored_files and included_files are file glob matches using
+      http://godoc/pkg/path/filepath#Match extended with support for "**".  If
+      ignored_files and changed files are both empty, then they are not used
+      to determine whether or not to trigger a build.  If ignored_files is not
+      empty, then we ignore any files that match any of the ignored_file
+      globs. If the change has no files that are outside of the ignored_files
+      globs, then we do not trigger a build.
+    includedFiles: If any of the files altered in the commit pass the
+      ignored_files filter and included_files is empty, then as far as this
+      filter is concerned, we should trigger the build.  If any of the files
+      altered in the commit pass the ignored_files filter and included_files
+      is not empty, then we make sure that at least one of those files matches
+      a included_files glob. If not, then we do not trigger a build.
     substitutions: Substitutions data for Build resource.
     triggerTemplate: Template describing the types of source changes to
       trigger a build.  Branch and tag names in trigger templates are
@@ -501,8 +514,10 @@ class BuildTrigger(_messages.Message):
   disabled = _messages.BooleanField(4)
   filename = _messages.StringField(5)
   id = _messages.StringField(6)
-  substitutions = _messages.MessageField('SubstitutionsValue', 7)
-  triggerTemplate = _messages.MessageField('RepoSource', 8)
+  ignoredFiles = _messages.StringField(7, repeated=True)
+  includedFiles = _messages.StringField(8, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 9)
+  triggerTemplate = _messages.MessageField('RepoSource', 10)
 
 
 class BuiltImage(_messages.Message):
@@ -935,6 +950,11 @@ class Results(_messages.Message):
       artifacts are uploaded.
     buildStepImages: List of build step digests, in the order corresponding to
       build step indices.
+    buildStepOutputs: List of build step outputs, produced by builder images,
+      in the order corresponding to build step indices.  [Cloud
+      Builders](https://cloud.google.com/cloud-build/docs/cloud-builders) can
+      produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
+      first 4KB of data is stored.
     images: Container images that were built as a part of the build.
     numArtifacts: Number of artifacts uploaded. Only populated when artifacts
       are uploaded.
@@ -942,8 +962,9 @@ class Results(_messages.Message):
 
   artifactManifest = _messages.StringField(1)
   buildStepImages = _messages.StringField(2, repeated=True)
-  images = _messages.MessageField('BuiltImage', 3, repeated=True)
-  numArtifacts = _messages.IntegerField(4)
+  buildStepOutputs = _messages.BytesField(3, repeated=True)
+  images = _messages.MessageField('BuiltImage', 4, repeated=True)
+  numArtifacts = _messages.IntegerField(5)
 
 
 class RetryBuildRequest(_messages.Message):

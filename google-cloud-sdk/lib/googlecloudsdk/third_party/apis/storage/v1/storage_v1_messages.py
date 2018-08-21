@@ -218,6 +218,13 @@ class Bucket(_messages.Message):
           isLive: Relevant only for versioned objects. If the value is true,
             this condition matches live objects; if the value is false, it
             matches archived objects.
+          matchesPattern: A regular expression that satisfies the RE2 syntax
+            language. This condition is satisfied when the name of the object
+            matches the RE2 pattern. Note: This feature is currently in the
+            "Early Access" launch stage and is only available to a whitelisted
+            set of users; that means that this feature may changed in
+            backward-incompatible ways and that it is not guaranteed to be
+            released.
           matchesStorageClass: Objects having any of the storage classes
             specified by this condition will be matched. Values include
             MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, STANDARD, and
@@ -231,8 +238,9 @@ class Bucket(_messages.Message):
         age = _messages.IntegerField(1, variant=_messages.Variant.INT32)
         createdBefore = extra_types.DateField(2)
         isLive = _messages.BooleanField(3)
-        matchesStorageClass = _messages.StringField(4, repeated=True)
-        numNewerVersions = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+        matchesPattern = _messages.StringField(4)
+        matchesStorageClass = _messages.StringField(5, repeated=True)
+        numNewerVersions = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
       action = _messages.MessageField('ActionValue', 1)
       condition = _messages.MessageField('ConditionValue', 2)

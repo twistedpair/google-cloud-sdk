@@ -360,7 +360,7 @@ class ArgumentParser(argparse.ArgumentParser):
     return self._remainder_action
 
   def GetSpecifiedArgNames(self):
-    """Returns the scrubbed names for args specified on the comman line."""
+    """Returns the scrubbed names for args specified on the command line."""
     return sorted(self._specified_args.values())
 
   def _Suggest(self, unknown_args):

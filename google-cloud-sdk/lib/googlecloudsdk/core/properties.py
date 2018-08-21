@@ -890,7 +890,7 @@ class _SectionCore(_Section):
         # Current runtime lint patterns. Delete from this comment when the
         # pattern usage has been deleted.
         #
-        #   AddCacheUpdaters: Throws an exeption for each command that needs
+        #   AddCacheUpdaters: Throws an exception for each command that needs
         #     a parser.display_info.AddCacheUpdater() call.
         #
         # When running tests set default=PATTERN[,PATTERN...] here to weed out
@@ -1327,6 +1327,9 @@ class _SectionInteractive(_Section):
     self.context = self._Add(
         'context', default='',
         help_text='Command context string.')
+    self.debug = self._AddBool(
+        'debug', default=False, hidden=True,
+        help_text='If True, enable the debugging display.')
     self.fixed_prompt_position = self._Add(
         'fixed_prompt_position', default=False,
         help_text='If True, display the prompt at the same position.')
@@ -1346,6 +1349,9 @@ class _SectionInteractive(_Section):
     self.multi_column_completion_menu = self._AddBool(
         'multi_column_completion_menu', default=False,
         help_text='If True, display the completions as a multi-column menu.')
+    self.obfuscate = self._AddBool(
+        'obfuscate', default=False, hidden=True,
+        help_text='If True, obfuscate status PII.')
     self.prompt = self._Add(
         'prompt', default='$ ',
         help_text='Command prompt string.')

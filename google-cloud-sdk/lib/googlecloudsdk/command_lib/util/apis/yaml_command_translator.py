@@ -101,6 +101,8 @@ class CommandBuilder(object):
       command = self._GenerateRemoveIamPolicyBindingCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
       command = self._GenerateGenericCommand()
+    elif self.spec.command_type == yaml_command_schema.CommandType.UPDATE:
+      command = self._GenerateUpdateCommand()
     else:
       raise ValueError('Command [{}] unknown command type [{}].'.format(
           ' '.join(self.path), self.spec.command_type))
@@ -479,6 +481,46 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.Command):
+
+      @staticmethod
+      def Args(parser):
+        self._CommonArgs(parser)
+        if self.spec.async:
+          base.ASYNC_FLAG.AddToParser(parser)
+
+      def Run(self_, args):
+        ref, response = self._CommonRun(args)
+        if self.spec.async:
+          request_string = None
+          if ref:
+            request_string = 'Request issued for: [{{{}}}]'.format(
+                yaml_command_schema.NAME_FORMAT_KEY)
+          response = self._HandleAsync(
+              args, ref, response, request_string=request_string)
+        return self._HandleResponse(response, args)
+
+    return Command
+
+  def _GenerateUpdateCommand(self):
+    """Generates an update command.
+
+    An update command has a resource argument, additional fields, and calls an
+    API method. It supports async if the async configuration is given. Any
+    fields is message_params will be generated as arguments and inserted into
+    the request message.
+
+    Currently, the Update command is the same as Generic command.
+
+    Returns:
+      calliope.base.Command, The command that implements the spec.
+    """
+
+    # pylint: disable=no-self-argument, The class closure throws off the linter
+    # a bit. We want to use the generator class, not the class being generated.
+    # pylint: disable=protected-access, The linter gets confused about 'self'
+    # and thinks we are accessing something protected.
+    class Command(base.Command):
+      # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):

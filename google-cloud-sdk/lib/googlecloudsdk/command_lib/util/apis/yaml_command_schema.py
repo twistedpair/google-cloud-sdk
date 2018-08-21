@@ -67,6 +67,8 @@ class CommandType(Enum):
   DELETE = 'delete'
   CREATE = 'create'
   WAIT = 'get'
+  # For update commands, the API method needs to be specified in the spec.
+  UPDATE = ''
   # IAM support currently implemented as subcommands
   GET_IAM_POLICY = 'getIamPolicy'
   SET_IAM_POLICY = 'setIamPolicy'

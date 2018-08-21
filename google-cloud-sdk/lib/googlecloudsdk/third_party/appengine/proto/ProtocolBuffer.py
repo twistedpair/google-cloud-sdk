@@ -547,11 +547,6 @@ class Encoder:
         break
     return
 
-
-  # TODO: should we make sure that v actually has no more precision than
-  #       float (so it comes out exactly as it goes in)?  Probably not -
-  #       users expect their value to be rounded, and they would be
-  #       annoyed if we forced them do it themselves.
   def putFloat(self, v):
     a = array.array('B')
     a.fromstring(struct.pack("<f", v))

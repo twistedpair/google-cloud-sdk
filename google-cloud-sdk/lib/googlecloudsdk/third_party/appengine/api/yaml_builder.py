@@ -28,10 +28,11 @@ object so that it can construct a properly structured object.
 
 
 
+from ruamel import yaml
+
 from googlecloudsdk.third_party.appengine.api import yaml_errors
 from googlecloudsdk.third_party.appengine.api import yaml_listener
 
-import yaml
 
 # Token constants used by handler for keeping track of handler state.
 _TOKEN_DOCUMENT = 'document'

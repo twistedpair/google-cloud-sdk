@@ -21,6 +21,7 @@ Library for parsing client_deploy.yaml files and working with these in memory.
 # information in docstrings.  If you must communicate internal information in
 # this source file, please place them in comments only.
 
+from __future__ import absolute_import
 import os
 
 # pylint: disable=g-import-not-at-top

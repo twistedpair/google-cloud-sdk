@@ -91,6 +91,28 @@ class CLI(interface.CommandLineInterface):
       self.renderer.erase()
     self.coshell.Run(text)
 
+  # Wraps the interface.CommandLineInterface method.
+  def add_buffer(self, name, buf, focus=False):
+    """MONKEYPATCH! Calls the async completer on delete before cursor."""
+    super(CLI, self).add_buffer(name, buf, focus)
+
+    def DeleteBeforeCursor(count=1):
+      deleted = buf.patch_real_delete_before_cursor(count=count)
+      # This call to the async completer refreshes the completion dropdown as
+      # characters are deleted.
+      buf.patch_completer_function()
+      return deleted
+
+    # Only needed in complete_while_typing mode, and only need to patch once.
+    if (buf.complete_while_typing() and
+        buf.delete_before_cursor != DeleteBeforeCursor):
+      # The async completer to call.
+      buf.patch_completer_function = self._async_completers[name]
+      # The real delete_before_cursor, always called.
+      buf.patch_real_delete_before_cursor = buf.delete_before_cursor
+      # Our monkeypatched delete_before_cursor.
+      buf.delete_before_cursor = DeleteBeforeCursor
+
 
 class Context(pt_layout.Processor):
   """Input processor that adds context."""
@@ -272,6 +294,8 @@ class Application(object):
 
   def _GetProjectAndAccount(self):
     """Returns the current (project, account) tuple."""
+    if self.config.obfuscate:
+      return ('me', 'myself@i')
     if not self.args.IsSpecified('project'):
       named_configs.ActivePropertiesFile().Invalidate()
     project = properties.VALUES.core.project.Get() or '<NO PROJECT SET>'

@@ -436,6 +436,7 @@ class UpdateClusterOptions(object):
                update_nodes=None,
                node_pool=None,
                monitoring_service=None,
+               logging_service=None,
                disable_addons=None,
                enable_autoscaling=None,
                min_nodes=None,
@@ -456,6 +457,7 @@ class UpdateClusterOptions(object):
     self.update_nodes = bool(update_nodes)
     self.node_pool = node_pool
     self.monitoring_service = monitoring_service
+    self.logging_service = logging_service
     self.disable_addons = disable_addons
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
@@ -523,7 +525,8 @@ class CreateNodePoolOptions(object):
                accelerators=None,
                min_cpu_platform=None,
                workload_metadata_from_node=None,
-               max_pods_per_node=None):
+               max_pods_per_node=None,
+               sandbox=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -553,6 +556,7 @@ class CreateNodePoolOptions(object):
     self.min_cpu_platform = min_cpu_platform
     self.workload_metadata_from_node = workload_metadata_from_node
     self.max_pods_per_node = max_pods_per_node
+    self.sandbox = sandbox
 
 
 class UpdateNodePoolOptions(object):
@@ -1087,9 +1091,12 @@ class APIAdapter(object):
     elif options.update_master:
       update = self.messages.ClusterUpdate(
           desiredMasterVersion=options.version)
-    elif options.monitoring_service:
-      update = self.messages.ClusterUpdate(
-          desiredMonitoringService=options.monitoring_service)
+    elif options.monitoring_service or options.logging_service:
+      update = self.messages.ClusterUpdate()
+      if options.monitoring_service:
+        update.desiredMonitoringService = options.monitoring_service
+      if options.logging_service:
+        update.desiredLoggingService = options.logging_service
     elif options.disable_addons:
       addons = self._AddonsConfig(
           disable_ingress=options.disable_addons.get(INGRESS),
@@ -1430,6 +1437,10 @@ class APIAdapter(object):
       node_config.workloadMetadataConfig = self.messages.WorkloadMetadataConfig(
           nodeMetadata=self.messages.WorkloadMetadataConfig.
           NodeMetadataValueValuesEnum.SECURE)
+
+    if options.sandbox is not None:
+      node_config.sandboxConfig = self.messages.SandboxConfig(
+          sandboxType=options.sandbox['type'])
 
     pool = self.messages.NodePool(
         name=node_pool_ref.nodePoolId,
@@ -1774,6 +1785,14 @@ class V1Beta1Adapter(V1Adapter):
         enableNodeAutoprovisioning=options.enable_autoprovisioning,
         resourceLimits=resource_limits)
 
+  def GetDegradedWarning(self, cluster):
+    if cluster.conditions:
+      codes = [condition.code for condition in cluster.conditions]
+      messages = [condition.message for condition in cluster.conditions]
+      return ('Codes: {0}\n' 'Messages: {1}.').format(codes, messages)
+    else:
+      return gke_constants.DEFAULT_DEGRADED_WARNING
+
   def UpdateNodePool(self, node_pool_ref, options):
     if options.IsAutoscalingUpdate():
       autoscaling = self.UpdateNodePoolAutoscaling(node_pool_ref, options)
@@ -1912,14 +1931,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             resource=ProjectLocationCluster(cluster_ref.projectId,
                                             cluster_ref.zone,
                                             cluster_ref.clusterId)))
-
-  def GetDegradedWarning(self, cluster):
-    if cluster.conditions:
-      codes = [condition.code for condition in cluster.conditions]
-      messages = [condition.message for condition in cluster.conditions]
-      return ('Codes: {0}\n' 'Messages: {1}.').format(codes, messages)
-    else:
-      return gke_constants.DEFAULT_DEGRADED_WARNING
 
   def ListUsableSubnets(self, project_ref, network_project, filter_arg):
     """List usable subnets for a given project.

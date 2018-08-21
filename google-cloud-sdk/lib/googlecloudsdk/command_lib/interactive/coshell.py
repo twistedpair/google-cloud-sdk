@@ -397,6 +397,18 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
       signal.signal(signal.SIGINT, sigint)
     return status
 
+  def GetCompletions(self, args):
+    """Returns the list of completion choices for args.
+
+    Args:
+      args: The list of command line argument strings to complete.
+
+    Returns:
+      The list of completions for args.
+    """
+    # Some shell completers return unsorted with dups -- that stops here.
+    return sorted(set(self.Communicate(['__get_completions__'] + args)))
+
   def Interrupt(self):
     """Sends the interrupt signal to the coshell."""
     self._shell.send_signal(signal.SIGINT)
@@ -521,18 +533,6 @@ class _UnixCoshell(_UnixCoshellBase):
         line.append(c)
     return lines
 
-  def GetCompletions(self, args):
-    """Returns the list of completion choices for args.
-
-    Args:
-      args: The list of command line argument strings to complete.
-
-    Returns:
-      The list of completions for args.
-    """
-    # Some shell completers return unsorted with dups -- that stops here.
-    return sorted(set(self.Communicate(['__get_completions__'] + args)))
-
 
 class _MinGWCoshell(_UnixCoshellBase):
   """The MinGW local coshell implementation.
@@ -543,7 +543,8 @@ class _MinGWCoshell(_UnixCoshellBase):
   no others. It is possble to pass handles that can be converted to/from fds,
   but the child process needs to know what handles to convert back to fds. Until
   we figure out how to reconstitute handles as fds >= 3 we are stuck with
-  restricting fds 0,1,2 to be /dev/tty. Luckily this works for the shell
+  restricting fds 0,1,2 to be /dev/tty, via shell redirection, for Run(). For
+  internal communication fds 0,1 are pipes. Luckily this works for the shell
   interactive prompt. Unfortunately this fails for the test environment.
   """
 
@@ -597,11 +598,41 @@ class _MinGWCoshell(_UnixCoshellBase):
         ))
     status = self._GetStatus()
 
-    # Re-check shell shared modes.
-    if check_modes and re.search(r'\bset\s+[-+]o\s+\w+', command):
-      self._GetModes()
+    # Re-check shell shared state and modes.
+    if check_modes:
+      if re.search(r'\bset\s+[-+]o\s+\w', command):
+        self._GetModes()
+      if re.search(r'\bcd\b', command):
+        self.GetPwd()
 
     return status
+
+  def Communicate(self, args, quote=True):
+    """Runs args and returns the list of output lines, up to first empty one.
+
+    Args:
+      args: The list of command line arguments.
+      quote: Shell quote args if True.
+
+    Returns:
+      The list of output lines from command args up to the first empty line.
+    """
+    if quote:
+      command = ' '.join([self._Quote(arg) for arg in args])
+    else:
+      command = ' '.join(args)
+    self._SendCommand(command + '\n')
+    lines = []
+    while True:
+      try:
+        line = self._shell.stdout.readline().rstrip('\n')
+      except (IOError, OSError, ValueError):
+        # Yeah, ValueError for IO on a closed file.
+        self._Exited()
+      if not line:
+        break
+      lines.append(line.decode(self._encoding))
+    return lines
 
   def Interrupt(self):
     """Sends the interrupt signal to the coshell."""

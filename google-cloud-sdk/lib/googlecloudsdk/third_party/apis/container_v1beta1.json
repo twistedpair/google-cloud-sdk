@@ -367,6 +367,13 @@
         "tpuIpv4CidrBlock": {
           "description": "[Output only] The IP address range of the Cloud TPUs in this cluster, in\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `1.2.3.4\/29`).",
           "type": "string"
+        },
+        "conditions": {
+          "description": "Which conditions caused the current cluster state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -396,7 +403,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "The metadata key\/value pairs assigned to instances in the cluster.\n\nKeys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes\nin length. These are reflected as part of a URL in the metadata server.\nAdditionally, to avoid ambiguity, keys must not conflict with any other\nmetadata keys for the project or be one of the reserved keys:\n \"cluster-location\"\n \"cluster-name\"\n \"cluster-uid\"\n \"configure-sh\"\n \"gci-update-strategy\"\n \"gci-ensure-gke-docker\"\n \"instance-template\"\n \"kube-env\"\n \"startup-script\"\n \"user-data\"\n\nValues are free-form strings, and only have meaning as interpreted by\nthe image running in the instance. The only restriction placed on them is\nthat each value's size must be less than or equal to 32 KB.\n\nThe total size of all keys and values must be less than 512 KB.",
+          "description": "The metadata key\/value pairs assigned to instances in the cluster.\n\nKeys must conform to the regexp [a-zA-Z0-9-_]+ and be less than 128 bytes\nin length. These are reflected as part of a URL in the metadata server.\nAdditionally, to avoid ambiguity, keys must not conflict with any other\nmetadata keys for the project or be one of the reserved keys:\n \"cluster-location\"\n \"cluster-name\"\n \"cluster-uid\"\n \"configure-sh\"\n \"enable-oslogin\"\n \"gci-ensure-gke-docker\"\n \"gci-update-strategy\"\n \"instance-template\"\n \"kube-env\"\n \"startup-script\"\n \"user-data\"\n\nValues are free-form strings, and only have meaning as interpreted by\nthe image running in the instance. The only restriction placed on them is\nthat each value's size must be less than or equal to 32 KB.\n\nThe total size of all keys and values must be less than 512 KB.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -614,6 +621,10 @@
         "networkPolicyConfig": {
           "description": "Configuration for NetworkPolicy. This only tracks whether the addon\nis enabled or not on the Master, it does not track whether network policy\nis enabled for the nodes.",
           "$ref": "NetworkPolicyConfig"
+        },
+        "istioConfig": {
+          "description": "Configuration for Istio, an open platform to connect, manage, and secure\nmicroservices.",
+          "$ref": "IstioConfig"
         }
       }
     },
@@ -658,6 +669,29 @@
         "disabled": {
           "description": "Whether NetworkPolicy is enabled for this cluster.",
           "type": "boolean"
+        }
+      }
+    },
+    "IstioConfig": {
+      "id": "IstioConfig",
+      "description": "Configuration options for Istio addon.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Whether Istio is enabled for this cluster.",
+          "type": "boolean"
+        },
+        "auth": {
+          "description": "The specified Istio auth mode, either none, or mutual TLS.",
+          "enumDescriptions": [
+            "auth not enabled",
+            "auth mutual TLS enabled"
+          ],
+          "type": "string",
+          "enum": [
+            "AUTH_NONE",
+            "AUTH_MUTUAL_TLS"
+          ]
         }
       }
     },
@@ -731,6 +765,13 @@
         "maxPodsConstraint": {
           "description": "The constraint on the maximum number of pods that can be run\nsimultaneously on a node in the node pool.",
           "$ref": "MaxPodsConstraint"
+        },
+        "conditions": {
+          "description": "Which conditions caused the current node pool state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -806,6 +847,31 @@
           "description": "Constraint enforced on the max num of pods per node.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "StatusCondition": {
+      "id": "StatusCondition",
+      "description": "StatusCondition describes why a cluster or a node pool has a certain status\n(e.g., ERROR or DEGRADED).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Machine-friendly representation of the condition",
+          "enumDescriptions": [
+            "UNKNOWN indicates a generic condition.",
+            "GCE_STOCKOUT indicates a GCE stockout.",
+            "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.\nMore codes TBA"
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "GCE_STOCKOUT",
+            "GKE_SERVICE_ACCOUNT_DELETED"
+          ]
+        },
+        "message": {
+          "description": "Human-friendly representation of the condition",
+          "type": "string"
         }
       }
     },
@@ -1300,6 +1366,20 @@
         "progress": {
           "description": "[Output only] Progress information for an operation.",
           "$ref": "OperationProgress"
+        },
+        "clusterConditions": {
+          "description": "Which conditions caused the current cluster state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
+        },
+        "nodepoolConditions": {
+          "description": "Which conditions caused the current node pool state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -1538,31 +1618,6 @@
           "items": {
             "$ref": "StatusCondition"
           }
-        }
-      }
-    },
-    "StatusCondition": {
-      "id": "StatusCondition",
-      "description": "StatusCondition describes why a cluster or a node pool has a certain status\n(e.g., ERROR or DEGRADED).",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "Machine-friendly representation of the condition",
-          "enumDescriptions": [
-            "UNKNOWN indicates a generic condition.",
-            "GCE_STOCKOUT indicates a GCE stockout.",
-            "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.\nMore codes TBA"
-          ],
-          "type": "string",
-          "enum": [
-            "UNKNOWN",
-            "GCE_STOCKOUT",
-            "GKE_SERVICE_ACCOUNT_DELETED"
-          ]
-        },
-        "message": {
-          "description": "Human-friendly representation of the condition",
-          "type": "string"
         }
       }
     },

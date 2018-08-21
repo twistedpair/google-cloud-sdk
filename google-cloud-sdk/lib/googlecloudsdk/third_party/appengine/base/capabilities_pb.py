@@ -17,7 +17,12 @@
 from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 import abc
 import array
-import thread
+try:
+  from thread import allocate_lock as _Lock
+except ImportError:
+  from threading import Lock as _Lock
+
+if hasattr(__builtins__, 'xrange'): range = xrange
 
 if hasattr(ProtocolBuffer, 'ExtendableProtocolMessage'):
   _extension_runtime = True
@@ -32,7 +37,7 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
 
   def __init__(self, contents=None):
     self.config_ = []
-    self.lazy_init_lock_ = thread.allocate_lock()
+    self.lazy_init_lock_ = _Lock()
     if contents is not None: self.MergeFromString(contents)
 
   def config_size(self): return len(self.config_)
@@ -73,7 +78,7 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
 
   def MergeFrom(self, x):
     assert x is not self
-    for i in xrange(x.config_size()): self.add_config().CopyFrom(x.config(i))
+    for i in range(x.config_size()): self.add_config().CopyFrom(x.config(i))
     if (x.has_default_config()): self.mutable_default_config().MergeFrom(x.default_config())
 
   def Equals(self, x):
@@ -95,14 +100,14 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
   def ByteSize(self):
     n = 0
     n += 1 * len(self.config_)
-    for i in xrange(len(self.config_)): n += self.lengthString(self.config_[i].ByteSize())
+    for i in range(len(self.config_)): n += self.lengthString(self.config_[i].ByteSize())
     if (self.has_default_config_): n += 1 + self.lengthString(self.default_config_.ByteSize())
     return n
 
   def ByteSizePartial(self):
     n = 0
     n += 1 * len(self.config_)
-    for i in xrange(len(self.config_)): n += self.lengthString(self.config_[i].ByteSizePartial())
+    for i in range(len(self.config_)): n += self.lengthString(self.config_[i].ByteSizePartial())
     if (self.has_default_config_): n += 1 + self.lengthString(self.default_config_.ByteSizePartial())
     return n
 
@@ -111,7 +116,7 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
     self.clear_default_config()
 
   def OutputUnchecked(self, out):
-    for i in xrange(len(self.config_)):
+    for i in range(len(self.config_)):
       out.putVarInt32(10)
       out.putVarInt32(self.config_[i].ByteSize())
       self.config_[i].OutputUnchecked(out)
@@ -121,7 +126,7 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
       self.default_config_.OutputUnchecked(out)
 
   def OutputPartial(self, out):
-    for i in xrange(len(self.config_)):
+    for i in range(len(self.config_)):
       out.putVarInt32(10)
       out.putVarInt32(self.config_[i].ByteSizePartial())
       self.config_[i].OutputPartial(out)
@@ -147,7 +152,7 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
-      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
+      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError()
       d.skipData(tt)
 
 
@@ -169,7 +174,7 @@ class CapabilityConfigList(ProtocolBuffer.ProtocolMessage):
 
 
   def _BuildTagLookupTable(sparse, maxtag, default=None):
-    return tuple([sparse.get(i, default) for i in xrange(0, 1+maxtag)])
+    return tuple([sparse.get(i, default) for i in range(0, 1+maxtag)])
 
   kconfig = 1
   kdefault_config = 2
@@ -467,7 +472,7 @@ class CapabilityConfig(ProtocolBuffer.ProtocolMessage):
         continue
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
-      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
+      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError()
       d.skipData(tt)
 
 
@@ -484,7 +489,7 @@ class CapabilityConfig(ProtocolBuffer.ProtocolMessage):
 
 
   def _BuildTagLookupTable(sparse, maxtag, default=None):
-    return tuple([sparse.get(i, default) for i in xrange(0, 1+maxtag)])
+    return tuple([sparse.get(i, default) for i in range(0, 1+maxtag)])
 
   kpackage = 1
   kcapability = 2

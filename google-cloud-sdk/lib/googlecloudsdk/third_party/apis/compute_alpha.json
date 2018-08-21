@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20180803",
+ "revision": "20180813",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -13366,6 +13366,15 @@
     "name": {
      "type": "string",
      "description": "Name of the peering, which should conform to RFC1035."
+    }
+   }
+  },
+  "NetworksUpdatePeeringRequest": {
+   "id": "NetworksUpdatePeeringRequest",
+   "type": "object",
+   "properties": {
+    "networkPeering": {
+     "$ref": "NetworkPeering"
     }
    }
   },
@@ -33044,7 +33053,7 @@
      "id": "compute.instances.aggregatedList",
      "path": "{project}/aggregated/instances",
      "httpMethod": "GET",
-     "description": "Retrieves aggregated list of instances.",
+     "description": "Retrieves aggregated list of all of the instances in your project across all regions and zones.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -33437,7 +33446,7 @@
      "id": "compute.instances.getSerialPortOutput",
      "path": "{project}/zones/{zone}/instances/{instance}/serialPort",
      "httpMethod": "GET",
-     "description": "Returns the specified instance's serial port output.",
+     "description": "Returns the last 1 MB of serial port output from the specified instance.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -37590,6 +37599,47 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "updatePeering": {
+     "id": "compute.networks.updatePeering",
+     "path": "{project}/global/networks/{network}/updatePeering",
+     "httpMethod": "PATCH",
+     "description": "Updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes",
+     "parameters": {
+      "network": {
+       "type": "string",
+       "description": "Name of the network resource which the updated peering is belonging to.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "request": {
+      "$ref": "NetworksUpdatePeeringRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     }
    }

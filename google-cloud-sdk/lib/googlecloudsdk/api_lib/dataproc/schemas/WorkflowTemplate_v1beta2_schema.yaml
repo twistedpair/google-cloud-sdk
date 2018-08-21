@@ -601,15 +601,12 @@ properties:
         type: object
         additionalProperties: false
         required:
-        - config
         - clusterName
         properties:
           config:
-            description: Required. The cluster configuration.
+            description: The cluster configuration.
             type: object
             additionalProperties: false
-            required:
-            - gceClusterConfig
             properties:
               workerConfig:
                 description: |-
@@ -713,7 +710,7 @@ properties:
                     type: string
               gceClusterConfig:
                 description: |-
-                  Required. The shared Compute Engine config settings for
+                  The shared Compute Engine config settings for
                   all instances in a cluster.
                 type: object
                 additionalProperties: false

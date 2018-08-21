@@ -555,6 +555,14 @@
           "description": "Number of artifacts uploaded. Only populated when artifacts are uploaded.",
           "type": "string",
           "format": "int64"
+        },
+        "buildStepOutputs": {
+          "description": "List of build step outputs, produced by builder images, in the order\ncorresponding to build step indices.\n\n[Cloud Builders](https:\/\/cloud.google.com\/cloud-build\/docs\/cloud-builders)\ncan produce this output by writing to `$BUILDER_OUTPUT\/output`.\nOnly the first 4KB of data is stored.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "byte"
+          }
         }
       }
     },
@@ -849,6 +857,20 @@
           "description": "Substitutions data for Build resource.",
           "type": "object",
           "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "ignoredFiles": {
+          "description": "ignored_files and included_files are file glob matches using\nhttp:\/\/godoc\/pkg\/path\/filepath#Match extended with support for \"**\".\n\nIf ignored_files and changed files are both empty, then they are\nnot used to determine whether or not to trigger a build.\n\nIf ignored_files is not empty, then we ignore any files that match\nany of the ignored_file globs. If the change has no files that are\noutside of the ignored_files globs, then we do not trigger a build.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includedFiles": {
+          "description": "If any of the files altered in the commit pass the ignored_files\nfilter and included_files is empty, then as far as this filter is\nconcerned, we should trigger the build.\n\nIf any of the files altered in the commit pass the ignored_files\nfilter and included_files is not empty, then we make sure that at\nleast one of those files matches a included_files glob. If not,\nthen we do not trigger a build.",
+          "type": "array",
+          "items": {
             "type": "string"
           }
         }

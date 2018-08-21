@@ -152,12 +152,13 @@ class InteractiveCliCompleter(completion.Completer):
       node = arg.tree
       prefix = ''
 
+    elif arg.token_type == parser.ArgTokenType.PREFIX:
+      prefix = arg.value
+      node = self.parser.root
     elif arg.token_type == parser.ArgTokenType.UNKNOWN:
       prefix = arg.value
-      if len(args) == 1:
-        node = self.parser.root
-      elif (self.manpage_generator and not prefix and
-            len(args) == 2 and args[0].value):
+      if (self.manpage_generator and not prefix and
+          len(args) == 2 and args[0].value):
         node = generate_cli_trees.LoadOrGenerate(args[0].value)
         if not node:
           return None, 0
@@ -307,6 +308,34 @@ class InteractiveCliCompleter(completion.Completer):
     prefix = last if last.endswith('/') else os.path.dirname(last)
     chop = len(prefix) if prefix else 0
 
+    uri_sep = '://'
+    uri_sep_index = completions[0].find(uri_sep)
+    if uri_sep_index > 0:
+      # Treat the completions as URI paths.
+      if not last:
+        chop = uri_sep_index + len(uri_sep)
+      return self.UriPathCompletions(completions, offset, chop), None
+
+    if os.path.isdir(prefix) or self.coshell.GetPwd():
+      # Treat the completions as file/dir paths.
+      return self.FilePathCompletions(completions, offset, chop), None
+
+    # The prefix is not a dir or we have a bogus coshell pwd. Treat the
+    # completions as normal strings.
+    return completions, offset
+
+  def FilePathCompletions(self, completions, offset, chop):
+    """Returns the list of Completion objects for file path completions.
+
+    Args:
+      completions: The list of file/path completion strings.
+      offset: The Completion object offset used for dropdown display.
+      chop: The minimum number of chars to chop from the dropdown items.
+
+    Returns:
+      The list of Completion objects for file path completions.
+    """
+
     def _Mark(c):
       """Returns completion c with a trailing '/' if it is a dir."""
       if not c.endswith('/') and os.path.isdir(c):
@@ -315,20 +344,45 @@ class InteractiveCliCompleter(completion.Completer):
 
     def _Display(c):
       """Returns the annotated dropdown display spelling of completion c."""
-      c = _Mark(c)[chop:]
-      if prefix and c.startswith('/'):
+      d = _Mark(c)[chop:]
+      if chop and d.startswith('/'):
         # Some shell completers insert an '/' that spoils the dropdown.
-        c = c[1:]
-      return c
+        d = d[1:]
+      return completion.Completion(c, display=d, start_position=offset)
 
-    if not os.path.isdir(prefix) and not self.coshell.GetPwd():
-      # The prefix is not a dir or we have a bogus coshell pwd. Treat the
-      # completions as normal strings.
-      return completions, offset
     if len(completions) == 1:
       # No dropdown for singletons so just return the marked completion.
       choice = _Mark(completions[0])
-      return [completion.Completion(choice, start_position=offset)], None
+      return [completion.Completion(choice, start_position=offset)]
     # Return completion objects with annotated choices for the dropdown.
-    return [completion.Completion(c, display=_Display(c), start_position=offset)
-            for c in completions], None
+    return [_Display(c) for c in completions]
+
+  def UriPathCompletions(self, completions, offset, chop):
+    """Returns the list of Completion objects for URI path completions.
+
+    Args:
+      completions: The list of file/path completion strings.
+      offset: The Completion object offset used for dropdown display.
+      chop: The minimum number of chars to chop from the dropdown items.
+
+    Returns:
+      The list of Completion objects for file path completions.
+    """
+
+    def _Display(c):
+      """Returns the annotated dropdown display spelling of completion c."""
+      d = c[chop:]
+      if d.startswith('/'):
+        d = d[1:]
+        if d.startswith('/'):
+          d = d[1:]
+      if c.endswith('/') and not c.endswith('://'):
+        c = c[:-1]
+      return completion.Completion(c, display=d, start_position=offset)
+
+    if len(completions) == 1:
+      # No dropdown for singletons so just return the marked completion.
+      choice = completions[0]
+      return [completion.Completion(choice, start_position=offset)]
+    # Return completion objects with annotated choices for the dropdown.
+    return [_Display(c) for c in completions]

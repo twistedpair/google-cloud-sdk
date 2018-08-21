@@ -328,7 +328,7 @@ class ListEnvironmentsResponse(_messages.Message):
     environments: The list of environments returned by a
       ListEnvironmentsRequest.
     nextPageToken: The page token used to query for the next page if one
-      exists
+      exists.
   """
 
   environments = _messages.MessageField('Environment', 1, repeated=True)
@@ -385,12 +385,12 @@ class NodeConfig(_messages.Message):
     network: Optional. The Compute Engine network to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:
-      "projects/{projectId}/global/networks/{networkId}".  [Shared
-      VPC](/vpc/docs/shared-vpc) is not currently supported. The network must
-      belong to the environment's project. If unspecified, the "default"
-      network ID in the environment's project is used.  If a [Custom Subnet
-      Network]((/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
-      `nodeConfig.subnetwork` must also be provided.
+      "projects/{projectId}/global/networks/{networkId}".  If unspecified, the
+      default network in the environment's project is used. If a [Custom
+      Subnet Network]((/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
+      `nodeConfig.subnetwork` must also be provided. For [Shared
+      VPC](/vpc/docs/shared-vpc) subnetwork requirements, see
+      `nodeConfig.subnetwork`.
     oauthScopes: Optional. The set of Google API scopes to be made available
       on all node VMs. Defaults to ["https://www.googleapis.com/auth/cloud-
       platform"] and must be included in the list of specified scopes. Cannot
@@ -403,8 +403,10 @@ class NodeConfig(_messages.Message):
       name](/apis/design/resource_names#relative_resource_name). For example:
       "projects/{projectId}/regions/{regionId}/subnetworks/{subnetworkId}"  If
       a subnetwork is provided, `nodeConfig.network` must also be provided,
-      and the subnetwork must belong to the enclosing environment's project
-      and location.
+      and the subnetwork must belong to the same project as the network.  For
+      Shared VPC, you must configure the subnetwork with secondary ranges
+      named <strong>composer-pods</strong> and <strong>composer-
+      services</strong> to support Alias IPs.
     tags: Optional. The list of instance tags applied to all node VMs. Tags
       are used to identify valid sources or targets for network firewalls.
       Each tag within the list must comply with

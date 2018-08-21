@@ -48,12 +48,13 @@ LOOKUP_CLI_VERSION = cli_tree.LOOKUP_CLI_VERSION
 
 
 class ArgTokenType(enum.Enum):
-  UNKNOWN = 0
-  GROUP = 1
-  COMMAND = 2
-  FLAG = 3
-  FLAG_ARG = 4
-  POSITIONAL = 5
+  UNKNOWN = 0  # Unknow token type in any position
+  PREFIX = 1  # Potential command name, maybe after lex.SHELL_TERMINATOR_CHARS
+  GROUP = 2  # Command arg with subcommands
+  COMMAND = 3  # Command arg
+  FLAG = 4  # Flag arg
+  FLAG_ARG = 5  # Flag value arg
+  POSITIONAL = 6  # Positional arg
 
 
 class ArgToken(object):
@@ -167,7 +168,11 @@ class Parser(object):
 
         else:
           unknown = True
-          self.args.append(ArgToken(value, ArgTokenType.UNKNOWN, self.cmd,
+          if self.cmd == self.root:
+            token_type = ArgTokenType.PREFIX
+          else:
+            token_type = ArgTokenType.UNKNOWN
+          self.args.append(ArgToken(value, token_type, self.cmd,
                                     token.start, token.end))
 
       elif token.lex == lexer.ShellTokenType.TERMINATOR:

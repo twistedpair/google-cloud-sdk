@@ -190,7 +190,13 @@ class SuffixConsoleMessage(object):
     self._message = message
     self._suffix = suffix
     # TODO(b/111592003): May be better to get this on demand.
-    self._console_width = console_attr.ConsoleAttr().GetTermSize()[0]
+    # TODO(b/112460253): On terminals that don't automatically line wrap, use
+    # the entire console width.
+    # Some terminals will move the cursor to the next line once console_width
+    # characters have been written. So for now we need to use 1 less than the
+    # actual console width to prevent automatic wrapping leading to improper
+    # text formatting.
+    self._console_width = console_attr.ConsoleAttr().GetTermSize()[0] - 1
     if self._console_width < 0:
       self._console_width = 0
     self._detail_message_callback = detail_message_callback

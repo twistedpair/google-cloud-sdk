@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20180803",
+ "revision": "20180813",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1063,6 +1063,10 @@
    "type": "object",
    "description": "[Input Only] Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance.\n\nThis property is mutually exclusive with the source property; you can only define one or the other, but not both.",
    "properties": {
+    "description": {
+     "type": "string",
+     "description": "An optional description. Provide this property when creating the disk."
+    },
     "diskName": {
      "type": "string",
      "description": "Specifies the disk name. If not specified, the default is to use the name of the instance. If the disk with the instance name exists already in the given zone/region, a new name will be automatically generated."
@@ -24205,7 +24209,7 @@
      "id": "compute.instances.aggregatedList",
      "path": "{project}/aggregated/instances",
      "httpMethod": "GET",
-     "description": "Retrieves aggregated list of instances.",
+     "description": "Retrieves aggregated list of all of the instances in your project across all regions and zones.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -24509,7 +24513,7 @@
      "id": "compute.instances.getSerialPortOutput",
      "path": "{project}/zones/{zone}/instances/{instance}/serialPort",
      "httpMethod": "GET",
-     "description": "Returns the specified instance's serial port output.",
+     "description": "Returns the last 1 MB of serial port output from the specified instance.",
      "parameters": {
       "instance": {
        "type": "string",

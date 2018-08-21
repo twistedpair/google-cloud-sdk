@@ -37,10 +37,11 @@ import os
 import re
 import subprocess
 import sys
+import tarfile
 import textwrap
 
 from googlecloudsdk.calliope import cli_tree
-from googlecloudsdk.command_lib.static_completion import generate
+from googlecloudsdk.command_lib.static_completion import generate as generate_static
 from googlecloudsdk.command_lib.static_completion import lookup
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -56,11 +57,19 @@ from six.moves import range
 from typing import Any, Dict  # pylint: disable=unused-import
 
 
-class NoCliTreeGeneratorForCommand(exceptions.Error):
+class Error(exceptions.Error):
+  """Exceptions for this module."""
+
+
+class NoCliTreeForCommand(Error):
+  """Command does not have a CLI tree."""
+
+
+class NoCliTreeGeneratorForCommand(Error):
   """Command does not have a CLI tree generator."""
 
 
-class NoManPageTextForCommand(exceptions.Error):
+class NoManPageTextForCommand(Error):
   """Could not get man page text for command."""
 
 
@@ -129,6 +138,32 @@ def _Command(path):
   }
 
 
+def _GetDirectories(directory=None, warn_on_exceptions=False):
+  """Returns the list of directories to search for CLI trees.
+
+  Args:
+    directory: The directory containing the CLI tree JSON files. If None
+      then the default installation and config directories are used.
+    warn_on_exceptions: Emits warning messages in lieu of exceptions.
+  """
+  # Initialize the list of directories to search for CLI tree files. The default
+  # CLI tree is only searched for and generated in directories[0]. Other
+  # existing trees are updated in the directory in which they were found. New
+  # trees are generated in directories[-1].
+  directories = []
+  if directory:
+    directories.append(directory)
+  else:
+    try:
+      directories.append(cli_tree.CliTreeDir())
+    except cli_tree.SdkRootNotFoundError as e:
+      if not warn_on_exceptions:
+        raise
+      log.warning(six.text_type(e))
+    directories.append(cli_tree.CliTreeConfigDir())
+  return directories
+
+
 class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
   """Base CLI tree generator."""
 
@@ -150,18 +185,23 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
     if cls._FAILURES is not None:
       cls._FAILURES.add(command)
 
-  def __init__(self, command):
+  def __init__(self, command, command_name=None, tarball=None):
     self.command = command
+    self.command_name = command_name or command
     self._cli_version = None  # For memoizing GetVersion()
+    self._tarball = tarball
 
   def Run(self, cmd):
     """Runs cmd and returns the output as a string."""
-    return encoding.Decode(subprocess.check_output(cmd))
+    return encoding.Decode(subprocess.check_output([self.command] + cmd[1:]))
 
   def GetVersion(self):
     """Returns the CLI_VERSION string."""
     if not self._cli_version:
-      self._cli_version = self.Run([self.command, 'version']).split()[-1]
+      try:
+        self._cli_version = self.Run([self.command, 'version']).split()[-1]
+      except:  # pylint: disable=bare-except
+        self._cli_version = cli_tree.CLI_VERSION_UNKNOWN
     return self._cli_version
 
   @abc.abstractmethod
@@ -171,8 +211,8 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
   def FindTreeFile(self, directories):
     """Returns (path,f) open for read for the first CLI tree in directories."""
-    for directory in directories or [cli_tree.CliTreeConfigDir()]:
-      path = os.path.join(directory or '.', self.command) + '.json'
+    for directory in directories or _GetDirectories(warn_on_exceptions=True):
+      path = os.path.join(directory or '.', self.command_name) + '.json'
       try:
         return path, files.FileReader(path)
       except files.Error:
@@ -207,8 +247,8 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
           self.command, actual_cli_version))
     return readonly, True
 
-  def LoadOrGenerate(self, directories=None, force=False,
-                     ignore_out_of_date=False, verbose=False,
+  def LoadOrGenerate(self, directories=None, force=False, generate=True,
+                     ignore_out_of_date=False, tarball=False, verbose=False,
                      warn_on_exceptions=False):
     """Loads the CLI tree or generates it if necessary, and returns the tree."""
     f = None
@@ -227,13 +267,13 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
           tree = None
         if tree:
           readonly, up_to_date = self.IsUpToDate(tree, verbose=verbose)
-        if readonly:
-          return tree
-        elif up_to_date:
-          if not force:
+          if readonly:
             return tree
-        elif ignore_out_of_date:
-          return None
+          elif up_to_date:
+            if not force:
+              return tree
+          elif ignore_out_of_date:
+            return None
     finally:
       if f:
         f.close()
@@ -264,6 +304,8 @@ class CliTreeGenerator(six.with_metaclass(abc.ABCMeta, object)):
     #   (2) the tree is not readonly
     #   (3) we have a generator for the tree
 
+    if not generate:
+      raise NoCliTreeForCommand('No CLI tree for [{}].'.format(self.command))
     if not verbose:
       return _Generate()
     with progress_tracker.ProgressTracker(
@@ -308,7 +350,7 @@ class BqCliTreeGenerator(CliTreeGenerator):
   def Run(self, cmd):
     """Runs cmd and returns the output as a string."""
     try:
-      output = subprocess.check_output(cmd)
+      output = subprocess.check_output([self.command] + cmd[1:])
     except subprocess.CalledProcessError as e:
       # bq exit code is 1 for help and --help. How do you know if help failed?
       if e.returncode != 1:
@@ -351,7 +393,7 @@ class BqCliTreeGenerator(CliTreeGenerator):
     """Generates and returns the CLI subtree rooted at path."""
     command = _Command(path)
     command[cli_tree.LOOKUP_IS_GROUP] = True
-    text = self.Run([path[0], 'help'] + path[1:])
+    text = self.Run([self.command, 'help'] + path[1:])
 
     # `bq help` lists help for all commands. Command flags are "defined"
     # by example. We don't attempt to suss that out.
@@ -388,7 +430,7 @@ class BqCliTreeGenerator(CliTreeGenerator):
     """Generates and returns the CLI tree rooted at self.command."""
 
     # Construct the tree minus the global flags.
-    tree = self.SubTree([self.command])
+    tree = self.SubTree([self.command_name])
 
     # Add the global flags to the root.
     text = self.Run([self.command, '--help'])
@@ -480,6 +522,9 @@ class GsutilCliTreeGenerator(CliTreeGenerator):
   def Run(self, cmd):
     """Runs the command in cmd and returns the output as a string."""
     try:
+      if self._tarball:
+        # package time invocation requires explicit #! override
+        cmd = [sys.executable, self.command] + cmd[1:]
       output = subprocess.check_output(cmd)
     except subprocess.CalledProcessError as e:
       # gsutil exit code is 1 for --help depending on the context.
@@ -585,7 +630,7 @@ class GsutilCliTreeGenerator(CliTreeGenerator):
 
   def Generate(self):
     """Generates and returns the CLI tree rooted at self.command."""
-    tree = self.SubTree([self.command])
+    tree = self.SubTree([self.command_name])
 
     # Add the global flags to the root.
     text = self.Run([self.command, 'help', 'options'])
@@ -711,16 +756,19 @@ class KubectlCliTreeGenerator(CliTreeGenerator):
   def GetVersion(self):
     """Returns the CLI_VERSION string."""
     if not self._cli_version:
-      verbose_version = self.Run([self.command, 'version', '--client'])
-      match = re.search('GitVersion:"([^"]*)"', verbose_version)
-      self._cli_version = match.group(1)
+      try:
+        verbose_version = self.Run([self.command, 'version', '--client'])
+        match = re.search('GitVersion:"([^"]*)"', verbose_version)
+        self._cli_version = match.group(1)
+      except:  # pylint: disable=bare-except
+        self._cli_version = cli_tree.CLI_VERSION_UNKNOWN
     return self._cli_version
 
   def Generate(self):
     """Generates and returns the CLI tree rooted at self.command."""
 
     # Construct the tree minus the global flags.
-    tree = self.SubTree([self.command])
+    tree = self.SubTree([self.command_name])
 
     # Add the global flags to the root.
     text = self.Run([self.command, 'options'])
@@ -1086,8 +1134,8 @@ GENERATORS = {
 }
 
 
-def LoadOrGenerate(command, directories=None, force=False,
-                   ignore_out_of_date=False, verbose=False,
+def LoadOrGenerate(command, directories=None, tarball=None, force=False,
+                   generate=True, ignore_out_of_date=False, verbose=False,
                    warn_on_exceptions=False):
   """Returns the CLI tree for command, generating it if it does not exist.
 
@@ -1095,7 +1143,12 @@ def LoadOrGenerate(command, directories=None, force=False,
     command: The CLI root command name.
     directories: The list of directories containing the CLI tree JSON files.
       If None then the default installation directories are used.
+    tarball: For packaging CLI trees. --commands specifies one command that is
+      a relative path in this tarball. The tarball is extracted to a temporary
+      directory and the command path is adjusted to point to the temporary
+      directory.
     force: Update all exitsing trees by forcing them to be out of date if True.
+    generate: Generate the tree if it is out of date or does not exist.
     ignore_out_of_date: Ignore out of date trees instead of regenerating.
     verbose: Display a status line for up to date CLI trees if True.
     warn_on_exceptions: Emits warning messages in lieu of generator exceptions.
@@ -1107,13 +1160,17 @@ def LoadOrGenerate(command, directories=None, force=False,
   """
   command_dir, command_name = os.path.split(command)
 
+  # Handle package time command names.
+  if command_name.endswith('_lite'):
+    command_name = command_name[:-5]
+
   # Don't repeat failed attempts.
   if CliTreeGenerator.AlreadyFailed(command_name):
     if verbose:
       log.status.Print('No CLI tree generator for [{}].'.format(command))
     return None
 
-  def _LoadOrGenerate():
+  def _LoadOrGenerate(command, command_dir, command_name):
     """Helper."""
 
     # The command must exist.
@@ -1125,7 +1182,8 @@ def LoadOrGenerate(command, directories=None, force=False,
 
     # Instantiate the appropriate generator.
     try:
-      generator = GENERATORS[command_name](command_name)
+      generator = GENERATORS[command_name](
+          command, command_name=command_name, tarball=tarball)
     except KeyError:
       generator = ManPageCliTreeGenerator(command_name)
     if not generator:
@@ -1136,6 +1194,7 @@ def LoadOrGenerate(command, directories=None, force=False,
       return generator.LoadOrGenerate(
           directories=directories,
           force=force,
+          generate=generate,
           ignore_out_of_date=ignore_out_of_date,
           verbose=verbose,
           warn_on_exceptions=warn_on_exceptions)
@@ -1144,39 +1203,23 @@ def LoadOrGenerate(command, directories=None, force=False,
 
     return None
 
-  tree = _LoadOrGenerate()
+  if command_name == cli_tree.DEFAULT_CLI_NAME:
+    tree = cli_tree.Load()
+  elif tarball:
+    with files.TemporaryDirectory() as tmp:
+      tar = tarfile.open(tarball)
+      tar.extractall(tmp)
+      command = os.path.join(tmp, command)
+      command_dir = os.path.join(tmp, command_dir)
+      tree = _LoadOrGenerate(command, command_dir, command_name)
+  else:
+    tree = _LoadOrGenerate(command, command_dir, command_name)
   if not tree:
     CliTreeGenerator.AddFailure(command_name)
   return tree
 
 
-def _GetDirectories(directory=None, warn_on_exceptions=False):
-  """Returns the list of directories to search for CLI trees.
-
-  Args:
-    directory: The directory containing the CLI tree JSON files. If None
-      then the default installation and config directories are used.
-    warn_on_exceptions: Emits warning messages in lieu of exceptions.
-  """
-  # Initialize the list of directories to search for CLI tree files. The default
-  # CLI tree is only searched for and generated in directories[0]. Other
-  # existing trees are updated in the directory in which they were found. New
-  # trees are generated in directories[-1].
-  directories = []
-  if directory:
-    directories.append(directory)
-  else:
-    try:
-      directories.append(cli_tree.CliTreeDir())
-    except cli_tree.SdkRootNotFoundError as e:
-      if not warn_on_exceptions:
-        raise
-      log.warning(six.text_type(e))
-    directories.append(cli_tree.CliTreeConfigDir())
-  return directories
-
-
-def UpdateCliTrees(cli=None, commands=None, directory=None,
+def UpdateCliTrees(cli=None, commands=None, directory=None, tarball=None,
                    force=False, verbose=False, warn_on_exceptions=False):
   """(re)generates the CLI trees in directory if non-existent or out of date.
 
@@ -1188,6 +1231,10 @@ def UpdateCliTrees(cli=None, commands=None, directory=None,
     commands: Update only the commands in this list.
     directory: The directory containing the CLI tree JSON files. If None
       then the default installation directories are used.
+    tarball: For packaging CLI trees. --commands specifies one command that is
+      a relative path in this tarball. The tarball is extracted to a temporary
+      directory and the command path is adjusted to point to the temporary
+      directory.
     force: Update all exitsing trees by forcing them to be out of date if True.
     verbose: Display a status line for up to date CLI trees if True.
     warn_on_exceptions: Emits warning messages in lieu of exceptions. Used
@@ -1207,6 +1254,7 @@ def UpdateCliTrees(cli=None, commands=None, directory=None,
     if command != cli_tree.DEFAULT_CLI_NAME:
       tree = LoadOrGenerate(command,
                             directories=directories,
+                            tarball=tarball,
                             force=force,
                             verbose=verbose,
                             warn_on_exceptions=warn_on_exceptions)
@@ -1235,7 +1283,7 @@ def UpdateCliTrees(cli=None, commands=None, directory=None,
           completion_tree_mtime < cli_tree_mtime):
         files.MakeDir(os.path.dirname(completion_tree_path))
         with files.FileWriter(completion_tree_path) as f:
-          generate.ListCompletionTree(cli, out=f)
+          generate_static.ListCompletionTree(cli, out=f)
       elif verbose:
         log.status.Print(
             '[{}] static completion CLI tree is up to date.'.format(command))

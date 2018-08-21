@@ -18,11 +18,16 @@ from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 import abc
 import array
 import base64
-import thread
+try:
+  from thread import allocate_lock as _Lock
+except ImportError:
+  from threading import Lock as _Lock
 try:
   from googlecloudsdk.third_party.appengine.proto import _net_proto___parse__python
 except ImportError:
   _net_proto___parse__python = None
+
+if hasattr(__builtins__, 'xrange'): range = xrange
 
 if hasattr(ProtocolBuffer, 'ExtendableProtocolMessage'):
   _extension_runtime = True
@@ -98,7 +103,7 @@ class OpaqueMessage(ProtocolBuffer.ProtocolMessage):
       tt = d.getVarInt32()
       # tag 0 is special: it's used to indicate an error.
       # so if we see it we raise an exception.
-      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError
+      if (tt == 0): raise ProtocolBuffer.ProtocolBufferDecodeError()
       d.skipData(tt)
 
 
@@ -108,7 +113,7 @@ class OpaqueMessage(ProtocolBuffer.ProtocolMessage):
 
 
   def _BuildTagLookupTable(sparse, maxtag, default=None):
-    return tuple([sparse.get(i, default) for i in xrange(0, 1+maxtag)])
+    return tuple([sparse.get(i, default) for i in range(0, 1+maxtag)])
 
 
   _TEXT = _BuildTagLookupTable({

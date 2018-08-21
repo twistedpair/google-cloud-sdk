@@ -894,14 +894,10 @@ class StackTrace(_messages.Message):
   r"""A stacktrace.
 
   Fields:
-    clusterId: Exception cluster ID
     exception: The stack trace message.  Required
-    reportId: Exception report ID
   """
 
-  clusterId = _messages.StringField(1)
-  exception = _messages.StringField(2)
-  reportId = _messages.StringField(3)
+  exception = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

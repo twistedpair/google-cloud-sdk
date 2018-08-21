@@ -16,6 +16,8 @@
 
 """The Python datastore protocol buffer definition (old name)."""
 
+from __future__ import absolute_import
+
 
 
 # The proto2 compiler generates datastore_v3_pb.py, but all our code refers

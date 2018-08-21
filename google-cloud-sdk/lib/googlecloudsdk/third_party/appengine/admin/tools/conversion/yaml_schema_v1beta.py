@@ -158,6 +158,9 @@ SCHEMA = s.Message(
                                                         c.ToJsonString)),
         session_affinity=s.Value()
     ),
+    vpc_access_connector=s.Message(
+        name=s.Value(converter=c.ToJsonString),
+    ),
     zones=s.RepeatedField(element=s.Value(converter=c.ToJsonString)),
     nobuild_files=s.Value('nobuild_files_regex', converter=c.ToJsonString),
     resources=s.Message(

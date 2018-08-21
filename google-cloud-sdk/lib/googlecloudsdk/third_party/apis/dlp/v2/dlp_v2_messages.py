@@ -175,6 +175,78 @@ class DlpOrganizationsInspectTemplatesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpOrganizationsStoredInfoTypesCreateRequest(_messages.Message):
+  r"""A DlpOrganizationsStoredInfoTypesCreateRequest object.
+
+  Fields:
+    googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
+      GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
+      the request body.
+    parent: The parent resource name, for example projects/my-project-id or
+      organizations/my-org-id.
+  """
+
+  googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DlpOrganizationsStoredInfoTypesDeleteRequest(_messages.Message):
+  r"""A DlpOrganizationsStoredInfoTypesDeleteRequest object.
+
+  Fields:
+    name: Resource name of the organization and storedInfoType to be deleted,
+      for example `organizations/433245324/storedInfoTypes/432452342` or
+      projects/project-id/storedInfoTypes/432452342.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsStoredInfoTypesGetRequest(_messages.Message):
+  r"""A DlpOrganizationsStoredInfoTypesGetRequest object.
+
+  Fields:
+    name: Resource name of the organization and storedInfoType to be read, for
+      example `organizations/433245324/storedInfoTypes/432452342` or projects
+      /project-id/storedInfoTypes/432452342.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
+  r"""A DlpOrganizationsStoredInfoTypesListRequest object.
+
+  Fields:
+    pageSize: Optional size of the page, can be limited by server. If zero
+      server returns a page of max size 100.
+    pageToken: Optional page token to continue retrieval. Comes from previous
+      call to `ListStoredInfoTypes`.
+    parent: The parent resource name, for example projects/my-project-id or
+      organizations/my-org-id.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DlpOrganizationsStoredInfoTypesPatchRequest(_messages.Message):
+  r"""A DlpOrganizationsStoredInfoTypesPatchRequest object.
+
+  Fields:
+    googlePrivacyDlpV2UpdateStoredInfoTypeRequest: A
+      GooglePrivacyDlpV2UpdateStoredInfoTypeRequest resource to be passed as
+      the request body.
+    name: Resource name of organization and storedInfoType to be updated, for
+      example `organizations/433245324/storedInfoTypes/432452342` or projects
+      /project-id/storedInfoTypes/432452342.
+  """
+
+  googlePrivacyDlpV2UpdateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateStoredInfoTypeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DlpProjectsContentDeidentifyRequest(_messages.Message):
   r"""A DlpProjectsContentDeidentifyRequest object.
 
@@ -547,6 +619,78 @@ class DlpProjectsJobTriggersPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
+  r"""A DlpProjectsStoredInfoTypesCreateRequest object.
+
+  Fields:
+    googlePrivacyDlpV2CreateStoredInfoTypeRequest: A
+      GooglePrivacyDlpV2CreateStoredInfoTypeRequest resource to be passed as
+      the request body.
+    parent: The parent resource name, for example projects/my-project-id or
+      organizations/my-org-id.
+  """
+
+  googlePrivacyDlpV2CreateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2CreateStoredInfoTypeRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DlpProjectsStoredInfoTypesDeleteRequest(_messages.Message):
+  r"""A DlpProjectsStoredInfoTypesDeleteRequest object.
+
+  Fields:
+    name: Resource name of the organization and storedInfoType to be deleted,
+      for example `organizations/433245324/storedInfoTypes/432452342` or
+      projects/project-id/storedInfoTypes/432452342.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsStoredInfoTypesGetRequest(_messages.Message):
+  r"""A DlpProjectsStoredInfoTypesGetRequest object.
+
+  Fields:
+    name: Resource name of the organization and storedInfoType to be read, for
+      example `organizations/433245324/storedInfoTypes/432452342` or projects
+      /project-id/storedInfoTypes/432452342.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
+  r"""A DlpProjectsStoredInfoTypesListRequest object.
+
+  Fields:
+    pageSize: Optional size of the page, can be limited by server. If zero
+      server returns a page of max size 100.
+    pageToken: Optional page token to continue retrieval. Comes from previous
+      call to `ListStoredInfoTypes`.
+    parent: The parent resource name, for example projects/my-project-id or
+      organizations/my-org-id.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DlpProjectsStoredInfoTypesPatchRequest(_messages.Message):
+  r"""A DlpProjectsStoredInfoTypesPatchRequest object.
+
+  Fields:
+    googlePrivacyDlpV2UpdateStoredInfoTypeRequest: A
+      GooglePrivacyDlpV2UpdateStoredInfoTypeRequest resource to be passed as
+      the request body.
+    name: Resource name of organization and storedInfoType to be updated, for
+      example `organizations/433245324/storedInfoTypes/432452342` or projects
+      /project-id/storedInfoTypes/432452342.
+  """
+
+  googlePrivacyDlpV2UpdateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateStoredInfoTypeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class GooglePrivacyDlpV2Action(_messages.Message):
   r"""A task to execute on the completion of a job. See
   https://cloud.google.com/dlp/docs/concepts-actions to learn more.
@@ -610,6 +754,18 @@ class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
   table = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 3)
 
 
+class GooglePrivacyDlpV2BigQueryField(_messages.Message):
+  r"""Message defining a field of a BigQuery table.
+
+  Fields:
+    field: Designated field in the BigQuery table.
+    table: Source table of the field.
+  """
+
+  field = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1)
+  table = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 2)
+
+
 class GooglePrivacyDlpV2BigQueryKey(_messages.Message):
   r"""Row key for identifying a record in BigQuery table.
 
@@ -635,8 +791,14 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
       are allowed.
     rowsLimit: Max number of rows to scan. If the table has more rows than
       this value, the rest of the rows are omitted. If not set, or if set to
-      0, all rows will be scanned. Cannot be used in conjunction with
+      0, all rows will be scanned. Only one of rows_limit and
+      rows_limit_percent can be specified. Cannot be used in conjunction with
       TimespanConfig.
+    rowsLimitPercent: Max percentage of rows to scan. The rest are omitted.
+      The number of rows scanned is rounded down. Must be between 0 and 100,
+      inclusively. Both 0 and 100 means no limit. Defaults to 0. Only one of
+      rows_limit and rows_limit_percent can be specified. Cannot be used in
+      conjunction with TimespanConfig.
     sampleMethod: A SampleMethodValueValuesEnum attribute.
     tableReference: Complete BigQuery table reference.
   """
@@ -656,8 +818,9 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
 
   identifyingFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
   rowsLimit = _messages.IntegerField(2)
-  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 3)
-  tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 4)
+  rowsLimitPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 4)
+  tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 5)
 
 
 class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
@@ -883,6 +1046,17 @@ class GooglePrivacyDlpV2CharsToIgnore(_messages.Message):
   commonCharactersToIgnore = _messages.EnumField('CommonCharactersToIgnoreValueValuesEnum', 2)
 
 
+class GooglePrivacyDlpV2CloudStorageFileSet(_messages.Message):
+  r"""Message representing a set of files in Cloud Storage.
+
+  Fields:
+    url: The url, in the format `gs://<bucket>/<path>`. Trailing wildcard in
+      the path is allowed.
+  """
+
+  url = _messages.StringField(1)
+
+
 class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
   r"""Options defining a file or a set of files (path ending with *) within a
   Google Cloud Storage bucket.
@@ -894,7 +1068,13 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
   Fields:
     bytesLimitPerFile: Max number of bytes to scan from a file. If a scanned
       file's size is bigger than this value then the rest of the bytes are
-      omitted.
+      omitted. Only one of bytes_limit_per_file and
+      bytes_limit_per_file_percent can be specified.
+    bytesLimitPerFilePercent: Max percentage of bytes to scan from a file. The
+      rest are omitted. The number of bytes scanned is rounded down. Must be
+      between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults
+      to 0. Only one of bytes_limit_per_file and bytes_limit_per_file_percent
+      can be specified.
     fileSet: A GooglePrivacyDlpV2FileSet attribute.
     fileTypes: List of file type groups to include in the scan. If empty, all
       files are scanned and available data format processors are applied.
@@ -931,10 +1111,11 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
     RANDOM_START = 2
 
   bytesLimitPerFile = _messages.IntegerField(1)
-  fileSet = _messages.MessageField('GooglePrivacyDlpV2FileSet', 2)
-  fileTypes = _messages.EnumField('FileTypesValueListEntryValuesEnum', 3, repeated=True)
-  filesLimitPercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 5)
+  bytesLimitPerFilePercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  fileSet = _messages.MessageField('GooglePrivacyDlpV2FileSet', 3)
+  fileTypes = _messages.EnumField('FileTypesValueListEntryValuesEnum', 4, repeated=True)
+  filesLimitPercent = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 6)
 
 
 class GooglePrivacyDlpV2CloudStoragePath(_messages.Message):
@@ -1130,6 +1311,21 @@ class GooglePrivacyDlpV2CreateJobTriggerRequest(_messages.Message):
   triggerId = _messages.StringField(2)
 
 
+class GooglePrivacyDlpV2CreateStoredInfoTypeRequest(_messages.Message):
+  r"""Request message for CreateStoredInfoType.
+
+  Fields:
+    config: Configuration of the storedInfoType to create.
+    storedInfoTypeId: The storedInfoType ID can contain uppercase and
+      lowercase letters, numbers, and hyphens; that is, it must match the
+      regular expression: `[a-zA-Z\\d-]+`. The maximum length is 100
+      characters. Can be empty to allow the system to generate one.
+  """
+
+  config = _messages.MessageField('GooglePrivacyDlpV2StoredInfoTypeConfig', 1)
+  storedInfoTypeId = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2CryptoHashConfig(_messages.Message):
   r"""Pseudonymization method that generates surrogates via cryptographic
   hashing. Uses SHA-256. The key size must be either 32 or 64 bytes. Outputs a
@@ -1263,6 +1459,8 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
       can be altered by a detection rule if the finding meets the criteria
       specified by the rule. Defaults to `VERY_LIKELY` if not specified.
     regex: Regular expression based CustomInfoType.
+    storedType: Load an existing `StoredInfoType` resource for use in
+      `InspectDataSource`. Not currently supported in `InspectContent`.
     surrogateType: Message for detecting output from deidentification
       transformations that support reversing.
   """
@@ -1292,7 +1490,8 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 3)
   likelihood = _messages.EnumField('LikelihoodValueValuesEnum', 4)
   regex = _messages.MessageField('GooglePrivacyDlpV2Regex', 5)
-  surrogateType = _messages.MessageField('GooglePrivacyDlpV2SurrogateType', 6)
+  storedType = _messages.MessageField('GooglePrivacyDlpV2StoredType', 6)
+  surrogateType = _messages.MessageField('GooglePrivacyDlpV2SurrogateType', 7)
 
 
 class GooglePrivacyDlpV2DatastoreKey(_messages.Message):
@@ -1582,7 +1781,11 @@ class GooglePrivacyDlpV2Dictionary(_messages.Message):
   match the first three letters of the text "jen123" but will return no
   matches for "jennifer".  Dictionary words containing a large number of
   characters that are not letters or digits may result in unexpected findings
-  because such characters are treated as whitespace.
+  because such characters are treated as whitespace. The
+  [limits](https://cloud.google.com/dlp/limits) page contains details about
+  the size limits of dictionaries. For dictionaries that do not fit within
+  these constraints, consider using `LargeCustomDictionaryConfig` in the
+  `StoredInfoType` API.
 
   Fields:
     cloudStoragePath: Newline-delimited file of words in Cloud Storage. Only a
@@ -2527,6 +2730,30 @@ class GooglePrivacyDlpV2LDiversityResult(_messages.Message):
   sensitiveValueFrequencyHistogramBuckets = _messages.MessageField('GooglePrivacyDlpV2LDiversityHistogramBucket', 1, repeated=True)
 
 
+class GooglePrivacyDlpV2LargeCustomDictionaryConfig(_messages.Message):
+  r"""Configuration for a custom dictionary created from a data source of any
+  size up to the maximum size defined in the
+  [limits](https://cloud.google.com/dlp/limits) page. The artifacts of
+  dictionary creation are stored in the specified Google Cloud Storage
+  location. Consider using `CustomInfoType.Dictionary` for smaller
+  dictionaries that satisfy the size requirements.
+
+  Fields:
+    bigQueryField: Field in a BigQuery table where each cell represents a
+      dictionary phrase.
+    cloudStorageFileSet: Set of files containing newline-delimited lists of
+      dictionary phrases.
+    outputPath: Location to store dictionary artifacts in Google Cloud
+      Storage. These files will only be accessible by project owners and the
+      DLP API. If any of these artifacts are modified, the dictionary is
+      considered invalid and can no longer be used.
+  """
+
+  bigQueryField = _messages.MessageField('GooglePrivacyDlpV2BigQueryField', 1)
+  cloudStorageFileSet = _messages.MessageField('GooglePrivacyDlpV2CloudStorageFileSet', 2)
+  outputPath = _messages.MessageField('GooglePrivacyDlpV2CloudStoragePath', 3)
+
+
 class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
   r"""Message for specifying an adjustment to the likelihood of a finding as
   part of a detection rule.
@@ -2631,6 +2858,20 @@ class GooglePrivacyDlpV2ListJobTriggersResponse(_messages.Message):
 
   jobTriggers = _messages.MessageField('GooglePrivacyDlpV2JobTrigger', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2ListStoredInfoTypesResponse(_messages.Message):
+  r"""Response message for ListStoredInfoTypes.
+
+  Fields:
+    nextPageToken: If the next page is available then the next page token to
+      be used in following ListStoredInfoTypes request.
+    storedInfoTypes: List of storedInfoTypes, up to page_size in
+      ListStoredInfoTypesRequest.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  storedInfoTypes = _messages.MessageField('GooglePrivacyDlpV2StoredInfoType', 2, repeated=True)
 
 
 class GooglePrivacyDlpV2Location(_messages.Message):
@@ -3244,6 +3485,108 @@ class GooglePrivacyDlpV2StorageConfig(_messages.Message):
   timespanConfig = _messages.MessageField('GooglePrivacyDlpV2TimespanConfig', 4)
 
 
+class GooglePrivacyDlpV2StoredInfoType(_messages.Message):
+  r"""StoredInfoType resource message that contains information about the
+  current version and any pending updates.
+
+  Fields:
+    currentVersion: Current version of the stored info type.
+    name: Resource name.
+    pendingVersions: Pending versions of the stored info type. Empty if no
+      versions are pending.
+  """
+
+  currentVersion = _messages.MessageField('GooglePrivacyDlpV2StoredInfoTypeVersion', 1)
+  name = _messages.StringField(2)
+  pendingVersions = _messages.MessageField('GooglePrivacyDlpV2StoredInfoTypeVersion', 3, repeated=True)
+
+
+class GooglePrivacyDlpV2StoredInfoTypeConfig(_messages.Message):
+  r"""Configuration for a StoredInfoType.
+
+  Fields:
+    description: Description of the StoredInfoType (max 256 characters).
+    displayName: Display name of the StoredInfoType (max 256 characters).
+    largeCustomDictionary: StoredInfoType where findings are defined by a
+      dictionary of phrases.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  largeCustomDictionary = _messages.MessageField('GooglePrivacyDlpV2LargeCustomDictionaryConfig', 3)
+
+
+class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
+  r"""Version of a StoredInfoType, including the configuration used to build
+  it, create timestamp, and current state.
+
+  Enums:
+    StateValueValuesEnum: Stored info type version state. Read-only, updated
+      by the system during dictionary creation.
+
+  Fields:
+    config: StoredInfoType configuration.
+    createTime: Create timestamp of the version. Read-only, determined by the
+      system when the version is created.
+    errors: Errors that occurred when creating this storedInfoType version, or
+      anomalies detected in the storedInfoType data that render it unusable.
+      Only the five most recent errors will be displayed, with the most recent
+      error appearing first. <p>For example, some of the data for stored
+      custom dictionaries is put in the user's Google Cloud Storage bucket,
+      and if this data is modified or deleted by the user or another system,
+      the dictionary becomes invalid. <p>If any errors occur, fix the problem
+      indicated by the error message and use the UpdateStoredInfoType API
+      method to create another version of the storedInfoType to continue using
+      it, reusing the same `config` if it was not the source of the error.
+    state: Stored info type version state. Read-only, updated by the system
+      during dictionary creation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Stored info type version state. Read-only, updated by the system
+    during dictionary creation.
+
+    Values:
+      STORED_INFO_TYPE_STATE_UNSPECIFIED: <no description>
+      PENDING: StoredInfoType version is being created.
+      READY: StoredInfoType version is ready for use.
+      FAILED: StoredInfoType creation failed. All relevant error messages are
+        returned in the `StoredInfoTypeVersion` message.
+      INVALID: StoredInfoType is no longer valid because artifacts stored in
+        user-controlled storage were modified. To fix an invalid
+        StoredInfoType, use the `UpdateStoredInfoType` method to create a new
+        version.
+    """
+    STORED_INFO_TYPE_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    READY = 2
+    FAILED = 3
+    INVALID = 4
+
+  config = _messages.MessageField('GooglePrivacyDlpV2StoredInfoTypeConfig', 1)
+  createTime = _messages.StringField(2)
+  errors = _messages.MessageField('GooglePrivacyDlpV2Error', 3, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class GooglePrivacyDlpV2StoredType(_messages.Message):
+  r"""CustomInfoType implementation that loads an existing `StoredInfoType`
+  resource for scanning in `InspectDataSource`. Not currently supported in
+  `InspectContent`.
+
+  Fields:
+    createTime: Timestamp indicating when the version of the `StoredInfoType`
+      used for inspection was created. Output-only field, populated by the
+      system.
+    name: Resource name of the requested `StoredInfoType`, for example
+      `organizations/433245324/storedInfoTypes/432452342` or `projects
+      /project-id/storedInfoTypes/432452342`.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2SummaryResult(_messages.Message):
   r"""A collection that informs the user the number of times a particular
   `TransformationResultCode` and error details occurred.
@@ -3514,6 +3857,20 @@ class GooglePrivacyDlpV2UpdateJobTriggerRequest(_messages.Message):
   """
 
   jobTrigger = _messages.MessageField('GooglePrivacyDlpV2JobTrigger', 1)
+  updateMask = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2UpdateStoredInfoTypeRequest(_messages.Message):
+  r"""Request message for UpdateStoredInfoType.
+
+  Fields:
+    config: Updated configuration for the storedInfoType. If not provided, a
+      new version of the storedInfoType will be created with the existing
+      configuration.
+    updateMask: Mask to control which fields get updated.
+  """
+
+  config = _messages.MessageField('GooglePrivacyDlpV2StoredInfoTypeConfig', 1)
   updateMask = _messages.StringField(2)
 
 

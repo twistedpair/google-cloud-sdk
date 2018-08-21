@@ -26,18 +26,23 @@ from googlecloudsdk.api_lib.sql import exceptions
 from googlecloudsdk.core.console import progress_tracker as console_progress_tracker
 from googlecloudsdk.core.util import retry
 
+_MS_PER_SECOND = 1000
+
 
 class _BaseOperations(object):
   """Common utility functions for sql operations."""
 
   _PRE_START_SLEEP_SEC = 1
   _INITIAL_SLEEP_MS = 2000
-  _MAX_WAIT_MS = 300000
   _WAIT_CEILING_MS = 20000
   _HTTP_MAX_RETRY_MS = 2000
 
   @classmethod
-  def WaitForOperation(cls, sql_client, operation_ref, message):
+  def WaitForOperation(cls,
+                       sql_client,
+                       operation_ref,
+                       message,
+                       max_wait_seconds=300):
     """Wait for a Cloud SQL operation to complete.
 
     No operation is done instantly. Wait for it to finish following this logic:
@@ -50,13 +55,16 @@ class _BaseOperations(object):
       sql_client: apitools.BaseApiClient, The client used to make requests.
       operation_ref: resources.Resource, A reference for the operation to poll.
       message: str, The string to print while polling.
+      max_wait_seconds: integer or None, the number of seconds before the
+          poller times out.
 
     Returns:
       True if the operation succeeded without error.
 
     Raises:
       OperationError: If the operation has an error code, is in UNKNOWN state,
-          or if the operation takes more than 300s.
+          or if the operation takes more than max_wait_seconds when a value is
+          specified.
     """
 
     def ShouldRetryFunc(result, state):
@@ -71,12 +79,16 @@ class _BaseOperations(object):
       # Otherwise let the retryer do it's job until the Operation is done.
       return not result
 
+    # Set the max wait time.
+    max_wait_ms = None
+    if max_wait_seconds:
+      max_wait_ms = max_wait_seconds * _MS_PER_SECOND
     with console_progress_tracker.ProgressTracker(
         message, autotick=False) as pt:
       time.sleep(_BaseOperations._PRE_START_SLEEP_SEC)
       retryer = retry.Retryer(
           exponential_sleep_multiplier=2,
-          max_wait_ms=_BaseOperations._MAX_WAIT_MS,
+          max_wait_ms=max_wait_ms,
           wait_ceiling_ms=_BaseOperations._WAIT_CEILING_MS)
       try:
         retryer.RetryOnResult(

@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20180803",
+ "revision": "20180813",
  "title": "Cloud SQL Admin API",
  "description": "Cloud SQL provides the Cloud SQL Admin API, a REST API for administering your instances programmatically.",
  "ownerDomain": "google.com",

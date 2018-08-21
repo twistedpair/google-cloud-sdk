@@ -24,6 +24,8 @@ datastore client libraries.
 # information in docstrings.  If you must communicate internal information in
 # this source file, please place them in comments only.
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 
 # This defines the names that will be seen by "from ... import *".
@@ -50,6 +52,7 @@ import logging
 import os
 
 from googlecloudsdk.third_party.appengine.googlestorage.onestore.v3 import entity_pb
+from googlecloudsdk.third_party.appengine._internal import six_subset
 
 # App Engine imports.
 from googlecloudsdk.third_party.appengine.api import api_base_pb
@@ -318,9 +321,9 @@ class _ConfigurationMetaClass(type):
         if '_options' in c.__dict__:
           options.update(c.__dict__['_options'])
       cls._options = options  # Each cls gets its own copy of fields.
-      for option, value in cls.__dict__.iteritems():
+      for option, value in cls.__dict__.items():
         if isinstance(value, ConfigOption):
-          if cls._options.has_key(option):
+          if option in cls._options:  # pylint: disable=protected-access
             raise TypeError('%s cannot be overridden (%s)' %
                             (option, cls.__name__))
           cls._options[option] = value
@@ -330,7 +333,8 @@ class _ConfigurationMetaClass(type):
   # TODO(user): define __instancecheck__ once we have a released 2.7 environment
 
 
-class BaseConfiguration(object):
+class BaseConfiguration(six_subset.with_metaclass(_ConfigurationMetaClass,
+                                                  object)):
   """A base class for a configuration object.
 
   Subclasses should provide validation functions for every configuration option
@@ -350,8 +354,6 @@ class BaseConfiguration(object):
   'config' of the same name is ignored. Options that are not specified will
   return 'None' when accessed.
   """
-
-  __metaclass__ = _ConfigurationMetaClass
   _options = {}  # Maps option name to ConfigOption objects
 
   def __new__(cls, config=None, **kwargs):
@@ -378,7 +380,7 @@ class BaseConfiguration(object):
         # Shortcut: return the config argument unchanged.
         return config
 
-      for key, value in config._values.iteritems():
+      for key, value in config._values.items():  # pylint: disable=protected-access
         # Only grab options we know about
         if issubclass(cls, config._options[key]._cls):
           kwargs.setdefault(key, value)
@@ -388,11 +390,11 @@ class BaseConfiguration(object):
 
     obj = super(BaseConfiguration, cls).__new__(cls)
     obj._values = {}
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
       if value is not None:
         try:
           config_option = obj._options[key]
-        except KeyError, err:
+        except KeyError as err:
           raise TypeError('Unknown configuration option (%s)' % err)
         value = config_option.validator(value)
         if value is not None:
@@ -413,12 +415,12 @@ class BaseConfiguration(object):
     return not equal
 
   def __hash__(self):
-    return (hash(frozenset(self._values.iteritems())) ^
-            hash(frozenset(self._options.iteritems())))
+    return (hash(frozenset(self._values.items())) ^
+            hash(frozenset(self._options.items())))
 
   def __repr__(self):
     args = []
-    for key_value in sorted(self._values.iteritems()):
+    for key_value in sorted(self._values.items()):
       args.append('%s=%r' % key_value)
     return '%s(%s)' % (self.__class__.__name__, ', '.join(args))
 
@@ -445,7 +447,7 @@ class BaseConfiguration(object):
       True if each of the self attributes is stronger than the
     corresponding argument.
     """
-    for key, value in kwargs.iteritems():
+    for key, value in kwargs.items():
       if key not in self._values or value != self._values[key]:
         return False
     return True
@@ -552,7 +554,7 @@ class _MergedConfiguration(BaseConfiguration):
     # Find out which options we handle and raise an error on name clashes
     obj._options = {}
     for config in configs:
-      for name, option in config._options.iteritems():
+      for name, option in config._options.items():  # pylint: disable=protected-access
         if name in obj._options:
           if option is not obj._options[name]:
             error = ("merge conflict on '%s' from '%s' and '%s'" %
@@ -563,7 +565,7 @@ class _MergedConfiguration(BaseConfiguration):
 
     obj._values = {}
     for config in reversed(configs):
-      for name, value in config._values.iteritems():
+      for name, value in config._values.items():  # pylint: disable=protected-access
         obj._values[name] = value
 
     return obj
@@ -649,7 +651,7 @@ class Configuration(BaseConfiguration):
     Raises:
       BadArgumentError if value is not a number or is less than zero.
     """
-    if not isinstance(value, (int, long, float)):
+    if not isinstance(value, six_subset.integer_types + (float,)):
       raise datastore_errors.BadArgumentError(
         'deadline argument should be int/long/float (%r)' % (value,))
     if value <= 0:
@@ -714,7 +716,7 @@ class Configuration(BaseConfiguration):
     rpc.  The optimal value for this property will be application-specific, so
     experimentation is encouraged.
     """
-    if not (isinstance(value, (int, long)) and value > 0):
+    if not (isinstance(value, six_subset.integer_types) and value > 0):
       raise datastore_errors.BadArgumentError(
           'max_entity_groups_per_rpc should be a positive integer')
     return value
@@ -722,7 +724,7 @@ class Configuration(BaseConfiguration):
   @ConfigOption
   def max_allocate_ids_keys(value):
     """The maximum number of keys in a v1 AllocateIds rpc."""
-    if not (isinstance(value, (int, long)) and value > 0):
+    if not (isinstance(value, six_subset.integer_types) and value > 0):
       raise datastore_errors.BadArgumentError(
           'max_allocate_ids_keys should be a positive integer')
     return value
@@ -730,7 +732,7 @@ class Configuration(BaseConfiguration):
   @ConfigOption
   def max_rpc_bytes(value):
     """The maximum serialized size of a Get/Put/Delete without batching."""
-    if not (isinstance(value, (int, long)) and value > 0):
+    if not (isinstance(value, six_subset.integer_types) and value > 0):
       raise datastore_errors.BadArgumentError(
         'max_rpc_bytes should be a positive integer')
     return value
@@ -738,7 +740,7 @@ class Configuration(BaseConfiguration):
   @ConfigOption
   def max_get_keys(value):
     """The maximum number of keys in a Get without batching."""
-    if not (isinstance(value, (int, long)) and value > 0):
+    if not (isinstance(value, six_subset.integer_types) and value > 0):
       raise datastore_errors.BadArgumentError(
         'max_get_keys should be a positive integer')
     return value
@@ -746,7 +748,7 @@ class Configuration(BaseConfiguration):
   @ConfigOption
   def max_put_entities(value):
     """The maximum number of entities in a Put without batching."""
-    if not (isinstance(value, (int, long)) and value > 0):
+    if not (isinstance(value, six_subset.integer_types) and value > 0):
       raise datastore_errors.BadArgumentError(
         'max_put_entities should be a positive integer')
     return value
@@ -754,7 +756,7 @@ class Configuration(BaseConfiguration):
   @ConfigOption
   def max_delete_keys(value):
     """The maximum number of keys in a Delete without batching."""
-    if not (isinstance(value, (int, long)) and value > 0):
+    if not (isinstance(value, six_subset.integer_types) and value > 0):
       raise datastore_errors.BadArgumentError(
         'max_delete_keys should be a positive integer')
     return value
@@ -1335,7 +1337,8 @@ class BaseConnection(object):
       rpc = config  # "We already got one."
     else:
       rpc = self._create_rpc(config, service_name)
-    rpc.make_call(method, request, response, get_result_hook, user_data)
+    rpc.make_call(six_subset.ensure_binary(method), request, response,
+                  get_result_hook, user_data)
     self._add_pending(rpc)
     return rpc
 
@@ -1365,7 +1368,7 @@ class BaseConnection(object):
       self._remove_pending(rpc)
     try:
       rpc.check_success()
-    except apiproxy_errors.ApplicationError, err:
+    except apiproxy_errors.ApplicationError as err:
       raise _ToDatastoreError(err)
 
   # Basic operations: Get, Put, Delete.
@@ -1439,7 +1442,7 @@ class BaseConnection(object):
     for index, value in enumerate(values):
       key = map_fn(value)
       indexed_key_groups[group_fn(key)].append((key, index))
-    return indexed_key_groups.values()
+    return list(indexed_key_groups.values())
 
   def __create_result_index_pairs(self, indexes):
     """Internal helper: build a function that ties an index with each result.
@@ -1450,7 +1453,7 @@ class BaseConnection(object):
         x in the list of results returned to the user.
     """
     def create_result_index_pairs(results):
-      return zip(results, indexes)
+      return list(zip(results, indexes))
     return create_result_index_pairs
 
   def __sort_result_index_pairs(self, extra_hook):
@@ -2024,7 +2027,7 @@ class BaseConnection(object):
     Returns:
       A MultiRpc object.
     """
-    if not isinstance(app, basestring) or not app:
+    if not isinstance(app, six_subset.string_types) or not app:
       raise datastore_errors.BadArgumentError(
           'begin_transaction requires an application id argument (%r)' % (app,))
 
@@ -2164,7 +2167,7 @@ class Connection(BaseConnection):
       if max is not None:
         raise datastore_errors.BadArgumentError(
           'Cannot allocate ids using both size and max')
-      if not isinstance(size, (int, long)):
+      if not isinstance(size, six_subset.integer_types):
         raise datastore_errors.BadArgumentError('Invalid size (%r)' % (size,))
       if size > _MAX_ID_BATCH_SIZE:
         raise datastore_errors.BadArgumentError(
@@ -2174,7 +2177,7 @@ class Connection(BaseConnection):
         raise datastore_errors.BadArgumentError(
           'Cannot allocate less than 1 id; received %s' % size)
     if max is not None:
-      if not isinstance(max, (int, long)):
+      if not isinstance(max, six_subset.integer_types):
         raise datastore_errors.BadArgumentError('Invalid max (%r)' % (max,))
       if max < 0:
         raise datastore_errors.BadArgumentError(
@@ -2394,7 +2397,7 @@ class TransactionalConnection(BaseConnection):
           None, app, previous_transaction, mode)
     else:
       if self._api_version == _CLOUD_DATASTORE_V1:
-        txn_class = str
+        txn_class = six_subset.binary_type
       else:
         txn_class = datastore_pb.Transaction
       if not isinstance(transaction, txn_class):
@@ -2637,10 +2640,10 @@ class TransactionalConnection(BaseConnection):
         self.__force(req)
 
       # Move all pending mutations into the request.
-      for entity in self.__pending_v1_upserts.itervalues():
+      for entity in self.__pending_v1_upserts.values():
         mutation = req.mutations.add()
         mutation.upsert.CopyFrom(entity)
-      for key in self.__pending_v1_deletes.itervalues():
+      for key in self.__pending_v1_deletes.values():
         mutation = req.mutations.add()
         mutation.delete.CopyFrom(key)
       # Transactional connections cannot be reused, but clear the cached
@@ -2663,7 +2666,7 @@ class TransactionalConnection(BaseConnection):
       rpc.check_success()
       self._state = TransactionalConnection.CLOSED
       self.__transaction = None
-    except apiproxy_errors.ApplicationError, err:
+    except apiproxy_errors.ApplicationError as err:
       self._state = TransactionalConnection.FAILED
       if err.application_error == datastore_pb.Error.CONCURRENT_TRANSACTION:
         return False
@@ -2910,6 +2913,7 @@ _DATASTORE_EXCEPTION_CLASSES = {
     datastore_pb.Error.BIGTABLE_ERROR: datastore_errors.Timeout,
     datastore_pb.Error.COMMITTED_BUT_STILL_APPLYING: datastore_errors.CommittedButStillApplying,
     datastore_pb.Error.CAPABILITY_DISABLED: apiproxy_errors.CapabilityDisabledError,
+    datastore_pb.Error.RESOURCE_EXHAUSTED: apiproxy_errors.OverQuotaError,
 }
 
 _CLOUD_DATASTORE_EXCEPTION_CLASSES = {}

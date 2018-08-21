@@ -32,7 +32,7 @@ ALPHA_LIST_FORMAT = """\
       name,
       type,
       creationTimestamp,
-      expiryTime,
+      expireTime,
       managed.status:label=MANAGED_STATUS,
       managed.domainStatus:format="yaml"
     )"""

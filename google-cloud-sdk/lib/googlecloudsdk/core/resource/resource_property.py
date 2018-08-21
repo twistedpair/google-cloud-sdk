@@ -303,8 +303,10 @@ def Get(resource_obj, resource_key, default=None):
       # class-like?
       name = GetMatchingIndex(index, lambda x: hasattr(resource, x))
       if name:
-        resource = getattr(resource, name, default)
-        continue
+        r = getattr(resource, name, default)
+        if not callable(r):
+          resource = r
+          continue
 
     if hasattr(resource, '__iter__') or isinstance(resource, six.string_types):
       # list-like

@@ -34,6 +34,36 @@ class AcceleratorConfig(_messages.Message):
   acceleratorTypeUri = _messages.StringField(2)
 
 
+class Binding(_messages.Message):
+  r"""Associates members with a role.
+
+  Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. members can have the following values: allUsers: A special
+      identifier that represents anyone who is  on the internet; with or
+      without a Google account. allAuthenticatedUsers: A special identifier
+      that represents anyone  who is authenticated with a Google account or a
+      service account. user:{emailid}: An email address that represents a
+      specific Google  account. For example, alice@gmail.com .
+      serviceAccount:{emailid}: An email address that represents a service
+      account. For example, my-other-app@appspot.gserviceaccount.com.
+      group:{emailid}: An email address that represents a Google group.  For
+      example, admins@example.com. domain:{domain}: A Google Apps domain name
+      that represents all the  users of that domain. For example, google.com
+      or example.com.
+    role: Role that is assigned to members. For example, roles/viewer,
+      roles/editor, or roles/owner.
+  """
+
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
+
+
 class CancelJobRequest(_messages.Message):
   r"""A request to cancel a job."""
 
@@ -378,6 +408,52 @@ class ClusterStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class DataprocProjectsLocationsWorkflowTemplatesGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsWorkflowTemplatesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsWorkflowTemplatesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersCreateRequest object.
 
@@ -449,6 +525,21 @@ class DataprocProjectsRegionsClustersDiagnoseRequest(_messages.Message):
   diagnoseClusterRequest = _messages.MessageField('DiagnoseClusterRequest', 2)
   projectId = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
+
+
+class DataprocProjectsRegionsClustersGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsRegionsClustersGetRequest(_messages.Message):
@@ -553,6 +644,36 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
   updateMask = _messages.StringField(7)
 
 
+class DataprocProjectsRegionsClustersSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsClustersTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class DataprocProjectsRegionsJobsCancelRequest(_messages.Message):
   r"""A DataprocProjectsRegionsJobsCancelRequest object.
 
@@ -586,6 +707,21 @@ class DataprocProjectsRegionsJobsDeleteRequest(_messages.Message):
   jobId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
+
+
+class DataprocProjectsRegionsJobsGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsJobsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsRegionsJobsGetRequest(_messages.Message):
@@ -682,6 +818,21 @@ class DataprocProjectsRegionsJobsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(5)
 
 
+class DataprocProjectsRegionsJobsSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsJobsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
 class DataprocProjectsRegionsJobsSubmitRequest(_messages.Message):
   r"""A DataprocProjectsRegionsJobsSubmitRequest object.
 
@@ -697,6 +848,21 @@ class DataprocProjectsRegionsJobsSubmitRequest(_messages.Message):
   projectId = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   submitJobRequest = _messages.MessageField('SubmitJobRequest', 3)
+
+
+class DataprocProjectsRegionsJobsTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsJobsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DataprocProjectsRegionsOperationsCancelRequest(_messages.Message):
@@ -717,6 +883,21 @@ class DataprocProjectsRegionsOperationsDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsRegionsOperationsGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsOperationsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class DataprocProjectsRegionsOperationsGetRequest(_messages.Message):
@@ -743,6 +924,82 @@ class DataprocProjectsRegionsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class DataprocProjectsRegionsOperationsSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsOperationsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsOperationsTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsOperationsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DataprocProjectsRegionsWorkflowTemplatesGetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsWorkflowTemplatesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsRegionsWorkflowTemplatesSetIamPolicyRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsWorkflowTemplatesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class DataprocProjectsRegionsWorkflowTemplatesTestIamPermissionsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsWorkflowTemplatesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class DiagnoseClusterRequest(_messages.Message):
@@ -791,6 +1048,30 @@ class Empty(_messages.Message):
   representation for Empty is empty JSON object {}.
   """
 
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example: title: "User account presence"
+  description: "Determines whether the request has a user account" expression:
+  "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class GceClusterConfig(_messages.Message):
@@ -891,6 +1172,10 @@ class GceClusterConfig(_messages.Message):
   subnetworkUri = _messages.StringField(6)
   tags = _messages.StringField(7, repeated=True)
   zoneUri = _messages.StringField(8)
+
+
+class GetIamPolicyRequest(_messages.Message):
+  r"""Request message for GetIamPolicy method."""
 
 
 class HadoopJob(_messages.Message):
@@ -1660,6 +1945,43 @@ class PigJob(_messages.Message):
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 7)
 
 
+class Policy(_messages.Message):
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.A Policy
+  consists of a list of bindings. A binding binds a list of members to a role,
+  where the members can be user accounts, Google groups, Google domains, and
+  service accounts. A role is a named list of permissions defined by IAM.JSON
+  Example {   "bindings": [     {       "role": "roles/owner",
+  "members": [         "user:mike@example.com",
+  "group:admins@example.com",         "domain:google.com",
+  "serviceAccount:my-other-app@appspot.gserviceaccount.com"       ]     },
+  {       "role": "roles/viewer",       "members": ["user:sean@example.com"]
+  }   ] } YAML Example bindings: - members:   - user:mike@example.com   -
+  group:admins@example.com   - domain:google.com   - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com   role: roles/owner - members:   -
+  user:sean@example.com   role: roles/viewer For a description of IAM and its
+  features, see the IAM developer's guide (https://cloud.google.com/iam/docs).
+
+  Fields:
+    bindings: Associates a list of members to a role. bindings with no members
+      will result in an error.
+    etag: etag is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the etag in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An etag is returned in the response to getIamPolicy, and
+      systems are expected to put that etag in the request to setIamPolicy to
+      ensure that their change will be applied to the same version of the
+      policy.If no etag is provided in the call to setIamPolicy, then the
+      existing policy is overwritten blindly.
+    version: Deprecated.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class PySparkJob(_messages.Message):
   r"""A Cloud Dataproc job for running Apache PySpark
   (https://spark.apache.org/docs/0.9.0/python-programming-guide.html)
@@ -1743,6 +2065,19 @@ class QueryList(_messages.Message):
   """
 
   queries = _messages.StringField(1, repeated=True)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  r"""Request message for SetIamPolicy method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the resource. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
 
 
 class SoftwareConfig(_messages.Message):
@@ -2115,6 +2450,30 @@ class SubmitJobRequest(_messages.Message):
 
   job = _messages.MessageField('Job', 1)
   requestId = _messages.StringField(2)
+
+
+class TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for TestIamPermissions method.
+
+  Fields:
+    permissions: The set of permissions to check for the resource. Permissions
+      with wildcards (such as '*' or 'storage.*') are not allowed. For more
+      information see IAM Overview
+      (https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for TestIamPermissions method.
+
+  Fields:
+    permissions: A subset of TestPermissionsRequest.permissions that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class WorkflowGraph(_messages.Message):
