@@ -8,6 +8,8 @@ KEY_NAME=travis_deploy_key.private
 KEY_FILE_PATH=`pwd`/.travis/$KEY_NAME
 openssl aes-256-cbc -k "$GITHUB_KEY_PASSWORD" -d -a -in "$KEY_FILE_PATH.enc" -out $KEY_FILE_PATH
 
+chmod 400 ${KEY_FILE_PATH}
+
 echo "Setting github.com SSH key in ~/.ssh/config"
 echo -e "Host github.com-twistedpair\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/id_rsa" > ~/.ssh/config
 
