@@ -2,5 +2,5 @@
 set -e
 
 cd  /tmp/gcloud_history/
-git push -u origin master --tags
+ssh-agent sh -c "ssh-add ${KEY_FILE_PATH}; git push -u origin master --tags"
 echo "git sync complete"
