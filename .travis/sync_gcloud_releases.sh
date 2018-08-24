@@ -14,8 +14,7 @@ WORK_DIR=/tmp/gcloud_history
 GIT_WORK_DIR="$WORK_DIR/google-cloud-sdk"
 
 # In case you're new here
-if [[ ! -e $WORK_DIR ]]
-then
+if [[ ! -e $WORK_DIR ]]; then
     echo "Making initial checkout"
     git clone --quiet $REPO_URI $WORK_DIR
 fi
@@ -42,14 +41,12 @@ process_sdk_release()
     RELEASE_DATE=`grep -Po "## $RELEASE_VERSION \(\K\d{4}.\d{1,2}.\d{1,2}(?=\))" google-cloud-sdk/RELEASE_NOTES`
     #grep -Po "## \d+\.\d+\.\d+(\.\d+)? \(\K\d{4}.\d{1,2}.\d{1,2}(?=\))" /opt/gcloud/google-cloud-sdk/RELEASE_NOTES
 
-    if [ -z $RELEASE_DATE ]
-    then
+    if [ -z $RELEASE_DATE ]; then
         
         # Fix bugs in bad releases using corrections
         # TODO use look ahead (next release) to find the correctly updated manifest. Fail on bad pass, fix on next pas.
         RELEASE_DATE_FIX=${MISSING_RELEASE_DATES_FIXES[$RELEASE_VERSION]}
-        if [ -z RELEASE_DATE_FIX ]
-        then
+        if [ -z RELEASE_DATE_FIX ]; then
             echo -e "\tCannot find release date for $RELEASE_VERSION"    
             exit 1
         else
@@ -95,8 +92,7 @@ process_sdk_release()
 # ensure sorted, so we start with oldest
 SDK_VERSIONS=$(gsutil ls gs://cloud-sdk-release/  | grep -Po "\d+\.\d+\.\d+(\.\d+)?(?=-linux-x86_64)" | sort -n)
 
-for RELEASE_VERSION in $SDK_VERSIONS;
-do
+for RELEASE_VERSION in $SDK_VERSIONS; do
     VERSION_TAG_RESULT=`git tag -l $RELEASE_VERSION`
 
     ## Exclude all versions we already have tags for
