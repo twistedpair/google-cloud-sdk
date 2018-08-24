@@ -19,4 +19,3 @@ echo "github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6Tb
 
 # Ensure we can authentica
 ssh-agent sh -c "ssh-add ${KEY_FILE_PATH}; ssh -T git@github.com"
-ssh -T git@github.com
