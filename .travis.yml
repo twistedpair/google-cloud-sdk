@@ -1,6 +1,7 @@
 before_script:
 - sudo apt-get update -qq
 - sudo apt-get install git -y
+- "git --git-dir /tmp/gcloud_history/.git checkout master"
 - ".travis/setup_git_keys.sh"
 - ".travis/install_gcloud_sdk.sh"
 script: ".travis/sync_gcloud_releases.sh"
