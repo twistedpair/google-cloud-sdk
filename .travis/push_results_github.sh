@@ -2,5 +2,5 @@
 set -e
 
 cd  /tmp/gcloud_history/
-git push origin head --tags
+git push -u origin master --tags
 echo "git sync complete"
