@@ -21,6 +21,9 @@ fi
 
 cd $WORK_DIR
 
+echo "Syncing from master"
+git checkout master
+git pull origin master
 
 process_sdk_release()
 {
