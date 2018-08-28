@@ -120,6 +120,14 @@ DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
 Cannot use --default-max-pods-per-node without --enable-ip-alias.
 """
 
+NOTHING_TO_UPDATE_ERROR_MSG = """\
+Nothing to update.
+"""
+
+ENABLE_PRIVATE_NODES_WITH_PRIVATE_CLUSTER_ERROR_MSG = """\
+Cannot specify both --[no-]enable-private-nodes and --[no-]private-cluster at the same time.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_CONCURRENT_NODE_COUNT = 20
@@ -352,6 +360,8 @@ class CreateClusterOptions(object):
                enable_pod_security_policy=None,
                allow_route_overlap=None,
                private_cluster=None,
+               enable_private_nodes=None,
+               enable_private_endpoint=None,
                master_ipv4_cidr=None,
                tpu_ipv4_cidr=None,
                enable_tpu=None,
@@ -359,7 +369,9 @@ class CreateClusterOptions(object):
                enable_managed_pod_identity=None,
                resource_usage_bigquery_dataset=None,
                security_group=None,
-               enable_vertical_pod_autoscaling=None):
+               enable_vertical_pod_autoscaling=None,
+               security_profile=None,
+               security_profile_runtime_rules=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -417,6 +429,8 @@ class CreateClusterOptions(object):
     self.enable_pod_security_policy = enable_pod_security_policy
     self.allow_route_overlap = allow_route_overlap
     self.private_cluster = private_cluster
+    self.enable_private_nodes = enable_private_nodes
+    self.enable_private_endpoint = enable_private_endpoint
     self.master_ipv4_cidr = master_ipv4_cidr
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
     self.enable_tpu = enable_tpu
@@ -426,6 +440,8 @@ class CreateClusterOptions(object):
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
     self.security_group = security_group
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
+    self.security_profile = security_profile
+    self.security_profile_runtime_rules = security_profile_runtime_rules
 
 
 class UpdateClusterOptions(object):
@@ -451,7 +467,9 @@ class UpdateClusterOptions(object):
                enable_pod_security_policy=None,
                enable_binauthz=None,
                concurrent_node_count=None,
-               enable_vertical_pod_autoscaling=None):
+               enable_vertical_pod_autoscaling=None,
+               security_profile=None,
+               security_profile_runtime_rules=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -473,6 +491,8 @@ class UpdateClusterOptions(object):
     self.enable_binauthz = enable_binauthz
     self.concurrent_node_count = concurrent_node_count
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
+    self.security_profile = security_profile
+    self.security_profile_runtime_rules = security_profile_runtime_rules
 
 
 class SetMasterAuthOptions(object):
@@ -1029,9 +1049,35 @@ class APIAdapter(object):
 
   def ParsePrivateClusterOptions(self, options, cluster):
     """Parses the options for Private Clusters."""
-    if options.private_cluster:
-      cluster.masterIpv4CidrBlock = options.master_ipv4_cidr
-      cluster.privateCluster = options.private_cluster
+    if (options.enable_private_nodes is not None
+        and options.private_cluster is not None):
+      raise util.Error(ENABLE_PRIVATE_NODES_WITH_PRIVATE_CLUSTER_ERROR_MSG)
+
+    if options.enable_private_nodes is None:
+      options.enable_private_nodes = options.private_cluster
+
+    if options.enable_private_nodes and not options.enable_ip_alias:
+      raise util.Error(
+          PREREQUISITE_OPTION_ERROR_MSG.format(
+              prerequisite='enable-ip-alias', opt='enable-private-nodes'))
+
+    if options.enable_private_endpoint and not options.enable_private_nodes:
+      raise util.Error(
+          PREREQUISITE_OPTION_ERROR_MSG.format(
+              prerequisite='enable-private-nodes',
+              opt='enable-private-endpoint'))
+
+    if options.master_ipv4_cidr and not options.enable_private_nodes:
+      raise util.Error(
+          PREREQUISITE_OPTION_ERROR_MSG.format(
+              prerequisite='enable-private-nodes', opt='master-ipv4-cidr'))
+
+    if options.enable_private_nodes:
+      config = self.messages.PrivateClusterConfig(
+          enablePrivateNodes=options.enable_private_nodes,
+          enablePrivateEndpoint=options.enable_private_endpoint,
+          masterIpv4CidrBlock=options.master_ipv4_cidr)
+      cluster.privateClusterConfig = config
     return cluster
 
   def ParseTpuOptions(self, options, cluster):
@@ -1079,6 +1125,7 @@ class APIAdapter(object):
 
   def UpdateClusterCommon(self, options):
     """Returns an UpdateCluster operation."""
+    update = None
     if not options.version:
       options.version = '-'
     if options.update_nodes:
@@ -1088,9 +1135,17 @@ class APIAdapter(object):
           desiredImageType=options.image_type,
           desiredImage=options.image,
           desiredImageProject=options.image_project)
+      # security_profile may be set in upgrade command
+      if options.security_profile is not None:
+        update.securityProfile = self.messages.SecurityProfile(
+            name=options.security_profile)
     elif options.update_master:
       update = self.messages.ClusterUpdate(
           desiredMasterVersion=options.version)
+      # security_profile may be set in upgrade command
+      if options.security_profile is not None:
+        update.securityProfile = self.messages.SecurityProfile(
+            name=options.security_profile)
     elif options.monitoring_service or options.logging_service:
       update = self.messages.ClusterUpdate()
       if options.monitoring_service:
@@ -1156,7 +1211,26 @@ class APIAdapter(object):
       export_config = self.messages.ResourceUsageExportConfig()
       update = self.messages.ClusterUpdate(
           desiredResourceUsageExportConfig=export_config)
+    elif options.security_profile is not None:
+      # security_profile is set in update command
+      security_profile = self.messages.SecurityProfile(
+          name=options.security_profile)
+      update = self.messages.ClusterUpdate(
+          securityProfile=security_profile)
 
+    if not update:
+      # if reached here, it's possible:
+      # - someone added update flags but not handled
+      # - none of the update flags specified from command line
+      # so raise an error with readable message like:
+      #   Nothing to update
+      # to catch this error.
+      raise util.Error(NOTHING_TO_UPDATE_ERROR_MSG)
+
+    if (options.security_profile is not None
+        and options.security_profile_runtime_rules is not None):
+      update.securityProfile.disableRuntimeRules = \
+          not options.security_profile_runtime_rules
     if (options.master_authorized_networks
         and not options.enable_master_authorized_networks):
       # Raise error if use --master-authorized-networks without
@@ -1868,6 +1942,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.resourceUsageExportConfig = \
           self.messages.ResourceUsageExportConfig(
               bigqueryDestination=bigquery_destination)
+    if options.security_profile is not None:
+      cluster.securityProfile = self.messages.SecurityProfile(
+          name=options.security_profile)
+      if options.security_profile_runtime_rules is not None:
+        cluster.securityProfile.disableRuntimeRules = \
+          not options.security_profile_runtime_rules
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),

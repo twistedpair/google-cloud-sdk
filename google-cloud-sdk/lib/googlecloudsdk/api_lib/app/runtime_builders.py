@@ -611,7 +611,7 @@ class Resolver(object):
     version_file_uri = _Join(self.build_file_root, version_file_name)
     try:
       with _Read(version_file_uri) as f:
-        version = f.read().strip()
+        version = f.read().decode().strip()
     except FileReadError:
       log.debug('', exc_info=True)
       return None

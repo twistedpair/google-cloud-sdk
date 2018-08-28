@@ -18,6 +18,7 @@ A library for working with BackendInfoExternal records, describing backends
 configured for an application. Supports loading the records from backend.yaml.
 """
 
+from __future__ import absolute_import
 
 
 # WARNING: This file is externally viewable by our users.  All comments from

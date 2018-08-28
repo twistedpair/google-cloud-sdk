@@ -30,19 +30,13 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-def AddBasicAuthFlags(parser,
-                      username_default='admin',
-                      enable_basic_auth_default=True):
+def AddBasicAuthFlags(parser):
   """Adds basic auth flags to the given parser.
 
   Basic auth flags are: --username, --enable-basic-auth, and --password.
 
   Args:
     parser: A given parser.
-    username_default: The default username to use for this parser (create is
-        'admin', update is None).
-    enable_basic_auth_default: The default value for --enable-basic-auth (create
-        is True, update is None).
   """
   basic_auth_group = parser.add_group(help='Basic auth')
   username_group = basic_auth_group.add_group(
@@ -50,19 +44,20 @@ def AddBasicAuthFlags(parser,
   username_help_text = """\
 The user name to use for basic auth for the cluster. Use `--password` to specify
 a password; if not, the server will randomly generate one."""
-  username_group.add_argument(
-      '--username', '-u', help=username_help_text, default=username_default)
+  username_group.add_argument('--username', '-u', help=username_help_text)
 
   enable_basic_auth_help_text = """\
 Enable basic (username/password) auth for the cluster.  `--enable-basic-auth` is
 an alias for `--username=admin`; `--no-enable-basic-auth` is an alias for
 `--username=""`. Use `--password` to specify a password; if not, the server will
-randomly generate one."""
+randomly generate one. For cluster versions before 1.12, if neither
+`--enable-basic-auth` nor `--username` is specified, `--enable-basic-auth` will
+default to `true`. After 1.12, `--enable-basic-auth` will default to `false`."""
   username_group.add_argument(
       '--enable-basic-auth',
       help=enable_basic_auth_help_text,
       action='store_true',
-      default=enable_basic_auth_default)
+      default=None)
 
   basic_auth_group.add_argument(
       '--password',
@@ -87,8 +82,6 @@ def MungeBasicAuthFlags(args):
     if not args.enable_basic_auth:
       args.username = ''
     else:
-      # Even though this is the default for `clusters create`, we still need to
-      # set it for `clusters update`.
       args.username = 'admin'
   if not args.username and args.IsSpecified('password'):
     raise util.Error(constants.USERNAME_PASSWORD_ERROR_MSG)
@@ -715,8 +708,8 @@ Allow only specified set of CIDR blocks (specified by the
 `--master-authorized-networks` flag) to connect to Kubernetes master through
 HTTPS. Besides these blocks, the following have access as well:\n
   1) The private network the cluster connects to if
-  `--private-cluster` is specified.
-  2) Google Compute Engine Public IPs if `--private-cluster` is not
+  `--enable-private-nodes` is specified.
+  2) Google Compute Engine Public IPs if `--enable-private-nodes` is not
   specified.\n
 When disabled, public internet (0.0.0.0/0) is allowed to connect to Kubernetes
 master through HTTPS.
@@ -749,23 +742,39 @@ def AddNetworkPolicyFlags(parser, hidden=False):
 
 
 def AddPrivateClusterFlags(parser, hidden=False):
-  """Adds --private-cluster flag to parser and --master-ipv4-cidr to parser."""
+  """Adds flags related to private clusters to parser."""
   group = parser.add_argument_group('Private Clusters')
   group.add_argument(
       '--private-cluster',
       help=('Cluster is created with no public IP addresses on the cluster '
             'nodes.'),
       default=None,
+      action=actions.DeprecationAction(
+          'private-cluster',
+          warn='The --private-cluster flag is deprecated and will be removed '
+               'in a future release. Use --enable-private-nodes instead.',
+          action='store_true'),
+      hidden=hidden)
+  group.add_argument(
+      '--enable-private-nodes',
+      help=('Cluster is created with no public IP addresses on the cluster '
+            'nodes.'),
+      default=None,
       action='store_true',
-      required=True,
+      hidden=hidden)
+  group.add_argument(
+      '--enable-private-endpoint',
+      help=('Cluster is managed using the private IP address of the master '
+            'API endpoint.'),
+      default=None,
+      action='store_true',
       hidden=hidden)
   group.add_argument(
       '--master-ipv4-cidr',
       help=('IPv4 CIDR range to use for the master network.  This should be a '
-            '/28 and should be used in conjunction with the --private-cluster '
-            'flag.'),
+            '/28 and should be used in conjunction with the '
+            '--enable-private-nodes flag.'),
       default=None,
-      required=True,
       hidden=hidden)
 
 
@@ -1650,7 +1659,7 @@ You can also specify custom machine types with the string "custom-CPUS-RAM"
 where ``CPUS`` is the number of virtual CPUs and ``RAM`` is the amount of RAM in
 MiB.
 
-For example, to create a node pool using custom machines with 2 vCPUs and 12 GiB
+For example, to create a node pool using custom machines with 2 vCPUs and 12 GB
 of RAM:
 
   $ {command} high-mem-pool --machine-type=custom-2-12288
@@ -1698,12 +1707,14 @@ Example:
 
   group.add_argument(
       '--resource-usage-bigquery-dataset',
+      default=None,
       help=dataset_help_text)
 
   if add_clear_flag:
     group.add_argument(
         '--clear-resource-usage-bigquery-dataset',
         action='store_true',
+        default=None,
         help='Disables exporting cluster resource usage to BigQuery.')
 
 
@@ -1750,3 +1761,101 @@ Enables the requested sandbox on all nodes in the node-pool. Example:
 
 The only supported type is 'gvisor'.
       """)
+
+
+def AddSecurityProfileForCreateFlags(parser, hidden=False):
+  """Adds flags related to Security Profile to the parser for cluster creation.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+
+  group = parser.add_group(help='Flags for Security Profile:')
+
+  group.add_argument(
+      '--security-profile',
+      hidden=hidden,
+      help="""\
+Name and version of the security profile to be applied to the cluster.
+
+Example:
+
+  $ {command} example-cluster --security-profile=default-1.0-gke.0
+""")
+
+  group.add_argument(
+      '--security-profile-runtime-rules',
+      default=True,
+      action='store_true',
+      hidden=hidden,
+      help="""\
+Apply runtime rules in the specified security profile to the cluster.
+When enabled (by default), a security profile controller and webhook
+are deployed on the cluster to enforce the runtime rules. If
+--no-security-profile-runtime-rules is specified to disable this
+feature, only bootstrapping rules are applied, and no security profile
+controller or webhook are installed.
+""")
+
+
+def AddSecurityProfileForUpdateFlag(parser, hidden=False):
+  """Adds --security-profile to specify security profile for cluster update.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+
+  parser.add_argument(
+      '--security-profile',
+      hidden=hidden,
+      help="""\
+Name and version of the security profile to be applied to the cluster.
+If not specified, the current setting of security profile will be
+preserved.
+
+Example:
+
+  $ {command} example-cluster --security-profile=default-1.0-gke.1
+""")
+
+
+def AddSecurityProfileForUpgradeFlags(parser, hidden=False):
+  """Adds flags related to Security Profile to the parser for cluster upgrade.
+
+  Args:
+    parser: A given parser.
+    hidden: Whether or not to hide the help text.
+  """
+
+  group = parser.add_group(help='Flags for Security Profile:')
+
+  group.add_argument(
+      '--security-profile',
+      hidden=hidden,
+      help="""\
+Name and version of the security profile to be applied to the cluster.
+If not specified, the current security profile settings are preserved.
+If the current security profile is not supported in the new cluster
+version, this option must be explicitly specified with a supported
+security profile, otherwise the operation will fail.
+
+Example:
+
+  $ {command} example-cluster --security-profile=default-1.0-gke.1
+""")
+
+  group.add_argument(
+      '--security-profile-runtime-rules',
+      default=None,
+      action='store_true',
+      hidden=hidden,
+      help="""\
+Apply runtime rules in the specified security profile to the cluster.
+When enabled, a security profile controller and webhook
+are deployed on the cluster to enforce the runtime rules. If
+--no-security-profile-runtime-rules is specified to disable this
+feature, only bootstrapping rules are applied, and no security profile
+controller or webhook are installed.
+""")

@@ -140,20 +140,24 @@ def CheckIamPermissions(project_id):
   project = projects_api.Get(project_id)
   # If the user's project doesn't have cloudbuild enabled yet, then the service
   # account won't even exist. If so, then ask to enable it before continuing.
-  cloudbuild_service_name = 'cloudbuild.googleapis.com'
-  if not services_api.IsServiceEnabled(project.projectId,
-                                       cloudbuild_service_name):
-    prompt_message = ('The Google Cloud Build service is not '
-                      'enabled for this project. It is required for this '
-                      'operation.\n')
-    console_io.PromptContinue(prompt_message,
-                              'Would you like to enable Container Builder?',
-                              throw_if_unattended=True,
-                              cancel_on_no=True)
-    operation = services_api.EnableServiceApiCall(project.projectId,
-                                                  cloudbuild_service_name)
-    # Wait for the operation to finish.
-    services_util.ProcessOperationResult(operation, is_async=False)
+  # Also prompt them to enable Stackdriver Logging if they haven't yet.
+  expected_services = ['cloudbuild.googleapis.com',
+                       'logging.googleapis.com']
+  for service_name in expected_services:
+    if not services_api.IsServiceEnabled(project.projectId,
+                                         service_name):
+      # TODO(b/112757283): Split this out into a separate library.
+      prompt_message = ('The "{0}" service is not enabled for this project. '
+                        'It is required for this operation.\n').format(
+                            service_name)
+      console_io.PromptContinue(prompt_message,
+                                'Would you like to enable this service?',
+                                throw_if_unattended=True,
+                                cancel_on_no=True)
+      operation = services_api.EnableServiceApiCall(project.projectId,
+                                                    service_name)
+      # Wait for the operation to finish.
+      services_util.ProcessOperationResult(operation, is_async=False)
 
   # Now that we're sure the service account exists, actually check permissions.
   service_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(

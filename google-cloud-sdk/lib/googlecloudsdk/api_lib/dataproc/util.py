@@ -507,6 +507,28 @@ def ParseRegion(dataproc):
   return ref
 
 
+def _GetValidator(schema, schema_dir):
+  """"Construct a validator that uses the given schema.
+
+  The validator is able to resolve references to all other schemas in the same
+  directory.
+
+  Args:
+    schema: The schema to validate against.
+    schema_dir: The full path to the directory containing the schema.
+
+  Returns:
+    A validator.
+  """
+  validator = validators.validator_for(schema)(schema)
+  validator_store = validator.resolver.store
+  for resource in pkg_resources.ListPackageResources(schema_dir):
+    schema = yaml.load(
+        pkg_resources.GetResourceFromFile(os.path.join(schema_dir, resource)))
+    validator_store[resource] = schema
+  return validator
+
+
 def _ValidateYaml(parsed_yaml, schema_path):
   """Validate yaml against schema.
 
@@ -518,9 +540,14 @@ def _ValidateYaml(parsed_yaml, schema_path):
     ValidationError: if the template doesn't obey the schema.
     SchemaError: if the schema is invalid.
   """
-  schema = yaml.load(
-      pkg_resources.GetResourceFromFile(os.path.join(SCHEMA_DIR, schema_path)))
-  validators.validate(parsed_yaml, schema)
+
+  full_schema_path = os.path.join(SCHEMA_DIR, schema_path)
+  schema = yaml.load(pkg_resources.GetResourceFromFile(full_schema_path))
+
+  schema_dir = os.path.join(SCHEMA_DIR, os.path.dirname(schema_path))
+  validator = _GetValidator(schema, schema_dir)
+
+  validator.validate(parsed_yaml, schema)
 
 
 def ReadYaml(message_type, stream, schema_path=None):

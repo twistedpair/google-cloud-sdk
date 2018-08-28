@@ -181,7 +181,7 @@ class CloudBuildClient(object):
 
     # Poll the logs one final time to ensure we have everything. We know this
     # final poll will get the full log contents because GCS is strongly
-    # consistent and Container Builder waits for logs to finish pushing before
+    # consistent and Cloud Build waits for logs to finish pushing before
     # marking the build complete.
     if log_tailer:
       log_tailer.Poll(is_last=True)

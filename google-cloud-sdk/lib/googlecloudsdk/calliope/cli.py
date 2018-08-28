@@ -39,8 +39,6 @@ from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
-from googlecloudsdk.core.resource import session_capturer
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
 
 import six
@@ -835,13 +833,6 @@ class CLI(object):
       properties.VALUES.SetInvocationValue(
           properties.VALUES.metrics.command_name, command_path_string, None)
 
-      if properties.VALUES.core.capture_session_file.Get() is not None:
-        capturer = session_capturer.SessionCapturer()
-        capturer.CaptureArgs(args)
-        capturer.CaptureState()
-        capturer.CaptureProperties(properties.VALUES.AllValues())
-        session_capturer.SessionCapturer.capturer = capturer
-
       for hook in self.__pre_run_hooks:
         hook.Run(command_path_string)
 
@@ -874,10 +865,6 @@ class CLI(object):
       self._HandleAllErrors(exc, command_path_string, specified_arg_names)
 
     finally:
-      if session_capturer.SessionCapturer.capturer is not None:
-        with files.FileWriter(
-            properties.VALUES.core.capture_session_file.Get()) as f:
-          session_capturer.SessionCapturer.capturer.Print(f)
       properties.VALUES.PopInvocationValues()
       named_configs.FLAG_OVERRIDE_STACK.Pop()
       # Reset these values to their previous state now that we popped the flag
@@ -898,8 +885,6 @@ class CLI(object):
     Raises:
       exc or a core.exceptions variant that does not produce a stack trace.
     """
-    if session_capturer.SessionCapturer.capturer:
-      session_capturer.SessionCapturer.capturer.CaptureException(exc)
     error_extra_info = {'error_code': getattr(exc, 'exit_code', 1)}
     if isinstance(exc, exceptions.HttpException):
       error_extra_info['http_status_code'] = exc.payload.status_code

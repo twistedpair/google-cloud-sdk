@@ -8,6 +8,7 @@ project:
       parameter_name: project
       attribute_name: project
       help: The Google Cloud Platform project name.
+      property: core/project
 
 region:
   name: region
@@ -17,6 +18,7 @@ region:
       parameter_name: region
       attribute_name: region
       help: The name of the Google Compute Engine region.
+      property: compute/region
 
 zone:
   name: zone
@@ -26,6 +28,7 @@ zone:
       parameter_name: zone
       attribute_name: zone
       help: The name of the Google Compute Engine zone.
+      property: compute/zone
 
 # resource name parameters
 
@@ -70,6 +73,28 @@ instance_template:
       parameter_name: instanceTemplate
       attribute_name: instance_template
       help: The name of the Google Compute Engine instance template.
+
+node_group:
+  name: node_group
+  collection: compute.nodeGroups
+  attributes:
+    - *project
+    - *zone
+    - &node_group
+      parameter_name: nodeGroup
+      attribute_name: node_group
+      help: The name of the Google Compute Engine node group.
+
+node_template:
+  name: node_template
+  collection: compute.nodeTemplates
+  attributes:
+    - *project
+    - *region
+    - &node_template
+      parameter_name: nodeTemplate
+      attribute_name: node_template
+      help: The name of the Google Compute Engine node template.
 
 subnet:
   name: subnetwork

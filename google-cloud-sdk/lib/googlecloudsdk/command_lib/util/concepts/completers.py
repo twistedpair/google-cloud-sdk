@@ -30,9 +30,9 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 import six
-import typing  # pylint: disable=unused-import
 
 DEFAULT_ID_FIELD = 'name'
 _PROJECTS_COLLECTION = 'cloudresourcemanager.projects'

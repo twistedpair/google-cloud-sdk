@@ -78,14 +78,15 @@ class CompleterCache(object):
 class InteractiveCliCompleter(completion.Completer):
   """A prompt_toolkit interactive CLI completer."""
 
-  def __init__(self, interactive_parser, args=None, hidden=False,
-               manpage_generator=True, cosh=None):
-    self.parsed_args = args
-    self.hidden = hidden
-    self.coshell = cosh
+  def __init__(self, coshell=None, debug=None, interactive_parser=None,
+               args=None, hidden=False, manpage_generator=True):
     self.completer_cache = {}
+    self.coshell = coshell
+    self.debug = debug
+    self.hidden = hidden
     self.manpage_generator = manpage_generator
     self.parser = interactive_parser
+    self.parsed_args = args
     self.empty = False
     self.last = ''
     generate_cli_trees.CliTreeGenerator.MemoizeFailures(True)
@@ -106,12 +107,20 @@ class InteractiveCliCompleter(completion.Completer):
     Yields:
       Completion instances for doc.
     """
+    self.debug.tabs.count().text(
+        'explicit' if event.completion_requested else 'implicit')
     args = self.parser.ParseCommand(doc.text_before_cursor)
     if not args:
       return
     self.last = doc.text_before_cursor[-1] if doc.text_before_cursor else ''
     self.empty = self.last.isspace()
     self.event = event
+
+    self.debug.last.text(self.last)
+    self.debug.tokens.text(str(args)
+                           .replace("u'", "'")
+                           .replace('ArgTokenType.', '')
+                           .replace('ArgToken', ''))
 
     for completer in (
         self.CommandCompleter,
@@ -120,15 +129,17 @@ class InteractiveCliCompleter(completion.Completer):
         self.InteractiveCompleter,
     ):
       choices, offset = completer(args)
-      if choices is not None:
-        if offset is None:
-          # The choices are already completion.Completion objects.
-          for choice in choices:
-            yield choice
-        else:
-          for choice in sorted(choices):
-            yield completion.Completion(choice, start_position=offset)
-        return
+      if choices is None:
+        continue
+      self.debug.tag(completer.__name__).count().text(str(len(list(choices))))
+      if offset is None:
+        # The choices are already completion.Completion objects.
+        for choice in choices:
+          yield choice
+      else:
+        for choice in sorted(choices):
+          yield completion.Completion(choice, start_position=offset)
+      return
 
   def CommandCompleter(self, args):
     """Returns the command/group completion choices for args or None.
@@ -144,18 +155,36 @@ class InteractiveCliCompleter(completion.Completer):
     arg = args[-1]
 
     if arg.value.startswith('-'):
+      # A flag, not a command.
       return None, 0
 
-    if arg.token_type == parser.ArgTokenType.GROUP:
+    elif arg.token_type == parser.ArgTokenType.PREFIX:
+      # The root command name arg ("argv[0]"), the first token at the beginning
+      # of the command line or the next token after a shell statement separator.
+      node = self.parser.root
+      prefix = arg.value
+
+    elif arg.token_type in (parser.ArgTokenType.COMMAND,
+                            parser.ArgTokenType.GROUP) and not self.empty:
+      # A command/group with an exact CLI tree match. See if it's also a prefix
+      # of other command/groups.
+      node = args[-2].tree if len(args) > 1 else self.parser.root
+      prefix = arg.value
+      for c in node[parser.LOOKUP_COMMANDS]:
+        if c.startswith(prefix) and c != prefix:
+          break
+      else:
+        return None, 0
+
+    elif arg.token_type == parser.ArgTokenType.GROUP:
+      # A command group with an exact CLI tree match.
       if not self.empty:
         return [], 0
       node = arg.tree
       prefix = ''
 
-    elif arg.token_type == parser.ArgTokenType.PREFIX:
-      prefix = arg.value
-      node = self.parser.root
     elif arg.token_type == parser.ArgTokenType.UNKNOWN:
+      # Unknown command arg type.
       prefix = arg.value
       if (self.manpage_generator and not prefix and
           len(args) == 2 and args[0].value):
@@ -163,12 +192,13 @@ class InteractiveCliCompleter(completion.Completer):
         if not node:
           return None, 0
         self.parser.root[parser.LOOKUP_COMMANDS][args[0].value] = node
-      elif args[-2].token_type == parser.ArgTokenType.GROUP:
+      elif len(args) > 1 and args[-2].token_type == parser.ArgTokenType.GROUP:
         node = args[-2].tree
       else:
         return None, 0
 
     else:
+      # Don't know how to complete this arg.
       return None, 0
 
     return [k for k, v in six.iteritems(node[parser.LOOKUP_COMMANDS])
@@ -238,19 +268,38 @@ class InteractiveCliCompleter(completion.Completer):
     """
     arg = args[-1]
 
-    if arg.token_type == parser.ArgTokenType.FLAG_ARG:
+    if (arg.token_type == parser.ArgTokenType.FLAG_ARG and
+        args[-2].token_type == parser.ArgTokenType.FLAG and
+        (not arg.value and self.last in (' ', '=') or
+         arg.value and not self.empty)):
+      # A flag value arg with the cursor in the value so it's OK to complete.
       flag = args[-2].tree
       return self.ArgCompleter(args, flag, arg.value)
 
     elif arg.token_type == parser.ArgTokenType.FLAG:
+      # A flag arg with an exact CLI tree match.
+      if not self.empty:
+        # The cursor is in the flag arg. See if it's a prefix of other flags.
+        flag = args[-2].tree
+        completions = [k for k, v in six.iteritems(flag[parser.LOOKUP_FLAGS])
+                       if k != arg.value and
+                       k.startswith(arg.value) and
+                       not self.IsSuppressed(v)]
+        if completions:
+          completions.append(arg.value)
+          return completions, -len(arg.value)
+
+      # Flag completed as it.
       flag = arg.tree
       if flag.get(parser.LOOKUP_TYPE) != 'bool':
         completions, offset = self.ArgCompleter(args, flag, '')
+        # Massage the completions to insert space between flag and it's value.
         if not self.empty and self.last != '=':
           completions = [' ' + c for c in completions]
         return completions, offset
 
     elif arg.value.startswith('-'):
+      # The arg is a flag prefix. Return the matching completions.
       return [k for k, v in six.iteritems(arg.tree[parser.LOOKUP_FLAGS])
               if k.startswith(arg.value) and
               not self.IsSuppressed(v)], -len(arg.value)
@@ -294,6 +343,7 @@ class InteractiveCliCompleter(completion.Completer):
     # completer to complete the next arg.
     if self.empty and command[-1]:
       command.append('')
+    self.debug.getcompletions.count()
     completions = self.coshell.GetCompletions(command)
     if not completions:
       return None, None

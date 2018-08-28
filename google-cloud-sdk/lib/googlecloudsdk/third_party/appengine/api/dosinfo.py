@@ -18,6 +18,8 @@
 Library for parsing dos.yaml files and working with these in memory.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 
 # WARNING: This file is externally viewable by our users.  All comments from
@@ -27,7 +29,14 @@ Library for parsing dos.yaml files and working with these in memory.
 
 import os
 import re
-import ipaddr
+from googlecloudsdk.third_party.appengine._internal import six_subset
+
+# ipaddr is py2-only, so conditionally import based on python version. See
+# comments under SubnetValidator.Validate for more context.
+if six_subset.PY2:
+  import ipaddr  # pylint:disable=g-import-not-at-top
+else:
+  ipaddr = None
 
 # pylint: disable=g-import-not-at-top
 if os.environ.get('APPENGINE_RUNTIME') == 'python27':
@@ -58,14 +67,17 @@ class SubnetValidator(validation.Validator):
     """Validates a subnet."""
     if value is None:
       raise validation.MissingAttribute('subnet must be specified')
-    if not isinstance(value, basestring):
+    if not isinstance(value, six_subset.string_types):
       raise validation.ValidationError('subnet must be a string, not \'%r\'' %
                                        type(value))
-    try:
-      ipaddr.IPNetwork(value)
-    except ValueError:
-      raise validation.ValidationError('%s is not a valid IPv4 or IPv6 subnet' %
-                                       value)
+    # If we're running on py3 and don't have access to the ipaddr module,
+    # then the server will still do the validation on the IP address.
+    if ipaddr:
+      try:
+        ipaddr.IPNetwork(value)
+      except ValueError:
+        raise validation.ValidationError(
+            '%s is not a valid IPv4 or IPv6 subnet' % value)
 
     # Extra validation check since ipaddr accepts quad-dotted subnet masks.
     parts = value.split('/')

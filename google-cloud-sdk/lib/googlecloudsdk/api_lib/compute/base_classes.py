@@ -43,8 +43,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import text
+from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 import six
-from typing import Any, Generator  # pylint: disable=unused-import
 
 
 class ComputeApiHolder(object):
@@ -216,7 +216,7 @@ class BaseLister(base.ListCommand, BaseCommand):
       self.names.add(name)
 
   def FilterResults(self, args, items):
-    # type: (Any, list[dict[str, str]]) -> Generator[dict[str,str], Any, Any]
+    # type: (typing.Any, list[dict[str, str]]) -> typing.Generator[dict[str,str], typing.Any, typing.Any]  # pylint: disable=line-too-long
     """Filters the list results by name and URI."""
     for item in items:
       # If no positional arguments were given, do no filtering.
@@ -680,7 +680,7 @@ class BaseDescriber(base.DescribeCommand, BaseCommand):
     pass
 
   def SetNameField(self, ref, request):
-    # type: (resources.Resource, Any) -> None
+    # type: (resources.Resource, typing.Any) -> None
     """Sets the field in the request that corresponds to the object name."""
     name_field = self.service.GetMethodConfig(self.method).ordered_params[-1]
     setattr(request, name_field, ref.Name())

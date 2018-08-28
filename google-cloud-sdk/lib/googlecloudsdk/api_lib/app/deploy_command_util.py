@@ -51,6 +51,7 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.third_party.appengine.api import appinfo
 from googlecloudsdk.third_party.appengine.tools import context_util
+import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 from six.moves import zip  # pylint: disable=redefined-builtin
 
@@ -303,7 +304,8 @@ def _GetSourceContextsForUpload(source_dir):
 
   try:
     context = context_util.BestSourceContext(contexts)
-    source_contexts[context_util.CONTEXT_FILENAME] = json.dumps(context)
+    source_contexts[context_util.CONTEXT_FILENAME] = six.text_type(
+        json.dumps(context))
   except KeyError as e:
     log.info(m.format(name=context_util.CONTEXT_FILENAME, error=e))
   return source_contexts
@@ -350,7 +352,7 @@ def _GetYamlPath(source_dir, service_path, skip_files, gen_files):
       return rel_path
   yaml_contents = files.ReadFileContents(service_path)
   # Use a checksum to ensure file uniqueness, not for security reasons.
-  checksum = files.Checksum().AddContents(yaml_contents).HexDigest()
+  checksum = files.Checksum().AddContents(yaml_contents.encode()).HexDigest()
   generated_path = '_app_{}.yaml'.format(checksum)
   gen_files[generated_path] = yaml_contents
   return generated_path
@@ -459,7 +461,7 @@ def _SubmitBuild(build, image, project, parallel_build):
   Returns:
     BuildArtifact, Representing the pushed container image or in-progress build.
   """
-  build_timeout = properties.VALUES.app.cloud_build_timeout.Get()
+  build_timeout = properties.VALUES.app.cloud_build_timeout.GetInt()
   if build_timeout and build_timeout > MAX_PARALLEL_BUILD_TIME:
     parallel_build = False
     log.info(
@@ -664,4 +666,3 @@ def GetAppHostname(app=None, app_id=None, service=None, version=None,
 
 
 DEFAULT_DEPLOYABLE = 'app.yaml'
-

@@ -20,6 +20,7 @@
 # this source file, please place them in comments only.
 
 
+from __future__ import absolute_import
 
 
 
@@ -164,7 +165,7 @@ class ObjectBuilder(yaml_builder.Builder):
     except validation.ValidationError:
       # These should just pass through.
       raise
-    except Exception, e:
+    except Exception as e:
       # Some errors may have problematic encoding or other issues.
       # Re-raising an error in this block would be very hard to debug
       # for the time being so instead, on error, the value is merely
@@ -204,7 +205,7 @@ class ObjectBuilder(yaml_builder.Builder):
 
     try:
       attribute = subject.value.GetValidator(key)
-    except validation.ValidationError, err:
+    except validation.ValidationError as err:
       raise yaml_errors.UnexpectedAttribute(err)
 
     if isinstance(value, _ObjectMapper):
@@ -220,7 +221,7 @@ class ObjectBuilder(yaml_builder.Builder):
     subject.see(key)
     try:
       subject.value.Set(key, value)
-    except validation.ValidationError, e:
+    except validation.ValidationError as e:
       # Some errors may have problematic encoding or other issues.
       # Re-raising an error in this block would be very hard to debug
       # for the time being so instead, on error, the value is merely
@@ -239,7 +240,7 @@ class ObjectBuilder(yaml_builder.Builder):
       e.message = ("Unable to assign value '%s' to attribute '%s':\n%s" %
                    (value_str, key, error_str))
       raise e
-    except Exception, e:
+    except Exception as e:
       try:
         error_str = str(e)
       except Exception:

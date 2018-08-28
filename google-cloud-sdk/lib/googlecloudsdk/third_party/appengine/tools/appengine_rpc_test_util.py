@@ -13,14 +13,29 @@
 # limitations under the License.
 """Utilities for testing code that uses appengine_rpc's *RpcServer."""
 
+from __future__ import absolute_import
 
 
+import io
 import logging
-import StringIO
-import urllib2
 
 from googlecloudsdk.third_party.appengine.tools.appengine_rpc import AbstractRpcServer
 from googlecloudsdk.third_party.appengine.tools.appengine_rpc import HttpRpcServer
+from googlecloudsdk.third_party.appengine._internal import six_subset
+
+# pylint:disable=g-import-not-at-top
+# pylint:disable=invalid-name
+# Inline these directly rather than placing in six_subset since importing
+# urllib into six_subset seems to mess with the overridden version of
+# urllib/httplib that the NaCl runtime sandbox inserts for SSL purposes.
+if six_subset.PY3:
+  import urllib.error
+  HTTPError = urllib.error.HTTPError
+else:
+  import urllib2
+  HTTPError = urllib2.HTTPError
+# pylint:disable=g-import-not-at-top
+# pylint:disable=invalid-name
 
 
 class TestRpcServerMixin(object):
@@ -53,7 +68,7 @@ class TestRpcServerMixin(object):
         code: The response code (default 200).
         headers: An optional header dictionary.
       """
-      self.fp = StringIO.StringIO(body)
+      self.fp = io.BytesIO(body)
       self.code = code
       self.headers = headers
       self.msg = ""
@@ -141,7 +156,7 @@ class TestRpcServerMixin(object):
         raise Exception('No response found for url: %s (%s)' % (url, full_url))
       else:
         logging.debug("Using generic blank response for: %s" % full_url)
-        response = TestRpcServerMixin.MockResponse("")
+        response = TestRpcServerMixin.MockResponse(b"")
       if "Set-Cookie" in response.headers:
         self.cookie = response.headers["Set-Cookie"]
 
@@ -149,8 +164,8 @@ class TestRpcServerMixin(object):
       # urllib2 will raise HTTPError for non-2XX status codes, per RFC 2616.
       if not (200 <= response.code < 300):
         code, msg, hdrs = response.code, response.msg, response.info()
-        fp = StringIO.StringIO(response.read())
-        raise urllib2.HTTPError(url=url, code=code, msg=None, hdrs=hdrs, fp=fp)
+        fp = io.BytesIO(response.read())
+        raise HTTPError(url=url, code=code, msg=None, hdrs=hdrs, fp=fp)
       return response
 
     def AddResponse(self, url, response_func):
@@ -217,13 +232,13 @@ class UrlLibRequestStub(UrlLibRequestResponseStub):
   pass
 
 
-class UrlLibResponseStub(UrlLibRequestResponseStub, StringIO.StringIO):
+class UrlLibResponseStub(UrlLibRequestResponseStub, io.BytesIO):
   def __init__(self, body, headers, url, code, msg):
     UrlLibRequestResponseStub.__init__(self, headers)
     if body:
-      StringIO.StringIO.__init__(self, body)
+      io.BytesIO.__init__(self, body)
     else:
-      StringIO.StringIO.__init__(self, "")
+      io.BytesIO.__init__(self, b"")
     self.url = url
     self.code = code
     self.msg = msg

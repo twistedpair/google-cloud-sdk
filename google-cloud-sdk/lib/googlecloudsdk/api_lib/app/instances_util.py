@@ -194,11 +194,11 @@ def GetMatchingInstance(instances, service=None, version=None, instance=None):
   if len(matching) > 1:
     raise InvalidInstanceSpecificationError(
         'More than one instance matches the given specification.\n\n'
-        'Matching instances: {0}'.format(list(map(str, sorted(matching)))))
+        'Matching instances: {0}'.format(list(sorted(map(str, matching)))))
   elif not matching:
     raise InvalidInstanceSpecificationError(
         'No instances match the given specification.\n\n'
-        'All instances: {0}'.format(list(map(str, sorted(instances)))))
+        'All instances: {0}'.format(list(sorted(map(str, instances)))))
   return matching[0]
 
 
@@ -244,7 +244,7 @@ def SelectInstanceInteractive(all_instances, service=None, version=None):
   # Defined here to close over all_instances for the error message
   def _PromptOptions(options, type_):
     """Given an iterable options of type type_, prompt and return one."""
-    options = sorted(set(options))
+    options = sorted(set(options), key=str)
     if len(options) > 1:
       idx = console_io.PromptChoice(options, message='Which {0}?'.format(type_))
     elif len(options) == 1:
@@ -254,7 +254,8 @@ def SelectInstanceInteractive(all_instances, service=None, version=None):
       if all_instances:
         msg = ('No instances could be found matching the given criteria.\n\n'
                'All instances:\n' +
-               '\n'.join(map('* [{0}]'.format, sorted(all_instances))))
+               '\n'.join(
+                   map('* [{0}]'.format, sorted(all_instances, key=str))))
       else:
         msg = 'No instances were found for the current project [{0}].'.format(
             properties.VALUES.core.project.Get(required=True))

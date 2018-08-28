@@ -31,7 +31,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.resource import session_capturer
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
@@ -184,11 +183,6 @@ def _Wrap(
     handlers.append(Modifiers.Handler(
         Modifiers.LogRequest(log_http_redact_token),
         Modifiers.LogResponse()))
-
-  if session_capturer.SessionCapturer.capturer is not None:
-    handlers.append(Modifiers.Handler(
-        Modifiers.DumpRequest(session_capturer.SessionCapturer.capturer),
-        Modifiers.DumpResponse(session_capturer.SessionCapturer.capturer)))
 
   return Modifiers.WrapRequest(http_client, handlers,
                                response_encoding=response_encoding)

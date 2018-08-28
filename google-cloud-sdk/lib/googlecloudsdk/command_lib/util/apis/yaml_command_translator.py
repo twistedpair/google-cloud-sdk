@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util.apis import arg_marshalling
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
+from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -481,6 +482,7 @@ class CommandBuilder(object):
     # pylint: disable=protected-access, The linter gets confused about 'self'
     # and thinks we are accessing something protected.
     class Command(base.Command):
+      # pylint: disable=missing-docstring
 
       @staticmethod
       def Args(parser):
@@ -529,6 +531,12 @@ class CommandBuilder(object):
           base.ASYNC_FLAG.AddToParser(parser)
 
       def Run(self_, args):
+        if self.spec.update:
+          update_spec = self.spec.update
+          if update_spec.mask_field:
+            mask_string = update.GetMaskString(args, self.spec)
+            self.spec.request.static_fields[
+                update_spec.mask_field] = mask_string
         ref, response = self._CommonRun(args)
         if self.spec.async:
           request_string = None

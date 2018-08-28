@@ -6,6 +6,7 @@ project:
       parameter_name: projectsId
       attribute_name: project
       help: The project name.
+      property: core/project
 
 instance:
   name: instance
@@ -18,6 +19,7 @@ instance:
       help: |
         The name of the Cloud Spanner instance.
       property: spanner/instance
+  disable_auto_completers: false
 
 database:
   name: database
@@ -30,3 +32,17 @@ database:
       attribute_name: database
       help: |
         The name of the Cloud Spanner database.
+  disable_auto_completers: false
+
+operation:
+  name: operation
+  collection: spanner.projects.instances.operations
+  attributes:
+    - *project
+    - *instance
+    - &operation
+      parameter_name: operationsId
+      attribute_name: operation
+      help: |
+        The name of the Cloud Spanner operation.
+  disable_auto_completers: false

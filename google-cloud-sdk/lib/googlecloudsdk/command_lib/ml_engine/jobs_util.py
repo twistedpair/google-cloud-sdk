@@ -45,8 +45,8 @@ JOB_FORMAT = 'yaml(jobId,state,startTime.date(tz=LOCAL),endTime.date(tz=LOCAL))'
 _CONTINUE_INTERVAL = 10
 
 
-_TF_RECORD_URL = ('https://www.tensorflow.org/versions/r0.12/how_tos/'
-                  'reading_data/index.html#file-formats')
+_TF_RECORD_URL = ('https://www.tensorflow.org/guide/datasets'
+                  '#consuming_tfrecord_data')
 
 
 _PREDICTION_DATA_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(

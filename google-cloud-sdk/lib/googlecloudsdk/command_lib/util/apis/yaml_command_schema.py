@@ -34,6 +34,7 @@ RESOURCE_TYPE_FORMAT_KEY = '__resource_type__'
 
 
 class CommandData(object):
+  """A general holder object for yaml command schema."""
 
   def __init__(self, name, data):
     self.is_hidden = data.get('is_hidden', False)
@@ -45,6 +46,7 @@ class CommandData(object):
     self.response = Response(data.get('response', {}))
     async_data = data.get('async')
     iam_data = data.get('iam')
+    update_data = data.get('update')
     if self.command_type == CommandType.WAIT and not async_data:
       raise util.InvalidSchemaError(
           'Wait commands must include an async section.')
@@ -53,6 +55,7 @@ class CommandData(object):
     self.arguments = Arguments(data['arguments'])
     self.input = Input(self.command_type, data.get('input', {}))
     self.output = Output(data.get('output', {}))
+    self.update = UpdateData(update_data) if update_data else None
 
 
 class CommandType(Enum):
@@ -95,6 +98,7 @@ class CommandType(Enum):
 
 
 class Request(object):
+  """A holder object for api request information specified in yaml command."""
 
   def __init__(self, command_type, data):
     self.collection = data['collection']
@@ -116,6 +120,7 @@ class Request(object):
 
 
 class Response(object):
+  """A holder object for api response information specified in yaml command."""
 
   def __init__(self, data):
     self.id_field = data.get('id_field')
@@ -134,6 +139,7 @@ class ResponseError(object):
 
 
 class Async(object):
+  """A holder object for api async information specified in yaml command."""
 
   def __init__(self, data):
     self.collection = data['collection']
@@ -155,6 +161,7 @@ class Async(object):
 
 
 class IamData(object):
+  """A holder object for IAM related information specified in yaml command."""
 
   def __init__(self, data):
     self.message_type_overrides = data.get('message_type_overrides', {})
@@ -414,3 +421,10 @@ class Output(object):
 
   def __init__(self, data):
     self.format = data.get('format')
+
+
+class UpdateData(object):
+  """A holder object for yaml update command."""
+
+  def __init__(self, data):
+    self.mask_field = data.get('mask_field', {})

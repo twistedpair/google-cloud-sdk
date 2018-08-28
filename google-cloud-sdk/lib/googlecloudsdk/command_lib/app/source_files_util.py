@@ -50,6 +50,20 @@ _PYTHON_GCLOUDIGNORE = '\n'.join([
     '__pycache__/'
 ])
 
+_GO_GCLOUDIGNORE = '\n'.join([
+    gcloudignore.DEFAULT_IGNORE_FILE,
+    '# Binaries for programs and plugins',
+    '*.exe',
+    '*.exe~',
+    '*.dll',
+    '*.so',
+    '*.dylib',
+    '# Test binary, build with `go test -c`',
+    '*.test',
+    '# Output of the go coverage tool, specifically when used with LiteIDE',
+    '*.out'
+])
+
 
 _GCLOUDIGNORE_REGISTRY = {
     runtime_registry.RegistryEntry(
@@ -58,6 +72,8 @@ _GCLOUDIGNORE_REGISTRY = {
         env.PHP_TI_RUNTIME_EXPR, {env.STANDARD}): _PHP_GCLOUDIGNORE,
     runtime_registry.RegistryEntry(
         env.PYTHON_TI_RUNTIME_EXPR, {env.STANDARD}): _PYTHON_GCLOUDIGNORE,
+    runtime_registry.RegistryEntry(
+        env.GO_TI_RUNTIME_EXPR, {env.STANDARD}): _GO_GCLOUDIGNORE,
 }
 
 

@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+from __future__ import absolute_import
 from googlecloudsdk.third_party.appengine.proto import ProtocolBuffer
 
 __pychecker__ = """maxreturns=0 maxbranches=0 no-callinit

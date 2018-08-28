@@ -28,6 +28,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
 
@@ -65,15 +66,19 @@ def RunPredict(model_dir, json_instances=None, text_instances=None,
   # could be used to point to non-standard install locations of CUDA and CUDNN.
   # If not inherited, the child process could fail to initialize Tensorflow.
   env = os.environ.copy()
-  env['CLOUDSDK_ROOT'] = sdk_root
+  encoding.SetEncodedValue(env, 'CLOUDSDK_ROOT', sdk_root)
   # We want to use whatever the user's Python was, before the Cloud SDK started
   # changing the PATH. That's where Tensorflow is installed.
   python_executables = files.SearchForExecutableOnPath('python')
   # Need to ensure that ml_sdk is in PYTHONPATH for the import in
   # local_predict to succeed.
-  orig_py_path = ':' + env.get('PYTHONPATH') if env.get('PYTHONPATH') else ''
-  env['PYTHONPATH'] = (os.path.join(sdk_root, 'lib', 'third_party', 'ml_sdk') +
-                       orig_py_path)
+
+  orig_py_path = encoding.GetEncodedValue(env, 'PYTHONPATH') or ''
+  if orig_py_path:
+    orig_py_path = ':' + orig_py_path
+  encoding.SetEncodedValue(
+      env, 'PYTHONPATH',
+      os.path.join(sdk_root, 'lib', 'third_party', 'ml_sdk') + orig_py_path)
   if not python_executables:
     # This doesn't have to be actionable because things are probably beyond help
     # at this point.
@@ -87,14 +92,16 @@ def RunPredict(model_dir, json_instances=None, text_instances=None,
   if signature_name:
     predict_args += ['--signature-name', signature_name]
   # Start local prediction in a subprocess.
+  args = [encoding.Encode(a) for a in
+          ([python_executable, local_predict.__file__] + predict_args)]
   proc = subprocess.Popen(
-      [python_executable, local_predict.__file__] + predict_args,
+      args,
       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
       env=env)
 
   # Pass the instances to the process that actually runs local prediction.
   for instance in instances:
-    proc.stdin.write(json.dumps(instance) + '\n')
+    proc.stdin.write((json.dumps(instance) + '\n').encode('utf-8'))
   proc.stdin.flush()
 
   # Get the results for the local prediction.

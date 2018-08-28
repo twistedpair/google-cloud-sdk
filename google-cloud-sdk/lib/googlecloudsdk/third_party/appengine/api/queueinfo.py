@@ -24,6 +24,8 @@ learn more about the parameters you can specify in `queue.yaml`, review the
    https://cloud.google.com/appengine/docs/python/config/queueref
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 __author__ = 'arb@google.com (Anthony Baxter)'
 
 # WARNING: This file is externally viewable by our users.  All comments from

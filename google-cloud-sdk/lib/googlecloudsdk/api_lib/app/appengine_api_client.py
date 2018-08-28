@@ -40,6 +40,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
+import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 from six.moves import map  # pylint: disable=redefined-builtin
 
@@ -637,7 +638,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
       raise exceptions.ConfigError(
           '[{f}] could not be converted to the App Engine configuration '
           'format for the following reason: {msg}'.format(
-              f=service_config.file, msg=e.message))
+              f=service_config.file, msg=six.text_type(e)))
     log.debug('Converted YAML to JSON: "{0}"'.format(
         json.dumps(json_version_resource, indent=2, sort_keys=True)))
 

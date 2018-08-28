@@ -31,7 +31,6 @@ from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.util import encoding
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import times
 
@@ -264,6 +263,7 @@ class _Sections(object):
     self.proxy = _SectionProxy()
     self.pubsub = _SectionPubsub()
     self.redis = _SectionRedis()
+    self.serverless = _SectionServerless()
     self.spanner = _SectionSpanner()
     self.test = _SectionTest()
 
@@ -293,6 +293,7 @@ class _Sections(object):
         self.ml_engine,
         self.proxy,
         self.redis,
+        self.serverless,
         self.spanner,
         self.test,
     ]
@@ -567,6 +568,34 @@ class _Section(object):
       # Always include if value is set (even if hidden)
       result[prop.name] = value
     return result
+
+
+class _SectionServerless(_Section):
+  """Contains the properties for the 'serverless' section."""
+
+  def __init__(self):
+    super(_SectionServerless, self).__init__('serverless', hidden=True)
+    self.region = self._Add(
+        'region',
+        default='us-central1',
+        help_text='The default region to use when working with Google '
+        'Serverless resources. When a `--region` flag is required '
+        'but not provided, the command will fall back to this value, if set. '
+        'To see valid choices, run `gcloud serverless regions list`.')
+
+    self.namespace = self._Add(
+        'namespace',
+        help_text='Kubernetes namespace to create Serverless resources in.',
+        hidden=True)
+
+    self.cluster = self._Add(
+        'cluster',
+        help_text='GKE cluster to use. '
+        'Knative must be installed in this cluster.')
+
+    self.cluster_location = self._Add(
+        'cluster_location',
+        help_text='Zone or region of the GKE cluster to use.')
 
 
 class _SectionSpanner(_Section):
@@ -993,30 +1022,6 @@ class _SectionCore(_Section):
         default=True,
         hidden=True,
         help_text='If true, allow a Python 3 interpreter to run gcloud.')
-
-    def CaptureSessionFileValidator(filename):
-      """Validates if session could be captured to given file."""
-      if filename is None:
-        return
-      if not isinstance(filename, six.string_types):
-        raise InvalidValueError('Filename is not string')
-      dirname = os.path.dirname(os.path.realpath(filename))
-      if not os.path.exists(dirname):
-        while not os.path.exists(os.path.dirname(dirname)):
-          dirname = os.path.dirname(dirname)
-        raise InvalidValueError('Directory {} does not exist'.format(dirname))
-      try:
-        has_write_access = files.HasWriteAccessInDir(dirname)
-      except ValueError as e:  # dirname is not a directory
-        raise InvalidValueError(e.message)
-      if not has_write_access:
-        raise InvalidValueError('Can\'t write to {}'.format(filename))
-
-    self.capture_session_file = self._Add(
-        'capture_session_file',
-        hidden=True,
-        validator=CaptureSessionFileValidator,
-        help_text='If provided, will capture session to the file')
 
     def ShowStructuredLogsValidator(show_structured_logs):
       if show_structured_logs is None:
@@ -1467,6 +1472,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.redis = self._Add('redis')
+    self.serverless = self._Add('serverless')
     self.servicemanagement = self._Add('servicemanagement')
     self.serviceregistry = self._Add('serviceregistry')
     self.serviceuser = self._Add('serviceuser')

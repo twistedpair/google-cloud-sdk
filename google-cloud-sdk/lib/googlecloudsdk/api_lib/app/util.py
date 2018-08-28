@@ -116,7 +116,8 @@ def GenerateVersionId(datetime_getter=datetime.datetime.now):
   Returns:
     A version string based.
   """
-  return datetime_getter().isoformat().lower().translate(None, b':-')[:15]
+  return datetime_getter().isoformat().lower().replace('-', '').replace(
+      ':', '')[:15]
 
 
 def ConvertToPosixPath(path):

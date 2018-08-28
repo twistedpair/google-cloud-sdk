@@ -48,6 +48,20 @@ if PY3:
   binary_type = bytes
   class_types = type,
 
+  def reraise(tp, value, tb=None):
+    try:
+      if value is None:
+        value = tp()
+      if value.__traceback__ is not tb:
+        raise value.with_traceback(tb)
+      raise value
+    finally:
+      value = None
+      tb = None
+
+  import urllib.parse  # pylint:disable=g-import-not-at-top
+  urlparse_fn = urllib.parse.urlparse
+
   def is_basestring(t):
     """Return true if t is (referentially) the abstract basestring."""
     del t
@@ -59,6 +73,28 @@ else:
   text_type = unicode
   binary_type = str
   class_types = (type, types.ClassType)
+
+  def exec_(_code_, _globs_=None, _locs_=None):
+    """Execute code in a namespace."""
+    if _globs_ is None:
+      frame = sys._getframe(1)  # pylint: disable=protected-access
+      _globs_ = frame.f_globals
+      if _locs_ is None:
+        _locs_ = frame.f_locals
+      del frame
+    elif _locs_ is None:
+      _locs_ = _globs_
+    exec ("""exec _code_ in _globs_, _locs_""")  # pylint: disable=exec-used
+
+  exec_("""def reraise(tp, value, tb=None):
+    try:
+        raise tp, value, tb
+    finally:
+        tb = None
+""")
+
+  import urlparse  # pylint:disable=g-import-not-at-top
+  urlparse_fn = urlparse.urlparse
 
   def is_basestring(t):
     """Return true if t is (referentially) the abstract basestring."""
@@ -96,4 +132,3 @@ def ensure_binary(s, encoding='utf-8', errors='strict'):
     return s
   else:
     raise TypeError("not expecting type '%s'" % type(s))
-

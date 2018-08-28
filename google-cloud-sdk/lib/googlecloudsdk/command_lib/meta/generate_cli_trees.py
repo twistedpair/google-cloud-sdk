@@ -50,11 +50,11 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import text as text_utils
+from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 import httplib2
 import six
 from six.moves import range
-from typing import Any, Dict  # pylint: disable=unused-import
 
 
 class Error(exceptions.Error):
@@ -122,7 +122,7 @@ def _Positional(name, description='', default=None, nargs='0'):
 
 
 def _Command(path):
-  # type: (str) -> Dict[str, Any]
+  # type: (str) -> typing.Dict[str, typing.Any]
   """Initializes and returns a command/group dict node."""
   return {
       cli_tree.LOOKUP_CAPSULE: '',

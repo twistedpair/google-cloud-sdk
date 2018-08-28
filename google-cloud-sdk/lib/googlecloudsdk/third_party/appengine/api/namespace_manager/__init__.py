@@ -1,4 +1,3 @@
-#
 # Copyright 2010 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,4 +19,5 @@
 # information in docstrings.  If you must communicate internal information in
 # this source file, please place them in comments only.
 
-from namespace_manager import *
+from __future__ import absolute_import
+from googlecloudsdk.third_party.appengine.api.namespace_manager.namespace_manager import *  # pylint:disable=wildcard-import

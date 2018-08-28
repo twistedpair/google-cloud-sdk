@@ -1757,3 +1757,16 @@ def AddShieldedVMIntegrityPolicyArgs(parser):
       boot-specific changes in the instance configuration, like kernel
       updates or kernel driver installation.
       """)
+
+
+def AddHostnameArg(parser):
+  """Adds flag for overriding hostname for instance."""
+  parser.add_argument(
+      '--hostname',
+      help="""\
+      Specify the hostname of the instance to be created. The specified
+      homename must be RFC1035 compliant. If hostname is not specified, the
+      default hostname is [INSTANCE_NAME].c.[PROJECT_ID].internal when using
+      the global DNS, and [INSTANCE_NAME].[ZONE].c.[PROJECT_ID].internal
+      when using zonal DNS.
+      """)

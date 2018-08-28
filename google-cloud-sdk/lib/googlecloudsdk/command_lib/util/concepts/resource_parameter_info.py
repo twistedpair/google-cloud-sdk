@@ -23,7 +23,7 @@ from googlecloudsdk.calliope.concepts import handlers
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.command_lib.util import parameter_info_lib
 from googlecloudsdk.core import properties
-import typing  # pylint: disable=unused-import
+from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 
 class ResourceParameterInfo(parameter_info_lib.ParameterInfoByConvention):

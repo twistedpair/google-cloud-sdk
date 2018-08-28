@@ -986,6 +986,8 @@ class UXElementType(enum.Enum):
   """Describes the type of a ux element."""
   PROGRESS_BAR = (['message'])
   PROGRESS_TRACKER = (['message', 'aborted_message', 'status'])
+  STAGED_PROGRESS_TRACKER = (['message', 'status',
+                              'succeeded_stages', 'failed_stage'])
   PROMPT_CONTINUE = (['message', 'prompt_string', 'cancel_string'])
   PROMPT_RESPONSE = (['choices'])
   PROMPT_CHOICE = (['message', 'prompt_string', 'choices'])

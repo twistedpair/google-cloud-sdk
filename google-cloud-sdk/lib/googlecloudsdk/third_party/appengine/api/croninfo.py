@@ -1,4 +1,3 @@
-#
 # Copyright 2008 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +18,8 @@ A library for working with CronInfo records, describing cron entries for an
 application. Supports loading the records from yaml.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 __author__ = 'arb@google.com (Anthony Baxter)'
 
 # WARNING: This file is externally viewable by our users.  All comments from
@@ -36,10 +37,18 @@ try:
 except ImportError:
   pytz = None
 
-from googlecloudsdk.third_party.appengine.googlecron import groc
-from googlecloudsdk.third_party.appengine.googlecron import groctimespecification
-
 # pylint: disable=g-import-not-at-top
+from googlecloudsdk.third_party.appengine._internal import six_subset
+
+# groc depends on antlr3 which is py2-only, so conditionally import based on
+# python version. See comments under GrocValidator.Validate for more context.
+if six_subset.PY2:
+  from googlecloudsdk.third_party.appengine.googlecron import groc
+  from googlecloudsdk.third_party.appengine.googlecron import groctimespecification
+else:
+  groc = None
+  groctimespecification = None
+
 if os.environ.get('APPENGINE_RUNTIME') == 'python27':
   from google.appengine.api import appinfo
   from google.appengine.api import validation
@@ -56,7 +65,7 @@ else:
 
 _URL_REGEX = r'^/.*$'
 _TIMEZONE_REGEX = r'^.{0,100}$'
-_DESCRIPTION_REGEX = ur'^.{0,499}$'
+_DESCRIPTION_REGEX = r'^.{0,499}$'
 # TODO(user): Figure out what engine-related work needs to happen here.
 # http://b/issue?id=6237360
 SERVER_ID_RE_STRING = r'(?!-)[a-z\d\-]{1,63}'
@@ -77,13 +86,16 @@ class GrocValidator(validation.Validator):
     """Validates a schedule."""
     if value is None:
       raise validation.MissingAttribute('schedule must be specified')
-    if not isinstance(value, basestring):
+    if not isinstance(value, six_subset.string_types):
       raise TypeError('schedule must be a string, not \'%r\''%type(value))
-    try:
-      groctimespecification.GrocTimeSpecification(value)
-    except groc.GrocException, e:
-      raise validation.ValidationError('schedule \'%s\' failed to parse: %s'%(
-          value, e.args[0]))
+    # If we're running on py3 and don't have access to groctimespecification,
+    # then the server will still do the validation on the schedule property.
+    if groc and groctimespecification:
+      try:
+        groctimespecification.GrocTimeSpecification(value)
+      except groc.GrocException as e:
+        raise validation.ValidationError('schedule \'%s\' failed to parse: %s'%(
+            value, e.args[0]))
     return value
 
 
@@ -95,7 +107,7 @@ class TimezoneValidator(validation.Validator):
     if value is None:
       # optional
       return
-    if not isinstance(value, basestring):
+    if not isinstance(value, six_subset.string_types):
       raise TypeError('timezone must be a string, not \'%r\'' % type(value))
     if pytz is None:
       # pytz not installed, silently accept anything without validating
@@ -144,7 +156,7 @@ class RetryParameters(validation.Validated):
       JOB_RETRY_LIMIT: validation.Optional(
           validation.Range(minimum=0,
                            # Max value of 32-bit int.
-                           maximum=sys.maxint,
+                           maximum=sys.maxsize,
                            range_type=int)),
       JOB_AGE_LIMIT: validation.Optional(validation.TimeValue()),
       MIN_BACKOFF_SECONDS: validation.Optional(

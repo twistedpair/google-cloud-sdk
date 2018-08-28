@@ -26,6 +26,7 @@ object so that it can construct a properly structured object.
 # this source file, please place them in comments only.
 
 
+from __future__ import absolute_import
 
 
 from ruamel import yaml

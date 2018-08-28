@@ -23,6 +23,8 @@ import json
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.credentials import http
 
+import six
+
 
 class InstancesEncodeError(core_exceptions.Error):
   """Indicates that error occurs while decoding the instances in http body."""
@@ -66,7 +68,9 @@ def Predict(model_or_version_ref, instances, signature_name=None):
   # Workaround since current gcloud sdk cannot handle the httpbody properly.
   # TODO(b/31403673): use MlV1.ProjectsService.Predict once b/31403673
   # is fixed.
-  response, response_body = http.Http().request(
+  # TODO(b/77278279): Decide whether we should always set this or not.
+  encoding = None if six.PY2 else 'utf8'
+  response, response_body = http.Http(response_encoding=encoding).request(
       uri=url, method='POST', body=body, headers=headers)
   if response.get('status') != '200':
     raise HttpRequestFailError('HTTP request failed. Response: ' +

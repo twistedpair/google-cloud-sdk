@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""container builds resource filter expression rewrite backend."""
+"""Cloud Build resource filter expression rewrite backend."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -55,7 +55,7 @@ _TIME_FIELDS = {
 
 
 class Backend(resource_expr_rewrite.Backend):
-  """Container builds resource filter expression rewrite backend."""
+  """Cloud Build resource filter expression rewrite backend."""
 
   def __init__(self, ongoing=False, **kwargs):
     super(Backend, self).__init__(**kwargs)

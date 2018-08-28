@@ -14,11 +14,14 @@
 # Copyright 2002, Google Inc.
 
 
+from __future__ import absolute_import
 import array
-import httplib
+import six.moves.http_client
 import itertools
 import re
 import struct
+import six
+
 try:
   # NOTE(user): Using non-google-style import to workaround a zipimport_tinypar
   # issue for zip files embedded in par files. See http://b/13811096
@@ -130,7 +133,7 @@ class ProtocolMessage:
     self.MergePartialFromString(s)
     dbg = []
     if not self.IsInitialized(dbg):
-      raise ProtocolBufferDecodeError, '\n\t'.join(dbg)
+      raise ProtocolBufferDecodeError('\n\t'.join(dbg))
 
   def MergePartialFromString(self, s):
     """Merges in data from the string 's'.
@@ -187,12 +190,12 @@ class ProtocolMessage:
     data = self.Encode()
     if secure:
       if keyfile and certfile:
-        conn = httplib.HTTPSConnection(server, key_file=keyfile,
+        conn = six.moves.http_client.HTTPSConnection(server, key_file=keyfile,
                                        cert_file=certfile)
       else:
-        conn = httplib.HTTPSConnection(server)
+        conn = six.moves.http_client.HTTPSConnection(server)
     else:
-      conn = httplib.HTTPConnection(server)
+      conn = six.moves.http_client.HTTPConnection(server)
     conn.putrequest("POST", url)
     conn.putheader("Content-Length", "%d" %len(data))
     conn.endheaders()
@@ -314,7 +317,7 @@ class ProtocolMessage:
     """write self to the encoder 'e'."""
     dbg = []
     if not self.IsInitialized(dbg):
-      raise ProtocolBufferEncodeError, '\n\t'.join(dbg)
+      raise ProtocolBufferEncodeError('\n\t'.join(dbg))
     self.OutputUnchecked(e)
     return
 
@@ -338,7 +341,7 @@ class ProtocolMessage:
     self.TryMerge(d)
     dbg = []
     if not self.IsInitialized(dbg):
-      raise ProtocolBufferDecodeError, '\n\t'.join(dbg)
+      raise ProtocolBufferDecodeError('\n\t'.join(dbg))
     return
 
   def TryMerge(self, d):
@@ -404,10 +407,10 @@ class ProtocolMessage:
   def DebugFormatFloat(self, value):
     return "%ff" % value
   def DebugFormatFixed32(self, value):
-    if (value < 0): value += (1L<<32)
+    if (value < 0): value += (1<<32)
     return "0x%x" % value
   def DebugFormatFixed64(self, value):
-    if (value < 0): value += (1L<<64)
+    if (value < 0): value += (1<<64)
     return "0x%x" % value
   def DebugFormatBool(self, value):
     if value:
@@ -460,18 +463,18 @@ class Encoder:
     return self.buf
 
   def put8(self, v):
-    if v < 0 or v >= (1<<8): raise ProtocolBufferEncodeError, "u8 too big"
+    if v < 0 or v >= (1<<8): raise ProtocolBufferEncodeError("u8 too big")
     self.buf.append(v & 255)
     return
 
   def put16(self, v):
-    if v < 0 or v >= (1<<16): raise ProtocolBufferEncodeError, "u16 too big"
+    if v < 0 or v >= (1<<16): raise ProtocolBufferEncodeError("u16 too big")
     self.buf.append((v >> 0) & 255)
     self.buf.append((v >> 8) & 255)
     return
 
   def put32(self, v):
-    if v < 0 or v >= (1L<<32): raise ProtocolBufferEncodeError, "u32 too big"
+    if v < 0 or v >= (1<<32): raise ProtocolBufferEncodeError("u32 too big")
     self.buf.append((v >> 0) & 255)
     self.buf.append((v >> 8) & 255)
     self.buf.append((v >> 16) & 255)
@@ -479,7 +482,7 @@ class Encoder:
     return
 
   def put64(self, v):
-    if v < 0 or v >= (1L<<64): raise ProtocolBufferEncodeError, "u64 too big"
+    if v < 0 or v >= (1<<64): raise ProtocolBufferEncodeError("u64 too big")
     self.buf.append((v >> 0) & 255)
     self.buf.append((v >> 8) & 255)
     self.buf.append((v >> 16) & 255)
@@ -504,7 +507,7 @@ class Encoder:
       buf_append(v)
       return
     if v >= 0x80000000 or v < -0x80000000:  # python2.4 doesn't fold constants
-      raise ProtocolBufferEncodeError, "int32 too big"
+      raise ProtocolBufferEncodeError("int32 too big")
     if v < 0:
       v += 0x10000000000000000
     while True:
@@ -520,7 +523,7 @@ class Encoder:
   def putVarInt64(self, v):
     buf_append = self.buf.append
     if v >= 0x8000000000000000 or v < -0x8000000000000000:
-      raise ProtocolBufferEncodeError, "int64 too big"
+      raise ProtocolBufferEncodeError("int64 too big")
     if v < 0:
       v += 0x10000000000000000
     while True:
@@ -536,7 +539,7 @@ class Encoder:
   def putVarUint64(self, v):
     buf_append = self.buf.append
     if v < 0 or v >= 0x10000000000000000:
-      raise ProtocolBufferEncodeError, "uint64 too big"
+      raise ProtocolBufferEncodeError("uint64 too big")
     while True:
       bits = v & 127
       v >>= 7
@@ -613,7 +616,7 @@ class Decoder:
     return self.idx
 
   def skip(self, n):
-    if self.idx + n > self.limit: raise ProtocolBufferDecodeError, "truncated"
+    if self.idx + n > self.limit: raise ProtocolBufferDecodeError("truncated")
     self.idx += n
     return
 
@@ -634,47 +637,47 @@ class Decoder:
         else:
           self.skipData(t)
       if (t - Encoder.ENDGROUP) != (tag - Encoder.STARTGROUP):
-        raise ProtocolBufferDecodeError, "corrupted"
+        raise ProtocolBufferDecodeError("corrupted")
     elif t == Encoder.ENDGROUP:
-      raise ProtocolBufferDecodeError, "corrupted"
+      raise ProtocolBufferDecodeError("corrupted")
     elif t == Encoder.FLOAT:
       self.skip(4)
     else:
-      raise ProtocolBufferDecodeError, "corrupted"
+      raise ProtocolBufferDecodeError("corrupted")
 
   # these are all unsigned gets
   def get8(self):
-    if self.idx >= self.limit: raise ProtocolBufferDecodeError, "truncated"
+    if self.idx >= self.limit: raise ProtocolBufferDecodeError("truncated")
     c = self.buf[self.idx]
     self.idx += 1
     return c
 
   def get16(self):
-    if self.idx + 2 > self.limit: raise ProtocolBufferDecodeError, "truncated"
+    if self.idx + 2 > self.limit: raise ProtocolBufferDecodeError("truncated")
     c = self.buf[self.idx]
     d = self.buf[self.idx + 1]
     self.idx += 2
     return (d << 8) | c
 
   def get32(self):
-    if self.idx + 4 > self.limit: raise ProtocolBufferDecodeError, "truncated"
+    if self.idx + 4 > self.limit: raise ProtocolBufferDecodeError("truncated")
     c = self.buf[self.idx]
     d = self.buf[self.idx + 1]
     e = self.buf[self.idx + 2]
-    f = long(self.buf[self.idx + 3])
+    f = int(self.buf[self.idx + 3])
     self.idx += 4
     return (f << 24) | (e << 16) | (d << 8) | c
 
   def get64(self):
-    if self.idx + 8 > self.limit: raise ProtocolBufferDecodeError, "truncated"
+    if self.idx + 8 > self.limit: raise ProtocolBufferDecodeError("truncated")
     c = self.buf[self.idx]
     d = self.buf[self.idx + 1]
     e = self.buf[self.idx + 2]
-    f = long(self.buf[self.idx + 3])
-    g = long(self.buf[self.idx + 4])
-    h = long(self.buf[self.idx + 5])
-    i = long(self.buf[self.idx + 6])
-    j = long(self.buf[self.idx + 7])
+    f = int(self.buf[self.idx + 3])
+    g = int(self.buf[self.idx + 4])
+    h = int(self.buf[self.idx + 5])
+    i = int(self.buf[self.idx + 6])
+    j = int(self.buf[self.idx + 7])
     self.idx += 8
     return ((j << 56) | (i << 48) | (h << 40) | (g << 32) | (f << 24)
             | (e << 16) | (d << 8) | c)
@@ -687,65 +690,65 @@ class Decoder:
     if not (b & 128):
       return b
 
-    result = long(0)
+    result = int(0)
     shift = 0
 
     while 1:
-      result |= (long(b & 127) << shift)
+      result |= (int(b & 127) << shift)
       shift += 7
       if not (b & 128):
-        if result >= 0x10000000000000000L:  # (1L << 64):
-          raise ProtocolBufferDecodeError, "corrupted"
+        if result >= 0x10000000000000000:  # (1L << 64):
+          raise ProtocolBufferDecodeError("corrupted")
         break
-      if shift >= 64: raise ProtocolBufferDecodeError, "corrupted"
+      if shift >= 64: raise ProtocolBufferDecodeError("corrupted")
       b = self.get8()
 
-    if result >= 0x8000000000000000L:  # (1L << 63)
-      result -= 0x10000000000000000L  # (1L << 64)
-    if result >= 0x80000000L or result < -0x80000000L:  # (1L << 31)
-      raise ProtocolBufferDecodeError, "corrupted"
+    if result >= 0x8000000000000000:  # (1L << 63)
+      result -= 0x10000000000000000  # (1L << 64)
+    if result >= 0x80000000 or result < -0x80000000:  # (1L << 31)
+      raise ProtocolBufferDecodeError("corrupted")
     return result
 
   def getVarInt64(self):
     result = self.getVarUint64()
-    if result >= (1L << 63):
-      result -= (1L << 64)
+    if result >= (1 << 63):
+      result -= (1 << 64)
     return result
 
   def getVarUint64(self):
-    result = long(0)
+    result = int(0)
     shift = 0
     while 1:
-      if shift >= 64: raise ProtocolBufferDecodeError, "corrupted"
+      if shift >= 64: raise ProtocolBufferDecodeError("corrupted")
       b = self.get8()
-      result |= (long(b & 127) << shift)
+      result |= (int(b & 127) << shift)
       shift += 7
       if not (b & 128):
-        if result >= (1L << 64): raise ProtocolBufferDecodeError, "corrupted"
+        if result >= (1 << 64): raise ProtocolBufferDecodeError("corrupted")
         return result
     return result             # make pychecker happy
 
   def getFloat(self):
-    if self.idx + 4 > self.limit: raise ProtocolBufferDecodeError, "truncated"
+    if self.idx + 4 > self.limit: raise ProtocolBufferDecodeError("truncated")
     a = self.buf[self.idx:self.idx+4]
     self.idx += 4
     return struct.unpack("<f", a)[0]
 
   def getDouble(self):
-    if self.idx + 8 > self.limit: raise ProtocolBufferDecodeError, "truncated"
+    if self.idx + 8 > self.limit: raise ProtocolBufferDecodeError("truncated")
     a = self.buf[self.idx:self.idx+8]
     self.idx += 8
     return struct.unpack("<d", a)[0]
 
   def getBoolean(self):
     b = self.get8()
-    if b != 0 and b != 1: raise ProtocolBufferDecodeError, "corrupted"
+    if b != 0 and b != 1: raise ProtocolBufferDecodeError("corrupted")
     return b
 
   def getPrefixedString(self):
     length = self.getVarInt32()
     if self.idx + length > self.limit:
-      raise ProtocolBufferDecodeError, "truncated"
+      raise ProtocolBufferDecodeError("truncated")
     r = self.buf[self.idx : self.idx + length]
     self.idx += length
     return r.tostring()
@@ -1007,7 +1010,7 @@ class ExtendableProtocolMessage(ProtocolMessage):
     for ext in extensions:
       if ext.is_repeated:
         if self.ExtensionSize(ext) != x.ExtensionSize(ext): return False
-        for e1, e2 in itertools.izip(self.ExtensionList(ext),
+        for e1, e2 in zip(self.ExtensionList(ext),
                                      x.ExtensionList(ext)):
           if e1 != e2: return False
       else:
@@ -1103,7 +1106,7 @@ class ExtendableProtocolMessage(ProtocolMessage):
 
   def _ExtensionByteSize(self, partial):
     size = 0
-    for extension, value in self._extension_fields.iteritems():
+    for extension, value in six.iteritems(self._extension_fields):
       ftype = extension.field_type
       tag_size = self.lengthVarInt64(extension.wire_tag)
       if ftype == TYPE_GROUP:

@@ -21,9 +21,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import gzip
+import io
 import operator
 import os
-import StringIO
 import tarfile
 
 from apitools.base.py import encoding
@@ -69,9 +69,9 @@ def _CreateTar(source_dir, gen_files, paths, gz):
     full_path = os.path.join(root, path)
     t.add(full_path, arcname=path, recursive=False)
   for name, contents in six.iteritems(gen_files):
-    genfileobj = StringIO.StringIO(contents)
+    genfileobj = io.BytesIO(contents.encode())
     tar_info = tarfile.TarInfo(name=name)
-    tar_info.size = len(genfileobj.buf)  # pytype: disable=attribute-error
+    tar_info.size = len(genfileobj.getvalue())
     t.addfile(tar_info, fileobj=genfileobj)
     genfileobj.close()
   t.close()

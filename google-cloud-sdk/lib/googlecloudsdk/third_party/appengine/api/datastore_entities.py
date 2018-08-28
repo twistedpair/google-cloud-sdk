@@ -29,15 +29,16 @@ Most of these kinds are based on the gd namespace "kinds" from GData:
 
 # TODO(user): rename this file datastore_kinds.py
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 
-import types
-import urlparse
 from xml.sax import saxutils
 from googlecloudsdk.third_party.appengine.datastore import datastore_pb
 from googlecloudsdk.third_party.appengine.api import datastore
 from googlecloudsdk.third_party.appengine.api import datastore_errors
 from googlecloudsdk.third_party.appengine.api import datastore_types
+from googlecloudsdk.third_party.appengine._internal import six_subset
 
 class GdKind(datastore.Entity):
   """ A base class for gd namespace kinds.
@@ -47,10 +48,10 @@ class GdKind(datastore.Entity):
   URIs appropriate for use in <key> tags.
   """
 
-  HEADER = u"""<entry xmlns:gd='http://schemas.google.com/g/2005'>
+  HEADER = """<entry xmlns:gd='http://schemas.google.com/g/2005'>
   <category scheme='http://schemas.google.com/g/2005#kind'
             term='http://schemas.google.com/g/2005#%s' />"""
-  FOOTER = u"""
+  FOOTER = """
 </entry>"""
 
   _kind_properties = set()
@@ -80,7 +81,7 @@ class GdKind(datastore.Entity):
     """
     datastore.Entity.__init__(self, kind)
 
-    if not isinstance(title, types.StringTypes):
+    if not isinstance(title, six_subset.string_types):
       raise datastore_errors.BadValueError(
         'Expected a string for title; received %s (a %s).' %
         (title, datastore_types.typename(title)))
@@ -89,7 +90,7 @@ class GdKind(datastore.Entity):
 
     # automatic properties (like title and content) can't be contact properties
     self._contact_properties = set(contact_properties)
-    assert not self._contact_properties.intersection(self.keys())
+    assert not self._contact_properties.intersection(list(self.keys()))
 
     self._kind_properties = set(kind_properties) - self._contact_properties
     self._kind_properties.add('title')
@@ -105,7 +106,7 @@ class GdKind(datastore.Entity):
     """
     properties = self._kind_properties.intersection(set(self.keys()))
 
-    xml = u''
+    xml = ''
     for prop in sorted(properties):
       prop_xml = saxutils.quoteattr(prop)[1:-1]  # strip the enclosing quotes
 
@@ -133,7 +134,7 @@ class GdKind(datastore.Entity):
     """
     properties = self._contact_properties.intersection(set(self.keys()))
 
-    xml = u''
+    xml = ''
     for prop in sorted(properties):
       values = self[prop]
       if not isinstance(values, list):
@@ -160,9 +161,9 @@ class GdKind(datastore.Entity):
     leftovers -= self._kind_properties
     leftovers -= self._contact_properties
     if leftovers:
-      return u'\n  ' + '\n  '.join(self._PropertiesToXml(leftovers))
+      return '\n  ' + '\n  '.join(self._PropertiesToXml(leftovers))
     else:
-      return u''
+      return ''
 
   def ToXml(self):
     """ Returns an XML representation of this entity, as a string.

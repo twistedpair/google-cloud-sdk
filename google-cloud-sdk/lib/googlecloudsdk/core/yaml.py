@@ -27,9 +27,9 @@ import collections
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 from ruamel import yaml
-from typing import Any, AnyStr, Generator, IO, Iterable, Optional, Union  # pylint: disable=unused-import, for pytype
 
 
 # YAML unfortunately uses a bunch of global class state for this kind of stuff.
@@ -60,7 +60,7 @@ class Error(exceptions.Error):
   """
 
   def __init__(self, e, verb, f=None):
-    # type: (Exception, str, Optional[str]) -> None
+    # type: (Exception, str, typing.Optional[str]) -> None
     file_text = ' from [{}]'.format(f) if f else ''
     super(Error, self).__init__(
         'Failed to {} YAML{}: {}'.format(verb, file_text, e))
@@ -72,7 +72,7 @@ class YAMLParseError(Error):
   """An error that wraps all YAML parsing errors."""
 
   def __init__(self, e, f=None):
-    # type: (Exception, Optional[str]) -> None
+    # type: (Exception, typing.Optional[str]) -> None
     super(YAMLParseError, self).__init__(e, verb='parse', f=f)
 
 
@@ -85,7 +85,7 @@ class FileLoadError(Error):
 
 
 def load(stream, file_hint=None, round_trip=False):
-  # type: (Union[str, IO[AnyStr]], Optional[str]) -> Any
+  # type: (typing.Union[str, typing.IO[typing.AnyStr]], typing.Optional[str], typing.Optional[bool]) -> typing.Any  # pylint: disable=line-too-long
   """Loads YAML from the given steam.
 
   Args:
@@ -112,7 +112,7 @@ def load(stream, file_hint=None, round_trip=False):
 
 
 def load_all(stream, file_hint=None):
-  # type: (Union[str, IO[AnyStr]], Optional[str]) -> Generator[Any]
+  # type: (typing.Union[str, typing.IO[typing.AnyStr]], typing.Optional[str]) -> typing.Generator[typing.Any]  # pylint: disable=line-too-long
   """Loads multiple YAML documents from the given steam.
 
   Args:
@@ -134,7 +134,7 @@ def load_all(stream, file_hint=None):
 
 
 def load_path(path, round_trip=False):
-  # type: (str) -> Any
+  # type: (str, typing.Optional[bool]) -> typing.Any
   """Loads YAML from the given file path.
 
   Args:
@@ -157,7 +157,7 @@ def load_path(path, round_trip=False):
 
 
 def load_all_path(path):
-  # type: (str) -> Generator[Any]
+  # type: (str) -> typing.Generator[typing.Any]
   """Loads multiple YAML documents from the given file path.
 
   Args:
@@ -181,7 +181,7 @@ def load_all_path(path):
 
 
 def dump(data, stream=None, round_trip=False, **kwargs):
-  # type: (Any, Optional[IO[AnyStr]], Any) -> str
+  # type: (typing.Any, typing.Optional[typing.IO[typing.AnyStr]], typing.Any, typing.Optional[typing.Dict]) -> str  # pylint: disable=line-too-long
   """Dumps the given YAML data to the stream.
 
   Args:
@@ -200,7 +200,7 @@ def dump(data, stream=None, round_trip=False, **kwargs):
 
 
 def dump_all(documents, stream=None, **kwargs):
-  # type: (Iterable[Any], Optional[IO[AnyStr]], Any) -> str
+  # type: (typing.Iterable[typing.Any], typing.Optional[typing.IO[typing.AnyStr]], typing.Any) -> str  # pylint: disable=line-too-long
   """Dumps multiple YAML documents to the stream.
 
   Args:
@@ -216,7 +216,7 @@ def dump_all(documents, stream=None, **kwargs):
 
 
 def convert_to_block_text(data):
-  # type: (Union[dict, list]) -> None
+  # type: (typing.Union[dict, list]) -> None
   r"""This processes the given dict or list so it will render as block text.
 
   By default, the yaml dumper will write multiline strings out as a double

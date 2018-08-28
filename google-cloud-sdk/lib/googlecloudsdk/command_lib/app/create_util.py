@@ -120,7 +120,7 @@ def CreateAppInteractively(api_client, project, regions=None, extra_warning=''):
   log.status.Print('You are creating an app for project [{}].'.format(project))
   log.warning(APP_CREATE_WARNING)
 
-  regions = regions or sorted(set(api_client.ListRegions()))
+  regions = regions or sorted(set(api_client.ListRegions()), key=str)
   if extra_warning:
     log.warning(extra_warning)
   idx = console_io.PromptChoice(

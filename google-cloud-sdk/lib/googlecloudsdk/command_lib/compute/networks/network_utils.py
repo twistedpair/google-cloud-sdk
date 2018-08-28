@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import actions as calliope_actions
 from googlecloudsdk.calliope import parser_errors
 
 
@@ -69,37 +68,14 @@ def AddCreateBaseArgs(parser):
 
 
 def AddCreateSubnetModeArg(parser):
-  """Adds the --subnet-mode and deprecated --mode flags."""
-  mode_args = parser.add_mutually_exclusive_group(required=False)
-
-  mode_args.add_argument(
+  """Adds the --subnet-mode flag."""
+  parser.add_argument(
       '--subnet-mode',
       choices=_CREATE_SUBNET_MODE_CHOICES,
       type=lambda mode: mode.lower(),
       metavar='MODE',
       help="""The subnet mode of the network. If not specified, defaults to
               AUTO.""")
-
-  # TODO(b/64980447): Clean up the --mode flag after 3 months of deprecation.
-  mode_args.add_argument(
-      '--mode',
-      action=calliope_actions.DeprecationAction(
-          'mode',
-          removed=True,
-          error=('`{flag_name}` has been removed. '
-                 'Please use `subnet-mode` instead.')),
-      metavar='NETWORK_TYPE',
-      choices={
-          'auto': ('Subnets are created automatically. This is the recommended '
-                   'selection.'),
-          'custom':
-              'Create subnets manually.',
-          'legacy': (
-              'Create an old style network that has a range and cannot have '
-              'subnets.  This is not recommended for new networks.'),
-      },
-      required=False,
-      help='The network type.')
 
 
 def AddCreateBgpRoutingModeArg(parser):
@@ -134,7 +110,6 @@ def AddUpdateArgs(parser):
 
 def CheckRangeLegacyModeOrRaise(args):
   """Checks for range being used with incompatible mode and raises an error."""
-  if args.range is not None:
-    if ((args.subnet_mode and args.subnet_mode != 'legacy') or
-        (args.mode and args.mode != 'legacy')):
-      raise parser_errors.ArgumentError(_RANGE_NON_LEGACY_MODE_ERROR)
+  if args.IsSpecified('range') and args.IsSpecified(
+      'subnet_mode') and args.subnet_mode != 'legacy':
+    raise parser_errors.ArgumentError(_RANGE_NON_LEGACY_MODE_ERROR)

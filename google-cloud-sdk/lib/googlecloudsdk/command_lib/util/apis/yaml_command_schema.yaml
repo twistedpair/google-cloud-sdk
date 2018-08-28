@@ -641,3 +641,12 @@ properties:
         type: object
         patternProperties:
           .*: {type: string}
+
+  # Additional information for handling the update commands.
+  update:
+    type: object
+    additionalProperties: false
+    properties:
+      # Path to the fieldMask/updateMask fields in the update/modify/put
+      # API requests.
+      mask_field: {type: string}

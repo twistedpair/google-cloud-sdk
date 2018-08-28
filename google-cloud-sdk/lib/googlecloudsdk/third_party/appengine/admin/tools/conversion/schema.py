@@ -63,6 +63,7 @@ Using the above input dictionary, the result would be:
 }
 """
 
+from __future__ import absolute_import
 import logging
 
 from googlecloudsdk.third_party.appengine.admin.tools.conversion import converters
@@ -209,7 +210,7 @@ class Message(SchemaField):
     """Convert each child field and put the result in a new dictionary."""
     ValidateType(value, dict)
     result = {}
-    for source_key, field_schema in self.fields.iteritems():
+    for source_key, field_schema in self.fields.items():
       if source_key not in value:
         continue
 
@@ -274,7 +275,7 @@ class Map(SchemaField):
   def _VisitInternal(self, value):
     ValidateType(value, dict)
     result = {}
-    for key, dict_value in value.iteritems():
+    for key, dict_value in value.items():
       if self.key_converter:
         key = self.key_converter(key)
       if self.value_converter:

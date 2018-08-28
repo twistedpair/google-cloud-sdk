@@ -394,6 +394,13 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
     software_config.properties = encoding.DictToMessage(
         args.properties, dataproc.messages.SoftwareConfig.PropertiesValue)
 
+  if beta:
+    if args.components:
+      software_config_cls = dataproc.messages.SoftwareConfig
+      software_config.optionalComponents.extend(list(map(
+          software_config_cls.OptionalComponentsValueListEntryValuesEnum,
+          args.components)))
+
   gce_cluster_config = dataproc.messages.GceClusterConfig(
       networkUri=network_ref and network_ref.SelfLink(),
       subnetworkUri=subnetwork_ref and subnetwork_ref.SelfLink(),

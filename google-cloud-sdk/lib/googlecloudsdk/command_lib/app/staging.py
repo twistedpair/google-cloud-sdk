@@ -37,7 +37,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
-import cStringIO
+import io
 import os
 import re
 import tempfile
@@ -170,8 +170,8 @@ class _Command(six.with_metaclass(abc.ABCMeta, object)):
     staging_dir = tempfile.mkdtemp(dir=staging_area)
     args = self.GetArgs(descriptor, app_dir, staging_dir)
     log.info('Executing staging command: [{0}]\n\n'.format(' '.join(args)))
-    out = cStringIO.StringIO()
-    err = cStringIO.StringIO()
+    out = io.StringIO()
+    err = io.StringIO()
     return_code = execution_utils.Exec(args, no_exit=True, out_func=out.write,
                                        err_func=err.write)
     message = _STAGING_COMMAND_OUTPUT_TEMPLATE.format(out=out.getvalue(),

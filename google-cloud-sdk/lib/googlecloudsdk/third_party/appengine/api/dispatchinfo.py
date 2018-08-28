@@ -17,6 +17,8 @@
 Library for parsing dispatch.yaml files and working with these in memory.
 """
 
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 
 # WARNING: This file is externally viewable by our users.  All comments from
@@ -26,6 +28,7 @@ Library for parsing dispatch.yaml files and working with these in memory.
 
 import os
 import re
+from googlecloudsdk.third_party.appengine._internal import six_subset
 
 # pylint: disable=g-import-not-at-top
 if os.environ.get('APPENGINE_RUNTIME') == 'python27':
@@ -93,7 +96,7 @@ class DispatchEntryURLValidator(validation.Validator):
     """Validates an URL pattern."""
     if value is None:
       raise validation.MissingAttribute('url must be specified')
-    if not isinstance(value, basestring):
+    if not isinstance(value, six_subset.string_types):
       raise validation.ValidationError('url must be a string, not \'%r\'' %
                                        type(value))
 

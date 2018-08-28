@@ -27,9 +27,9 @@ import abc
 
 from googlecloudsdk.core.cache import exceptions
 from googlecloudsdk.core.cache import persistent_cache_base
+from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 import six
-from typing import Optional  # pylint: disable=unused-import, for pytype
 
 
 class Metadata(object):
@@ -254,7 +254,7 @@ class CacheUsingMetadataTable(persistent_cache_base.Cache):  # pytype: disable=i
                keys=1, timeout=0)
 
   def Select(self, name=None):
-    # type: (Optional[str]) -> list[str]
+    # type: (typing.Optional[str]) -> list[str]
     """Returns the list of unrestricted table names matching name.
 
     Args:

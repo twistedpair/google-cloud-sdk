@@ -28,7 +28,8 @@ from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.command_lib.interactive import bindings
 from googlecloudsdk.command_lib.interactive import bindings_vi
 from googlecloudsdk.command_lib.interactive import completer
-from googlecloudsdk.command_lib.interactive import coshell
+from googlecloudsdk.command_lib.interactive import coshell as interactive_coshell
+from googlecloudsdk.command_lib.interactive import debug as interactive_debug
 from googlecloudsdk.command_lib.interactive import layout
 from googlecloudsdk.command_lib.interactive import parser
 from googlecloudsdk.command_lib.interactive import style as interactive_style
@@ -60,14 +61,16 @@ class CLI(interface.CommandLineInterface):
       positionals and help doc snippets.
   """
 
-  def __init__(self, config=None, cosh=None, root=None, interactive_parser=None,
-               application=None, eventloop=None, output=None):
+  def __init__(self, config=None, coshell=None, debug=None, root=None,
+               interactive_parser=None, application=None, eventloop=None,
+               output=None):
     super(CLI, self).__init__(
         application=application,
         eventloop=eventloop,
         output=output)
     self.config = config
-    self.coshell = cosh
+    self.coshell = coshell
+    self.debug = debug
     self.parser = interactive_parser
     self.root = root
 
@@ -178,15 +181,17 @@ class Application(object):
     args: The parsed command line arguments.
     config: The interactive shell config object.
     coshell: The shell coprocess object.
+    debug: The debugging object.
     key_bindings: The key_bindings object holding the key binding list and
       toggle states.
     key_bindings_registry: The key bindings registry.
   """
 
-  def __init__(self, cosh=None, args=None, config=None):
+  def __init__(self, coshell=None, args=None, config=None, debug=None):
     self.args = args
-    self.coshell = cosh
+    self.coshell = coshell
     self.config = config
+    self.debug = debug
     self.key_bindings = bindings.KeyBindings()
     self.key_bindings_registry = self.key_bindings.MakeRegistry()
 
@@ -220,9 +225,10 @@ class Application(object):
         context=config.context,
         hidden=config.hidden)
     interactive_completer = completer.InteractiveCliCompleter(
+        coshell=coshell,
+        debug=debug,
         interactive_parser=interactive_parser,
         args=args,
-        cosh=self.coshell,
         hidden=config.hidden,
         manpage_generator=config.manpage_generator)
 
@@ -253,7 +259,8 @@ class Application(object):
     # Create the CLI.
     self.cli = CLI(
         config=config,
-        cosh=cosh,
+        coshell=coshell,
+        debug=debug,
         root=self.root,
         interactive_parser=interactive_parser,
         application=self._CreatePromptApplication(config=config,
@@ -274,6 +281,7 @@ class Application(object):
             get_bottom_status_tokens=self._GetBottomStatusTokens,
             get_bottom_toolbar_tokens=self._GetBottomToolbarTokens,
             get_continuation_tokens=None,
+            get_debug_tokens=self._GetDebugTokens,
             get_prompt_tokens=None,
             is_password=False,
             lexer=None,
@@ -322,6 +330,10 @@ class Application(object):
         justify=cli.config.justify_bottom_lines,
         width=cli.output.get_size().columns)
 
+  def _GetDebugTokens(self, cli):
+    """Returns the debug frame tokens."""
+    return [(token.Token.Text, c + ' ') for c in cli.debug.contents()]
+
   def Prompt(self):
     """Prompts and returns one command line."""
     self.cli.context_was_set = not self.cli.config.context
@@ -337,6 +349,7 @@ class Application(object):
 
   def Run(self, text):
     """Runs the command(s) in text and waits for them to complete."""
+    self.debug.commands.count()
     status = self.coshell.Run(text)
     if status > 128:
       # command interrupted - print an empty line to clear partial output
@@ -359,19 +372,20 @@ class Application(object):
       except KeyboardInterrupt:
         # ignore ctrl-c
         pass
-      except coshell.CoshellExitException:
+      except interactive_coshell.CoshellExitException:
         break
 
 
 def main(args=None, config=None):
   """The interactive application loop."""
-  cosh = coshell.Coshell()
+  coshell = interactive_coshell.Coshell()
   try:
     Application(
         args=args,
-        cosh=cosh,
+        coshell=coshell,
         config=config,
+        debug=interactive_debug.Debug(),
     ).Loop()
   finally:
-    status = cosh.Close()
+    status = coshell.Close()
   sys.exit(status)

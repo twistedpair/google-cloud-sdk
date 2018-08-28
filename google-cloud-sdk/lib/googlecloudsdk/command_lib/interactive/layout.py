@@ -52,6 +52,7 @@ def CreatePromptLayout(config,
                        is_password=False,
                        get_prompt_tokens=None,
                        get_continuation_tokens=None,
+                       get_debug_tokens=None,
                        get_bottom_status_tokens=None,
                        get_bottom_toolbar_tokens=None,
                        extra_input_processors=None,
@@ -64,6 +65,7 @@ def CreatePromptLayout(config,
   assert get_bottom_toolbar_tokens is None or callable(
       get_bottom_toolbar_tokens)
   assert get_prompt_tokens is None or callable(get_prompt_tokens)
+  assert get_debug_tokens is None or callable(get_debug_tokens)
   assert not (config.prompt and get_prompt_tokens)
 
   multi_column_completion_menu = filters.to_cli_filter(
@@ -131,12 +133,24 @@ def CreatePromptLayout(config,
                   height=help_height),
           ]),
           filter=help_filter))
-  if (config.bottom_status_line and get_bottom_status_tokens
-      or config.bottom_bindings_line and get_bottom_toolbar_tokens):
+  if (config.bottom_status_line and get_bottom_status_tokens or
+      config.bottom_bindings_line and get_bottom_toolbar_tokens or
+      config.debug and get_debug_tokens):
     windows = []
     windows.append(layout.Window(
         controls.FillControl(char=screen.Char('_', token.Token.HSep)),
         height=dimension.LayoutDimension.exact(1)))
+    if config.debug and get_debug_tokens:
+      windows.append(
+          layout.Window(
+              controls.TokenListControl(
+                  get_debug_tokens,
+                  default_char=screen.Char(' ', token.Token.Text)),
+              wrap_lines=True,
+              height=dimension.LayoutDimension.exact(3)))
+      windows.append(layout.Window(
+          controls.FillControl(char=screen.Char('_', token.Token.HSep)),
+          height=dimension.LayoutDimension.exact(1)))
     if config.bottom_status_line and get_bottom_status_tokens:
       windows.append(
           layout.Window(
