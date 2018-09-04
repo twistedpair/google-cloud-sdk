@@ -180,6 +180,9 @@ apis:
   cloudtasks:
     v2beta2:
       discovery_doc: cloudtasks_v2beta2.json
+      default: true
+    v2beta3:
+      discovery_doc: cloudtasks_v2beta3.json
   cloudscheduler:
     v1alpha1:
       discovery_doc: cloudscheduler_v1alpha1.json
@@ -371,7 +374,10 @@ apis:
       discovery_doc: redis_v1alpha1.json
     v1beta1:
       discovery_doc: redis_v1beta1.json
+    v1:
+      discovery_doc: redis_v1.json
       default: true
+
   replicapoolupdater:
     v1beta1:
       discovery_doc: replicapoolupdater_v1beta1.json

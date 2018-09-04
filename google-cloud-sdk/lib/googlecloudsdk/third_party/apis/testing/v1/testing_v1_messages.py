@@ -177,6 +177,8 @@ class AndroidModel(_messages.Message):
   Enums:
     FormValueValuesEnum: Whether this device is virtual or physical.
       @OutputOnly
+    FormFactorValueValuesEnum: Whther this device is a phone, tablet,
+      wearable, etc. @OutputOnly
 
   Fields:
     brand: The company that this device is branded with. Example: "Google",
@@ -184,6 +186,8 @@ class AndroidModel(_messages.Message):
     codename: The name of the industrial design. This corresponds to
       android.os.Build.DEVICE @OutputOnly
     form: Whether this device is virtual or physical. @OutputOnly
+    formFactor: Whther this device is a phone, tablet, wearable, etc.
+      @OutputOnly
     id: The unique opaque id for this model. Use this for invoking the
       TestExecutionService. @OutputOnly
     manufacturer: The manufacturer of this device. @OutputOnly
@@ -211,6 +215,20 @@ class AndroidModel(_messages.Message):
       TestSpecification.disable_video_recording @OutputOnly
   """
 
+  class FormFactorValueValuesEnum(_messages.Enum):
+    r"""Whther this device is a phone, tablet, wearable, etc. @OutputOnly
+
+    Values:
+      DEVICE_FORM_FACTOR_UNSPECIFIED: Do not use. For proto versioning only.
+      PHONE: This device has the shape of a phone
+      TABLET: This device has the shape of a tablet
+      WEARABLE: This device has the shape of a watch or other wearable
+    """
+    DEVICE_FORM_FACTOR_UNSPECIFIED = 0
+    PHONE = 1
+    TABLET = 2
+    WEARABLE = 3
+
   class FormValueValuesEnum(_messages.Enum):
     r"""Whether this device is virtual or physical. @OutputOnly
 
@@ -226,16 +244,17 @@ class AndroidModel(_messages.Message):
   brand = _messages.StringField(1)
   codename = _messages.StringField(2)
   form = _messages.EnumField('FormValueValuesEnum', 3)
-  id = _messages.StringField(4)
-  manufacturer = _messages.StringField(5)
-  name = _messages.StringField(6)
-  screenDensity = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  screenX = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  screenY = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  supportedAbis = _messages.StringField(10, repeated=True)
-  supportedVersionIds = _messages.StringField(11, repeated=True)
-  tags = _messages.StringField(12, repeated=True)
-  videoRecordingNotSupported = _messages.BooleanField(13)
+  formFactor = _messages.EnumField('FormFactorValueValuesEnum', 4)
+  id = _messages.StringField(5)
+  manufacturer = _messages.StringField(6)
+  name = _messages.StringField(7)
+  screenDensity = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  supportedAbis = _messages.StringField(11, repeated=True)
+  supportedVersionIds = _messages.StringField(12, repeated=True)
+  tags = _messages.StringField(13, repeated=True)
+  videoRecordingNotSupported = _messages.BooleanField(14)
 
 
 class AndroidRoboTest(_messages.Message):
@@ -626,16 +645,14 @@ class IosDevice(_messages.Message):
   r"""A single iOS device.
 
   Fields:
-    iosModelId: The id of the iOS device to be used. Use the
-      EnvironmentDiscoveryService to get supported options. Required
-    iosVersionId: The id of the iOS major software version to be used. Use the
-      EnvironmentDiscoveryService to get supported options. Required
-    locale: The locale the test device used for testing (only "en" is
-      currently supported). Use the EnvironmentDiscoveryService to get
-      supported options (not yet implemented). Required
-    orientation: How the device is oriented during the test (only "portrait"
-      is currently supported). Use the EnvironmentDiscoveryService to get
-      supported options. (not yet implemented). Required
+    iosModelId: Required. The id of the iOS device to be used. Use the
+      EnvironmentDiscoveryService to get supported options.
+    iosVersionId: Required. The id of the iOS major software version to be
+      used. Use the EnvironmentDiscoveryService to get supported options.
+    locale: Required. The locale the test device used for testing. Use the
+      EnvironmentDiscoveryService to get supported options.
+    orientation: Required. How the device is oriented during the test. Use the
+      EnvironmentDiscoveryService to get supported options.
   """
 
   iosModelId = _messages.StringField(1)
@@ -648,10 +665,10 @@ class IosDeviceCatalog(_messages.Message):
   r"""The currently supported iOS devices.
 
   Fields:
-    models: The set of supported iOS device models. @OutputOnly
-    runtimeConfiguration: The set of supported runtime configurations.
-      @OutputOnly
-    versions: The set of supported iOS software versions. @OutputOnly
+    models: Output only. The set of supported iOS device models.
+    runtimeConfiguration: Output only. The set of supported runtime
+      configurations.
+    versions: Output only. The set of supported iOS software versions.
   """
 
   models = _messages.MessageField('IosModel', 1, repeated=True)
@@ -663,7 +680,7 @@ class IosDeviceList(_messages.Message):
   r"""A list of iOS device configurations in which the test is to be executed.
 
   Fields:
-    iosDevices: A list of iOS devices Required
+    iosDevices: Required. A list of iOS devices
   """
 
   iosDevices = _messages.MessageField('IosDevice', 1, repeated=True)
@@ -673,28 +690,33 @@ class IosModel(_messages.Message):
   r"""A description of an iOS device tests may be run on.
 
   Fields:
-    id: The unique opaque id for this model. Use this for invoking the
-      TestExecutionService. @OutputOnly
-    name: The human-readable name for this device model. Examples: "iPhone
-      4s", "iPad Mini 2" @OutputOnly
-    supportedVersionIds: The set of iOS major software versions this device
-      supports. @OutputOnly
-    tags: Tags for this dimension. Examples: "default", "preview",
-      "deprecated" @OutputOnly
+    deviceCapabilities: Output only. Device capabilities. Copied from https://
+      developer.apple.com/library/archive/documentation/DeviceInformation/Refe
+      rence/iOSDeviceCompatibility/DeviceCompatibilityMatrix/DeviceCompatibili
+      tyMatrix.html
+    id: Output only. The unique opaque id for this model. Use this for
+      invoking the TestExecutionService.
+    name: Output only. The human-readable name for this device model.
+      Examples: "iPhone 4s", "iPad Mini 2"
+    supportedVersionIds: Output only. The set of iOS major software versions
+      this device supports.
+    tags: Output only. Tags for this dimension. Examples: "default",
+      "preview", "deprecated"
   """
 
-  id = _messages.StringField(1)
-  name = _messages.StringField(2)
-  supportedVersionIds = _messages.StringField(3, repeated=True)
-  tags = _messages.StringField(4, repeated=True)
+  deviceCapabilities = _messages.StringField(1, repeated=True)
+  id = _messages.StringField(2)
+  name = _messages.StringField(3)
+  supportedVersionIds = _messages.StringField(4, repeated=True)
+  tags = _messages.StringField(5, repeated=True)
 
 
 class IosRuntimeConfiguration(_messages.Message):
   r"""iOS configuration that can be selected at the time a test is run.
 
   Fields:
-    locales: The set of available locales. @OutputOnly
-    orientations: The set of available orientations. @OutputOnly
+    locales: Output only. The set of available locales.
+    orientations: Output only. The set of available orientations.
   """
 
   locales = _messages.MessageField('Locale', 1, repeated=True)
@@ -705,8 +727,8 @@ class IosTestSetup(_messages.Message):
   r"""A description of how to set up an iOS device prior to a test.
 
   Fields:
-    networkProfile: The network traffic profile used for running the test.
-      Optional
+    networkProfile: Optional. The network traffic profile used for running the
+      test.
   """
 
   networkProfile = _messages.StringField(1)
@@ -716,14 +738,14 @@ class IosVersion(_messages.Message):
   r"""An iOS version
 
   Fields:
-    id: An opaque id for this iOS version. Use this id to invoke the
-      TestExecutionService. @OutputOnly
-    majorVersion: A integer representing the major iOS version. Examples: "8",
-      "9" @OutputOnly
-    minorVersion: A integer representing the minor iOS version. Examples: "1",
-      "2" @OutputOnly
-    tags: Tags for this dimension. Examples: "default", "preview",
-      "deprecated" @OutputOnly
+    id: Output only. An opaque id for this iOS version. Use this id to invoke
+      the TestExecutionService.
+    majorVersion: Output only. A integer representing the major iOS version.
+      Examples: "8", "9"
+    minorVersion: Output only. A integer representing the minor iOS version.
+      Examples: "1", "2"
+    tags: Output only. Tags for this dimension. Examples: "default",
+      "preview", "deprecated"
   """
 
   id = _messages.StringField(1)
@@ -741,14 +763,13 @@ class IosXcTest(_messages.Message):
   binaries needed to run the tests.
 
   Fields:
-    testsZip: The .zip containing the .xctestrun file and the contents of the
-      DerivedData/Build/Products directory. The .xctestrun file in this zip is
-      ignored if the xctestrun field is specified. Required
-    xctestrun: An .xctestrun file that will override the .xctestrun file in
-      the tests zip. Because the .xctestrun file contains environment
+    testsZip: Required. The .zip containing the .xctestrun file and the
+      contents of the DerivedData/Build/Products directory. The .xctestrun
+      file in this zip is ignored if the xctestrun field is specified.
+    xctestrun: Optional. An .xctestrun file that will override the .xctestrun
+      file in the tests zip. Because the .xctestrun file contains environment
       variables along with test methods to run and/or ignore, this can be
-      useful for sharding tests. Optional, default is taken from the tests
-      zip.
+      useful for sharding tests. Default is taken from the tests zip.
   """
 
   testsZip = _messages.MessageField('FileReference', 1)
@@ -1220,6 +1241,8 @@ class TestMatrix(_messages.Message):
       INVALID_INPUT_APK: Either the provided input APK path was malformed, the
         APK file does not exist, or the user does not have permission to
         access the APK file.
+      INVALID_APK_PREVIEW_SDK: APK is built for a preview SDK which is
+        unsupported
     """
     INVALID_MATRIX_DETAILS_UNSPECIFIED = 0
     DETAILS_UNAVAILABLE = 1
@@ -1249,6 +1272,7 @@ class TestMatrix(_messages.Message):
     MALFORMED_IPA = 25
     NO_CODE_APK = 26
     INVALID_INPUT_APK = 27
+    INVALID_APK_PREVIEW_SDK = 28
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Indicates the current progress of the test matrix (e.g., FINISHED)
@@ -1356,7 +1380,7 @@ class TestSpecification(_messages.Message):
     disablePerformanceMetrics: Disables performance metrics recording; may
       reduce test latency.
     disableVideoRecording: Disables video recording; may reduce test latency.
-    iosTestSetup: Test setup requirements for iOS. Optional
+    iosTestSetup: Optional. Test setup requirements for iOS.
     iosXcTest: An iOS XCTest, via an .xctestrun file
     testSetup: Test setup requirements for Android e.g. files to install,
       bootstrap scripts. Optional

@@ -176,6 +176,33 @@ a `Dataset` message.
         supports_download=False,
     )
 
+    def RefreshData(self, request, global_params=None):
+      r"""Refresh data for a dataset.
+
+      Args:
+        request: (SpeechProjectsLocationsDatasetsRefreshDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RefreshData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RefreshData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:refreshData',
+        http_method=u'POST',
+        method_id=u'speech.projects.locations.datasets.refreshData',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1p1beta1/{+name}:refreshData',
+        request_field=u'refreshDataRequest',
+        request_type_name=u'SpeechProjectsLocationsDatasetsRefreshDataRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsLogDataStatsService(base_api.BaseApiService):
     """Service class for the projects_locations_log_data_stats resource."""
 

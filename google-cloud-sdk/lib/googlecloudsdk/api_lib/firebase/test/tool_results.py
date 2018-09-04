@@ -170,7 +170,10 @@ def _ErrorFromInvalidMatrix(matrix):
           '"hasCode" is false in the Manifest. Tested APKs must contain code',
       enum_values.INVALID_INPUT_APK:
           'Either the provided input APK path was malformed, the APK file does '
-          'not exist, or the user does not have permission to access the file'
+          'not exist, or the user does not have permission to access the file',
+      enum_values.INVALID_APK_PREVIEW_SDK:
+          "Your app targets a preview version of the Android SDK that's "
+          'incompatible with the selected devices.',
   }
   details_enum = matrix.invalidMatrixDetails
   if details_enum in error_dict:

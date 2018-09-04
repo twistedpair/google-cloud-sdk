@@ -131,21 +131,20 @@ class CloudiotProjectsLocationsRegistriesDevicesListRequest(_messages.Message):
   r"""A CloudiotProjectsLocationsRegistriesDevicesListRequest object.
 
   Fields:
-    deviceIds: A list of device string identifiers. If empty, it will ignore
-      this field. For example, `['device0', 'device12']`. This field cannot
-      hold more than 10,000 entries.
-    deviceNumIds: A list of device numerical ids. If empty, it will ignore
-      this field. This field cannot hold more than 10,000 entries.
+    deviceIds: A list of device string IDs. For example, `['device0',
+      'device12']`. If empty, this field is ignored. Maximum IDs: 10,000
+    deviceNumIds: A list of device numeric IDs. If empty, this field is
+      ignored. Maximum IDs: 10,000.
     fieldMask: The fields of the `Device` resource to be returned in the
-      response. The fields `id`, and `num_id` are always returned by default,
-      along with any other fields specified.
+      response. The fields `id` and `num_id` are always returned, along with
+      any other fields specified.
     pageSize: The maximum number of devices to return in the response. If this
       value is zero, the service will select a default size. A call may return
-      fewer objects than requested, but if there is a non-empty `page_token`,
-      it indicates that more entries are available.
+      fewer objects than requested. A non-empty `next_page_token` in the
+      response indicates that more data is available.
     pageToken: The value returned by the last `ListDevicesResponse`; indicates
-      that this is a continuation of a prior `ListDevices` call, and that the
-      system should return the next page of data.
+      that this is a continuation of a prior `ListDevices` call and the system
+      should return the next page of data.
     parent: The device registry path. Required. For example, `projects/my-
       project/locations/us-central1/registries/my-registry`.
   """
@@ -276,21 +275,20 @@ class CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest(_messages.Mess
   r"""A CloudiotProjectsLocationsRegistriesGroupsDevicesListRequest object.
 
   Fields:
-    deviceIds: A list of device string identifiers. If empty, it will ignore
-      this field. For example, `['device0', 'device12']`. This field cannot
-      hold more than 10,000 entries.
-    deviceNumIds: A list of device numerical ids. If empty, it will ignore
-      this field. This field cannot hold more than 10,000 entries.
+    deviceIds: A list of device string IDs. For example, `['device0',
+      'device12']`. If empty, this field is ignored. Maximum IDs: 10,000
+    deviceNumIds: A list of device numeric IDs. If empty, this field is
+      ignored. Maximum IDs: 10,000.
     fieldMask: The fields of the `Device` resource to be returned in the
-      response. The fields `id`, and `num_id` are always returned by default,
-      along with any other fields specified.
+      response. The fields `id` and `num_id` are always returned, along with
+      any other fields specified.
     pageSize: The maximum number of devices to return in the response. If this
       value is zero, the service will select a default size. A call may return
-      fewer objects than requested, but if there is a non-empty `page_token`,
-      it indicates that more entries are available.
+      fewer objects than requested. A non-empty `next_page_token` in the
+      response indicates that more data is available.
     pageToken: The value returned by the last `ListDevicesResponse`; indicates
-      that this is a continuation of a prior `ListDevices` call, and that the
-      system should return the next page of data.
+      that this is a continuation of a prior `ListDevices` call and the system
+      should return the next page of data.
     parent: The device registry path. Required. For example, `projects/my-
       project/locations/us-central1/registries/my-registry`.
   """
@@ -409,11 +407,11 @@ class CloudiotProjectsLocationsRegistriesListRequest(_messages.Message):
   Fields:
     pageSize: The maximum number of registries to return in the response. If
       this value is zero, the service will select a default size. A call may
-      return fewer objects than requested, but if there is a non-empty
-      `page_token`, it indicates that more entries are available.
+      return fewer objects than requested. A non-empty `next_page_token` in
+      the response indicates that more data is available.
     pageToken: The value returned by the last `ListDeviceRegistriesResponse`;
       indicates that this is a continuation of a prior `ListDeviceRegistries`
-      call, and that the system should return the next page of data.
+      call and the system should return the next page of data.
     parent: The project and cloud region path. For example, `projects/example-
       project/locations/us-central1`.
   """

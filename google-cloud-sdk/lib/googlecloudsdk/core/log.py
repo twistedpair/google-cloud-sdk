@@ -166,8 +166,8 @@ class _ConsoleWriter(object):
     Args:
       *msg: str, The messages to print.
     """
-    msg = (
-        console_attr.SafeText(x, encoding=LOG_FILE_ENCODING, escape=False) for x in msg)
+    msg = (console_attr.SafeText(
+        x, encoding=LOG_FILE_ENCODING, escape=False) for x in msg)
     message = ' '.join(msg)
     self._Write(message + '\n')
 
@@ -200,7 +200,8 @@ class _ConsoleWriter(object):
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def write(self, msg):
-    self._Write(console_attr.SafeText(msg, encoding=LOG_FILE_ENCODING, escape=False))
+    self._Write(
+        console_attr.SafeText(msg, encoding=LOG_FILE_ENCODING, escape=False))
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def writelines(self, lines):
@@ -258,6 +259,8 @@ def _SafeDecodedLogRecord(record, encoding):
   Args:
     record: The log record.
     encoding: The name of the encoding to SafeDecode with.
+  Yields:
+    None, yield is necessary as this is a context manager.
   """
   original_msg = record.msg
   try:
@@ -322,7 +325,7 @@ class _LogFileFormatter(logging.Formatter):
   FORMAT = _FmtString('%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
 
   def __init__(self):
-    super(_LogFileFormatter, self).__init__(fmt = _LogFileFormatter.FORMAT)
+    super(_LogFileFormatter, self).__init__(fmt=_LogFileFormatter.FORMAT)
 
   def format(self, record):
     # The log file handler expects text strings always, and encodes them to
@@ -609,7 +612,8 @@ class _LogManager(object):
     # A handler to write DEBUG and above to log files in the given directory
     try:
       log_file = self._SetupLogsDir(logs_dir)
-      file_handler = logging.FileHandler(log_file, encoding=LOG_FILE_ENCODING)
+      file_handler = logging.FileHandler(
+          log_file, encoding=LOG_FILE_ENCODING)  # pytype: disable=wrong-arg-types
     except (OSError, IOError, files.Error) as exp:
       warning('Could not setup log file in {0}, ({1}: {2})'
               .format(logs_dir, type(exp).__name__, exp))

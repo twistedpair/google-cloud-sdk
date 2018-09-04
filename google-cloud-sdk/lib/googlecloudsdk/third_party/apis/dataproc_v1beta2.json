@@ -495,6 +495,11 @@
           "description": "Optional. The life duration of cluster, the cluster will be auto-deleted at the end of this duration.",
           "type": "string",
           "format": "google-duration"
+        },
+        "idleStartTime": {
+          "description": "Output only. The time when cluster became idle (most recent job finished) and became eligible for deletion due to idleness.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

@@ -137,7 +137,7 @@ def GetModuleFromPath(name_to_give, module_path):
     return _GetModuleFromPathViaPkgutil(module_path, name_to_give)
   else:
     try:
-      f, file_path, items = result
+      f, file_path, items = result  # pytype: disable=attribute-error
       module = imp.load_module(name_to_give, f, file_path, items)
       if module.__name__ not in sys.modules:
         # Python 2.6 does not add this to sys.modules. This is to make sure

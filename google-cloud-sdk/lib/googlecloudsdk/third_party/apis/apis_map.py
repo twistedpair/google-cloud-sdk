@@ -282,6 +282,12 @@ MAP = {
             messages_modulepath='cloudtasks_v2beta2_messages',
             default_version=True
         ),
+        'v2beta3': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudtasks.v2beta3',
+            client_classpath='cloudtasks_v2beta3_client.CloudtasksV2beta3',
+            messages_modulepath='cloudtasks_v2beta3_messages',
+            default_version=False
+        ),
     },
     'composer': {
         'v1': APIDef(
@@ -580,6 +586,12 @@ MAP = {
         ),
     },
     'redis': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.redis.v1',
+            client_classpath='redis_v1_client.RedisV1',
+            messages_modulepath='redis_v1_messages',
+            default_version=True
+        ),
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.redis.v1alpha1',
             client_classpath='redis_v1alpha1_client.RedisV1alpha1',
@@ -590,7 +602,7 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.redis.v1beta1',
             client_classpath='redis_v1beta1_client.RedisV1beta1',
             messages_modulepath='redis_v1beta1_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'replicapoolupdater': {

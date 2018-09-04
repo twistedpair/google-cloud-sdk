@@ -955,15 +955,25 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       </dd>   <dt>complex_model_l_gpu</dt>   <dd>   A machine equivalent to
       <i>complex_model_l</i> that also includes   eight NVIDIA Tesla K80 GPUs.
       </dd>   <dt>standard_p100</dt>   <dd>   A machine equivalent to
-      <i>standard</i> that   also includes a single NVIDIA Tesla P100 GPU. The
-      availability of these   GPUs is in the <i>Beta</i> launch stage.   </dd>
-      <dt>complex_model_m_p100</dt>   <dd>   A machine equivalent to
+      <i>standard</i> that   also includes a single NVIDIA Tesla P100 GPU.
+      </dd>   <dt>complex_model_m_p100</dt>   <dd>   A machine equivalent to
       <i>complex_model_m</i> that also includes   four NVIDIA Tesla P100 GPUs.
-      The availability of these GPUs is in   the <i>Beta</i> launch stage.
-      </dd>   <dt>cloud_tpu</dt>   <dd>   A TPU VM including one Cloud TPU.
-      See more about   <a href="/ml-engine/docs/tensorflow/using-tpus">using
-      TPUs to train   your model</a>.   </dd> </dl>  You must set this value
-      when `scaleTier` is set to `CUSTOM`.
+      </dd>   <dt>standard_v100</dt>   <dd>   A machine equivalent to
+      <i>standard</i> that   also includes a single NVIDIA Tesla V100 GPU. The
+      availability of these   GPUs is in the <i>Beta</i> launch stage.   </dd>
+      <dt>large_model_v100</dt>   <dd>   A machine equivalent to
+      <i>large_model</i> that   also includes a single NVIDIA Tesla V100 GPU.
+      The availability of these   GPUs is in the <i>Beta</i> launch stage.
+      </dd>   <dt>complex_model_m_v100</dt>   <dd>   A machine equivalent to
+      <i>complex_model_m</i> that   also includes four NVIDIA Tesla V100 GPUs.
+      The availability of these   GPUs is in the <i>Beta</i> launch stage.
+      </dd>   <dt>complex_model_l_v100</dt>   <dd>   A machine equivalent to
+      <i>complex_model_l</i> that   also includes eight NVIDIA Tesla V100
+      GPUs. The availability of these   GPUs is in the <i>Beta</i> launch
+      stage.   </dd>   <dt>cloud_tpu</dt>   <dd>   A TPU VM including one
+      Cloud TPU. See more about   <a href="/ml-engine/docs/tensorflow/using-
+      tpus">using TPUs to train   your model</a>.   </dd> </dl>  You must set
+      this value when `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.

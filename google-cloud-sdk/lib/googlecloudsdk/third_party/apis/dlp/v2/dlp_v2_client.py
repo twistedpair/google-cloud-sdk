@@ -206,7 +206,7 @@ more.
         method_id=u'dlp.organizations.deidentifyTemplates.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'orderBy', u'pageSize', u'pageToken'],
         relative_path=u'v2/{+parent}/deidentifyTemplates',
         request_field='',
         request_type_name=u'DlpOrganizationsDeidentifyTemplatesListRequest',
@@ -358,7 +358,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
         method_id=u'dlp.organizations.inspectTemplates.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'orderBy', u'pageSize', u'pageToken'],
         relative_path=u'v2/{+parent}/inspectTemplates',
         request_field='',
         request_type_name=u'DlpOrganizationsInspectTemplatesListRequest',
@@ -405,8 +405,9 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a pre-built StoredInfoType to be used for inspecting storage in.
-InspectDataSource.
+      r"""Creates a pre-built stored infoType to be used for inspection.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesCreateRequest) input message
@@ -433,7 +434,9 @@ InspectDataSource.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a StoredInfoType.
+      r"""Deletes a stored infoType.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesDeleteRequest) input message
@@ -460,7 +463,9 @@ InspectDataSource.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a StoredInfoType.
+      r"""Gets a stored infoType.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesGetRequest) input message
@@ -487,7 +492,9 @@ InspectDataSource.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists StoredInfoTypes.
+      r"""Lists stored infoTypes.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesListRequest) input message
@@ -514,8 +521,10 @@ InspectDataSource.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the StoredInfoType by creating a new version. The existing version.
+      r"""Updates the stored infoType by creating a new version. The existing version.
 will continue to be used until the new version is ready.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpOrganizationsStoredInfoTypesPatchRequest) input message
@@ -779,7 +788,7 @@ more.
         method_id=u'dlp.projects.deidentifyTemplates.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'orderBy', u'pageSize', u'pageToken'],
         relative_path=u'v2/{+parent}/deidentifyTemplates',
         request_field='',
         request_type_name=u'DlpProjectsDeidentifyTemplatesListRequest',
@@ -1138,7 +1147,7 @@ See https://cloud.google.com/dlp/docs/creating-templates to learn more.
         method_id=u'dlp.projects.inspectTemplates.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken'],
+        query_params=[u'orderBy', u'pageSize', u'pageToken'],
         relative_path=u'v2/{+parent}/inspectTemplates',
         request_field='',
         request_type_name=u'DlpProjectsInspectTemplatesListRequest',
@@ -1336,8 +1345,9 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a pre-built StoredInfoType to be used for inspecting storage in.
-InspectDataSource.
+      r"""Creates a pre-built stored infoType to be used for inspection.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesCreateRequest) input message
@@ -1364,7 +1374,9 @@ InspectDataSource.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a StoredInfoType.
+      r"""Deletes a stored infoType.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesDeleteRequest) input message
@@ -1391,7 +1403,9 @@ InspectDataSource.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a StoredInfoType.
+      r"""Gets a stored infoType.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesGetRequest) input message
@@ -1418,7 +1432,9 @@ InspectDataSource.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists StoredInfoTypes.
+      r"""Lists stored infoTypes.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesListRequest) input message
@@ -1445,8 +1461,10 @@ InspectDataSource.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the StoredInfoType by creating a new version. The existing version.
+      r"""Updates the stored infoType by creating a new version. The existing version.
 will continue to be used until the new version is ready.
+See https://cloud.google.com/dlp/docs/creating-stored-infotypes to
+learn more.
 
       Args:
         request: (DlpProjectsStoredInfoTypesPatchRequest) input message

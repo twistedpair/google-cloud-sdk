@@ -461,7 +461,8 @@ def _SubmitBuild(build, image, project, parallel_build):
   Returns:
     BuildArtifact, Representing the pushed container image or in-progress build.
   """
-  build_timeout = properties.VALUES.app.cloud_build_timeout.GetInt()
+  build_timeout = cloud_build.GetServiceTimeoutSeconds(
+      properties.VALUES.app.cloud_build_timeout.Get())
   if build_timeout and build_timeout > MAX_PARALLEL_BUILD_TIME:
     parallel_build = False
     log.info(

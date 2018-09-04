@@ -1192,6 +1192,38 @@ class Allocation(_messages.Message):
   zone = _messages.StringField(10)
 
 
+class AllocationAffinity(_messages.Message):
+  r"""AllocationAffinity is the configuration of desired allocation which this
+  instance could take capacity from.
+
+  Enums:
+    ConsumeAllocationTypeValueValuesEnum:
+
+  Fields:
+    consumeAllocationType: A ConsumeAllocationTypeValueValuesEnum attribute.
+    key: Corresponds to the label key of allocation resource.
+    values: Corresponds to the label values of allocation resource.
+  """
+
+  class ConsumeAllocationTypeValueValuesEnum(_messages.Enum):
+    r"""ConsumeAllocationTypeValueValuesEnum enum type.
+
+    Values:
+      ANY_ALLOCATION: <no description>
+      NO_ALLOCATION: <no description>
+      SPECIFIC_ALLOCATION: <no description>
+      UNSPECIFIED: <no description>
+    """
+    ANY_ALLOCATION = 0
+    NO_ALLOCATION = 1
+    SPECIFIC_ALLOCATION = 2
+    UNSPECIFIED = 3
+
+  consumeAllocationType = _messages.EnumField('ConsumeAllocationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class AllocationAggregatedList(_messages.Message):
   r"""Contains a list of allocations.
 
@@ -1342,80 +1374,8 @@ class AllocationAggregatedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
-class AllocationSpecificSKUAllocation(_messages.Message):
-  r"""This allocation type allows to pre allocate specific instance
-  configuration.
-
-  Fields:
-    count: Specifies number of resources that are allocated.
-    inUseCount: [OutputOnly] Indicates how many resource are in use.
-    instanceProperties: A
-      AllocationSpecificSKUAllocationAllocatedInstanceProperties attribute.
-  """
-
-  count = _messages.IntegerField(1)
-  inUseCount = _messages.IntegerField(2)
-  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstanceProperties', 3)
-
-
-class AllocationSpecificSKUAllocationAllocatedInstanceProperties(_messages.Message):
-  r"""Properties of the SKU instances being reserved.
-
-  Fields:
-    guestAccelerators: Specifies accelerator type and count.
-    localSsds: Specifies amount of local ssd to reserve with each instance.
-      The type of disk is local-ssd.
-    machineType: Specifies type of machine (name only) which has fixed number
-      of vCPUs and fixed amount of memory. This also includes specifying
-      custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
-      pattern.
-    minCpuPlatform: Minimum cpu platform the allocation.
-  """
-
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
-  localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk', 2, repeated=True)
-  machineType = _messages.StringField(3)
-  minCpuPlatform = _messages.StringField(4)
-
-
-class AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk(_messages.Message):
-  r"""A
-  AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk
-  object.
-
-  Enums:
-    InterfaceValueValuesEnum: Specifies the disk interface to use for
-      attaching this disk, which is either SCSI or NVME. The default is SCSI.
-      For performance characteristics of SCSI over NVMe, see Local SSD
-      performance.
-
-  Fields:
-    diskSizeGb: Specifies the size of the disk in base-2 GB.
-    interface: Specifies the disk interface to use for attaching this disk,
-      which is either SCSI or NVME. The default is SCSI. For performance
-      characteristics of SCSI over NVMe, see Local SSD performance.
-  """
-
-  class InterfaceValueValuesEnum(_messages.Enum):
-    r"""Specifies the disk interface to use for attaching this disk, which is
-    either SCSI or NVME. The default is SCSI. For performance characteristics
-    of SCSI over NVMe, see Local SSD performance.
-
-    Values:
-      NVDIMM: <no description>
-      NVME: <no description>
-      SCSI: <no description>
-    """
-    NVDIMM = 0
-    NVME = 1
-    SCSI = 2
-
-  diskSizeGb = _messages.IntegerField(1)
-  interface = _messages.EnumField('InterfaceValueValuesEnum', 2)
-
-
-class AllocationsList(_messages.Message):
-  r"""A AllocationsList object.
+class AllocationList(_messages.Message):
+  r"""A AllocationList object.
 
   Messages:
     WarningValue: [Output Only] Informational warning message.
@@ -1533,10 +1493,82 @@ class AllocationsList(_messages.Message):
 
   id = _messages.StringField(1)
   items = _messages.MessageField('Allocation', 2, repeated=True)
-  kind = _messages.StringField(3, default=u'compute#allocationsList')
+  kind = _messages.StringField(3, default=u'compute#allocationList')
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class AllocationSpecificSKUAllocation(_messages.Message):
+  r"""This allocation type allows to pre allocate specific instance
+  configuration.
+
+  Fields:
+    count: Specifies number of resources that are allocated.
+    inUseCount: [OutputOnly] Indicates how many resource are in use.
+    instanceProperties: A
+      AllocationSpecificSKUAllocationAllocatedInstanceProperties attribute.
+  """
+
+  count = _messages.IntegerField(1)
+  inUseCount = _messages.IntegerField(2)
+  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstanceProperties', 3)
+
+
+class AllocationSpecificSKUAllocationAllocatedInstanceProperties(_messages.Message):
+  r"""Properties of the SKU instances being reserved.
+
+  Fields:
+    guestAccelerators: Specifies accelerator type and count.
+    localSsds: Specifies amount of local ssd to reserve with each instance.
+      The type of disk is local-ssd.
+    machineType: Specifies type of machine (name only) which has fixed number
+      of vCPUs and fixed amount of memory. This also includes specifying
+      custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY
+      pattern.
+    minCpuPlatform: Minimum cpu platform the allocation.
+  """
+
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
+  localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk', 2, repeated=True)
+  machineType = _messages.StringField(3)
+  minCpuPlatform = _messages.StringField(4)
+
+
+class AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk(_messages.Message):
+  r"""A
+  AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk
+  object.
+
+  Enums:
+    InterfaceValueValuesEnum: Specifies the disk interface to use for
+      attaching this disk, which is either SCSI or NVME. The default is SCSI.
+      For performance characteristics of SCSI over NVMe, see Local SSD
+      performance.
+
+  Fields:
+    diskSizeGb: Specifies the size of the disk in base-2 GB.
+    interface: Specifies the disk interface to use for attaching this disk,
+      which is either SCSI or NVME. The default is SCSI. For performance
+      characteristics of SCSI over NVMe, see Local SSD performance.
+  """
+
+  class InterfaceValueValuesEnum(_messages.Enum):
+    r"""Specifies the disk interface to use for attaching this disk, which is
+    either SCSI or NVME. The default is SCSI. For performance characteristics
+    of SCSI over NVMe, see Local SSD performance.
+
+    Values:
+      NVDIMM: <no description>
+      NVME: <no description>
+      SCSI: <no description>
+    """
+    NVDIMM = 0
+    NVME = 1
+    SCSI = 2
+
+  diskSizeGb = _messages.IntegerField(1)
+  interface = _messages.EnumField('InterfaceValueValuesEnum', 2)
 
 
 class AllocationsScopedList(_messages.Message):
@@ -9153,10 +9185,10 @@ class ComputeInstancesInsertRequest(_messages.Message):
     sourceInstanceTemplate: Specifies instance template to create the
       instance.  This field is optional. It can be a full or partial URL. For
       example, the following are all valid URLs to an instance template:   - h
-      ttps://www.googleapis.com/compute/v1/projects/project/global/global/inst
-      anceTemplates/instanceTemplate  -
-      projects/project/global/global/instanceTemplates/instanceTemplate  -
-      global/instancesTemplates/instanceTemplate
+      ttps://www.googleapis.com/compute/v1/projects/project/global/instanceTem
+      plates/instanceTemplate  -
+      projects/project/global/instanceTemplates/instanceTemplate  -
+      global/instanceTemplates/instanceTemplate
     sourceMachineImage: Specifies instance machine to create the instance.
       This field is optional. It can be a full or partial URL. For example,
       the following are all valid URLs to an instance template:   - https://ww
@@ -23421,7 +23453,7 @@ class Instance(_messages.Message):
       by the setLabels method.
 
   Fields:
-    allocationAffinity: A InstanceAllocationAffinity attribute.
+    allocationAffinity: A AllocationAffinity attribute.
     canIpForward: Allows this instance to send and receive packets with non-
       matching destination or source IPs. This is required if you plan to use
       this instance to forward routes. For more information, see Enabling IP
@@ -23569,7 +23601,7 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  allocationAffinity = _messages.MessageField('InstanceAllocationAffinity', 1)
+  allocationAffinity = _messages.MessageField('AllocationAffinity', 1)
   canIpForward = _messages.BooleanField(2)
   cpuPlatform = _messages.StringField(3)
   creationTimestamp = _messages.StringField(4)
@@ -23753,38 +23785,6 @@ class InstanceAggregatedList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
-
-
-class InstanceAllocationAffinity(_messages.Message):
-  r"""AllocationAffinity is the configuration of desired allocation which this
-  instance could take capacity from.
-
-  Enums:
-    ConsumeAllocationTypeValueValuesEnum:
-
-  Fields:
-    consumeAllocationType: A ConsumeAllocationTypeValueValuesEnum attribute.
-    key: Corresponds to the label key of Allocation resource.
-    values: Corresponds to the label values of allocation resource.
-  """
-
-  class ConsumeAllocationTypeValueValuesEnum(_messages.Enum):
-    r"""ConsumeAllocationTypeValueValuesEnum enum type.
-
-    Values:
-      ANY_ALLOCATION: <no description>
-      NO_ALLOCATION: <no description>
-      SPECIFIC_ALLOCATION: <no description>
-      UNSPECIFIED: <no description>
-    """
-    ANY_ALLOCATION = 0
-    NO_ALLOCATION = 1
-    SPECIFIC_ALLOCATION = 2
-    UNSPECIFIED = 3
-
-  consumeAllocationType = _messages.EnumField('ConsumeAllocationTypeValueValuesEnum', 1)
-  key = _messages.StringField(2)
-  values = _messages.StringField(3, repeated=True)
 
 
 class InstanceGroup(_messages.Message):
@@ -24613,9 +24613,14 @@ class InstanceGroupManagerStatus(_messages.Message):
       of change (for example, creation, restart, or deletion); no future
       changes are scheduled for instances in the managed instance group; and
       the managed instance group itself is not being modified.
+    versionTargetReached: [Output Only] A bit indicating whether version
+      target has been reached in this managed instance group, i.e. all
+      instances are in their target version. Instances' target version are
+      specified by version field on Instance Group Manager.
   """
 
   isStable = _messages.BooleanField(1)
+  versionTargetReached = _messages.BooleanField(2)
 
 
 class InstanceGroupManagerUpdatePolicy(_messages.Message):
@@ -27475,6 +27480,10 @@ class InterconnectLocation(_messages.Message):
 
   Enums:
     ContinentValueValuesEnum: [Output Only] Continent for this location.
+    StatusValueValuesEnum: [Output Only] The status of this
+      InterconnectLocation. If the status is AVAILABLE, new Interconnects may
+      be provisioned in this InterconnectLocation. Otherwise, no new
+      Interconnects may be provisioned.
 
   Fields:
     address: [Output Only] The postal address of the Point of Presence, each
@@ -27505,6 +27514,10 @@ class InterconnectLocation(_messages.Message):
       objects, that describe parameters pertaining to the relation between
       this InterconnectLocation and various Google Cloud regions.
     selfLink: [Output Only] Server-defined URL for the resource.
+    status: [Output Only] The status of this InterconnectLocation. If the
+      status is AVAILABLE, new Interconnects may be provisioned in this
+      InterconnectLocation. Otherwise, no new Interconnects may be
+      provisioned.
   """
 
   class ContinentValueValuesEnum(_messages.Enum):
@@ -27533,6 +27546,18 @@ class InterconnectLocation(_messages.Message):
     NORTH_AMERICA = 8
     SOUTH_AMERICA = 9
 
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The status of this InterconnectLocation. If the status
+    is AVAILABLE, new Interconnects may be provisioned in this
+    InterconnectLocation. Otherwise, no new Interconnects may be provisioned.
+
+    Values:
+      AVAILABLE: <no description>
+      CLOSED: <no description>
+    """
+    AVAILABLE = 0
+    CLOSED = 1
+
   address = _messages.StringField(1)
   availabilityZone = _messages.StringField(2)
   city = _messages.StringField(3)
@@ -27547,6 +27572,7 @@ class InterconnectLocation(_messages.Message):
   peeringdbFacilityId = _messages.StringField(12)
   regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 13, repeated=True)
   selfLink = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
 
 
 class InterconnectLocationList(_messages.Message):
@@ -27866,7 +27892,7 @@ class IpAddressesList(_messages.Message):
   Fields:
     id: [Output Only] Unique identifier for the resource; defined by the
       server.
-    items: A list of InternalIpOwner resources.
+    items: A list of InternalIpAddress resources.
     kind: [Output Only] Type of resource. Always compute#ipAddressesList for
       IP addresses lists.
     nextPageToken: [Output Only] This token allows you to get the next page of
@@ -29524,6 +29550,8 @@ class NetworkEndpointGroup(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultPort: The default port used if the port number is not specified in
+      the network endpoint.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -29531,7 +29559,7 @@ class NetworkEndpointGroup(_messages.Message):
     kind: [Output Only] Type of the resource. Always
       compute#networkEndpointGroup for network endpoint group.
     loadBalancer: This field is only valid when the network endpoint group is
-      used for load balancing.
+      used for load balancing. [Deprecated] This field is deprecated.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -29539,13 +29567,19 @@ class NetworkEndpointGroup(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    network: The URL of the network to which all network endpoints in the NEG
+      belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
       group. Currently the only supported value is GCE_VM_IP_PORT.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output only] Number of network endpoints in the network endpoint
       group.
+    subnetwork: Optional URL of the subnetwork to which all network endpoints
+      in the NEG belong.
     type: Specify the type of this network endpoint group. Only LOAD_BALANCING
       is valid for now.
+    zone: [Output Only] The URL of the zone where the network endpoint group
+      is located.
   """
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
@@ -29567,15 +29601,19 @@ class NetworkEndpointGroup(_messages.Message):
     LOAD_BALANCING = 0
 
   creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#networkEndpointGroup')
-  loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 5)
-  name = _messages.StringField(6)
-  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 7)
-  selfLink = _messages.StringField(8)
-  size = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  defaultPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#networkEndpointGroup')
+  loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 9)
+  selfLink = _messages.StringField(10)
+  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  zone = _messages.StringField(14)
 
 
 class NetworkEndpointGroupAggregatedList(_messages.Message):
@@ -29735,13 +29773,14 @@ class NetworkEndpointGroupLbNetworkEndpointGroup(_messages.Message):
 
   Fields:
     defaultPort: The default port used if the port number is not specified in
-      the network endpoint.
+      the network endpoint. [Deprecated] This field is deprecated.
     network: The URL of the network to which all network endpoints in the NEG
-      belong. Uses "default" project network if unspecified.
+      belong. Uses "default" project network if unspecified. [Deprecated] This
+      field is deprecated.
     subnetwork: Optional URL of the subnetwork to which all network endpoints
-      in the NEG belong.
+      in the NEG belong. [Deprecated] This field is deprecated.
     zone: [Output Only] The URL of the zone where the network endpoint group
-      is located.
+      is located. [Deprecated] This field is deprecated.
   """
 
   defaultPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -30508,8 +30547,6 @@ class NodeGroup(_messages.Message):
       character, which cannot be a dash.
     nodeTemplate: The URL of the node template to which this node group
       belongs.
-    nodes: [Deprecated] Use nodeGroups.listNodes instead. [Output Only] A list
-      of nodes in this node group.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output Only] The total number of nodes in the node group.
     status: A StatusValueValuesEnum attribute.
@@ -30537,11 +30574,10 @@ class NodeGroup(_messages.Message):
   kind = _messages.StringField(4, default=u'compute#nodeGroup')
   name = _messages.StringField(5)
   nodeTemplate = _messages.StringField(6)
-  nodes = _messages.MessageField('NodeGroupNode', 7, repeated=True)
-  selfLink = _messages.StringField(8)
-  size = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  zone = _messages.StringField(11)
+  selfLink = _messages.StringField(7)
+  size = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  zone = _messages.StringField(10)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -30830,6 +30866,7 @@ class NodeGroupNode(_messages.Message):
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
+    serverBinding: Binding properties for the physical server.
     status: A StatusValueValuesEnum attribute.
   """
 
@@ -30850,7 +30887,8 @@ class NodeGroupNode(_messages.Message):
   instances = _messages.StringField(1, repeated=True)
   name = _messages.StringField(2)
   nodeType = _messages.StringField(3)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  serverBinding = _messages.MessageField('ServerBinding', 4)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -31163,6 +31201,7 @@ class NodeTemplate(_messages.Message):
     region: [Output Only] The name of the region where the node template
       resides, such as us-central1.
     selfLink: [Output Only] Server-defined URL for the resource.
+    serverBinding: Binding properties for the physical server.
     status: [Output Only] The status of the node template. One of the
       following values: CREATING, READY, and DELETING.
     statusMessage: [Output Only] An optional, human-readable explanation of
@@ -31221,8 +31260,9 @@ class NodeTemplate(_messages.Message):
   nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 8)
   region = _messages.StringField(9)
   selfLink = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusMessage = _messages.StringField(12)
+  serverBinding = _messages.MessageField('ServerBinding', 11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
 
 
 class NodeTemplateAggregatedList(_messages.Message):
@@ -34432,133 +34472,6 @@ class ResourceGroupReference(_messages.Message):
   group = _messages.StringField(1)
 
 
-class ResourcePoliciesList(_messages.Message):
-  r"""A ResourcePoliciesList object.
-
-  Messages:
-    WarningValue: [Output Only] Informational warning message.
-
-  Fields:
-    etag: A string attribute.
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of ResourcePolicy resources.
-    kind: [Output Only] Type of resource.Always compute#resourcePoliciesList
-      for listsof resourcePolicies
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for this resource.
-    warning: [Output Only] Informational warning message.
-  """
-
-  class WarningValue(_messages.Message):
-    r"""[Output Only] Informational warning message.
-
-    Enums:
-      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
-        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
-        results in the response.
-
-    Messages:
-      DataValueListEntry: A DataValueListEntry object.
-
-    Fields:
-      code: [Output Only] A warning code, if applicable. For example, Compute
-        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-        response.
-      data: [Output Only] Metadata about this warning in key: value format.
-        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
-      message: [Output Only] A human-readable description of the warning code.
-    """
-
-    class CodeValueValuesEnum(_messages.Enum):
-      r"""[Output Only] A warning code, if applicable. For example, Compute
-      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-      response.
-
-      Values:
-        CLEANUP_FAILED: <no description>
-        DEPRECATED_RESOURCE_USED: <no description>
-        DEPRECATED_TYPE_USED: <no description>
-        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
-        EXPERIMENTAL_TYPE_USED: <no description>
-        EXTERNAL_API_WARNING: <no description>
-        FIELD_VALUE_OVERRIDEN: <no description>
-        INJECTED_KERNELS_DEPRECATED: <no description>
-        MISSING_TYPE_DEPENDENCY: <no description>
-        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
-        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
-        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
-        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
-        NEXT_HOP_NOT_RUNNING: <no description>
-        NOT_CRITICAL_ERROR: <no description>
-        NO_RESULTS_ON_PAGE: <no description>
-        REQUIRED_TOS_AGREEMENT: <no description>
-        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
-        RESOURCE_NOT_DELETED: <no description>
-        SCHEMA_VALIDATION_IGNORED: <no description>
-        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
-        UNDECLARED_PROPERTIES: <no description>
-        UNREACHABLE: <no description>
-      """
-      CLEANUP_FAILED = 0
-      DEPRECATED_RESOURCE_USED = 1
-      DEPRECATED_TYPE_USED = 2
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
-      EXPERIMENTAL_TYPE_USED = 4
-      EXTERNAL_API_WARNING = 5
-      FIELD_VALUE_OVERRIDEN = 6
-      INJECTED_KERNELS_DEPRECATED = 7
-      MISSING_TYPE_DEPENDENCY = 8
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
-      NEXT_HOP_CANNOT_IP_FORWARD = 10
-      NEXT_HOP_INSTANCE_NOT_FOUND = 11
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
-      NEXT_HOP_NOT_RUNNING = 13
-      NOT_CRITICAL_ERROR = 14
-      NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
-
-    class DataValueListEntry(_messages.Message):
-      r"""A DataValueListEntry object.
-
-      Fields:
-        key: [Output Only] A key that provides more detail on the warning
-          being returned. For example, for warnings where there are no results
-          in a list request for a particular zone, this key might be scope and
-          the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource and a suggested replacement, or a
-          warning about invalid network settings (for example, if an instance
-          attempts to perform IP forwarding but is not enabled for IP
-          forwarding).
-        value: [Output Only] A warning data value corresponding to the key.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    code = _messages.EnumField('CodeValueValuesEnum', 1)
-    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
-    message = _messages.StringField(3)
-
-  etag = _messages.StringField(1)
-  id = _messages.StringField(2)
-  items = _messages.MessageField('ResourcePolicy', 3, repeated=True)
-  kind = _messages.StringField(4, default=u'compute#resourcePoliciesList')
-  nextPageToken = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  warning = _messages.MessageField('WarningValue', 7)
-
-
 class ResourcePoliciesScopedList(_messages.Message):
   r"""A ResourcePoliciesScopedList object.
 
@@ -34984,6 +34897,133 @@ class ResourcePolicyHourlyCycle(_messages.Message):
   duration = _messages.StringField(1)
   hoursInCycle = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   startTime = _messages.StringField(3)
+
+
+class ResourcePolicyList(_messages.Message):
+  r"""A ResourcePolicyList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of ResourcePolicy resources.
+    kind: [Output Only] Type of resource.Always compute#resourcePoliciesList
+      for listsof resourcePolicies
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  items = _messages.MessageField('ResourcePolicy', 3, repeated=True)
+  kind = _messages.StringField(4, default=u'compute#resourcePolicyList')
+  nextPageToken = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class ResourcePolicyVmMaintenancePolicy(_messages.Message):
@@ -35921,11 +35961,6 @@ class RouterNat(_messages.Message):
       other Router.Nat section in any Router for this network in this region.
 
   Fields:
-    autoAllocatedNatIps: [Output Only] A list of IPs allocated automatically
-      by GCP for this Nat service. They will be raw IP strings like
-      "179.12.26.133". They are ephemeral IPs allocated from the IP blocks
-      managed by the NAT manager. This list can grow and shrink based on the
-      number of VMs configured to use NAT.
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
     minPortsPerVm: Minimum number of ports allocated to a VM from this NAT
@@ -35980,17 +36015,16 @@ class RouterNat(_messages.Message):
     ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES = 1
     LIST_OF_SUBNETWORKS = 2
 
-  autoAllocatedNatIps = _messages.StringField(1, repeated=True)
-  icmpIdleTimeoutSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minPortsPerVm = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  name = _messages.StringField(4)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 5)
-  natIps = _messages.StringField(6, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 7)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 8, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  icmpIdleTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 4)
+  natIps = _messages.StringField(5, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 6)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 7, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):
@@ -36983,6 +37017,31 @@ class SerialPortOutput(_messages.Message):
   next = _messages.IntegerField(3)
   selfLink = _messages.StringField(4)
   start = _messages.IntegerField(5)
+
+
+class ServerBinding(_messages.Message):
+  r"""A ServerBinding object.
+
+  Enums:
+    TypeValueValuesEnum:
+
+  Fields:
+    type: A TypeValueValuesEnum attribute.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""TypeValueValuesEnum enum type.
+
+    Values:
+      RESTART_NODE_ON_ANY_SERVER: <no description>
+      RESTART_NODE_ON_MINIMAL_SERVERS: <no description>
+      SERVER_BINDING_TYPE_UNSPECIFIED: <no description>
+    """
+    RESTART_NODE_ON_ANY_SERVER = 0
+    RESTART_NODE_ON_MINIMAL_SERVERS = 1
+    SERVER_BINDING_TYPE_UNSPECIFIED = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class ServiceAccount(_messages.Message):

@@ -133,7 +133,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the enqueued time.
+      r"""Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the backup initiation time.
 
       Args:
         request: (SqlBackupRunsListRequest) input message

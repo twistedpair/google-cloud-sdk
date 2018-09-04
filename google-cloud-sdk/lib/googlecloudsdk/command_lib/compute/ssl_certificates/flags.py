@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -47,23 +48,66 @@ class SslCertificatesCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def SslCertificateArgument(required=True, plural=False):
+class GlobalSslCertificatesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalSslCertificatesCompleter, self).__init__(
+        collection='compute.sslCertificates',
+        api_version='alpha',
+        list_command='alpha compute ssl-certificates list --global --uri',
+        **kwargs)
+
+
+class RegionSslCertificatesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionSslCertificatesCompleter, self).__init__(
+        collection='compute.regionSslCertificates',
+        api_version='alpha',
+        list_command=
+        'alpha compute ssl-certificates list --filter=region:* --uri',
+        **kwargs)
+
+
+class SslCertificatesCompleterAlpha(completers.MultiResourceCompleter):
+
+  def __init__(self, **kwargs):
+    super(SslCertificatesCompleterAlpha, self).__init__(
+        completers=[
+            GlobalSslCertificatesCompleter, RegionSslCertificatesCompleter
+        ],
+        **kwargs)
+
+
+def SslCertificateArgument(required=True, plural=False, include_alpha=False):
   return compute_flags.ResourceArgument(
       resource_name='SSL certificate',
-      completer=SslCertificatesCompleter,
+      completer=SslCertificatesCompleterAlpha
+      if include_alpha else SslCertificatesCompleter,
       plural=plural,
       required=required,
-      global_collection='compute.sslCertificates')
+      global_collection='compute.sslCertificates',
+      regional_collection='compute.regionSslCertificates'
+      if include_alpha else None,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if include_alpha else None)
 
 
-def SslCertificatesArgumentForOtherResource(resource, required=True):
+def SslCertificatesArgumentForOtherResource(resource,
+                                            required=True,
+                                            include_alpha=False):
   return compute_flags.ResourceArgument(
       name='--ssl-certificates',
       resource_name='ssl certificate',
-      completer=SslCertificatesCompleter,
+      completer=SslCertificatesCompleterAlpha
+      if include_alpha else SslCertificatesCompleter,
       plural=True,
       required=required,
       global_collection='compute.sslCertificates',
+      regional_collection='compute.regionSslCertificates'
+      if include_alpha else None,
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if include_alpha else None,
       short_help=('A reference to SSL certificate resources that are used for '
                   'server-side authentication.'),
       detailed_help="""\

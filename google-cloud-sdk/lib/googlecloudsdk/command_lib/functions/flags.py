@@ -350,3 +350,17 @@ def AddFunctionResourceArg(parser, verb, positional=True):
       GetFunctionResourceSpec(),
       'The Cloud function name {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddServiceAccountFlag(parser):
+  parser.add_argument(
+      '--service-account',
+      help="""\
+      The email address of the IAM service account associated with the
+      function at runtime. The service account represents the identity of the
+      running function, and determines what permissions the function has.
+
+      If not provided, the function will use the project's default service
+      account.
+      """
+  )

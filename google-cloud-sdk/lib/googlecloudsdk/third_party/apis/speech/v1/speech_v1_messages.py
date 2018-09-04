@@ -136,16 +136,17 @@ class Operation(_messages.Message):
 class RecognitionAudio(_messages.Message):
   r"""Contains audio data in the encoding specified in the
   `RecognitionConfig`. Either `content` or `uri` must be supplied. Supplying
-  both or neither returns google.rpc.Code.INVALID_ARGUMENT. See [audio
-  limits](https://cloud.google.com/speech/limits#content).
+  both or neither returns google.rpc.Code.INVALID_ARGUMENT. See [content
+  limits](/speech-to-text/quotas#content).
 
   Fields:
     content: The audio data bytes encoded as specified in `RecognitionConfig`.
       Note: as with all bytes fields, protobuffers use a pure binary
       representation, whereas JSON representations use base64.
     uri: URI that points to a file that contains audio data bytes as specified
-      in `RecognitionConfig`. Currently, only Google Cloud Storage URIs are
-      supported, which must be specified in the following format:
+      in `RecognitionConfig`. The file must not be compressed (for example,
+      gzip). Currently, only Google Cloud Storage URIs are supported, which
+      must be specified in the following format:
       `gs://bucket_name/object_name` (other URI formats return
       google.rpc.Code.INVALID_ARGUMENT). For more information, see [Request
       URIs](https://cloud.google.com/storage/docs/reference-uris).
@@ -166,6 +167,13 @@ class RecognitionConfig(_messages.Message):
       AudioEncoding.
 
   Fields:
+    enableAutomaticPunctuation: *Optional* If 'true', adds punctuation to
+      recognition result hypotheses. This feature is only available in select
+      languages. Setting this for requests in other languages has no effect at
+      all. The default 'false' value does not add punctuation to result
+      hypotheses. Note: This is currently offered as an experimental service,
+      complimentary to all users. In the future this may be exclusively
+      available as a premium feature.
     enableWordTimeOffsets: *Optional* If `true`, the top result includes a
       list of words and the start and end time offsets (timestamps) for those
       words. If `false`, no word-level time offset information is returned.
@@ -175,15 +183,31 @@ class RecognitionConfig(_messages.Message):
       all other audio formats. For details, see AudioEncoding.
     languageCode: *Required* The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Example: "en-US". See [Language
-      Support](https://cloud.google.com/speech/docs/languages) for a list of
-      the currently supported language codes.
+      Example: "en-US". See [Language Support](/speech-to-text/docs/languages)
+      for a list of the currently supported language codes.
     maxAlternatives: *Optional* Maximum number of recognition hypotheses to be
       returned. Specifically, the maximum number of
       `SpeechRecognitionAlternative` messages within each
       `SpeechRecognitionResult`. The server may return fewer than
       `max_alternatives`. Valid values are `0`-`30`. A value of `0` or `1`
       will return a maximum of one. If omitted, will return a maximum of one.
+    model: *Optional* Which model to select for the given request. Select the
+      model best suited to your domain to get best results. If a model is not
+      explicitly specified, then we auto-select a model based on the
+      parameters in the RecognitionConfig. <table>   <tr>
+      <td><b>Model</b></td>     <td><b>Description</b></td>   </tr>   <tr>
+      <td><code>command_and_search</code></td>     <td>Best for short queries
+      such as voice commands or voice search.</td>   </tr>   <tr>
+      <td><code>phone_call</code></td>     <td>Best for audio that originated
+      from a phone call (typically     recorded at an 8khz sampling
+      rate).</td>   </tr>   <tr>     <td><code>video</code></td>     <td>Best
+      for audio that originated from from video or includes multiple
+      speakers. Ideally the audio is recorded at a 16khz or greater
+      sampling rate. This is a premium model that costs more than the
+      standard rate.</td>   </tr>   <tr>     <td><code>default</code></td>
+      <td>Best for audio that is not one of the specific audio models.
+      For example, long-form audio. Ideally the audio is high-fidelity,
+      recorded at a 16khz or greater sampling rate.</td>   </tr> </table>
     profanityFilter: *Optional* If set to `true`, the server will attempt to
       filter out profanities, replacing all but the initial character in each
       filtered word with asterisks, e.g. "f***". If set to `false` or omitted,
@@ -195,8 +219,19 @@ class RecognitionConfig(_messages.Message):
       audio source (instead of re-sampling). This field is optional for `FLAC`
       and `WAV` audio files and required for all other audio formats. For
       details, see AudioEncoding.
-    speechContexts: *Optional* A means to provide context to assist the speech
-      recognition.
+    speechContexts: *Optional* array of SpeechContext. A means to provide
+      context to assist the speech recognition. For more information, see
+      [Phrase Hints](/speech-to-text/docs/basics#phrase-hints).
+    useEnhanced: *Optional* Set to true to use an enhanced model for speech
+      recognition. You must also set the `model` field to a valid, enhanced
+      model. If `use_enhanced` is set to true and the `model` field is not
+      set, then `use_enhanced` is ignored. If `use_enhanced` is true and an
+      enhanced version of the specified model does not exist, then the speech
+      is recognized using the standard version of the specified model.
+      Enhanced speech models require that you opt-in to data logging using
+      instructions in the [documentation](/speech-to-text/enable-data-
+      logging). If you set `use_enhanced` to true and you have not enabled
+      audio logging, then you will receive an error.
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
@@ -244,13 +279,16 @@ class RecognitionConfig(_messages.Message):
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
 
-  enableWordTimeOffsets = _messages.BooleanField(1)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 2)
-  languageCode = _messages.StringField(3)
-  maxAlternatives = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  profanityFilter = _messages.BooleanField(5)
-  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 7, repeated=True)
+  enableAutomaticPunctuation = _messages.BooleanField(1)
+  enableWordTimeOffsets = _messages.BooleanField(2)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 3)
+  languageCode = _messages.StringField(4)
+  maxAlternatives = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  model = _messages.StringField(6)
+  profanityFilter = _messages.BooleanField(7)
+  sampleRateHertz = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 9, repeated=True)
+  useEnhanced = _messages.BooleanField(10)
 
 
 class RecognizeRequest(_messages.Message):
@@ -289,8 +327,7 @@ class SpeechContext(_messages.Message):
       can be used to improve the accuracy for specific words and phrases, for
       example, if specific commands are typically spoken by the user. This can
       also be used to add additional words to the vocabulary of the
-      recognizer. See [usage
-      limits](https://cloud.google.com/speech/limits#content).
+      recognizer. See [usage limits](/speech-to-text/quotas#content).
   """
 
   phrases = _messages.StringField(1, repeated=True)
@@ -320,8 +357,8 @@ class SpeechRecognitionAlternative(_messages.Message):
     transcript: Output only. Transcript text representing the words that the
       user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word. Note: When enable_speaker_diarization is true, you will
-      see all the words from the beginning of the audio.
+      recognized word. Note: When `enable_speaker_diarization` is true, you
+      will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)

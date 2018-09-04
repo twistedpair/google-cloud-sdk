@@ -100,10 +100,10 @@ class CommandBuilder(object):
     elif (self.spec.command_type ==
           yaml_command_schema.CommandType.REMOVE_IAM_POLICY_BINDING):
       command = self._GenerateRemoveIamPolicyBindingCommand()
-    elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
-      command = self._GenerateGenericCommand()
     elif self.spec.command_type == yaml_command_schema.CommandType.UPDATE:
       command = self._GenerateUpdateCommand()
+    elif self.spec.command_type == yaml_command_schema.CommandType.GENERIC:
+      command = self._GenerateGenericCommand()
     else:
       raise ValueError('Command [{}] unknown command type [{}].'.format(
           ' '.join(self.path), self.spec.command_type))
@@ -201,7 +201,9 @@ class CommandBuilder(object):
         ref, response = self._CommonRun(args)
         if self.spec.async:
           response = self._HandleAsync(
-              args, ref, response,
+              args,
+              ref,
+              response,
               request_string='Delete request issued for: [{{{}}}]'
               .format(yaml_command_schema.NAME_FORMAT_KEY),
               extract_resource_result=False)
@@ -531,13 +533,19 @@ class CommandBuilder(object):
           base.ASYNC_FLAG.AddToParser(parser)
 
       def Run(self_, args):
+        # Check if mask is required for an update request.
+        mask_path = update.GetMaskFieldPath(self.method)
+        if mask_path:
+          mask_string = update.GetMaskString(args, self.spec, mask_path)
+          self.spec.request.static_fields[mask_path] = mask_string
+
+        # Check if the update is full-update, which requires a get request.
+        existing_message = None
         if self.spec.update:
-          update_spec = self.spec.update
-          if update_spec.mask_field:
-            mask_string = update.GetMaskString(args, self.spec)
-            self.spec.request.static_fields[
-                update_spec.mask_field] = mask_string
-        ref, response = self._CommonRun(args)
+          if self.spec.update.read_modify_update:
+            existing_message = self._GetExistingResource(args)
+
+        ref, response = self._CommonRun(args, existing_message)
         if self.spec.async:
           request_string = None
           if ref:
@@ -567,7 +575,7 @@ class CommandBuilder(object):
     if self.spec.output.format:
       parser.display_info.AddFormat(self.spec.output.format)
 
-  def _CommonRun(self, args):
+  def _CommonRun(self, args, existing_message=None):
     """Performs run actions common to all commands.
 
     Parses the resource argument into a resource reference
@@ -576,6 +584,7 @@ class CommandBuilder(object):
 
     Args:
       args: The argparse parser.
+      existing_message: the apitools message returned from previous request.
 
     Returns:
       (resources.Resource, response), A tuple of the parsed resource reference
@@ -598,10 +607,12 @@ class CommandBuilder(object):
     else:
       parse_resource = self.spec.request.parse_resource_into_request
       request = self.arg_generator.CreateRequest(
-          args, self.spec.request.static_fields,
+          args,
+          self.spec.request.static_fields,
           self.spec.request.resource_method_params,
           use_relative_name=self.spec.request.use_relative_name,
-          parse_resource_into_request=parse_resource)
+          parse_resource_into_request=parse_resource,
+          existing_message=existing_message)
       for hook in self.spec.request.modify_request_hooks:
         request = hook(ref, args, request)
 
@@ -671,6 +682,15 @@ class CommandBuilder(object):
       pass
 
     return policy
+
+  def _GetExistingResource(self, args):
+    get_method = registry.GetMethod(self.spec.request.collection, 'get',
+                                    self.spec.request.api_version)
+    get_arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
+        get_method, [], self.spec.arguments.resource)
+
+    # TODO(b/111069150): Add error handling when get fails.
+    return get_method.Call(get_arg_generator.CreateRequest(args))
 
   def _HandleAsync(self, args, resource_ref, operation,
                    request_string, extract_resource_result=True):

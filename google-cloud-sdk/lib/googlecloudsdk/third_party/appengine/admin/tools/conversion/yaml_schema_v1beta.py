@@ -87,6 +87,7 @@ SCHEMA = s.Message(
         config_id=s.Value(),
         trace_sampling=s.Value('disable_trace_sampling', converter=c.Not),
     ),
+    entrypoint=s.Value(converter=c.ConvertEntrypoint),
     env=s.Value(),
     env_variables=s.Map(),
     error_handlers=s.RepeatedField(element=s.Message(

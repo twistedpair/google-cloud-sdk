@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from apitools.base.protorpclite import messages
 
 from googlecloudsdk.api_lib.util import resource as resource_lib  # pylint: disable=unused-import
@@ -36,13 +38,120 @@ import six
 
 DEFAULT_ID_FIELD = 'name'
 _PROJECTS_COLLECTION = 'cloudresourcemanager.projects'
-_PROJECTS_STATIC_PARAMS = {
-    'filter': 'lifecycleState:ACTIVE'}
-_PROJECTS_ID_FIELD = 'projectId'
+_PROJECT_ID_FIELD = 'projectId'
 
 
 class Error(exceptions.Error):
   """Base error class for this module."""
+
+
+class ParentTranslator(object):
+  """Translates parent collections for completers.
+
+  Attributes:
+    collection: str, the collection name.
+    param_translation: {str: str}, lookup from the params of the child
+      collection to the params of the special parent collection. If None,
+      then the collections match and translate methods are a no-op.
+  """
+
+  def __init__(self, collection, param_translation=None):
+    self.collection = collection
+    self.param_translation = param_translation or {}
+
+  def ToChildParams(self, params):
+    """Translate from original parent params to params that match the child."""
+    if self.param_translation:
+      for orig_param, new_param in six.iteritems(self.param_translation):
+        params[orig_param] = params.get(new_param)
+        del params[new_param]
+    return params
+
+  def ResourceMethodParams(self, message):
+    """Get dict for translating parent params into the given message type."""
+    resource_method_params = {}
+    # Parse resource with any params in the translator that are needed for the
+    # request.
+    for orig_param, special_param in six.iteritems(self.param_translation):
+      try:
+        message.field_by_name(orig_param)
+      # The field is not found, meaning that the original param isn't in the
+      # message.
+      except KeyError:
+        continue
+      resource_method_params[orig_param] = special_param
+    return resource_method_params
+
+  def Parse(self, parent_params, parameter_info, aggregations_dict):
+    """Parse the parent resource from parameter info and aggregations.
+
+    Args:
+      parent_params: [str], a list of params in the current collection's parent
+        collection.
+      parameter_info: the runtime ResourceParameterInfo object.
+      aggregations_dict: {str: str}, a dict of params to values that are
+        being aggregated from earlier updates.
+
+    Returns:
+      resources.Resource | None, the parsed parent reference or None if there
+        is not enough information to parse.
+    """
+    param_values = {
+        self.param_translation.get(p, p): parameter_info.GetValue(p)
+        for p in parent_params}
+    for p, value in six.iteritems(aggregations_dict):
+      translated_name = self.param_translation.get(p, p)
+      if value and not param_values.get(translated_name, None):
+        param_values[translated_name] = value
+    try:
+      return resources.Resource(
+          resources.REGISTRY,
+          collection_info=resources.REGISTRY.GetCollectionInfo(self.collection),
+          subcollection='',
+          param_values=param_values,
+          endpoint_url=None)
+    # Not all completion list calls may need to have a parent, so even if we
+    # can't parse a parent, we log the error and attempt to send an update call
+    # without one. (Any error returned by the API will be raised.)
+    except resources.Error as e:
+      log.info(six.text_type(e).rstrip())
+      return None
+
+
+# A map from parent params (in original resource parser order, joined with '.')
+# to special collections. If the original params are different from the special
+# collection, the param_translator is used to translate back and forth between
+# the original params and the special collection.
+_PARENT_TRANSLATORS = {
+    'projectsId': ParentTranslator(_PROJECTS_COLLECTION,
+                                   {'projectsId': _PROJECT_ID_FIELD}),
+    'projectId': ParentTranslator(_PROJECTS_COLLECTION)}
+
+
+class CollectionConfig(collections.namedtuple(
+    'CollectionConfig',
+    [
+        # static params are used to build the List request when updating
+        # the cache (equivalent to completion_request_params in AttributeConfig
+        # objects)
+        'static_params',
+        # Configures the ID field that is used to parse the results of a List
+        # request when updating the cache. Equivalent to completion_id_field
+        # in AttributeConfig objects.
+        'id_field',
+        # Configures the param name for the completer.
+        'param_name']
+    )):
+  """Stores data about special collections for configuring completion."""
+
+
+# This maps special collections to configuration for CompleterInfo objects
+# rather than using configuration from the parent resource's collection.
+# Currently only covers projects.
+_SPECIAL_COLLECTIONS_MAP = {
+    _PROJECTS_COLLECTION: CollectionConfig({'filter': 'lifecycleState:ACTIVE'},
+                                           _PROJECT_ID_FIELD,
+                                           _PROJECT_ID_FIELD)}
 
 
 class ResourceArgumentCompleter(completers.ResourceCompleter):
@@ -72,6 +181,10 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
       googlecloudsdk.command_lib.util.apis.registry.APIMethod, the method.
     """
     return self._method
+
+  def _ParentParams(self):
+    """Get the parent params of the collection."""
+    return self.collection_info.GetParams('')[:-1]
 
   def _GetUpdaters(self):
     # type: (...) -> dict
@@ -128,8 +241,10 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
              for p in self.collection_info.GetParams('')],
             [(p.name, p.value) for p in aggregations],
             parameter_info.resource_info.attribute_to_args_map))
+    parent_translator = self._GetParentTranslator(parameter_info, aggregations)
     try:
-      query = self.BuildListQuery(parameter_info, aggregations)
+      query = self.BuildListQuery(parameter_info, aggregations,
+                                  parent_translator=parent_translator)
     except Exception as e:  # pylint: disable=broad-except
       if properties.VALUES.core.print_completion_tracebacks.GetBool():
         raise
@@ -141,7 +256,8 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
       response_collection = self.method.collection
       items = [self._ParseResponse(r, response_collection,
                                    parameter_info=parameter_info,
-                                   aggregations=aggregations)
+                                   aggregations=aggregations,
+                                   parent_translator=parent_translator)
                for r in response]
       log.info('cache items={}'.format(
           [i.RelativeName() for i in items]))
@@ -158,26 +274,36 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
                         type(e), six.text_type(e).rstrip()))
       raise Error('Update query [{}]: {} {}'.format(
           query, type(e), six.text_type(e).rstrip()))
-
     return [self.StringToRow(item.RelativeName()) for item in items]
 
   def _ParseResponse(self, response, response_collection,
-                     parameter_info=None, aggregations=None):
+                     parameter_info=None, aggregations=None,
+                     parent_translator=None):
     # type: (...) -> typing.Optional[resources.Resource]
     """Gets a resource ref from a single item in a list response."""
-    params = {}
-    parent_ref = self.GetParentRef(parameter_info, aggregations=aggregations)
-    if parent_ref:
-      params = parent_ref.AsDict()
+    param_values = self._GetParamValuesFromParent(
+        parameter_info, aggregations=aggregations,
+        parent_translator=parent_translator)
     param_names = response_collection.detailed_params
     for param in param_names:
       val = getattr(response, param, None)
       if val is not None:
-        params[param] = val
+        param_values[param] = val
 
     line = getattr(response, self.id_field, '')
     return resources.REGISTRY.Parse(
-        line, collection=response_collection.full_name, params=params)
+        line, collection=response_collection.full_name, params=param_values)
+
+  def _GetParamValuesFromParent(self, parameter_info, aggregations=None,
+                                parent_translator=None):
+    parent_ref = self.GetParent(parameter_info, aggregations=aggregations,
+                                parent_translator=parent_translator)
+    if not parent_ref:
+      return {}
+    params = parent_ref.AsDict()
+    if parent_translator:
+      return parent_translator.ToChildParams(params)
+    return params
 
   def _GetAggregationsValuesDict(self, aggregations):
     # type: (...) -> dict
@@ -189,13 +315,15 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
         aggregations_dict[aggregation.name] = aggregation.value
     return aggregations_dict
 
-  def BuildListQuery(self, parameter_info, aggregations=None):
+  def BuildListQuery(self, parameter_info, aggregations=None,
+                     parent_translator=None):
     # type: (...) -> typing.Optional[messages.Message]
     """Builds a list request to list values for the given argument.
 
     Args:
       parameter_info: the runtime ResourceParameterInfo object.
       aggregations: a list of _RuntimeParameter objects.
+      parent_translator: a ParentTranslator object if needed.
 
     Returns:
       The apitools request.
@@ -206,45 +334,91 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
     message = method.GetRequestType()()
     for field, value in six.iteritems(self._static_params):
       arg_utils.SetFieldInMessage(message, field, value)
-    parent = self.GetParentRef(parameter_info,
-                               aggregations=aggregations)
+    parent = self.GetParent(parameter_info, aggregations=aggregations,
+                            parent_translator=parent_translator)
     if not parent:
       return message
-    arg_utils.ParseResourceIntoMessage(parent, method, message)
+    resource_method_params = {}
+
+    if parent_translator:
+      resource_method_params = parent_translator.ResourceMethodParams(message)
+
+    arg_utils.ParseResourceIntoMessage(
+        parent, method, message,
+        resource_method_params=resource_method_params)
     return message
 
-  def GetParentRef(self, parameter_info, aggregations=None):
+  def _GetParentTranslator(self, parameter_info, aggregations=None):
+    """Get a special parent translator if needed and available."""
+    aggregations_dict = self._GetAggregationsValuesDict(aggregations)
+    param_values = self._GetRawParamValuesForParent(
+        parameter_info, aggregations_dict=aggregations_dict)
+    try:
+      self._ParseDefaultParent(param_values)
+      # If there's no error, we don't need a translator.
+      return None
+    except resources.ParentCollectionResolutionException:
+      # Check the parent params against the _PARENT_TRANSLATORS dict, using the
+      # parent params (joined by '.' in original resource parser order) as a
+      # key.
+      key = '.'.join(self._ParentParams())
+      if key in _PARENT_TRANSLATORS:
+        return _PARENT_TRANSLATORS.get(key)
+    # Errors will be raised and logged later when actually parsing the parent.
+    except resources.Error:
+      return None
+
+  def _GetRawParamValuesForParent(self, parameter_info, aggregations_dict=None):
+    """Get raw param values for the resource in prep for parsing parent."""
+    param_values = {p: parameter_info.GetValue(p) for p in self._ParentParams()}
+    for name, value in six.iteritems(aggregations_dict or {}):
+      if value and not param_values.get(name, None):
+        param_values[name] = value
+    final_param = self.collection_info.GetParams('')[-1]
+    if param_values.get(final_param, None) is None:
+      param_values[final_param] = 'fake'  # Stripped when we get the parent.
+    return param_values
+
+  def _ParseDefaultParent(self, param_values):
+    """Parse the parent for a resource using default collection."""
+    resource = resources.Resource(
+        resources.REGISTRY,
+        collection_info=self.collection_info,
+        subcollection='',
+        param_values=param_values,
+        endpoint_url=None)
+    return resource.Parent()
+
+  def GetParent(self, parameter_info, aggregations=None,
+                parent_translator=None):
     # type: (...) -> typing.Optional[resources.Resource]
     """Gets the parent reference of the parsed parameters.
 
     Args:
       parameter_info: the runtime ResourceParameterInfo object.
       aggregations: a list of _RuntimeParameter objects.
+      parent_translator: a ParentTranslator for translating to a special
+        parent collection, if needed.
 
     Returns:
-      googlecloudsdk.core.resources.Resource, the parent reference | None, if
-        no parent could be parsed.
+      googlecloudsdk.core.resources.Resource | None, the parent resource or None
+        if no parent was found.
     """
-    param_values = {
-        p: parameter_info.GetValue(p)
-        for p in self.collection_info.GetParams('')[:-1]
-    }
     aggregations_dict = self._GetAggregationsValuesDict(aggregations)
-    for name, value in six.iteritems(aggregations_dict):
-      if value and not param_values.get(name, None):
-        param_values[name] = value
-    final_param = self.collection_info.GetParams('')[-1]
-    if param_values.get(final_param, None) is None:
-      param_values[final_param] = 'fake'  # Stripped by resource.Parent() below.
+    param_values = self._GetRawParamValuesForParent(
+        parameter_info, aggregations_dict=aggregations_dict)
     try:
-      resource = resources.Resource(
-          resources.REGISTRY,
-          collection_info=self.collection_info,
-          subcollection='',
-          param_values=param_values,
-          endpoint_url=None)
-      return resource.Parent()
-    except resources.Error:
+      if not parent_translator:
+        return self._ParseDefaultParent(param_values)
+      return parent_translator.Parse(self._ParentParams(), parameter_info,
+                                     aggregations_dict)
+    except resources.ParentCollectionResolutionException as e:
+      # We don't know the parent collection.
+      log.info(six.text_type(e).rstrip())
+      return None
+    # No resource could be parsed.
+    except resources.Error as e:
+      log.info(six.text_type(e).rstrip())
       return None
 
   def __eq__(self, other):
@@ -269,11 +443,11 @@ def _MatchCollection(resource_spec, attribute):
     return resource_collection.name
   attribute_idx = resource_spec.attributes.index(attribute)
   api_name = resource_collection_info.api_name
-  collections = registry.GetAPICollections(
+  resource_collections = registry.GetAPICollections(
       api_name,
       resource_collection_info.api_version)
   params = resource_collection.detailed_params[:attribute_idx + 1]
-  for c in collections:
+  for c in resource_collections:
     if c.detailed_params == params:
       return c.name
 
@@ -299,50 +473,84 @@ def _GetCompleterCollectionInfo(resource_spec, attribute):
                                               api_version=api_version)
 
 
-def _GetCollectionAndMethod(resource_spec, attribute_name):
-  # type: (concepts.ResourceSpec, str) -> typing.Tuple[typing.Optional[dict], typing.Optional[str], typing.Optional[resource_lib.CollectionInfo], typing.Optional[registry.APIMethod]]  # pylint: disable=line-too-long
-  """Gets static params, name, collection, method of attribute in resource."""
-  for a in resource_spec.attributes:
-    if a.name == attribute_name:
-      attribute = a
-      break
-  else:
-    raise AttributeError(
-        'Attribute [{}] not found in resource.'.format(attribute_name))
-  static_params = attribute.completion_request_params
-  id_field = attribute.completion_id_field
-  collection_info = _GetCompleterCollectionInfo(resource_spec, attribute)
-  if not collection_info:
-    return static_params, id_field, None, None
-  # If there is no appropriate list method for the collection, we can't auto-
-  # create a completer.
-  try:
-    method = registry.GetMethod(
-        collection_info.full_name, 'list',
-        api_version=collection_info.api_version)
-  except registry.UnknownMethodError:
-    if (collection_info.full_name != _PROJECTS_COLLECTION
-        and collection_info.full_name.split('.')[-1] == 'projects'):
-      # The CloudResourceManager projects methods can be used for "synthetic"
-      # project resources that don't have their own method.
-      # This is a bit of a hack, so if any resource arguments come up for
-      # which this doesn't work, a toggle should be added to the
-      # ResourceSpec class to disable this.
-      method = registry.GetMethod(_PROJECTS_COLLECTION, 'list')
-      static_params = _PROJECTS_STATIC_PARAMS
-      id_field = _PROJECTS_ID_FIELD
+class CompleterInfo(object):
+  """Holds data that can be used to instantiate a resource completer."""
+
+  def __init__(self, static_params=None, id_field=None, collection_info=None,
+               method=None, param_name=None):
+    self.static_params = static_params
+    self.id_field = id_field
+    self.collection_info = collection_info
+    self.method = method
+    self.param_name = param_name
+
+  @classmethod
+  def FromResource(cls, resource_spec, attribute_name):
+    # type: (...) -> CompleterInfo
+    """Gets the method, param_name, and other configuration for a completer.
+
+    Args:
+      resource_spec: concepts.ResourceSpec, the overall resource.
+      attribute_name: str, the name of the attribute whose argument will use
+        this completer.
+
+    Raises:
+      AttributeError: if the attribute doesn't belong to the resource.
+
+    Returns:
+      CompleterInfo, the instantiated object.
+    """
+    for a in resource_spec.attributes:
+      if a.name == attribute_name:
+        attribute = a
+        break
     else:
+      raise AttributeError(
+          'Attribute [{}] not found in resource.'.format(attribute_name))
+    param_name = resource_spec.ParamName(attribute_name)
+    static_params = attribute.completion_request_params
+    id_field = attribute.completion_id_field
+    collection_info = _GetCompleterCollectionInfo(resource_spec, attribute)
+    if collection_info.full_name in _SPECIAL_COLLECTIONS_MAP:
+      special_info = _SPECIAL_COLLECTIONS_MAP.get(collection_info.full_name)
+      method = registry.GetMethod(collection_info.full_name, 'list')
+      static_params = special_info.static_params
+      id_field = special_info.id_field
+      param_name = special_info.param_name
+    if not collection_info:
+      return CompleterInfo(static_params, id_field, None, None, param_name)
+    # If there is no appropriate list method for the collection, we can't auto-
+    # create a completer.
+    try:
+      method = registry.GetMethod(
+          collection_info.full_name, 'list',
+          api_version=collection_info.api_version)
+    except registry.UnknownMethodError:
+      if (collection_info.full_name != _PROJECTS_COLLECTION
+          and collection_info.full_name.split('.')[-1] == 'projects'):
+        # The CloudResourceManager projects methods can be used for "synthetic"
+        # project resources that don't have their own method.
+        # This is a bit of a hack, so if any resource arguments come up for
+        # which this doesn't work, a toggle should be added to the
+        # ResourceSpec class to disable this.
+        # Does not use param_name from the special collections map because
+        # the collection exists with the current params, it's just the list
+        # method that we're borrowing.
+        special_info = _SPECIAL_COLLECTIONS_MAP.get(_PROJECTS_COLLECTION)
+        method = registry.GetMethod(_PROJECTS_COLLECTION, 'list')
+        static_params = special_info.static_params
+        id_field = special_info.id_field
+      else:
+        method = None
+    except registry.Error:
       method = None
-  except registry.Error:
-    method = None
-  return static_params, id_field, collection_info, method
+    return CompleterInfo(static_params, id_field, collection_info, method,
+                         param_name)
 
-
-def _GetMethod(resource_spec, attribute_name):
-  # type: (concepts.ResourceSpec, str) -> typing.Optional[registry.APIMethod]
-  """Get the APIMethod for an attribute in a resource."""
-  _, _, _, method = _GetCollectionAndMethod(resource_spec, attribute_name)
-  return method
+  def GetMethod(self):
+    # type: (...) -> typing.Optional[registry.APIMethod]
+    """Get the APIMethod for an attribute in a resource."""
+    return self.method
 
 
 def CompleterForAttribute(resource_spec, attribute_name):
@@ -353,22 +561,22 @@ def CompleterForAttribute(resource_spec, attribute_name):
 
     def __init__(self, resource_spec=resource_spec,
                  attribute_name=attribute_name, **kwargs):
-      params, id_field, collection_info, method = _GetCollectionAndMethod(
-          resource_spec, attribute_name)
+      completer_info = CompleterInfo.FromResource(resource_spec, attribute_name)
 
       super(Completer, self).__init__(
           resource_spec,
-          collection_info,
-          method,
-          static_params=params,
-          id_field=id_field,
-          param=resource_spec.ParamName(attribute_name),
+          completer_info.collection_info,
+          completer_info.method,
+          static_params=completer_info.static_params,
+          id_field=completer_info.id_field,
+          param=completer_info.param_name,
           **kwargs)
 
     @classmethod
     def validate(cls):
       """Checks whether the completer is valid (has a list method)."""
-      return bool(_GetMethod(resource_spec, attribute_name))
+      return bool(
+          CompleterInfo.FromResource(resource_spec, attribute_name).GetMethod())
 
   if not Completer.validate():
     return None

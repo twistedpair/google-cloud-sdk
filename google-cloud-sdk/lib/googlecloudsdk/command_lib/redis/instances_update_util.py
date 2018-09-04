@@ -113,3 +113,8 @@ def UpdateLabels(instance_ref, args, patch_request):
     if new_labels:
       patch_request.instance.labels = new_labels
   return patch_request
+
+
+def ResetDefaultMaskField(unused_instance_ref, unused_args, patch_request):
+  patch_request.updateMask = ''
+  return patch_request

@@ -347,7 +347,7 @@
       "type": "object",
       "properties": {
         "pattern": {
-          "description": "Pattern defining the regular expression.",
+          "description": "Pattern defining the regular expression. Its syntax\n(https:\/\/github.com\/google\/re2\/wiki\/Syntax) can be found under the\ngoogle\/re2 repository on GitHub.",
           "type": "string"
         }
       }
@@ -361,7 +361,7 @@
     },
     "GooglePrivacyDlpV2StoredType": {
       "id": "GooglePrivacyDlpV2StoredType",
-      "description": "CustomInfoType implementation that loads an\nexisting `StoredInfoType` resource for scanning in `InspectDataSource`. Not\ncurrently supported in `InspectContent`.",
+      "description": "A reference to a StoredInfoType to use with scanning.",
       "type": "object",
       "properties": {
         "name": {
@@ -2215,10 +2215,11 @@
     },
     "GooglePrivacyDlpV2CloudStorageOptions": {
       "id": "GooglePrivacyDlpV2CloudStorageOptions",
-      "description": "Options defining a file or a set of files (path ending with *) within\na Google Cloud Storage bucket.",
+      "description": "Options defining a file or a set of files within a Google Cloud Storage\nbucket.",
       "type": "object",
       "properties": {
         "fileSet": {
+          "description": "The set of one or more files to scan.",
           "$ref": "GooglePrivacyDlpV2FileSet"
         },
         "bytesLimitPerFile": {
@@ -2274,7 +2275,7 @@
       "type": "object",
       "properties": {
         "url": {
-          "description": "The url, in the format `gs:\/\/<bucket>\/<path>`. Trailing wildcard in the\npath is allowed.",
+          "description": "The Cloud Storage url of the file(s) to scan, in the format\n`gs:\/\/<bucket>\/<path>`. Trailing wildcard in the path is allowed.",
           "type": "string"
         }
       }
@@ -3796,6 +3797,11 @@
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
+                },
+                "orderBy": {
+                  "description": "Optional comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the template was created.\n- `update_time`: corresponds to time the template was last updated.\n- `name`: corresponds to template's name.\n- `display_name`: corresponds to template's display name.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3942,6 +3948,11 @@
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
+                },
+                "orderBy": {
+                  "description": "Optional comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the template was created.\n- `update_time`: corresponds to time the template was last updated.\n- `name`: corresponds to template's name.\n- `display_name`: corresponds to template's display name.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -4090,7 +4101,7 @@
                   "format": "int32"
                 },
                 "orderBy": {
-                  "description": "Optional comma separated list of triggeredJob fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the triggeredJob was created.\n- `update_time`: corresponds to time the triggeredJob was last updated.\n- `name`: corresponds to JobTrigger's name.",
+                  "description": "Optional comma separated list of triggeredJob fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the JobTrigger was created.\n- `update_time`: corresponds to time the JobTrigger was last updated.\n- `name`: corresponds to JobTrigger's name.\n- `display_name`: corresponds to JobTrigger's display name.\n- `status`: corresponds to JobTrigger's status.",
                   "location": "query",
                   "type": "string"
                 }
@@ -4322,7 +4333,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a pre-built StoredInfoType to be used for inspecting storage in\nInspectDataSource."
+              "description": "Creates a pre-built stored infoType to be used for inspection.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             },
             "patch": {
               "id": "dlp.projects.storedInfoTypes.patch",
@@ -4350,7 +4361,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates the StoredInfoType by creating a new version. The existing version\nwill continue to be used until the new version is ready."
+              "description": "Updates the stored infoType by creating a new version. The existing version\nwill continue to be used until the new version is ready.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             },
             "get": {
               "id": "dlp.projects.storedInfoTypes.get",
@@ -4375,7 +4386,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a StoredInfoType."
+              "description": "Gets a stored infoType.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             },
             "list": {
               "id": "dlp.projects.storedInfoTypes.list",
@@ -4411,7 +4422,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists StoredInfoTypes."
+              "description": "Lists stored infoTypes.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             },
             "delete": {
               "id": "dlp.projects.storedInfoTypes.delete",
@@ -4436,7 +4447,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a StoredInfoType."
+              "description": "Deletes a stored infoType.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             }
           }
         }
@@ -4581,6 +4592,11 @@
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
+                },
+                "orderBy": {
+                  "description": "Optional comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the template was created.\n- `update_time`: corresponds to time the template was last updated.\n- `name`: corresponds to template's name.\n- `display_name`: corresponds to template's display name.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -4727,6 +4743,11 @@
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
+                },
+                "orderBy": {
+                  "description": "Optional comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc,update_time, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the template was created.\n- `update_time`: corresponds to time the template was last updated.\n- `name`: corresponds to template's name.\n- `display_name`: corresponds to template's display name.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -4795,7 +4816,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Creates a pre-built StoredInfoType to be used for inspecting storage in\nInspectDataSource."
+              "description": "Creates a pre-built stored infoType to be used for inspection.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             },
             "patch": {
               "id": "dlp.organizations.storedInfoTypes.patch",
@@ -4823,7 +4844,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates the StoredInfoType by creating a new version. The existing version\nwill continue to be used until the new version is ready."
+              "description": "Updates the stored infoType by creating a new version. The existing version\nwill continue to be used until the new version is ready.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             },
             "get": {
               "id": "dlp.organizations.storedInfoTypes.get",
@@ -4848,7 +4869,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets a StoredInfoType."
+              "description": "Gets a stored infoType.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             },
             "list": {
               "id": "dlp.organizations.storedInfoTypes.list",
@@ -4884,7 +4905,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Lists StoredInfoTypes."
+              "description": "Lists stored infoTypes.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             },
             "delete": {
               "id": "dlp.organizations.storedInfoTypes.delete",
@@ -4909,7 +4930,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a StoredInfoType."
+              "description": "Deletes a stored infoType.\nSee https:\/\/cloud.google.com\/dlp\/docs\/creating-stored-infotypes to\nlearn more."
             }
           }
         }

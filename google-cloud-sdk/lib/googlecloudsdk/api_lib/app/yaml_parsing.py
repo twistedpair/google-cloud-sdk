@@ -50,6 +50,10 @@ HINT_VERSION = ('This field is not used by gcloud and must be removed. '
 HINT_THREADSAFE = ('This field is not supported with runtime [{}] and can '
                    'safely be removed.')
 
+HINT_READABLE = ('This field is not configurable with runtime [{}] since '
+                 'static files are always readable by the application. It '
+                 'can safely be removed.')
+
 MANAGED_VMS_DEPRECATION_WARNING = """\
 Deployments using `vm: true` have been deprecated.  Please update your \
 app.yaml to use `env: flex`. To learn more, please visit \
@@ -349,14 +353,6 @@ class ServiceYamlInfo(_YamlInfo):
         GetRuntimeConfigAttr(self.parsed, 'python_version') == '3.4'):
       log.warning(FLEX_PY34_WARNING)
 
-    if self.is_ti_runtime:
-      _CheckIllegalAttribute(
-          name='threadsafe',
-          yaml_info=self.parsed,
-          extractor_func=lambda yaml: yaml.threadsafe,
-          file_path=self.file,
-          msg=HINT_THREADSAFE.format(self.runtime))
-
     _CheckIllegalAttribute(
         name='application',
         yaml_info=self.parsed,
@@ -370,6 +366,28 @@ class ServiceYamlInfo(_YamlInfo):
         extractor_func=lambda yaml: yaml.version,
         file_path=self.file,
         msg=HINT_VERSION)
+
+    self._ValidateTi()
+
+  def _ValidateTi(self):
+    """Validation specifically for Ti-runtimes."""
+    if not self.is_ti_runtime:
+      return
+    _CheckIllegalAttribute(
+        name='threadsafe',
+        yaml_info=self.parsed,
+        extractor_func=lambda yaml: yaml.threadsafe,
+        file_path=self.file,
+        msg=HINT_THREADSAFE.format(self.runtime))
+
+    # pylint: disable=cell-var-from-loop
+    for handler in self.parsed.handlers:
+      _CheckIllegalAttribute(
+          name='application_readable',
+          yaml_info=handler,
+          extractor_func=lambda yaml: handler.application_readable,
+          file_path=self.file,
+          msg=HINT_READABLE.format(self.runtime))
 
   def RequiresImage(self):
     """Returns True if we'll need to build a docker image."""

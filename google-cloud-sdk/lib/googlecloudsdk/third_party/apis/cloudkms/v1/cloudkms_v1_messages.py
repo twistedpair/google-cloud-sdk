@@ -739,6 +739,8 @@ class CryptoKeyVersion(_messages.Message):
         digest.
       RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
         digest.
+      RSA_DECRYPT_OAEP_4096_SHA256: RSAES-OAEP 4096 bit key with a SHA256
+        digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
     """
@@ -752,8 +754,9 @@ class CryptoKeyVersion(_messages.Message):
     RSA_SIGN_PKCS1_4096_SHA256 = 7
     RSA_DECRYPT_OAEP_2048_SHA256 = 8
     RSA_DECRYPT_OAEP_3072_SHA256 = 9
-    EC_SIGN_P256_SHA256 = 10
-    EC_SIGN_P384_SHA384 = 11
+    RSA_DECRYPT_OAEP_4096_SHA256 = 10
+    EC_SIGN_P256_SHA256 = 11
+    EC_SIGN_P384_SHA384 = 12
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -849,6 +852,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
         digest.
       RSA_DECRYPT_OAEP_3072_SHA256: RSAES-OAEP 3072 bit key with a SHA256
         digest.
+      RSA_DECRYPT_OAEP_4096_SHA256: RSAES-OAEP 4096 bit key with a SHA256
+        digest.
       EC_SIGN_P256_SHA256: ECDSA on the NIST P-256 curve with a SHA256 digest.
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
     """
@@ -862,8 +867,9 @@ class CryptoKeyVersionTemplate(_messages.Message):
     RSA_SIGN_PKCS1_4096_SHA256 = 7
     RSA_DECRYPT_OAEP_2048_SHA256 = 8
     RSA_DECRYPT_OAEP_3072_SHA256 = 9
-    EC_SIGN_P256_SHA256 = 10
-    EC_SIGN_P384_SHA384 = 11
+    RSA_DECRYPT_OAEP_4096_SHA256 = 10
+    EC_SIGN_P256_SHA256 = 11
+    EC_SIGN_P384_SHA384 = 12
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this

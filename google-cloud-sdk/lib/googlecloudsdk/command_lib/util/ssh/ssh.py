@@ -854,7 +854,7 @@ class KeygenCommand(object):
     if env.suite is Suite.OPENSSH:
       prompt_passphrase = self.allow_passphrase and console_io.CanPrompt()
       if not prompt_passphrase:
-        args.extend(['-P', ''])  # Empty passphrase
+        args.extend(['-N', ''])  # Empty passphrase
       args.extend(['-t', 'rsa', '-f', self.identity_file])
     else:
       args.append(self.identity_file)

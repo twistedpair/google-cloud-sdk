@@ -291,7 +291,8 @@
             "Run Safe Search to detect potentially unsafe\nor undesirable content.",
             "Compute a set of image properties, such as the\nimage's dominant colors.",
             "Run crop hints.",
-            "Run web detection."
+            "Run web detection.",
+            "Run localizer for object detection."
           ],
           "type": "string",
           "enum": [
@@ -305,7 +306,8 @@
             "SAFE_SEARCH_DETECTION",
             "IMAGE_PROPERTIES",
             "CROP_HINTS",
-            "WEB_DETECTION"
+            "WEB_DETECTION",
+            "OBJECT_LOCALIZATION"
           ]
         },
         "maxResults": {
@@ -448,6 +450,13 @@
           "type": "array",
           "items": {
             "$ref": "EntityAnnotation"
+          }
+        },
+        "localizedObjectAnnotations": {
+          "description": "If present, localized object detection has completed successfully.\nThis will be sorted descending by confidence score.",
+          "type": "array",
+          "items": {
+            "$ref": "LocalizedObjectAnnotation"
           }
         },
         "textAnnotations": {
@@ -920,6 +929,34 @@
           "description": "Value of numeric properties.",
           "type": "string",
           "format": "uint64"
+        }
+      }
+    },
+    "LocalizedObjectAnnotation": {
+      "id": "LocalizedObjectAnnotation",
+      "description": "Set of detected objects with bounding boxes.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "boundingPoly": {
+          "description": "Image region to which this object belongs. This must be populated.",
+          "$ref": "BoundingPoly"
         }
       }
     },
@@ -1777,6 +1814,13 @@
             "$ref": "GoogleCloudVisionV1p1beta1EntityAnnotation"
           }
         },
+        "localizedObjectAnnotations": {
+          "description": "If present, localized object detection has completed successfully.\nThis will be sorted descending by confidence score.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p1beta1LocalizedObjectAnnotation"
+          }
+        },
         "textAnnotations": {
           "description": "If present, text (OCR) detection has completed successfully.",
           "type": "array",
@@ -2223,6 +2267,34 @@
           "description": "Value of numeric properties.",
           "type": "string",
           "format": "uint64"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p1beta1LocalizedObjectAnnotation": {
+      "id": "GoogleCloudVisionV1p1beta1LocalizedObjectAnnotation",
+      "description": "Set of detected objects with bounding boxes.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "boundingPoly": {
+          "description": "Image region to which this object belongs. This must be populated.",
+          "$ref": "GoogleCloudVisionV1p1beta1BoundingPoly"
         }
       }
     },
@@ -2969,6 +3041,13 @@
             "$ref": "GoogleCloudVisionV1p2beta1EntityAnnotation"
           }
         },
+        "localizedObjectAnnotations": {
+          "description": "If present, localized object detection has completed successfully.\nThis will be sorted descending by confidence score.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p2beta1LocalizedObjectAnnotation"
+          }
+        },
         "textAnnotations": {
           "description": "If present, text (OCR) detection has completed successfully.",
           "type": "array",
@@ -3439,6 +3518,34 @@
           "description": "Value of numeric properties.",
           "type": "string",
           "format": "uint64"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p2beta1LocalizedObjectAnnotation": {
+      "id": "GoogleCloudVisionV1p2beta1LocalizedObjectAnnotation",
+      "description": "Set of detected objects with bounding boxes.",
+      "type": "object",
+      "properties": {
+        "mid": {
+          "description": "Object ID that should align with EntityAnnotation mid.",
+          "type": "string"
+        },
+        "languageCode": {
+          "description": "The BCP-47 language code, such as \"en-US\" or \"sr-Latn\". For more\ninformation, see\nhttp:\/\/www.unicode.org\/reports\/tr35\/#Unicode_locale_identifier.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Object name, expressed in its `language_code` language.",
+          "type": "string"
+        },
+        "score": {
+          "description": "Score of the result. Range [0, 1].",
+          "type": "number",
+          "format": "float"
+        },
+        "boundingPoly": {
+          "description": "Image region to which this object belongs. This must be populated.",
+          "$ref": "GoogleCloudVisionV1p2beta1BoundingPoly"
         }
       }
     },
@@ -5367,7 +5474,7 @@
           "$ref": "GoogleCloudVisionV1p3beta1Product"
         },
         "score": {
-          "description": "A confidence level on the match, ranging from 0 (no confidence) to\n1 (full confidence).\n\nThis field is returned only if `view` is set to `FULL` in\nthe request.",
+          "description": "A confidence level on the match, ranging from 0 (no confidence) to\n1 (full confidence).",
           "type": "number",
           "format": "float"
         },

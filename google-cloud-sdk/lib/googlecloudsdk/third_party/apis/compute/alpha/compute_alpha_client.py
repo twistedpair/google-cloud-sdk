@@ -505,7 +505,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         request: (ComputeAllocationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (AllocationsList) The response message.
+        (AllocationList) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -520,7 +520,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path=u'projects/{project}/zones/{zone}/allocations',
         request_field='',
         request_type_name=u'ComputeAllocationsListRequest',
-        response_type_name=u'AllocationsList',
+        response_type_name=u'AllocationList',
         supports_download=False,
     )
 
@@ -11327,7 +11327,7 @@ If the group is part of a backend service that has enabled connection draining, 
         request: (ComputeResourcePoliciesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ResourcePoliciesList) The response message.
+        (ResourcePolicyList) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -11342,7 +11342,7 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/regions/{region}/resourcePolicies',
         request_field='',
         request_type_name=u'ComputeResourcePoliciesListRequest',
-        response_type_name=u'ResourcePoliciesList',
+        response_type_name=u'ResourcePolicyList',
         supports_download=False,
     )
 

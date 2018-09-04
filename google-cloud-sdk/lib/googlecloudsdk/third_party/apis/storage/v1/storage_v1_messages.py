@@ -218,13 +218,12 @@ class Bucket(_messages.Message):
           isLive: Relevant only for versioned objects. If the value is true,
             this condition matches live objects; if the value is false, it
             matches archived objects.
-          matchesPattern: A regular expression that satisfies the RE2 syntax
-            language. This condition is satisfied when the name of the object
-            matches the RE2 pattern. Note: This feature is currently in the
-            "Early Access" launch stage and is only available to a whitelisted
-            set of users; that means that this feature may changed in
-            backward-incompatible ways and that it is not guaranteed to be
-            released.
+          matchesPattern: A regular expression that satisfies the RE2 syntax.
+            This condition is satisfied when the name of the object matches
+            the RE2 pattern. Note: This feature is currently in the "Early
+            Access" launch stage and is only available to a whitelisted set of
+            users; that means that this feature may be changed in backward-
+            incompatible ways and that it is not guaranteed to be released.
           matchesStorageClass: Objects having any of the storage classes
             specified by this condition will be matched. Values include
             MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, STANDARD, and
@@ -551,8 +550,8 @@ class ComposeRequest(_messages.Message):
 
     Fields:
       generation: The generation of this object to use as the source.
-      name: The source object's name. The source object's bucket is implicitly
-        the destination bucket.
+      name: The source object's name. All source objects must reside in the
+        same bucket.
       objectPreconditions: Conditions that must be met for this operation to
         execute.
     """
@@ -1939,7 +1938,8 @@ class StorageObjectsComposeRequest(_messages.Message):
   Fields:
     composeRequest: A ComposeRequest resource to be passed as the request
       body.
-    destinationBucket: Name of the bucket in which to store the new object.
+    destinationBucket: Name of the bucket containing the source objects. The
+      destination object is stored in this bucket.
     destinationObject: Name of the new object. For information about how to
       URL encode object names to be path safe, see Encoding URI Path Parts.
     destinationPredefinedAcl: Apply a predefined set of access controls to the

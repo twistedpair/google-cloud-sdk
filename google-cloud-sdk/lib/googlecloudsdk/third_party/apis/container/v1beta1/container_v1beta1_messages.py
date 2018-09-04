@@ -312,7 +312,8 @@ class Cluster(_messages.Message):
     privateCluster: If this is a private cluster setup. Private clusters are
       clusters that, by default have no external IP addresses on the nodes and
       where nodes and the master communicate over private IP addresses. This
-      field is deprecated, use private_cluster_config.enabled instead.
+      field is deprecated, use private_cluster_config.enable_private_nodes
+      instead.
     privateClusterConfig: Configuration for private cluster.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related Google Compute Engine resources.
@@ -1465,8 +1466,10 @@ class GoogleIamV1Condition(_messages.Message):
       SECURITY_REALM: Any of the security realms in the IAMContext (go
         /security-realms). When used with IN, the condition indicates "any of
         the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". Note that a value can be
-        either a realm or a realm group (go/realm-groups). A match is
+        of the realms match any of the given values". Note that a value can
+        be:  - 'self' (i.e., allow connections from clients that are in the
+        same  security realm)  - a realm (e.g., 'campus-abc')  - a realm group
+        (e.g., 'realms-for-borg-cell-xx', see: go/realm-groups) A match is
         determined by a realm group membership check performed by a
         RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
         access based on the *absence* of a realm, so realm conditions can only
@@ -2778,11 +2781,14 @@ class PrivateClusterConfig(_messages.Message):
   Fields:
     enablePrivateEndpoint: Whether the master's internal IP address is used as
       the cluster endpoint.
-    enablePrivateNodes: Whether nodes have only private IP addresses, and
+    enablePrivateNodes: Whether nodes have internal IP addresses only. If
+      enabled, all nodes are given only RFC 1918 private addresses and
       communicate with the master via private networking.
-    masterIpv4CidrBlock: The IP prefix in CIDR notation to use for the hosted
-      master network. This prefix will be used for assigning private IP
-      addresses to the master or set of masters, as well as the ILB VIP.
+    masterIpv4CidrBlock: The IP range in CIDR notation to use for the hosted
+      master network. This range will be used for assigning internal IP
+      addresses to the master or set of masters, as well as the ILB VIP. This
+      range must not overlap with any other ranges in use within the cluster's
+      network.
     privateEndpoint: Output only. The internal IP address of this cluster's
       master endpoint.
     publicEndpoint: Output only. The external IP address of this cluster's
@@ -3374,11 +3380,13 @@ class StatusCondition(_messages.Message):
       UNKNOWN: UNKNOWN indicates a generic condition.
       GCE_STOCKOUT: GCE_STOCKOUT indicates a GCE stockout.
       GKE_SERVICE_ACCOUNT_DELETED: GKE_SERVICE_ACCOUNT_DELETED indicates that
-        the user deleted their robot service account. More codes TBA
+        the user deleted their robot service account.
+      GCE_QUOTA_EXCEEDED: GCE quota was exceeded. More codes TBA
     """
     UNKNOWN = 0
     GCE_STOCKOUT = 1
     GKE_SERVICE_ACCOUNT_DELETED = 2
+    GCE_QUOTA_EXCEEDED = 3
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

@@ -1567,6 +1567,33 @@ resource.
         supports_download=False,
     )
 
+    def ListCreateDatabaseFromBackupMetadata(self, request, global_params=None):
+      r"""ListCreateDatabaseFromBackupMetadata method for the projects_instances service.
+
+      Args:
+        request: (SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCreateDatabaseFromBackupMetadataResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListCreateDatabaseFromBackupMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListCreateDatabaseFromBackupMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}:ListCreateDatabaseFromBackupMetadata',
+        http_method=u'GET',
+        method_id=u'spanner.projects.instances.listCreateDatabaseFromBackupMetadata',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}:ListCreateDatabaseFromBackupMetadata',
+        request_field='',
+        request_type_name=u'SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest',
+        response_type_name=u'ListCreateDatabaseFromBackupMetadataResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an instance, and begins allocating or releasing resources.
 as requested. The returned long-running

@@ -74,6 +74,14 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
   r"""A DlpOrganizationsDeidentifyTemplatesListRequest object.
 
   Fields:
+    orderBy: Optional comma separated list of fields to order by, followed by
+      `asc` or `desc` postfix. This list is case-insensitive, default sorting
+      order is ascending, redundant space characters are insignificant.
+      Example: `name asc,update_time, create_time desc`  Supported fields are:
+      - `create_time`: corresponds to time the template was created. -
+      `update_time`: corresponds to time the template was last updated. -
+      `name`: corresponds to template's name. - `display_name`: corresponds to
+      template's display name.
     pageSize: Optional size of the page, can be limited by server. If zero
       server returns a page of max size 100.
     pageToken: Optional page token to continue retrieval. Comes from previous
@@ -82,9 +90,10 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
       organizations/my-org-id.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DlpOrganizationsDeidentifyTemplatesPatchRequest(_messages.Message):
@@ -146,6 +155,14 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
   r"""A DlpOrganizationsInspectTemplatesListRequest object.
 
   Fields:
+    orderBy: Optional comma separated list of fields to order by, followed by
+      `asc` or `desc` postfix. This list is case-insensitive, default sorting
+      order is ascending, redundant space characters are insignificant.
+      Example: `name asc,update_time, create_time desc`  Supported fields are:
+      - `create_time`: corresponds to time the template was created. -
+      `update_time`: corresponds to time the template was last updated. -
+      `name`: corresponds to template's name. - `display_name`: corresponds to
+      template's display name.
     pageSize: Optional size of the page, can be limited by server. If zero
       server returns a page of max size 100.
     pageToken: Optional page token to continue retrieval. Comes from previous
@@ -154,9 +171,10 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
       organizations/my-org-id.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DlpOrganizationsInspectTemplatesPatchRequest(_messages.Message):
@@ -334,6 +352,14 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
   r"""A DlpProjectsDeidentifyTemplatesListRequest object.
 
   Fields:
+    orderBy: Optional comma separated list of fields to order by, followed by
+      `asc` or `desc` postfix. This list is case-insensitive, default sorting
+      order is ascending, redundant space characters are insignificant.
+      Example: `name asc,update_time, create_time desc`  Supported fields are:
+      - `create_time`: corresponds to time the template was created. -
+      `update_time`: corresponds to time the template was last updated. -
+      `name`: corresponds to template's name. - `display_name`: corresponds to
+      template's display name.
     pageSize: Optional size of the page, can be limited by server. If zero
       server returns a page of max size 100.
     pageToken: Optional page token to continue retrieval. Comes from previous
@@ -342,9 +368,10 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
       organizations/my-org-id.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DlpProjectsDeidentifyTemplatesPatchRequest(_messages.Message):
@@ -514,6 +541,14 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
   r"""A DlpProjectsInspectTemplatesListRequest object.
 
   Fields:
+    orderBy: Optional comma separated list of fields to order by, followed by
+      `asc` or `desc` postfix. This list is case-insensitive, default sorting
+      order is ascending, redundant space characters are insignificant.
+      Example: `name asc,update_time, create_time desc`  Supported fields are:
+      - `create_time`: corresponds to time the template was created. -
+      `update_time`: corresponds to time the template was last updated. -
+      `name`: corresponds to template's name. - `display_name`: corresponds to
+      template's display name.
     pageSize: Optional size of the page, can be limited by server. If zero
       server returns a page of max size 100.
     pageToken: Optional page token to continue retrieval. Comes from previous
@@ -522,9 +557,10 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
       organizations/my-org-id.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DlpProjectsInspectTemplatesPatchRequest(_messages.Message):
@@ -588,9 +624,10 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       default sorting order is ascending, redundant space characters are
       insignificant.  Example: `name asc,update_time, create_time desc`
       Supported fields are:  - `create_time`: corresponds to time the
-      triggeredJob was created. - `update_time`: corresponds to time the
-      triggeredJob was last updated. - `name`: corresponds to JobTrigger's
-      name.
+      JobTrigger was created. - `update_time`: corresponds to time the
+      JobTrigger was last updated. - `name`: corresponds to JobTrigger's name.
+      - `display_name`: corresponds to JobTrigger's display name. - `status`:
+      corresponds to JobTrigger's status.
     pageSize: Optional size of the page, can be limited by a server.
     pageToken: Optional page token to continue retrieval. Comes from previous
       call to ListJobTriggers. `order_by` field must not change for subsequent
@@ -1058,8 +1095,8 @@ class GooglePrivacyDlpV2CloudStorageFileSet(_messages.Message):
 
 
 class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
-  r"""Options defining a file or a set of files (path ending with *) within a
-  Google Cloud Storage bucket.
+  r"""Options defining a file or a set of files within a Google Cloud Storage
+  bucket.
 
   Enums:
     FileTypesValueListEntryValuesEnum:
@@ -1075,7 +1112,7 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults
       to 0. Only one of bytes_limit_per_file and bytes_limit_per_file_percent
       can be specified.
-    fileSet: A GooglePrivacyDlpV2FileSet attribute.
+    fileSet: The set of one or more files to scan.
     fileTypes: List of file type groups to include in the scan. If empty, all
       files are scanned and available data format processors are applied.
     filesLimitPercent: Limits the number of files to scan to this percentage
@@ -1965,8 +2002,8 @@ class GooglePrivacyDlpV2FileSet(_messages.Message):
   r"""Set of files to scan.
 
   Fields:
-    url: The url, in the format `gs://<bucket>/<path>`. Trailing wildcard in
-      the path is allowed.
+    url: The Cloud Storage url of the file(s) to scan, in the format
+      `gs://<bucket>/<path>`. Trailing wildcard in the path is allowed.
   """
 
   url = _messages.StringField(1)
@@ -3302,7 +3339,9 @@ class GooglePrivacyDlpV2Regex(_messages.Message):
   r"""Message defining a custom regular expression.
 
   Fields:
-    pattern: Pattern defining the regular expression.
+    pattern: Pattern defining the regular expression. Its syntax
+      (https://github.com/google/re2/wiki/Syntax) can be found under the
+      google/re2 repository on GitHub.
   """
 
   pattern = _messages.StringField(1)
@@ -3570,9 +3609,7 @@ class GooglePrivacyDlpV2StoredInfoTypeVersion(_messages.Message):
 
 
 class GooglePrivacyDlpV2StoredType(_messages.Message):
-  r"""CustomInfoType implementation that loads an existing `StoredInfoType`
-  resource for scanning in `InspectDataSource`. Not currently supported in
-  `InspectContent`.
+  r"""A reference to a StoredInfoType to use with scanning.
 
   Fields:
     createTime: Timestamp indicating when the version of the `StoredInfoType`

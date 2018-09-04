@@ -5446,6 +5446,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetDiagnostics(self, request, global_params=None):
+      r"""Returns the interconnectDiagnostics for the specified interconnect.
+
+      Args:
+        request: (ComputeInterconnectsGetDiagnosticsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectsGetDiagnosticsResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetDiagnostics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDiagnostics.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.interconnects.getDiagnostics',
+        ordered_params=[u'project', u'interconnect'],
+        path_params=[u'interconnect', u'project'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/interconnects/{interconnect}/getDiagnostics',
+        request_field='',
+        request_type_name=u'ComputeInterconnectsGetDiagnosticsRequest',
+        response_type_name=u'InterconnectsGetDiagnosticsResponse',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a Interconnect in the specified project using the data included in the request.
 
@@ -8961,7 +8987,7 @@ If the group is part of a backend service that has enabled connection draining, 
         request: (ComputeResourcePoliciesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ResourcePoliciesList) The response message.
+        (ResourcePolicyList) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
@@ -8976,7 +9002,7 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/regions/{region}/resourcePolicies',
         request_field='',
         request_type_name=u'ComputeResourcePoliciesListRequest',
-        response_type_name=u'ResourcePoliciesList',
+        response_type_name=u'ResourcePolicyList',
         supports_download=False,
     )
 

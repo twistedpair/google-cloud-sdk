@@ -47,6 +47,13 @@ yaml.add_representer(
     Dumper=yaml.dumper.RoundTripDumper)
 
 
+# Always output None as "null", instead of just empty.
+yaml.add_representer(
+    type(None),
+    lambda self, _: self.represent_scalar('tag:yaml.org,2002:null', 'null'),
+    Dumper=yaml.dumper.RoundTripDumper)
+
+
 class Error(exceptions.Error):
   """Top level error for this module.
 
@@ -60,7 +67,7 @@ class Error(exceptions.Error):
   """
 
   def __init__(self, e, verb, f=None):
-    # type: (Exception, str, typing.Optional[str]) -> None
+    # type: (Exception, typing.Text, typing.Optional[str]) -> None
     file_text = ' from [{}]'.format(f) if f else ''
     super(Error, self).__init__(
         'Failed to {} YAML{}: {}'.format(verb, file_text, e))

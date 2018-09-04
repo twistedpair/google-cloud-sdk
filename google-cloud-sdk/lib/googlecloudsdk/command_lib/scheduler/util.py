@@ -167,26 +167,6 @@ def ParseAttributes(attributes):
       value=extra_types.JsonValue(object_value=attributes_value))
 
 
-def HeaderType(string):
-  """Returns ArgDict type for headers."""
-  header, value = string.split(':')
-  value = value.lstrip()
-  return {header: value}
-
-
-def GetHeaderProcessor(message_type):
-  """Gets a hook to convert a dict into a HeadersValue for the given message."""
-  scheduler_messages = _GetSchedulerMessages()
-  header_type = getattr(scheduler_messages, message_type).HeadersValue
-  def HeaderProcessor(value):
-    """Convert dict into HeadersValue."""
-    props = []
-    for key, value in sorted(value.items()):
-      props.append(header_type.AdditionalProperty(key=key, value=value))
-    return header_type(additionalProperties=props)
-  return HeaderProcessor
-
-
 _MORE_REGIONS_AVAILABLE_WARNING = """\
 The regions listed here are only those in which the Cloud Scheduler API is
 available. To see full list of App Engine regions available,

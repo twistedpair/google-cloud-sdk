@@ -1560,12 +1560,14 @@ def AddIssueClientCertificateFlag(parser):
 Issue a TLS client certificate with admin permissions.
 
 When enabled, the certificate and private key pair will be present in
-MasterAuth field of the Cluster object.
+MasterAuth field of the Cluster object. For cluster versions before 1.12, a
+client certificate will be issued by default. As of 1.12, client certificates
+are disabled by default.
 """
   parser.add_argument(
       '--issue-client-certificate',
       action='store_true',
-      default=True,
+      default=None,
       help=help_text)
 
 
@@ -1859,3 +1861,28 @@ are deployed on the cluster to enforce the runtime rules. If
 feature, only bootstrapping rules are applied, and no security profile
 controller or webhook are installed.
 """)
+
+
+def AddNodeGroupFlag(parser):
+  """Adds --node-group flag to the parser."""
+  help_text = """\
+Assign instances of this pool to run on the specified GCE node group.
+This is useful for running workloads on sole tenant nodes.
+
+To see available sole tenant node-groups, run:
+
+  $ gcloud compute sole-tenancy node-groups list
+
+To create a sole tenant node group, run:
+
+  $ gcloud compute sole-tenancy node-groups create [GROUP_NAME] \
+    --zone [ZONE] --node-template [TEMPLATE_NAME] --target-size [TARGET_SIZE]
+
+See https://cloud.google.com/compute/docs/nodes for more
+information on sole tenancy and node groups.
+"""
+
+  parser.add_argument(
+      '--node-group',
+      hidden=True,
+      help=help_text)

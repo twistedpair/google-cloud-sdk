@@ -79,9 +79,8 @@ class Dataset(_messages.Message):
       custom models.
     languageCode: Required. The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Example: "en-US". See [Language
-      Support](https://cloud.google.com/speech/docs/languages) for a list of
-      the currently supported language codes.
+      Example: "en-US". See [Language Support](/speech-to-text/docs/languages)
+      for a list of the currently supported language codes.
     models: All the models (including models pending training) built using the
       dataset.
     name: Output only. Resource name of the dataset. Form :-
@@ -102,8 +101,7 @@ class Dataset(_messages.Message):
       language model. Currently, only Google Cloud Storage URIs are supported,
       which must be specified in the following format:
       `gs://bucket_name/object_name` (other URI formats will be ignored). For
-      more information, see [Request
-      URIs](https://cloud.google.com/storage/docs/reference-uris).
+      more information, see [Request URIs](/storage/docs/reference-uris).
     useLoggedData: If this is true, then use the previously logged data (for
       the project) The logs data for this project will be preprocessed and
       prepared for downstream pipelines (like training)
@@ -398,16 +396,17 @@ class Operation(_messages.Message):
 class RecognitionAudio(_messages.Message):
   r"""Contains audio data in the encoding specified in the
   `RecognitionConfig`. Either `content` or `uri` must be supplied. Supplying
-  both or neither returns google.rpc.Code.INVALID_ARGUMENT. See [audio
-  limits](https://cloud.google.com/speech/limits#content).
+  both or neither returns google.rpc.Code.INVALID_ARGUMENT. See [content
+  limits](/speech-to-text/quotas#content).
 
   Fields:
     content: The audio data bytes encoded as specified in `RecognitionConfig`.
       Note: as with all bytes fields, protobuffers use a pure binary
       representation, whereas JSON representations use base64.
     uri: URI that points to a file that contains audio data bytes as specified
-      in `RecognitionConfig`. Currently, only Google Cloud Storage URIs are
-      supported, which must be specified in the following format:
+      in `RecognitionConfig`. The file must not be compressed (for example,
+      gzip). Currently, only Google Cloud Storage URIs are supported, which
+      must be specified in the following format:
       `gs://bucket_name/object_name` (other URI formats return
       google.rpc.Code.INVALID_ARGUMENT). For more information, see [Request
       URIs](https://cloud.google.com/storage/docs/reference-uris).
@@ -431,22 +430,22 @@ class RecognitionConfig(_messages.Message):
     alternativeLanguageCodes: *Optional* A list of up to 3 additional
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tags,
       listing possible alternative languages of the supplied audio. See
-      [Language Support](https://cloud.google.com/speech/docs/languages) for a
-      list of the currently supported language codes. If alternative languages
-      are listed, recognition result will contain recognition in the most
-      likely language detected including the main language_code. The
-      recognition result will include the language tag of the language
-      detected in the audio. NOTE: This feature is only supported for Voice
-      Command and Voice Search use cases and performance may vary for other
-      use cases (e.g., phone call transcription).
+      [Language Support](/speech-to-text/docs/languages) for a list of the
+      currently supported language codes. If alternative languages are listed,
+      recognition result will contain recognition in the most likely language
+      detected including the main language_code. The recognition result will
+      include the language tag of the language detected in the audio. Note:
+      This feature is only supported for Voice Command and Voice Search use
+      cases and performance may vary for other use cases (e.g., phone call
+      transcription).
     audioChannelCount: *Optional* The number of channels in the input audio
       data. ONLY set this for MULTI-CHANNEL recognition. Valid values for
       LINEAR16 and FLAC are `1`-`8`. Valid values for OGG_OPUS are '1'-'254'.
       Valid value for MULAW, AMR, AMR_WB and SPEEX_WITH_HEADER_BYTE is only
-      `1`. If `0` or omitted, defaults to one channel (mono). NOTE: We only
+      `1`. If `0` or omitted, defaults to one channel (mono). Note: We only
       recognize the first channel by default. To perform independent
-      recognition on each channel set enable_separate_recognition_per_channel
-      to 'true'.
+      recognition on each channel set
+      `enable_separate_recognition_per_channel` to 'true'.
     diarizationSpeakerCount: *Optional* If set, specifies the estimated number
       of speakers in the conversation. If not set, defaults to '2'. Ignored
       unless enable_speaker_diarization is set to true."
@@ -454,16 +453,16 @@ class RecognitionConfig(_messages.Message):
       recognition result hypotheses. This feature is only available in select
       languages. Setting this for requests in other languages has no effect at
       all. The default 'false' value does not add punctuation to result
-      hypotheses. NOTE: "This is currently offered as an experimental service,
+      hypotheses. Note: This is currently offered as an experimental service,
       complimentary to all users. In the future this may be exclusively
-      available as a premium feature."
+      available as a premium feature.
     enableSeparateRecognitionPerChannel: This needs to be set to 'true'
-      explicitly and audio_channel_count > 1 to get each channel recognized
-      separately. The recognition result will contain a channel_tag field to
-      state which channel that result belongs to. If this is not 'true', we
-      will only recognize the first channel. NOTE: The request is also billed
-      cumulatively for all channels recognized:     (audio_channel_count times
-      the audio length)
+      explicitly and `audio_channel_count` > 1 to get each channel recognized
+      separately. The recognition result will contain a `channel_tag` field to
+      state which channel that result belongs to. If this is not true, we will
+      only recognize the first channel. The request is billed cumulatively for
+      all channels recognized: `audio_channel_count` multiplied by the length
+      of the audio.
     enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
       for each recognized word in the top alternative of the recognition
       result using a speaker_tag provided in the WordInfo. Note: When this is
@@ -483,9 +482,8 @@ class RecognitionConfig(_messages.Message):
       all other audio formats. For details, see AudioEncoding.
     languageCode: *Required* The language of the supplied audio as a
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Example: "en-US". See [Language
-      Support](https://cloud.google.com/speech/docs/languages) for a list of
-      the currently supported language codes.
+      Example: "en-US". See [Language Support](/speech-to-text/docs/languages)
+      for a list of the currently supported language codes.
     maxAlternatives: *Optional* Maximum number of recognition hypotheses to be
       returned. Specifically, the maximum number of
       `SpeechRecognitionAlternative` messages within each
@@ -521,18 +519,19 @@ class RecognitionConfig(_messages.Message):
       audio source (instead of re-sampling). This field is optional for `FLAC`
       and `WAV` audio files and required for all other audio formats. For
       details, see AudioEncoding.
-    speechContexts: *Optional* A means to provide context to assist the speech
-      recognition.
+    speechContexts: *Optional* array of SpeechContext. A means to provide
+      context to assist the speech recognition. For more information, see
+      [Phrase Hints](/speech-to-text/docs/basics#phrase-hints).
     useEnhanced: *Optional* Set to true to use an enhanced model for speech
       recognition. You must also set the `model` field to a valid, enhanced
       model. If `use_enhanced` is set to true and the `model` field is not
       set, then `use_enhanced` is ignored. If `use_enhanced` is true and an
       enhanced version of the specified model does not exist, then the speech
       is recognized using the standard version of the specified model.
-      Enhanced speech models require that you opt-in to the audio logging
-      using instructions in the [alpha documentation](/speech/data-sharing).
-      If you set `use_enhanced` to true and you have not enabled audio
-      logging, then you will receive an error.
+      Enhanced speech models require that you opt-in to data logging using
+      instructions in the [documentation](/speech-to-text/enable-data-
+      logging). If you set `use_enhanced` to true and you have not enabled
+      audio logging, then you will receive an error.
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
@@ -759,6 +758,31 @@ class RecognizeResponse(_messages.Message):
   results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
 
 
+class RefreshDataRequest(_messages.Message):
+  r"""Message sent by the client to refresh data in a existing dataset.
+
+  Fields:
+    uri: URI that points to a file in csv file where each row has following
+      format. <gs_path_to_audio>,<gs_path_to_transcript>,<label> label can be
+      HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row to be
+      considered valid are :- 1. Each row must have at least a label and
+      <gs_path_to_transcript> 2. If a row is marked HUMAN_TRANSCRIBED, then
+      both <gs_path_to_audio> and <gs_path_to_transcript> needs to be
+      specified. 3. There has to be minimum 500 number of rows labelled
+      HUMAN_TRANSCRIBED if evaluation stats are required. 4. If
+      use_logged_data_for_training is set to true, then we ignore the rows
+      labelled as MACHINE_TRANSCRIBED. 5. There has to be minimum 100,000
+      words in the transcripts in order to provide sufficient textual training
+      data for the language model. Currently, only Google Cloud Storage URIs
+      are supported, which must be specified in the following format:
+      `gs://bucket_name/object_name` (other URI formats will be ignored). For
+      more information, see [Request
+      URIs](https://cloud.google.com/storage/docs/reference-uris).
+  """
+
+  uri = _messages.StringField(1)
+
+
 class SpeechContext(_messages.Message):
   r"""Provides "hints" to the speech recognizer to favor specific words and
   phrases in the results.
@@ -776,8 +800,7 @@ class SpeechContext(_messages.Message):
       can be used to improve the accuracy for specific words and phrases, for
       example, if specific commands are typically spoken by the user. This can
       also be used to add additional words to the vocabulary of the
-      recognizer. See [usage
-      limits](https://cloud.google.com/speech/limits#content).
+      recognizer. See [usage limits](/speech-to-text/quotas#content).
     strength: Hint strength to use (high, medium or low). If you use a high
       strength then you are more likely to see those phrases in the results.
       If strength is not specified then by default medium strength will be
@@ -865,6 +888,19 @@ class SpeechProjectsLocationsDatasetsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class SpeechProjectsLocationsDatasetsRefreshDataRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsDatasetsRefreshDataRequest object.
+
+  Fields:
+    name: The resource name of the destination dataset.
+    refreshDataRequest: A RefreshDataRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  refreshDataRequest = _messages.MessageField('RefreshDataRequest', 2)
 
 
 class SpeechProjectsLocationsLogDataStatsListRequest(_messages.Message):
@@ -956,8 +992,8 @@ class SpeechRecognitionAlternative(_messages.Message):
     transcript: Output only. Transcript text representing the words that the
       user spoke.
     words: Output only. A list of word-specific information for each
-      recognized word. Note: When enable_speaker_diarization is true, you will
-      see all the words from the beginning of the audio.
+      recognized word. Note: When `enable_speaker_diarization` is true, you
+      will see all the words from the beginning of the audio.
   """
 
   confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)

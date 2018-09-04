@@ -24,6 +24,31 @@ DOCS_URL = 'https://cloud.google.com/dataproc/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_WORKFLOWTEMPLATES = (
+      'projects.locations.workflowTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workflowTemplates/{workflowTemplatesId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_REGIONS = (
       'projects.regions',
       'projects/{projectId}/regions/{regionId}',
@@ -61,6 +86,17 @@ class Collections(enum.Enum):
       'projects/{projectId}/regions/{regionId}/operations',
       {},
       [u'projectId', u'regionId'],
+      True
+  )
+  PROJECTS_REGIONS_WORKFLOWTEMPLATES = (
+      'projects.regions.workflowTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/regions/{regionsId}/workflowTemplates/'
+              '{workflowTemplatesId}',
+      },
+      [u'name'],
       True
   )
 

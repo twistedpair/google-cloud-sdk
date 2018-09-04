@@ -421,11 +421,16 @@ def AddSessionAffinity(parser, internal_lb=False, target_pools=False,
       'CLIENT_IP': (
           "Route requests to instances based on the hash of the client's IP "
           'address.'),
-      'GENERATED_COOKIE': (
-          'Route requests to instances based on the contents of the "GCLB" '
-          'cookie set by the load balancer.'),
       'NONE': 'Session affinity is disabled.',
   }
+
+  if not target_pools:
+    choices.update({
+        'GENERATED_COOKIE': (
+            'Route requests to instances based on the contents of the "GCLB" '
+            'cookie set by the load balancer.')
+    })
+
   if internal_lb or target_pools:
     choices.update({
         'CLIENT_IP_PROTO': (

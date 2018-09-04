@@ -404,7 +404,7 @@ class StorageV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate.
+      r"""Updates a bucket. Changes to the bucket will be readable immediately after writing, but configuration changes may take time to propagate. This method supports patch semantics.
 
       Args:
         request: (StorageBucketsPatchRequest) input message

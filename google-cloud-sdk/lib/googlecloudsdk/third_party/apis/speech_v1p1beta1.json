@@ -221,20 +221,20 @@
           "format": "int32"
         },
         "audioChannelCount": {
-          "description": "*Optional* The number of channels in the input audio data.\nONLY set this for MULTI-CHANNEL recognition.\nValid values for LINEAR16 and FLAC are `1`-`8`.\nValid values for OGG_OPUS are '1'-'254'.\nValid value for MULAW, AMR, AMR_WB and SPEEX_WITH_HEADER_BYTE is only `1`.\nIf `0` or omitted, defaults to one channel (mono).\nNOTE: We only recognize the first channel by default.\nTo perform independent recognition on each channel set\nenable_separate_recognition_per_channel to 'true'.",
+          "description": "*Optional* The number of channels in the input audio data.\nONLY set this for MULTI-CHANNEL recognition.\nValid values for LINEAR16 and FLAC are `1`-`8`.\nValid values for OGG_OPUS are '1'-'254'.\nValid value for MULAW, AMR, AMR_WB and SPEEX_WITH_HEADER_BYTE is only `1`.\nIf `0` or omitted, defaults to one channel (mono).\nNote: We only recognize the first channel by default.\nTo perform independent recognition on each channel set\n`enable_separate_recognition_per_channel` to 'true'.",
           "type": "integer",
           "format": "int32"
         },
         "enableSeparateRecognitionPerChannel": {
-          "description": "This needs to be set to \u2018true\u2019 explicitly and audio_channel_count > 1\nto get each channel recognized separately. The recognition result will\ncontain a channel_tag field to state which channel that result belongs to.\nIf this is not \u2018true\u2019, we will only recognize the first channel.\nNOTE: The request is also billed cumulatively for all channels recognized:\n    (audio_channel_count times the audio length)",
+          "description": "This needs to be set to \u2018true\u2019 explicitly and `audio_channel_count` > 1\nto get each channel recognized separately. The recognition result will\ncontain a `channel_tag` field to state which channel that result belongs\nto. If this is not true, we will only recognize the first channel. The\nrequest is billed cumulatively for all channels recognized:\n`audio_channel_count` multiplied by the length of the audio.",
           "type": "boolean"
         },
         "languageCode": {
-          "description": "*Required* The language of the supplied audio as a\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag.\nExample: \"en-US\".\nSee [Language Support](https:\/\/cloud.google.com\/speech\/docs\/languages)\nfor a list of the currently supported language codes.",
+          "description": "*Required* The language of the supplied audio as a\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag.\nExample: \"en-US\".\nSee [Language Support](\/speech-to-text\/docs\/languages)\nfor a list of the currently supported language codes.",
           "type": "string"
         },
         "alternativeLanguageCodes": {
-          "description": "*Optional* A list of up to 3 additional\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tags,\nlisting possible alternative languages of the supplied audio.\nSee [Language Support](https:\/\/cloud.google.com\/speech\/docs\/languages)\nfor a list of the currently supported language codes.\nIf alternative languages are listed, recognition result will contain\nrecognition in the most likely language detected including the main\nlanguage_code. The recognition result will include the language tag\nof the language detected in the audio.\nNOTE: This feature is only supported for Voice Command and Voice Search\nuse cases and performance may vary for other use cases (e.g., phone call\ntranscription).",
+          "description": "*Optional* A list of up to 3 additional\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tags,\nlisting possible alternative languages of the supplied audio.\nSee [Language Support](\/speech-to-text\/docs\/languages)\nfor a list of the currently supported language codes.\nIf alternative languages are listed, recognition result will contain\nrecognition in the most likely language detected including the main\nlanguage_code. The recognition result will include the language tag\nof the language detected in the audio.\nNote: This feature is only supported for Voice Command and Voice Search\nuse cases and performance may vary for other use cases (e.g., phone call\ntranscription).",
           "type": "array",
           "items": {
             "type": "string"
@@ -250,7 +250,7 @@
           "type": "boolean"
         },
         "speechContexts": {
-          "description": "*Optional* A means to provide context to assist the speech recognition.",
+          "description": "*Optional* array of SpeechContext.\nA means to provide context to assist the speech recognition. For more\ninformation, see [Phrase Hints](\/speech-to-text\/docs\/basics#phrase-hints).",
           "type": "array",
           "items": {
             "$ref": "SpeechContext"
@@ -265,7 +265,7 @@
           "type": "boolean"
         },
         "enableAutomaticPunctuation": {
-          "description": "*Optional* If 'true', adds punctuation to recognition result hypotheses.\nThis feature is only available in select languages. Setting this for\nrequests in other languages has no effect at all.\nThe default 'false' value does not add punctuation to result hypotheses.\nNOTE: \"This is currently offered as an experimental service, complimentary\nto all users. In the future this may be exclusively available as a\npremium feature.\"",
+          "description": "*Optional* If 'true', adds punctuation to recognition result hypotheses.\nThis feature is only available in select languages. Setting this for\nrequests in other languages has no effect at all.\nThe default 'false' value does not add punctuation to result hypotheses.\nNote: This is currently offered as an experimental service, complimentary\nto all users. In the future this may be exclusively available as a\npremium feature.",
           "type": "boolean"
         },
         "enableSpeakerDiarization": {
@@ -286,7 +286,7 @@
           "type": "string"
         },
         "useEnhanced": {
-          "description": "*Optional* Set to true to use an enhanced model for speech recognition.\nYou must also set the `model` field to a valid, enhanced model. If\n`use_enhanced` is set to true and the `model` field is not set, then\n`use_enhanced` is ignored. If `use_enhanced` is true and an enhanced\nversion of the specified model does not exist, then the speech is\nrecognized using the standard version of the specified model.\n\nEnhanced speech models require that you opt-in to the audio logging using\ninstructions in the [alpha documentation](\/speech\/data-sharing). If you set\n`use_enhanced` to true and you have not enabled audio logging, then you\nwill receive an error.",
+          "description": "*Optional* Set to true to use an enhanced model for speech recognition.\nYou must also set the `model` field to a valid, enhanced model. If\n`use_enhanced` is set to true and the `model` field is not set, then\n`use_enhanced` is ignored. If `use_enhanced` is true and an enhanced\nversion of the specified model does not exist, then the speech is\nrecognized using the standard version of the specified model.\n\nEnhanced speech models require that you opt-in to data logging using\ninstructions in the [documentation](\/speech-to-text\/enable-data-logging).\nIf you set `use_enhanced` to true and you have not enabled audio logging,\nthen you will receive an error.",
           "type": "boolean"
         }
       }
@@ -297,7 +297,7 @@
       "type": "object",
       "properties": {
         "phrases": {
-          "description": "*Optional* A list of strings containing words and phrases \"hints\" so that\nthe speech recognition is more likely to recognize them. This can be used\nto improve the accuracy for specific words and phrases, for example, if\nspecific commands are typically spoken by the user. This can also be used\nto add additional words to the vocabulary of the recognizer. See\n[usage limits](https:\/\/cloud.google.com\/speech\/limits#content).",
+          "description": "*Optional* A list of strings containing words and phrases \"hints\" so that\nthe speech recognition is more likely to recognize them. This can be used\nto improve the accuracy for specific words and phrases, for example, if\nspecific commands are typically spoken by the user. This can also be used\nto add additional words to the vocabulary of the recognizer. See\n[usage limits](\/speech-to-text\/quotas#content).",
           "type": "array",
           "items": {
             "type": "string"
@@ -437,7 +437,7 @@
     },
     "RecognitionAudio": {
       "id": "RecognitionAudio",
-      "description": "Contains audio data in the encoding specified in the `RecognitionConfig`.\nEither `content` or `uri` must be supplied. Supplying both or neither\nreturns google.rpc.Code.INVALID_ARGUMENT. See\n[audio limits](https:\/\/cloud.google.com\/speech\/limits#content).",
+      "description": "Contains audio data in the encoding specified in the `RecognitionConfig`.\nEither `content` or `uri` must be supplied. Supplying both or neither\nreturns google.rpc.Code.INVALID_ARGUMENT. See\n[content limits](\/speech-to-text\/quotas#content).",
       "type": "object",
       "properties": {
         "content": {
@@ -446,7 +446,7 @@
           "format": "byte"
         },
         "uri": {
-          "description": "URI that points to a file that contains audio data bytes as specified in\n`RecognitionConfig`. Currently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats return\ngoogle.rpc.Code.INVALID_ARGUMENT). For more information, see\n[Request URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris).",
+          "description": "URI that points to a file that contains audio data bytes as specified in\n`RecognitionConfig`. The file must not be compressed (for example, gzip).\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats return\ngoogle.rpc.Code.INVALID_ARGUMENT). For more information, see\n[Request URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris).",
           "type": "string"
         }
       }
@@ -503,7 +503,7 @@
           "format": "float"
         },
         "words": {
-          "description": "Output only. A list of word-specific information for each recognized word.\nNote: When enable_speaker_diarization is true, you will see all the words\nfrom the beginning of the audio.",
+          "description": "Output only. A list of word-specific information for each recognized word.\nNote: When `enable_speaker_diarization` is true, you will see all the words\nfrom the beginning of the audio.",
           "type": "array",
           "items": {
             "$ref": "WordInfo"
@@ -610,11 +610,11 @@
           "type": "boolean"
         },
         "uri": {
-          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row\nto be considered valid are :-\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then both <gs_path_to_audio>\nand <gs_path_to_transcript> needs to be specified.\n3. There has to be minimum 500 number of rows labelled HUMAN_TRANSCRIBED if\nevaluation stats are required.\n4. If use_logged_data is set to true, then we ignore the rows labelled as\nMACHINE_TRANSCRIBED.\n5. There has to be minimum 100,000 words in the transcripts in order to\nprovide sufficient textual training data for the language model.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris).",
+          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row\nto be considered valid are :-\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then both <gs_path_to_audio>\nand <gs_path_to_transcript> needs to be specified.\n3. There has to be minimum 500 number of rows labelled HUMAN_TRANSCRIBED if\nevaluation stats are required.\n4. If use_logged_data is set to true, then we ignore the rows labelled as\nMACHINE_TRANSCRIBED.\n5. There has to be minimum 100,000 words in the transcripts in order to\nprovide sufficient textual training data for the language model.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](\/storage\/docs\/reference-uris).",
           "type": "string"
         },
         "languageCode": {
-          "description": "Required. The language of the supplied audio as a\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag.\nExample: \"en-US\".\nSee [Language Support](https:\/\/cloud.google.com\/speech\/docs\/languages)\nfor a list of the currently supported language codes.",
+          "description": "Required. The language of the supplied audio as a\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag.\nExample: \"en-US\".\nSee [Language Support](\/speech-to-text\/docs\/languages)\nfor a list of the currently supported language codes.",
           "type": "string"
         },
         "dataProcessingRegion": {
@@ -783,6 +783,17 @@
         "isEnhancedModel": {
           "description": "If true then it means we are referring to the results of an enhanced\nversion of the model_type. Currently only PHONE_CALL model_type has an\nenhanced version.",
           "type": "boolean"
+        }
+      }
+    },
+    "RefreshDataRequest": {
+      "id": "RefreshDataRequest",
+      "description": "Message sent by the client to refresh data in a existing dataset.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row\nto be considered valid are :-\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then both <gs_path_to_audio>\nand <gs_path_to_transcript> needs to be specified.\n3. There has to be minimum 500 number of rows labelled HUMAN_TRANSCRIBED if\nevaluation stats are required.\n4. If use_logged_data_for_training is set to true, then we ignore the rows\nlabelled as MACHINE_TRANSCRIBED.\n5. There has to be minimum 100,000 words in the transcripts in order to\nprovide sufficient textual training data for the language model.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris).",
+          "type": "string"
         }
       }
     },
@@ -971,6 +982,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Performs asynchronous data upload for AutoML: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `Dataset` message."
+                },
+                "refreshData": {
+                  "id": "speech.projects.locations.datasets.refreshData",
+                  "path": "v1p1beta1/{+name}:refreshData",
+                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}:refreshData",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the destination dataset.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "RefreshDataRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Refresh data for a dataset."
                 },
                 "list": {
                   "id": "speech.projects.locations.datasets.list",

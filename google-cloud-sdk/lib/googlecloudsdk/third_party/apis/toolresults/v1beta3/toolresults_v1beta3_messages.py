@@ -1273,13 +1273,17 @@ class TestIssue(_messages.Message):
       availableDeepLinks: <no description>
       compatibleWithOrchestrator: <no description>
       completeRoboScriptExecution: <no description>
+      encounteredLoginScreen: <no description>
       encounteredNonAndroidUiWidgetScreen: <no description>
       failedToInstall: <no description>
       fatalException: <no description>
       incompleteRoboScriptExecution: <no description>
+      iosCrash: <no description>
+      iosException: <no description>
       launcherActivityNotFound: <no description>
       nativeCrash: <no description>
       nonSdkApiUsageViolation: <no description>
+      performedGoogleLogin: <no description>
       startActivityNotFound: <no description>
       unspecifiedType: <no description>
       unusedRoboDirective: <no description>
@@ -1288,16 +1292,20 @@ class TestIssue(_messages.Message):
     availableDeepLinks = 1
     compatibleWithOrchestrator = 2
     completeRoboScriptExecution = 3
-    encounteredNonAndroidUiWidgetScreen = 4
-    failedToInstall = 5
-    fatalException = 6
-    incompleteRoboScriptExecution = 7
-    launcherActivityNotFound = 8
-    nativeCrash = 9
-    nonSdkApiUsageViolation = 10
-    startActivityNotFound = 11
-    unspecifiedType = 12
-    unusedRoboDirective = 13
+    encounteredLoginScreen = 4
+    encounteredNonAndroidUiWidgetScreen = 5
+    failedToInstall = 6
+    fatalException = 7
+    incompleteRoboScriptExecution = 8
+    iosCrash = 9
+    iosException = 10
+    launcherActivityNotFound = 11
+    nativeCrash = 12
+    nonSdkApiUsageViolation = 13
+    performedGoogleLogin = 14
+    startActivityNotFound = 15
+    unspecifiedType = 16
+    unusedRoboDirective = 17
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)
@@ -1418,7 +1426,7 @@ class Timestamp(_messages.Message):
   [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
   the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
   the Joda Time's [`ISODateTimeFormat.dateTime()`]( http://www.joda.org/joda-
-  time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime-- ) to
+  time/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime%2D%2D ) to
   obtain a formatter capable of generating timestamps in this format.
 
   Fields:

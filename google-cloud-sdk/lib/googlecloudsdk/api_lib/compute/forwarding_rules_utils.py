@@ -80,7 +80,7 @@ def GetGlobalTarget(resources, args, include_alpha=False):
     return flags.TargetHttpProxyArg().ResolveAsResource(args, resources)
 
   if args.target_https_proxy:
-    return flags.TARGET_HTTPS_PROXY_ARG.ResolveAsResource(args, resources)
+    return flags.TargetHttpsProxyArg().ResolveAsResource(args, resources)
   if args.target_ssl_proxy:
     return flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)
   if getattr(args, 'target_tcp_proxy', None):
@@ -173,7 +173,8 @@ def GetRegionalTarget(client,
         include_alpha=include_alpha).ResolveAsResource(args, resources)
     target_region = region_arg
   elif args.target_https_proxy:
-    target_ref = flags.TARGET_HTTPS_PROXY_ARG.ResolveAsResource(args, resources)
+    target_ref = flags.TargetHttpsProxyArg(
+        include_alpha=include_alpha).ResolveAsResource(args, resources)
     target_region = region_arg
   elif args.target_ssl_proxy:
     target_ref = flags.TARGET_SSL_PROXY_ARG.ResolveAsResource(args, resources)

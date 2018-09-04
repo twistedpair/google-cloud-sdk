@@ -3208,7 +3208,7 @@ class Service(_messages.Message):
     http: HTTP configuration.
     id: A unique ID for a specific instance of this message, typically
       assigned by the client for tracking purpose. If empty, the server may
-      choose to generate one instead.
+      choose to generate one instead. Must be no longer than 60 characters.
     logging: Logging configuration.
     logs: Defines the logs used by this service.
     metrics: Defines the metrics used by this service.
@@ -3340,7 +3340,9 @@ class ServicemanagementServicesConfigsGetRequest(_messages.Message):
       returned in the response.
 
   Fields:
-    configId: The id of the service configuration resource.
+    configId: The id of the service configuration resource.  This field must
+      be specified for the server to return all fields, including
+      `SourceInfo`.
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:
       `example.googleapis.com`.
@@ -3581,7 +3583,9 @@ class ServicemanagementServicesGetConfigRequest(_messages.Message):
       returned in the response.
 
   Fields:
-    configId: The id of the service configuration resource.
+    configId: The id of the service configuration resource.  This field must
+      be specified for the server to return all fields, including
+      `SourceInfo`.
     serviceName: The name of the service.  See the [overview](/service-
       management/overview) for naming requirements.  For example:
       `example.googleapis.com`.

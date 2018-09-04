@@ -169,16 +169,21 @@ def UploadSource(source_dir, object_ref, gen_files=None, info=None):
     storage_client.CopyFileToGCS(object_ref.bucket_ref, f.name, object_ref.name)
 
 
+def GetServiceTimeoutSeconds(timeout_property_str):
+  """Returns the service timeout in seconds given the duration string."""
+  if timeout_property_str is None:
+    return None
+  build_timeout_duration = times.ParseDuration(timeout_property_str,
+                                               default_suffix='s')
+  return int(build_timeout_duration.total_seconds)
+
+
 def GetServiceTimeoutString(timeout_property_str):
-  if timeout_property_str is not None:
-    try:
-      # A bare number is interpreted as seconds.
-      build_timeout_secs = int(timeout_property_str)
-    except ValueError:
-      build_timeout_duration = times.ParseDuration(timeout_property_str)
-      build_timeout_secs = int(build_timeout_duration.total_seconds)
-    return str(build_timeout_secs) + 's'
-  return None
+  """Returns the service timeout duration string with suffix appended."""
+  if timeout_property_str is None:
+    return None
+  build_timeout_secs = GetServiceTimeoutSeconds(timeout_property_str)
+  return str(build_timeout_secs) + 's'
 
 
 class InvalidBuildError(ValueError):

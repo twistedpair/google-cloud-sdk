@@ -35,38 +35,11 @@ table(
                     sourceTags.list():label=SRC_TAGS,
                     sourceServiceAccounts.list():label=SRC_SVC_ACCT,
                     targetTags.list():label=TARGET_TAGS,
-                    targetServiceAccounts.list():label=TARGET_SVC_ACCT
-                )"""
-
-DEFAULT_LIST_FORMAT = """\
-    table(
-      name,
-      network.basename(),
-      direction,
-      priority,
-      allowed[].map().firewall_rule().list():label=ALLOW,
-      denied[].map().firewall_rule().list():label=DENY
-    )"""
-
-# Needs to be indented to show up correctly in help text
-LIST_WITH_ALL_FIELDS_FORMAT_BETA = """\
-table(
-                    name,
-                    network,
-                    direction,
-                    priority,
-                    sourceRanges.list():label=SRC_RANGES,
-                    destinationRanges.list():label=DEST_RANGES,
-                    allowed[].map().firewall_rule().list():label=ALLOW,
-                    denied[].map().firewall_rule().list():label=DENY,
-                    sourceTags.list():label=SRC_TAGS,
-                    sourceServiceAccounts.list():label=SRC_SVC_ACCT,
-                    targetTags.list():label=TARGET_TAGS,
                     targetServiceAccounts.list():label=TARGET_SVC_ACCT,
                     disabled
                 )"""
 
-DEFAULT_LIST_FORMAT_BETA = """\
+DEFAULT_LIST_FORMAT = """\
     table(
       name,
       network.basename(),

@@ -1256,6 +1256,13 @@ class RunPipelineRequest(_messages.Message):
   pipeline = _messages.MessageField('Pipeline', 2)
 
 
+class RunPipelineResponse(_messages.Message):
+  r"""The response to the RunPipeline method, returned in the operation's
+  result field on success.
+  """
+
+
+
 class RuntimeMetadata(_messages.Message):
   r"""Runtime metadata that will be populated in the runtimeMetadata field of
   the Operation associated with a RunPipeline execution.
@@ -1273,7 +1280,7 @@ class Secret(_messages.Message):
 
   Fields:
     cipherText: The value of the cipherText response from the `encrypt`
-      method.
+      method. This field is intentionally unaudited.
     keyName: The name of the Cloud KMS key that will be used to decrypt the
       secret value. The VM service account must have the required permissions
       and authentication scopes to invoke the `decrypt` method on the

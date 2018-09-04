@@ -14,6 +14,8 @@
 # limitations under the License.
 
 """A module that will mirror the typing package if it is available."""
+# This file lazily imports the typing module which confuses pytype.
+# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division

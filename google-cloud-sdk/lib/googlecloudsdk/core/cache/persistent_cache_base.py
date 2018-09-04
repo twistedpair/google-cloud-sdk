@@ -326,7 +326,9 @@ class Cache(object):  # pytype: disable=ignored-abstractmethod
     """
     pass
 
+  @abc.abstractmethod
   def Table(self, name, create=True, columns=1, keys=1, timeout=None):
+    # type: (str, bool, int, int, int) -> Table
     """Returns the Table object for existing table name.
 
     Args:

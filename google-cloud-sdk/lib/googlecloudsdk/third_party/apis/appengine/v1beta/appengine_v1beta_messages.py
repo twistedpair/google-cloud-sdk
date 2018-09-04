@@ -838,10 +838,12 @@ class AutomaticScaling(_messages.Message):
   other application metrics.
 
   Fields:
-    coolDownPeriod: Amount of time that the Autoscaler
-      (https://cloud.google.com/compute/docs/autoscaler/) should wait between
-      changes to the number of virtual machines. Only applicable in the App
-      Engine flexible environment.
+    coolDownPeriod: The time period that the Autoscaler
+      (https://cloud.google.com/compute/docs/autoscaler/) should wait before
+      it starts collecting information from a new instance. This prevents the
+      autoscaler from collecting information when the instance is
+      initializing, during which the collected usage would not be reliable.
+      Only applicable in the App Engine flexible environment.
     cpuUtilization: Target scaling by CPU usage.
     customMetrics: Target scaling by user-provided metrics.
     diskUtilization: Target scaling by disk usage.
@@ -2821,6 +2823,7 @@ class Version(_messages.Message):
     versionUrl: Serving URL for this version. Example: "https://myversion-dot-
       myservice-dot-myapp.appspot.com"@OutputOnly
     vm: Whether to deploy this version in a container on a virtual machine.
+    vpcAccessConnector: Enables VPC connectivity for standard apps.
     zones: The Google Compute Engine zones that are supported by this version
       in the App Engine flexible environment.
   """
@@ -2952,7 +2955,8 @@ class Version(_messages.Message):
   threadsafe = _messages.BooleanField(32)
   versionUrl = _messages.StringField(33)
   vm = _messages.BooleanField(34)
-  zones = _messages.StringField(35, repeated=True)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 35)
+  zones = _messages.StringField(36, repeated=True)
 
 
 class Volume(_messages.Message):
@@ -2968,6 +2972,17 @@ class Volume(_messages.Message):
   name = _messages.StringField(1)
   sizeGb = _messages.FloatField(2)
   volumeType = _messages.StringField(3)
+
+
+class VpcAccessConnector(_messages.Message):
+  r"""VPC access connector specification.
+
+  Fields:
+    name: Full Serverless VPC Access Connector name e.g. /projects/my-
+      project/locations/us-central1/connectors/c1.
+  """
+
+  name = _messages.StringField(1)
 
 
 class ZipInfo(_messages.Message):

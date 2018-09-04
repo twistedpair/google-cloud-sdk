@@ -472,10 +472,10 @@ class ComponentSnapshot(object):
       deps = [self.ComponentFromId(d)
               for d in self.__dependencies[component_id]]
       deps = [d for d in deps
-              if d.platform.Matches(platform_filter) and d.is_hidden and d.data]
+              if d.platform.Matches(platform_filter) and  # pytype: disable=attribute-error
+              d.is_hidden and d.data]  # pytype: disable=attribute-error
       for d in deps:
-        size += d.data.size
-
+        size += d.data.size  # pytype: disable=attribute-error
     return size
 
   def CreateDiff(self, latest_snapshot, platform_filter=None):

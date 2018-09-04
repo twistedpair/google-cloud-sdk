@@ -172,7 +172,7 @@ def ParseRetentionDurationWithDefault(value):
 def AddSubscriptionSettingsFlags(parser, track, is_update=False):
   AddAckDeadlineFlag(parser)
   AddPushEndpointFlag(parser)
-  if track == base.ReleaseTrack.ALPHA:
+  if track == base.ReleaseTrack.ALPHA or track == base.ReleaseTrack.BETA:
     if not is_update:
       retention_parser = arg_parsers.Duration()
       retention_default_help = ('The default value is 7 days, the minimum is '

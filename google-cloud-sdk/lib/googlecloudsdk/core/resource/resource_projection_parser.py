@@ -14,6 +14,8 @@
 # limitations under the License.
 
 """A class for parsing a resource projection expression."""
+# TODO(b/113319639): Temporary skip to get pytype enabled.
+# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division

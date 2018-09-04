@@ -638,6 +638,10 @@
         "entrypoint": {
           "description": "The entrypoint for the application.",
           "$ref": "Entrypoint"
+        },
+        "vpcAccessConnector": {
+          "description": "Enables VPC connectivity for standard apps.",
+          "$ref": "VpcAccessConnector"
         }
       }
     },
@@ -647,7 +651,7 @@
       "type": "object",
       "properties": {
         "coolDownPeriod": {
-          "description": "Amount of time that the Autoscaler (https:\/\/cloud.google.com\/compute\/docs\/autoscaler\/) should wait between changes to the number of virtual machines. Only applicable in the App Engine flexible environment.",
+          "description": "The time period that the Autoscaler (https:\/\/cloud.google.com\/compute\/docs\/autoscaler\/) should wait before it starts collecting information from a new instance. This prevents the autoscaler from collecting information when the instance is initializing, during which the collected usage would not be reliable. Only applicable in the App Engine flexible environment.",
           "type": "string",
           "format": "google-duration"
         },
@@ -1491,6 +1495,17 @@
       "properties": {
         "shell": {
           "description": "The format should be a shell command that can be fed to bash -c.",
+          "type": "string"
+        }
+      }
+    },
+    "VpcAccessConnector": {
+      "id": "VpcAccessConnector",
+      "description": "VPC access connector specification.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Full Serverless VPC Access Connector name e.g. \/projects\/my-project\/locations\/us-central1\/connectors\/c1.",
           "type": "string"
         }
       }

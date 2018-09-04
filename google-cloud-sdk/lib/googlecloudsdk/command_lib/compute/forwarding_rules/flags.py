@@ -236,14 +236,22 @@ def TargetHttpProxyArg(include_alpha=False):
   return target_http_proxy_arg
 
 
-TARGET_HTTPS_PROXY_ARG = compute_flags.ResourceArgument(
-    name='--target-https-proxy',
-    required=False,
-    resource_name='https proxy',
-    global_collection='compute.targetHttpsProxies',
-    short_help='The target HTTPS proxy that will receive the traffic.',
-    detailed_help=('The target HTTPS proxy that will receive the traffic. '
-                   'Acceptable values for --ports flag are: 443.'))
+def TargetHttpsProxyArg(include_alpha=False):
+  """Return a resource argument for parsing a target https proxy."""
+
+  target_https_proxy_arg = compute_flags.ResourceArgument(
+      name='--target-https-proxy',
+      required=False,
+      resource_name='https proxy',
+      global_collection='compute.targetHttpsProxies',
+      regional_collection='compute.regionTargetHttpsProxies'
+      if include_alpha else None,
+      short_help='The target HTTPS proxy that will receive the traffic.',
+      detailed_help=('The target HTTPS proxy that will receive the traffic. '
+                     'Acceptable values for --ports flag are: 443.'),
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
+      if include_alpha else None)
+  return target_https_proxy_arg
 
 TARGET_INSTANCE_ARG = compute_flags.ResourceArgument(
     name='--target-instance',
@@ -385,7 +393,8 @@ def AddUpdateArgs(parser, include_beta=False, include_alpha=False):
 
   TargetHttpProxyArg(include_alpha=include_alpha).AddArgument(
       parser, mutex_group=target)
-  TARGET_HTTPS_PROXY_ARG.AddArgument(parser, mutex_group=target)
+  TargetHttpsProxyArg(include_alpha=include_alpha).AddArgument(
+      parser, mutex_group=target)
   TARGET_INSTANCE_ARG.AddArgument(parser, mutex_group=target)
   TARGET_POOL_ARG.AddArgument(parser, mutex_group=target)
   TARGET_SSL_PROXY_ARG.AddArgument(parser, mutex_group=target)

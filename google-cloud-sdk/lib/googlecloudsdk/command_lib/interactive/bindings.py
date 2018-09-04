@@ -136,7 +136,7 @@ class _ContextKeyBinding(_KeyBinding):
             '*gcloud compute* at subsequent prompts until the context is '
             'changed.'
             '\n+\n'
-            'Hit ^C and {key} to clear the context, or edit a command line '
+            'Hit ctrl-c and {key} to clear the context, or edit a command line '
             'and/or move the cursor and hit {key} to set a different context.'
         ),
     )
@@ -179,9 +179,9 @@ class _QuitKeyBinding(_KeyBinding):
 
 
 class _InterruptKeyBinding(_KeyBinding):
-  """The interrupt (^C) key binding.
+  """The interrupt (ctrl-c) key binding.
 
-  Catches control-C and clears the prompt input buffer.
+  Catches control-C and clears the prompt input buffer and completer.
   """
 
   def __init__(self, key):
@@ -191,6 +191,7 @@ class _InterruptKeyBinding(_KeyBinding):
 
   def Handle(self, event):
     event.cli.current_buffer.reset()
+    event.cli.completer.reset()
 
 
 class _StopKeyBinding(_KeyBinding):

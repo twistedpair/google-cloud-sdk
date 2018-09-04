@@ -1222,6 +1222,9 @@ class GoogleCloudVisionV1p1beta1AnnotateImageResponse(_messages.Message):
     labelAnnotations: If present, label detection has completed successfully.
     landmarkAnnotations: If present, landmark detection has completed
       successfully.
+    localizedObjectAnnotations: If present, localized object detection has
+      completed successfully. This will be sorted descending by confidence
+      score.
     logoAnnotations: If present, logo detection has completed successfully.
     safeSearchAnnotation: If present, safe-search annotation has completed
       successfully.
@@ -1238,10 +1241,11 @@ class GoogleCloudVisionV1p1beta1AnnotateImageResponse(_messages.Message):
   imagePropertiesAnnotation = _messages.MessageField('GoogleCloudVisionV1p1beta1ImageProperties', 6)
   labelAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 7, repeated=True)
   landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 8, repeated=True)
-  logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 9, repeated=True)
-  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p1beta1SafeSearchAnnotation', 10)
-  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 11, repeated=True)
-  webDetection = _messages.MessageField('GoogleCloudVisionV1p1beta1WebDetection', 12)
+  localizedObjectAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1LocalizedObjectAnnotation', 9, repeated=True)
+  logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 10, repeated=True)
+  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p1beta1SafeSearchAnnotation', 11)
+  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 12, repeated=True)
+  webDetection = _messages.MessageField('GoogleCloudVisionV1p1beta1WebDetection', 13)
 
 
 class GoogleCloudVisionV1p1beta1AsyncAnnotateFileResponse(_messages.Message):
@@ -1798,6 +1802,27 @@ class GoogleCloudVisionV1p1beta1InputConfig(_messages.Message):
   mimeType = _messages.StringField(2)
 
 
+class GoogleCloudVisionV1p1beta1LocalizedObjectAnnotation(_messages.Message):
+  r"""Set of detected objects with bounding boxes.
+
+  Fields:
+    boundingPoly: Image region to which this object belongs. This must be
+      populated.
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p1beta1BoundingPoly', 1)
+  languageCode = _messages.StringField(2)
+  mid = _messages.StringField(3)
+  name = _messages.StringField(4)
+  score = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudVisionV1p1beta1LocationInfo(_messages.Message):
   r"""Detected entity location information.
 
@@ -2349,6 +2374,9 @@ class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
     labelAnnotations: If present, label detection has completed successfully.
     landmarkAnnotations: If present, landmark detection has completed
       successfully.
+    localizedObjectAnnotations: If present, localized object detection has
+      completed successfully. This will be sorted descending by confidence
+      score.
     logoAnnotations: If present, logo detection has completed successfully.
     safeSearchAnnotation: If present, safe-search annotation has completed
       successfully.
@@ -2365,10 +2393,11 @@ class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
   imagePropertiesAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1ImageProperties', 6)
   labelAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 7, repeated=True)
   landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 8, repeated=True)
-  logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 9, repeated=True)
-  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1SafeSearchAnnotation', 10)
-  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 11, repeated=True)
-  webDetection = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetection', 12)
+  localizedObjectAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1LocalizedObjectAnnotation', 9, repeated=True)
+  logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 10, repeated=True)
+  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1SafeSearchAnnotation', 11)
+  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 12, repeated=True)
+  webDetection = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetection', 13)
 
 
 class GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse(_messages.Message):
@@ -2925,6 +2954,27 @@ class GoogleCloudVisionV1p2beta1InputConfig(_messages.Message):
 
   gcsSource = _messages.MessageField('GoogleCloudVisionV1p2beta1GcsSource', 1)
   mimeType = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1LocalizedObjectAnnotation(_messages.Message):
+  r"""Set of detected objects with bounding boxes.
+
+  Fields:
+    boundingPoly: Image region to which this object belongs. This must be
+      populated.
+    languageCode: The BCP-47 language code, such as "en-US" or "sr-Latn". For
+      more information, see
+      http://www.unicode.org/reports/tr35/#Unicode_locale_identifier.
+    mid: Object ID that should align with EntityAnnotation mid.
+    name: Object name, expressed in its `language_code` language.
+    score: Score of the result. Range [0, 1].
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
+  languageCode = _messages.StringField(2)
+  mid = _messages.StringField(3)
+  name = _messages.StringField(4)
+  score = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p2beta1LocationInfo(_messages.Message):
@@ -4354,8 +4404,7 @@ class GoogleCloudVisionV1p3beta1ProductSearchResultsResult(_messages.Message):
       match to the query.
     product: The Product.
     score: A confidence level on the match, ranging from 0 (no confidence) to
-      1 (full confidence).  This field is returned only if `view` is set to
-      `FULL` in the request.
+      1 (full confidence).
   """
 
   image = _messages.StringField(1)
@@ -5588,8 +5637,7 @@ class Result(_messages.Message):
       match to the query.
     product: The Product.
     score: A confidence level on the match, ranging from 0 (no confidence) to
-      1 (full confidence).  This field is returned only if `view` is set to
-      `FULL` in the request.
+      1 (full confidence).
   """
 
   image = _messages.StringField(1)

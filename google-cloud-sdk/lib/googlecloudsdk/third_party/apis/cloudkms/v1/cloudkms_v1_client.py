@@ -341,8 +341,9 @@ and destroy_time will be cleared.
     def Create(self, request, global_params=None):
       r"""Create a new CryptoKey within a KeyRing.
 
-CryptoKey.purpose and CryptoKey.version_template.algorithm are
-required.
+CryptoKey.purpose and
+CryptoKey.version_template.algorithm
+are required.
 
       Args:
         request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCreateRequest) input message

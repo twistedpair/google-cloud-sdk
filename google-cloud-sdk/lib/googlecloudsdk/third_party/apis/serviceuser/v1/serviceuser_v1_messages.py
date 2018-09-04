@@ -1847,7 +1847,7 @@ class Service(_messages.Message):
     http: HTTP configuration.
     id: A unique ID for a specific instance of this message, typically
       assigned by the client for tracking purpose. If empty, the server may
-      choose to generate one instead.
+      choose to generate one instead. Must be no longer than 60 characters.
     logging: Logging configuration.
     logs: Defines the logs used by this service.
     metrics: Defines the metrics used by this service.

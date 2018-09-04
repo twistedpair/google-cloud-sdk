@@ -178,7 +178,7 @@ def FormatDurationForJson(duration):
   return num + 's'
 
 
-def ParseDuration(string, calendar=False):
+def ParseDuration(string, calendar=False, default_suffix=None):
   """Parses a duration string and returns a Duration object.
 
   Durations using only hours, miniutes, seconds and microseconds are exact.
@@ -198,6 +198,7 @@ def ParseDuration(string, calendar=False):
   Args:
     string: The ISO 8601 duration/period string to parse.
     calendar: Use duration units larger than hours if True.
+    default_suffix: Use this suffix if string is an unqualified int.
 
   Raises:
     DurationSyntaxError: Invalid duration syntax.
@@ -207,6 +208,12 @@ def ParseDuration(string, calendar=False):
     An iso_duration.Duration object for the given ISO 8601 duration/period
     string.
   """
+  if default_suffix:
+    try:
+      seconds = int(string)
+      string = '{}{}'.format(seconds, default_suffix)
+    except ValueError:
+      pass
   try:
     return iso_duration.Duration(calendar=calendar).Parse(string)
   except (AttributeError, OverflowError) as e:

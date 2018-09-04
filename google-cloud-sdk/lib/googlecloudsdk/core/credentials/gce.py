@@ -188,7 +188,7 @@ class _GCEMetadata(object):
     # Zone will be formatted as (e.g.) us-central1-a, and we want to return
     # everything ahead of the last hyphen.
     zone = self.Zone()
-    return '-'.join(zone.split('-')[:-1])
+    return '-'.join(zone.split('-')[:-1]) if zone else None
 
 
 _metadata = None  # type: _GCEMetadata

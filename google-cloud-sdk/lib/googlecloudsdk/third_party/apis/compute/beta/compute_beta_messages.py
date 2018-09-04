@@ -7867,10 +7867,10 @@ class ComputeInstancesInsertRequest(_messages.Message):
     sourceInstanceTemplate: Specifies instance template to create the
       instance.  This field is optional. It can be a full or partial URL. For
       example, the following are all valid URLs to an instance template:   - h
-      ttps://www.googleapis.com/compute/v1/projects/project/global/global/inst
-      anceTemplates/instanceTemplate  -
-      projects/project/global/global/instanceTemplates/instanceTemplate  -
-      global/instancesTemplates/instanceTemplate
+      ttps://www.googleapis.com/compute/v1/projects/project/global/instanceTem
+      plates/instanceTemplate  -
+      projects/project/global/instanceTemplates/instanceTemplate  -
+      global/instanceTemplates/instanceTemplate
     zone: The name of the zone for this request.
   """
 
@@ -8837,6 +8837,18 @@ class ComputeInterconnectsDeleteRequest(_messages.Message):
   interconnect = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
+
+
+class ComputeInterconnectsGetDiagnosticsRequest(_messages.Message):
+  r"""A ComputeInterconnectsGetDiagnosticsRequest object.
+
+  Fields:
+    interconnect: Name of the interconnect resource to query.
+    project: Project ID for this request.
+  """
+
+  interconnect = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
 
 
 class ComputeInterconnectsGetRequest(_messages.Message):
@@ -18733,7 +18745,6 @@ class HealthCheck(_messages.Message):
       HTTPS. If not specified, the default is TCP. Exactly one of the
       protocol-specific health check field must be specified, which must match
       type field.
-    udpHealthCheck: A UDPHealthCheck attribute.
     unhealthyThreshold: A so-far healthy instance will be marked unhealthy
       after this many consecutive failures. The default value is 2.
   """
@@ -18750,7 +18761,6 @@ class HealthCheck(_messages.Message):
       INVALID: <no description>
       SSL: <no description>
       TCP: <no description>
-      UDP: <no description>
     """
     HTTP = 0
     HTTP2 = 1
@@ -18758,7 +18768,6 @@ class HealthCheck(_messages.Message):
     INVALID = 3
     SSL = 4
     TCP = 5
-    UDP = 6
 
   checkIntervalSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   creationTimestamp = _messages.StringField(2)
@@ -18775,8 +18784,7 @@ class HealthCheck(_messages.Message):
   tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 13)
   timeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   type = _messages.EnumField('TypeValueValuesEnum', 15)
-  udpHealthCheck = _messages.MessageField('UDPHealthCheck', 16)
-  unhealthyThreshold = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  unhealthyThreshold = _messages.IntegerField(16, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -20418,6 +20426,7 @@ class InstanceGroupManager(_messages.Message):
       service accounts needs all permissions required to create and delete
       instances. By default, the service account
       {projectNumber}@cloudservices.gserviceaccount.com is used.
+    status: [Output Only] The status of this managed instance group.
     targetPools: The URLs for all TargetPool resources to which instances in
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
@@ -20466,11 +20475,12 @@ class InstanceGroupManager(_messages.Message):
   region = _messages.StringField(16)
   selfLink = _messages.StringField(17)
   serviceAccount = _messages.StringField(18)
-  targetPools = _messages.StringField(19, repeated=True)
-  targetSize = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 21)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 22, repeated=True)
-  zone = _messages.StringField(23)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 19)
+  targetPools = _messages.StringField(20, repeated=True)
+  targetSize = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 22)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 23, repeated=True)
+  zone = _messages.StringField(24)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -20835,6 +20845,21 @@ class InstanceGroupManagerPendingActionsSummary(_messages.Message):
   deleting = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   recreating = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   restarting = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class InstanceGroupManagerStatus(_messages.Message):
+  r"""A InstanceGroupManagerStatus object.
+
+  Fields:
+    isStable: [Output Only] A bit indicating whether the managed instance
+      group is in a stable state. A stable state means that: none of the
+      instances in the managed instance group is currently undergoing any type
+      of change (for example, creation, restart, or deletion); no future
+      changes are scheduled for instances in the managed instance group; and
+      the managed instance group itself is not being modified.
+  """
+
+  isStable = _messages.BooleanField(1)
 
 
 class InstanceGroupManagerUpdatePolicy(_messages.Message):
@@ -23169,6 +23194,122 @@ class InterconnectCircuitInfo(_messages.Message):
   googleDemarcId = _messages.StringField(3)
 
 
+class InterconnectDiagnostics(_messages.Message):
+  r"""Diagnostics information about interconnect, contains detailed and
+  current technical information about Google?s side of the connection.
+
+  Fields:
+    arpCaches: A list of InterconnectDiagnostics.ARPEntry objects, describing
+      individual neighbors currently seen by the Google router in the ARP
+      cache for the Interconnect. This will be empty when the Interconnect is
+      not bundled.
+    links: A list of InterconnectDiagnostics.LinkStatus objects, describing
+      the status for each link on the Interconnect.
+    macAddress: The MAC address of the Interconnect's bundle interface.
+  """
+
+  arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
+  links = _messages.MessageField('InterconnectDiagnosticsLinkStatus', 2, repeated=True)
+  macAddress = _messages.StringField(3)
+
+
+class InterconnectDiagnosticsARPEntry(_messages.Message):
+  r"""Describing the ARP neighbor entries seen on this link
+
+  Fields:
+    ipAddress: The IP address of this ARP neighbor.
+    macAddress: The MAC address of this ARP neighbor.
+  """
+
+  ipAddress = _messages.StringField(1)
+  macAddress = _messages.StringField(2)
+
+
+class InterconnectDiagnosticsLinkLACPStatus(_messages.Message):
+  r"""A InterconnectDiagnosticsLinkLACPStatus object.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    googleSystemId: System ID of the port on Google?s side of the LACP
+      exchange.
+    neighborSystemId: System ID of the port on the neighbor?s side of the LACP
+      exchange.
+    state: A StateValueValuesEnum attribute.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      ACTIVE: <no description>
+      DETACHED: <no description>
+    """
+    ACTIVE = 0
+    DETACHED = 1
+
+  googleSystemId = _messages.StringField(1)
+  neighborSystemId = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class InterconnectDiagnosticsLinkOpticalPower(_messages.Message):
+  r"""A InterconnectDiagnosticsLinkOpticalPower object.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    state: A StateValueValuesEnum attribute.
+    value: Value of the current optical power, read in dBm.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      HIGH_ALARM: <no description>
+      HIGH_WARNING: <no description>
+      LOW_ALARM: <no description>
+      LOW_WARNING: <no description>
+      OK: <no description>
+    """
+    HIGH_ALARM = 0
+    HIGH_WARNING = 1
+    LOW_ALARM = 2
+    LOW_WARNING = 3
+    OK = 4
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  value = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class InterconnectDiagnosticsLinkStatus(_messages.Message):
+  r"""A InterconnectDiagnosticsLinkStatus object.
+
+  Fields:
+    arpCaches: A list of InterconnectDiagnostics.ARPEntry objects, describing
+      the ARP neighbor entries seen on this link. This will be empty if the
+      link is bundled
+    circuitId: The unique ID for this link assigned during turn up by Google.
+    googleDemarc: The Demarc address assigned by Google and provided in the
+      LoA.
+    lacpStatus: A InterconnectDiagnosticsLinkLACPStatus attribute.
+    receivingOpticalPower: A InterconnectDiagnosticsLinkOpticalPower
+      attribute.
+    transmittingOpticalPower: A InterconnectDiagnosticsLinkOpticalPower
+      attribute.
+  """
+
+  arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
+  circuitId = _messages.StringField(2)
+  googleDemarc = _messages.StringField(3)
+  lacpStatus = _messages.MessageField('InterconnectDiagnosticsLinkLACPStatus', 4)
+  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 5)
+  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 6)
+
+
 class InterconnectList(_messages.Message):
   r"""Response to the list request, and contains a list of interconnects.
 
@@ -23616,6 +23757,16 @@ class InterconnectOutageNotification(_messages.Message):
   source = _messages.EnumField('SourceValueValuesEnum', 6)
   startTime = _messages.IntegerField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+
+
+class InterconnectsGetDiagnosticsResponse(_messages.Message):
+  r"""Response for the InterconnectsGetDiagnosticsRequest.
+
+  Fields:
+    result: A InterconnectDiagnostics attribute.
+  """
+
+  result = _messages.MessageField('InterconnectDiagnostics', 1)
 
 
 class License(_messages.Message):
@@ -24718,6 +24869,8 @@ class NetworkEndpointGroup(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultPort: The default port used if the port number is not specified in
+      the network endpoint.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -24725,7 +24878,7 @@ class NetworkEndpointGroup(_messages.Message):
     kind: [Output Only] Type of the resource. Always
       compute#networkEndpointGroup for network endpoint group.
     loadBalancer: This field is only valid when the network endpoint group is
-      used for load balancing.
+      used for load balancing. [Deprecated] This field is deprecated.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -24733,11 +24886,17 @@ class NetworkEndpointGroup(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    network: The URL of the network to which all network endpoints in the NEG
+      belong. Uses "default" project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
       group. Currently the only supported value is GCE_VM_IP_PORT.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output only] Number of network endpoints in the network endpoint
       group.
+    subnetwork: Optional URL of the subnetwork to which all network endpoints
+      in the NEG belong.
+    zone: [Output Only] The URL of the zone where the network endpoint group
+      is located.
   """
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
@@ -24750,14 +24909,18 @@ class NetworkEndpointGroup(_messages.Message):
     GCE_VM_IP_PORT = 0
 
   creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(4, default=u'compute#networkEndpointGroup')
-  loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 5)
-  name = _messages.StringField(6)
-  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 7)
-  selfLink = _messages.StringField(8)
-  size = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  defaultPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  description = _messages.StringField(3)
+  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(5, default=u'compute#networkEndpointGroup')
+  loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 9)
+  selfLink = _messages.StringField(10)
+  size = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(12)
+  zone = _messages.StringField(13)
 
 
 class NetworkEndpointGroupAggregatedList(_messages.Message):
@@ -24917,13 +25080,14 @@ class NetworkEndpointGroupLbNetworkEndpointGroup(_messages.Message):
 
   Fields:
     defaultPort: The default port used if the port number is not specified in
-      the network endpoint.
+      the network endpoint. [Deprecated] This field is deprecated.
     network: The URL of the network to which all network endpoints in the NEG
-      belong. Uses "default" project network if unspecified.
+      belong. Uses "default" project network if unspecified. [Deprecated] This
+      field is deprecated.
     subnetwork: Optional URL of the subnetwork to which all network endpoints
-      in the NEG belong.
+      in the NEG belong. [Deprecated] This field is deprecated.
     zone: [Output Only] The URL of the zone where the network endpoint group
-      is located.
+      is located. [Deprecated] This field is deprecated.
   """
 
   defaultPort = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -25672,8 +25836,6 @@ class NodeGroup(_messages.Message):
       character, which cannot be a dash.
     nodeTemplate: The URL of the node template to which this node group
       belongs.
-    nodes: [Deprecated] Use nodeGroups.listNodes instead. [Output Only] A list
-      of nodes in this node group.
     selfLink: [Output Only] Server-defined URL for the resource.
     size: [Output Only] The total number of nodes in the node group.
     status: A StatusValueValuesEnum attribute.
@@ -25701,11 +25863,10 @@ class NodeGroup(_messages.Message):
   kind = _messages.StringField(4, default=u'compute#nodeGroup')
   name = _messages.StringField(5)
   nodeTemplate = _messages.StringField(6)
-  nodes = _messages.MessageField('NodeGroupNode', 7, repeated=True)
-  selfLink = _messages.StringField(8)
-  size = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  zone = _messages.StringField(11)
+  selfLink = _messages.StringField(7)
+  size = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  zone = _messages.StringField(10)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -29338,133 +29499,6 @@ class ResourceGroupReference(_messages.Message):
   group = _messages.StringField(1)
 
 
-class ResourcePoliciesList(_messages.Message):
-  r"""A ResourcePoliciesList object.
-
-  Messages:
-    WarningValue: [Output Only] Informational warning message.
-
-  Fields:
-    etag: A string attribute.
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    items: [Output Only] A list of ResourcePolicy resources.
-    kind: [Output Only] Type of resource.Always compute#resourcePoliciesList
-      for listsof resourcePolicies
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for this resource.
-    warning: [Output Only] Informational warning message.
-  """
-
-  class WarningValue(_messages.Message):
-    r"""[Output Only] Informational warning message.
-
-    Enums:
-      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
-        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
-        results in the response.
-
-    Messages:
-      DataValueListEntry: A DataValueListEntry object.
-
-    Fields:
-      code: [Output Only] A warning code, if applicable. For example, Compute
-        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-        response.
-      data: [Output Only] Metadata about this warning in key: value format.
-        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
-      message: [Output Only] A human-readable description of the warning code.
-    """
-
-    class CodeValueValuesEnum(_messages.Enum):
-      r"""[Output Only] A warning code, if applicable. For example, Compute
-      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-      response.
-
-      Values:
-        CLEANUP_FAILED: <no description>
-        DEPRECATED_RESOURCE_USED: <no description>
-        DEPRECATED_TYPE_USED: <no description>
-        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
-        EXPERIMENTAL_TYPE_USED: <no description>
-        EXTERNAL_API_WARNING: <no description>
-        FIELD_VALUE_OVERRIDEN: <no description>
-        INJECTED_KERNELS_DEPRECATED: <no description>
-        MISSING_TYPE_DEPENDENCY: <no description>
-        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
-        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
-        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
-        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
-        NEXT_HOP_NOT_RUNNING: <no description>
-        NOT_CRITICAL_ERROR: <no description>
-        NO_RESULTS_ON_PAGE: <no description>
-        REQUIRED_TOS_AGREEMENT: <no description>
-        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
-        RESOURCE_NOT_DELETED: <no description>
-        SCHEMA_VALIDATION_IGNORED: <no description>
-        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
-        UNDECLARED_PROPERTIES: <no description>
-        UNREACHABLE: <no description>
-      """
-      CLEANUP_FAILED = 0
-      DEPRECATED_RESOURCE_USED = 1
-      DEPRECATED_TYPE_USED = 2
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
-      EXPERIMENTAL_TYPE_USED = 4
-      EXTERNAL_API_WARNING = 5
-      FIELD_VALUE_OVERRIDEN = 6
-      INJECTED_KERNELS_DEPRECATED = 7
-      MISSING_TYPE_DEPENDENCY = 8
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
-      NEXT_HOP_CANNOT_IP_FORWARD = 10
-      NEXT_HOP_INSTANCE_NOT_FOUND = 11
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
-      NEXT_HOP_NOT_RUNNING = 13
-      NOT_CRITICAL_ERROR = 14
-      NO_RESULTS_ON_PAGE = 15
-      REQUIRED_TOS_AGREEMENT = 16
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
-      RESOURCE_NOT_DELETED = 18
-      SCHEMA_VALIDATION_IGNORED = 19
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
-      UNDECLARED_PROPERTIES = 21
-      UNREACHABLE = 22
-
-    class DataValueListEntry(_messages.Message):
-      r"""A DataValueListEntry object.
-
-      Fields:
-        key: [Output Only] A key that provides more detail on the warning
-          being returned. For example, for warnings where there are no results
-          in a list request for a particular zone, this key might be scope and
-          the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource and a suggested replacement, or a
-          warning about invalid network settings (for example, if an instance
-          attempts to perform IP forwarding but is not enabled for IP
-          forwarding).
-        value: [Output Only] A warning data value corresponding to the key.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    code = _messages.EnumField('CodeValueValuesEnum', 1)
-    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
-    message = _messages.StringField(3)
-
-  etag = _messages.StringField(1)
-  id = _messages.StringField(2)
-  items = _messages.MessageField('ResourcePolicy', 3, repeated=True)
-  kind = _messages.StringField(4, default=u'compute#resourcePoliciesList')
-  nextPageToken = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  warning = _messages.MessageField('WarningValue', 7)
-
-
 class ResourcePoliciesScopedList(_messages.Message):
   r"""A ResourcePoliciesScopedList object.
 
@@ -29887,6 +29921,133 @@ class ResourcePolicyHourlyCycle(_messages.Message):
   duration = _messages.StringField(1)
   hoursInCycle = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   startTime = _messages.StringField(3)
+
+
+class ResourcePolicyList(_messages.Message):
+  r"""A ResourcePolicyList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    etag: A string attribute.
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    items: [Output Only] A list of ResourcePolicy resources.
+    kind: [Output Only] Type of resource.Always compute#resourcePoliciesList
+      for listsof resourcePolicies
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  etag = _messages.StringField(1)
+  id = _messages.StringField(2)
+  items = _messages.MessageField('ResourcePolicy', 3, repeated=True)
+  kind = _messages.StringField(4, default=u'compute#resourcePolicyList')
+  nextPageToken = _messages.StringField(5)
+  selfLink = _messages.StringField(6)
+  warning = _messages.MessageField('WarningValue', 7)
 
 
 class ResourcePolicyWeeklyCycle(_messages.Message):
@@ -35570,26 +35731,6 @@ class TestPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class UDPHealthCheck(_messages.Message):
-  r"""A UDPHealthCheck object.
-
-  Fields:
-    port: The UDP port number for the health check request. Valid values are 1
-      through 65535.
-    portName: Port name as defined in InstanceGroup#NamedPort#name. If both
-      port and port_name are defined, port takes precedence.
-    request: Raw data of request to send in payload of UDP packet. It is an
-      error if this is empty. The request data can only be ASCII.
-    response: The bytes to match against the beginning of the response data.
-      It is an error if this is empty. The response data can only be ASCII.
-  """
-
-  port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(2)
-  request = _messages.StringField(3)
-  response = _messages.StringField(4)
 
 
 class UrlMap(_messages.Message):

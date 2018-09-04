@@ -14,8 +14,9 @@
 # limitations under the License.
 
 """OS specific console_attr helper functions."""
-# Ignore all type checks because of os specific imports
-# type: ignore
+# This file contains platform specific code which is not currently handled
+# by pytype.
+# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division

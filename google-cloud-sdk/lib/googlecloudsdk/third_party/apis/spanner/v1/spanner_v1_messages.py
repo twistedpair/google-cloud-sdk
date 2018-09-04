@@ -170,9 +170,9 @@ class Backup(_messages.Message):
       release.
     name: Required. A globally unique identifier for the backup which cannot
       be changed.  Values are of the form
-      `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]`. The
-      final segment of the name must be between 6 and 30 characters in length.
-      The backup is stored in the location(s) specified in the instance
+      `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]` The final
+      segment of the name must be between 2 and 60 characters in length.  The
+      backup is stored in the location(s) specified in the instance
       configuration of the instance containing the backup, identified by the
       prefix of the backup name of the form
       `projects/<project>/instances/<instance>`.
@@ -401,8 +401,10 @@ class Condition(_messages.Message):
       SECURITY_REALM: Any of the security realms in the IAMContext (go
         /security-realms). When used with IN, the condition indicates "any of
         the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". Note that a value can be
-        either a realm or a realm group (go/realm-groups). A match is
+        of the realms match any of the given values". Note that a value can
+        be:  - 'self' (i.e., allow connections from clients that are in the
+        same  security realm)  - a realm (e.g., 'campus-abc')  - a realm group
+        (e.g., 'realms-for-borg-cell-xx', see: go/realm-groups) A match is
         determined by a realm group membership check performed by a
         RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
         access based on the *absence* of a realm, so realm conditions can only
@@ -512,6 +514,26 @@ class CreateBackupRequest(_messages.Message):
   """
 
   backup = _messages.MessageField('Backup', 1)
+
+
+class CreateDatabaseFromBackupMetadata(_messages.Message):
+  r"""A CreateDatabaseFromBackupMetadata object.
+
+  Fields:
+    backup: Name of the backup being restored.
+    cancelTime: The time at which this operation was cancelled. If set, this
+      operation is in the process of undoing itself (which is guaranteed to
+      succeed) and cannot be cancelled again.
+    name: Name of the database being created and restored to.
+    progress: The progress of the CreateDatabaseFromBackup operation.
+    sourceDatabase: Name of the database the backup was taken from.
+  """
+
+  backup = _messages.StringField(1)
+  cancelTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  progress = _messages.MessageField('OperationProgress', 4)
+  sourceDatabase = _messages.StringField(5)
 
 
 class CreateDatabaseFromBackupRequest(_messages.Message):
@@ -1156,6 +1178,20 @@ class ListBackupsResponse(_messages.Message):
   """
 
   backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListCreateDatabaseFromBackupMetadataResponse(_messages.Message):
+  r"""A ListCreateDatabaseFromBackupMetadataResponse object.
+
+  Fields:
+    metadata: The list of matching CreateDatabaseFromBackupMetadata.
+    nextPageToken: `next_page_token` can be sent in a subsequent
+      ListCreateDatabaseFromBackupMetadata call to fetch more of the matching
+      metadata.
+  """
+
+  metadata = _messages.MessageField('CreateDatabaseFromBackupMetadata', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1957,10 +1993,10 @@ class RestoreInfo(_messages.Message):
     r"""The type of the restore source.
 
     Values:
-      UNSPECIFIED: No restore associated.
+      RESTORE_SOURCE_TYPE_UNSPECIFIED: No restore associated.
       BACKUP: A backup was used as the source of the restore.
     """
-    UNSPECIFIED = 0
+    RESTORE_SOURCE_TYPE_UNSPECIFIED = 0
     BACKUP = 1
 
   source = _messages.StringField(1)
@@ -2361,36 +2397,41 @@ class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       The expression must specify the field name, a comparison operator, and
       the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      =, !=, >, or <. Filter rules are case insensitive.  The fields eligible
-      for filtering are:   * `name`   * `database_name`   * `labels.key` where
-      key is the name of a label   * `state`   * `create_time` (and values are
-      of the format YYYY-MM-DDTHH:MM:SSZ)   * `expire_time` (and values are of
-      the format YYYY-MM-DDTHH:MM:SSZ)   * `size_bytes`  To filter on multiple
-      expressions, provide each separate expression within parentheses. By
-      default, each expression is an AND expression. However, you can include
-      AND and OR expressions explicitly.  Some examples of using filters are:
-      * `name:Howl` --> The backup's name contains the string "howl".   *
-      `database_name:prod` --> The backup's name contains the string "prod".
-      * `labels.env:*` --> The backup has the label "env".   *
-      `state:CREATING` --> The backup is pending creation.   * `state:READY`
-      --> The backup is fully created and ready for use.   * `(name:howl) AND
-      (create_time < 2018-03-28T14:50:00Z)`          --> The backup name
-      contains the string "howl" and create_time              of the backup is
-      before 2018-03-28T14:50:00Z.   * `size_bytes > 10000000000` --> The
-      backup size is greater than 10GB
+      string, a number, or a boolean. The comparison operator must be <, >,
+      <=, >=, !=, =, or :. Colon ':' represents a HAS operator which is
+      roughly synonymous with equality. Filter rules are case insensitive.
+      The fields eligible for filtering are:   * `name`   * `database_name`
+      * `labels.key` where key is the name of a label   * `state`   *
+      `create_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)   *
+      `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)   *
+      `size_bytes`   * `creating_progress.progress_percent'   *      -->
+      Values are integers between 0 and 100 inclusive.   *
+      `creating_progress.start_time`   * `creating_progress.end_time`  To
+      filter on multiple expressions, provide each separate expression within
+      parentheses. By default, each expression is an AND expression. However,
+      you can include AND, OR, and NOT expressions explicitly.  Some examples
+      of using filters are:    * `name:Howl` --> The backup's name contains
+      the string "howl".   * `database_name:prod`          --> The database's
+      name contains the string "prod".   * `labels.env:*` --> The backup has
+      the label "env".   * `state:CREATING` --> The backup is pending
+      creation.   * `state:READY` --> The backup is fully created and ready
+      for use.   * `(name:howl) AND (create_time < 2018-03-28T14:50:00Z)`
+      --> The backup name contains the string "howl" and create_time
+      of the backup is before 2018-03-28T14:50:00Z.   * `size_bytes >
+      10000000000` --> The backup's size is greater than 10GB
     orderBy: An expression for specifying the sort order of the results of the
       request. The string value should follow SQL syntax: comma separated list
       of fields in Backup. Fields supported are:    * name    * database    *
       expire_time    * create_time    * size_bytes    * state    *
       creating_progress.progress_percent    * creating_progress.start_time
-      * creating_progress.end_time  For example, "foo,bar". The default
-      sorting order is ascending. To specify descending order for a field, a
-      suffix " desc" should be appended to the field name. For example, "foo
-      desc,bar". Redundant space characters in the syntax are insigificant.
-      "foo, bar desc" and " foo , bar desc" are equivalent.  If order_by is
-      empty, results will be sorted by `create_time` in descending order
-      starting from the most recently created backup.
+      * creating_progress.end_time  For example, "create_time,name". The
+      default sorting order is ascending. To specify descending order for a
+      field, a suffix " desc" should be appended to the field name. For
+      example, "create_time desc,name". Redundant space characters in the
+      syntax are insigificant. "create_time desc, name" and " create_time desc
+      , name" are equivalent.  If order_by is empty, results will be sorted by
+      `create_time` in descending order starting from the most recently
+      created backup.
     pageSize: Number of instances to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
@@ -2413,9 +2454,9 @@ class SpannerProjectsInstancesBackupsPatchRequest(_messages.Message):
   Fields:
     name: Required. A globally unique identifier for the backup which cannot
       be changed.  Values are of the form
-      `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]`. The
-      final segment of the name must be between 6 and 30 characters in length.
-      The backup is stored in the location(s) specified in the instance
+      `projects/<project>/instances/<instance>/backups/a-z*[a-z0-9]` The final
+      segment of the name must be between 2 and 60 characters in length.  The
+      backup is stored in the location(s) specified in the instance
       configuration of the instance containing the backup, identified by the
       prefix of the backup name of the form
       `projects/<project>/instances/<instance>`.
@@ -2873,6 +2914,64 @@ class SpannerProjectsInstancesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters what is returned in the response.
+      The response returns a list of CreateDatabaseFromBackupMetadata
+      describing restore operations (database creations from backups).  The
+      expression must specify the field name, a comparison operator, and the
+      value that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The comparison operator must be <, >, <=, >=, !=,
+      =, or :. Colon ':' represents a HAS operator which is roughly synonymous
+      with equality. Filter rules are case insensitive.  The fields eligible
+      for filtering are:   * `name` --> The name of the newly created
+      database.   * `backup` --> The name of the backup that was restored.   *
+      `source_database`   *     --> The name of the database the backup was
+      taken from.   * `progress.progress_percent`         --> Values are
+      integers between 0 and 100 inclusive.   * `progress.start_time`   *
+      `progress.end_time`  To filter on multiple expressions, provide each
+      separate expression within parentheses. By default, each expression is
+      an AND expression. However, you can include AND, OR, and NOT expressions
+      explicitly.  Some examples of using filters are:    * `name:Howl` -->
+      The created database name contains the string "howl".   *
+      `source_database:prod`   *      --> The database the backup was taken
+      from has a name containing   *          the string "prod".   *
+      `(name:howl) AND (progress.start_time < 2018-03-28T14:50:00Z)`
+      --> The created database name contains the string "howl" and
+      the progress.start_time of the restore operation is before
+      2018-03-28T14:50:00Z.
+    orderBy: An expression for specifying the sort order of the results of the
+      request. The string value should follow SQL syntax: comma separated list
+      of fields in CreateDatabaseFromBackupMetadata. Fields supported are:
+      * name    * backup    * source_database    * progress.progress_percent
+      * progress.start_time    * progress.end_time  For example,
+      "create_time,name". The default sorting order is ascending. To specify
+      descending order for a field, a suffix " desc" should be appended to the
+      field name. For example, "create_time desc,name". Redundant space
+      characters in the syntax are insigificant. "create_time desc, name" and
+      " create_time desc , name" are equivalent.  If order_by is empty,
+      results will be sorted by `progress.start_time` in descending order
+      starting from the most recently started restore.
+    pageSize: Number of instances to be returned in the response. If 0 or
+      less, defaults to the server's maximum allowed page size.
+    pageToken: If non-empty, `page_token` should contain a next_page_token
+      from a previous ListCreateDatabaseFromBackupMetadataResponse to the same
+      `parent` and with the same `filter`.
+    parent: Required. The instance containing the backups from which the
+      restore operations were initiated. Values are of the form
+      `projects/<project>/instances/<instance>`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SpannerProjectsInstancesListRequest(_messages.Message):
@@ -3418,17 +3517,43 @@ class Type(_messages.Message):
 class UpdateBackupRequest(_messages.Message):
   r"""A UpdateBackupRequest object.
 
+  Enums:
+    LabelsUpdateOptionValueValuesEnum: Required if updating labels. Specify
+      how labels should be updated.
+
   Fields:
-    backup: Required. The backup to update.
-    updateMask: Required. A mask specifying which fields in the Backup
-      resource should be updated. This mask is relative to the Backup
-      resource, not to the request message. The field mask must always be
-      specified; this prevents any future fields from being erased
-      accidentally by clients that do not know about them.
+    backup: Required. The backup to update. `backup.name`, and the fields to
+      be updated as specified by `update_mask` are required. Other fields are
+      ignored. Update is only supported for the following fields:  *
+      `backup.labels`  * `backup.expire_time`.
+    labelsUpdateOption: Required if updating labels. Specify how labels should
+      be updated.
+    updateMask: Required. A mask specifying which fields (`backup.labels`
+      and/or `backup.expire_time`) in the Backup resource should be updated.
+      This mask is relative to the Backup resource, not to the request
+      message. The field mask must always be specified; this prevents any
+      future fields from being erased accidentally by clients that do not know
+      about them.
   """
 
+  class LabelsUpdateOptionValueValuesEnum(_messages.Enum):
+    r"""Required if updating labels. Specify how labels should be updated.
+
+    Values:
+      LABELS_UPDATE_OPTION_UNSPECIFIED: Unspecified option
+      SET_LABELS: Set labels with the new labels specified in the update. This
+        option will replace existing labels with the new labels.
+      ADD_LABELS: Add specified labels to the existing set of labels.
+      REMOVE_LABELS: Remove specified labels from the existing set of labels.
+    """
+    LABELS_UPDATE_OPTION_UNSPECIFIED = 0
+    SET_LABELS = 1
+    ADD_LABELS = 2
+    REMOVE_LABELS = 3
+
   backup = _messages.MessageField('Backup', 1)
-  updateMask = _messages.StringField(2)
+  labelsUpdateOption = _messages.EnumField('LabelsUpdateOptionValueValuesEnum', 2)
+  updateMask = _messages.StringField(3)
 
 
 class UpdateDatabaseDdlMetadata(_messages.Message):

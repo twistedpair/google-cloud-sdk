@@ -361,14 +361,14 @@
           }
         },
         "failedLocations": {
-          "description": "Locations from which Instance information could not be retrieved,\ndue to an outage or some other transient condition.\nInstances whose Clusters are all in one of the failed locations\nmay be missing from `instances`, and Instances with at least one\nCluster in a failed location may only have partial information returned.",
+          "description": "Locations from which Instance information could not be retrieved,\ndue to an outage or some other transient condition.\nInstances whose Clusters are all in one of the failed locations\nmay be missing from `instances`, and Instances with at least one\nCluster in a failed location may only have partial information returned.\nValues are of the form `projects\/<project>\/locations\/<zone_id>`",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "nextPageToken": {
-          "description": "Set if not all instances could be returned in a single response.\nPass this value to `page_token` in another request to get the next\npage of results.",
+          "description": "DEPRECATED: This field is unused and ignored.",
           "type": "string"
         }
       }
@@ -386,14 +386,14 @@
           }
         },
         "failedLocations": {
-          "description": "Locations from which Cluster information could not be retrieved,\ndue to an outage or some other transient condition.\nClusters from these locations may be missing from `clusters`,\nor may only have partial information returned.",
+          "description": "Locations from which Cluster information could not be retrieved,\ndue to an outage or some other transient condition.\nClusters from these locations may be missing from `clusters`,\nor may only have partial information returned.\nValues are of the form `projects\/<project>\/locations\/<zone_id>`",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "nextPageToken": {
-          "description": "Set if not all clusters could be returned in a single response.\nPass this value to `page_token` in another request to get the next\npage of results.",
+          "description": "DEPRECATED: This field is unused and ignored.",
           "type": "string"
         }
       }
@@ -462,6 +462,13 @@
         "nextPageToken": {
           "description": "Set if not all app profiles could be returned in a single response.\nPass this value to `page_token` in another request to get the next\npage of results.",
           "type": "string"
+        },
+        "failedLocations": {
+          "description": "Locations from which AppProfile information could not be retrieved,\ndue to an outage or some other transient condition.\nAppProfiles from these locations may be missing from `app_profiles`.\nValues are of the form `projects\/<project>\/locations\/<zone_id>`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1274,7 +1281,7 @@
                   "type": "string"
                 },
                 "pageToken": {
-                  "description": "The value of `next_page_token` returned by a previous call.",
+                  "description": "DEPRECATED: This field is unused and ignored.",
                   "location": "query",
                   "type": "string"
                 }
@@ -1585,7 +1592,7 @@
                       "type": "string"
                     },
                     "pageToken": {
-                      "description": "The value of `next_page_token` returned by a previous call.",
+                      "description": "DEPRECATED: This field is unused and ignored.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1754,11 +1761,17 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The unique name of the instance for which a list of app profiles is\nrequested. Values are of the form\n`projects\/<project>\/instances\/<instance>`.",
+                      "description": "The unique name of the instance for which a list of app profiles is\nrequested. Values are of the form\n`projects\/<project>\/instances\/<instance>`.\nUse `<instance> = '-'` to list AppProfiles for all Instances in a project,\ne.g., `projects\/myproject\/instances\/-`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
                       "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of results per page.\nCURRENTLY UNIMPLEMENTED AND IGNORED.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
                     },
                     "pageToken": {
                       "description": "The value of `next_page_token` returned by a previous call.",
@@ -1921,6 +1934,12 @@
                         "REPLICATION_VIEW",
                         "FULL"
                       ]
+                    },
+                    "pageSize": {
+                      "description": "Maximum number of results per page.\nCURRENTLY UNIMPLEMENTED AND IGNORED.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
                     },
                     "pageToken": {
                       "description": "The value of `next_page_token` returned by a previous call.",

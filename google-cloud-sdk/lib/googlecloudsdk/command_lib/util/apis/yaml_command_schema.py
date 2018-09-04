@@ -70,8 +70,7 @@ class CommandType(Enum):
   DELETE = 'delete'
   CREATE = 'create'
   WAIT = 'get'
-  # For update commands, the API method needs to be specified in the spec.
-  UPDATE = ''
+  UPDATE = 'patch'
   # IAM support currently implemented as subcommands
   GET_IAM_POLICY = 'getIamPolicy'
   SET_IAM_POLICY = 'setIamPolicy'
@@ -427,4 +426,5 @@ class UpdateData(object):
   """A holder object for yaml update command."""
 
   def __init__(self, data):
-    self.mask_field = data.get('mask_field', {})
+    self.mask_field = data.get('mask_field', None)
+    self.read_modify_update = data.get('read_modify_update', False)

@@ -630,6 +630,12 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
 
     parsed_yaml = service_config.parsed.ToYAML()
     config_dict = yaml.load(parsed_yaml)
+
+    # We always want to set a value for entrypoint when sending the request
+    # to Zeus, even if one wasn't specified in the yaml file
+    if 'entrypoint' not in config_dict:
+      config_dict['entrypoint'] = ''
+
     try:
       # pylint: disable=protected-access
       schema_parser = convert_yaml.GetSchemaParser(self.client._VERSION)
@@ -641,18 +647,6 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
               f=service_config.file, msg=six.text_type(e)))
     log.debug('Converted YAML to JSON: "{0}"'.format(
         json.dumps(json_version_resource, indent=2, sort_keys=True)))
-
-    entrypoint = service_config.parsed.entrypoint
-    if entrypoint:
-      json_version_resource['entrypoint'] = {}
-      # hack: this undoes the effect of the appinfo validation library
-      # which prepends `exec ` to the entrypoint. ideally, we would instead find
-      # a way to relax the validation requirement so it only prepends 'exec '
-      # for flex deployments.
-      if entrypoint.startswith('exec '):
-        entrypoint = entrypoint[len('exec '):]
-      json_version_resource['entrypoint'][
-          'shell'] = entrypoint
 
     json_version_resource['deployment'] = {}
     # Add the deployment manifest information.

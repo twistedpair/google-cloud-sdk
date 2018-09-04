@@ -217,7 +217,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
     if action != 'store':
       raise ArgumentGenerationError(
           field.name,
-          'The field is repeated but is but is using a custom action. You might'
+          'The field is repeated but is using a custom action. You might'
           ' want to set repeated: False in your arg spec.')
     if t:
       # A special ArgDict wrapper type was given, bind it to the message so it
@@ -374,6 +374,51 @@ def ParseStaticFieldsIntoMessage(message, static_fields=None):
     field = GetFieldFromMessage(message, field_path)
     SetFieldInMessage(
         message, field_path, ConvertValue(field, value))
+
+
+def ParseExistingMessageIntoMessage(message, existing_message, method):
+  """Sets fields in message based on an existing message.
+
+  This function is used for get-modify-update pattern. The request type of
+  update requests would be either the same as the response type of get requests
+  or one field inside the request would be the same as the get response.
+
+  For example:
+  1) update.request_type_name = ServiceAccount
+     get.response_type_name = ServiceAccount
+  2) update.request_type_name = updateInstanceRequest
+     updateInstanceRequest.instance = Instance
+     get.response_type_name = Instance
+
+  If the existing message has the same type as the message to be sent for the
+  request, then return the existing message instead. If they are different, find
+  the field in the message which has the same type as existing_message, then
+  assign exsiting message to that field.
+
+  Args:
+    message: the apitools message to construct a new request.
+    existing_message: the exsting apitools message returned from server.
+    method: APIMethod, the method to generate request for.
+
+  Returns:
+    A modified apitools message to be send to the method.
+  """
+  if type(existing_message) == type(message):  # pylint: disable=unidiomatic-typecheck
+    return existing_message
+
+  # For read-modify-update api calls, the field name would be the same level
+  # or the next level of the request.
+  # TODO(b/111069150): refactor this part, don't hard code.
+  existing_message_name = type(existing_message).__name__
+  field_name = existing_message_name[0].lower() + existing_message_name[1:]
+  field_path = ''
+  if method.request_field != field_name:
+    field_path += method.request_field
+    field_path += '.'
+  field_path += field_name
+
+  SetFieldInMessage(message, field_path, existing_message)
+  return message
 
 
 def ChoiceToEnum(choice, enum_type):
@@ -557,7 +602,7 @@ class ChoiceEnumMapper(object):
       TypeError: If invalid values are passed for base.Argument or
        custom_mapping
     """
-     # pylint:disable=protected-access
+    # pylint:disable=protected-access
     if not isinstance(message_enum, messages._EnumClass):
       raise ValueError('Invalid Message Enum: [{}]'.format(message_enum))
     self._arg_name = arg_name

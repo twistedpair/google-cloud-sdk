@@ -221,7 +221,7 @@
           "format": "int32"
         },
         "languageCode": {
-          "description": "*Required* The language of the supplied audio as a\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag.\nExample: \"en-US\".\nSee [Language Support](https:\/\/cloud.google.com\/speech\/docs\/languages)\nfor a list of the currently supported language codes.",
+          "description": "*Required* The language of the supplied audio as a\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag.\nExample: \"en-US\".\nSee [Language Support](\/speech-to-text\/docs\/languages)\nfor a list of the currently supported language codes.",
           "type": "string"
         },
         "maxAlternatives": {
@@ -234,7 +234,7 @@
           "type": "boolean"
         },
         "speechContexts": {
-          "description": "*Optional* A means to provide context to assist the speech recognition.",
+          "description": "*Optional* array of SpeechContext.\nA means to provide context to assist the speech recognition. For more\ninformation, see [Phrase Hints](\/speech-to-text\/docs\/basics#phrase-hints).",
           "type": "array",
           "items": {
             "$ref": "SpeechContext"
@@ -242,6 +242,18 @@
         },
         "enableWordTimeOffsets": {
           "description": "*Optional* If `true`, the top result includes a list of words and\nthe start and end time offsets (timestamps) for those words. If\n`false`, no word-level time offset information is returned. The default is\n`false`.",
+          "type": "boolean"
+        },
+        "enableAutomaticPunctuation": {
+          "description": "*Optional* If 'true', adds punctuation to recognition result hypotheses.\nThis feature is only available in select languages. Setting this for\nrequests in other languages has no effect at all.\nThe default 'false' value does not add punctuation to result hypotheses.\nNote: This is currently offered as an experimental service, complimentary\nto all users. In the future this may be exclusively available as a\npremium feature.",
+          "type": "boolean"
+        },
+        "model": {
+          "description": "*Optional* Which model to select for the given request. Select the model\nbest suited to your domain to get best results. If a model is not\nexplicitly specified, then we auto-select a model based on the parameters\nin the RecognitionConfig.\n<table>\n  <tr>\n    <td><b>Model<\/b><\/td>\n    <td><b>Description<\/b><\/td>\n  <\/tr>\n  <tr>\n    <td><code>command_and_search<\/code><\/td>\n    <td>Best for short queries such as voice commands or voice search.<\/td>\n  <\/tr>\n  <tr>\n    <td><code>phone_call<\/code><\/td>\n    <td>Best for audio that originated from a phone call (typically\n    recorded at an 8khz sampling rate).<\/td>\n  <\/tr>\n  <tr>\n    <td><code>video<\/code><\/td>\n    <td>Best for audio that originated from from video or includes multiple\n        speakers. Ideally the audio is recorded at a 16khz or greater\n        sampling rate. This is a premium model that costs more than the\n        standard rate.<\/td>\n  <\/tr>\n  <tr>\n    <td><code>default<\/code><\/td>\n    <td>Best for audio that is not one of the specific audio models.\n        For example, long-form audio. Ideally the audio is high-fidelity,\n        recorded at a 16khz or greater sampling rate.<\/td>\n  <\/tr>\n<\/table>",
+          "type": "string"
+        },
+        "useEnhanced": {
+          "description": "*Optional* Set to true to use an enhanced model for speech recognition.\nYou must also set the `model` field to a valid, enhanced model. If\n`use_enhanced` is set to true and the `model` field is not set, then\n`use_enhanced` is ignored. If `use_enhanced` is true and an enhanced\nversion of the specified model does not exist, then the speech is\nrecognized using the standard version of the specified model.\n\nEnhanced speech models require that you opt-in to data logging using\ninstructions in the [documentation](\/speech-to-text\/enable-data-logging).\nIf you set `use_enhanced` to true and you have not enabled audio logging,\nthen you will receive an error.",
           "type": "boolean"
         }
       }
@@ -252,7 +264,7 @@
       "type": "object",
       "properties": {
         "phrases": {
-          "description": "*Optional* A list of strings containing words and phrases \"hints\" so that\nthe speech recognition is more likely to recognize them. This can be used\nto improve the accuracy for specific words and phrases, for example, if\nspecific commands are typically spoken by the user. This can also be used\nto add additional words to the vocabulary of the recognizer. See\n[usage limits](https:\/\/cloud.google.com\/speech\/limits#content).",
+          "description": "*Optional* A list of strings containing words and phrases \"hints\" so that\nthe speech recognition is more likely to recognize them. This can be used\nto improve the accuracy for specific words and phrases, for example, if\nspecific commands are typically spoken by the user. This can also be used\nto add additional words to the vocabulary of the recognizer. See\n[usage limits](\/speech-to-text\/quotas#content).",
           "type": "array",
           "items": {
             "type": "string"
@@ -262,7 +274,7 @@
     },
     "RecognitionAudio": {
       "id": "RecognitionAudio",
-      "description": "Contains audio data in the encoding specified in the `RecognitionConfig`.\nEither `content` or `uri` must be supplied. Supplying both or neither\nreturns google.rpc.Code.INVALID_ARGUMENT. See\n[audio limits](https:\/\/cloud.google.com\/speech\/limits#content).",
+      "description": "Contains audio data in the encoding specified in the `RecognitionConfig`.\nEither `content` or `uri` must be supplied. Supplying both or neither\nreturns google.rpc.Code.INVALID_ARGUMENT. See\n[content limits](\/speech-to-text\/quotas#content).",
       "type": "object",
       "properties": {
         "content": {
@@ -271,7 +283,7 @@
           "format": "byte"
         },
         "uri": {
-          "description": "URI that points to a file that contains audio data bytes as specified in\n`RecognitionConfig`. Currently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats return\ngoogle.rpc.Code.INVALID_ARGUMENT). For more information, see\n[Request URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris).",
+          "description": "URI that points to a file that contains audio data bytes as specified in\n`RecognitionConfig`. The file must not be compressed (for example, gzip).\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats return\ngoogle.rpc.Code.INVALID_ARGUMENT). For more information, see\n[Request URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris).",
           "type": "string"
         }
       }
@@ -319,7 +331,7 @@
           "format": "float"
         },
         "words": {
-          "description": "Output only. A list of word-specific information for each recognized word.\nNote: When enable_speaker_diarization is true, you will see all the words\nfrom the beginning of the audio.",
+          "description": "Output only. A list of word-specific information for each recognized word.\nNote: When `enable_speaker_diarization` is true, you will see all the words\nfrom the beginning of the audio.",
           "type": "array",
           "items": {
             "$ref": "WordInfo"

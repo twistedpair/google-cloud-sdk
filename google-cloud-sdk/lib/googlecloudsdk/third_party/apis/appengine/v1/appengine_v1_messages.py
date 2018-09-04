@@ -838,10 +838,12 @@ class AutomaticScaling(_messages.Message):
   other application metrics.
 
   Fields:
-    coolDownPeriod: Amount of time that the Autoscaler
-      (https://cloud.google.com/compute/docs/autoscaler/) should wait between
-      changes to the number of virtual machines. Only applicable in the App
-      Engine flexible environment.
+    coolDownPeriod: The time period that the Autoscaler
+      (https://cloud.google.com/compute/docs/autoscaler/) should wait before
+      it starts collecting information from a new instance. This prevents the
+      autoscaler from collecting information when the instance is
+      initializing, during which the collected usage would not be reliable.
+      Only applicable in the App Engine flexible environment.
     cpuUtilization: Target scaling by CPU usage.
     diskUtilization: Target scaling by disk usage.
     maxConcurrentRequests: Number of concurrent requests an automatic scaling

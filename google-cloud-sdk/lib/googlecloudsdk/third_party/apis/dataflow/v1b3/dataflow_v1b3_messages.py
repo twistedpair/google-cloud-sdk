@@ -1690,13 +1690,16 @@ class ExecutionStageState(_messages.Message):
         was requested. This state is a terminal state, may only be set by the
         Cloud Dataflow service, and only as a transition from
         `JOB_STATE_DRAINING`.
-      JOB_STATE_PENDING: 'JOB_STATE_PENDING' indicates that the job has been
+      JOB_STATE_PENDING: `JOB_STATE_PENDING` indicates that the job has been
         created but is not yet running.  Jobs that are pending may only
         transition to `JOB_STATE_RUNNING`, or `JOB_STATE_FAILED`.
-      JOB_STATE_CANCELLING: 'JOB_STATE_CANCELLING' indicates that the job has
+      JOB_STATE_CANCELLING: `JOB_STATE_CANCELLING` indicates that the job has
         been explicitly cancelled and is in the process of stopping.  Jobs
-        that are cancelling may only transition to 'JOB_STATE_CANCELLED' or
-        'JOB_STATE_FAILED'.
+        that are cancelling may only transition to `JOB_STATE_CANCELLED` or
+        `JOB_STATE_FAILED`.
+      JOB_STATE_QUEUED: `JOB_STATE_QUEUED` indicates that the job has been
+        created but is being delayed until launch. Jobs that are queued may
+        only transition to `JOB_STATE_PENDING` or `JOB_STATE_CANCELLED`.
     """
     JOB_STATE_UNKNOWN = 0
     JOB_STATE_STOPPED = 1
@@ -1709,6 +1712,7 @@ class ExecutionStageState(_messages.Message):
     JOB_STATE_DRAINED = 8
     JOB_STATE_PENDING = 9
     JOB_STATE_CANCELLING = 10
+    JOB_STATE_QUEUED = 11
 
   currentStateTime = _messages.StringField(1)
   executionStageName = _messages.StringField(2)
@@ -2124,13 +2128,16 @@ class Job(_messages.Message):
         was requested. This state is a terminal state, may only be set by the
         Cloud Dataflow service, and only as a transition from
         `JOB_STATE_DRAINING`.
-      JOB_STATE_PENDING: 'JOB_STATE_PENDING' indicates that the job has been
+      JOB_STATE_PENDING: `JOB_STATE_PENDING` indicates that the job has been
         created but is not yet running.  Jobs that are pending may only
         transition to `JOB_STATE_RUNNING`, or `JOB_STATE_FAILED`.
-      JOB_STATE_CANCELLING: 'JOB_STATE_CANCELLING' indicates that the job has
+      JOB_STATE_CANCELLING: `JOB_STATE_CANCELLING` indicates that the job has
         been explicitly cancelled and is in the process of stopping.  Jobs
-        that are cancelling may only transition to 'JOB_STATE_CANCELLED' or
-        'JOB_STATE_FAILED'.
+        that are cancelling may only transition to `JOB_STATE_CANCELLED` or
+        `JOB_STATE_FAILED`.
+      JOB_STATE_QUEUED: `JOB_STATE_QUEUED` indicates that the job has been
+        created but is being delayed until launch. Jobs that are queued may
+        only transition to `JOB_STATE_PENDING` or `JOB_STATE_CANCELLED`.
     """
     JOB_STATE_UNKNOWN = 0
     JOB_STATE_STOPPED = 1
@@ -2143,6 +2150,7 @@ class Job(_messages.Message):
     JOB_STATE_DRAINED = 8
     JOB_STATE_PENDING = 9
     JOB_STATE_CANCELLING = 10
+    JOB_STATE_QUEUED = 11
 
   class RequestedStateValueValuesEnum(_messages.Enum):
     r"""The job's requested state.  `UpdateJob` may be used to switch between
@@ -2187,13 +2195,16 @@ class Job(_messages.Message):
         was requested. This state is a terminal state, may only be set by the
         Cloud Dataflow service, and only as a transition from
         `JOB_STATE_DRAINING`.
-      JOB_STATE_PENDING: 'JOB_STATE_PENDING' indicates that the job has been
+      JOB_STATE_PENDING: `JOB_STATE_PENDING` indicates that the job has been
         created but is not yet running.  Jobs that are pending may only
         transition to `JOB_STATE_RUNNING`, or `JOB_STATE_FAILED`.
-      JOB_STATE_CANCELLING: 'JOB_STATE_CANCELLING' indicates that the job has
+      JOB_STATE_CANCELLING: `JOB_STATE_CANCELLING` indicates that the job has
         been explicitly cancelled and is in the process of stopping.  Jobs
-        that are cancelling may only transition to 'JOB_STATE_CANCELLED' or
-        'JOB_STATE_FAILED'.
+        that are cancelling may only transition to `JOB_STATE_CANCELLED` or
+        `JOB_STATE_FAILED`.
+      JOB_STATE_QUEUED: `JOB_STATE_QUEUED` indicates that the job has been
+        created but is being delayed until launch. Jobs that are queued may
+        only transition to `JOB_STATE_PENDING` or `JOB_STATE_CANCELLED`.
     """
     JOB_STATE_UNKNOWN = 0
     JOB_STATE_STOPPED = 1
@@ -2206,6 +2217,7 @@ class Job(_messages.Message):
     JOB_STATE_DRAINED = 8
     JOB_STATE_PENDING = 9
     JOB_STATE_CANCELLING = 10
+    JOB_STATE_QUEUED = 11
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of Cloud Dataflow job.

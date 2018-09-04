@@ -197,9 +197,11 @@ class DictionaryWriter(object):
       func: An optional function to call on each value in the list before
         writing it to the dictionary.
     """
-    def ListMapper(values):
-      return [func(v) for v in values]
-    list_func = ListMapper if func else None
+    list_func = None
+    if func:
+      def ListMapper(values):
+        return [func(v) for v in values]
+      list_func = ListMapper
     self.Write(field, func=list_func)
 
   def WriteDict(self, field, func=None):
@@ -915,7 +917,7 @@ class SDKDefinition(object):
   def LastUpdatedString(self):
     try:
       last_updated = config.InstallationConfig.ParseRevision(self.revision)
-      return time.strftime('%Y/%m/%d', last_updated)
+      return time.strftime('%Y/%m/%d', last_updated)  # pytype: disable=wrong-arg-types
     except ValueError:
       return 'Unknown'
 

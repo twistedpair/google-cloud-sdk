@@ -133,14 +133,14 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       Apache Airflow config overrides. If a replacement config  overrides map
       is not included in `environment`, all config overrides  are cleared.  It
       is an error to provide both this mask and a mask specifying one or  more
-      individual config overrides.</td>  </tr>  <tr>
-      <td>config.softwareConfig.properties.<var>section</var>-<var>name
-      </var></td>  <td>Override the Apache Airflow property <var>name</var> in
-      the section  named <var>section</var>, preserving other properties. To
-      delete the  property override, include it in `updateMask` and omit its
-      mapping  in `environment.config.softwareConfig.properties`.  It is an
+      individual config overrides.</td>  </tr>  <tr>  <td>config.softwareConfi
+      g.airflowConfigOverrides.<var>section</var>-<var>name  </var></td>
+      <td>Override the Apache Airflow config property <var>name</var> in the
+      section named <var>section</var>, preserving other properties. To delete
+      the property override, include it in `updateMask` and omit its mapping
+      in `environment.config.softwareConfig.airflowConfigOverrides`.  It is an
       error to provide both a mask of this form and the
-      "config.softwareConfig.properties" mask.</td>  </tr>  <tr>
+      "config.softwareConfig.airflowConfigOverrides" mask.</td>  </tr>  <tr>
       <td>config.softwareConfig.envVariables</td>  <td>Replace all environment
       variables. If a replacement environment  variable map is not included in
       `environment`, all custom environment  variables  are cleared.  It is an

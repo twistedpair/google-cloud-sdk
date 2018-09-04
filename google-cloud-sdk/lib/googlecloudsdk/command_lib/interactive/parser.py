@@ -39,6 +39,7 @@ LOOKUP_FLAGS = cli_tree.LOOKUP_FLAGS
 LOOKUP_GROUPS = cli_tree.LOOKUP_GROUPS
 LOOKUP_IS_GROUP = cli_tree.LOOKUP_IS_GROUP
 LOOKUP_IS_HIDDEN = cli_tree.LOOKUP_IS_HIDDEN
+LOOKUP_IS_SPECIAL = 'interactive.is_special'
 LOOKUP_NAME = cli_tree.LOOKUP_NAME
 LOOKUP_NARGS = cli_tree.LOOKUP_NARGS
 LOOKUP_POSITIONALS = cli_tree.LOOKUP_POSITIONALS
@@ -48,13 +49,14 @@ LOOKUP_CLI_VERSION = cli_tree.LOOKUP_CLI_VERSION
 
 
 class ArgTokenType(enum.Enum):
-  UNKNOWN = 0  # Unknow token type in any position
+  UNKNOWN = 0  # Unknown token type in any position
   PREFIX = 1  # Potential command name, maybe after lex.SHELL_TERMINATOR_CHARS
   GROUP = 2  # Command arg with subcommands
   COMMAND = 3  # Command arg
   FLAG = 4  # Flag arg
   FLAG_ARG = 5  # Flag value arg
   POSITIONAL = 6  # Positional arg
+  SPECIAL = 7  # Special keyword that is followed by PREFIX.
 
 
 class ArgToken(object):
@@ -68,7 +70,8 @@ class ArgToken(object):
     end: The index directly after the last char in the original string.
   """
 
-  def __init__(self, value, token_type, tree, start=None, end=None):
+  def __init__(self, value, token_type=ArgTokenType.UNKNOWN, tree=None,
+               start=None, end=None):
     self.value = value
     self.token_type = token_type
     self.tree = tree
@@ -143,7 +146,13 @@ class Parser(object):
       token = self.tokens.pop(0)
       value = token.UnquotedValue()
 
-      if token.lex == lexer.ShellTokenType.FLAG:
+      if token.lex == lexer.ShellTokenType.TERMINATOR:
+        unknown = False
+        self.cmd = self.root
+        self.args.append(ArgToken(value, ArgTokenType.SPECIAL, self.cmd,
+                                  token.start, token.end))
+
+      elif token.lex == lexer.ShellTokenType.FLAG:
         self.ParseFlag(token, value)
 
       elif token.lex == lexer.ShellTokenType.ARG and not unknown:
@@ -151,8 +160,17 @@ class Parser(object):
           self.cmd = self.cmd[LOOKUP_COMMANDS][value]
           if self.cmd[LOOKUP_IS_GROUP]:
             token_type = ArgTokenType.GROUP
+          elif LOOKUP_IS_SPECIAL in self.cmd:
+            token_type = ArgTokenType.SPECIAL
+            self.cmd = self.root
           else:
             token_type = ArgTokenType.COMMAND
+          self.args.append(ArgToken(value, token_type, self.cmd,
+                                    token.start, token.end))
+
+        elif self.cmd == self.root and '=' in value:
+          token_type = ArgTokenType.SPECIAL
+          self.cmd = self.root
           self.args.append(ArgToken(value, token_type, self.cmd,
                                     token.start, token.end))
 
@@ -174,10 +192,6 @@ class Parser(object):
             token_type = ArgTokenType.UNKNOWN
           self.args.append(ArgToken(value, token_type, self.cmd,
                                     token.start, token.end))
-
-      elif token.lex == lexer.ShellTokenType.TERMINATOR:
-        unknown = False
-        self.cmd = self.root
 
       else:
         unknown = True

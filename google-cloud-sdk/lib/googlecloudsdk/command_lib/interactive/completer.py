@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.interactive import parser
 from googlecloudsdk.command_lib.meta import generate_cli_trees
 from googlecloudsdk.core import module_util
 from prompt_toolkit import completion
+
 import six
 
 
@@ -55,8 +56,15 @@ def _NameSpaceDict(args):
   return namespace
 
 
-class CompleterCache(object):
-  """A local completer cache item to minimize intra-command latency.
+class ModuleCache(object):
+  """A local completer module cache item to minimize intra-command latency.
+
+  Some CLI tree positionals and flag values have completers that are specified
+  by module paths. These path strings point to a completer method or class that
+  can be imported at run-time. The ModuleCache keeps track of modules that have
+  already been imported, the most recent completeion result, and a timeout for
+  the data. This saves on import lookup, and more importantly, repeated
+  completion requests within a short window. Users really love that TAB key.
 
   Attributes:
     _TIMEOUT: Newly updated choices stale after this many seconds.
@@ -72,26 +80,76 @@ class CompleterCache(object):
     self.completer_class = completer_class
     self.choices = None
     self.stale = 0
-    self.timeout = CompleterCache._TIMEOUT
+    self.timeout = ModuleCache._TIMEOUT
 
 
 class InteractiveCliCompleter(completion.Completer):
-  """A prompt_toolkit interactive CLI completer."""
+  """A prompt_toolkit interactive CLI completer.
 
-  def __init__(self, coshell=None, debug=None, interactive_parser=None,
-               args=None, hidden=False, manpage_generator=True):
-    self.completer_cache = {}
+  This is the wrapper class for the get_completions() callback that is
+  called when characters are added to the default input buffer. It's a bit
+  hairy because it maintains state between calls to avoid duplicate work,
+  especially for completer calls of unknown cost.
+
+  cli.command_count is a serial number that marks the current command line in
+  progress. Some of the cached state is reset when get_completions() detects
+  that it has changed.
+
+  Attributes:
+    cli: The interactive CLI object.
+    coshell: The interactive coshell object.
+    debug: The debug object.
+    empty: Completion request is on an empty arg if True.
+    hidden: Complete hidden commands and flags if True.
+    last: The last character before the cursor in the completion request.
+    manpage_generator: The unknown command man page generator object.
+    module_cache: The completer module path cache object.
+    parsed_args: The parsed args namespace passed to completer modules.
+    parser: The interactive parser object.
+    prefix_completer_command_count: If this is equal to cli.command_count then
+      command PREFIX TAB completion is enabled. This completion searches PATH
+      for executables matching the current PREFIX token. It's fairly expensive
+      and volumninous, so we don't want to do it for every completion event.
+  """
+
+  def __init__(self, cli=None, coshell=None, debug=None,
+               interactive_parser=None, args=None, hidden=False,
+               manpage_generator=True):
+    self.cli = cli
     self.coshell = coshell
     self.debug = debug
     self.hidden = hidden
     self.manpage_generator = manpage_generator
+    self.module_cache = {}
     self.parser = interactive_parser
     self.parsed_args = args
     self.empty = False
     self.last = ''
     generate_cli_trees.CliTreeGenerator.MemoizeFailures(True)
+    self.reset()
+
+  def reset(self):
+    """Resets any cached state for the current command being composed."""
+    self.DisableExecutableCompletions()
+
+  def DoExecutableCompletions(self):
+    """Returns True if command prefix args should use executable completion."""
+    return self.prefix_completer_command_count == self.cli.command_count
+
+  def DisableExecutableCompletions(self):
+    """Disables command prefix arg executable completion."""
+    self.prefix_completer_command_count = -1
+
+  def EnableExecutableCompletions(self):
+    """Enables command prefix arg executable completion."""
+    self.prefix_completer_command_count = self.cli.command_count
+
+  def IsPrefixArg(self, args):
+    """Returns True if the input buffer cursor is in a command prefix arg."""
+    return not self.empty and args[-1].token_type == parser.ArgTokenType.PREFIX
 
   def IsSuppressed(self, info):
+    """Returns True if the info for a command, group or flag is hidden."""
     if self.hidden:
       return info.get(parser.LOOKUP_NAME, '').startswith('--no-')
     return info.get(parser.LOOKUP_IS_HIDDEN)
@@ -107,27 +165,55 @@ class InteractiveCliCompleter(completion.Completer):
     Yields:
       Completion instances for doc.
     """
+
     self.debug.tabs.count().text(
         'explicit' if event.completion_requested else 'implicit')
+
+    # TAB on empty line toggles command PREFIX executable completions.
+
+    if not doc.text_before_cursor and event.completion_requested:
+      if self.DoExecutableCompletions():
+        self.DisableExecutableCompletions()
+      else:
+        self.EnableExecutableCompletions()
+      return
+
+    # Parse the arg types from the input buffer.
+
     args = self.parser.ParseCommand(doc.text_before_cursor)
     if not args:
       return
+
+    # The default completer order.
+
+    completers = (
+        self.CommandCompleter,
+        self.FlagCompleter,
+        self.PositionalCompleter,
+        self.InteractiveCompleter,
+    )
+
+    # Command PREFIX token may need a different order.
+
+    if self.IsPrefixArg(args) and (
+        self.DoExecutableCompletions() or event.completion_requested):
+      completers = (self.InteractiveCompleter,)
+
     self.last = doc.text_before_cursor[-1] if doc.text_before_cursor else ''
     self.empty = self.last.isspace()
     self.event = event
 
+    self.debug.commands.text(str(self.cli.command_count))
     self.debug.last.text(self.last)
     self.debug.tokens.text(str(args)
                            .replace("u'", "'")
                            .replace('ArgTokenType.', '')
                            .replace('ArgToken', ''))
 
-    for completer in (
-        self.CommandCompleter,
-        self.FlagCompleter,
-        self.PositionalCompleter,
-        self.InteractiveCompleter,
-    ):
+    # Apply the completers in order stopping at the first one that does not
+    # return None.
+
+    for completer in completers:
       choices, offset = completer(args)
       if choices is None:
         continue
@@ -158,7 +244,7 @@ class InteractiveCliCompleter(completion.Completer):
       # A flag, not a command.
       return None, 0
 
-    elif arg.token_type == parser.ArgTokenType.PREFIX:
+    elif self.IsPrefixArg(args):
       # The root command name arg ("argv[0]"), the first token at the beginning
       # of the command line or the next token after a shell statement separator.
       node = self.parser.root
@@ -166,15 +252,10 @@ class InteractiveCliCompleter(completion.Completer):
 
     elif arg.token_type in (parser.ArgTokenType.COMMAND,
                             parser.ArgTokenType.GROUP) and not self.empty:
-      # A command/group with an exact CLI tree match. See if it's also a prefix
-      # of other command/groups.
+      # A command/group with an exact CLI tree match. It could also be a prefix
+      # of other command/groups, so fallthrough to default choices logic.
       node = args[-2].tree if len(args) > 1 else self.parser.root
       prefix = arg.value
-      for c in node[parser.LOOKUP_COMMANDS]:
-        if c.startswith(prefix) and c != prefix:
-          break
-      else:
-        return None, 0
 
     elif arg.token_type == parser.ArgTokenType.GROUP:
       # A command group with an exact CLI tree match.
@@ -201,8 +282,12 @@ class InteractiveCliCompleter(completion.Completer):
       # Don't know how to complete this arg.
       return None, 0
 
-    return [k for k, v in six.iteritems(node[parser.LOOKUP_COMMANDS])
-            if k.startswith(prefix) and not self.IsSuppressed(v)], -len(prefix)
+    choices = [k for k, v in six.iteritems(node[parser.LOOKUP_COMMANDS])
+               if k.startswith(prefix) and not self.IsSuppressed(v)]
+    if choices:
+      return choices, -len(prefix)
+
+    return None, 0
 
   def ArgCompleter(self, args, arg, value):
     """Returns the flag or positional completion choices for arg or [].
@@ -230,10 +315,10 @@ class InteractiveCliCompleter(completion.Completer):
       return [], 0
 
     # arg with a completer
-    cache = self.completer_cache.get(module_path)
+    cache = self.module_cache.get(module_path)
     if not cache:
-      cache = CompleterCache(module_util.ImportModule(module_path))
-      self.completer_cache[module_path] = cache
+      cache = ModuleCache(module_util.ImportModule(module_path))
+      self.module_cache[module_path] = cache
     prefix = value
     if not isinstance(cache.completer_class, type):
       cache.choices = cache.completer_class(prefix=prefix)
@@ -280,8 +365,13 @@ class InteractiveCliCompleter(completion.Completer):
       # A flag arg with an exact CLI tree match.
       if not self.empty:
         # The cursor is in the flag arg. See if it's a prefix of other flags.
-        flag = args[-2].tree
-        completions = [k for k, v in six.iteritems(flag[parser.LOOKUP_FLAGS])
+        # Search backwards in args to find the rightmost command node.
+        flags = {}
+        for a in reversed(args):
+          if a.tree and parser.LOOKUP_FLAGS in a.tree:
+            flags = a.tree[parser.LOOKUP_FLAGS]
+            break
+        completions = [k for k, v in six.iteritems(flags)
                        if k != arg.value and
                        k.startswith(arg.value) and
                        not self.IsSuppressed(v)]
@@ -335,7 +425,8 @@ class InteractiveCliCompleter(completion.Completer):
         choices - The list of completion strings or None.
         offset - The completion prefix offset.
     """
-    if not self.event.completion_requested:
+    prefix = self.DoExecutableCompletions() and self.IsPrefixArg(args)
+    if not self.event.completion_requested and not prefix:
       return None, 0
     command = [arg.value for arg in args]
     # If the input command line ended with a space then the split command line
@@ -344,17 +435,21 @@ class InteractiveCliCompleter(completion.Completer):
     if self.empty and command[-1]:
       command.append('')
     self.debug.getcompletions.count()
-    completions = self.coshell.GetCompletions(command)
+    completions = self.coshell.GetCompletions(command, prefix=prefix)
     if not completions:
       return None, None
+    last = command[-1]
+    offset = -len(last)
+    if len(completions) == 1:
+      # No dropdown for singletons so just return the original completion.
+      return completions, offset
 
     # Make path completions play nice with dropdowns. Add trailing '/' for dirs
     # in the dropdown but not the completion. User types '/' to select a dir
     # and ' ' to select a path.
     #
     # NOTE: '/' instead of os.path.sep since the coshell is bash even on Windows
-    last = command[-1]
-    offset = -len(last)
+
     prefix = last if last.endswith('/') else os.path.dirname(last)
     chop = len(prefix) if prefix else 0
 
@@ -364,75 +459,51 @@ class InteractiveCliCompleter(completion.Completer):
       # Treat the completions as URI paths.
       if not last:
         chop = uri_sep_index + len(uri_sep)
-      return self.UriPathCompletions(completions, offset, chop), None
+      make_completion = self.MakeUriPathCompletion
+    else:
+      make_completion = self.MakeFilePathCompletion
+    return [make_completion(c, offset, chop) for c in completions], None
 
-    if os.path.isdir(prefix) or self.coshell.GetPwd():
-      # Treat the completions as file/dir paths.
-      return self.FilePathCompletions(completions, offset, chop), None
-
-    # The prefix is not a dir or we have a bogus coshell pwd. Treat the
-    # completions as normal strings.
-    return completions, offset
-
-  def FilePathCompletions(self, completions, offset, chop):
-    """Returns the list of Completion objects for file path completions.
+  @classmethod
+  def MakeFilePathCompletion(cls, value, offset, chop):
+    """Returns the Completion object for a file path completion value.
 
     Args:
-      completions: The list of file/path completion strings.
+      value: The file/path completion value string.
       offset: The Completion object offset used for dropdown display.
       chop: The minimum number of chars to chop from the dropdown items.
 
     Returns:
-      The list of Completion objects for file path completions.
+      The Completion object for a file path completion value.
     """
 
-    def _Mark(c):
-      """Returns completion c with a trailing '/' if it is a dir."""
-      if not c.endswith('/') and os.path.isdir(c):
-        return c + '/'
-      return c
+    display = value
+    if chop:
+      display = display[chop:]
+      if display.startswith('/'):
+        display = display[1:]
+    if value.endswith('/'):
+      value = value[:-1]
+    return completion.Completion(value, display=display, start_position=offset)
 
-    def _Display(c):
-      """Returns the annotated dropdown display spelling of completion c."""
-      d = _Mark(c)[chop:]
-      if chop and d.startswith('/'):
-        # Some shell completers insert an '/' that spoils the dropdown.
-        d = d[1:]
-      return completion.Completion(c, display=d, start_position=offset)
-
-    if len(completions) == 1:
-      # No dropdown for singletons so just return the marked completion.
-      choice = _Mark(completions[0])
-      return [completion.Completion(choice, start_position=offset)]
-    # Return completion objects with annotated choices for the dropdown.
-    return [_Display(c) for c in completions]
-
-  def UriPathCompletions(self, completions, offset, chop):
-    """Returns the list of Completion objects for URI path completions.
+  @classmethod
+  def MakeUriPathCompletion(cls, value, offset, chop):
+    """Returns the Completion object for a URI path completion value.
 
     Args:
-      completions: The list of file/path completion strings.
+      value: The file/path completion value string.
       offset: The Completion object offset used for dropdown display.
       chop: The minimum number of chars to chop from the dropdown items.
 
     Returns:
-      The list of Completion objects for file path completions.
+      The Completion object for a URI path completion value.
     """
 
-    def _Display(c):
-      """Returns the annotated dropdown display spelling of completion c."""
-      d = c[chop:]
-      if d.startswith('/'):
-        d = d[1:]
-        if d.startswith('/'):
-          d = d[1:]
-      if c.endswith('/') and not c.endswith('://'):
-        c = c[:-1]
-      return completion.Completion(c, display=d, start_position=offset)
-
-    if len(completions) == 1:
-      # No dropdown for singletons so just return the marked completion.
-      choice = completions[0]
-      return [completion.Completion(choice, start_position=offset)]
-    # Return completion objects with annotated choices for the dropdown.
-    return [_Display(c) for c in completions]
+    display = value[chop:]
+    if display.startswith('/'):
+      display = display[1:]
+      if display.startswith('/'):
+        display = display[1:]
+    if value.endswith('/') and not value.endswith('://'):
+      value = value[:-1]
+    return completion.Completion(value, display=display, start_position=offset)

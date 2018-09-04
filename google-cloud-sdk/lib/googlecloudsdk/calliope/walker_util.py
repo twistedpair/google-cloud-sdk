@@ -297,15 +297,16 @@ class CommandTreeGenerator(walker.Walker):
     _global_flags: The set of global flags, only listed for the root command.
   """
 
-  def __init__(self, cli, with_flags=False, with_flag_values=False):
+  def __init__(self, cli, with_flags=False, with_flag_values=False, **kwargs):
     """Constructor.
 
     Args:
       cli: The Cloud SDK CLI object.
       with_flags: Include the non-global flags for each command/group if True.
       with_flag_values: Include flags and flag value choices or :type: if True.
+      **kwargs: Other keyword arguments to pass to Walker constructor.
     """
-    super(CommandTreeGenerator, self).__init__(cli)
+    super(CommandTreeGenerator, self).__init__(cli, **kwargs)
     self._with_flags = with_flags or with_flag_values
     self._with_flag_values = with_flag_values
     self._global_flags = set()

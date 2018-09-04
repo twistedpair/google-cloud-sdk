@@ -53,10 +53,15 @@ class PubsubV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a snapshot from the requested subscription.<br><br>.
-<b>ALPHA:</b> This feature is part of an alpha release. This API might be
+      r"""Creates a snapshot from the requested subscription. Snapshots are used in.
+<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.
+<br><br>
+<b>BETA:</b> This feature is part of a beta release. This API might be
 changed in backward-incompatible ways and is not recommended for production
-use. It is not subject to any SLA or deprecation policy.
+use. It is not subject to any SLA or deprecation policy.<br><br>
 If the snapshot already exists, returns `ALREADY_EXISTS`.
 If the requested subscription doesn't exist, returns `NOT_FOUND`.
 If the backlog in the subscription is too old -- and the resulting snapshot
@@ -94,8 +99,12 @@ requests, you must specify a name in the request.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Removes an existing snapshot. <br><br>.
-<b>ALPHA:</b> This feature is part of an alpha release. This API might be
+      r"""Removes an existing snapshot. Snapshots are used in.
+<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.<br><br>
+<b>BETA:</b> This feature is part of a beta release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
 When the snapshot is deleted, all messages retained in the snapshot
@@ -128,8 +137,12 @@ snapshot or its subscription, unless the same subscription is specified.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the configuration details of a snapshot.<br><br>.
-<b>ALPHA:</b> This feature is part of an alpha release. This API might be
+      r"""Gets the configuration details of a snapshot. Snapshots are used in.
+<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.<br><br>
+<b>BETA:</b> This feature is part of a beta release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
 
@@ -187,8 +200,12 @@ set.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the existing snapshots.<br><br>.
-<b>ALPHA:</b> This feature is part of an alpha release. This API might be
+      r"""Lists the existing snapshots. Snapshots are used in.
+<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.<br><br>
+<b>BETA:</b> This feature is part of a beta release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
 
@@ -217,8 +234,12 @@ use. It is not subject to any SLA or deprecation policy.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing snapshot.<br><br>.
-<b>ALPHA:</b> This feature is part of an alpha release. This API might be
+      r"""Updates an existing snapshot. Snapshots are used in.
+<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.<br><br>
+<b>BETA:</b> This feature is part of a beta release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
 Note that certain properties of a snapshot are not modifiable.
@@ -624,8 +645,13 @@ subscription.
 
     def Seek(self, request, global_params=None):
       r"""Seeks an existing subscription to a point in time or to a given snapshot,.
-whichever is provided in the request.<br><br>
-<b>ALPHA:</b> This feature is part of an alpha release. This API might be
+whichever is provided in the request. Snapshots are used in
+<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot. Note that both the subscription and the snapshot
+must be on the same topic.<br><br>
+<b>BETA:</b> This feature is part of a beta release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
 
@@ -725,8 +751,12 @@ may "fail open" without warning.
           }
 
     def List(self, request, global_params=None):
-      r"""Lists the names of the snapshots on this topic.<br><br>.
-<b>ALPHA:</b> This feature is part of an alpha release. This API might be
+      r"""Lists the names of the snapshots on this topic. Snapshots are used in.
+<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+you to manage message acknowledgments in bulk. That is, you can set the
+acknowledgment state of messages in an existing subscription to the state
+captured by a snapshot.<br><br>
+<b>BETA:</b> This feature is part of a beta release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
 

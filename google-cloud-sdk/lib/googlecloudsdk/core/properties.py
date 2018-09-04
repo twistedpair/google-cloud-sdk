@@ -141,6 +141,15 @@ def _BooleanValidator(property_name, value):
             ', '.join([x if x else "''" for x in accepted_strings])))
 
 
+def _BuildTimeoutValidator(timeout):
+  """Validates build timeouts."""
+  if timeout is None:
+    return
+  seconds = times.ParseDuration(timeout, default_suffix='s').total_seconds
+  if seconds <= 0:
+    raise InvalidValueError('Timeout must be a positive time duration.')
+
+
 class Error(exceptions.Error):
   """Exceptions for the properties module."""
 
@@ -696,18 +705,9 @@ class _SectionApp(_Section):
         'trigger_build_server_side',
         hidden=True,
         default=None)
-    def CloudBuildTimeoutValidator(build_timeout):
-      if build_timeout is None:
-        return
-      try:
-        seconds = int(build_timeout)  # bare int means seconds
-      except ValueError:
-        seconds = times.ParseDuration(build_timeout).total_seconds
-      if seconds <= 0:
-        raise InvalidValueError('Timeout must be a positive time duration.')
     self.cloud_build_timeout = self._Add(
         'cloud_build_timeout',
-        validator=CloudBuildTimeoutValidator,
+        validator=_BuildTimeoutValidator,
         help_text='Timeout, in seconds, to wait for Docker builds to '
                   'complete during deployments. All Docker builds now use the '
                   'Cloud Build API.')
@@ -779,18 +779,9 @@ class _SectionBuilds(_Section):
   def __init__(self):
     super(_SectionBuilds, self).__init__('builds')
 
-    def TimeoutValidator(timeout):
-      if timeout is None:
-        return
-      try:
-        seconds = int(timeout)  # bare int means seconds
-      except ValueError:
-        seconds = times.ParseDuration(timeout).total_seconds
-      if seconds <= 0:
-        raise InvalidValueError('Timeout must be a positive time duration.')
     self.timeout = self._Add(
         'timeout',
-        validator=TimeoutValidator,
+        validator=_BuildTimeoutValidator,
         help_text='Timeout, in seconds, to wait for builds to complete.')
     self.check_tag = self._AddBool(
         'check_tag',
@@ -798,6 +789,12 @@ class _SectionBuilds(_Section):
         hidden=True,
         help_text='If True, validate that the --tag value to builds '
         'submit is in the gcr.io or *.gcr.io namespace.')
+    self.use_kaniko = self._AddBool(
+        'use_kaniko',
+        default=False,
+        hidden=True,
+        help_text='If True, kaniko will be used to build images described by '
+        'a Dockerfile, instead of `docker build`.')
 
 
 class _SectionContainer(_Section):
@@ -833,18 +830,9 @@ class _SectionContainer(_Section):
         'these tracks always use the new behavior. See `--scopes` help for '
         'more info.')
 
-    def BuildTimeoutValidator(build_timeout):
-      if build_timeout is None:
-        return
-      try:
-        seconds = int(build_timeout)  # bare int means seconds
-      except ValueError:
-        seconds = times.ParseDuration(build_timeout).total_seconds
-      if seconds <= 0:
-        raise InvalidValueError('Timeout must be a positive time duration.')
     self.build_timeout = self._Add(
         'build_timeout',
-        validator=BuildTimeoutValidator,
+        validator=_BuildTimeoutValidator,
         help_text='Timeout, in seconds, to wait for container builds to '
         'complete.')
     self.build_check_tag = self._AddBool(

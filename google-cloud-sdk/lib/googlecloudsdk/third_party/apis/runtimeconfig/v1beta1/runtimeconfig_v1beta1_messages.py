@@ -227,8 +227,10 @@ class Condition(_messages.Message):
       SECURITY_REALM: Any of the security realms in the IAMContext (go
         /security-realms). When used with IN, the condition indicates "any of
         the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". Note that a value can be
-        either a realm or a realm group (go/realm-groups). A match is
+        of the realms match any of the given values". Note that a value can
+        be:  - 'self' (i.e., allow connections from clients that are in the
+        same  security realm)  - a realm (e.g., 'campus-abc')  - a realm group
+        (e.g., 'realms-for-borg-cell-xx', see: go/realm-groups) A match is
         determined by a realm group membership check performed by a
         RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
         access based on the *absence* of a realm, so realm conditions can only

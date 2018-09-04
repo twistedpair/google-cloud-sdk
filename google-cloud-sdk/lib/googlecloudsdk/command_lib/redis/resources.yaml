@@ -2,45 +2,43 @@ project:
   name: project
   collection: redis.projects
   attributes:
-    - &project
-      parameter_name: projectsId
-      attribute_name: project
-      help: |
-        The project name.
-      property: core/project
+  - parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project name.
+    property: core/project
 
 region:
   name: region
   collection: redis.projects.locations
   attributes:
-    - &region
-      parameter_name: locationsId
-      attribute_name: region
-      help: |
-        The name of the Redis region of the {resource}. Overrides the default
-        redis/region property value for this command invocation.
-      property: redis/region
+  - &region
+    parameter_name: locationsId
+    attribute_name: region
+    help: |
+      The name of the Redis region of the {resource}. Overrides the default
+      redis/region property value for this command invocation.
+    property: redis/region
   disable_auto_completers: false
 
 region_without_property:
   name: region
   collection: redis.projects.locations
   attributes:
-    - parameter_name: locationsId
-      attribute_name: region
-      help: |
-        The name of the Redis region.
+  - parameter_name: locationsId
+    attribute_name: region
+    help: |
+      The name of the Redis region.
   disable_auto_completers: false
 
 operation:
   name: operation
   collection: redis.projects.locations.operations
   attributes:
-    - *region
-    - &operation
-      parameter_name: operationsId
-      attribute_name: operation
-      help: The name of the Redis operation.
+  - *region
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: The name of the Redis operation.
   disable_auto_completers: false
 
 instance:
@@ -48,9 +46,8 @@ instance:
   collection: redis.projects.locations.instances
   request_id_field: instanceId
   attributes:
-    - *region
-    - &instance
-      parameter_name: instancesId
-      attribute_name: instance
-      help: The name of the Redis instance.
+  - *region
+  - parameter_name: instancesId
+    attribute_name: instance
+    help: The name of the Redis instance.
   disable_auto_completers: false

@@ -1929,11 +1929,14 @@ class LifecycleConfig(_messages.Message):
     idleDeleteTtl: Optional. The longest duration that cluster would keep
       alive while staying  idle; passing this threshold will cause cluster to
       be auto-deleted.
+    idleStartTime: Output only. The time when cluster became idle (most recent
+      job finished) and became eligible for deletion due to idleness.
   """
 
   autoDeleteTime = _messages.StringField(1)
   autoDeleteTtl = _messages.StringField(2)
   idleDeleteTtl = _messages.StringField(3)
+  idleStartTime = _messages.StringField(4)
 
 
 class ListClustersResponse(_messages.Message):

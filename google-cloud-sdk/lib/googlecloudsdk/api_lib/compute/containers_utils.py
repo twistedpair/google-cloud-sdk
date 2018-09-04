@@ -54,6 +54,8 @@ CONTAINER_MANIFEST_KEY = 'google-container-manifest'
 
 GCE_CONTAINER_DECLARATION = 'gce-container-declaration'
 
+STACKDRIVER_LOGGING_AGENT_CONFIGURATION = 'google-logging-enabled'
+
 GKE_DOCKER = 'gci-ensure-gke-docker'
 
 ALLOWED_PROTOCOLS = ['TCP', 'UDP']
@@ -386,7 +388,10 @@ def _CreateYamlContainerManifest(args, instance_name):
 def CreateKonletMetadataMessage(messages, args, instance_name, user_metadata):
   konlet_metadata = {
       GCE_CONTAINER_DECLARATION:
-          _CreateYamlContainerManifest(args, instance_name)
+          _CreateYamlContainerManifest(args, instance_name),
+      # Since COS 69, having logs for Container-VMs written requires enabling
+      # Stackdriver Logging agent.
+      STACKDRIVER_LOGGING_AGENT_CONFIGURATION: 'true',
   }
   return metadata_utils.ConstructMetadataMessage(
       messages, metadata=konlet_metadata, existing_metadata=user_metadata)

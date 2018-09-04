@@ -440,7 +440,7 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
           accelerators=master_accelerators,
           diskConfig=GetDiskConfig(
               dataproc,
-              args.master_boot_disk_type if beta else None,
+              args.master_boot_disk_type,
               master_boot_disk_size_gb,
               args.num_master_local_ssds
           )),
@@ -451,7 +451,7 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
           accelerators=worker_accelerators,
           diskConfig=GetDiskConfig(
               dataproc,
-              args.worker_boot_disk_type if beta else None,
+              args.worker_boot_disk_type,
               worker_boot_disk_size_gb,
               args.num_worker_local_ssds,
           )),
@@ -499,14 +499,14 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
   # future pVMs configuration at creation time.
   if (args.num_preemptible_workers is not None or
       preemptible_worker_boot_disk_size_gb is not None or
-      (beta and (args.preemptible_worker_boot_disk_type is not None or
-                 args.worker_min_cpu_platform is not None))):
+      args.preemptible_worker_boot_disk_type is not None or
+      (beta and args.worker_min_cpu_platform is not None)):
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
             numInstances=args.num_preemptible_workers,
             diskConfig=GetDiskConfig(
                 dataproc,
-                args.preemptible_worker_boot_disk_type if beta else None,
+                args.preemptible_worker_boot_disk_type,
                 preemptible_worker_boot_disk_size_gb,
                 None,
             )))

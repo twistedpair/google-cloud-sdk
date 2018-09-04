@@ -246,7 +246,7 @@ class CreateServiceAccountRequest(_messages.Message):
       project, must be 6-30 characters long, and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])` to comply with RFC1035.
     serviceAccount: The ServiceAccount resource to create. Currently, only the
-      following values are user assignable: `display_name`, and `description`.
+      following values are user assignable: `display_name` .
   """
 
   accountId = _messages.StringField(1)
@@ -881,15 +881,15 @@ class LintResult(_messages.Message):
       with any particular binding and only targets the policy as a whole, such
       as results about policy size violations.
     debugMessage: Human readable debug message associated with the issue.
-    fieldName: The name of the field for which this lint result is about,
-      relative to the input object to lint in the request.  For nested
-      messages, `field_name` consists of names of the embedded fields
-      separated by period character. For instance, if the lint request is on a
+    fieldName: The name of the field for which this lint result is about.  For
+      nested messages, `field_name` consists of names of the embedded fields
+      separated by period character. The top-level qualifier is the input
+      object to lint in the request. For instance, if the lint request is on a
       google.iam.v1.Policy and this lint result is about a condition
       expression of one of the input policy bindings, the field would be
-      populated as `bindings.condition.expression`.  This field does not
-      identify the ordinality of the repetitive fields (for instance bindings
-      in a policy).
+      populated as `policy.bindings.condition.expression`.  This field does
+      not identify the ordinality of the repetitive fields (for instance
+      bindings in a policy).
     level: The validation unit level.
     locationOffset: 0-based character position of problematic construct within
       the object identified by `field_name`. Currently, this is populated only
@@ -1273,10 +1273,10 @@ class ServiceAccount(_messages.Message):
   value can be the `email` address or the `unique_id` of the service account.
 
   Fields:
-    displayName: Optional. A user-specified name for the service account. Must
-      be less than or equal to 100 UTF-8 bytes.
+    displayName: Optional. A user-specified description of the service
+      account.  Must be fewer than 100 UTF-8 bytes.
     email: @OutputOnly The email address of the service account.
-    etag: Optional. Not currently used.
+    etag: Used to perform a consistent read-modify-write.
     name: The resource name of the service account in the following format:
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Requests using `-`
       as a wildcard for the `PROJECT_ID` will infer the project from the

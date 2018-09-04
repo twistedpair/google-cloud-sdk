@@ -200,7 +200,10 @@ def DefaultAccount():
 class DevshellCredentials(client.OAuth2Credentials):
 
   def __init__(self, **kwargs):
+    # Update __dict__ directly instead of calling super __init__ to avoid having
+    # to pass positional arguments.
     self.__dict__.update(**kwargs)
+    self.invalid = False
     self._refresh(None)
 
   def _refresh(self, http):

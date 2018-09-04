@@ -54,8 +54,8 @@ class Binding(_messages.Message):
 
 
 class CreateSnapshotRequest(_messages.Message):
-  r"""Request for the `CreateSnapshot` method.<br><br> <b>ALPHA:</b> This
-  feature is part of an alpha release. This API might be changed in backward-
+  r"""Request for the `CreateSnapshot` method.<br><br> <b>BETA:</b> This
+  feature is part of a beta release. This API might be changed in backward-
   incompatible ways and is not recommended for production use. It is not
   subject to any SLA or deprecation policy.
 
@@ -115,6 +115,22 @@ class Empty(_messages.Message):
 
 
 
+class ExpirationPolicy(_messages.Message):
+  r"""A policy that specifies the conditions for resource expiration (i.e.,
+  automatic resource deletion).
+
+  Fields:
+    ttl: Specifies the "time-to-live" duration for an associated resource. The
+      resource expires if it is not active for a period of `ttl`. The
+      definition of "activity" depends on the type of the associated resource.
+      The minimum and maximum allowed values for `ttl` depend on the type of
+      the associated resource, as well. If `ttl` is not set, the associated
+      resource never expires.
+  """
+
+  ttl = _messages.StringField(1)
+
+
 class Expr(_messages.Message):
   r"""Represents an expression text. Example:      title: "User account
   presence"     description: "Determines whether the request has a user
@@ -140,8 +156,8 @@ class Expr(_messages.Message):
 
 
 class ListSnapshotsResponse(_messages.Message):
-  r"""Response for the `ListSnapshots` method.<br><br> <b>ALPHA:</b> This
-  feature is part of an alpha release. This API might be changed in backward-
+  r"""Response for the `ListSnapshots` method.<br><br> <b>BETA:</b> This
+  feature is part of a beta release. This API might be changed in backward-
   incompatible ways and is not recommended for production use. It is not
   subject to any SLA or deprecation policy.
 
@@ -171,8 +187,8 @@ class ListSubscriptionsResponse(_messages.Message):
 
 
 class ListTopicSnapshotsResponse(_messages.Message):
-  r"""Response for the `ListTopicSnapshots` method.<br><br> <b>ALPHA:</b> This
-  feature is part of an alpha release. This API might be changed in backward-
+  r"""Response for the `ListTopicSnapshots` method.<br><br> <b>BETA:</b> This
+  feature is part of a beta release. This API might be changed in backward-
   incompatible ways and is not recommended for production use. It is not
   subject to any SLA or deprecation policy.
 
@@ -385,8 +401,9 @@ class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
     name: Optional user-provided name for this snapshot. If the name is not
       provided in the request, the server will assign a random name for this
       snapshot on the same project as the subscription. Note that for REST API
-      requests, you must specify a name. Format is
-      `projects/{project}/snapshots/{snap}`.
+      requests, you must specify a name.  See the <a
+      href="/pubsub/docs/admin#resource_names">resource name rules</a>. Format
+      is `projects/{project}/snapshots/{snap}`.
   """
 
   createSnapshotRequest = _messages.MessageField('CreateSnapshotRequest', 1)
@@ -928,8 +945,8 @@ class ReceivedMessage(_messages.Message):
 
 
 class SeekRequest(_messages.Message):
-  r"""Request for the `Seek` method.<br><br> <b>ALPHA:</b> This feature is
-  part of an alpha release. This API might be changed in backward-incompatible
+  r"""Request for the `Seek` method. <br><br> <b>BETA:</b> This feature is
+  part of a beta release. This API might be changed in backward-incompatible
   ways and is not recommended for production use. It is not subject to any SLA
   or deprecation policy.
 
@@ -954,7 +971,7 @@ class SeekRequest(_messages.Message):
 
 
 class SeekResponse(_messages.Message):
-  r"""A SeekResponse object."""
+  r"""Response for the `Seek` method (this response is empty)."""
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -971,10 +988,13 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  r"""A snapshot resource.<br><br> <b>ALPHA:</b> This feature is part of an
-  alpha release. This API might be changed in backward-incompatible ways and
-  is not recommended for production use. It is not subject to any SLA or
-  deprecation policy.
+  r"""A snapshot resource. Snapshots are used in <a href="/pubsub/docs/replay-
+  overview">Seek</a> operations, which allow you to manage message
+  acknowledgments in bulk. That is, you can set the acknowledgment state of
+  messages in an existing subscription to the state captured by a
+  snapshot.<br><br> <b>BETA:</b> This feature is part of a beta release. This
+  API might be changed in backward-incompatible ways and is not recommended
+  for production use. It is not subject to any SLA or deprecation policy.
 
   Messages:
     LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
@@ -1116,6 +1136,13 @@ class Subscription(_messages.Message):
       value is also used to set the request timeout for the call to the push
       endpoint.  If the subscriber never acknowledges the message, the Pub/Sub
       system will eventually redeliver the message.
+    expirationPolicy: A policy that specifies the conditions for this
+      subscription's expiration. A subscription is considered active as long
+      as any connected subscriber is successfully consuming messages from the
+      subscription or is issuing operations on the subscription. If
+      `expiration_policy` is not set, a *default policy* with `ttl` of 31 days
+      will be used. The minimum allowed value for `expiration_policy.ttl` is 1
+      day.
     labels: See <a href="/pubsub/docs/labels"> Creating and managing
       labels</a>.
     messageRetentionDuration: How long to retain unacknowledged messages in
@@ -1123,8 +1150,8 @@ class Subscription(_messages.Message):
       `retain_acked_messages` is true, then this also configures the retention
       of acknowledged messages, and thus configures how far back in time a
       `Seek` can be done. Defaults to 7 days. Cannot be more than 7 days or
-      less than 10 minutes.<br><br> <b>ALPHA:</b> This feature is part of an
-      alpha release. This API might be changed in backward-incompatible ways
+      less than 10 minutes.<br><br> <b>BETA:</b> This feature is part of a
+      beta release. This API might be changed in backward-incompatible ways
       and is not recommended for production use. It is not subject to any SLA
       or deprecation policy.
     name: The name of the subscription. It must have the format
@@ -1139,10 +1166,12 @@ class Subscription(_messages.Message):
     retainAckedMessages: Indicates whether to retain acknowledged messages. If
       true, then messages are not expunged from the subscription's backlog,
       even if they are acknowledged, until they fall out of the
-      `message_retention_duration` window.<br><br> <b>ALPHA:</b> This feature
-      is part of an alpha release. This API might be changed in backward-
-      incompatible ways and is not recommended for production use. It is not
-      subject to any SLA or deprecation policy.
+      `message_retention_duration` window. This must be true if you would like
+      to <a href="/pubsub/docs/replay-overview#seek_to_a_time">Seek to a
+      timestamp</a>. <br><br> <b>BETA:</b> This feature is part of a beta
+      release. This API might be changed in backward-incompatible ways and is
+      not recommended for production use. It is not subject to any SLA or
+      deprecation policy.
     topic: The name of the topic from which this subscription is receiving
       messages. Format is `projects/{project}/topics/{topic}`. The value of
       this field will be `_deleted-topic_` if the topic has been deleted.
@@ -1173,12 +1202,13 @@ class Subscription(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  labels = _messages.MessageField('LabelsValue', 2)
-  messageRetentionDuration = _messages.StringField(3)
-  name = _messages.StringField(4)
-  pushConfig = _messages.MessageField('PushConfig', 5)
-  retainAckedMessages = _messages.BooleanField(6)
-  topic = _messages.StringField(7)
+  expirationPolicy = _messages.MessageField('ExpirationPolicy', 2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  messageRetentionDuration = _messages.StringField(4)
+  name = _messages.StringField(5)
+  pushConfig = _messages.MessageField('PushConfig', 6)
+  retainAckedMessages = _messages.BooleanField(7)
+  topic = _messages.StringField(8)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -1260,8 +1290,8 @@ class Topic(_messages.Message):
 
 
 class UpdateSnapshotRequest(_messages.Message):
-  r"""Request for the UpdateSnapshot method.<br><br> <b>ALPHA:</b> This
-  feature is part of an alpha release. This API might be changed in backward-
+  r"""Request for the UpdateSnapshot method.<br><br> <b>BETA:</b> This feature
+  is part of a beta release. This API might be changed in backward-
   incompatible ways and is not recommended for production use. It is not
   subject to any SLA or deprecation policy.
 

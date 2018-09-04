@@ -270,6 +270,8 @@ class Node(_messages.Message):
       STARTING: TPU node is currently starting.
       PREEMPTED: TPU node has been preempted. Only applies to Preemptible TPU
         Nodes.
+      TERMINATED: TPU node has been terminated due to maintenance or has
+        reached the end of its life cycle (for preemptible nodes).
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -282,6 +284,7 @@ class Node(_messages.Message):
     STOPPING = 8
     STARTING = 9
     PREEMPTED = 10
+    TERMINATED = 11
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

@@ -210,7 +210,7 @@ class _ResourceParser(object):
     params = self.collection_info.GetParams(subcollection)
     fields = match.groups()
     if url_unescape:
-      fields = map(urllib.parse.unquote, fields)
+      fields = map(urllib.parse.unquote, fields)  # pytype: disable=wrong-arg-types
 
     return Resource(self.registry, self.collection_info, subcollection,
                     param_values=dict(zip(params, fields)),

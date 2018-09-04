@@ -354,7 +354,8 @@ class Cluster(_messages.Message):
     privateCluster: If this is a private cluster setup. Private clusters are
       clusters that, by default have no external IP addresses on the nodes and
       where nodes and the master communicate over private IP addresses. This
-      field is deprecated, use private_cluster_config.enabled instead.
+      field is deprecated, use private_cluster_config.enable_private_nodes
+      instead.
     privateClusterConfig: Configuration for private cluster.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related GCE resources.
@@ -920,6 +921,36 @@ class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
   projectId = _messages.StringField(3)
   version = _messages.StringField(4)
   zone = _messages.StringField(5)
+
+
+class ContainerProjectsLocationsClustersNodePoolsReplaceNodePoolRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersNodePoolsReplaceNodePoolRequest
+  object.
+
+  Fields:
+    name: The name (project, location, cluster, node pool id) of the node pool
+      to update. Specified in the format
+      'projects/*/locations/*/clusters/*/nodePools/*'.
+    replaceNodePoolRequest: A ReplaceNodePoolRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  replaceNodePoolRequest = _messages.MessageField('ReplaceNodePoolRequest', 2)
+
+
+class ContainerProjectsLocationsClustersReplaceClusterRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersReplaceClusterRequest object.
+
+  Fields:
+    name: The name (project, location, cluster) of the cluster to update.
+      Specified in the format 'projects/*/locations/*/clusters/*'.
+    replaceClusterRequest: A ReplaceClusterRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  replaceClusterRequest = _messages.MessageField('ReplaceClusterRequest', 2)
 
 
 class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
@@ -1577,8 +1608,10 @@ class GoogleIamV1Condition(_messages.Message):
       SECURITY_REALM: Any of the security realms in the IAMContext (go
         /security-realms). When used with IN, the condition indicates "any of
         the request's realms match one of the given values; with NOT_IN, "none
-        of the realms match any of the given values". Note that a value can be
-        either a realm or a realm group (go/realm-groups). A match is
+        of the realms match any of the given values". Note that a value can
+        be:  - 'self' (i.e., allow connections from clients that are in the
+        same  security realm)  - a realm (e.g., 'campus-abc')  - a realm group
+        (e.g., 'realms-for-borg-cell-xx', see: go/realm-groups) A match is
         determined by a realm group membership check performed by a
         RealmAclRep object (go/realm-acl-howto). It is not permitted to grant
         access based on the *absence* of a realm, so realm conditions can only
@@ -2463,12 +2496,12 @@ class NodeConfig(_messages.Message):
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
       reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
-      "configure-sh"  "gci-update-strategy"  "gci-ensure-gke-docker"
-      "instance-template"  "kube-env"  "startup-script"  "user-data"  Values
-      are free-form strings, and only have meaning as interpreted by the image
-      running in the instance. The only restriction placed on them is that
-      each value's size must be less than or equal to 32 KB.  The total size
-      of all keys and values must be less than 512 KB.
+      "configure-sh"  "enable-os-login"  "gci-update-strategy"  "gci-ensure-
+      gke-docker"  "instance-template"  "kube-env"  "startup-script"  "user-
+      data"  Values are free-form strings, and only have meaning as
+      interpreted by the image running in the instance. The only restriction
+      placed on them is that each value's size must be less than or equal to
+      32 KB.  The total size of all keys and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2506,12 +2539,12 @@ class NodeConfig(_messages.Message):
       metadata server. Additionally, to avoid ambiguity, keys must not
       conflict with any other metadata keys for the project or be one of the
       reserved keys:  "cluster-location"  "cluster-name"  "cluster-uid"
-      "configure-sh"  "gci-update-strategy"  "gci-ensure-gke-docker"
-      "instance-template"  "kube-env"  "startup-script"  "user-data"  Values
-      are free-form strings, and only have meaning as interpreted by the image
-      running in the instance. The only restriction placed on them is that
-      each value's size must be less than or equal to 32 KB.  The total size
-      of all keys and values must be less than 512 KB.
+      "configure-sh"  "enable-os-login"  "gci-update-strategy"  "gci-ensure-
+      gke-docker"  "instance-template"  "kube-env"  "startup-script"  "user-
+      data"  Values are free-form strings, and only have meaning as
+      interpreted by the image running in the instance. The only restriction
+      placed on them is that each value's size must be less than or equal to
+      32 KB.  The total size of all keys and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -2520,6 +2553,10 @@ class NodeConfig(_messages.Message):
       information, read [how to specify min CPU
       platform](https://cloud.google.com/compute/docs/instances/specify-min-
       cpu-platform)
+    nodeGroup: The optional node group. Setting this field will assign
+      instances of this pool to run on the specified node group. This is
+      useful for running workloads on [sole tenant
+      nodes](/compute/docs/nodes/)
     nodeImageConfig: The node image configuration to use for this node pool.
       Note that this is only applicable for node pools using
       image_type=CUSTOM.
@@ -2587,13 +2624,13 @@ class NodeConfig(_messages.Message):
     in length. These are reflected as part of a URL in the metadata server.
     Additionally, to avoid ambiguity, keys must not conflict with any other
     metadata keys for the project or be one of the reserved keys:  "cluster-
-    location"  "cluster-name"  "cluster-uid"  "configure-sh"  "gci-update-
-    strategy"  "gci-ensure-gke-docker"  "instance-template"  "kube-env"
-    "startup-script"  "user-data"  Values are free-form strings, and only have
-    meaning as interpreted by the image running in the instance. The only
-    restriction placed on them is that each value's size must be less than or
-    equal to 32 KB.  The total size of all keys and values must be less than
-    512 KB.
+    location"  "cluster-name"  "cluster-uid"  "configure-sh"  "enable-os-
+    login"  "gci-update-strategy"  "gci-ensure-gke-docker"  "instance-
+    template"  "kube-env"  "startup-script"  "user-data"  Values are free-form
+    strings, and only have meaning as interpreted by the image running in the
+    instance. The only restriction placed on them is that each value's size
+    must be less than or equal to 32 KB.  The total size of all keys and
+    values must be less than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2626,14 +2663,15 @@ class NodeConfig(_messages.Message):
   machineType = _messages.StringField(9)
   metadata = _messages.MessageField('MetadataValue', 10)
   minCpuPlatform = _messages.StringField(11)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 12)
-  oauthScopes = _messages.StringField(13, repeated=True)
-  preemptible = _messages.BooleanField(14)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 15)
-  serviceAccount = _messages.StringField(16)
-  tags = _messages.StringField(17, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 18, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 19)
+  nodeGroup = _messages.StringField(12)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 13)
+  oauthScopes = _messages.StringField(14, repeated=True)
+  preemptible = _messages.BooleanField(15)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 16)
+  serviceAccount = _messages.StringField(17)
+  tags = _messages.StringField(18, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 19, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 20)
 
 
 class NodeManagement(_messages.Message):
@@ -2946,11 +2984,14 @@ class PrivateClusterConfig(_messages.Message):
   Fields:
     enablePrivateEndpoint: Whether the master's internal IP address is used as
       the cluster endpoint.
-    enablePrivateNodes: Whether nodes have only private IP addresses, and
+    enablePrivateNodes: Whether nodes have internal IP addresses only. If
+      enabled, all nodes are given only RFC 1918 private addresses and
       communicate with the master via private networking.
-    masterIpv4CidrBlock: The IP prefix in CIDR notation to use for the hosted
-      master network. This prefix will be used for assigning private IP
-      addresses to the master or set of masters, as well as the ILB VIP.
+    masterIpv4CidrBlock: The IP range in CIDR notation to use for the hosted
+      master network. This range will be used for assigning internal IP
+      addresses to the master or set of masters, as well as the ILB VIP. This
+      range must not overlap with any other ranges in use within the cluster's
+      network.
     privateEndpoint: Output only. The internal IP address of this cluster's
       endpoint.
     publicEndpoint: Output only. The external IP address of this cluster's
@@ -2962,6 +3003,30 @@ class PrivateClusterConfig(_messages.Message):
   masterIpv4CidrBlock = _messages.StringField(3)
   privateEndpoint = _messages.StringField(4)
   publicEndpoint = _messages.StringField(5)
+
+
+class ReplaceClusterRequest(_messages.Message):
+  r"""Updates the existing cluster to the provided cluster.
+
+  Fields:
+    updatedCluster: The updated cluster object.
+    version: API request version that initiates this operation.
+  """
+
+  updatedCluster = _messages.MessageField('Cluster', 1)
+  version = _messages.StringField(2)
+
+
+class ReplaceNodePoolRequest(_messages.Message):
+  r"""Updates the existing node pool to the provided node pool.
+
+  Fields:
+    updatedNodePool: The updated node pool object.
+    version: API request version that initiates this operation.
+  """
+
+  updatedNodePool = _messages.MessageField('NodePool', 1)
+  version = _messages.StringField(2)
 
 
 class ResourceLimit(_messages.Message):
@@ -3589,11 +3654,13 @@ class StatusCondition(_messages.Message):
       UNKNOWN: UNKNOWN indicates a generic condition.
       GCE_STOCKOUT: GCE_STOCKOUT indicates a GCE stockout.
       GKE_SERVICE_ACCOUNT_DELETED: GKE_SERVICE_ACCOUNT_DELETED indicates that
-        the user deleted their robot service account. More codes TBA
+        the user deleted their robot service account.
+      GCE_QUOTA_EXCEEDED: GCE quota was exceeded. More codes TBA
     """
     UNKNOWN = 0
     GCE_STOCKOUT = 1
     GKE_SERVICE_ACCOUNT_DELETED = 2
+    GCE_QUOTA_EXCEEDED = 3
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

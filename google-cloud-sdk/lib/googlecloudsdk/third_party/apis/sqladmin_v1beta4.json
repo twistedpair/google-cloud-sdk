@@ -5,9 +5,9 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20180813",
+ "revision": "20180828",
  "title": "Cloud SQL Admin API",
- "description": "Cloud SQL provides the Cloud SQL Admin API, a REST API for administering your instances programmatically.",
+ "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
  "ownerName": "Google",
  "icons": {
@@ -135,7 +135,7 @@
   "BackupRun": {
    "id": "BackupRun",
    "type": "object",
-   "description": "A database instance backup run resource.",
+   "description": "A BackupRun resource.",
    "properties": {
     "description": {
      "type": "string",
@@ -157,7 +157,7 @@
     },
     "id": {
      "type": "string",
-     "description": "A unique identifier for this backup run. Note that this is unique only within the scope of a particular Cloud SQL instance.",
+     "description": "The identifier for this backup run. Unique only for a specific Cloud SQL instance.",
      "format": "int64"
     },
     "instance": {
@@ -265,7 +265,7 @@
   "Database": {
    "id": "Database",
    "type": "object",
-   "description": "A database resource inside a Cloud SQL instance.",
+   "description": "Represents a SQL database on the Cloud SQL instance.",
    "properties": {
     "charset": {
      "type": "string",
@@ -320,11 +320,11 @@
   "DatabaseFlags": {
    "id": "DatabaseFlags",
    "type": "object",
-   "description": "MySQL flags for Cloud SQL instances.",
+   "description": "Database flags for Cloud SQL instances.",
    "properties": {
     "name": {
      "type": "string",
-     "description": "The name of the flag. These flags are passed at instance startup, so include both MySQL server options and MySQL system variables. Flags should be specified with underscores, not hyphens. For more information, see Configuring MySQL Flags in the Google Cloud SQL documentation, as well as the official MySQL documentation for server options and system variables."
+     "description": "The name of the flag. These flags are passed at instance startup, so include both server options and system variables for MySQL. Flags should be specified with underscores, not hyphens. For more information, see Configuring Database Flags in the Cloud SQL documentation."
     },
     "value": {
      "type": "string",
@@ -428,7 +428,7 @@
     },
     "replicaConfiguration": {
      "$ref": "ReplicaConfiguration",
-     "description": "Configuration specific to read-replicas replicating from on-premises masters."
+     "description": "Configuration specific to failover replicas and read replicas."
     },
     "replicaNames": {
      "type": "array",
@@ -637,7 +637,7 @@
   "Flag": {
    "id": "Flag",
    "type": "object",
-   "description": "A Google Cloud SQL service flag resource.",
+   "description": "A flag resource.",
    "properties": {
     "allowedStringValues": {
      "type": "array",
@@ -1265,12 +1265,12 @@
     },
     "dataDiskSizeGb": {
      "type": "string",
-     "description": "The size of data disk, in GB. The data disk size minimum is 10GB. Applies only to Second Generation instances.",
+     "description": "The size of data disk, in GB. The data disk size minimum is 10GB. Not used for First Generation instances.",
      "format": "int64"
     },
     "dataDiskType": {
      "type": "string",
-     "description": "The type of data disk. Only supported for Second Generation instances. The default type is PD_SSD. Applies only to Second Generation instances."
+     "description": "The type of data disk: PD_SSD (default) or PD_HDD. Not used for First Generation instances."
     },
     "databaseFlags": {
      "type": "array",
@@ -1298,7 +1298,7 @@
     },
     "maintenanceWindow": {
      "$ref": "MaintenanceWindow",
-     "description": "The maintenance window for this instance. This specifies when the instance may be restarted for maintenance purposes. Applies only to Second Generation instances."
+     "description": "The maintenance window for this instance. This specifies when the instance can be restarted for maintenance purposes. Not used for First Generation instances."
     },
     "pricingPlan": {
      "type": "string",
@@ -1320,11 +1320,11 @@
     },
     "storageAutoResize": {
      "type": "boolean",
-     "description": "Configuration to increase storage size automatically. The default value is true. Applies only to Second Generation instances."
+     "description": "Configuration to increase storage size automatically. The default value is true. Not used for First Generation instances."
     },
     "storageAutoResizeLimit": {
      "type": "string",
-     "description": "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. Applies only to Second Generation instances.",
+     "description": "The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit. Not used for First Generation instances.",
      "format": "int64"
     },
     "tier": {
@@ -1720,7 +1720,7 @@
      "id": "sql.backupRuns.list",
      "path": "projects/{project}/instances/{instance}/backupRuns",
      "httpMethod": "GET",
-     "description": "Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the enqueued time.",
+     "description": "Lists all backup runs associated with a given instance and configuration in the reverse chronological order of the backup initiation time.",
      "parameters": {
       "instance": {
        "type": "string",
@@ -1997,7 +1997,7 @@
      "parameters": {
       "databaseVersion": {
        "type": "string",
-       "description": "Database version for flag retrieval. Flags are specific to the database version.",
+       "description": "Database type and version you want to retrieve flags for. By default, this method returns flags for all database types and versions.",
        "location": "query"
       }
      },

@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20180813",
+ "revision": "20180828",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -5259,8 +5259,7 @@
       "HTTPS",
       "INVALID",
       "SSL",
-      "TCP",
-      "UDP"
+      "TCP"
      ],
      "enumDescriptions": [
       "",
@@ -5268,12 +5267,8 @@
       "",
       "",
       "",
-      "",
       ""
      ]
-    },
-    "udpHealthCheck": {
-     "$ref": "UDPHealthCheck"
     },
     "unhealthyThreshold": {
      "type": "integer",
@@ -6820,6 +6815,10 @@
      "type": "string",
      "description": "The service account to be used as credentials for all operations performed by the managed instance group on instances. The service accounts needs all permissions required to create and delete instances. By default, the service account {projectNumber}@cloudservices.gserviceaccount.com is used."
     },
+    "status": {
+     "$ref": "InstanceGroupManagerStatus",
+     "description": "[Output Only] The status of this managed instance group."
+    },
     "targetPools": {
      "type": "array",
      "description": "The URLs for all TargetPool resources to which instances in the instanceGroup field are added. The target pools automatically apply to all of the instances in the managed instance group.",
@@ -7169,6 +7168,16 @@
      "type": "integer",
      "description": "[Output Only] The number of instances in the managed instance group that are pending to be restarted.",
      "format": "int32"
+    }
+   }
+  },
+  "InstanceGroupManagerStatus": {
+   "id": "InstanceGroupManagerStatus",
+   "type": "object",
+   "properties": {
+    "isStable": {
+     "type": "boolean",
+     "description": "[Output Only] A bit indicating whether the managed instance group is in a stable state. A stable state means that: none of the instances in the managed instance group is currently undergoing any type of change (for example, creation, restart, or deletion); no future changes are scheduled for instances in the managed instance group; and the managed instance group itself is not being modified."
     }
    }
   },
@@ -9126,6 +9135,129 @@
     }
    }
   },
+  "InterconnectDiagnostics": {
+   "id": "InterconnectDiagnostics",
+   "type": "object",
+   "description": "Diagnostics information about interconnect, contains detailed and current technical information about Google?s side of the connection.",
+   "properties": {
+    "arpCaches": {
+     "type": "array",
+     "description": "A list of InterconnectDiagnostics.ARPEntry objects, describing individual neighbors currently seen by the Google router in the ARP cache for the Interconnect. This will be empty when the Interconnect is not bundled.",
+     "items": {
+      "$ref": "InterconnectDiagnosticsARPEntry"
+     }
+    },
+    "links": {
+     "type": "array",
+     "description": "A list of InterconnectDiagnostics.LinkStatus objects, describing the status for each link on the Interconnect.",
+     "items": {
+      "$ref": "InterconnectDiagnosticsLinkStatus"
+     }
+    },
+    "macAddress": {
+     "type": "string",
+     "description": "The MAC address of the Interconnect's bundle interface."
+    }
+   }
+  },
+  "InterconnectDiagnosticsARPEntry": {
+   "id": "InterconnectDiagnosticsARPEntry",
+   "type": "object",
+   "description": "Describing the ARP neighbor entries seen on this link",
+   "properties": {
+    "ipAddress": {
+     "type": "string",
+     "description": "The IP address of this ARP neighbor."
+    },
+    "macAddress": {
+     "type": "string",
+     "description": "The MAC address of this ARP neighbor."
+    }
+   }
+  },
+  "InterconnectDiagnosticsLinkLACPStatus": {
+   "id": "InterconnectDiagnosticsLinkLACPStatus",
+   "type": "object",
+   "properties": {
+    "googleSystemId": {
+     "type": "string",
+     "description": "System ID of the port on Google?s side of the LACP exchange."
+    },
+    "neighborSystemId": {
+     "type": "string",
+     "description": "System ID of the port on the neighbor?s side of the LACP exchange."
+    },
+    "state": {
+     "type": "string",
+     "enum": [
+      "ACTIVE",
+      "DETACHED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "InterconnectDiagnosticsLinkOpticalPower": {
+   "id": "InterconnectDiagnosticsLinkOpticalPower",
+   "type": "object",
+   "properties": {
+    "state": {
+     "type": "string",
+     "enum": [
+      "HIGH_ALARM",
+      "HIGH_WARNING",
+      "LOW_ALARM",
+      "LOW_WARNING",
+      "OK"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "value": {
+     "type": "number",
+     "description": "Value of the current optical power, read in dBm.",
+     "format": "float"
+    }
+   }
+  },
+  "InterconnectDiagnosticsLinkStatus": {
+   "id": "InterconnectDiagnosticsLinkStatus",
+   "type": "object",
+   "properties": {
+    "arpCaches": {
+     "type": "array",
+     "description": "A list of InterconnectDiagnostics.ARPEntry objects, describing the ARP neighbor entries seen on this link. This will be empty if the link is bundled",
+     "items": {
+      "$ref": "InterconnectDiagnosticsARPEntry"
+     }
+    },
+    "circuitId": {
+     "type": "string",
+     "description": "The unique ID for this link assigned during turn up by Google."
+    },
+    "googleDemarc": {
+     "type": "string",
+     "description": "The Demarc address assigned by Google and provided in the LoA."
+    },
+    "lacpStatus": {
+     "$ref": "InterconnectDiagnosticsLinkLACPStatus"
+    },
+    "receivingOpticalPower": {
+     "$ref": "InterconnectDiagnosticsLinkOpticalPower"
+    },
+    "transmittingOpticalPower": {
+     "$ref": "InterconnectDiagnosticsLinkOpticalPower"
+    }
+   }
+  },
   "InterconnectList": {
    "id": "InterconnectList",
    "type": "object",
@@ -9547,6 +9679,16 @@
       "",
       ""
      ]
+    }
+   }
+  },
+  "InterconnectsGetDiagnosticsResponse": {
+   "id": "InterconnectsGetDiagnosticsResponse",
+   "type": "object",
+   "description": "Response for the InterconnectsGetDiagnosticsRequest.",
+   "properties": {
+    "result": {
+     "$ref": "InterconnectDiagnostics"
     }
    }
   },
@@ -10554,6 +10696,11 @@
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
+    "defaultPort": {
+     "type": "integer",
+     "description": "The default port used if the port number is not specified in the network endpoint.",
+     "format": "int32"
+    },
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
@@ -10570,11 +10717,15 @@
     },
     "loadBalancer": {
      "$ref": "NetworkEndpointGroupLbNetworkEndpointGroup",
-     "description": "This field is only valid when the network endpoint group is used for load balancing."
+     "description": "This field is only valid when the network endpoint group is used for load balancing. [Deprecated] This field is deprecated."
     },
     "name": {
      "type": "string",
      "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash."
+    },
+    "network": {
+     "type": "string",
+     "description": "The URL of the network to which all network endpoints in the NEG belong. Uses \"default\" project network if unspecified."
     },
     "networkEndpointType": {
      "type": "string",
@@ -10594,6 +10745,14 @@
      "type": "integer",
      "description": "[Output only] Number of network endpoints in the network endpoint group.",
      "format": "int32"
+    },
+    "subnetwork": {
+     "type": "string",
+     "description": "Optional URL of the subnetwork to which all network endpoints in the NEG belong."
+    },
+    "zone": {
+     "type": "string",
+     "description": "[Output Only] The URL of the zone where the network endpoint group is located."
     }
    }
   },
@@ -10716,20 +10875,20 @@
    "properties": {
     "defaultPort": {
      "type": "integer",
-     "description": "The default port used if the port number is not specified in the network endpoint.",
+     "description": "The default port used if the port number is not specified in the network endpoint. [Deprecated] This field is deprecated.",
      "format": "int32"
     },
     "network": {
      "type": "string",
-     "description": "The URL of the network to which all network endpoints in the NEG belong. Uses \"default\" project network if unspecified."
+     "description": "The URL of the network to which all network endpoints in the NEG belong. Uses \"default\" project network if unspecified. [Deprecated] This field is deprecated."
     },
     "subnetwork": {
      "type": "string",
-     "description": "Optional URL of the subnetwork to which all network endpoints in the NEG belong."
+     "description": "Optional URL of the subnetwork to which all network endpoints in the NEG belong. [Deprecated] This field is deprecated."
     },
     "zone": {
      "type": "string",
-     "description": "[Output Only] The URL of the zone where the network endpoint group is located."
+     "description": "[Output Only] The URL of the zone where the network endpoint group is located. [Deprecated] This field is deprecated."
     }
    }
   },
@@ -11382,13 +11541,6 @@
     "nodeTemplate": {
      "type": "string",
      "description": "The URL of the node template to which this node group belongs."
-    },
-    "nodes": {
-     "type": "array",
-     "description": "[Deprecated] Use nodeGroups.listNodes instead. [Output Only] A list of nodes in this node group.",
-     "items": {
-      "$ref": "NodeGroupNode"
-     }
     },
     "selfLink": {
      "type": "string",
@@ -14641,120 +14793,6 @@
     }
    }
   },
-  "ResourcePoliciesList": {
-   "id": "ResourcePoliciesList",
-   "type": "object",
-   "properties": {
-    "etag": {
-     "type": "string"
-    },
-    "id": {
-     "type": "string",
-     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
-    },
-    "items": {
-     "type": "array",
-     "description": "[Output Only] A list of ResourcePolicy resources.",
-     "items": {
-      "$ref": "ResourcePolicy"
-     }
-    },
-    "kind": {
-     "type": "string",
-     "description": "[Output Only] Type of resource.Always compute#resourcePoliciesList for listsof resourcePolicies",
-     "default": "compute#resourcePoliciesList"
-    },
-    "nextPageToken": {
-     "type": "string",
-     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
-    },
-    "selfLink": {
-     "type": "string",
-     "description": "[Output Only] Server-defined URL for this resource."
-    },
-    "warning": {
-     "type": "object",
-     "description": "[Output Only] Informational warning message.",
-     "properties": {
-      "code": {
-       "type": "string",
-       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
-       "enum": [
-        "CLEANUP_FAILED",
-        "DEPRECATED_RESOURCE_USED",
-        "DEPRECATED_TYPE_USED",
-        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
-        "EXPERIMENTAL_TYPE_USED",
-        "EXTERNAL_API_WARNING",
-        "FIELD_VALUE_OVERRIDEN",
-        "INJECTED_KERNELS_DEPRECATED",
-        "MISSING_TYPE_DEPENDENCY",
-        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
-        "NEXT_HOP_CANNOT_IP_FORWARD",
-        "NEXT_HOP_INSTANCE_NOT_FOUND",
-        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
-        "NEXT_HOP_NOT_RUNNING",
-        "NOT_CRITICAL_ERROR",
-        "NO_RESULTS_ON_PAGE",
-        "REQUIRED_TOS_AGREEMENT",
-        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
-        "RESOURCE_NOT_DELETED",
-        "SCHEMA_VALIDATION_IGNORED",
-        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
-        "UNDECLARED_PROPERTIES",
-        "UNREACHABLE"
-       ],
-       "enumDescriptions": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-       ]
-      },
-      "data": {
-       "type": "array",
-       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
-       "items": {
-        "type": "object",
-        "properties": {
-         "key": {
-          "type": "string",
-          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
-         },
-         "value": {
-          "type": "string",
-          "description": "[Output Only] A warning data value corresponding to the key."
-         }
-        }
-       }
-      },
-      "message": {
-       "type": "string",
-       "description": "[Output Only] A human-readable description of the warning code."
-      }
-     }
-    }
-   }
-  },
   "ResourcePoliciesScopedList": {
    "id": "ResourcePoliciesScopedList",
    "type": "object",
@@ -15118,6 +15156,120 @@
     "startTime": {
      "type": "string",
      "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-59] GMT."
+    }
+   }
+  },
+  "ResourcePolicyList": {
+   "id": "ResourcePolicyList",
+   "type": "object",
+   "properties": {
+    "etag": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "[Output Only] A list of ResourcePolicy resources.",
+     "items": {
+      "$ref": "ResourcePolicy"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource.Always compute#resourcePoliciesList for listsof resourcePolicies",
+     "default": "compute#resourcePolicyList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
     }
    }
   },
@@ -20059,29 +20211,6 @@
      "items": {
       "type": "string"
      }
-    }
-   }
-  },
-  "UDPHealthCheck": {
-   "id": "UDPHealthCheck",
-   "type": "object",
-   "properties": {
-    "port": {
-     "type": "integer",
-     "description": "The UDP port number for the health check request. Valid values are 1 through 65535.",
-     "format": "int32"
-    },
-    "portName": {
-     "type": "string",
-     "description": "Port name as defined in InstanceGroup#NamedPort#name. If both port and port_name are defined, port takes precedence."
-    },
-    "request": {
-     "type": "string",
-     "description": "Raw data of request to send in payload of UDP packet. It is an error if this is empty. The request data can only be ASCII."
-    },
-    "response": {
-     "type": "string",
-     "description": "The bytes to match against the beginning of the response data. It is an error if this is empty. The response data can only be ASCII."
     }
    }
   },
@@ -28374,7 +28503,7 @@
       },
       "sourceInstanceTemplate": {
        "type": "string",
-       "description": "Specifies instance template to create the instance.\n\nThis field is optional. It can be a full or partial URL. For example, the following are all valid URLs to an instance template:  \n- https://www.googleapis.com/compute/v1/projects/project/global/global/instanceTemplates/instanceTemplate \n- projects/project/global/global/instanceTemplates/instanceTemplate \n- global/instancesTemplates/instanceTemplate",
+       "description": "Specifies instance template to create the instance.\n\nThis field is optional. It can be a full or partial URL. For example, the following are all valid URLs to an instance template:  \n- https://www.googleapis.com/compute/v1/projects/project/global/instanceTemplates/instanceTemplate \n- projects/project/global/instanceTemplates/instanceTemplate \n- global/instanceTemplates/instanceTemplate",
        "location": "query"
       },
       "zone": {
@@ -30092,6 +30221,40 @@
      ],
      "response": {
       "$ref": "Interconnect"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getDiagnostics": {
+     "id": "compute.interconnects.getDiagnostics",
+     "path": "{project}/global/interconnects/{interconnect}/getDiagnostics",
+     "httpMethod": "GET",
+     "description": "Returns the interconnectDiagnostics for the specified interconnect.",
+     "parameters": {
+      "interconnect": {
+       "type": "string",
+       "description": "Name of the interconnect resource to query.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "interconnect"
+     ],
+     "response": {
+      "$ref": "InterconnectsGetDiagnosticsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -35924,7 +36087,7 @@
       "region"
      ],
      "response": {
-      "$ref": "ResourcePoliciesList"
+      "$ref": "ResourcePolicyList"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",

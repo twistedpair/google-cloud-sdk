@@ -2451,6 +2451,13 @@ class ReferenceSet(_messages.Message):
   sourceUri = _messages.StringField(8)
 
 
+class RunPipelineResponse(_messages.Message):
+  r"""The response to the RunPipeline method, returned in the operation's
+  result field on success.
+  """
+
+
+
 class RuntimeMetadata(_messages.Message):
   r"""Runtime metadata that will be populated in the runtimeMetadata field of
   the Operation associated with a RunPipeline execution.

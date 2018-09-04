@@ -146,7 +146,7 @@ ALPHA_ADDONS_OPTIONS = ADDONS_OPTIONS + [SERVERLESS]
 
 UNSPECIFIED = 'UNSPECIFIED'
 SECURE = 'SECURE'
-EXPOSE = 'EXPOSE'
+EXPOSED = 'EXPOSED'
 
 
 def CheckResponse(response):
@@ -1507,10 +1507,7 @@ class APIAdapter(object):
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
 
-    if options.workload_metadata_from_node:
-      node_config.workloadMetadataConfig = self.messages.WorkloadMetadataConfig(
-          nodeMetadata=self.messages.WorkloadMetadataConfig.
-          NodeMetadataValueValuesEnum.SECURE)
+    _AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
 
     if options.sandbox is not None:
       node_config.sandboxConfig = self.messages.SandboxConfig(
@@ -1893,6 +1890,34 @@ class V1Beta1Adapter(V1Adapter):
           self.client.projects_locations_clusters_nodePools.SetManagement(req))
       return self.ParseOperation(operation.name, node_pool_ref.zone)
 
+  def ListUsableSubnets(self, project_ref, network_project, filter_arg):
+    """List usable subnets for a given project.
+
+    Args:
+      project_ref: project where clusters will be created.
+      network_project: project ID where clusters will be created.
+      filter_arg: value of filter flag.
+
+    Returns:
+      Response containing the list of subnetworks and a next page token.
+    """
+    filters = []
+    if network_project is not None:
+      filters.append('networkProjectId=' + network_project)
+
+    if filter_arg is not None:
+      filters.append(filter_arg)
+
+    filters = ' AND '.join(filters)
+
+    req = self.messages.ContainerProjectsAggregatedUsableSubnetworksListRequest(
+        # parent example: 'projects/abc'
+        parent=project_ref.RelativeName(),
+        # max pageSize accepted by GKE
+        pageSize=500,
+        filter=filters)
+    return self.client.projects_aggregated_usableSubnetworks.List(req)
+
 
 class V1Alpha1Adapter(V1Beta1Adapter):
   """APIAdapter for v1alpha1."""
@@ -1989,6 +2014,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       self._AddLocalSSDVolumeConfigsToNodeConfig(pool.config, options)
     if options.enable_autoprovisioning is not None:
       pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
+    if options.node_group is not None:
+      pool.config.nodeGroup = options.node_group
     req = self.messages.CreateNodePoolRequest(
         nodePool=pool,
         parent=ProjectLocationCluster(node_pool_ref.projectId,
@@ -2011,33 +2038,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             resource=ProjectLocationCluster(cluster_ref.projectId,
                                             cluster_ref.zone,
                                             cluster_ref.clusterId)))
-
-  def ListUsableSubnets(self, project_ref, network_project, filter_arg):
-    """List usable subnets for a given project.
-
-    Args:
-      project_ref: project where clusters will be created.
-      network_project: project ID where clusters will be created.
-      filter_arg: value of filter flag.
-    Returns:
-      Response containing the list of subnetworks and a next page token.
-    """
-    filters = []
-    if network_project is not None:
-      filters.append('networkProjectId=' + network_project)
-
-    if filter_arg is not None:
-      filters.append(filter_arg)
-
-    filters = ' AND '.join(filters)
-
-    req = self.messages.ContainerProjectsAggregatedUsableSubnetworksListRequest(
-        # parent example: 'projects/abc'
-        parent=project_ref.RelativeName(),
-        # max pageSize accepted by GKE
-        pageSize=500,
-        filter=filters)
-    return self.client.projects_aggregated_usableSubnetworks.List(req)
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):
@@ -2062,7 +2062,7 @@ def _AddWorkloadMetadataToNodeConfig(node_config, options, messages):
       node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
           nodeMetadata=messages.WorkloadMetadataConfig.
           NodeMetadataValueValuesEnum.SECURE)
-    elif option == EXPOSE:
+    elif option == EXPOSED:
       node_config.workloadMetadataConfig = messages.WorkloadMetadataConfig(
           nodeMetadata=messages.WorkloadMetadataConfig.
           NodeMetadataValueValuesEnum.EXPOSE)

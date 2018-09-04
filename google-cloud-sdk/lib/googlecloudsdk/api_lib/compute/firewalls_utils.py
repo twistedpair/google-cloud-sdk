@@ -55,8 +55,7 @@ class ActionType(enum.Enum):
 def AddCommonArgs(parser,
                   for_update=False,
                   with_egress_support=False,
-                  with_service_account=False,
-                  with_disabled=False):
+                  with_service_account=False):
   """Adds common arguments for firewall create or update subcommands."""
 
   min_length = 0 if for_update else 1
@@ -217,19 +216,17 @@ def AddCommonArgs(parser,
       help=target_tags_help)
 
   disabled_help = """\
-      Use this flag to disable a firewall rule and stop it from being enforced
-      in the network. In the case of disabled firewall rules, the associated
-      network behaves as if the firewall rule did not exist. To enable a
-      disabled rule instead, use:
+      Disable a firewall rule and stop it from being enforced in the network.
+      If a firewall rule is disabled, the associated network behaves as if the
+      rule did not exist. To enable a disabled rule, use:
 
        $ {parent_command} update MY-RULE --no-disabled
 
       """
   if not for_update:
-    disabled_help += """If omitted firewall rule is considered enabled."""
-  if with_disabled:
-    parser.add_argument(
-        '--disabled', action='store_true', default=None, help=disabled_help)
+    disabled_help += """Firewall rules are enabled by default."""
+  parser.add_argument(
+      '--disabled', action='store_true', default=None, help=disabled_help)
 
   # Add egress deny firewall cli support.
   if with_egress_support:

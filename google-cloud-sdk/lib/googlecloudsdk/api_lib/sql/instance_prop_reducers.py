@@ -51,16 +51,16 @@ def BackupConfiguration(sql_messages,
   Raises:
     ToolException: Bad combination of arguments.
   """
-  no_backup_enabled = no_backup or backup is False
+  backup_enabled = no_backup is False or backup
   should_generate_config = any(
-      [backup_start_time, enable_bin_log is not None, no_backup_enabled])
+      [backup_start_time, enable_bin_log is not None, not backup_enabled])
 
   # TODO(b/63139210): Remove v1beta3-related logic -- isinstance(..., list).
   if not should_generate_config:
     return None
   elif not instance or not instance.settings.backupConfiguration:
     backup_config = sql_messages.BackupConfiguration(
-        startTime='00:00', enabled=False)
+        startTime='00:00', enabled=backup_enabled)
   elif isinstance(instance.settings.backupConfiguration, list):
     # Only one backup configuration was ever allowed.
     # Field switched from list to single object in v1beta4.

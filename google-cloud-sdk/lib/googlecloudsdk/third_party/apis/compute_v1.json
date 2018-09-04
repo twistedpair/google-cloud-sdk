@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20180813",
+ "revision": "20180828",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2859,10 +2859,6 @@
    "type": "object",
    "description": "Represents a customer-supplied encryption key",
    "properties": {
-    "kmsKeyName": {
-     "type": "string",
-     "description": "The name of the encryption key that is stored in Google Cloud KMS."
-    },
     "rawKey": {
      "type": "string",
      "description": "Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource."
@@ -24586,7 +24582,7 @@
       },
       "sourceInstanceTemplate": {
        "type": "string",
-       "description": "Specifies instance template to create the instance.\n\nThis field is optional. It can be a full or partial URL. For example, the following are all valid URLs to an instance template:  \n- https://www.googleapis.com/compute/v1/projects/project/global/global/instanceTemplates/instanceTemplate \n- projects/project/global/global/instanceTemplates/instanceTemplate \n- global/instancesTemplates/instanceTemplate",
+       "description": "Specifies instance template to create the instance.\n\nThis field is optional. It can be a full or partial URL. For example, the following are all valid URLs to an instance template:  \n- https://www.googleapis.com/compute/v1/projects/project/global/instanceTemplates/instanceTemplate \n- projects/project/global/instanceTemplates/instanceTemplate \n- global/instanceTemplates/instanceTemplate",
        "location": "query"
       },
       "zone": {

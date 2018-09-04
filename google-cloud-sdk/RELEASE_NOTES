@@ -5,6 +5,67 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 215.0.0 (2018-09-04)
+
+### Breaking Changes
+
+*   **(Cloud SQL)** Removed the default value of the `--database-version` flag of `gcloud sql
+  instances create`, allowing the API to select the value.
+
+
+### App Engine
+
+* Added python 3 support for gcloud app and gcloud domains.
+* Added the `--no-cache` flag to `gcloud beta app deploy` for
+  [Second Generation runtimes](/appengine/docs/standard/appengine-generation),
+  to disable the build cache during deployment.
+* Updated the Python SDK to version 1.9.75.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20180823 release.
+  Released changes are documented in its tracking issue at
+      [https://github.com/googledatalab/datalab/issues/2068](https://github.com/googledatalab/datalab/issues/2068).
+
+### Cloud Dataproc
+
+* Fixed an issue preventing the creation of clusters with SSD in GA.
+
+### Cloud Firestore
+
+* Added `gcloud beta firestore` and `gcloud beta firestore operations` for
+  managing cloud firestore imports and exports.
+
+### Cloud Functions
+
+* Added --service-account flag to gcloud alpha functions deploy.
+
+### Cloud PubSub
+
+*   Promoted Snapshot & Seek features to beta. These features allow users to
+    create snapshots of subscription backlog state, and later restore that
+    state.
+
+### Cloud SQL
+
+* Fixed a bug preventing `--backup` and `--enable-bin-log` flags from being sent together when using the `gcloud sql instances create` command.
+
+### Compute Engine
+
+* Promoted `--internal-ip` flag of `gcloud compute scp` to beta.
+* Promoted `--disabled` flag of `gcloud compute firewall-rules` to GA.
+
+### Kubernetes Engine
+
+* Promote `gcloud alpha container subnets list-usable` to Beta.
+* Add `secondaryIpRanges` to the output of `gcloud beta container subnets list-usable`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 214.0.0 (2018-08-28)
 
 ### Breaking Changes
@@ -58,7 +119,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     *   `--network-tier` of `gcloud compute instances <add-access-config|create>`
     *   `--network-tier` of `gcloud compute instance-templates create`
 *   Promoted `gcloud compute instances simulate-maintenance-event` to GA.
-*   Promoted `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to
+*   Promoted `\<get|set\>-iam-policy` and `\<add|remove\>-iam-policy-bindings` to
     beta in the following commands groups:
     * `gcloud compute sole-tenancy node-groups`
     * `gcloud compute sole-tenancy node-templates`
@@ -295,7 +356,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 *   Promoted `--zones` flag of `gcloud compute instance-groups managed create` command to GA.
-*   Promoted `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to
+*   Promoted `\<get|set\>-iam-policy` and `\<add|remove\>-iam-policy-bindings` to
     beta in the following commands groups:
     *   `gcloud compute disks`
     *   `gcloud compute images`

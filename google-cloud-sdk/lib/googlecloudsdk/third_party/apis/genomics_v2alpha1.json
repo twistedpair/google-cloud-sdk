@@ -377,7 +377,7 @@
           "type": "string"
         },
         "cipherText": {
-          "description": "The value of the cipherText response from the `encrypt` method.",
+          "description": "The value of the cipherText response from the `encrypt` method. This field\nis intentionally unaudited.",
           "type": "string"
         }
       }
@@ -1004,6 +1004,13 @@
           "description": "The URI of the image that was pulled.",
           "type": "string"
         }
+      }
+    },
+    "RunPipelineResponse": {
+      "id": "RunPipelineResponse",
+      "description": "The response to the RunPipeline method, returned in the operation's result\nfield on success.",
+      "type": "object",
+      "properties": {
       }
     },
     "UnexpectedExitStatusEvent": {

@@ -18,21 +18,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
-
-# TODO(b/111069150): Add a single test for this file.
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
   """Raises when no arguments specified for update commands."""
 
 
-def GetMaskString(args, spec):
+def GetMaskString(args, spec, mask_path, is_dotted=True):
   """Gets the fieldMask that is required for update api calls.
 
   Args:
     args: The argparse parser.
     spec: The CommandData class.
+    mask_path: string, the dotted path of mask in the api method
+    is_dotted: Boolean, True if the dotted path of the name is returned.
 
   Returns:
     A String, represents a mask specifying which fields in the resource should
@@ -51,9 +52,79 @@ def GetMaskString(args, spec):
   for param in params_in_spec:
     if ('--' + param.arg_name in specified_args_list or
         param.arg_name in specified_args_list):
-      # Field name would be the string after the last dot.
-      # Example: instance.displayName -> displayName
-      api_field_name = param.api_field.split('.')[-1]
+      api_field_name = _ExtractMaskField(mask_path, param.api_field, is_dotted)
       field_list.append(api_field_name)
-  field_list.sort()  # Sort the list for better testing purpose.
-  return ','.join(field_list)
+
+  # Removes the duplicates and sorts the list for better testing.
+  trimmed_field_list = sorted(set(field_list))
+  mask = ','.join(trimmed_field_list)
+
+  return mask
+
+
+def _ExtractMaskField(mask_path, api_field, is_dotted):
+  """Extracts the api field name which constructs the mask used for request.
+
+  For most update requests, you have to specify which fields in the resource
+  should be updated. This information is stored as updateMask or fieldMask.
+  Because resource and mask are in the same path level in a request, this
+  function uses the mask_path as the guideline to extract the fields need to be
+  parsed in the mask.
+
+  Args:
+    mask_path: string, the dotted path of mask in an api method, e.g. updateMask
+      or updateRequest.fieldMask. The mask and the resource would always be in
+      the same level in a request.
+    api_field: string, the api field name in the resource to be updated and it
+      is specified in the YAML files, e.g. displayName or
+      updateRequest.instance.displayName.
+    is_dotted: Boolean, True if the dotted path of the name is returned.
+
+  Returns:
+    String, the field name of the resource to be updated..
+
+  """
+  level = len(mask_path.split('.'))
+  api_field_list = api_field.split('.')
+  if is_dotted:
+    if 'additionalProperties' in api_field_list:
+      repeated_index = api_field_list.index('additionalProperties')
+      api_field_list = api_field_list[:repeated_index]
+
+    return '.'.join(api_field_list[level:])
+  else:
+    return api_field_list[level]
+
+
+def GetMaskFieldPath(method):
+  """Gets the dotted path of mask in the api method.
+
+  Args:
+    method: APIMethod, The method specification.
+
+  Returns:
+    String or None.
+  """
+  possible_mask_fields = ('updateMask', 'fieldMask')
+  message = method.GetRequestType()()
+
+  # If the mask field is found in the request message of the method, return
+  # the mask name directly, e.g, updateMask
+  for mask in possible_mask_fields:
+    if hasattr(message, mask):
+      return mask
+
+  # If the mask field is found in the request field message, return the
+  # request field and the mask name, e.g, updateRequest.fieldMask.
+  if method.request_field:
+    request_field = method.request_field
+    request_message = None
+    if hasattr(message, request_field):
+      request_message = arg_utils.GetFieldFromMessage(message,
+                                                      request_field).type
+
+    for mask in possible_mask_fields:
+      if hasattr(request_message, mask):
+        return '{}.{}'.format(request_field, mask)
+
+  return None

@@ -7017,10 +7017,10 @@ class ComputeInstancesInsertRequest(_messages.Message):
     sourceInstanceTemplate: Specifies instance template to create the
       instance.  This field is optional. It can be a full or partial URL. For
       example, the following are all valid URLs to an instance template:   - h
-      ttps://www.googleapis.com/compute/v1/projects/project/global/global/inst
-      anceTemplates/instanceTemplate  -
-      projects/project/global/global/instanceTemplates/instanceTemplate  -
-      global/instancesTemplates/instanceTemplate
+      ttps://www.googleapis.com/compute/v1/projects/project/global/instanceTem
+      plates/instanceTemplate  -
+      projects/project/global/instanceTemplates/instanceTemplate  -
+      global/instanceTemplates/instanceTemplate
     zone: The name of the zone for this request.
   """
 
@@ -13761,17 +13761,14 @@ class CustomerEncryptionKey(_messages.Message):
   r"""Represents a customer-supplied encryption key
 
   Fields:
-    kmsKeyName: The name of the encryption key that is stored in Google Cloud
-      KMS.
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
       RFC 4648 base64 to either encrypt or decrypt this resource.
     sha256: [Output only] The RFC 4648 base64 encoded SHA-256 hash of the
       customer-supplied encryption key that protects this resource.
   """
 
-  kmsKeyName = _messages.StringField(1)
-  rawKey = _messages.StringField(2)
-  sha256 = _messages.StringField(3)
+  rawKey = _messages.StringField(1)
+  sha256 = _messages.StringField(2)
 
 
 class CustomerEncryptionKeyProtectedDisk(_messages.Message):

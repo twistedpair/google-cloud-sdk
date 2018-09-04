@@ -980,6 +980,13 @@
         }
       }
     },
+    "RunPipelineResponse": {
+      "id": "RunPipelineResponse",
+      "description": "The response to the RunPipeline method, returned in the operation's result\nfield on success.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "UnexpectedExitStatusEvent": {
       "id": "UnexpectedExitStatusEvent",
       "description": "An event generated when the execution of a container results in a\nnon-zero exit status that was not otherwise ignored. Execution will\ncontinue, but only actions that are flagged as `ALWAYS_RUN` will be\nexecuted. Other actions will be skipped.",

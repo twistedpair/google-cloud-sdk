@@ -212,6 +212,33 @@ class ContainerV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ReplaceNodePool(self, request, global_params=None):
+      r"""Updates the existing node pool to the provided node pool.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersNodePoolsReplaceNodePoolRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceNodePool')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceNodePool.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
+        http_method=u'PUT',
+        method_id=u'container.projects.locations.clusters.nodePools.replaceNodePool',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'replaceNodePoolRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsReplaceNodePoolRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Rollback(self, request, global_params=None):
       r"""Roll back the previously Aborted or Failed NodePool upgrade.
 This will be an no-op if the last upgrade successfully completed.
@@ -511,6 +538,33 @@ zones.
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersListRequest',
         response_type_name=u'ListClustersResponse',
+        supports_download=False,
+    )
+
+    def ReplaceCluster(self, request, global_params=None):
+      r"""Updates the existing cluster to the provided cluster.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersReplaceClusterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceCluster')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceCluster.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
+        http_method=u'PUT',
+        method_id=u'container.projects.locations.clusters.replaceCluster',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'replaceClusterRequest',
+        request_type_name=u'ContainerProjectsLocationsClustersReplaceClusterRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 

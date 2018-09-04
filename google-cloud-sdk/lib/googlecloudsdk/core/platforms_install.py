@@ -14,11 +14,15 @@
 # limitations under the License.
 
 """Utilities for configuring platform specific installation."""
+# This file contains platform specific code which is not currently handled
+# by pytype.
+# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
+
 import os
 import re
 import shutil

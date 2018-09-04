@@ -204,14 +204,19 @@ class BigtableadminProjectsInstancesAppProfilesListRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesAppProfilesListRequest object.
 
   Fields:
+    pageSize: Maximum number of results per page. CURRENTLY UNIMPLEMENTED AND
+      IGNORED.
     pageToken: The value of `next_page_token` returned by a previous call.
     parent: The unique name of the instance for which a list of app profiles
       is requested. Values are of the form
-      `projects/<project>/instances/<instance>`.
+      `projects/<project>/instances/<instance>`. Use `<instance> = '-'` to
+      list AppProfiles for all Instances in a project, e.g.,
+      `projects/myproject/instances/-`.
   """
 
-  pageToken = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class BigtableadminProjectsInstancesAppProfilesPatchRequest(_messages.Message):
@@ -277,7 +282,7 @@ class BigtableadminProjectsInstancesClustersListRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesClustersListRequest object.
 
   Fields:
-    pageToken: The value of `next_page_token` returned by a previous call.
+    pageToken: DEPRECATED: This field is unused and ignored.
     parent: The unique name of the instance for which a list of clusters is
       requested. Values are of the form
       `projects/<project>/instances/<instance>`. Use `<instance> = '-'` to
@@ -330,7 +335,7 @@ class BigtableadminProjectsInstancesListRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesListRequest object.
 
   Fields:
-    pageToken: The value of `next_page_token` returned by a previous call.
+    pageToken: DEPRECATED: This field is unused and ignored.
     parent: The unique name of the project for which a list of instances is
       requested. Values are of the form `projects/<project>`.
   """
@@ -485,6 +490,8 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
       supported.
 
   Fields:
+    pageSize: Maximum number of results per page. CURRENTLY UNIMPLEMENTED AND
+      IGNORED.
     pageToken: The value of `next_page_token` returned by a previous call.
     parent: The unique name of the instance for which tables should be listed.
       Values are of the form `projects/<project>/instances/<instance>`.
@@ -509,9 +516,10 @@ class BigtableadminProjectsInstancesTablesListRequest(_messages.Message):
     REPLICATION_VIEW = 3
     FULL = 4
 
-  pageToken = _messages.StringField(1)
-  parent = _messages.StringField(2, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 3)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
 
 
 class BigtableadminProjectsInstancesTablesModifyColumnFamiliesRequest(_messages.Message):
@@ -1076,13 +1084,18 @@ class ListAppProfilesResponse(_messages.Message):
 
   Fields:
     appProfiles: The list of requested app profiles.
+    failedLocations: Locations from which AppProfile information could not be
+      retrieved, due to an outage or some other transient condition.
+      AppProfiles from these locations may be missing from `app_profiles`.
+      Values are of the form `projects/<project>/locations/<zone_id>`
     nextPageToken: Set if not all app profiles could be returned in a single
       response. Pass this value to `page_token` in another request to get the
       next page of results.
   """
 
   appProfiles = _messages.MessageField('AppProfile', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
+  failedLocations = _messages.StringField(2, repeated=True)
+  nextPageToken = _messages.StringField(3)
 
 
 class ListClustersResponse(_messages.Message):
@@ -1093,10 +1106,9 @@ class ListClustersResponse(_messages.Message):
     failedLocations: Locations from which Cluster information could not be
       retrieved, due to an outage or some other transient condition. Clusters
       from these locations may be missing from `clusters`, or may only have
-      partial information returned.
-    nextPageToken: Set if not all clusters could be returned in a single
-      response. Pass this value to `page_token` in another request to get the
-      next page of results.
+      partial information returned. Values are of the form
+      `projects/<project>/locations/<zone_id>`
+    nextPageToken: DEPRECATED: This field is unused and ignored.
   """
 
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
@@ -1112,11 +1124,10 @@ class ListInstancesResponse(_messages.Message):
       retrieved, due to an outage or some other transient condition. Instances
       whose Clusters are all in one of the failed locations may be missing
       from `instances`, and Instances with at least one Cluster in a failed
-      location may only have partial information returned.
+      location may only have partial information returned. Values are of the
+      form `projects/<project>/locations/<zone_id>`
     instances: The list of requested instances.
-    nextPageToken: Set if not all instances could be returned in a single
-      response. Pass this value to `page_token` in another request to get the
-      next page of results.
+    nextPageToken: DEPRECATED: This field is unused and ignored.
   """
 
   failedLocations = _messages.StringField(1, repeated=True)

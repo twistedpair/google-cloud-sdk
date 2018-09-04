@@ -98,6 +98,11 @@ class Instance(_messages.Message):
       which specific zone (or collection of zones for cross zone instances) an
       instance should be provisioned in. Refer to [location_id] and
       [alternative_location_id] fields for more details.
+    persistenceIamIdentity: Output only. IAM identity used by import / export
+      operations to transfer data to/from GCS.  Format is
+      "serviceAccount:<service_account_email>".  The value may change over
+      time for a given instance so should be checked before each import/export
+      operation.
     port: Output only. The port number of the exposed redis endpoint.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
@@ -133,7 +138,6 @@ class Instance(_messages.Message):
         instance.
       IMPORTING: Redis instance is importing data (availability may be
         affected).
-      EXPORTING: Redis instance is exporting data.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -143,7 +147,6 @@ class Instance(_messages.Message):
     REPAIRING = 5
     PERFORMING_MAINTENANCE = 6
     IMPORTING = 7
-    EXPORTING = 8
 
   class TierValueValuesEnum(_messages.Enum):
     r"""Required. The service tier of the instance.
@@ -219,13 +222,14 @@ class Instance(_messages.Message):
   locationId = _messages.StringField(8)
   memorySizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
   name = _messages.StringField(10)
-  port = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 12)
-  redisVersion = _messages.StringField(13)
-  reservedIpRange = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  statusMessage = _messages.StringField(16)
-  tier = _messages.EnumField('TierValueValuesEnum', 17)
+  persistenceIamIdentity = _messages.StringField(11)
+  port = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 13)
+  redisVersion = _messages.StringField(14)
+  reservedIpRange = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  statusMessage = _messages.StringField(17)
+  tier = _messages.EnumField('TierValueValuesEnum', 18)
 
 
 class ListInstancesResponse(_messages.Message):

@@ -354,6 +354,7 @@ class ServiceDeployer(object):
              image,
              all_services,
              gcr_domain,
+             disable_build_cache,
              flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     """Deploy the given service.
 
@@ -379,6 +380,7 @@ class ServiceDeployer(object):
         promote this version to receive all traffic, if applicable).
       gcr_domain: str, Cloud Registry domain, determines the physical location
         of the image. E.g. `us.gcr.io`.
+      disable_build_cache: bool, disable the build cache.
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
         should upload files so that the server can build the image or build the
         image on client.
@@ -399,6 +401,8 @@ class ServiceDeployer(object):
                                          code_bucket_ref,
                                          flex_image_build_option)
     extra_config_settings = {}
+    if disable_build_cache:
+      extra_config_settings['no-cache'] = 'true'
 
     # Actually create the new version of the service.
     metrics.CustomTimedEvent(metric_names.DEPLOY_API_START)
@@ -499,7 +503,8 @@ def RunDeploy(
     use_beta_stager=False,
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     parallel_build=True,
-    flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
+    flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
+    disable_build_cache=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -517,6 +522,7 @@ def RunDeploy(
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
       should upload files so that the server can build the image or build the
       image on client.
+    disable_build_cache: bool, disable the build cache.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -595,6 +601,7 @@ def RunDeploy(
           args.image_url,
           all_services,
           app.gcrDomain,
+          disable_build_cache=disable_build_cache,
           flex_image_build_option=flex_image_build_option)
       new_versions.append(new_version)
       log.status.Print('Deployed service [{0}] to [{1}]'.format(
