@@ -9106,14 +9106,16 @@ class ComputeInstancesGetGuestAttributesRequest(_messages.Message):
   Fields:
     instance: Name of the instance scoping this request.
     project: Project ID for this request.
+    queryPath: Specifies the guest attributes path to be queried.
     variableKey: Specifies the key for the guest attributes entry.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  variableKey = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
+  queryPath = _messages.StringField(3)
+  variableKey = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesGetIamPolicyRequest(_messages.Message):
@@ -9164,6 +9166,20 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   start = _messages.IntegerField(4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstancesGetShieldedVmIdentityRequest(_messages.Message):
+  r"""A ComputeInstancesGetShieldedVmIdentityRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
 
 
 class ComputeInstancesInsertRequest(_messages.Message):
@@ -21127,12 +21143,13 @@ class ForwardingRule(_messages.Message):
       only. A global forwarding rule supports either IPv4 or IPv6.  When the
       load balancing scheme is INTERNAL_SELF_MANAGED, this must be a URL
       reference to an existing Address resource ( internal regional static IP
-      address).  When the load balancing scheme is INTERNAL, this can only be
-      an RFC 1918 IP address belonging to the network/subnet configured for
-      the forwarding rule. By default, if this field is empty, an ephemeral
-      internal IP address will be automatically allocated from the IP range of
-      the subnet or network configured for this forwarding rule.  An address
-      can be specified either by a literal IP address or a URL reference to an
+      address), with a purpose of GCE_END_POINT and address_type of INTERNAL.
+      When the load balancing scheme is INTERNAL, this can only be an RFC 1918
+      IP address belonging to the network/subnet configured for the forwarding
+      rule. By default, if this field is empty, an ephemeral internal IP
+      address will be automatically allocated from the IP range of the subnet
+      or network configured for this forwarding rule.  An address can be
+      specified either by a literal IP address or a URL reference to an
       existing Address resource. The following examples are all valid:   -
       100.1.2.3  - https://www.googleapis.com/compute/v1/projects/project/regi
       ons/region/addresses/address  -
@@ -21868,15 +21885,44 @@ class GuestAttributes(_messages.Message):
   Fields:
     kind: [Output Only] Type of the resource. Always compute#guestAttributes
       for guest attributes entry.
+    queryPath: The path to be queried. This can be the default namespace ('/')
+      or a nested namespace ('//') or a specified key ('//')
+    queryValue: [Output Only] The value of the requested queried path.
     selfLink: [Output Only] Server-defined URL for this resource.
     variableKey: The key to search for.
     variableValue: [Output Only] The value found for the requested key.
   """
 
   kind = _messages.StringField(1, default=u'compute#guestAttributes')
-  selfLink = _messages.StringField(2)
-  variableKey = _messages.StringField(3)
-  variableValue = _messages.StringField(4)
+  queryPath = _messages.StringField(2)
+  queryValue = _messages.MessageField('GuestAttributesValue', 3)
+  selfLink = _messages.StringField(4)
+  variableKey = _messages.StringField(5)
+  variableValue = _messages.StringField(6)
+
+
+class GuestAttributesEntry(_messages.Message):
+  r"""A guest attributes namespace/key/value entry.
+
+  Fields:
+    key: Key for the guest attribute entry.
+    namespace: Namespace for the guest attribute entry.
+    value: Value for the guest attribute entry.
+  """
+
+  key = _messages.StringField(1)
+  namespace = _messages.StringField(2)
+  value = _messages.StringField(3)
+
+
+class GuestAttributesValue(_messages.Message):
+  r"""Array of guest attribute namespace/key/value tuples.
+
+  Fields:
+    items: A GuestAttributesEntry attribute.
+  """
+
+  items = _messages.MessageField('GuestAttributesEntry', 1, repeated=True)
 
 
 class GuestOsFeature(_messages.Message):
@@ -28487,10 +28533,10 @@ class MachineImage(_messages.Message):
       cannot be a dash.
     selfLink: [Output Only] The URL for this machine image. The server defines
       this URL.
-    sourceInstance: The source instance used to create the template. You can
-      provide this as a partial or full URL to the resource. For example, the
-      following are valid values:   - https://www.googleapis.com/compute/v1/pr
-      ojects/project/zones/zone/instances/instance  -
+    sourceInstance: The source instance used to create the machine image. You
+      can provide this as a partial or full URL to the resource. For example,
+      the following are valid values:   - https://www.googleapis.com/compute/v
+      1/projects/project/zones/zone/instances/instance  -
       projects/project/zones/zone/instances/instance
     sourceInstanceProperties: A SourceInstanceProperties attribute.
     status: [Output Only] The status of disk creation.
@@ -33043,6 +33089,7 @@ class Quota(_messages.Message):
       DISKS_TOTAL_GB: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
+      GLOBAL_INTERNAL_ADDRESSES: <no description>
       GPUS_ALL_REGIONS: <no description>
       HEALTH_CHECKS: <no description>
       IMAGES: <no description>
@@ -33108,60 +33155,61 @@ class Quota(_messages.Message):
     DISKS_TOTAL_GB = 7
     FIREWALLS = 8
     FORWARDING_RULES = 9
-    GPUS_ALL_REGIONS = 10
-    HEALTH_CHECKS = 11
-    IMAGES = 12
-    INSTANCES = 13
-    INSTANCE_GROUPS = 14
-    INSTANCE_GROUP_MANAGERS = 15
-    INSTANCE_TEMPLATES = 16
-    INTERCONNECTS = 17
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 18
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 19
-    INTERNAL_ADDRESSES = 20
-    IN_USE_ADDRESSES = 21
-    IN_USE_BACKUP_SCHEDULES = 22
-    IN_USE_MAINTENANCE_WINDOWS = 23
-    LOCAL_SSD_TOTAL_GB = 24
-    MACHINE_IMAGES = 25
-    NETWORKS = 26
-    NETWORK_ENDPOINT_GROUPS = 27
-    NVIDIA_K80_GPUS = 28
-    NVIDIA_P100_GPUS = 29
-    NVIDIA_P100_VWS_GPUS = 30
-    NVIDIA_P4_GPUS = 31
-    NVIDIA_P4_VWS_GPUS = 32
-    NVIDIA_V100_GPUS = 33
-    PREEMPTIBLE_CPUS = 34
-    PREEMPTIBLE_LOCAL_SSD_GB = 35
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 36
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 37
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 38
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 39
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 40
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 41
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 42
-    REGIONAL_AUTOSCALERS = 43
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 44
-    RESOURCE_POLICIES = 45
-    ROUTERS = 46
-    ROUTES = 47
-    SECURITY_POLICIES = 48
-    SECURITY_POLICY_RULES = 49
-    SNAPSHOTS = 50
-    SSD_TOTAL_GB = 51
-    SSL_CERTIFICATES = 52
-    STATIC_ADDRESSES = 53
-    SUBNETWORKS = 54
-    TARGET_HTTPS_PROXIES = 55
-    TARGET_HTTP_PROXIES = 56
-    TARGET_INSTANCES = 57
-    TARGET_POOLS = 58
-    TARGET_SSL_PROXIES = 59
-    TARGET_TCP_PROXIES = 60
-    TARGET_VPN_GATEWAYS = 61
-    URL_MAPS = 62
-    VPN_TUNNELS = 63
+    GLOBAL_INTERNAL_ADDRESSES = 10
+    GPUS_ALL_REGIONS = 11
+    HEALTH_CHECKS = 12
+    IMAGES = 13
+    INSTANCES = 14
+    INSTANCE_GROUPS = 15
+    INSTANCE_GROUP_MANAGERS = 16
+    INSTANCE_TEMPLATES = 17
+    INTERCONNECTS = 18
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 19
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 20
+    INTERNAL_ADDRESSES = 21
+    IN_USE_ADDRESSES = 22
+    IN_USE_BACKUP_SCHEDULES = 23
+    IN_USE_MAINTENANCE_WINDOWS = 24
+    LOCAL_SSD_TOTAL_GB = 25
+    MACHINE_IMAGES = 26
+    NETWORKS = 27
+    NETWORK_ENDPOINT_GROUPS = 28
+    NVIDIA_K80_GPUS = 29
+    NVIDIA_P100_GPUS = 30
+    NVIDIA_P100_VWS_GPUS = 31
+    NVIDIA_P4_GPUS = 32
+    NVIDIA_P4_VWS_GPUS = 33
+    NVIDIA_V100_GPUS = 34
+    PREEMPTIBLE_CPUS = 35
+    PREEMPTIBLE_LOCAL_SSD_GB = 36
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 37
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 38
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 39
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 40
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 41
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 42
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 43
+    REGIONAL_AUTOSCALERS = 44
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 45
+    RESOURCE_POLICIES = 46
+    ROUTERS = 47
+    ROUTES = 48
+    SECURITY_POLICIES = 49
+    SECURITY_POLICY_RULES = 50
+    SNAPSHOTS = 51
+    SSD_TOTAL_GB = 52
+    SSL_CERTIFICATES = 53
+    STATIC_ADDRESSES = 54
+    SUBNETWORKS = 55
+    TARGET_HTTPS_PROXIES = 56
+    TARGET_HTTP_PROXIES = 57
+    TARGET_INSTANCES = 58
+    TARGET_POOLS = 59
+    TARGET_SSL_PROXIES = 60
+    TARGET_TCP_PROXIES = 61
+    TARGET_VPN_GATEWAYS = 62
+    URL_MAPS = 63
+    VPN_TUNNELS = 64
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -36466,7 +36514,7 @@ class SavedAttachedDisk(_messages.Message):
       when you attach the disk to a virtual machine instance.  If you do not
       provide an encryption key, then the disk will be encrypted using an
       automatically generated key and you do not need to provide a key to use
-      the disk later.  Instance templates do not store customer-supplied
+      the disk later.  Machine Images do not store customer-supplied
       encryption keys, so you cannot use your own keys to encrypt disks in a
       managed instance group.
     diskSizeGb: The size of the disk in base-2 GB. This supersedes
@@ -36503,7 +36551,7 @@ class SavedAttachedDisk(_messages.Message):
       initializeParams.sourceImage or disks.source is required except for
       local SSD.  If desired, you can also attach existing non-root persistent
       disks using this property. This field is only applicable for persistent
-      disks.  Note that for InstanceTemplate, specify the disk name, not the
+      disks.  Note that for sourceMachineImage, specify the disk name, not the
       URL for the disk.
     storageBytes: [Output Only] A size of the storage used by the disk's
       snapshot.
@@ -37071,6 +37119,33 @@ class ShieldedVmConfig(_messages.Message):
   enableVtpm = _messages.BooleanField(3)
 
 
+class ShieldedVmIdentity(_messages.Message):
+  r"""A shielded VM identity entry.
+
+  Fields:
+    encryptionKey: A ShieldedVmIdentityEntry attribute.
+    kind: [Output Only] Type of the resource. Always
+      compute#shieldedVmIdentity for shielded VM identity entry.
+    signingKey: A ShieldedVmIdentityEntry attribute.
+  """
+
+  encryptionKey = _messages.MessageField('ShieldedVmIdentityEntry', 1)
+  kind = _messages.StringField(2, default=u'compute#shieldedVmIdentity')
+  signingKey = _messages.MessageField('ShieldedVmIdentityEntry', 3)
+
+
+class ShieldedVmIdentityEntry(_messages.Message):
+  r"""A Shielded VM Identity Entry.
+
+  Fields:
+    ekCert: A string attribute.
+    ekPub: A string attribute.
+  """
+
+  ekCert = _messages.StringField(1)
+  ekPub = _messages.StringField(2)
+
+
 class ShieldedVmIntegrityPolicy(_messages.Message):
   r"""The policy describes the baseline against which VM instance boot
   integrity is measured.
@@ -37406,11 +37481,11 @@ class SourceInstanceProperties(_messages.Message):
 
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
-      template.
+      machine image.
 
   Fields:
-    canIpForward: Enables instances created based on this template to send
-      packets with source IP addresses other than their own and receive
+    canIpForward: Enables instances created based on this machine image to
+      send packets with source IP addresses other than their own and receive
       packets with destination IP addresses other than their own. If these
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
@@ -37418,17 +37493,18 @@ class SourceInstanceProperties(_messages.Message):
     deletionProtection: Whether the resource should be protected against
       deletion.
     description: An optional text description for the instances that are
-      created from this instance template.
+      created from this machine image.
     disks: An array of disks that are associated with the instances that are
-      created from this template.
+      created from this machine image.
     guestAccelerators: A list of guest accelerator cards' type and count to
-      use for instances created from the instance template.
-    labels: Labels to apply to instances that are created from this template.
+      use for instances created from the machine image.
+    labels: Labels to apply to instances that are created from this machine
+      image.
     machineType: The machine type to use for instances that are created from
-      this template.
+      this machine image.
     metadata: The metadata key/value pairs to assign to instances that are
-      created from this template. These pairs can consist of custom metadata
-      or predefined keys. See Project and instance metadata for more
+      created from this machine image. These pairs can consist of custom
+      metadata or predefined keys. See Project and instance metadata for more
       information.
     minCpuPlatform: Minimum cpu/platform to be used by this instance. The
       instance may be scheduled on the specified or newer cpu/platform.
@@ -37438,20 +37514,20 @@ class SourceInstanceProperties(_messages.Message):
     networkInterfaces: An array of network access configurations for this
       interface.
     scheduling: Specifies the scheduling options for the instances that are
-      created from this template.
+      created from this machine image.
     serviceAccounts: A list of service accounts with specified scopes. Access
       tokens for these service accounts are available to the instances that
-      are created from this template. Use metadata queries to obtain the
+      are created from this machine image. Use metadata queries to obtain the
       access tokens for these instances.
     tags: A list of tags to apply to the instances that are created from this
-      template. The tags identify valid sources or targets for network
+      machine image. The tags identify valid sources or targets for network
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to instances that are created from this template.
+    r"""Labels to apply to instances that are created from this machine image.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

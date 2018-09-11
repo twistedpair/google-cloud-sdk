@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20180828",
+ "revision": "20180904",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -5207,7 +5207,7 @@
    "properties": {
     "IPAddress": {
      "type": "string",
-     "description": "The IP address that this forwarding rule is serving on behalf of.\n\nAddresses are restricted based on the forwarding rule's load balancing scheme (EXTERNAL or INTERNAL) and scope (global or regional).\n\nWhen the load balancing scheme is EXTERNAL, for global forwarding rules, the address must be a global IP, and for regional forwarding rules, the address must live in the same region as the forwarding rule. If this field is empty, an ephemeral IPv4 address from the same scope (global or regional) will be assigned. A regional forwarding rule supports IPv4 only. A global forwarding rule supports either IPv4 or IPv6.\n\nWhen the load balancing scheme is INTERNAL_SELF_MANAGED, this must be a URL reference to an existing Address resource ( internal regional static IP address).\n\nWhen the load balancing scheme is INTERNAL, this can only be an RFC 1918 IP address belonging to the network/subnet configured for the forwarding rule. By default, if this field is empty, an ephemeral internal IP address will be automatically allocated from the IP range of the subnet or network configured for this forwarding rule.\n\nAn address can be specified either by a literal IP address or a URL reference to an existing Address resource. The following examples are all valid:  \n- 100.1.2.3 \n- https://www.googleapis.com/compute/v1/projects/project/regions/region/addresses/address \n- projects/project/regions/region/addresses/address \n- regions/region/addresses/address \n- global/addresses/address \n- address"
+     "description": "The IP address that this forwarding rule is serving on behalf of.\n\nAddresses are restricted based on the forwarding rule's load balancing scheme (EXTERNAL or INTERNAL) and scope (global or regional).\n\nWhen the load balancing scheme is EXTERNAL, for global forwarding rules, the address must be a global IP, and for regional forwarding rules, the address must live in the same region as the forwarding rule. If this field is empty, an ephemeral IPv4 address from the same scope (global or regional) will be assigned. A regional forwarding rule supports IPv4 only. A global forwarding rule supports either IPv4 or IPv6.\n\nWhen the load balancing scheme is INTERNAL_SELF_MANAGED, this must be a URL reference to an existing Address resource ( internal regional static IP address), with a purpose of GCE_END_POINT and address_type of INTERNAL.\n\nWhen the load balancing scheme is INTERNAL, this can only be an RFC 1918 IP address belonging to the network/subnet configured for the forwarding rule. By default, if this field is empty, an ephemeral internal IP address will be automatically allocated from the IP range of the subnet or network configured for this forwarding rule.\n\nAn address can be specified either by a literal IP address or a URL reference to an existing Address resource. The following examples are all valid:  \n- 100.1.2.3 \n- https://www.googleapis.com/compute/v1/projects/project/regions/region/addresses/address \n- projects/project/regions/region/addresses/address \n- regions/region/addresses/address \n- global/addresses/address \n- address"
     },
     "IPProtocol": {
      "type": "string",
@@ -5744,6 +5744,14 @@
      "description": "[Output Only] Type of the resource. Always compute#guestAttributes for guest attributes entry.",
      "default": "compute#guestAttributes"
     },
+    "queryPath": {
+     "type": "string",
+     "description": "The path to be queried. This can be the default namespace ('/') or a nested namespace ('//') or a specified key ('//')"
+    },
+    "queryValue": {
+     "$ref": "GuestAttributesValue",
+     "description": "[Output Only] The value of the requested queried path."
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource."
@@ -5755,6 +5763,38 @@
     "variableValue": {
      "type": "string",
      "description": "[Output Only] The value found for the requested key."
+    }
+   }
+  },
+  "GuestAttributesEntry": {
+   "id": "GuestAttributesEntry",
+   "type": "object",
+   "description": "A guest attributes namespace/key/value entry.",
+   "properties": {
+    "key": {
+     "type": "string",
+     "description": "Key for the guest attribute entry."
+    },
+    "namespace": {
+     "type": "string",
+     "description": "Namespace for the guest attribute entry."
+    },
+    "value": {
+     "type": "string",
+     "description": "Value for the guest attribute entry."
+    }
+   }
+  },
+  "GuestAttributesValue": {
+   "id": "GuestAttributesValue",
+   "type": "object",
+   "description": "Array of guest attribute namespace/key/value tuples.",
+   "properties": {
+    "items": {
+     "type": "array",
+     "items": {
+      "$ref": "GuestAttributesEntry"
+     }
     }
    }
   },
@@ -11628,7 +11668,7 @@
     },
     "sourceInstance": {
      "type": "string",
-     "description": "The source instance used to create the template. You can provide this as a partial or full URL to the resource. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/instances/instance \n- projects/project/zones/zone/instances/instance"
+     "description": "The source instance used to create the machine image. You can provide this as a partial or full URL to the resource. For example, the following are valid values:  \n- https://www.googleapis.com/compute/v1/projects/project/zones/zone/instances/instance \n- projects/project/zones/zone/instances/instance"
     },
     "sourceInstanceProperties": {
      "$ref": "SourceInstanceProperties"
@@ -15605,6 +15645,7 @@
       "DISKS_TOTAL_GB",
       "FIREWALLS",
       "FORWARDING_RULES",
+      "GLOBAL_INTERNAL_ADDRESSES",
       "GPUS_ALL_REGIONS",
       "HEALTH_CHECKS",
       "IMAGES",
@@ -15661,6 +15702,7 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -18771,7 +18813,7 @@
     },
     "diskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
-     "description": "Encrypts or decrypts a disk using a customer-supplied encryption key.\n\nIf you are creating a new disk, this field encrypts the new disk using an encryption key that you provide. If you are attaching an existing disk that is already encrypted, this field decrypts the disk using the customer-supplied encryption key.\n\nIf you encrypt a disk using a customer-supplied key, you must provide the same key again when you attempt to use this resource at a later time. For example, you must provide the key when you create a snapshot or an image from the disk or when you attach the disk to a virtual machine instance.\n\nIf you do not provide an encryption key, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the disk later.\n\nInstance templates do not store customer-supplied encryption keys, so you cannot use your own keys to encrypt disks in a managed instance group."
+     "description": "Encrypts or decrypts a disk using a customer-supplied encryption key.\n\nIf you are creating a new disk, this field encrypts the new disk using an encryption key that you provide. If you are attaching an existing disk that is already encrypted, this field decrypts the disk using the customer-supplied encryption key.\n\nIf you encrypt a disk using a customer-supplied key, you must provide the same key again when you attempt to use this resource at a later time. For example, you must provide the key when you create a snapshot or an image from the disk or when you attach the disk to a virtual machine instance.\n\nIf you do not provide an encryption key, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the disk later.\n\nMachine Images do not store customer-supplied encryption keys, so you cannot use your own keys to encrypt disks in a managed instance group."
     },
     "diskSizeGb": {
      "type": "string",
@@ -18846,7 +18888,7 @@
     },
     "source": {
      "type": "string",
-     "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD.\n\nIf desired, you can also attach existing non-root persistent disks using this property. This field is only applicable for persistent disks.\n\nNote that for InstanceTemplate, specify the disk name, not the URL for the disk."
+     "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource. When creating a new instance, one of initializeParams.sourceImage or disks.source is required except for local SSD.\n\nIf desired, you can also attach existing non-root persistent disks using this property. This field is only applicable for persistent disks.\n\nNote that for sourceMachineImage, specify the disk name, not the URL for the disk."
     },
     "storageBytes": {
      "type": "string",
@@ -19301,6 +19343,37 @@
     }
    }
   },
+  "ShieldedVmIdentity": {
+   "id": "ShieldedVmIdentity",
+   "type": "object",
+   "description": "A shielded VM identity entry.",
+   "properties": {
+    "encryptionKey": {
+     "$ref": "ShieldedVmIdentityEntry"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#shieldedVmIdentity for shielded VM identity entry.",
+     "default": "compute#shieldedVmIdentity"
+    },
+    "signingKey": {
+     "$ref": "ShieldedVmIdentityEntry"
+    }
+   }
+  },
+  "ShieldedVmIdentityEntry": {
+   "id": "ShieldedVmIdentityEntry",
+   "type": "object",
+   "description": "A Shielded VM Identity Entry.",
+   "properties": {
+    "ekCert": {
+     "type": "string"
+    },
+    "ekPub": {
+     "type": "string"
+    }
+   }
+  },
   "ShieldedVmIntegrityPolicy": {
    "id": "ShieldedVmIntegrityPolicy",
    "type": "object",
@@ -19596,7 +19669,7 @@
    "properties": {
     "canIpForward": {
      "type": "boolean",
-     "description": "Enables instances created based on this template to send packets with source IP addresses other than their own and receive packets with destination IP addresses other than their own. If these instances will be used as an IP gateway or it will be set as the next-hop in a Route resource, specify true. If unsure, leave this set to false. See the Enable IP forwarding documentation for more information."
+     "description": "Enables instances created based on this machine image to send packets with source IP addresses other than their own and receive packets with destination IP addresses other than their own. If these instances will be used as an IP gateway or it will be set as the next-hop in a Route resource, specify true. If unsure, leave this set to false. See the Enable IP forwarding documentation for more information."
     },
     "deletionProtection": {
      "type": "boolean",
@@ -19604,41 +19677,41 @@
     },
     "description": {
      "type": "string",
-     "description": "An optional text description for the instances that are created from this instance template."
+     "description": "An optional text description for the instances that are created from this machine image."
     },
     "disks": {
      "type": "array",
-     "description": "An array of disks that are associated with the instances that are created from this template.",
+     "description": "An array of disks that are associated with the instances that are created from this machine image.",
      "items": {
       "$ref": "SavedAttachedDisk"
      }
     },
     "guestAccelerators": {
      "type": "array",
-     "description": "A list of guest accelerator cards' type and count to use for instances created from the instance template.",
+     "description": "A list of guest accelerator cards' type and count to use for instances created from the machine image.",
      "items": {
       "$ref": "AcceleratorConfig"
      }
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to instances that are created from this template.",
+     "description": "Labels to apply to instances that are created from this machine image.",
      "additionalProperties": {
       "type": "string"
      }
     },
     "machineType": {
      "type": "string",
-     "description": "The machine type to use for instances that are created from this template.",
+     "description": "The machine type to use for instances that are created from this machine image.",
      "annotations": {
       "required": [
-       "compute.instanceTemplates.insert"
+       "compute.machineImages.insert"
       ]
      }
     },
     "metadata": {
      "$ref": "Metadata",
-     "description": "The metadata key/value pairs to assign to instances that are created from this template. These pairs can consist of custom metadata or predefined keys. See Project and instance metadata for more information."
+     "description": "The metadata key/value pairs to assign to instances that are created from this machine image. These pairs can consist of custom metadata or predefined keys. See Project and instance metadata for more information."
     },
     "minCpuPlatform": {
      "type": "string",
@@ -19653,18 +19726,18 @@
     },
     "scheduling": {
      "$ref": "Scheduling",
-     "description": "Specifies the scheduling options for the instances that are created from this template."
+     "description": "Specifies the scheduling options for the instances that are created from this machine image."
     },
     "serviceAccounts": {
      "type": "array",
-     "description": "A list of service accounts with specified scopes. Access tokens for these service accounts are available to the instances that are created from this template. Use metadata queries to obtain the access tokens for these instances.",
+     "description": "A list of service accounts with specified scopes. Access tokens for these service accounts are available to the instances that are created from this machine image. Use metadata queries to obtain the access tokens for these instances.",
      "items": {
       "$ref": "ServiceAccount"
      }
     },
     "tags": {
      "$ref": "Tags",
-     "description": "A list of tags to apply to the instances that are created from this template. The tags identify valid sources or targets for network firewalls. The setTags method can modify this list of tags. Each tag within the list must comply with RFC1035."
+     "description": "A list of tags to apply to the instances that are created from this machine image. The tags identify valid sources or targets for network firewalls. The setTags method can modify this list of tags. Each tag within the list must comply with RFC1035."
     }
    }
   },
@@ -33419,6 +33492,11 @@
        "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
        "location": "path"
       },
+      "queryPath": {
+       "type": "string",
+       "description": "Specifies the guest attributes path to be queried.",
+       "location": "query"
+      },
       "variableKey": {
        "type": "string",
        "description": "Specifies the key for the guest attributes entry.",
@@ -33538,6 +33616,48 @@
      ],
      "response": {
       "$ref": "SerialPortOutput"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getShieldedVmIdentity": {
+     "id": "compute.instances.getShieldedVmIdentity",
+     "path": "{project}/zones/{zone}/instances/{instance}/getShieldedVmIdentity",
+     "httpMethod": "GET",
+     "description": "Returns the Shielded VM Identity of an instance",
+     "parameters": {
+      "instance": {
+       "type": "string",
+       "description": "Name of the instance scoping this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instance"
+     ],
+     "response": {
+      "$ref": "ShieldedVmIdentity"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -36399,7 +36519,7 @@
      "id": "compute.machineImages.insert",
      "path": "{project}/global/machineImages",
      "httpMethod": "POST",
-     "description": "Creates an machine image in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new machine image must use the same network or, if applicable, the same subnetwork as the original template.",
+     "description": "Creates an machine image in the specified project using the data that is included in the request. If you are creating a new machine image to update an existing instance, your new machine image must use the same network or, if applicable, the same subnetwork as the original template.",
      "parameters": {
       "project": {
        "type": "string",

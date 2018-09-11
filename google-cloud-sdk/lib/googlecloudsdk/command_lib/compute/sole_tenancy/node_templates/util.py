@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import encoding
+from googlecloudsdk.command_lib.compute.sole_tenancy.node_templates import flags
 
 
 def _ParseNodeAffinityLabels(affinity_labels, messages):
@@ -27,7 +28,8 @@ def _ParseNodeAffinityLabels(affinity_labels, messages):
       affinity_labels, affinity_labels_class, sort_items=True)
 
 
-def CreateNodeTemplate(node_template_ref, args, messages):
+def CreateNodeTemplate(node_template_ref, args, messages,
+                       enable_server_binding):
   """Creates a Node Template message from args."""
   node_affinity_labels = None
   if args.node_affinity_labels:
@@ -44,9 +46,17 @@ def CreateNodeTemplate(node_template_ref, args, messages):
         localSsd=args.node_requirements.get('localSSD', None),
         memory=args.node_requirements.get('memory', 'any'))
 
-  return messages.NodeTemplate(
+  node_template = messages.NodeTemplate(
       name=node_template_ref.Name(),
       description=args.description,
       nodeAffinityLabels=node_affinity_labels,
       nodeType=args.node_type,
       nodeTypeFlexibility=node_type_flexbility)
+
+  if enable_server_binding:
+    server_binding_flag = flags.GetServerBindingMapperFlag(messages)
+    server_binding = messages.ServerBinding(
+        type=server_binding_flag.GetEnumForChoice(args.server_binding))
+    node_template.serverBinding = server_binding
+
+  return node_template

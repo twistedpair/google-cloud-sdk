@@ -15,7 +15,9 @@
 """Code that's shared between multiple NAT subcommands."""
 
 from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope

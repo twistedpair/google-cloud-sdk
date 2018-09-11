@@ -55,8 +55,9 @@ def AddCreatePullQueueFlags(parser):
     flag.AddToParser(parser)
 
 
-def AddCreateAppEngineQueueFlags(parser):
-  for flag in _AppEngineQueueFlags():
+def AddCreateAppEngineQueueFlags(parser, is_alpha=False):
+  flags = _AlphaAppEngineQueueFlags() if is_alpha else _AppEngineQueueFlags()
+  for flag in flags:
     flag.AddToParser(parser)
 
 
@@ -65,8 +66,9 @@ def AddUpdatePullQueueFlags(parser):
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
-def AddUpdateAppEngineQueueFlags(parser):
-  for flag in _AppEngineQueueFlags():
+def AddUpdateAppEngineQueueFlags(parser, is_alpha=False):
+  flags = _AlphaAppEngineQueueFlags() if is_alpha else _AppEngineQueueFlags()
+  for flag in flags:
     _AddFlagAndItsClearEquivalent(flag, parser)
 
 
@@ -135,16 +137,17 @@ def AddCreatePullTaskFlags(parser):
   _GetTaskIdFlag().AddToParser(parser)
   for flag in _PullTaskFlags():
     flag.AddToParser(parser)
-  _AddPayloadFlags(parser)
+  _AddPayloadFlags(parser, True)
 
 
-def AddCreateAppEngineTaskFlags(parser):
+def AddCreateAppEngineTaskFlags(parser, is_alpha=False):
   """Add flags needed for creating a App Engine task to the parser."""
   AddQueueResourceFlag(parser, required=True)
   _GetTaskIdFlag().AddToParser(parser)
-  for flag in _AppEngineTaskFlags():
+  flags = _AlphaAppEngineTaskFlags() if is_alpha else _AppEngineTaskFlags()
+  for flag in flags:
     flag.AddToParser(parser)
-  _AddPayloadFlags(parser)
+  _AddPayloadFlags(parser, is_alpha)
 
 
 def _PullQueueFlags():
@@ -168,23 +171,8 @@ def _PullQueueFlags():
   ]
 
 
-def _AppEngineQueueFlags():
+def _BaseAppEngineQueueFlags():
   return _PullQueueFlags() + [
-      base.Argument(
-          '--max-tasks-dispatched-per-second',
-          type=float,
-          help="""\
-          The maximum rate at which tasks are dispatched from this queue.
-          """),
-      base.Argument(
-          '--max-concurrent-tasks',
-          type=int,
-          help="""\
-          The maximum number of concurrent tasks that Cloud Tasks allows to
-          be dispatched for this queue. After this threshold has been reached,
-          Cloud Tasks stops dispatching tasks until the number of outstanding
-          requests decreases.
-          """),
       base.Argument(
           '--max-doublings',
           type=int,
@@ -230,6 +218,46 @@ def _AppEngineQueueFlags():
   ]
 
 
+def _AlphaAppEngineQueueFlags():
+  return _BaseAppEngineQueueFlags() + [
+      base.Argument(
+          '--max-tasks-dispatched-per-second',
+          type=float,
+          help="""\
+          The maximum rate at which tasks are dispatched from this queue.
+          """),
+      base.Argument(
+          '--max-concurrent-tasks',
+          type=int,
+          help="""\
+          The maximum number of concurrent tasks that Cloud Tasks allows to
+          be dispatched for this queue. After this threshold has been reached,
+          Cloud Tasks stops dispatching tasks until the number of outstanding
+          requests decreases.
+          """),
+  ]
+
+
+def _AppEngineQueueFlags():
+  return _BaseAppEngineQueueFlags() + [
+      base.Argument(
+          '--max-dispatches-per-second',
+          type=float,
+          help="""\
+          The maximum rate at which tasks are dispatched from this queue.
+          """),
+      base.Argument(
+          '--max-concurrent-dispatches',
+          type=int,
+          help="""\
+          The maximum number of concurrent tasks that Cloud Tasks allows to
+          be dispatched for this queue. After this threshold has been reached,
+          Cloud Tasks stops dispatching tasks until the number of outstanding
+          requests decreases.
+          """),
+  ]
+
+
 def _PullTaskFlags():
   return _CommonTaskFlags() + [
       base.Argument('--tag', help="""\
@@ -238,16 +266,11 @@ def _PullTaskFlags():
   ]
 
 
-def _AppEngineTaskFlags():
+def _BaseAppEngineTaskFlags():
   return _CommonTaskFlags() + [
       base.Argument('--method', help="""\
           The HTTP method to use for the request. If not specified, "POST" will
           be used.
-          """),
-      base.Argument('--url', help="""\
-          The relative URL of the request. Must begin with "/" and must be a
-          valid HTTP relative URL. It can contain a path and query string
-          arguments. If not specified, then the root path "/" will be used.
           """),
       base.Argument('--header', metavar='HEADER_FIELD: HEADER_VALUE',
                     action='append', type=_GetHeaderArgValidator(),
@@ -269,6 +292,26 @@ def _AppEngineTaskFlags():
           Routing can be overridden by the queue-level `--routing-override`
           flag.
           """.format(', '.join(constants.APP_ENGINE_ROUTING_KEYS))),
+  ]
+
+
+def _AlphaAppEngineTaskFlags():
+  return _BaseAppEngineTaskFlags() + [
+      base.Argument('--url', help="""\
+          The relative URL of the request. Must begin with "/" and must be a
+          valid HTTP relative URL. It can contain a path and query string
+          arguments. If not specified, then the root path "/" will be used.
+          """),
+  ]
+
+
+def _AppEngineTaskFlags():
+  return _BaseAppEngineTaskFlags() + [
+      base.Argument('--relative-uri', help="""\
+          The relative URI of the request. Must begin with "/" and must be a
+          valid HTTP relative URI. It can contain a path and query string
+          arguments. If not specified, then the root path "/" will be used.
+          """),
   ]
 
 
@@ -301,15 +344,25 @@ def _CommonTaskFlags():
   ]
 
 
-def _AddPayloadFlags(parser):
+def _AddPayloadFlags(parser, is_alpha=False):
+  """Adds either payload or body flags."""
   payload_group = parser.add_mutually_exclusive_group()
-  payload_group.add_argument('--payload-content', help="""\
-          Data payload used by the task worker to process the task.
-          """)
-  payload_group.add_argument('--payload-file', help="""\
-          File containing data payload used by the task worker to process the
-          task.
-          """)
+  if is_alpha:
+    payload_group.add_argument('--payload-content', help="""\
+            Data payload used by the task worker to process the task.
+            """)
+    payload_group.add_argument('--payload-file', help="""\
+            File containing data payload used by the task worker to process the
+            task.
+            """)
+  else:
+    payload_group.add_argument('--body-content', help="""\
+            HTTP Body data sent to the task worker processing the task.
+            """)
+    payload_group.add_argument('--body-file', help="""\
+            File containing HTTP body data sent to the task worker processing
+            the task.
+            """)
 
 
 def _GetAppEngineRoutingKeysValidator():

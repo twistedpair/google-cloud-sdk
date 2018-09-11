@@ -23,8 +23,10 @@ from googlecloudsdk.calliope import base
 
 
 API_VERSION_FOR_TRACK = {
-    base.ReleaseTrack.ALPHA: 'v1alpha1',
-    base.ReleaseTrack.BETA: 'v1beta1'}
+    base.ReleaseTrack.ALPHA: 'v1',
+    base.ReleaseTrack.BETA: 'v1',
+    base.ReleaseTrack.GA: 'v1',
+}
 
 
 def Client(api_version):

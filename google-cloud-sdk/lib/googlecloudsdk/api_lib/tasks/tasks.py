@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib import tasks
 from googlecloudsdk.core import exceptions
 
 
@@ -27,27 +26,59 @@ class ModifyingPullAndAppEngineTaskError(exceptions.InternalError):
   """Error for when attempt to create a queue as both pull and App Engine."""
 
 
-class Tasks(object):
+class BaseTasks(object):
   """API client for Cloud Tasks tasks."""
 
-  def __init__(self, tasks_api=None):
-    if tasks_api is None:
-      tasks_api = tasks.ApiAdapter()
-    self.api = tasks_api
+  def __init__(self, messages, tasks_service):
+    self.messages = messages
+    self.tasks_service = tasks_service
 
   def List(self, parent_ref, limit=None, page_size=100):
     request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesTasksListRequest(
+        self.messages.CloudtasksProjectsLocationsQueuesTasksListRequest(
             parent=parent_ref.RelativeName()))
     return list_pager.YieldFromList(
-        self.api.tasks_service, request, batch_size=page_size, limit=limit,
+        self.tasks_service, request, batch_size=page_size, limit=limit,
         field='tasks', batch_size_attribute='pageSize')
 
   def Get(self, task_ref):
     request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesTasksGetRequest(
+        self.messages.CloudtasksProjectsLocationsQueuesTasksGetRequest(
             name=task_ref.RelativeName()))
-    return self.api.tasks_service.Get(request)
+    return self.tasks_service.Get(request)
+
+  def Delete(self, task_ref):
+    request = (
+        self.messages.CloudtasksProjectsLocationsQueuesTasksDeleteRequest(
+            name=task_ref.RelativeName()))
+    return self.tasks_service.Delete(request)
+
+  def Run(self, task_ref):
+    request = (
+        self.messages.CloudtasksProjectsLocationsQueuesTasksRunRequest(
+            name=task_ref.RelativeName()))
+    return self.tasks_service.Run(request)
+
+
+class Tasks(BaseTasks):
+  """API client for Cloud Tasks tasks."""
+
+  def Create(self, parent_ref, task_ref=None, schedule_time=None,
+             app_engine_http_request=None):
+    """Prepares and sends a Create request for creating a task."""
+    name = task_ref.RelativeName() if task_ref else None
+    task = self.messages.Task(
+        name=name, scheduleTime=schedule_time,
+        appEngineHttpRequest=app_engine_http_request)
+    request = (
+        self.messages.CloudtasksProjectsLocationsQueuesTasksCreateRequest(
+            createTaskRequest=self.messages.CreateTaskRequest(task=task),
+            parent=parent_ref.RelativeName()))
+    return self.tasks_service.Create(request)
+
+
+class AlphaTasks(BaseTasks):
+  """API client for Cloud Tasks tasks."""
 
   def Create(self, parent_ref, task_ref=None, schedule_time=None,
              pull_message=None, app_engine_http_request=None):
@@ -57,26 +88,14 @@ class Tasks(object):
           'Attempting to send PullMessage and AppEngineHttpRequest '
           'simultaneously')
     name = task_ref.RelativeName() if task_ref else None
-    task = self.api.messages.Task(
+    task = self.messages.Task(
         name=name, scheduleTime=schedule_time, pullMessage=pull_message,
         appEngineHttpRequest=app_engine_http_request)
     request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesTasksCreateRequest(
-            createTaskRequest=self.api.messages.CreateTaskRequest(task=task),
+        self.messages.CloudtasksProjectsLocationsQueuesTasksCreateRequest(
+            createTaskRequest=self.messages.CreateTaskRequest(task=task),
             parent=parent_ref.RelativeName()))
-    return self.api.tasks_service.Create(request)
-
-  def Delete(self, task_ref):
-    request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesTasksDeleteRequest(
-            name=task_ref.RelativeName()))
-    return self.api.tasks_service.Delete(request)
-
-  def Run(self, task_ref):
-    request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesTasksRunRequest(
-            name=task_ref.RelativeName()))
-    return self.api.tasks_service.Run(request)
+    return self.tasks_service.Create(request)
 
   def RenewLease(self, task_ref, schedule_time, lease_duration):
     """Constructs and sends a tasks RenewLease request to the Cloud Tasks API.
@@ -89,13 +108,13 @@ class Tasks(object):
     Returns:
       The response of the tasks RenewLease request
     """
-    renew_lease_request = self.api.messages.RenewLeaseRequest(
+    renew_lease_request = self.messages.RenewLeaseRequest(
         scheduleTime=schedule_time, leaseDuration=lease_duration)
-    request_cls = (self.api.messages.
+    request_cls = (self.messages.
                    CloudtasksProjectsLocationsQueuesTasksRenewLeaseRequest)
     request = request_cls(renewLeaseRequest=renew_lease_request,
                           name=task_ref.RelativeName())
-    return self.api.tasks_service.RenewLease(request)
+    return self.tasks_service.RenewLease(request)
 
   def CancelLease(self, task_ref, schedule_time):
     """Constructs and sends a tasks CancelLease request to the Cloud Tasks API.
@@ -107,13 +126,13 @@ class Tasks(object):
     Returns:
       The response of the tasks CancelLease request
     """
-    cancel_lease_request = self.api.messages.CancelLeaseRequest(
+    cancel_lease_request = self.messages.CancelLeaseRequest(
         scheduleTime=schedule_time)
-    request_cls = (self.api.messages.
+    request_cls = (self.messages.
                    CloudtasksProjectsLocationsQueuesTasksCancelLeaseRequest)
     request = request_cls(cancelLeaseRequest=cancel_lease_request,
                           name=task_ref.RelativeName())
-    return self.api.tasks_service.CancelLease(request)
+    return self.tasks_service.CancelLease(request)
 
   def Lease(self, queue_ref, lease_duration, filter_string=None,
             max_tasks=None):
@@ -129,13 +148,13 @@ class Tasks(object):
     Returns:
       The response of the LeaseTasks request
     """
-    lease_tasks_request = self.api.messages.LeaseTasksRequest(
+    lease_tasks_request = self.messages.LeaseTasksRequest(
         filter=filter_string, leaseDuration=lease_duration, maxTasks=max_tasks)
     request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesTasksLeaseRequest(
+        self.messages.CloudtasksProjectsLocationsQueuesTasksLeaseRequest(
             leaseTasksRequest=lease_tasks_request,
             parent=queue_ref.RelativeName()))
-    return self.api.tasks_service.Lease(request)
+    return self.tasks_service.Lease(request)
 
   def Acknowledge(self, task_ref, schedule_time):
     """Constructs and sends a tasks Acknowledge request to the Cloud Tasks API.
@@ -147,10 +166,10 @@ class Tasks(object):
     Returns:
       The response of the tasks Acknowledge request
     """
-    acknowledge_task_request = self.api.messages.AcknowledgeTaskRequest(
+    acknowledge_task_request = self.messages.AcknowledgeTaskRequest(
         scheduleTime=schedule_time)
-    request_cls = (self.api.messages.
+    request_cls = (self.messages.
                    CloudtasksProjectsLocationsQueuesTasksAcknowledgeRequest)
     request = request_cls(acknowledgeTaskRequest=acknowledge_task_request,
                           name=task_ref.RelativeName())
-    return self.api.tasks_service.Acknowledge(request)
+    return self.tasks_service.Acknowledge(request)

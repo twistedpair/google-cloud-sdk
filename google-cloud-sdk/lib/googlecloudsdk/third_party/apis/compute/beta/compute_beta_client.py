@@ -4428,6 +4428,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetGuestAttributes(self, request, global_params=None):
+      r"""Returns the specified guest attributes entry.
+
+      Args:
+        request: (ComputeInstancesGetGuestAttributesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GuestAttributes) The response message.
+      """
+      config = self.GetMethodConfig('GetGuestAttributes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetGuestAttributes.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.getGuestAttributes',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'queryPath', u'variableKey'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getGuestAttributes',
+        request_field='',
+        request_type_name=u'ComputeInstancesGetGuestAttributesRequest',
+        response_type_name=u'GuestAttributes',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
 
@@ -4477,6 +4503,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeInstancesGetSerialPortOutputRequest',
         response_type_name=u'SerialPortOutput',
+        supports_download=False,
+    )
+
+    def GetShieldedVmIdentity(self, request, global_params=None):
+      r"""Returns the Shielded VM Identity of an instance.
+
+      Args:
+        request: (ComputeInstancesGetShieldedVmIdentityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShieldedVmIdentity) The response message.
+      """
+      config = self.GetMethodConfig('GetShieldedVmIdentity')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetShieldedVmIdentity.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.getShieldedVmIdentity',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getShieldedVmIdentity',
+        request_field='',
+        request_type_name=u'ComputeInstancesGetShieldedVmIdentityRequest',
+        response_type_name=u'ShieldedVmIdentity',
         supports_download=False,
     )
 
@@ -9120,6 +9172,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetNatMappingInfo(self, request, global_params=None):
+      r"""Retrieves runtime Nat mapping information of VM endpoints.
+
+      Args:
+        request: (ComputeRoutersGetNatMappingInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmEndpointNatMappingsList) The response message.
+      """
+      config = self.GetMethodConfig('GetNatMappingInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNatMappingInfo.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.routers.getNatMappingInfo',
+        ordered_params=[u'project', u'region', u'router'],
+        path_params=[u'project', u'region', u'router'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/routers/{router}/getNatMappingInfo',
+        request_field='',
+        request_type_name=u'ComputeRoutersGetNatMappingInfoRequest',
+        response_type_name=u'VmEndpointNatMappingsList',
+        supports_download=False,
+    )
+
     def GetRouterStatus(self, request, global_params=None):
       r"""Retrieves runtime information of the specified router.
 
@@ -9470,7 +9548,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.securityPolicies.addRule',
         ordered_params=[u'project', u'securityPolicy'],
         path_params=[u'project', u'securityPolicy'],
-        query_params=[],
+        query_params=[u'validateOnly'],
         relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/addRule',
         request_field=u'securityPolicyRule',
         request_type_name=u'ComputeSecurityPoliciesAddRuleRequest',
@@ -9574,7 +9652,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.securityPolicies.insert',
         ordered_params=[u'project'],
         path_params=[u'project'],
-        query_params=[u'requestId'],
+        query_params=[u'requestId', u'validateOnly'],
         relative_path=u'projects/{project}/global/securityPolicies',
         request_field=u'securityPolicy',
         request_type_name=u'ComputeSecurityPoliciesInsertRequest',
@@ -9678,7 +9756,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.securityPolicies.patchRule',
         ordered_params=[u'project', u'securityPolicy'],
         path_params=[u'project', u'securityPolicy'],
-        query_params=[u'priority'],
+        query_params=[u'priority', u'validateOnly'],
         relative_path=u'projects/{project}/global/securityPolicies/{securityPolicy}/patchRule',
         request_field=u'securityPolicyRule',
         request_type_name=u'ComputeSecurityPoliciesPatchRuleRequest',

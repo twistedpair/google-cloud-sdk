@@ -30,7 +30,6 @@ from apitools.base.py import encoding
 from docker import docker
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.storage import storage_api
-from googlecloudsdk.command_lib.app import source_files_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -50,7 +49,7 @@ class UploadFailedError(exceptions.Error):
   """Raised when the source fails to upload to GCS."""
 
 
-def _CreateTar(source_dir, gen_files, paths, gz):
+def _CreateTar(upload_dir, gen_files, paths, gz):
   """Create tarfile for upload to GCS.
 
   The third-party code closes the tarfile after creating, which does not
@@ -58,12 +57,12 @@ def _CreateTar(source_dir, gen_files, paths, gz):
   since gzipped tarfiles can't be opened in append mode.
 
   Args:
-    source_dir: the directory to be archived
+    upload_dir: the directory to be archived
     gen_files: Generated files to write to the tar
     paths: allowed paths in the tarfile
     gz: gzipped tarfile object
   """
-  root = os.path.abspath(source_dir)
+  root = os.path.abspath(upload_dir)
   t = tarfile.open(mode='w', fileobj=gz)
   for path in sorted(paths):
     full_path = os.path.join(root, path)
@@ -77,17 +76,17 @@ def _CreateTar(source_dir, gen_files, paths, gz):
   t.close()
 
 
-def _GetDockerignoreExclusions(source_dir, gen_files):
+def _GetDockerignoreExclusions(upload_dir, gen_files):
   """Helper function to read the .dockerignore on disk or in generated files.
 
   Args:
-    source_dir: the path to the root directory.
+    upload_dir: the path to the root directory.
     gen_files: dict of filename to contents of generated files.
 
   Returns:
     Set of exclusion expressions from the dockerignore file.
   """
-  dockerignore = os.path.join(source_dir, '.dockerignore')
+  dockerignore = os.path.join(upload_dir, '.dockerignore')
   exclude = set()
   ignore_contents = None
   if os.path.exists(dockerignore):
@@ -102,7 +101,7 @@ def _GetDockerignoreExclusions(source_dir, gen_files):
   return exclude
 
 
-def _GetIncludedPaths(source_dir, exclude, info=None):
+def _GetIncludedPaths(upload_dir, source_file_iterator, exclude):
   """Helper function to filter paths in root using dockerignore and skip_files.
 
   We iterate separately to filter on skip_files in order to preserve expected
@@ -110,50 +109,43 @@ def _GetIncludedPaths(source_dir, exclude, info=None):
   ignored by skip_files).
 
   Args:
-    source_dir: the path to the root directory.
+    upload_dir: the path to the root directory.
+    source_file_iterator: iterator, yields relative paths to upload.
     exclude: the .dockerignore file exclusions.
-    info: yaml_parsing.ServiceYamlInfo, used to calculate files to skip.
 
   Returns:
-    Set of paths (relative to source_dir) to include.
+    Set of paths (relative to upload_dir) to include.
   """
   # This code replicates how docker.utils.tar() finds the root
   # and excluded paths.
-  root = os.path.abspath(source_dir)
+  root = os.path.abspath(upload_dir)
   # Get set of all paths other than exclusions from dockerignore.
   paths = docker.utils.exclude_paths(root, exclude)
   # Also filter on the ignore regex from .gcloudignore or skip_files.
-  if info:
-    skip_files = info.parsed.skip_files.regex
-    runtime = info.parsed.runtime if info.parsed.runtime else ''
-    included_paths = source_files_util.GetSourceFileIterator(
-        source_dir, skip_files, info.HasExplicitSkipFiles(), runtime,
-        info.env)
-    paths.intersection_update(included_paths)
+  paths.intersection_update(source_file_iterator)
   return paths
 
 
-def UploadSource(source_dir, object_ref, gen_files=None, info=None):
+def UploadSource(upload_dir, source_file_iterator, object_ref, gen_files=None):
   """Upload a gzipped tarball of the source directory to GCS.
 
   Note: To provide parity with docker's behavior, we must respect .dockerignore.
 
   Args:
-    source_dir: the directory to be archived.
+    upload_dir: the directory to be archived.
+    source_file_iterator: iterator, yields relative paths to upload.
     object_ref: storage_util.ObjectReference, the Cloud Storage location to
       upload the source tarball to.
     gen_files: dict of filename to (str) contents of generated config and
       source context files.
-    info: yaml_parsing.ServiceYamlInfo, used to calculate files to skip.
 
   Raises:
     UploadFailedError: when the source fails to upload to GCS.
   """
   gen_files = gen_files or {}
-  dockerignore_contents = _GetDockerignoreExclusions(source_dir, gen_files)
-  included_paths = _GetIncludedPaths(source_dir,
-                                     dockerignore_contents,
-                                     info)
+  dockerignore_contents = _GetDockerignoreExclusions(upload_dir, gen_files)
+  included_paths = _GetIncludedPaths(
+      upload_dir, source_file_iterator, dockerignore_contents)
 
   # We can't use tempfile.NamedTemporaryFile here because ... Windows.
   # See https://bugs.python.org/issue14243. There are small cleanup races
@@ -163,7 +155,7 @@ def UploadSource(source_dir, object_ref, gen_files=None, info=None):
   with files.TemporaryDirectory() as temp_dir:
     f = files.BinaryFileWriter(os.path.join(temp_dir, 'src.tgz'))
     with gzip.GzipFile(mode='wb', fileobj=f) as gz:
-      _CreateTar(source_dir, gen_files, included_paths, gz)
+      _CreateTar(upload_dir, gen_files, included_paths, gz)
     f.close()
     storage_client = storage_api.StorageClient()
     storage_client.CopyFileToGCS(object_ref.bucket_ref, f.name, object_ref.name)

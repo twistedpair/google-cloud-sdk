@@ -94,9 +94,10 @@ CONSOLES = {
 ################################################################################
 # pylint: disable=g-import-not-at-top
 # pylint: disable=g-bad-import-order
+from googlecloudsdk.core import log  # pylint: disable=unused-import
+from googlecloudsdk.core import properties  # pylint: disable=unused-import
 from googlecloudsdk.core.console import console_io  # pylint: disable=unused-import
 from googlecloudsdk.core.util import files  # pylint: disable=unused-import
-from googlecloudsdk.core import properties  # pylint: disable=unused-import
 # pylint: enable=g-import-not-at-top
 # pylint: enable=g-bad-import-order
 

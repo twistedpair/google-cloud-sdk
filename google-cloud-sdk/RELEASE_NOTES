@@ -5,12 +5,49 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 215.0.0 (2018-09-04)
+## 216.0.0 (2018-09-11)
+
+### App Engine
+
+
+* Updated the Go SDK to version 1.9.68.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/go/release-notes
+
+### Cloud Bigtable
+
+*   Promoted the following commands to GA:
+    *   `gcloud bigtable instances` command group
+    *   `gcloud bigtable clusters list`
+    *   `gcloud bigtable clusters describe`
+
+
+### Cloud Memorystore
+
+* Promoted `gcloud redis` to GA.
+
+### Cloud Services
+
+*   Deprecated `gcloud services operations list` in beta and GA.
+
+### Compute Engine
+
+* Promoted `--internal-ip` flag of `gcloud compute scp` to beta.
+* Promoted `--disabled` flag of `gcloud compute firewall-rules` to GA.
+* Fixed bug preventing `gcloud compute <ssh|scp>` from finding an instance's external IP address when configured with multiple network interfaces.
+* Promoted `gcloud compute instances <create-with-container|compute instances
+  update-container>` from beta to ga.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 215.0.0 (2018-09-05)
 
 ### Breaking Changes
 
-*   **(Cloud SQL)** Removed the default value of the `--database-version` flag of `gcloud sql
-  instances create`, allowing the API to select the value.
+* **(Cloud SQL)** Removed the default value of the `--database-version` flag
+  of `gcloud sql instances create`, allowing the API to select the value.
 
 
 ### App Engine
@@ -6673,7 +6710,7 @@ command surface.
 * Added node pool support to enable heterogeneous clusters (alpha).
 
 
-## 99.0.0 (2016/3/2)
+## 99.0.0 (2016-3-2)
 
 ### Breaking Changes
 
@@ -6724,7 +6761,7 @@ command surface.
 * Update gsutil component to 4.17
 
 
-## 98.0.0 (2016/2/24)
+## 98.0.0 (2016-2-24)
 
 * Release 95.0.0 introduced a bug that generated corrupt keys for Windows gcloud
   compute ssh|copy-files. Any keys generated on Windows between 95.0.0 and
@@ -6755,7 +6792,7 @@ command surface.
 * Google Cloud SDK no longer needs Python installed when using the Windows
   Installer. The SDK for Windows comes with Python bundled.
 
-## 97.0.0 (2016/2/17)
+## 97.0.0 (2016-2-17)
 
 ### Breaking Changes
 
@@ -6775,7 +6812,7 @@ command surface.
 
 * Added `--master` flag to `gcloud container clusters upgrade`
 
-## 96.0.0 (2016/2/10)
+## 96.0.0 (2016-2-10)
 
 ### Breaking Changes
 
@@ -6820,7 +6857,7 @@ command surface.
   used for abs(n) < 1e-04 and abs(n) >= 1e+09.
 * The arrow and page up/down/home/end keys now work in the Windows help pager.
 
-## 95.0.0 (2016/2/3)
+## 95.0.0 (2016-2-3)
 
 ### Breaking Changes
 
@@ -6870,7 +6907,7 @@ command surface.
   Try: `gcloud compute instances list
   --format="table(disks:format='table[box](deviceName:sort=1, kind)')"`
 
-## 94.0.0 (2016/1/27)
+## 94.0.0 (2016-1-27)
 
 ### Google Compute Engine
 
@@ -6918,7 +6955,7 @@ command surface.
 
 * Added the `gcloud projects list` command that can be used to list projects.
 
-## 93.0.0 (2016/1/20)
+## 93.0.0 (2016-1-20)
 
 * kubectrl upgraded to 1.1.4.
 
@@ -6931,7 +6968,7 @@ command surface.
 * `gcloud source repos clone` now supports `--dry-run` flag to show equivalent
   git command.
 
-## 92.0.0 (2016/1/13)
+## 92.0.0 (2016-1-13)
 
 *   Because of the rollback of 91.0.0, this release contains all of the changes
     from 91.0.0 in addition to the changes listed below.
@@ -7745,7 +7782,7 @@ command surface.
 
 *   Bug fixes.
 
-## 0.9.55 (2015/04/8)
+## 0.9.55 (2015-04-8)
 
 *   New and improved gcloud dns surface including:
     *   Transactions for scriptable editing of record-sets.

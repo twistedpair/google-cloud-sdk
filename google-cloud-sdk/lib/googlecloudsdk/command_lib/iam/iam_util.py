@@ -56,6 +56,18 @@ SERVICE_ACCOUNT_KEY_FORMAT = """
         validBeforeTime:label=EXPIRES_AT
     )
 """
+_CONDITION_FORMAT_EXCEPTION = gcloud_exceptions.InvalidArgumentException(
+    'condition',
+    'condition must be either `None` or a list of key=value pairs. '
+    'If not `None`, `expression` and `title` are required keys.\n'
+    'Example: --condition=expression=[expression],title=[title],'
+    'description=[description].')
+
+_ALL_CONDITIONS = {'All': None}
+
+
+def _IsAllConditions(condition):
+  return condition == _ALL_CONDITIONS
 
 
 class IamEtagReadError(core_exceptions.Error):
@@ -64,6 +76,10 @@ class IamEtagReadError(core_exceptions.Error):
 
 class IamPolicyBindingNotFound(core_exceptions.Error):
   """Raised when the specified IAM policy binding is not found."""
+
+
+class IamPolicyBindingIncompleteError(core_exceptions.Error):
+  """Raised when the specified IAM policy binding is incomplete."""
 
 
 def _AddMemberFlag(parser, verb, required=True):
@@ -84,6 +100,53 @@ Can also be one of the following special values:
       """
   ).format(verb=verb)
   parser.add_argument('--member', required=required, help=help_str)
+
+
+def _ConditionArgDict():
+  condition_spec = {
+      'expression': str,
+      'title': str,
+      'description': str,
+      'None': None
+  }
+  return arg_parsers.ArgDict(spec=condition_spec, allow_key_only=True)
+
+
+# TODO(b/113606810):  Add more help information on specifying a condition
+def _AddConditionFlag(parser, intro, required=False, completer=None):
+  """Create --condition flag and add to parser."""
+  help_str = ("""
+{intro}
+
+*expression*::: (Required) The expression of the condition which
+evaluates to True or False. This uses a subset of Common Expression
+Language syntax.
+
+*title*::: (Required) A title for the expression, i.e. a short string
+describing its purpose.
+
+*description*::: (Optional) An description of the expression. This is
+a longer text which describes the expression
+
+NOTE: an unsatisfied condition will not allow user access via this
+binding.""").format(intro=intro)
+  parser.add_argument(
+      '--condition',
+      type=_ConditionArgDict(),
+      metavar='PROPERTY=VALUE',
+      required=required,
+      completer=completer,
+      help=help_str)
+
+
+def ValidateConditionArgument(condition):
+  if 'None' in condition:
+    if ('expression' in condition or 'description' in condition or
+        'title' in condition):
+      raise _CONDITION_FORMAT_EXCEPTION
+  else:
+    if not condition.get('expression') or not condition.get('title'):
+      raise _CONDITION_FORMAT_EXCEPTION
 
 
 def AddArgForPolicyFile(parser):
@@ -125,6 +188,29 @@ def AddArgsForAddIamPolicyBinding(parser, completer=None):
   _AddMemberFlag(parser, 'to add the binding for')
 
 
+def AddArgsForAddIamPolicyBindingWithCondition(parser,
+                                               role_completer=None,
+                                               condition_completer=None):
+  """Adds the IAM policy binding arguments for role,  member, and condition.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object to which we add the args.
+    role_completer: A command_lib.iam.completers.IamRolesCompleter class to
+      complete the --role flag value.
+    condition_completer: A completer for condition to complete the --condition
+      flag value.
+
+  Raises:
+    ArgumentError if one of the arguments is already defined in the parser.
+  """
+  intro_message = ('Specify a condition to be added to the binding. '
+                   'When condition is explicitly specified as `None` '
+                   '(e.g. --condition=None), '
+                   'a binding without a condition is added.')
+  AddArgsForAddIamPolicyBinding(parser, role_completer)
+  _AddConditionFlag(parser, intro=intro_message, completer=condition_completer)
+
+
 def AddArgsForRemoveIamPolicyBinding(parser, completer=None):
   """Adds the IAM policy binding arguments for role and members.
 
@@ -141,6 +227,32 @@ def AddArgsForRemoveIamPolicyBinding(parser, completer=None):
       '--role', required=True, completer=completer,
       help='The role to remove the member from.')
   _AddMemberFlag(parser, 'to remove the binding for')
+
+
+def AddArgsForRemoveIamPolicyBindingWithCondition(parser,
+                                                  role_completer=None,
+                                                  condition_completer=None):
+  """Adds the IAM policy binding arguments for role, member, and condition.
+
+  Args:
+    parser: An argparse.ArgumentParser-like object to which we add the argss.
+    role_completer: A command_lib.iam.completers.IamRolesCompleter class to
+      complete the --role flag value.
+    condition_completer: A completer for condition to complete the --condition
+      flag value.
+
+  Raises:
+    ArgumentError if one of the arguments is already defined in the parser.
+  """
+  intro_message = ('Specify the condition of the binding to be removed. '
+                   'When condition is explicitly specified as `None` '
+                   '(e.g. --condition=None), it '
+                   'matches a binding without a condition. Otherwise, '
+                   'only the binding with a condition which exactly matches '
+                   'the specified condition (including the optional '
+                   'description) will be removed.')
+  AddArgsForRemoveIamPolicyBinding(parser, role_completer)
+  _AddConditionFlag(parser, intro=intro_message, completer=condition_completer)
 
 
 def AddBindingToIamPolicy(binding_message_type, policy, member, role):
@@ -177,6 +289,296 @@ def AddBindingToIamPolicy(binding_message_type, policy, member, role):
   # Third step: no binding was found that has the same role. Create a new one.
   policy.bindings.append(binding_message_type(
       members=[member], role='{0}'.format(role)))
+
+
+def _IsNoneCondition(condition):
+  """When user specify --condition=None."""
+  return condition is not None and 'None' in condition
+
+
+def _ConditionIsSpecified(condition):
+  """When --condition is specified."""
+  return condition is not None
+
+
+def AddBindingToIamPolicyWithCondition(binding_message_type,
+                                       condition_message_type, policy, member,
+                                       role, condition):
+  """Given an IAM policy, add a new role/member binding with condition.
+
+  An IAM binding is a pair of role and member with an optional condition.
+  Check if the arguments passed define both the role and member attribute,
+  create a binding out of their values, and append it to the policy.
+
+  Args:
+    binding_message_type: The protorpc.Message of the Binding to create.
+    condition_message_type: the protorpc.Message of the Expr.
+    policy: IAM policy to which we want to add the bindings.
+    member: The member of the binding.
+    role: The role the member should have.
+    condition: The condition of the role/member binding.
+
+  Raises:
+    IamPolicyBindingIncompleteError: when user adds a binding without specifying
+      --condition to a policy containing conditions in the non-interactive mode.
+  """
+  if _PolicyContainsCondition(policy) and not _ConditionIsSpecified(condition):
+    if not console_io.CanPrompt():
+      message = (
+          'Adding a binding without specifying a condition to a '
+          'policy containing conditions is prohibited in non-interactive '
+          'mode. Run the command again with `--condition=None`')
+      raise IamPolicyBindingIncompleteError(message)
+    condition = _PromptForConditionAddBindingToIamPolicy(policy)
+    ValidateConditionArgument(condition)
+  if (not _PolicyContainsCondition(policy) and
+      _ConditionIsSpecified(condition) and not _IsNoneCondition(condition)):
+    log.warning('Adding binding with condition to a policy without condition '
+                'will change the behavior of add-iam-policy-binding and '
+                'remove-iam-policy-binding commands.')
+  condition = None if _IsNoneCondition(condition) else condition
+  _AddBindingToIamPolicyWithCondition(binding_message_type,
+                                      condition_message_type, policy, member,
+                                      role, condition)
+
+
+def _ConditionsInPolicy(policy, member=None, role=None):
+  """Select conditions in bindings which have the given role and member.
+
+  Search bindings from policy and return their conditions which has the given
+  role and member if role and member are given. If member and role are not
+  given, return all conditions. Duplicates are not returned.
+
+  Args:
+    policy: IAM policy to collect conditions
+    member: member which should appear in the binding to select its condition
+    role: role which should be the role of binding to select its condition
+
+  Returns:
+    A list of conditions got selected
+  """
+  conditions = []
+  for binding in policy.bindings:
+    if (member is None or member in binding.members) and (role is None or
+                                                          role == binding.role):
+      conditions.append(binding.condition)
+  conditions = [_ConditionToString(condition) for condition in conditions]
+  conditions = sorted(list(set(conditions)))
+  if 'None' in conditions:
+    conditions = [c for c in conditions if c != 'None']
+    conditions.append('None')
+  return conditions
+
+
+def _ConditionToString(condition):
+  if condition is None:
+    return 'None'
+  keys = ['expression', 'title', 'description']
+  key_values = []
+  for key in keys:
+    if getattr(condition, key) is not None:
+      key_values.append('{key}={value}'.format(
+          key=key, value=getattr(condition, key)))
+  return ','.join(key_values)
+
+
+def PromptChoicesForAddBindingToIamPolicy(policy):
+  """The choices in a prompt for condition when adding binding to policy.
+
+  All conditions in the policy will be returned. Two more choices (i.e.
+  `None` and `Specify a new condition`) are appended.
+  Args:
+    policy: the IAM policy which the binding is added to.
+  Returns:
+    a list of conditions appearing in policy plus the choices of `None` and
+    `Specify a new condition`.
+  """
+  conditions = _ConditionsInPolicy(policy)
+  if conditions[-1] != 'None':
+    conditions.append('None')
+  conditions.append('Specify a new condition')
+  return conditions
+
+
+def PromptChoicesForRemoveBindingFromIamPolicy(policy, member, role):
+  """The choices in a prompt for condition when removing binding from policy.
+
+  Args:
+    policy: the IAM policy which the binding is removed from.
+    member: the member of the binding to be removed.
+    role: the role of the binding to be removed.
+  Returns:
+    a list of conditions from the policy whose bindings contain the given member
+    and role.
+  """
+  conditions = _ConditionsInPolicy(policy, member, role)
+  if conditions:
+    conditions.append('all conditions')
+  return conditions
+
+
+def _PromptForConditionAddBindingToIamPolicy(policy):
+  """Prompt user for a condition when adding binding."""
+  prompt_message = ('The policy contains bindings with conditions, '
+                    'so specifying a condition is required when adding a '
+                    'binding. Please specify a condition.')
+  conditions = PromptChoicesForAddBindingToIamPolicy(policy)
+
+  condition_index = console_io.PromptChoice(
+      conditions, prompt_string=prompt_message)
+  if condition_index == len(conditions) - 1:
+    return _PromptForNewCondition()
+  return _ConditionArgDict()(conditions[condition_index])
+
+
+def _PromptForConditionRemoveBindingFromIamPolicy(policy, member, role):
+  """Prompt user for a condition when removing binding."""
+  conditions = PromptChoicesForRemoveBindingFromIamPolicy(policy, member, role)
+  if not conditions:
+    raise IamPolicyBindingNotFound('Policy binding with the specified member '
+                                   'and role not found!')
+  prompt_message = ('The policy contains bindings with conditions, '
+                    'so specifying a condition is required when removing a '
+                    'binding. Please specify a condition.')
+
+  condition_index = console_io.PromptChoice(
+      conditions, prompt_string=prompt_message)
+  if condition_index == len(conditions) - 1:
+    return _ALL_CONDITIONS
+  return _ConditionArgDict()(conditions[condition_index])
+
+
+def _PromptForNewCondition():
+  prompt_message = (
+      'Condition is either `None` or a list of key=value pairs. '
+      'If not `None`, `expression` and `title` are required keys.\n'
+      'Example: --condition=expression=[expression],title=[title],'
+      'description=[description].\nSpecify the condition')
+  condition_string = console_io.PromptWithDefault(prompt_message)
+  condition_dict = _ConditionArgDict()(condition_string)
+  return condition_dict
+
+
+def _EqualConditions(binding_condition, input_condition):
+  if binding_condition is None and input_condition is None:
+    return True
+  if binding_condition is None or input_condition is None:
+    return False
+  return (binding_condition.expression == input_condition.get('expression') and
+          binding_condition.title == input_condition.get('title') and
+          binding_condition.description == input_condition.get('description'))
+
+
+def _AddBindingToIamPolicyWithCondition(binding_message_type,
+                                        condition_message_type, policy, member,
+                                        role, condition):
+  """Given an IAM policy, add a new role/member binding with condition."""
+  for binding in policy.bindings:
+    if binding.role == role and _EqualConditions(
+        binding_condition=binding.condition, input_condition=condition):
+      if member not in binding.members:
+        binding.members.append(member)
+      return
+
+  condition_message = None if condition is None else condition_message_type(
+      expression=condition.get('expression'),
+      title=condition.get('title'),
+      description=condition.get('description'))
+  policy.bindings.append(
+      binding_message_type(
+          members=[member], role='{}'.format(role),
+          condition=condition_message))
+
+
+def RemoveBindingFromIamPolicyWithCondition(policy,
+                                            member,
+                                            role,
+                                            condition,
+                                            all_conditions=False):
+  """Given an IAM policy, remove bindings as specified by the args.
+
+  An IAM binding is a pair of role and member with an optional condition.
+  Check if the arguments passed define both the role and member attribute,
+  search the policy for a binding that contains this role, member and condition,
+  and remove it from the policy.
+
+  Args:
+    policy: IAM policy from which we want to remove bindings.
+    member: The member to remove from the IAM policy.
+    role: The role of the member should be removed from.
+    condition: The condition of the binding to be removed.
+    all_conditions: If true, all bindings with the specified member and role
+    will be removed, regardless of the condition.
+
+  Raises:
+    IamPolicyBindingNotFound: If specified binding is not found.
+    IamPolicyBindingIncompleteError: when user removes a binding without
+      specifying --condition to a policy containing conditions in the
+      non-interactive mode.
+  """
+  if not all_conditions and _PolicyContainsCondition(
+      policy) and not _ConditionIsSpecified(condition):
+    if not console_io.CanPrompt():
+      message = (
+          'Removing a binding without specifying a condition from a '
+          'policy containing conditions is prohibited in non-interactive '
+          'mode. Run the command again with `--condition=None` to remove a '
+          'binding without condition or run command with `--all` to remove all '
+          'bindings of the specified member and role.')
+      raise IamPolicyBindingIncompleteError(message)
+    condition = _PromptForConditionRemoveBindingFromIamPolicy(
+        policy, member, role)
+
+  if all_conditions or _IsAllConditions(condition):
+    _RemoveBindingFromIamPolicyAllConditions(policy, member, role)
+  else:
+    condition = None if _IsNoneCondition(condition) else condition
+    _RemoveBindingFromIamPolicyWithCondition(policy, member, role, condition)
+
+
+def _RemoveBindingFromIamPolicyAllConditions(policy, member, role):
+  """Remove all member/role bindings from policy regardless of condition."""
+  conditions_removed = False
+  for binding in policy.bindings:
+    if role == binding.role and member in binding.members:
+      binding.members.remove(member)
+      conditions_removed = True
+  if not conditions_removed:
+    raise IamPolicyBindingNotFound('Policy bindings with the specified member '
+                                   'and role not found!')
+  policy.bindings[:] = [b for b in policy.bindings if b.members]
+
+
+def _RemoveBindingFromIamPolicyWithCondition(policy, member, role, condition):
+  """Remove the member/role binding with the condition from policy."""
+  for binding in policy.bindings:
+    if (role == binding.role and _EqualConditions(
+        binding_condition=binding.condition, input_condition=condition) and
+        member in binding.members):
+      binding.members.remove(member)
+      break
+  else:
+    raise IamPolicyBindingNotFound('Policy binding with the specified member, '
+                                   'role, and condition not found!')
+  policy.bindings[:] = [b for b in policy.bindings if b.members]
+
+
+def _PolicyContainsCondition(policy):
+  """Investigate if policy has bindings with condition.
+
+  Given an IAM policy and return True if the policy contains any binding
+  which has a condition. Return False otherwise.
+
+  Args:
+    policy: IAM policy.
+
+  Returns:
+    True if policy has bindings with conditions, otherwise False.
+  """
+  for binding in policy.bindings:
+    if binding.condition:
+      return True
+  return False
 
 
 def RemoveBindingFromIamPolicy(policy, member, role):
@@ -308,7 +710,7 @@ def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
         'policy file. {1}'
         .format(policy_file_path, str(e)))
   except (apitools_messages.DecodeError, binascii.Error) as e:
-  # DecodeError is raised when etag is badly formatted (not proper Base64)
+    # DecodeError is raised when etag is badly formatted (not proper Base64)
     raise IamEtagReadError(
         'The etag of policy file [{0}] is not properly formatted. {1}'
         .format(policy_file_path, str(e)))

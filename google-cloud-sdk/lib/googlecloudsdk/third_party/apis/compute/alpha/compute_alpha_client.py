@@ -4984,7 +4984,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id=u'compute.instances.getGuestAttributes',
         ordered_params=[u'project', u'zone', u'instance'],
         path_params=[u'instance', u'project', u'zone'],
-        query_params=[u'variableKey'],
+        query_params=[u'queryPath', u'variableKey'],
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getGuestAttributes',
         request_field='',
         request_type_name=u'ComputeInstancesGetGuestAttributesRequest',
@@ -5041,6 +5041,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeInstancesGetSerialPortOutputRequest',
         response_type_name=u'SerialPortOutput',
+        supports_download=False,
+    )
+
+    def GetShieldedVmIdentity(self, request, global_params=None):
+      r"""Returns the Shielded VM Identity of an instance.
+
+      Args:
+        request: (ComputeInstancesGetShieldedVmIdentityRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShieldedVmIdentity) The response message.
+      """
+      config = self.GetMethodConfig('GetShieldedVmIdentity')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetShieldedVmIdentity.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.getShieldedVmIdentity',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getShieldedVmIdentity',
+        request_field='',
+        request_type_name=u'ComputeInstancesGetShieldedVmIdentityRequest',
+        response_type_name=u'ShieldedVmIdentity',
         supports_download=False,
     )
 
@@ -6769,7 +6795,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an machine image in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new machine image must use the same network or, if applicable, the same subnetwork as the original template.
+      r"""Creates an machine image in the specified project using the data that is included in the request. If you are creating a new machine image to update an existing instance, your new machine image must use the same network or, if applicable, the same subnetwork as the original template.
 
       Args:
         request: (ComputeMachineImagesInsertRequest) input message

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 
 
@@ -110,3 +111,32 @@ node. This value should include unit (eg. 3072MB or 9GB). If no
 units are specified, *GB is assumed*. If this key is not specified, local SSD is
 unconstrained.
       """)
+
+
+def GetServerBindingMapperFlag(messages):
+  """Helper to get a choice flag from server binding type enum."""
+  return arg_utils.ChoiceEnumMapper(
+      '--server-binding',
+      messages.ServerBinding.TypeValueValuesEnum,
+      custom_mappings={
+          'RESTART_NODE_ON_ANY_SERVER': (
+              'restart-node-on-any-server',
+              ('Nodes using this template will restart on any physical server '
+               'following a maintenance event.')),
+          'RESTART_NODE_ON_MINIMAL_SERVERS': (
+              'restart-node-on-minimal-servers', """\
+Nodes using this template will restart on the same physical server following a
+maintenance event, instead of being live migrated to or restarted on a new
+physical server. This means that VMs on such nodes will experience outages while
+maintenance is applied. This option may be useful if you are using software
+licenses tied to the underlying server characteristics such as physical sockets
+or cores, to avoid the need for additional licenses when maintenance occurs.
+
+Note that in some cases, Google Compute Engine may need to move your VMs to a
+new underlying server. During these situations your VMs will be restarted on a
+new physical server and assigned a new sole tenant physical server ID.""")},
+      help_str=(
+          'The server binding policy for nodes using this template, which '
+          'determines where the nodes should restart following a maintenance '
+          'event.'),
+      default='restart-node-on-any-server')

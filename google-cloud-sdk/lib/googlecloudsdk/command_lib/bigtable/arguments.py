@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.bigtable import util
-from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -203,16 +202,6 @@ class ArgAdder(object):
         '--display-name',
         help='Friendly name of the instance.',
         required=required)
-    # Specify old flag as removed with an error message
-    self.parser.add_argument(
-        '--description',
-        action=actions.DeprecationAction(
-            '--description',
-            removed=True,
-            error=('Flag {flag_name} has been removed. '
-                   'Use --display-name=DISPLAY_NAME instead.')),
-        help='Friendly name of the instance.',
-        hidden=True)
     return self
 
   def AddInstanceType(self, default=None, help_text=None):
@@ -287,13 +276,13 @@ def GetAppProfileResourceSpec():
       disable_auto_completers=False)
 
 
-def AddInstancesResourceArg(parser, verb):
+def AddInstancesResourceArg(parser, verb, positional=False):
   """Add --instances resource argument to the parser."""
   concept_parsers.ConceptParser.ForResource(
-      '--instances',
+      'instance' if positional else '--instances',
       GetInstanceResourceSpec(),
       'The instances {}.'.format(verb),
-      required=False,
+      required=positional,
       plural=True).AddToParser(parser)
 
 

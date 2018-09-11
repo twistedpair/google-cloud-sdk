@@ -414,38 +414,37 @@ def AddIap(parser, help=None):  # pylint: disable=redefined-builtin
       help=help or 'Specifies a list of settings for IAP service.')
 
 
-def AddSessionAffinity(parser, internal_lb=False, target_pools=False,
-                       hidden=False):
+def AddSessionAffinity(parser, target_pools=False, hidden=False):
   """Adds session affinity flag to the argparse."""
   choices = {
       'CLIENT_IP': (
           "Route requests to instances based on the hash of the client's IP "
           'address.'),
       'NONE': 'Session affinity is disabled.',
+      'CLIENT_IP_PROTO': (
+          'Connections from the same client IP with the same IP '
+          'protocol will go to the same VM in the pool while that VM remains'
+          ' healthy.'),
   }
 
   if not target_pools:
     choices.update({
         'GENERATED_COOKIE': (
-            'Route requests to instances based on the contents of the "GCLB" '
-            'cookie set by the load balancer.')
-    })
-
-  if internal_lb or target_pools:
-    choices.update({
+            '(Applicable if load-balancing scheme is external) Route requests '
+            'to instances based on the contents of the "GCLB" '
+            'cookie set by the load balancer.'),
         'CLIENT_IP_PROTO': (
-            'Connections from the same client IP with the same IP protocol will'
-            'go to the same VM in the pool while that VM remains healthy. This '
-            'option cannot be used for HTTP(s) load balancing.'),
-    })
-  if internal_lb:
-    choices.update({
+            '(Applicable if load-balancing scheme is internal) '
+            'Connections from the same client IP with the same IP '
+            'protocol will go to the same VM in the pool while that VM remains'
+            ' healthy.'),
         'CLIENT_IP_PORT_PROTO': (
-            'Connections from the same client IP with the same IP protocol and '
+            '(Applicable if load-balancing scheme is internal) Connections from'
+            ' the same client IP with the same IP protocol and '
             'port will go to the same VM in the backend while that VM remains '
-            'healthy. This option cannot be used for HTTP(S) load balancing.'),
+            'healthy.'),
     })
-  help_str = 'The type of session affinity to use for this backend service.'
+  help_str = 'The type of session affinity to use.'
   parser.add_argument(
       '--session-affinity',
       choices=choices,

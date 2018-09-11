@@ -22,7 +22,8 @@ from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.command_lib.tasks import parsers
 
 
-_QUEUE_LIST_FORMAT = '''table(
+# pylint: disable=line-too-long
+_ALPHA_QUEUE_LIST_FORMAT = '''table(
     name.basename():label="QUEUE_NAME",
     queuetype():label=TYPE,
     state,
@@ -31,7 +32,16 @@ _QUEUE_LIST_FORMAT = '''table(
     retryConfig.maxAttempts.yesno(no="unlimited"):label="MAX_ATTEMPTS")'''
 
 
-_TASK_LIST_FORMAT = '''table(
+_QUEUE_LIST_FORMAT = '''table(
+    name.basename():label="QUEUE_NAME",
+    queuetype():label=TYPE,
+    state,
+    rateLimits.maxConcurrentDispatches.yesno(no="unlimited").format("{0}").sub("-1", "unlimited"):label="MAX_NUM_OF_TASKS",
+    rateLimits.maxDispatchesPerSecond.yesno(no="unlimited"):label="MAX_RATE (/sec)",
+    retryConfig.maxAttempts.yesno(no="unlimited").format("{0}").sub("-1", "unlimited"):label="MAX_ATTEMPTS")'''
+
+
+_ALPHA_TASK_LIST_FORMAT = '''table(
     name.basename():label="TASK_NAME",
     tasktype():label=TYPE,
     createTime,
@@ -42,20 +52,34 @@ _TASK_LIST_FORMAT = '''table(
         :label="LAST_ATTEMPT_STATUS")'''
 
 
+_TASK_LIST_FORMAT = '''table(
+    name.basename():label="TASK_NAME",
+    tasktype():label=TYPE,
+    createTime,
+    scheduleTime,
+    dispatchCount.yesno(no="0"):label="DISPATCH_ATTEMPTS",
+    responseCount.yesno(no="0"):label="RESPONSE_ATTEMPTS",
+    lastAttempt.responseStatus.message.yesno(no="Unknown")
+        :label="LAST_ATTEMPT_STATUS")'''
+
+
 _LOCATION_LIST_FORMAT = '''table(
      locationId:label="NAME",
      name:label="FULL_NAME")'''
+# pylint: enable=line-too-long
 
 
-def AddListQueuesFormats(parser):
+def AddListQueuesFormats(parser, is_alpha=False):
   parser.display_info.AddTransforms({'queuetype': _TranformQueueType})
-  parser.display_info.AddFormat(_QUEUE_LIST_FORMAT)
+  parser.display_info.AddFormat(
+      _ALPHA_QUEUE_LIST_FORMAT if is_alpha else _QUEUE_LIST_FORMAT)
   parser.display_info.AddUriFunc(parsers.QueuesUriFunc)
 
 
-def AddListTasksFormats(parser):
+def AddListTasksFormats(parser, is_alpha=False):
   parser.display_info.AddTransforms({'tasktype': _TranformTaskType})
-  parser.display_info.AddFormat(_TASK_LIST_FORMAT)
+  parser.display_info.AddFormat(
+      _ALPHA_TASK_LIST_FORMAT if is_alpha else _TASK_LIST_FORMAT)
   parser.display_info.AddUriFunc(parsers.TasksUriFunc)
 
 
@@ -69,7 +93,9 @@ def _IsPullQueue(r):
 
 
 def _IsAppEngineQueue(r):
-  return 'appEngineHttpTarget' in r
+  # appEngineHttpTarget is used in the v2beta2 version of the API but will be
+  # deprecated soon.
+  return 'appEngineHttpTarget' in r or 'appEngineHttpQueue' in r
 
 
 def _IsPullTask(r):

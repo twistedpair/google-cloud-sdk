@@ -309,19 +309,41 @@ def AddAutoprovisioningFlags(parser, hidden=False):
       help="""\
 Enables  node autoprovisioning for a cluster.
 
-Cluster Autoscaler will be able to create new node pools. Requires --max-cpu
-and --max-memory to be specified.""",
+Cluster Autoscaler will be able to create new node pools. Requires maximum CPU
+and memory limits to be specified.""",
       hidden=hidden,
       action='store_true')
-  group.add_argument(
+
+  limits_group = group.add_mutually_exclusive_group()
+  limits_group.add_argument(
+      '--autoprovisioning-config-file',
+      type=arg_parsers.BufferedFileInput(),
+      hidden=hidden,
+      help="""\
+Path of the JSON/YAML file which contains information about the
+cluster's autoscaling configuration. Currently it only contains
+a list of resource limits of the cluster.
+
+Each resource limits contains three fields: resourceType, maximum and minimum.
+resourceType is the resource type to configure, e.g. "cpu", "memory" or
+a gpu-specific string (please run
+`gcloud compute accelerator-types list` to see the available ones).
+Maximum is the maximum amount with the unit of the resource.
+Minimum is the minimum amount with the unit of the resource.
+""")
+
+  from_flags_group = limits_group.add_argument_group('Flags to configure '
+                                                     'resource limits:')
+  from_flags_group.add_argument(
       '--max-cpu',
+      required=True,
       help="""\
 Maximum number of cores in the cluster.
 
 Maximum number of cores to which the cluster can scale.""",
       hidden=hidden,
       type=int)
-  group.add_argument(
+  from_flags_group.add_argument(
       '--min-cpu',
       help="""\
 Minimum number of cores in the cluster.
@@ -329,15 +351,16 @@ Minimum number of cores in the cluster.
 Minimum number of cores to which the cluster can scale.""",
       hidden=hidden,
       type=int)
-  group.add_argument(
+  from_flags_group.add_argument(
       '--max-memory',
+      required=True,
       help="""\
 Maximum memory in the cluster.
 
 Maximum number of gigabytes of memory to which the cluster can scale.""",
       hidden=hidden,
       type=int)
-  group.add_argument(
+  from_flags_group.add_argument(
       '--min-memory',
       help="""\
 Minimum memory in the cluster.
@@ -345,8 +368,8 @@ Minimum memory in the cluster.
 Minimum number of gigabytes of memory to which the cluster can scale.""",
       hidden=hidden,
       type=int)
-  accelerator_group = group.add_argument_group('Arguments to set limits on '
-                                               'accelerators:')
+  accelerator_group = from_flags_group.add_argument_group(
+      'Arguments to set limits on accelerators:')
   accelerator_group.add_argument(
       '--max-accelerator',
       type=arg_parsers.ArgDict(spec={
@@ -1580,12 +1603,13 @@ def AddIstioConfigFlag(parser, suppressed=False):
   """
 
   help_text = """\
-Configurations for Istio addon, requires --addons contains Istio.
+Configurations for Istio addon, requires --addons contains Istio for create,
+or --update-addons Istio=ENABLED for update.
 
 *auth*:::Optional Type of auth NONE or MUTUAL_TLS
 Example:
 
-  $ {command} example-cluster --addons=Istio --istio-config=auth=NONE
+  $ {command} example-cluster --istio-config=auth=NONE
 """
   parser.add_argument(
       '--istio-config',
@@ -1598,8 +1622,8 @@ Example:
       hidden=suppressed)
 
 
-def ValidateIstioConfigArgs(istio_config_args, addons_args):
-  """Validates flags specifying Istio config.
+def ValidateIstioConfigCreateArgs(istio_config_args, addons_args):
+  """Validates flags specifying Istio config for create.
 
   Args:
     istio_config_args: parsed comandline arguments for --istio_config.
@@ -1618,6 +1642,29 @@ def ValidateIstioConfigArgs(istio_config_args, addons_args):
       raise exceptions.InvalidArgumentException(
           '--istio-config', '--addon=Istio must be specified when '
           '--istio-config is given')
+
+
+def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
+  """Validates flags specifying Istio config for update.
+
+  Args:
+    istio_config_args: parsed comandline arguments for --istio_config.
+    disable_addons_args: parsed comandline arguments for --update-addons.
+  Raises:
+    InvalidArgumentException: when auth is not NONE nor MUTUAL_TLS, or
+    --update-addons=Istio=ENABLED is not specified
+  """
+  if istio_config_args:
+    auth = istio_config_args.get('auth', '')
+    if auth not in ['NONE', 'MUTUAL_TLS']:
+      raise exceptions.InvalidArgumentException(
+          '--istio-config', 'auth must be one of NONE or MUTUAL_TLS '
+          'e.g. --istio-config auth=NONE')
+    disable_istio = disable_addons_args.get('Istio')
+    if disable_istio is None or disable_istio:
+      raise exceptions.InvalidArgumentException(
+          '--istio-config', '--update-addons=Istio=ENABLED must be specified '
+          'when --istio-config is given')
 
 
 def AddConcurrentNodeCountFlag(parser):

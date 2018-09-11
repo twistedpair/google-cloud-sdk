@@ -553,6 +553,9 @@ class CommandBuilder(object):
                 yaml_command_schema.NAME_FORMAT_KEY)
           response = self._HandleAsync(
               args, ref, response, request_string=request_string)
+
+        log.UpdatedResource(
+            self._GetDisplayName(ref, args), kind=self.resource_type)
         return self._HandleResponse(response, args)
 
     return Command

@@ -50,6 +50,20 @@ _TROUBLESHOOTING_URL = (
     'https://cloud.google.com/compute/docs/troubleshooting#ssherrors')
 
 
+class UnallocatedIPAddressError(core_exceptions.Error):
+  """An exception to be raised when a network interface's IP address is yet
+
+     to be allocated.
+  """
+
+
+class MissingExternalIPAddressError(core_exceptions.Error):
+  """An exception to be raised when a network interface does not have an
+
+     external IP address.
+  """
+
+
 class CommandError(core_exceptions.Error):
   """Wraps ssh.CommandError, primarly for adding troubleshooting info."""
 
@@ -92,34 +106,35 @@ def GetExternalIPAddress(instance_resource, no_raise=False):
       raising.
 
   Raises:
-    ToolException: If no external IP address is found for the instance_resource
-      and no_raise is False.
-
+    UnallocatedIPAddressError: If the instance_resource's external IP address
+      has yet to be allocated.
+    MissingExternalIPAddressError: If no external IP address is found for the
+      instance_resource and no_raise is False.
   Returns:
     A string IP or None is no_raise is True and no ip exists.
   """
   if instance_resource.networkInterfaces:
-    access_configs = instance_resource.networkInterfaces[0].accessConfigs
-    if access_configs:
-      ip_address = access_configs[0].natIP
-      if ip_address:
-        return ip_address
-      elif not no_raise:
-        raise exceptions.ToolException(
-            'Instance [{0}] in zone [{1}] has not been allocated an external '
-            'IP address yet. Try rerunning this command later.'.format(
-                instance_resource.name,
-                path_simplifier.Name(instance_resource.zone)))
+    for network_interface in instance_resource.networkInterfaces:
+      access_configs = network_interface.accessConfigs
+      if access_configs:
+        ip_address = access_configs[0].natIP
+        if ip_address:
+          return ip_address
+        elif not no_raise:
+          raise UnallocatedIPAddressError(
+              'Instance [{0}] in zone [{1}] has not been allocated an external '
+              'IP address yet. Try rerunning this command later.'.format(
+                  instance_resource.name,
+                  path_simplifier.Name(instance_resource.zone)))
 
   if no_raise:
     return None
 
-  raise exceptions.ToolException(
+  raise MissingExternalIPAddressError(
       'Instance [{0}] in zone [{1}] does not have an external IP address, '
       'so you cannot SSH into it. To add an external IP address to the '
-      'instance, use [gcloud compute instances add-access-config].'
-      .format(instance_resource.name,
-              path_simplifier.Name(instance_resource.zone)))
+      'instance, use [gcloud compute instances add-access-config].'.format(
+          instance_resource.name, path_simplifier.Name(instance_resource.zone)))
 
 
 def GetInternalIPAddress(instance_resource):

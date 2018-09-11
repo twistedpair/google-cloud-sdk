@@ -78,17 +78,15 @@ _GCLOUDIGNORE_REGISTRY = {
 
 
 class SkipFilesError(core_exceptions.Error):
-
-  def __init__(self, error_message):
-    super(SkipFilesError, self).__init__(error_message)
+  pass
 
 
 def _GetGcloudignoreRegistry():
   return runtime_registry.Registry(_GCLOUDIGNORE_REGISTRY, default=False)
 
 
-def GetSourceFileIterator(source_dir, skip_files_regex, has_explicit_skip_files,
-                          runtime, environment):
+def GetSourceFileIterator(upload_dir, skip_files_regex, has_explicit_skip_files,
+                          runtime, environment, source_dir=None):
   """Returns an iterator for accessing all source files to be uploaded.
 
   This method uses several implementations based on the provided runtime and
@@ -103,7 +101,7 @@ def GetSourceFileIterator(source_dir, skip_files_regex, has_explicit_skip_files,
     2b) If there is no .gcloudignore, we use the provided skip_files.
 
   Args:
-    source_dir: str, path to source directory
+    upload_dir: str, path to upload directory, the files to be uploaded.
     skip_files_regex: str, skip_files to use if necessary - see above rules for
       when this could happen. This can be either the user's explicit skip_files
       as defined in their app.yaml or the default skip_files we implicitly
@@ -112,6 +110,8 @@ def GetSourceFileIterator(source_dir, skip_files_regex, has_explicit_skip_files,
       explicitly defined by the user
     runtime: str, runtime as defined in app.yaml
     environment: env.Environment enum
+    source_dir: str, path to original source directory, for writing generated
+      files. May be the same as upload_dir. If None, no files will be generated.
 
   Raises:
     SkipFilesError: if you are using a runtime that no longer supports
@@ -126,22 +126,27 @@ def GetSourceFileIterator(source_dir, skip_files_regex, has_explicit_skip_files,
   gcloudignore_registry = _GetGcloudignoreRegistry()
   registry_entry = gcloudignore_registry.Get(runtime, environment)
 
+  # Dir to look for and possibly generate gcloudignore
+  gcloudignore_dir = source_dir if source_dir is not None else upload_dir
+
   if registry_entry:
     if has_explicit_skip_files:
       raise SkipFilesError(
-          'You cannot use skip_files and have a .gcloudignore file in the same '
-          'application. You should convert your skip_files patterns and put '
-          'them in your .gcloudignore file. For information on the format and '
+          'skip_files cannot be used with the [{}] runtime. '
+          'Ignore patterns are instead expressed in '
+          'a .gcloudignore file. For information on the format and '
           'syntax of .gcloudignore files, see '
-          'https://cloud.google.com/sdk/gcloud/reference/topic/gcloudignore.')
+          'https://cloud.google.com/sdk/gcloud/reference/topic/gcloudignore.'
+          .format(runtime))
     file_chooser = gcloudignore.GetFileChooserForDir(
-        source_dir,
+        gcloudignore_dir,
         default_ignore_file=registry_entry,
-        write_on_disk=True,
+        write_on_disk=source_dir is not None,
         gcloud_ignore_creation_predicate=lambda unused_dir: True,
         include_gitignore=False)
-    return file_chooser.GetIncludedFiles(source_dir, include_dirs=False)
-  elif os.path.exists(os.path.join(source_dir, gcloudignore.IGNORE_FILE_NAME)):
+    return file_chooser.GetIncludedFiles(upload_dir, include_dirs=False)
+  elif os.path.exists(os.path.join(gcloudignore_dir,
+                                   gcloudignore.IGNORE_FILE_NAME)):
     if has_explicit_skip_files:
       raise SkipFilesError(
           'Cannot have both a .gcloudignore file and skip_files defined in '
@@ -149,7 +154,7 @@ def GetSourceFileIterator(source_dir, skip_files_regex, has_explicit_skip_files,
           'ignore patterns to your .gcloudignore file. See '
           'https://cloud.google.com/sdk/gcloud/reference/topic/gcloudignore '
           'for more information about gcloudignore.')
-    return gcloudignore.GetFileChooserForDir(source_dir).GetIncludedFiles(
-        source_dir, include_dirs=False)
+    return gcloudignore.GetFileChooserForDir(gcloudignore_dir).GetIncludedFiles(
+        upload_dir, include_dirs=False)
   else:
-    return util.FileIterator(source_dir, skip_files_regex)
+    return util.FileIterator(upload_dir, skip_files_regex)

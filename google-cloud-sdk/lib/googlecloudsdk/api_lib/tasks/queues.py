@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib import tasks
 from googlecloudsdk.core import exceptions
 
 
@@ -32,39 +31,72 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error for when calling a patch method with no fields specified."""
 
 
-class Queues(object):
+class BaseQueues(object):
   """Client for queues service in the Cloud Tasks API."""
 
-  def __init__(self, tasks_api=None):
-    self.api = tasks_api or tasks.ApiAdapter()
+  def __init__(self, messages, queues_service):
+    self.messages = messages
+    self.queues_service = queues_service
 
   def Get(self, queue_ref):
-    request = self.api.messages.CloudtasksProjectsLocationsQueuesGetRequest(
+    request = self.messages.CloudtasksProjectsLocationsQueuesGetRequest(
         name=queue_ref.RelativeName())
-    return self.api.queues_service.Get(request)
+    return self.queues_service.Get(request)
 
   def List(self, parent_ref, limit=None, page_size=100):
-    request = self.api.messages.CloudtasksProjectsLocationsQueuesListRequest(
+    request = self.messages.CloudtasksProjectsLocationsQueuesListRequest(
         parent=parent_ref.RelativeName())
     return list_pager.YieldFromList(
-        self.api.queues_service, request, batch_size=page_size, limit=limit,
+        self.queues_service, request, batch_size=page_size, limit=limit,
         field='queues', batch_size_attribute='pageSize')
 
+  def Delete(self, queue_ref):
+    request = self.messages.CloudtasksProjectsLocationsQueuesDeleteRequest(
+        name=queue_ref.RelativeName())
+    return self.queues_service.Delete(request)
+
+  def Purge(self, queue_ref):
+    request = self.messages.CloudtasksProjectsLocationsQueuesPurgeRequest(
+        name=queue_ref.RelativeName())
+    return self.queues_service.Purge(request)
+
+  def Pause(self, queue_ref):
+    request = self.messages.CloudtasksProjectsLocationsQueuesPauseRequest(
+        name=queue_ref.RelativeName())
+    return self.queues_service.Pause(request)
+
+  def Resume(self, queue_ref):
+    request = self.messages.CloudtasksProjectsLocationsQueuesResumeRequest(
+        name=queue_ref.RelativeName())
+    return self.queues_service.Resume(request)
+
+  def GetIamPolicy(self, queue_ref):
+    request = (
+        self.messages.CloudtasksProjectsLocationsQueuesGetIamPolicyRequest(
+            resource=queue_ref.RelativeName()))
+    return self.queues_service.GetIamPolicy(request)
+
+  def SetIamPolicy(self, queue_ref, policy):
+    request = (
+        self.messages.CloudtasksProjectsLocationsQueuesSetIamPolicyRequest(
+            resource=queue_ref.RelativeName(),
+            setIamPolicyRequest=self.messages.SetIamPolicyRequest(
+                policy=policy)))
+    return self.queues_service.SetIamPolicy(request)
+
+
+class Queues(BaseQueues):
+  """Client for queues service in the Cloud Tasks API."""
+
   def Create(self, parent_ref, queue_ref, retry_config=None,
-             rate_limits=None, pull_target=None,
-             app_engine_http_target=None):
+             rate_limits=None, app_engine_http_queue=None):
     """Prepares and sends a Create request for creating a queue."""
-    if pull_target and app_engine_http_target:
-      raise CreatingPullAndAppEngineQueueError(
-          'Attempting to send PullTarget and AppEngineHttpTarget '
-          'simultaneously')
-    queue = self.api.messages.Queue(
+    queue = self.messages.Queue(
         name=queue_ref.RelativeName(), retryConfig=retry_config,
-        rateLimits=rate_limits, pullTarget=pull_target,
-        appEngineHttpTarget=app_engine_http_target)
-    request = self.api.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
+        rateLimits=rate_limits, appEngineHttpQueue=app_engine_http_queue)
+    request = self.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
         parent=parent_ref.RelativeName(), queue=queue)
-    return self.api.queues_service.Create(request)
+    return self.queues_service.Create(request)
 
   def Patch(self, queue_ref, retry_config=None, rate_limits=None,
             app_engine_routing_override=None):
@@ -73,7 +105,7 @@ class Queues(object):
     if not any([retry_config, rate_limits, app_engine_routing_override]):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
 
-    queue = self.api.messages.Queue(name=queue_ref.RelativeName())
+    queue = self.messages.Queue(name=queue_ref.RelativeName())
 
     updated_fields = []
     if retry_config is not None:
@@ -84,50 +116,64 @@ class Queues(object):
       updated_fields.append('rateLimits')
     if app_engine_routing_override is not None:
       if _IsEmptyConfig(app_engine_routing_override):
-        queue.appEngineHttpTarget = self.api.messages.AppEngineHttpTarget()
+        queue.appEngineHttpQueue = self.messages.AppEngineHttpQueue()
       else:
-        queue.appEngineHttpTarget = self.api.messages.AppEngineHttpTarget(
+        queue.appEngineHttpQueue = self.messages.AppEngineHttpQueue(
+            appEngineRoutingOverride=app_engine_routing_override)
+      updated_fields.append('appEngineHttpQueue.appEngineRoutingOverride')
+    update_mask = ','.join(updated_fields)
+
+    request = self.messages.CloudtasksProjectsLocationsQueuesPatchRequest(
+        name=queue_ref.RelativeName(), queue=queue, updateMask=update_mask)
+    return self.queues_service.Patch(request)
+
+
+class AlphaQueues(BaseQueues):
+  """Client for queues service in the Cloud Tasks API."""
+
+  def Create(self, parent_ref, queue_ref, retry_config=None, rate_limits=None,
+             pull_target=None, app_engine_http_target=None):
+    """Prepares and sends a Create request for creating a queue."""
+    if pull_target and app_engine_http_target:
+      raise CreatingPullAndAppEngineQueueError(
+          'Attempting to send PullTarget and AppEngineHttpTarget '
+          'simultaneously')
+    queue = self.messages.Queue(
+        name=queue_ref.RelativeName(), retryConfig=retry_config,
+        rateLimits=rate_limits, pullTarget=pull_target,
+        appEngineHttpTarget=app_engine_http_target)
+    request = self.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
+        parent=parent_ref.RelativeName(), queue=queue)
+    return self.queues_service.Create(request)
+
+  def Patch(self, queue_ref, retry_config=None, rate_limits=None,
+            app_engine_routing_override=None):
+    """Prepares and sends a Patch request for modifying a queue."""
+
+    if not any([retry_config, rate_limits, app_engine_routing_override]):
+      raise NoFieldsSpecifiedError('Must specify at least one field to update.')
+
+    queue = self.messages.Queue(name=queue_ref.RelativeName())
+
+    updated_fields = []
+    if retry_config is not None:
+      queue.retryConfig = retry_config
+      updated_fields.append('retryConfig')
+    if rate_limits is not None:
+      queue.rateLimits = rate_limits
+      updated_fields.append('rateLimits')
+    if app_engine_routing_override is not None:
+      if _IsEmptyConfig(app_engine_routing_override):
+        queue.appEngineHttpTarget = self.messages.AppEngineHttpTarget()
+      else:
+        queue.appEngineHttpTarget = self.messages.AppEngineHttpTarget(
             appEngineRoutingOverride=app_engine_routing_override)
       updated_fields.append('appEngineHttpTarget.appEngineRoutingOverride')
     update_mask = ','.join(updated_fields)
 
-    request = self.api.messages.CloudtasksProjectsLocationsQueuesPatchRequest(
+    request = self.messages.CloudtasksProjectsLocationsQueuesPatchRequest(
         name=queue_ref.RelativeName(), queue=queue, updateMask=update_mask)
-    return self.api.queues_service.Patch(request)
-
-  def Delete(self, queue_ref):
-    request = self.api.messages.CloudtasksProjectsLocationsQueuesDeleteRequest(
-        name=queue_ref.RelativeName())
-    return self.api.queues_service.Delete(request)
-
-  def Purge(self, queue_ref):
-    request = self.api.messages.CloudtasksProjectsLocationsQueuesPurgeRequest(
-        name=queue_ref.RelativeName())
-    return self.api.queues_service.Purge(request)
-
-  def Pause(self, queue_ref):
-    request = self.api.messages.CloudtasksProjectsLocationsQueuesPauseRequest(
-        name=queue_ref.RelativeName())
-    return self.api.queues_service.Pause(request)
-
-  def Resume(self, queue_ref):
-    request = self.api.messages.CloudtasksProjectsLocationsQueuesResumeRequest(
-        name=queue_ref.RelativeName())
-    return self.api.queues_service.Resume(request)
-
-  def GetIamPolicy(self, queue_ref):
-    request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesGetIamPolicyRequest(
-            resource=queue_ref.RelativeName()))
-    return self.api.queues_service.GetIamPolicy(request)
-
-  def SetIamPolicy(self, queue_ref, policy):
-    request = (
-        self.api.messages.CloudtasksProjectsLocationsQueuesSetIamPolicyRequest(
-            resource=queue_ref.RelativeName(),
-            setIamPolicyRequest=self.api.messages.SetIamPolicyRequest(
-                policy=policy)))
-    return self.api.queues_service.SetIamPolicy(request)
+    return self.queues_service.Patch(request)
 
 
 def _IsEmptyConfig(config):

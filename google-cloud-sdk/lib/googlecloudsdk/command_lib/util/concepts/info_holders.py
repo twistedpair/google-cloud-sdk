@@ -29,8 +29,8 @@ import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 
 
-ANCHOR_HELP = ('The ID of the {resource} or a fully qualified identifier for '
-               'the {resource}.')
+ANCHOR_HELP = ('ID of the {resource} or fully qualified identifier for the '
+               '{resource}.')
 
 PLURAL_ANCHOR_HELP = ('IDs of the {resource} or fully qualified identifiers '
                       'for the {resource}.')

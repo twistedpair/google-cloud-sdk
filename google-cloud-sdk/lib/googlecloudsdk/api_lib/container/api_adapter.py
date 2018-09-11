@@ -32,6 +32,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as cloud_resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -371,7 +372,8 @@ class CreateClusterOptions(object):
                security_group=None,
                enable_vertical_pod_autoscaling=None,
                security_profile=None,
-               security_profile_runtime_rules=None):
+               security_profile_runtime_rules=None,
+               database_encryption=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -442,6 +444,7 @@ class CreateClusterOptions(object):
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
+    self.database_encryption = database_encryption
 
 
 class UpdateClusterOptions(object):
@@ -454,6 +457,7 @@ class UpdateClusterOptions(object):
                monitoring_service=None,
                logging_service=None,
                disable_addons=None,
+               istio_config=None,
                enable_autoscaling=None,
                min_nodes=None,
                max_nodes=None,
@@ -477,6 +481,7 @@ class UpdateClusterOptions(object):
     self.monitoring_service = monitoring_service
     self.logging_service = logging_service
     self.disable_addons = disable_addons
+    self.istio_config = istio_config
     self.enable_autoscaling = enable_autoscaling
     self.min_nodes = min_nodes
     self.max_nodes = max_nodes
@@ -1805,6 +1810,19 @@ class V1Beta1Adapter(V1Adapter):
 
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
+    if options.addons:
+      # Istio is disabled by default
+      if ISTIO in options.addons:
+        istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
+        mtls = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_MUTUAL_TLS
+        istio_config = options.istio_config
+        if istio_config is not None:
+          auth_config = istio_config.get('auth')
+          if auth_config is not None:
+            if auth_config == 'MUTUAL_TLS':
+              istio_auth = mtls
+        cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
+            disabled=False, auth=istio_auth)
     if options.enable_autoprovisioning is not None:
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(options)
     if options.enable_stackdriver_kubernetes:
@@ -1819,8 +1837,41 @@ class V1Beta1Adapter(V1Adapter):
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
 
+  def UpdateCluster(self, cluster_ref, options):
+    update = self.UpdateClusterCommon(options)
+    if options.disable_addons is not None:
+      if options.disable_addons.get(ISTIO) is not None:
+        istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
+        mtls = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_MUTUAL_TLS
+        istio_config = options.istio_config
+        if istio_config is not None:
+          auth_config = istio_config.get('auth')
+          if auth_config is not None:
+            if auth_config == 'MUTUAL_TLS':
+              istio_auth = mtls
+        update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
+            disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(cluster_ref.projectId,
+                                        cluster_ref.zone,
+                                        cluster_ref.clusterId),
+            update=update))
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
   def CreateClusterAutoscalingCommon(self, options):
     """Create cluster's autoscaling configuration.
+
+    Args:
+      options: Either CreateClusterOptions or UpdateClusterOptions.
+    Returns:
+      Cluster's autoscaling configuration.
+    """
+    # Only supported option in beta is setting limits by flags.
+    return self.CreateClusterAutoscalingFromFlags(options)
+
+  def CreateClusterAutoscalingFromFlags(self, options):
+    """Create cluster's autoscaling configuration from command line flags.
 
     Args:
       options: Either CreateClusterOptions or UpdateClusterOptions.
@@ -1973,12 +2024,29 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       if options.security_profile_runtime_rules is not None:
         cluster.securityProfile.disableRuntimeRules = \
           not options.security_profile_runtime_rules
+    if options.database_encryption:
+      cluster.databaseEncryption = self.messages.DatabaseEncryption(
+          keyName=options.database_encryption,
+          state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
+
+  def CreateClusterAutoscalingCommon(self, options):
+    if options.autoprovisioning_config_file is None:
+      # Create using limits from flags.
+      return self.CreateClusterAutoscalingFromFlags(options)
+    # Create using limits from config file only.
+    return self.CreateClusterAutoscalingFromFile(options)
+
+  def CreateClusterAutoscalingFromFile(self, options):
+    resource_limits = yaml.load(options.autoprovisioning_config_file)
+    return self.messages.ClusterAutoscaling(
+        enableNodeAutoprovisioning=options.enable_autoprovisioning,
+        resourceLimits=resource_limits)
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(options)

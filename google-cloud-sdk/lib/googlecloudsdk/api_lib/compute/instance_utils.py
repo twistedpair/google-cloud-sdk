@@ -968,16 +968,17 @@ def CreateDiskMessages(
             holder.client, holder.resources, None,
             getattr(args, 'create_disk', []), instance_ref))
     local_ssds = []
-    for x in args.local_ssd or []:
-      local_ssd = CreateLocalSsdMessage(
-          holder.resources,
-          holder.client.messages,
-          x.get('device-name'),
-          x.get('interface'),
-          x.get('size'),
-          instance_ref.zone,
-          instance_ref.project)
-      local_ssds.append(local_ssd)
+    if hasattr(args, 'local_ssd'):
+      for x in args.local_ssd or []:
+        local_ssd = CreateLocalSsdMessage(
+            holder.resources,
+            holder.client.messages,
+            x.get('device-name'),
+            x.get('interface'),
+            x.get('size'),
+            instance_ref.zone,
+            instance_ref.project)
+        local_ssds.append(local_ssd)
     boot_disk = CreateDefaultBootAttachedDiskMessage(
         holder.client, holder.resources,
         disk_type=args.boot_disk_type,

@@ -13,11 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Defines tool-wide constants."""
+
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
 # Defaults for instance creation.
-from __future__ import unicode_literals
 DEFAULT_MACHINE_TYPE = 'db-n1-standard-1'
 
 # Determining what executables, flags, and defaults to use for sql connect.

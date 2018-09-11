@@ -27,7 +27,6 @@ from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.storage import storage_api
-from googlecloudsdk.command_lib.app import source_files_util
 from googlecloudsdk.command_lib.storage import storage_parallel
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -68,12 +67,13 @@ class MultiError(core_exceptions.Error):
     self.errors = errors
 
 
-def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
+def _BuildDeploymentManifest(upload_dir, source_file_iterator,
+                             bucket_ref, tmp_dir):
   """Builds a deployment manifest for use with the App Engine Admin API.
 
   Args:
-    info: An instance of yaml_parsing.ServiceInfo.
-    source_dir: str, path to the service's source directory
+    upload_dir: str, path to the service's upload directory
+    source_file_iterator: iterator, yields relative paths to upload.
     bucket_ref: The reference to the bucket files will be placed in.
     tmp_dir: A temp directory for storing generated files (currently just source
         context files).
@@ -83,16 +83,9 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
   manifest = {}
   bucket_url = 'https://storage.googleapis.com/{0}'.format(bucket_ref.bucket)
 
-  skip_files_regex = info.parsed.skip_files.regex
-  runtime = info.parsed.runtime if info.parsed.runtime else ''
-
-  source_file_iterator = source_files_util.GetSourceFileIterator(
-      source_dir, skip_files_regex, info.HasExplicitSkipFiles(), runtime,
-      info.env)
-
   # Normal application files.
   for rel_path in source_file_iterator:
-    full_path = os.path.join(source_dir, rel_path)
+    full_path = os.path.join(upload_dir, rel_path)
     sha1_hash = file_utils.Checksum.HashSingleFile(full_path,
                                                    algorithm=hashlib.sha1)
     manifest_path = '/'.join([bucket_url, sha1_hash])
@@ -104,7 +97,7 @@ def _BuildDeploymentManifest(info, source_dir, bucket_ref, tmp_dir):
   # Source context files. These are temporary files which indicate the current
   # state of the source repository (git, cloud repo, etc.)
   context_files = context_util.CreateContextFiles(
-      tmp_dir, None, source_dir=source_dir)
+      tmp_dir, None, source_dir=upload_dir)
   for context_file in context_files:
     rel_path = os.path.basename(context_file)
     if rel_path in manifest:
@@ -257,8 +250,8 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
                                show_progress_bar=True)
 
 
-def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
-                          max_file_size=None):
+def CopyFilesToCodeBucket(upload_dir, source_file_iterator,
+                          bucket_ref, max_file_size=None):
   """Copies application files to the Google Cloud Storage code bucket.
 
   Use the Cloud Storage API using threads.
@@ -291,8 +284,8 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
     values already present in the bucket will not be uploaded again.
 
   Args:
-    service: ServiceYamlInfo, The service being deployed.
-    source_dir: str, path to the service's source directory
+    upload_dir: str, path to the service's upload directory
+    source_file_iterator: iterator, yields relative paths to upload.
     bucket_ref: The reference to the bucket files will be placed in.
     max_file_size: int, File size limit per individual file or None if no limit.
 
@@ -303,10 +296,10 @@ def CopyFilesToCodeBucket(service, source_dir, bucket_ref,
   # Collect a list of files to upload, indexed by the SHA so uploads are
   # deduplicated.
   with file_utils.TemporaryDirectory() as tmp_dir:
-    manifest = _BuildDeploymentManifest(service, source_dir, bucket_ref,
-                                        tmp_dir)
+    manifest = _BuildDeploymentManifest(
+        upload_dir, source_file_iterator, bucket_ref, tmp_dir)
     files_to_upload = _BuildFileUploadMap(
-        manifest, source_dir, bucket_ref, tmp_dir, max_file_size)
+        manifest, upload_dir, bucket_ref, tmp_dir, max_file_size)
     _UploadFilesThreads(files_to_upload, bucket_ref)
   log.status.Print('File upload done.')
   log.info('Manifest: [{0}]'.format(manifest))

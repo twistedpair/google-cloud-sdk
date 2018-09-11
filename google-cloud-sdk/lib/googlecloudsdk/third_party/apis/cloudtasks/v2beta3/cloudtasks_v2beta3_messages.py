@@ -1048,9 +1048,8 @@ class Queue(_messages.Message):
         or [queue.xml](https://cloud.google.com/appengine/docs/standard/java/c
         onfig/queueref) is uploaded which does not contain the queue. You
         cannot directly disable a queue.  When a queue is disabled, tasks can
-        still be added to a queue but the tasks are not dispatched and
-        LeaseTasks calls return a `FAILED_PRECONDITION` error.  To permanently
-        delete this queue and all of its tasks, call DeleteQueue.
+        still be added to a queue but the tasks are not dispatched.  To
+        permanently delete this queue and all of its tasks, call DeleteQueue.
     """
     STATE_UNSPECIFIED = 0
     RUNNING = 1
@@ -1083,16 +1082,15 @@ class RateLimits(_messages.Message):
       `max_burst_size`. Each time a task is dispatched, a token is removed
       from the bucket. Tasks will be dispatched until the queue's bucket runs
       out of tokens. The bucket will be continuously refilled with new tokens
-      based on max_tasks_dispatched_per_second.  Cloud Tasks will pick the
-      value of `max_burst_size` based on the value of
-      max_tasks_dispatched_per_second.  For App Engine queues that were
-      created or updated using `queue.yaml/xml`, `max_burst_size` is equal to
-      [bucket_size](https://cloud.google.com/appengine/docs/standard/python/co
-      nfig/queueref#bucket_size). Since `max_burst_size` is output only, if
-      UpdateQueue is called on a queue created by `queue.yaml/xml`,
-      `max_burst_size` will be reset based on the value of
-      max_tasks_dispatched_per_second, regardless of whether
-      max_tasks_dispatched_per_second is updated.
+      based on max_dispatches_per_second.  Cloud Tasks will pick the value of
+      `max_burst_size` based on the value of max_dispatches_per_second.  For
+      App Engine queues that were created or updated using `queue.yaml/xml`,
+      `max_burst_size` is equal to [bucket_size](https://cloud.google.com/appe
+      ngine/docs/standard/python/config/queueref#bucket_size). Since
+      `max_burst_size` is output only, if UpdateQueue is called on a queue
+      created by `queue.yaml/xml`, `max_burst_size` will be reset based on the
+      value of max_dispatches_per_second, regardless of whether
+      max_dispatches_per_second is updated.
     maxConcurrentDispatches: The maximum number of concurrent tasks that Cloud
       Tasks allows to be dispatched for this queue. After this threshold has
       been reached, Cloud Tasks stops dispatching tasks until the number of
@@ -1123,9 +1121,13 @@ class RetryConfig(_messages.Message):
   retried.
 
   Fields:
-    maxAttempts: The maximum number of attempts for a task.  Cloud Tasks will
-      attempt the task `max_attempts` times (that is, if the first attempt
-      fails, then there will be `max_attempts - 1` retries).  Must be > 0.
+    maxAttempts: Number of attempts per task.  Cloud Tasks will attempt the
+      task `max_attempts` times (that is, if the first attempt fails, then
+      there will be `max_attempts - 1` retries). Must be >= -1.  If
+      unspecified when the queue is created, Cloud Tasks will pick the
+      default.  -1 indicates unlimited attempts.  This field has the same
+      meaning as [task_retry_limit in queue.yaml/xml](https://cloud.google.com
+      /appengine/docs/standard/python/config/queueref#retry_parameters).
     maxBackoff: A task will be scheduled for retry between min_backoff and
       max_backoff duration after it fails, if the queue's RetryConfig
       specifies that the task should be retried.  If unspecified when the
@@ -1164,7 +1166,6 @@ class RetryConfig(_messages.Message):
       will be truncated to the nearest second.  This field has the same
       meaning as [min_backoff_seconds in queue.yaml/xml](https://cloud.google.
       com/appengine/docs/standard/python/config/queueref#retry_parameters).
-    unlimitedAttempts: If true, then the number of attempts is unlimited.
   """
 
   maxAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1172,7 +1173,6 @@ class RetryConfig(_messages.Message):
   maxDoublings = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   maxRetryDuration = _messages.StringField(4)
   minBackoff = _messages.StringField(5)
-  unlimitedAttempts = _messages.BooleanField(6)
 
 
 class RunTaskRequest(_messages.Message):
@@ -1395,8 +1395,8 @@ class Task(_messages.Message):
       includes tasks which have been dispatched but haven't received a
       response.
     firstAttempt: Output only. The status of the task's first attempt.  Only
-      dispatch_time will be set. The other AttemptStatus information is not
-      retained by Cloud Tasks.
+      dispatch_time will be set. The other Attempt information is not retained
+      by Cloud Tasks.
     lastAttempt: Output only. The status of the task's last attempt.
     name: Optionally caller-specified in CreateTask.  The task name.  The task
       name must have the following format: `projects/PROJECT_ID/locations/LOCA

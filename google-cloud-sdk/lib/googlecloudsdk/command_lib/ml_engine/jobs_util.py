@@ -44,7 +44,8 @@ JOB_FORMAT = 'yaml(jobId,state,startTime.date(tz=LOCAL),endTime.date(tz=LOCAL))'
 # last time)
 _CONTINUE_INTERVAL = 10
 
-
+_TEXT_FILE_URL = ('https://www.tensorflow.org/guide/datasets'
+                  '#consuming_text_data')
 _TF_RECORD_URL = ('https://www.tensorflow.org/guide/datasets'
                   '#consuming_tfrecord_data')
 
@@ -54,8 +55,7 @@ _PREDICTION_DATA_FORMAT_MAPPER = arg_utils.ChoiceEnumMapper(
     jobs.GetMessagesModule(
     ).GoogleCloudMlV1PredictionInput.DataFormatValueValuesEnum,
     custom_mappings={
-        'TEXT': ('text', ('Text files with instances separated '
-                          'by the new-line character.')),
+        'TEXT': ('text', ('Text files; see {}'.format(_TEXT_FILE_URL))),
         'TF_RECORD': ('tf-record',
                       'TFRecord files; see {}'.format(_TF_RECORD_URL)),
         'TF_RECORD_GZIP': ('tf-record-gzip',

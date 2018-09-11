@@ -136,6 +136,7 @@ def GetClearLabelsFlag(labels_name='labels'):
   return base.Argument(
       '--clear-{}'.format(labels_name),
       action='store_true',
+      # TODO(b/113682642): Update text to be compliant with the style guide.
       help="""\
           Removes all labels. If `--update-{labels}` is also specified then
           `--clear-{labels}` is applied first.
