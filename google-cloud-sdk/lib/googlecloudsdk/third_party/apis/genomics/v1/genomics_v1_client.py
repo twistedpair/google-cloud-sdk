@@ -837,7 +837,15 @@ This operation is only possible for a week after the deletion occurred.
           }
 
     def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. Clients may use Operations.GetOperation or Operations.ListOperations to check whether the cancellation succeeded or the operation completed despite cancellation.
+      r"""Starts asynchronous cancellation on a long-running operation.
+The server makes a best effort to cancel the operation, but success is not
+guaranteed. Clients may use Operations.GetOperation
+or Operations.ListOperations
+to check whether the cancellation succeeded or the operation completed
+despite cancellation.
+Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
+
+* `genomics.operations.cancel`
 
       Args:
         request: (GenomicsOperationsCancelRequest) input message
@@ -864,9 +872,12 @@ This operation is only possible for a week after the deletion occurred.
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the latest state of a long-running operation.  Clients can use this.
-method to poll the operation result at intervals as recommended by the API
-service.
+      r"""Gets the latest state of a long-running operation.
+Clients can use this method to poll the operation result at intervals as
+recommended by the API service.
+Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
+
+* `genomics.operations.get`
 
       Args:
         request: (GenomicsOperationsGetRequest) input message
@@ -893,7 +904,10 @@ service.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request.
+      r"""Lists operations that match the specified filter in the request.&#13;.
+Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
+
+* `genomics.operations.list`
 
       Args:
         request: (GenomicsOperationsListRequest) input message

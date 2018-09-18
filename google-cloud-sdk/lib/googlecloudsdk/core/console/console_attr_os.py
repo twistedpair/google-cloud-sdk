@@ -125,9 +125,11 @@ def _GetTermSizeEnvironment():
 def _GetTermSizeTput():
   """Returns the terminal x and y dimemsions from tput(1)."""
   import subprocess  # pylint: disable=g-import-not-at-top
-  output = subprocess.check_output(['tput', 'cols'], stderr=subprocess.STDOUT)
+  output = encoding.Decode(subprocess.check_output(['tput', 'cols'],
+                                                   stderr=subprocess.STDOUT))
   cols = int(output)
-  output = subprocess.check_output(['tput', 'lines'], stderr=subprocess.STDOUT)
+  output = encoding.Decode(subprocess.check_output(['tput', 'lines'],
+                                                   stderr=subprocess.STDOUT))
   rows = int(output)
   return (cols, rows)
 

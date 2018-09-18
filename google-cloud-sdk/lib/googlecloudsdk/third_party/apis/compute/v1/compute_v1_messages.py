@@ -13761,14 +13761,17 @@ class CustomerEncryptionKey(_messages.Message):
   r"""Represents a customer-supplied encryption key
 
   Fields:
+    kmsKeyName: The name of the encryption key that is stored in Google Cloud
+      KMS.
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
       RFC 4648 base64 to either encrypt or decrypt this resource.
     sha256: [Output only] The RFC 4648 base64 encoded SHA-256 hash of the
       customer-supplied encryption key that protects this resource.
   """
 
-  rawKey = _messages.StringField(1)
-  sha256 = _messages.StringField(2)
+  kmsKeyName = _messages.StringField(1)
+  rawKey = _messages.StringField(2)
+  sha256 = _messages.StringField(3)
 
 
 class CustomerEncryptionKeyProtectedDisk(_messages.Message):
@@ -15319,12 +15322,13 @@ class ForwardingRule(_messages.Message):
       only. A global forwarding rule supports either IPv4 or IPv6.  When the
       load balancing scheme is INTERNAL_SELF_MANAGED, this must be a URL
       reference to an existing Address resource ( internal regional static IP
-      address).  When the load balancing scheme is INTERNAL, this can only be
-      an RFC 1918 IP address belonging to the network/subnet configured for
-      the forwarding rule. By default, if this field is empty, an ephemeral
-      internal IP address will be automatically allocated from the IP range of
-      the subnet or network configured for this forwarding rule.  An address
-      can be specified either by a literal IP address or a URL reference to an
+      address), with a purpose of GCE_END_POINT and address_type of INTERNAL.
+      When the load balancing scheme is INTERNAL, this can only be an RFC 1918
+      IP address belonging to the network/subnet configured for the forwarding
+      rule. By default, if this field is empty, an ephemeral internal IP
+      address will be automatically allocated from the IP range of the subnet
+      or network configured for this forwarding rule.  An address can be
+      specified either by a literal IP address or a URL reference to an
       existing Address resource. The following examples are all valid:   -
       100.1.2.3  - https://www.googleapis.com/compute/v1/projects/project/regi
       ons/region/addresses/address  -
@@ -16003,6 +16007,9 @@ class HTTPHealthCheck(_messages.Message):
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP health check request. The
       default value is /.
+    response: The string to match anywhere in the first 1024 bytes of the
+      response body. If left empty (the default value), the status code
+      determines health. The response data can only be ASCII.
   """
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
@@ -16021,6 +16028,7 @@ class HTTPHealthCheck(_messages.Message):
   portName = _messages.StringField(3)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
   requestPath = _messages.StringField(5)
+  response = _messages.StringField(6)
 
 
 class HTTPSHealthCheck(_messages.Message):
@@ -16043,6 +16051,9 @@ class HTTPSHealthCheck(_messages.Message):
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTPS health check request. The
       default value is /.
+    response: The string to match anywhere in the first 1024 bytes of the
+      response body. If left empty (the default value), the status code
+      determines health. The response data can only be ASCII.
   """
 
   class ProxyHeaderValueValuesEnum(_messages.Enum):
@@ -16061,6 +16072,7 @@ class HTTPSHealthCheck(_messages.Message):
   portName = _messages.StringField(3)
   proxyHeader = _messages.EnumField('ProxyHeaderValueValuesEnum', 4)
   requestPath = _messages.StringField(5)
+  response = _messages.StringField(6)
 
 
 class HealthCheck(_messages.Message):
@@ -20636,8 +20648,8 @@ class License(_messages.Message):
     kind: [Output Only] Type of resource. Always compute#license for licenses.
     licenseCode: [Output Only] The unique code used to attach this license to
       images, snapshots, and disks.
-    name: [Output Only] Name of the resource. The name is 1-63 characters long
-      and complies with RFC1035.
+    name: Name of the resource. The name must be 1-63 characters long and
+      comply with RFC1035.
     resourceRequirements: A LicenseResourceRequirements attribute.
     selfLink: [Output Only] Server-defined URL for the resource.
     transferable: If false, licenses will not be copied from the source
@@ -24303,6 +24315,7 @@ class Quota(_messages.Message):
       DISKS_TOTAL_GB: <no description>
       FIREWALLS: <no description>
       FORWARDING_RULES: <no description>
+      GLOBAL_INTERNAL_ADDRESSES: <no description>
       GPUS_ALL_REGIONS: <no description>
       HEALTH_CHECKS: <no description>
       IMAGES: <no description>
@@ -24363,56 +24376,57 @@ class Quota(_messages.Message):
     DISKS_TOTAL_GB = 6
     FIREWALLS = 7
     FORWARDING_RULES = 8
-    GPUS_ALL_REGIONS = 9
-    HEALTH_CHECKS = 10
-    IMAGES = 11
-    INSTANCES = 12
-    INSTANCE_GROUPS = 13
-    INSTANCE_GROUP_MANAGERS = 14
-    INSTANCE_TEMPLATES = 15
-    INTERCONNECTS = 16
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 17
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 18
-    INTERNAL_ADDRESSES = 19
-    IN_USE_ADDRESSES = 20
-    IN_USE_BACKUP_SCHEDULES = 21
-    LOCAL_SSD_TOTAL_GB = 22
-    NETWORKS = 23
-    NVIDIA_K80_GPUS = 24
-    NVIDIA_P100_GPUS = 25
-    NVIDIA_P100_VWS_GPUS = 26
-    NVIDIA_P4_GPUS = 27
-    NVIDIA_P4_VWS_GPUS = 28
-    NVIDIA_V100_GPUS = 29
-    PREEMPTIBLE_CPUS = 30
-    PREEMPTIBLE_LOCAL_SSD_GB = 31
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 32
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 33
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 34
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 35
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 36
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 37
-    REGIONAL_AUTOSCALERS = 38
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 39
-    RESOURCE_POLICIES = 40
-    ROUTERS = 41
-    ROUTES = 42
-    SECURITY_POLICIES = 43
-    SECURITY_POLICY_RULES = 44
-    SNAPSHOTS = 45
-    SSD_TOTAL_GB = 46
-    SSL_CERTIFICATES = 47
-    STATIC_ADDRESSES = 48
-    SUBNETWORKS = 49
-    TARGET_HTTPS_PROXIES = 50
-    TARGET_HTTP_PROXIES = 51
-    TARGET_INSTANCES = 52
-    TARGET_POOLS = 53
-    TARGET_SSL_PROXIES = 54
-    TARGET_TCP_PROXIES = 55
-    TARGET_VPN_GATEWAYS = 56
-    URL_MAPS = 57
-    VPN_TUNNELS = 58
+    GLOBAL_INTERNAL_ADDRESSES = 9
+    GPUS_ALL_REGIONS = 10
+    HEALTH_CHECKS = 11
+    IMAGES = 12
+    INSTANCES = 13
+    INSTANCE_GROUPS = 14
+    INSTANCE_GROUP_MANAGERS = 15
+    INSTANCE_TEMPLATES = 16
+    INTERCONNECTS = 17
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 18
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 19
+    INTERNAL_ADDRESSES = 20
+    IN_USE_ADDRESSES = 21
+    IN_USE_BACKUP_SCHEDULES = 22
+    LOCAL_SSD_TOTAL_GB = 23
+    NETWORKS = 24
+    NVIDIA_K80_GPUS = 25
+    NVIDIA_P100_GPUS = 26
+    NVIDIA_P100_VWS_GPUS = 27
+    NVIDIA_P4_GPUS = 28
+    NVIDIA_P4_VWS_GPUS = 29
+    NVIDIA_V100_GPUS = 30
+    PREEMPTIBLE_CPUS = 31
+    PREEMPTIBLE_LOCAL_SSD_GB = 32
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 33
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 34
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 35
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 36
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 37
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 38
+    REGIONAL_AUTOSCALERS = 39
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 40
+    RESOURCE_POLICIES = 41
+    ROUTERS = 42
+    ROUTES = 43
+    SECURITY_POLICIES = 44
+    SECURITY_POLICY_RULES = 45
+    SNAPSHOTS = 46
+    SSD_TOTAL_GB = 47
+    SSL_CERTIFICATES = 48
+    STATIC_ADDRESSES = 49
+    SUBNETWORKS = 50
+    TARGET_HTTPS_PROXIES = 51
+    TARGET_HTTP_PROXIES = 52
+    TARGET_INSTANCES = 53
+    TARGET_POOLS = 54
+    TARGET_SSL_PROXIES = 55
+    TARGET_TCP_PROXIES = 56
+    TARGET_VPN_GATEWAYS = 57
+    URL_MAPS = 58
+    VPN_TUNNELS = 59
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -27751,7 +27765,9 @@ class Subnetwork(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource. This field can be set only at
       resource creation time.
-    enableFlowLogs: Whether to enable flow logging for this subnetwork.
+    enableFlowLogs: Whether to enable flow logging for this subnetwork. If
+      this field is not explicitly set, it will not appear in get listings. If
+      not set the default behavior is to disable flow logging.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint

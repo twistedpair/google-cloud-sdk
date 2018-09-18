@@ -295,9 +295,9 @@ class EnvironmentConfig(_messages.Message):
   r"""Configuration information for an environment.
 
   Fields:
-    airflowUri: The URI of the Apache Airflow Web UI hosted within this
-      environment (see [Airflow web interface](/composer/docs/how-to/accessing
-      /airflow-web-interface)).
+    airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
+      within this environment (see [Airflow web interface](/composer/docs/how-
+      to/accessing/airflow-web-interface)).
     dagGcsPrefix: Output only. The Cloud Storage prefix of the DAGs for this
       environment. Although Cloud Storage objects reside in a flat namespace,
       a hierarchical file tree can be simulated using "/"-delimited object
@@ -388,7 +388,7 @@ class NodeConfig(_messages.Message):
       VPC](/vpc/docs/shared-vpc) is not currently supported. The network must
       belong to the environment's project. If unspecified, the "default"
       network ID in the environment's project is used.  If a [Custom Subnet
-      Network]((/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
+      Network](/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
       `nodeConfig.subnetwork` must also be provided.
     oauthScopes: Optional. The set of Google API scopes to be made available
       on all node VMs. If `oauth_scopes` is empty, defaults to

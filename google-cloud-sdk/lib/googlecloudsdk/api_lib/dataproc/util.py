@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
+import re
 import time
 import uuid
 from apitools.base.py import encoding
@@ -529,6 +530,91 @@ def _GetValidator(schema, schema_dir):
   return validator
 
 
+def _ParseProperties(error_message):
+  """Parses disallowed properties from an error message.
+
+  Args:
+    error_message: The error message to parse.
+
+  Returns:
+    A list of property names.
+
+  A sample error message might look like this:
+
+  Additional properties are not allowed ('id', 'createTime', 'updateTime',
+  'name' were unexpected)
+
+  """
+  return list(
+      property.strip('\'') for property in re.findall("'[^']*'", error_message))
+
+
+def _ClearFields(fields, path_deque, py_dict):
+  """Clear the given fields in a dict at a given path.
+
+  Args:
+    fields: A list of fields to clear
+    path_deque: A deque containing path segments
+    py_dict: A nested dict from which to clear the fields
+  """
+  tmp_dict = py_dict
+  for elem in path_deque:
+    tmp_dict = tmp_dict[elem]
+  for field in fields:
+    if field in tmp_dict:
+      del tmp_dict[field]
+
+
+def _IsDisallowedPropertiesError(error):
+  """Checks if an error is due to properties that were not in the schema.
+
+  Args:
+    error: A ValidationError
+
+  Returns:
+    Whether the error was due to disallowed properties
+  """
+  prop_validator = 'additionalProperties'
+  prop_message = 'Additional properties are not allowed'
+  return error.validator == prop_validator and prop_message in error.message
+
+
+def _FilterYaml(parsed_yaml, schema_path):
+  """Filter out fields from the yaml that are not in the schema.
+
+  Args:
+    parsed_yaml: yaml to filter
+    schema_path: Path to schema, relative to schemas directory.
+  """
+  full_schema_path = os.path.join(SCHEMA_DIR, schema_path)
+  schema = yaml.load(pkg_resources.GetResourceFromFile(full_schema_path))
+
+  schema_dir = os.path.join(SCHEMA_DIR, os.path.dirname(schema_path))
+  validator = _GetValidator(schema, schema_dir)
+
+  errors = list(validator.iter_errors(parsed_yaml))
+  has_warnings = False
+  for error in errors:
+    # There are other types of errors (for example, missing a required field),
+    # but these are the only ones we expect to see on export and the only ones
+    # we want to act on. There is no way to distinguish disallowed fields from
+    # unrecognized fields. If we attempt to export an unrecognized value for a
+    # recognized field (this will happen whenever we add a new enum value), or
+    # if we attempt to export a resource that is missing a required field, we
+    # will log the errors as warnings and the exported data will not be able to
+    # be imported via the import command until the import command is updated.
+    if _IsDisallowedPropertiesError(error):
+      fields_to_remove = _ParseProperties(error.message)
+      _ClearFields(fields_to_remove, error.path, parsed_yaml)
+    else:
+      log.warning(error.message)
+      has_warnings = True
+    if has_warnings:
+      log.warning(
+          'The import command may need to be updated to handle the export data.'
+      )
+
+
 def _ValidateYaml(parsed_yaml, schema_path):
   """Validate yaml against schema.
 
@@ -578,18 +664,17 @@ def ReadYaml(message_type, stream, schema_path=None):
   return message
 
 
-def WriteYaml(message, stream, filter_function=None):
+def WriteYaml(message, stream, schema_path=None):
   """Write a message as yaml to a stream.
 
   Args:
     message: Message to write.
     stream: Stream to which the yaml should be written.
-    filter_function: Function used to filter out unwanted fields from the yaml.
+    schema_path: Path to schema used to filter unwanted fields.
   """
   py_value = encoding.MessageToPyValue(message)
-  if filter_function:
-    # TODO(b/110426036): Use schema to filter instead of custom method.
-    filter_function(py_value)
+  if schema_path:
+    _FilterYaml(py_value, schema_path)
   yaml.dump(py_value, stream=stream)
 
 

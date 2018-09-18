@@ -24659,14 +24659,26 @@ class InstanceGroupManagerStatus(_messages.Message):
       of change (for example, creation, restart, or deletion); no future
       changes are scheduled for instances in the managed instance group; and
       the managed instance group itself is not being modified.
-    versionTargetReached: [Output Only] A bit indicating whether version
-      target has been reached in this managed instance group, i.e. all
-      instances are in their target version. Instances' target version are
-      specified by version field on Instance Group Manager.
+    versionTarget: [Output Only] A status of consistency of Instances'
+      versions with their target version specified by version field on
+      Instance Group Manager.
   """
 
   isStable = _messages.BooleanField(1)
-  versionTargetReached = _messages.BooleanField(2)
+  versionTarget = _messages.MessageField('InstanceGroupManagerStatusVersionTarget', 2)
+
+
+class InstanceGroupManagerStatusVersionTarget(_messages.Message):
+  r"""A InstanceGroupManagerStatusVersionTarget object.
+
+  Fields:
+    isReached: [Output Only] A bit indicating whether version target has been
+      reached in this managed instance group, i.e. all instances are in their
+      target version. Instances' target version are specified by version field
+      on Instance Group Manager.
+  """
+
+  isReached = _messages.BooleanField(1)
 
 
 class InstanceGroupManagerUpdatePolicy(_messages.Message):
@@ -28194,8 +28206,8 @@ class License(_messages.Message):
     kind: [Output Only] Type of resource. Always compute#license for licenses.
     licenseCode: [Output Only] The unique code used to attach this license to
       images, snapshots, and disks.
-    name: [Output Only] Name of the resource. The name is 1-63 characters long
-      and complies with RFC1035.
+    name: Name of the resource. The name must be 1-63 characters long and
+      comply with RFC1035.
     resourceRequirements: A LicenseResourceRequirements attribute.
     selfLink: [Output Only] Server-defined URL for the resource.
     transferable: If false, licenses will not be copied from the source
@@ -28538,7 +28550,8 @@ class MachineImage(_messages.Message):
       the following are valid values:   - https://www.googleapis.com/compute/v
       1/projects/project/zones/zone/instances/instance  -
       projects/project/zones/zone/instances/instance
-    sourceInstanceProperties: A SourceInstanceProperties attribute.
+    sourceInstanceProperties: [Output Only] properties of source instance.
+      Currently, input for this field is not supported.
     status: [Output Only] The status of disk creation.
     storageLocations: GCS bucket storage location of the snapshot (regional or
       multi-regional).
@@ -38599,7 +38612,9 @@ class Subnetwork(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource. This field can be set only at
       resource creation time.
-    enableFlowLogs: Whether to enable flow logging for this subnetwork.
+    enableFlowLogs: Whether to enable flow logging for this subnetwork. If
+      this field is not explicitly set, it will not appear in get listings. If
+      not set the default behavior is to disable flow logging.
     enablePrivateV6Access: Whether the VMs in this subnet can directly access
       Google services via internal IPv6 addresses. This field can be both set
       at resource creation time and updated using patch.

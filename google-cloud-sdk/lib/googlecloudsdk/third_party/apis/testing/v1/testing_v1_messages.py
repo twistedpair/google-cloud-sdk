@@ -493,12 +493,12 @@ class ClientInfoDetail(_messages.Message):
 
 
 class Date(_messages.Message):
-  r"""Represents a whole calendar date, e.g. date of birth. The time of day
-  and time zone are either specified elsewhere or are not significant. The
-  date is relative to the Proleptic Gregorian Calendar. The day may be 0 to
-  represent a year and month where the day is not significant, e.g. credit
-  card expiration date. The year may be 0 to represent a month and day
-  independent of year, e.g. anniversary date. Related types are
+  r"""Represents a whole calendar date, for example date of birth. The time of
+  day and time zone are either specified elsewhere or are not significant. The
+  date is relative to the Proleptic Gregorian Calendar. The day can be 0 to
+  represent a year and month where the day is not significant, for example
+  credit card expiration date. The year can be 0 to represent a month and day
+  independent of year, for example anniversary date. Related types are
   google.type.TimeOfDay and `google.protobuf.Timestamp`.
 
   Fields:
@@ -728,7 +728,9 @@ class IosTestSetup(_messages.Message):
 
   Fields:
     networkProfile: Optional. The network traffic profile used for running the
-      test.
+      test. Available network profiles can be queried by using the
+      NETWORK_CONFIGURATION environment type when calling
+      TestEnvironmentDiscoveryService.GetTestEnvironmentCatalog.
   """
 
   networkProfile = _messages.StringField(1)
@@ -740,9 +742,9 @@ class IosVersion(_messages.Message):
   Fields:
     id: Output only. An opaque id for this iOS version. Use this id to invoke
       the TestExecutionService.
-    majorVersion: Output only. A integer representing the major iOS version.
+    majorVersion: Output only. An integer representing the major iOS version.
       Examples: "8", "9"
-    minorVersion: Output only. A integer representing the minor iOS version.
+    minorVersion: Output only. An integer representing the minor iOS version.
       Examples: "1", "2"
     tags: Output only. Tags for this dimension. Examples: "default",
       "preview", "deprecated"
@@ -1351,8 +1353,10 @@ class TestSetup(_messages.Message):
       applicable for instrumentation tests).
     filesToPush: List of files to push to the device before starting the test.
       Optional
-    networkProfile: The network traffic profile used for running the test.
-      Optional
+    networkProfile: Optional. The network traffic profile used for running the
+      test. Available network profiles can be queried by using the
+      NETWORK_CONFIGURATION environment type when calling
+      TestEnvironmentDiscoveryService.GetTestEnvironmentCatalog.
   """
 
   account = _messages.MessageField('Account', 1)

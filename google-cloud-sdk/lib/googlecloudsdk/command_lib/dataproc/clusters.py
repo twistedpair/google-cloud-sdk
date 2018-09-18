@@ -37,6 +37,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import times
 
 
+GENERATED_LABEL_PREFIX = 'goog-dataproc-'
+
+
 def ArgsForClusterRef(parser, beta=False):
   """Register flags for creating a dataproc cluster.
 
@@ -594,3 +597,26 @@ def CreateCluster(dataproc, cluster, is_async, timeout):
     if operation.details:
       log.error('Details:\n' + operation.details)
   return cluster
+
+
+def DeleteGeneratedLabels(cluster, dataproc):
+  """Filter out Dataproc-generated cluster labels.
+
+  Args:
+    cluster: Cluster to filter
+    dataproc: Dataproc object that contains client, messages, and resources
+  """
+  # Filter out Dataproc-generated labels.
+  if cluster.labels:
+    labels = encoding.MessageToPyValue(cluster.labels)
+    labels_to_delete = []
+    for label in labels:
+      if label.startswith(GENERATED_LABEL_PREFIX):
+        labels_to_delete.append(label)
+    for label in labels_to_delete:
+      del labels[label]
+    if not labels:
+      cluster.labels = None
+    else:
+      cluster.labels = encoding.DictToMessage(
+          labels, dataproc.messages.Cluster.LabelsValue)

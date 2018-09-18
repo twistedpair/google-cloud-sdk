@@ -154,7 +154,7 @@ def _PullQueueFlags():
   return [
       base.Argument(
           '--max-attempts',
-          type=arg_parsers.BoundedInt(1, sys.maxint, unlimited=True),
+          type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
           help="""\
           The maximum number of attempts per task in the queue.
           """),

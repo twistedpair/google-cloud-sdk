@@ -34,7 +34,7 @@ def AddZoneFlag(parser):
       '-z',
       help="""
           The compute zone (e.g. us-central1-a) for the cluster. If empty,
-          and --region is set to a value other than 'global', the server will
+          and --region is set to a value other than `global`, the server will
           pick a zone in the region.
           """,
       action=actions.StoreProperty(properties.VALUES.compute.zone))
@@ -56,12 +56,25 @@ def AddFileFlag(parser, input_type, action):
 def AddTemplateSourceFlag(parser):
   parser.add_argument(
       '--source',
-      help="""The path to a YAML file containing a Dataproc WorkflowTemplate
+      help="""Path to a YAML file containing a Dataproc WorkflowTemplate
       resource. The provided YAML file must not contain id, version, or any
       output-only fields.
-      Alternatively, you may omit this flag to read from the standard input.
+      Alternatively, you may omit this flag to read from standard input.
       For more information, see:
       https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.locations.workflowTemplates#WorkflowTemplate
+      """,
+      # Allow reading from stdin.
+      required=False)
+
+
+def AddClusterSourceFlag(parser):
+  parser.add_argument(
+      '--source',
+      help="""Path to a YAML file containing the configuration of a cluster.
+      The provided configuration should be an instance of ClusterConfig.
+      Alternatively, you may omit this flag to read from standard input.
+      A schema describing the import format can be found in:
+      $CLOUDSDKROOT/lib/googlecloudsdk/api_lib/dataproc/schemas/v1beta2/Cluster.yaml
       """,
       # Allow reading from stdin.
       required=False)
@@ -70,13 +83,25 @@ def AddTemplateSourceFlag(parser):
 def AddTemplateDestinationFlag(parser):
   parser.add_argument(
       '--destination',
-      help=
-      """The path to a YAML file to which the Dataproc WorkflowTemplate resource
-      will be exported. The exported template will not contain id, version, or
-      any output-only fields.
-      Alternatively, you may omit this flag to write to the standard output.
+      help="""Path to a YAML file to which the Dataproc WorkflowTemplate
+      resource will be exported. The exported template will not contain id,
+      version, or any output-only fields.
+      Alternatively, you may omit this flag to write to standard output.
       For more information, see:
       https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.locations.workflowTemplates#WorkflowTemplate
+      """,
+      # Allow writing to stdout.
+      required=False)
+
+
+def AddClusterDestinationFlag(parser):
+  parser.add_argument(
+      '--destination',
+      help="""Path to a YAML file to which the cluster's configuration
+      will be exported.
+      Alternatively, you may omit this flag to write to standard output.
+      A schema describing the export format can be found in:
+      $CLOUDSDKROOT/lib/googlecloudsdk/api_lib/dataproc/schemas/v1beta2/Cluster.yaml
       """,
       # Allow writing to stdout.
       required=False)
@@ -187,7 +212,7 @@ def RegionAttributeConfig():
           'The Cloud DataProc region for the {resource}. Each Cloud Dataproc '
           'region constitutes an independent resource namespace constrained to '
           'deploying instances into Google Compute Engine zones inside the '
-          'region. The default value of "global" is a special multi-region '
+          'region. The default value of `global` is a special multi-region '
           'namespace which is capable of deploying instances into all Google '
           'Compute Engine zones globally, and is disjoint from other Cloud '
           'Dataproc regions. Overrides the default `dataproc/region` property '

@@ -67,13 +67,12 @@ class MultiError(core_exceptions.Error):
     self.errors = errors
 
 
-def _BuildDeploymentManifest(upload_dir, source_file_iterator,
-                             bucket_ref, tmp_dir):
+def _BuildDeploymentManifest(upload_dir, source_files, bucket_ref, tmp_dir):
   """Builds a deployment manifest for use with the App Engine Admin API.
 
   Args:
     upload_dir: str, path to the service's upload directory
-    source_file_iterator: iterator, yields relative paths to upload.
+    source_files: [str], relative paths to upload.
     bucket_ref: The reference to the bucket files will be placed in.
     tmp_dir: A temp directory for storing generated files (currently just source
         context files).
@@ -84,7 +83,7 @@ def _BuildDeploymentManifest(upload_dir, source_file_iterator,
   bucket_url = 'https://storage.googleapis.com/{0}'.format(bucket_ref.bucket)
 
   # Normal application files.
-  for rel_path in source_file_iterator:
+  for rel_path in source_files:
     full_path = os.path.join(upload_dir, rel_path)
     sha1_hash = file_utils.Checksum.HashSingleFile(full_path,
                                                    algorithm=hashlib.sha1)
@@ -250,7 +249,7 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
                                show_progress_bar=True)
 
 
-def CopyFilesToCodeBucket(upload_dir, source_file_iterator,
+def CopyFilesToCodeBucket(upload_dir, source_files,
                           bucket_ref, max_file_size=None):
   """Copies application files to the Google Cloud Storage code bucket.
 
@@ -285,7 +284,7 @@ def CopyFilesToCodeBucket(upload_dir, source_file_iterator,
 
   Args:
     upload_dir: str, path to the service's upload directory
-    source_file_iterator: iterator, yields relative paths to upload.
+    source_files: [str], relative paths to upload.
     bucket_ref: The reference to the bucket files will be placed in.
     max_file_size: int, File size limit per individual file or None if no limit.
 
@@ -297,7 +296,7 @@ def CopyFilesToCodeBucket(upload_dir, source_file_iterator,
   # deduplicated.
   with file_utils.TemporaryDirectory() as tmp_dir:
     manifest = _BuildDeploymentManifest(
-        upload_dir, source_file_iterator, bucket_ref, tmp_dir)
+        upload_dir, source_files, bucket_ref, tmp_dir)
     files_to_upload = _BuildFileUploadMap(
         manifest, upload_dir, bucket_ref, tmp_dir, max_file_size)
     _UploadFilesThreads(files_to_upload, bucket_ref)

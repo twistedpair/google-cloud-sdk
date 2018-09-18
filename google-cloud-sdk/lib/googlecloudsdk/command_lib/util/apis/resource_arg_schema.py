@@ -129,13 +129,16 @@ class YAMLResourceArgument(YAMLConceptArgument):
     self.display_name_hook = (
         util.Hook.FromPath(display_name_hook) if display_name_hook else None)
 
-    attribute_names = [a['attribute_name'] for a in self._attribute_data]
     for removed in self.removed_flags:
-      if removed not in attribute_names:
+      if removed not in self.attribute_names:
         raise util.InvalidSchemaError(
             'Removed flag [{}] for resource arg [{}] references an attribute '
             'that does not exist. Valid attributes are [{}]'.format(
-                removed, self.name, ', '.join(attribute_names)))
+                removed, self.name, ', '.join(self.attribute_names)))
+
+  @property
+  def attribute_names(self):
+    return [a['attribute_name'] for a in self._attribute_data]
 
   def GenerateResourceSpec(self, resource_collection=None):
     """Creates a concept spec for the resource argument.
@@ -345,6 +348,16 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
                        'multitype resource argument [{}]'.format(self.name))
     self.display_name_hook = (
         util.Hook.FromPath(display_name_hook) if display_name_hook else None)
+
+  @property
+  def attribute_names(self):
+    attribute_names = []
+    for sub_resource in self._resources:
+      sub_resource_arg = YAMLResourceArgument.FromSpecData(sub_resource)
+      for attribute_name in sub_resource_arg.attribute_names:
+        if attribute_name not in attribute_names:
+          attribute_names.append(attribute_name)
+    return attribute_names
 
   def GenerateResourceSpec(self, resource_collection=None):
     """Creates a concept spec for the resource argument.

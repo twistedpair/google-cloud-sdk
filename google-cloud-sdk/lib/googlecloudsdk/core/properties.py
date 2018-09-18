@@ -274,6 +274,7 @@ class _Sections(object):
     self.redis = _SectionRedis()
     self.serverless = _SectionServerless()
     self.spanner = _SectionSpanner()
+    self.storage = _SectionStorage()
     self.test = _SectionTest()
 
     sections = [
@@ -1549,6 +1550,20 @@ class _SectionRedis(_Section):
         help_text='Default region to use when working with Cloud '
         'Memorystore for Redis resources. When a `region` is required but not '
         'provided by a flag, the command will fall back to this value, if set.')
+
+
+class _SectionStorage(_Section):
+  """Contains the properties for the 'storage' section."""
+
+  def __init__(self):
+    super(_SectionStorage, self).__init__('storage')
+    self.chunk_size = self._Add(
+        'chunk_size',
+        # TODO(b/109938541): Update this to 104857600 which is gsutil's default
+        # chunksize (1024 * 1024 * 100)
+        default=1048576,  # Apitool's default chunksize
+        help_text='Chunk size used for uploading and downloading from '
+                  'Cloud Storage.')
 
 
 class _Property(object):

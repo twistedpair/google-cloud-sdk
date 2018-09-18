@@ -160,7 +160,7 @@ def ForwardingRuleArgumentForRoute(required=True):
       required=required,
       regional_collection='compute.forwardingRules',
       short_help=
-      'The target forwarding rule that will receive forwarded traffic.',
+      'Target forwarding rule that will receive forwarded traffic.',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
@@ -170,8 +170,8 @@ BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     resource_name='backend service',
     regional_collection='compute.regionBackendServices',
     global_collection='compute.targetBackendServices',
-    short_help='The target backend service that will receive the traffic.',
-    region_explanation=('If not specified it will be set the'
+    short_help='Target backend service that will receive the traffic.',
+    region_explanation=('If not specified, it will be set to the'
                         ' region of the forwarding rule.'))
 
 NETWORK_ARG_ALPHA = compute_flags.ResourceArgument(
@@ -179,10 +179,10 @@ NETWORK_ARG_ALPHA = compute_flags.ResourceArgument(
     required=False,
     resource_name='networks',
     global_collection='compute.networks',
-    short_help='The network that this forwarding rule applies to.',
+    short_help='Network that this forwarding rule applies to.',
     detailed_help="""\
         (Only for --load-balancing-scheme=INTERNAL or
-        --load-balancing-scheme=INTERNAL_SELF_MANAGED) The network that this
+        --load-balancing-scheme=INTERNAL_SELF_MANAGED) Network that this
         forwarding rule applies to. If this field is not specified, the default
         network will be used. In the absence of the default network, this field
         must be specified.
@@ -193,9 +193,9 @@ NETWORK_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='networks',
     global_collection='compute.networks',
-    short_help='The network that this forwarding rule applies to.',
+    short_help='Network that this forwarding rule applies to.',
     detailed_help="""\
-        (Only for --load-balancing-scheme=INTERNAL) The network that this
+        (Only for --load-balancing-scheme=INTERNAL) Network that this
         forwarding rule applies to. If this field is not specified, the default
         network will be used. In the absence of the default network, this field
         must be specified.
@@ -206,15 +206,15 @@ SUBNET_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='subnetwork',
     regional_collection='compute.subnetworks',
-    short_help='The subnet that this forwarding rule applies to.',
+    short_help='Subnet that this forwarding rule applies to.',
     detailed_help="""\
-        (Only for --load-balancing-scheme=INTERNAL) The subnetwork that this
+        (Only for --load-balancing-scheme=INTERNAL) Subnetwork that this
         forwarding rule applies to. If the network configured for this
         forwarding rule is in auto subnet mode, this flag is optional and the
         subnet in the same region of the forwarding rule will be used. However,
         if the network is in custom subnet mode, a subnetwork must be specified.
         """,
-    region_explanation=('If not specified it will be set the'
+    region_explanation=('If not specified, it will be set to the'
                         ' region of the forwarding rule.'))
 
 
@@ -228,8 +228,8 @@ def TargetHttpProxyArg(include_alpha=False):
       global_collection='compute.targetHttpProxies',
       regional_collection='compute.regionTargetHttpProxies'
       if include_alpha else None,
-      short_help='The target HTTP proxy that will receive the traffic.',
-      detailed_help=('The target HTTP proxy that will receive the traffic. '
+      short_help='Target HTTP proxy that will receive the traffic.',
+      detailed_help=('Target HTTP proxy that will receive the traffic. '
                      'Acceptable values for --ports flag are: 80, 8080.'),
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
       if include_alpha else None)
@@ -246,8 +246,8 @@ def TargetHttpsProxyArg(include_alpha=False):
       global_collection='compute.targetHttpsProxies',
       regional_collection='compute.regionTargetHttpsProxies'
       if include_alpha else None,
-      short_help='The target HTTPS proxy that will receive the traffic.',
-      detailed_help=('The target HTTPS proxy that will receive the traffic. '
+      short_help='Target HTTPS proxy that will receive the traffic.',
+      detailed_help=('Target HTTPS proxy that will receive the traffic. '
                      'Acceptable values for --ports flag are: 443.'),
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
       if include_alpha else None)
@@ -258,9 +258,9 @@ TARGET_INSTANCE_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='target instance',
     zonal_collection='compute.targetInstances',
-    short_help='The name of the target instance that will receive the traffic.',
+    short_help='Name of the target instance that will receive the traffic.',
     detailed_help=textwrap.dedent("""\
-      The name of the target instance that will receive the traffic. The
+      Name of the target instance that will receive the traffic. The
       target instance must be in a zone that's in the forwarding rule's
       region. Global forwarding rules may not direct traffic to target
       instances.
@@ -271,13 +271,13 @@ TARGET_POOL_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='target pool',
     regional_collection='compute.targetPools',
-    short_help='The target pool that will receive the traffic.',
+    short_help='Target pool that will receive the traffic.',
     detailed_help="""\
-      The target pool that will receive the traffic. The target pool
+      Target pool that will receive the traffic. The target pool
       must be in the same region as the forwarding rule. Global
       forwarding rules may not direct traffic to target pools.
       """,
-    region_explanation=('If not specified it will be set the'
+    region_explanation=('If not specified, it will be set to the'
                         ' region of the forwarding rule.'))
 
 TARGET_SSL_PROXY_ARG = compute_flags.ResourceArgument(
@@ -285,8 +285,8 @@ TARGET_SSL_PROXY_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='ssl proxy',
     global_collection='compute.targetSslProxies',
-    short_help='The target SSL proxy that will receive the traffic.',
-    detailed_help=('The target SSL proxy that will receive the traffic. '
+    short_help='Target SSL proxy that will receive the traffic.',
+    detailed_help=('Target SSL proxy that will receive the traffic. '
                    'Acceptable values for --ports flag are: '
                    '25, 43, 110, 143, 195, 443, 465, 587, '
                    '700, 993, 995, 1883, 5222.'))
@@ -296,8 +296,8 @@ TARGET_TCP_PROXY_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='tcp proxy',
     global_collection='compute.targetTcpProxies',
-    short_help='The target TCP proxy that will receive the traffic.',
-    detailed_help=('The target TCP proxy that will receive the traffic. '
+    short_help='Target TCP proxy that will receive the traffic.',
+    detailed_help=('Target TCP proxy that will receive the traffic. '
                    'Acceptable values for --ports flag are: '
                    '25, 43, 110, 143, 195, 443, 465, 587, '
                    '700, 993, 995, 1883, 5222.'))
@@ -307,11 +307,11 @@ TARGET_VPN_GATEWAY_ARG = compute_flags.ResourceArgument(
     required=False,
     resource_name='VPN gateway',
     regional_collection='compute.targetVpnGateways',
-    short_help='The target VPN gateway that will receive forwarded traffic.',
+    short_help='Target VPN gateway that will receive forwarded traffic.',
     detailed_help=(
-        'The target VPN gateway that will receive forwarded traffic. '
+        'Target VPN gateway that will receive forwarded traffic. '
         'Acceptable values for --ports flag are: 500, 4500.'),
-    region_explanation=('If not specified it will be set the'
+    region_explanation=('If not specified, it will be set to the'
                         ' region of the forwarding rule.'))
 
 
@@ -319,7 +319,7 @@ def AddressArgHelp(include_alpha):
   """Build the help text for the address argument."""
 
   detailed_help = """\
-    The IP address that the forwarding rule will serve. All
+    IP address that the forwarding rule will serve. All
     traffic sent to this IP address is directed to the target
     pointed to by the forwarding rule. Assigned IP addresses can be
     reserved or unreserved.
@@ -371,7 +371,7 @@ ADDRESS_ARG_ALPHA = compute_flags.ResourceArgument(
     regional_collection='compute.addresses',
     global_collection='compute.globalAddresses',
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
-    short_help='The IP address that the forwarding rule will serve.',
+    short_help='IP address that the forwarding rule will serve.',
     detailed_help=AddressArgHelp(include_alpha=True))
 
 ADDRESS_ARG = compute_flags.ResourceArgument(
@@ -382,7 +382,7 @@ ADDRESS_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.addresses',
     global_collection='compute.globalAddresses',
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
-    short_help='The IP address that the forwarding rule will serve.',
+    short_help='IP address that the forwarding rule will serve.',
     detailed_help=AddressArgHelp(include_alpha=False))
 
 
@@ -445,7 +445,15 @@ def AddIPProtocols(parser):
       '--ip-protocol',
       choices=protocols,
       type=lambda x: x.upper(),
-      help='The IP protocol that the rule will serve. The default is TCP.')
+      help="""\
+      IP protocol that the rule will serve. The default is `TCP`.
+
+      Note that if the load-balancing scheme is `INTERNAL`, the protocol must
+      be one of: `TCP`, `UDP`.
+
+      For a load-balancing scheme that is `EXTERNAL`, all IP_PROTOCOL
+      options are valid.
+      """)
 
 
 def AddIpVersionGroup(parser):
@@ -455,7 +463,7 @@ def AddIpVersionGroup(parser):
       choices=['IPV4', 'IPV6'],
       type=lambda x: x.upper(),
       help="""\
-      The version of the IP address to be allocated if no --address is given.
+      Version of the IP address to be allocated if no --address is given.
       The default is IPv4.
       """)
 
@@ -475,7 +483,7 @@ def AddDescription(parser):
 
   parser.add_argument(
       '--description',
-      help='An optional textual description for the forwarding rule.')
+      help='Optional textual description for the forwarding rule.')
 
 
 def AddPortsAndPortRange(parser, supports_flex_port=False):
@@ -485,7 +493,7 @@ def AddPortsAndPortRange(parser, supports_flex_port=False):
   if supports_flex_port:
     ports_metavar = 'ALL | [PORT | START_PORT-END_PORT],[...]'
     ports_help = """\
-    A list of comma separated ports and/or port ranges or the value `all`.
+    List of comma separated ports and/or port ranges or the value `all`.
     If a list is provided, only packets addressed to ports in the list
     will be forwarded. If unspecified or `all` for regional forwarding
     rules, all ports are matched. This flag is required for global
@@ -557,7 +565,7 @@ def AddNetworkTier(parser, supports_network_tier_flag, for_update):
           '--network-tier',
           type=lambda x: x.upper(),
           help="""\
-          The network tier to assign to the forwarding rules. ``NETWORK_TIER''
+          Network tier to assign to the forwarding rules. ``NETWORK_TIER''
           must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
           """)
 

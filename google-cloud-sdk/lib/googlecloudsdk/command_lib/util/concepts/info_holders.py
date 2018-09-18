@@ -438,9 +438,15 @@ class MultitypeResourceInfo(ResourceInfo):
     base_text = super(MultitypeResourceInfo, self)._GetHelpTextForAttribute(
         attribute)
     # pylint: disable=protected-access
-    relevant_types = [
+    relevant_types = sorted([
         type_.name for type_ in self.concept_spec._attribute_to_types_map.get(
-            attribute.name)]
+            attribute.name)])
+    # Don't add anything extra if this attribute is used in all types.
+    all_types = [
+        type_.name for type_ in self.concept_spec.type_enum]
+    if len(set(relevant_types)) == len(all_types):
+      return base_text
     # pylint: disable=protected-access
-    return base_text + (' This argument is used for the following types: [{}].'
-                        .format(', '.join(relevant_types)))
+    return base_text + (
+        ' Must be specified for resource of type {}.'
+        .format(' or '.join(['[{}]'.format(t) for t in relevant_types])))

@@ -5,6 +5,46 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 217.0.0 (2018-09-18)
+
+### Breaking Changes
+
+*   **(Cloud Services)** Renamed `--reserved-ranges` to `ranges` in `gcloud beta services
+    vpc-peerings`.
+
+
+### App Engine
+
+
+* Updated the Java SDK to version 1.9.65.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### Cloud SQL
+
+* Promoted the `--network` flag of `gcloud sql instances <create|patch>` to
+  beta.
+
+### Cloud Storage
+
+
+* Updated gsutil component to 4.34
+
+### Compute Engine
+
+* Added `--prefix-length`, `--purpose` and `--network` flags to BETA for `gcloud compute addresses create` to support reserving IP range from virtual network for peering.
+* Added the `description` property to the `--create-disk` flag of `gcloud compute <instances|instance-templates> create`.
+
+### Kubernetes Engine
+
+* Added `--metadata` and `--metadata-from-file` flags to `gcloud beta
+  <node-pools|clusters> create`.
+* Updated Google Kubernetes Engine's kubectl from version 1.9.7 to 1.10.7.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 216.0.0 (2018-09-11)
 
 ### App Engine
@@ -35,8 +75,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Promoted `--internal-ip` flag of `gcloud compute scp` to beta.
 * Promoted `--disabled` flag of `gcloud compute firewall-rules` to GA.
 * Fixed bug preventing `gcloud compute <ssh|scp>` from finding an instance's external IP address when configured with multiple network interfaces.
-* Promoted `gcloud compute instances <create-with-container|compute instances
-  update-container>` from beta to ga.
+* Promoted `gcloud compute instances <create-with-container|update-container>` to GA.
 
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
@@ -79,7 +118,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Added --service-account flag to gcloud alpha functions deploy.
 
-### Cloud PubSub
+### Cloud Pub/Sub
 
 *   Promoted Snapshot & Seek features to beta. These features allow users to
     create snapshots of subscription backlog state, and later restore that
@@ -114,7 +153,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     *   Added a `force` option to ignore warnings.
 *   **(Cloud Bigtable)** Modified the specification for routing policies. A routing policy can be
     either "route-any" (previously of "multi_cluster_routing_use_any") or
-    "route-to=<cluster-id>".
+    "route-to=`<cluster-id>`".
 *   **(Compute Engine)** Deprecated `gcloud compute interconnects attachments create`. Please use
   `gcloud compute interconnects attachments dedicated create` instead.
 *   **(Compute Engine)** Removed deprecated `--mode` flag from `gcloud compute networks create`. Use `--subnet-mode` instead.
@@ -156,7 +195,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
     *   `--network-tier` of `gcloud compute instances <add-access-config|create>`
     *   `--network-tier` of `gcloud compute instance-templates create`
 *   Promoted `gcloud compute instances simulate-maintenance-event` to GA.
-*   Promoted `\<get|set\>-iam-policy` and `\<add|remove\>-iam-policy-bindings` to
+*   Promoted `<get|set\>-iam-policy` and `<add|remove\>-iam-policy-bindings` to
     beta in the following commands groups:
     * `gcloud compute sole-tenancy node-groups`
     * `gcloud compute sole-tenancy node-templates`
@@ -393,7 +432,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Compute Engine
 
 *   Promoted `--zones` flag of `gcloud compute instance-groups managed create` command to GA.
-*   Promoted `\<get|set\>-iam-policy` and `\<add|remove\>-iam-policy-bindings` to
+*   Promoted `<get|set\>-iam-policy` and `<add|remove\>-iam-policy-bindings` to
     beta in the following commands groups:
     *   `gcloud compute disks`
     *   `gcloud compute images`

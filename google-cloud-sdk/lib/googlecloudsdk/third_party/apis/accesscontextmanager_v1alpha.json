@@ -307,6 +307,10 @@
             "type": "string"
           }
         },
+        "devicePolicy": {
+          "description": "Device specific restrictions, all restrictions must hold for the\nCondition to be true. If not specified, all devices are allowed.",
+          "$ref": "DevicePolicy"
+        },
         "requiredAccessLevels": {
           "description": "A list of other access levels defined in the same `Policy`, referenced by\nresource name. Referencing an `AccessLevel` which does not exist is an\nerror. All access levels listed must be granted for the Condition\nto be true. Example:\n\"`accessPolicies\/MY_POLICY\/accessLevels\/LEVEL_NAME\"`",
           "type": "array",
@@ -324,6 +328,95 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "DevicePolicy": {
+      "id": "DevicePolicy",
+      "description": "`DevicePolicy` specifies device specific restrictions necessary to acquire a\ngiven access level. A `DevicePolicy` specifies requirements for requests from\ndevices to be granted access levels, it does not do any enforcement on the\ndevice. `DevicePolicy` acts as an AND over all specified fields, and each\nrepeated field is an OR over its elements. Any unset fields are ignored. For\nexample, if the proto is { os_type : DESKTOP_WINDOWS, os_type :\nDESKTOP_LINUX, encryption_status: ENCRYPTED}, then the DevicePolicy will be\ntrue for requests originating from encrypted Linux desktops and encrypted\nWindows desktops.",
+      "type": "object",
+      "properties": {
+        "requireScreenlock": {
+          "description": "Whether or not screenlock is required for the DevicePolicy to be true.\nDefaults to `false`.",
+          "type": "boolean"
+        },
+        "allowedEncryptionStatuses": {
+          "description": "Allowed encryptions statuses, an empty list allows all statuses.",
+          "enumDescriptions": [
+            "The encryption status of the device is not specified or not known.",
+            "The device does not support encryption.",
+            "The device supports encryption, but is currently unencrypted.",
+            "The device is encrypted."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "ENCRYPTION_UNSPECIFIED",
+              "ENCRYPTION_UNSUPPORTED",
+              "UNENCRYPTED",
+              "ENCRYPTED"
+            ]
+          }
+        },
+        "osConstraints": {
+          "description": "Allowed OS versions, an empty list allows all types and all versions.",
+          "type": "array",
+          "items": {
+            "$ref": "OsConstraint"
+          }
+        },
+        "allowedDeviceManagementLevels": {
+          "description": "Allowed device management levels, an empty list allows all management\nlevels.",
+          "enumDescriptions": [
+            "The device's management level is not specified or not known.",
+            "The device is not managed.",
+            "Basic management is enabled, which is generally limited to monitoring and\nwiping the corporate account.",
+            "Complete device management. This includes more thorough monitoring and the\nability to directly manage the device (such as remote wiping). This can be\nenabled through the Android Enterprise Platform."
+          ],
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "MANAGEMENT_UNSPECIFIED",
+              "NONE",
+              "BASIC",
+              "COMPLETE"
+            ]
+          }
+        }
+      }
+    },
+    "OsConstraint": {
+      "id": "OsConstraint",
+      "description": "A restriction on the OS type and version of devices making requests.",
+      "type": "object",
+      "properties": {
+        "osType": {
+          "description": "Required. The allowed OS type.",
+          "enumDescriptions": [
+            "The operating system of the device is not specified or not known.",
+            "A desktop Mac operating system.",
+            "A desktop Windows operating system.",
+            "A desktop Linux operating system.",
+            "A desktop ChromeOS operating system.",
+            "An Android operating system.",
+            "An iOS operating system."
+          ],
+          "type": "string",
+          "enum": [
+            "OS_UNSPECIFIED",
+            "DESKTOP_MAC",
+            "DESKTOP_WINDOWS",
+            "DESKTOP_LINUX",
+            "DESKTOP_CHROME_OS",
+            "ANDROID",
+            "IOS"
+          ]
+        },
+        "minimumVersion": {
+          "description": "The minimum allowed OS version. If not set, any version of this OS\nsatisfies the constraint. Format: `\"major.minor.patch\"`.\nExamples: `\"10.5.301\"`, `\"9.2.1\"`.",
+          "type": "string"
         }
       }
     },

@@ -121,7 +121,7 @@ def _ErrorFromInvalidMatrix(matrix):
       enum_values.NO_PACKAGE_NAME:
           'The APK manifest file is missing the package name',
       enum_values.TEST_SAME_AS_APP:
-          'The test APK is the same as the app APK',
+          'The test APK has the same package name as the app APK',
       enum_values.NO_INSTRUMENTATION:
           'The test APK declares no instrumentation tags in the manifest',
       enum_values.NO_SIGNATURE:

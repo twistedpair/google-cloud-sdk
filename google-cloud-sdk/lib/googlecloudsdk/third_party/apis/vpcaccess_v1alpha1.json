@@ -279,6 +279,20 @@
             "DELETING",
             "ERROR"
           ]
+        },
+        "type": {
+          "description": "Type of the VPC access connector.",
+          "enumDescriptions": [
+            "Invalid type.",
+            "Extended functionality with ILB support.",
+            "Basic functionality, only single VM and VPN."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "EXTENDED",
+            "BASIC"
+          ]
         }
       }
     },

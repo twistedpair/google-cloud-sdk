@@ -53,6 +53,31 @@ def _ReadNoProxyWithCleanFailures(uri, http_errors_to_ignore=()):
     raise CannotConnectToMetadataServerException(e)
 
 
+def _HandleMissingMetadataServer(return_list=False):
+  """Handles when the metadata server is missing and resets the caches.
+
+  If you move gcloud from one environment to another, it might still think it
+  in on GCE from a previous invocation (which would result in a crash).
+  Instead of crashing, we ignore the error and just update the cache.
+
+  Args:
+    return_list: True to return [] instead of None as the default empty answer.
+
+  Returns:
+    The value the underlying method would return.
+  """
+  def _Wrapper(f):
+    def Inner(self, *args, **kwargs):
+      try:
+        return f(self, *args, **kwargs)
+      except CannotConnectToMetadataServerException:
+        with _metadata_lock:
+          self.connected = gce_cache.ForceCacheRefresh()
+        return [] if return_list else None
+    return Inner
+  return _Wrapper
+
+
 class _GCEMetadata(object):
   """Class for fetching GCE metadata.
 
@@ -64,6 +89,7 @@ class _GCEMetadata(object):
   def __init__(self):
     self.connected = gce_cache.GetOnGCE()
 
+  @_HandleMissingMetadataServer()
   def DefaultAccount(self):
     """Get the default service account for the host GCE instance.
 
@@ -87,6 +113,7 @@ class _GCEMetadata(object):
         gce_read.GOOGLE_GCE_METADATA_DEFAULT_ACCOUNT_URI,
         http_errors_to_ignore=(404,))
 
+  @_HandleMissingMetadataServer()
   def Project(self):
     """Get the project that owns the current GCE instance.
 
@@ -109,6 +136,7 @@ class _GCEMetadata(object):
     return _ReadNoProxyWithCleanFailures(
         gce_read.GOOGLE_GCE_METADATA_PROJECT_URI)
 
+  @_HandleMissingMetadataServer(return_list=True)
   def Accounts(self):
     """Get the list of service accounts available from the metadata server.
 
@@ -135,6 +163,7 @@ class _GCEMetadata(object):
       accounts.append(account)
     return accounts
 
+  @_HandleMissingMetadataServer()
   def Zone(self):
     """Get the name of the zone containing the current GCE instance.
 

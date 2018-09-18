@@ -25,8 +25,8 @@ import re
 import string
 
 from googlecloudsdk.api_lib.util import apis as core_apis
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -44,6 +44,14 @@ LOG_OUTPUT_INCOMPLETE = ' (possibly incomplete) '
 OUTPUT_LINE_CHAR = '-'
 GCS_URL_PATTERN = (
     'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
+
+
+class Error(exceptions.Error):
+  """Base class for exceptions in this module."""
+
+
+class GsutilError(Error):
+  """Exception raised when gsutil cannot be found."""
 
 
 class InvalidNameError(ValueError):
@@ -287,8 +295,8 @@ def _GetGsutilPath():
       log.debug('Using gsutil found at [{path}]'.format(path=gsutil_path))
       return gsutil_path
     else:
-      raise exceptions.ToolException(('A SDK root could not be found. Please '
-                                      'check your installation.'))
+      raise GsutilError('A path to the storage client `gsutil` could not be '
+                        'found. Please check your SDK installation.')
   return os.path.join(sdk_bin_path, 'gsutil')
 
 

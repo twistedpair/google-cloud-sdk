@@ -766,6 +766,20 @@
             "STREAM_ON",
             "STREAM_OFF"
           ]
+        },
+        "logging": {
+          "description": "Option to specify the logging mode, which determines where the logs are stored.",
+          "enumDescriptions": [
+            "The service determines the logging mode. The default is `LEGACY`",
+            "Stackdriver logging and Cloud Storage logging are enabled.",
+            "Only Cloud Storage logging is enabled."
+          ],
+          "type": "string",
+          "enum": [
+            "LOGGING_UNSPECIFIED",
+            "LEGACY",
+            "GCS_ONLY"
+          ]
         }
       }
     },

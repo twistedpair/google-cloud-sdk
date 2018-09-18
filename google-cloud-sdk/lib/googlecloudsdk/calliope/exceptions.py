@@ -506,14 +506,15 @@ def HandleError(exc, command_path, known_error_handler=None):
     exc: Exception, The original exception that occurred.
     command_path: str, The name of the command that failed (for error
       reporting).
-    known_error_handler: f(exc): A function to process known errors.
+    known_error_handler: f(): A function to report the current exception as a
+      known error.
   """
   known_exc, print_error = ConvertKnownError(exc)
   if known_exc:
     _LogKnownError(known_exc, command_path, print_error)
     # Uncaught errors will be handled in gcloud_main.
     if known_error_handler:
-      known_error_handler(exc)
+      known_error_handler()
     if properties.VALUES.core.print_handled_tracebacks.GetBool():
       core_exceptions.reraise(exc)
     _Exit(known_exc)

@@ -43,6 +43,17 @@ class Tag(object):
     self._text = None
     self._intervals = []
 
+  @classmethod
+  def needs_quotes(cls, text):
+    """Returns True if text "needs" quotes for pretty printing contents."""
+    pairs = {'"': '"', "'": "'", '{': '}', '[': ']', '(': ')'}
+
+    if text == '':  # pylint: disable=g-explicit-bool-comparison
+      return True
+    if ' ' not in text:
+      return False
+    return pairs.get(text[0]) != text[-1]
+
   def contents(self):
     """Returns the tag/value display string."""
     buf = io.StringIO()
@@ -52,8 +63,11 @@ class Tag(object):
     if self._intervals:
       n = len(self._intervals)
       buf.write(':{}:{:.6f}'.format(n, sum(self._intervals) / n))
-    if self._text:
-      buf.write(':{}'.format(self._text))
+    if self._text is not None:
+      text = self._text
+      if isinstance(text, six.string_types) and self.needs_quotes(text):
+        text = '"' + text + '"'
+      buf.write(':{}'.format(text))
     return buf.getvalue()
 
   def count(self):
@@ -85,7 +99,7 @@ class Debug(object):
 
   Usage:
 
-    debug.foo.count().text(some_string)
+    debug.foo.count().text(some_object)
     debug.bar.text('some state')
     debug.tag(some_string).count()
     debug.time.start()

@@ -1933,3 +1933,57 @@ information on sole tenancy and node groups.
       '--node-group',
       hidden=True,
       help=help_text)
+
+
+def AddMetadataFlags(parser):
+  """Adds --metadata and --metadata-from-file flags to the given parser."""
+  metadata_help = """\
+      Compute Engine metadata to be made available to the guest operating system
+      running on nodes within the node pool.
+
+      Each metadata entry is a key/value pair separated by an equals sign.
+      Metadata keys must be unique and less than 128 bytes in length. Values
+      must be less than or equal to 32,768 bytes in length. The total size of
+      all keys and values must be less than 512 KB. Multiple arguments can be
+      passed to this flag, e.g.,
+      ``--metadata key-1=value-1,key-2=value-2,key-3=value-3''.
+
+      Additionally, the following keys are reserved for use by Kubernetes
+      Engine:
+
+      "cluster-location"
+      "cluster-name"
+      "cluster-uid"
+      "configure-sh"
+      "enable-os-login"
+      "gci-update-strategy"
+      "gci-ensure-gke-docker"
+      "instance-template"
+      "kube-env"
+      "startup-script"
+      "user-data"
+
+      See also Compute Engine's
+      link:https://cloud.google.com/compute/docs/storing-retrieving-metadata[documentation]
+      on storing and retrieving instance metadata.
+      """
+
+  parser.add_argument(
+      '--metadata',
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      help=metadata_help,
+      metavar='KEY=VALUE',
+      action=arg_parsers.StoreOnceAction)
+
+  metadata_from_file_help = """\
+      Same as ``--metadata'' except that the value for the entry will
+      be read from a local file.
+      """
+
+  parser.add_argument(
+      '--metadata-from-file',
+      type=arg_parsers.ArgDict(min_length=1),
+      default={},
+      help=metadata_from_file_help,
+      metavar='KEY=LOCAL_FILE_PATH')

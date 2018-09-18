@@ -517,6 +517,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
     csek_keys: customer suplied encryption keys,
     create_disks: disk objects - contains following properties
              * name - the name of disk,
+             * description - an optional description for the disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
              * disk-size - the size of the disk,
              * disk-type - the type of the disk (HDD or SSD),
@@ -596,6 +597,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
 
     initialize_params = messages.AttachedDiskInitializeParams(
         diskName=name,
+        description=disk.get('description'),
         sourceImage=image_uri,
         diskSizeGb=disk_size_gb,
         diskType=disk_type_uri,

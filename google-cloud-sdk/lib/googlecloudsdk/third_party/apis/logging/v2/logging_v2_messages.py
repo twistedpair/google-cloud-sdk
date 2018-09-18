@@ -1121,7 +1121,7 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1160,7 +1160,7 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1495,7 +1495,7 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1534,7 +1534,7 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1834,7 +1834,7 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1873,7 +1873,7 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -2189,7 +2189,7 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -2228,7 +2228,7 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -2345,7 +2345,7 @@ class LoggingSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmaskExample:
+      buffers/docs/reference/google.protobuf#FieldMaskExample:
       updateMask=filter.
   """
 
@@ -2946,9 +2946,12 @@ class WriteLogEntriesRequest(_messages.Message):
       "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
       "folders/[FOLDER_ID]/logs/[LOG_ID]" [LOG_ID] must be URL-encoded. For
-      example, "projects/my-project-id/logs/syslog" or "organizations/12345678
-      90/logs/cloudresourcemanager.googleapis.com%2Factivity". For more
-      information about log names, see LogEntry.
+      example: "projects/my-project-id/logs/syslog" "organizations/1234567890/
+      logs/cloudresourcemanager.googleapis.com%2Factivity" The permission
+      <code>logging.logEntries.create</code> is needed on each project,
+      organization, billing account, or folder that is receiving new log
+      entries, whether the resource is specified in <code>logName</code> or in
+      an individual log entry.
     partialSuccess: Optional. Whether valid entries should be written even if
       some other entries fail due to INVALID_ARGUMENT or PERMISSION_DENIED
       errors. If any entry is not written, then the response status is the

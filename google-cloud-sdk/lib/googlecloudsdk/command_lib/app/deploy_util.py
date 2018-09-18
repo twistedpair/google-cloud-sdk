@@ -239,7 +239,7 @@ class ServiceDeployer(object):
       raise InvalidRuntimeNameError(runtime, ORIGINAL_RUNTIME_RE_STRING)
 
   def _PossiblyBuildAndPush(
-      self, new_version, service, upload_dir, source_file_iterator, image,
+      self, new_version, service, upload_dir, source_files, image,
       code_bucket_ref, gcr_domain, flex_image_build_option):
     """Builds and Pushes the Docker image if necessary for this service.
 
@@ -248,7 +248,7 @@ class ServiceDeployer(object):
       service: yaml_parsing.ServiceYamlInfo, service configuration to be
         deployed
       upload_dir: str, path to the service's upload directory
-      source_file_iterator: iterator, yields relative paths to upload.
+      source_files: [str], relative paths to upload.
       image: str or None, the URL for the Docker image to be deployed (if image
         already exists).
       code_bucket_ref: cloud_storage.BucketReference where the service's files
@@ -283,7 +283,7 @@ class ServiceDeployer(object):
             cloud_build_options)
       else:
         build = deploy_command_util.BuildAndPushDockerImage(
-            new_version.project, service, upload_dir, source_file_iterator,
+            new_version.project, service, upload_dir, source_files,
             new_version.id, code_bucket_ref, gcr_domain,
             self.deploy_options.runtime_builder_strategy,
             self.deploy_options.parallel_build)
@@ -314,9 +314,9 @@ class ServiceDeployer(object):
       log.info('Not stopping previous version because new version was '
                'not promoted.')
 
-  def _PossiblyUploadFiles(self, image, service_info, upload_dir,
-                           source_file_iterator,
-                           code_bucket_ref, flex_image_build_option):
+  def _PossiblyUploadFiles(
+      self, image, service_info, upload_dir, source_files, code_bucket_ref,
+      flex_image_build_option):
     """Uploads files for this deployment is required for this service.
 
     Uploads if flex_image_build_option is FlexImageBuildOptions.ON_SERVER,
@@ -328,7 +328,7 @@ class ServiceDeployer(object):
       service_info: yaml_parsing.ServiceYamlInfo, service configuration to be
         deployed
       upload_dir: str, path to the service's upload directory
-      source_file_iterator: iterator, yields relative paths to upload.
+      source_files: [str], relative paths to upload.
       code_bucket_ref: cloud_storage.BucketReference where the service's files
         have been uploaded
       flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
@@ -348,8 +348,7 @@ class ServiceDeployer(object):
       if service_info.env == env.STANDARD:
         limit = _MAX_FILE_SIZE_STANDARD
       manifest = deploy_app_command_util.CopyFilesToCodeBucket(
-          upload_dir, source_file_iterator, code_bucket_ref,
-          max_file_size=limit)
+          upload_dir, source_files, code_bucket_ref, max_file_size=limit)
     return manifest
 
   def Deploy(self,
@@ -400,13 +399,12 @@ class ServiceDeployer(object):
     service_info = service.service_info
     self._ValidateRuntime(service_info)
 
-    source_file_iterator = source_files_util.GetSourceFileIterator(
+    source_files = source_files_util.GetSourceFiles(
         service.upload_dir,
         service_info.parsed.skip_files.regex,
         service_info.HasExplicitSkipFiles(),
         service_info.runtime,
         service_info.env, service.source)
-    source_files = list(source_file_iterator)
 
     # Tar-based upload for flex
     build = self._PossiblyBuildAndPush(

@@ -38,7 +38,7 @@ class Pager(object):
   agnostic and miscalculates line lengths, and less(1) which displays control
   character names by default.
 
-  Attrinutes:
+  Attributes:
     _attr: The current ConsoleAttr handle.
     _clear: A string that clears the prompt when written to _out.
     _contents: The entire contents of the text lines to page.

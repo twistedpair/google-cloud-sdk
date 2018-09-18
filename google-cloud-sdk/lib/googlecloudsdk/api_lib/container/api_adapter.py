@@ -373,7 +373,8 @@ class CreateClusterOptions(object):
                enable_vertical_pod_autoscaling=None,
                security_profile=None,
                security_profile_runtime_rules=None,
-               database_encryption=None):
+               database_encryption=None,
+               metadata=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -445,6 +446,7 @@ class CreateClusterOptions(object):
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
     self.database_encryption = database_encryption
+    self.metadata = metadata
 
 
 class UpdateClusterOptions(object):
@@ -551,7 +553,8 @@ class CreateNodePoolOptions(object):
                min_cpu_platform=None,
                workload_metadata_from_node=None,
                max_pods_per_node=None,
-               sandbox=None):
+               sandbox=None,
+               metadata=None):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -582,6 +585,7 @@ class CreateNodePoolOptions(object):
     self.workload_metadata_from_node = workload_metadata_from_node
     self.max_pods_per_node = max_pods_per_node
     self.sandbox = sandbox
+    self.metadata = metadata
 
 
 class UpdateNodePoolOptions(object):
@@ -904,6 +908,7 @@ class APIAdapter(object):
     self.ParseCustomNodeConfig(options, node_config)
 
     _AddNodeLabelsToNodeConfig(node_config, options)
+    _AddMetadataToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
 
     if options.preemptible:
@@ -1503,6 +1508,7 @@ class APIAdapter(object):
                                           acceleratorCount=count)
       ]
 
+    _AddMetadataToNodeConfig(node_config, options)
     _AddNodeLabelsToNodeConfig(node_config, options)
     self._AddNodeTaintsToNodeConfig(node_config, options)
 
@@ -2106,6 +2112,17 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             resource=ProjectLocationCluster(cluster_ref.projectId,
                                             cluster_ref.zone,
                                             cluster_ref.clusterId)))
+
+
+def _AddMetadataToNodeConfig(node_config, options):
+  if not options.metadata:
+    return
+  metadata = node_config.MetadataValue()
+  props = []
+  for key, value in six.iteritems(options.metadata):
+    props.append(metadata.AdditionalProperty(key=key, value=value))
+  metadata.additionalProperties = props
+  node_config.metadata = metadata
 
 
 def _AddNodeLabelsToNodeConfig(node_config, options):

@@ -846,6 +846,8 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       TF_RECORD: INPUT ONLY. The source file is a TFRecord file.
       TF_RECORD_GZIP: INPUT ONLY. The source file is a GZIP-compressed
         TFRecord file.
+      FILE_LIST: INPUT ONLY. Each line of the file is the location of an
+        instance to process.
       CSV: OUTPUT ONLY. Output values will be in comma-separated rows, with
         keys in a separate file.
     """
@@ -854,7 +856,8 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
     TEXT = 2
     TF_RECORD = 3
     TF_RECORD_GZIP = 4
-    CSV = 5
+    FILE_LIST = 5
+    CSV = 6
 
   class OutputDataFormatValueValuesEnum(_messages.Enum):
     r"""Optional. Format of the output data files, defaults to JSON.
@@ -867,6 +870,8 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
       TF_RECORD: INPUT ONLY. The source file is a TFRecord file.
       TF_RECORD_GZIP: INPUT ONLY. The source file is a GZIP-compressed
         TFRecord file.
+      FILE_LIST: INPUT ONLY. Each line of the file is the location of an
+        instance to process.
       CSV: OUTPUT ONLY. Output values will be in comma-separated rows, with
         keys in a separate file.
     """
@@ -875,7 +880,8 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
     TEXT = 2
     TF_RECORD = 3
     TF_RECORD_GZIP = 4
-    CSV = 5
+    FILE_LIST = 5
+    CSV = 6
 
   accelerator = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
   batchSize = _messages.IntegerField(2)
@@ -1110,6 +1116,7 @@ class GoogleCloudMlV1Version(_messages.Message):
       engine/docs/tensorflow/resource-labels">using labels</a>.
 
   Fields:
+    acceleratorConfig: Accelerator config for GPU serving.
     autoScaling: Automatically scale the number of nodes used to serve the
       model in response to increases and decreases in traffic. Care should be
       taken to ramp up traffic according to the model's ability to scale or
@@ -1267,24 +1274,25 @@ class GoogleCloudMlV1Version(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  autoScaling = _messages.MessageField('GoogleCloudMlV1AutoScaling', 1)
-  createTime = _messages.StringField(2)
-  deploymentUri = _messages.StringField(3)
-  description = _messages.StringField(4)
-  errorMessage = _messages.StringField(5)
-  etag = _messages.BytesField(6)
-  framework = _messages.EnumField('FrameworkValueValuesEnum', 7)
-  isDefault = _messages.BooleanField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  lastUseTime = _messages.StringField(10)
-  machineType = _messages.StringField(11)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 12)
-  modelClass = _messages.StringField(13)
-  name = _messages.StringField(14)
-  packageUris = _messages.StringField(15, repeated=True)
-  pythonVersion = _messages.StringField(16)
-  runtimeVersion = _messages.StringField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
+  acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
+  autoScaling = _messages.MessageField('GoogleCloudMlV1AutoScaling', 2)
+  createTime = _messages.StringField(3)
+  deploymentUri = _messages.StringField(4)
+  description = _messages.StringField(5)
+  errorMessage = _messages.StringField(6)
+  etag = _messages.BytesField(7)
+  framework = _messages.EnumField('FrameworkValueValuesEnum', 8)
+  isDefault = _messages.BooleanField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  lastUseTime = _messages.StringField(11)
+  machineType = _messages.StringField(12)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 13)
+  modelClass = _messages.StringField(14)
+  name = _messages.StringField(15)
+  packageUris = _messages.StringField(16, repeated=True)
+  pythonVersion = _messages.StringField(17)
+  runtimeVersion = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

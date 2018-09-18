@@ -24,9 +24,29 @@ import re
 from dns import rdatatype
 from dns import zone
 from googlecloudsdk.api_lib.util import apis as core_apis
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import encoding
+
+
+class Error(exceptions.Error):
+  """Base exception for all import errors."""
+
+
+class RecordsFileNotFound(Error):
+  """The specified records file was not found."""
+
+
+class RecordsFileIsADirectory(Error):
+  """The specified records file is a directory."""
+
+
+class UnableToReadRecordsFile(Error):
+  """Unable to read record sets from the specified records file."""
+
+
+class ConflictingRecordsFound(Error):
+  """Conflicts found between records being imported and current records."""
 
 
 def _AddressTranslation(rdata, unused_origin):
@@ -464,7 +484,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
     api_version: [str], the api version to use for creating the records.
 
   Raises:
-    ToolException: If conflicting CNAME records are found.
+    ConflictingRecordsFound: If conflicting records are found.
 
   Returns:
     A Change that describes the actions required to import the given
@@ -480,8 +500,8 @@ def ComputeChange(current, to_be_imported, replace_all=False,
 
   intersecting_keys = current_keys.intersection(keys_to_be_imported)
   if not replace_all and intersecting_keys:
-    raise exceptions.ToolException(
-        'Conflicting records for the following (name type): {0}'.format(
+    raise ConflictingRecordsFound(
+        'The following records (name type) already exist: {0}'.format(
             [_NameAndType(current[key]) for key in sorted(intersecting_keys)]))
 
   for key in intersecting_keys:

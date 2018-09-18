@@ -54,6 +54,14 @@ class Error(core_exc.Error):
   """Base exception for storage API module."""
 
 
+class BucketNotFoundError(Error):
+  """Error raised when the bucket specified does not exist."""
+
+
+class ListBucketError(Error):
+  """Error raised when there are problems listing the contents of a bucket."""
+
+
 class UploadError(Error):
   """Error raised when there are problems uploading files."""
 
@@ -77,6 +85,20 @@ class StorageClient(object):
   def __init__(self, client=None, messages=None):
     self.client = client or storage_util.GetClient()
     self.messages = messages or storage_util.GetMessages()
+
+  def _GetChunkSize(self):
+    """Returns the property defined chunksize corrected for server granularity.
+
+    Chunk size for GCS must be a multiple of 256 KiB. This functions rounds up
+    the property defined chunk size to the nearest chunk size interval.
+    """
+    gcs_chunk_granularity = 256 * 1024  # 256 KiB
+    chunksize = properties.VALUES.storage.chunk_size.GetInt()
+    if chunksize == 0:
+      chunksize = None  # Use apitools default (1048576 B)
+    elif chunksize % gcs_chunk_granularity != 0:
+      chunksize += gcs_chunk_granularity - (chunksize % gcs_chunk_granularity)
+    return chunksize
 
   def Copy(self, src, dst):
     """Copy one GCS object to another.
@@ -151,13 +173,18 @@ class StorageClient(object):
       Object, the storage object that was copied to.
 
     Raises:
-      BadFileException if the file upload is not successful.
+      BucketNotFoundError if the user-specified bucket does not exist.
+      UploadError if the file upload is not successful.
+      exceptions.BadFileException if the uploaded file size does not match the
+          size of the local file.
     """
     file_size = _GetFileSize(local_path)
     src_obj = self.messages.Object(size=file_size)
     mime_type = _GetMimetype(local_path)
 
-    upload = transfer.Upload.FromFile(local_path, mime_type=mime_type)
+    chunksize = self._GetChunkSize()
+    upload = transfer.Upload.FromFile(
+        local_path, mime_type=mime_type, chunksize=chunksize)
     insert_req = self.messages.StorageObjectsInsertRequest(
         bucket=bucket_ref.bucket,
         name=target_path,
@@ -167,11 +194,19 @@ class StorageClient(object):
                                                           gcs=target_path))
     try:
       response = self.client.objects.Insert(insert_req, upload=upload)
+    except api_exceptions.HttpNotFoundError:
+      raise BucketNotFoundError(
+          'Could not upload file: [{gcs}] bucket does not exist.'
+          .format(gcs=target_path))
     except api_exceptions.HttpError as err:
-      raise exceptions.BadFileException(
-          'Could not copy [{local_file}] to [{gcs}]. Please retry: {err}'
-          .format(local_file=local_path, gcs=target_path,
-                  err=http_exc.HttpException(err)))
+      log.debug('Could not upload file [{local_file}] to [{gcs}]: {e}'.format(
+          local_file=local_path, gcs=target_path,
+          e=http_exc.HttpException(err)))
+      raise UploadError(
+          '{code} Could not upload file [{local_file}] to [{gcs}]: {message}'
+          .format(code=err.status_code, local_file=local_path, gcs=target_path,
+                  message=http_exc.HttpException(
+                      err, error_format='{status_message}')))
 
     if response.size != file_size:
       log.debug('Response size: {0} bytes, but local file is {1} bytes.'.format(
@@ -194,7 +229,8 @@ class StorageClient(object):
     Raises:
       BadFileException if the file download is not successful.
     """
-    download = transfer.Download.FromFile(local_path)
+    chunksize = self._GetChunkSize()
+    download = transfer.Download.FromFile(local_path, chunksize=chunksize)
     download.bytes_http = http.Http(response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=bucket_ref.bucket,
@@ -236,7 +272,8 @@ class StorageClient(object):
       file-like object containing the data read.
     """
     data = io.BytesIO()
-    download = transfer.Download.FromStream(data)
+    chunksize = self._GetChunkSize()
+    download = transfer.Download.FromStream(data, chunksize=chunksize)
     download.bytes_http = http.Http(response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=object_ref.bucket,
@@ -290,19 +327,34 @@ class StorageClient(object):
     Args:
       bucket_ref: The reference to the bucket.
       prefix: str, Filter results to those whose names begin with this prefix.
+
     Yields:
       Object messages.
+
+    Raises:
+      BucketNotFoundError if the user-specified bucket does not exist.
+      ListBucketError if there was an error listing the bucket.
     """
     request = self.messages.StorageObjectsListRequest(
         bucket=bucket_ref.bucket, prefix=prefix)
+
     try:
       # batch_size=None gives us the API default
       for obj in list_pager.YieldFromList(self.client.objects,
                                           request, batch_size=None):
         yield obj
+    except api_exceptions.HttpNotFoundError:
+      raise BucketNotFoundError(
+          'Could not list bucket: [{bucket}] bucket does not exist.'
+          .format(bucket=bucket_ref.bucket))
     except api_exceptions.HttpError as e:
-      raise UploadError('Error uploading files: {e}'.format(
-          e=http_exc.HttpException(e)))
+      log.debug('Could not list bucket [{bucket}]: {e}'.format(
+          bucket=bucket_ref.bucket, e=http_exc.HttpException(e)))
+      raise ListBucketError(
+          '{code} Could not list bucket [{bucket}]: {message}'
+          .format(code=e.status_code, bucket=bucket_ref.bucket,
+                  message=http_exc.HttpException(
+                      e, error_format='{status_message}')))
 
   def DeleteObject(self, bucket_ref, object_path):
     """Delete the specified object.

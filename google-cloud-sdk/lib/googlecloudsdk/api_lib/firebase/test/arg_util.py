@@ -127,13 +127,39 @@ def AddAndroidTestArgs(parser):
   parser.add_argument(
       '--environment-variables',
       type=arg_parsers.ArgDict(),
+      action='append',
       metavar='KEY=VALUE',
-      help='A comma-separated, key=value, map of environment variables and '
-      'their desired values. The environment variables passed here will '
-      'be mirrored on to the adb run command. For example, specify '
-      '--environment-variables '
-      'coverage=true,coverageFile="/sdcard/coverage.ec" to enable code '
-      'coverage and provide a file path to store the coverage results.')
+      help="""\
+      A comma-separated, key=value map of environment variables and their
+      desired values. This flag is repeatable. The environment variables are
+      mirrored as extra options to the `am instrument -e KEY1 VALUE1 ...`
+      command and passed to your test runner (typically AndroidJUnitRunner).
+      Examples:
+
+      Break test cases into four shards and run only the first shard:
+
+      ```
+      --environment-variables numShards=4,shardIndex=0
+      ```
+
+      Enable code coverage and provide a file path to store the coverage
+      results when using Android Test Orchestrator (`--use-orchestrator`):
+
+      ```
+      --environment-variables clearPackageData,coverage=true,coverageFile=/sdcard/coverage.ec
+      ```
+
+      Enable code coverage and provide a file path to store the coverage
+      results when *not* using Android Test Orchestrator
+      (`--no-use-orchestrator`):
+
+      ```
+      --environment-variables coverage=true,coverageFile=/sdcard/coverage.ec
+      ```
+
+      Note: If you need to embed a comma into a `VALUE` string, please refer to
+      `gcloud topic escaping` for ways to change the default list delimiter.
+      """)
   parser.add_argument(
       '--obb-files',
       type=arg_parsers.ArgList(min_length=1, max_length=2),
@@ -185,12 +211,21 @@ def AddAndroidTestArgs(parser):
       category=ANDROID_INSTRUMENTATION_TEST,
       type=arg_parsers.ArgList(min_length=1),
       metavar='TEST_TARGET',
-      help='A list of one or more instrumentation test targets to be run '
-      '(default: all targets). Each target must be fully qualified with the '
-      'package name or class name, in one of these formats:\n'
-      '* "package package_name"\n'
-      '* "class package_name.class_name"\n'
-      '* "class package_name.class_name#method_name".')
+      help="""\
+      A list of one or more test target filters to apply (default: run all test
+      targets). Each target filter must be fully qualified with the package
+      name, class name, or test annotation desired. Any test filter supported by
+      `am instrument -e ...` is supported. See
+       https://developer.android.com/reference/android/support/test/runner/AndroidJUnitRunner
+       for more information. Examples:
+
+         * `--test-targets "package com.my.package.name"`
+         * `--test-targets "notPackage com.package.to.skip"`
+         * `--test-targets "class com.foo.ClassName"`
+         * `--test-targets "notClass com.foo.ClassName#testMethodToSkip"`
+         * `--test-targets "annotation com.foo.AnnotationToRun"`
+         * `--test-targets "size large notAnnotation com.foo.AnnotationToSkip"`
+      """)
   parser.add_argument(
       '--use-orchestrator',
       category=ANDROID_INSTRUMENTATION_TEST,

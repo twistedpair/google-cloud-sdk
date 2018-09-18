@@ -148,8 +148,6 @@ class _BaseInstances(object):
               'using [--storage-auto-increase-limit], '
               '[--storage-auto-increase] must be enabled.')
 
-    # ALPHA args.
-    if _IsAlpha(release_track):
       if args.IsSpecified('network'):
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()

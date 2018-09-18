@@ -95,6 +95,7 @@ class DisplayInfo(object):
         state_value_enum.JOB_STATE_CANCELLED: 'Cancelled',
         state_value_enum.JOB_STATE_DONE: 'Done',
         state_value_enum.JOB_STATE_FAILED: 'Failed',
+        state_value_enum.JOB_STATE_QUEUED: 'Queued',
         state_value_enum.JOB_STATE_RUNNING: 'Running',
         state_value_enum.JOB_STATE_STOPPED: 'Stopped',
         state_value_enum.JOB_STATE_UPDATED: 'Updated',

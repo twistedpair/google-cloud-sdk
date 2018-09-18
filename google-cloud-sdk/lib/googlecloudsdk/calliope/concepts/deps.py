@@ -112,6 +112,12 @@ class _FallthroughBase(six.with_metaclass(abc.ABCMeta, object)):
   def __hash__(self):
     return hash(self.hint) + hash(self.active)
 
+  def __eq__(self, other):
+    return (isinstance(other, self.__class__)
+            and other.hint == self.hint
+            and other.active == self.active
+            and other.plural == self.plural)
+
 
 class Fallthrough(_FallthroughBase):
   """A fallthrough that can get an attribute value from an arbitrary function.
@@ -142,6 +148,10 @@ class Fallthrough(_FallthroughBase):
   def _Call(self, parsed_args):
     del parsed_args
     return self._function()
+
+  def __eq__(self, other):
+    return (super(Fallthrough, self).__eq__(other)
+            and other._function == self._function)  # pylint: disable=protected-access
 
 
 class PropertyFallthrough(_FallthroughBase):
@@ -278,7 +288,7 @@ class FullySpecifiedAnchorFallthrough(_FallthroughBase):
                           self.parameter_name]))
 
 
-def Get(attribute, attribute_to_fallthroughs_map, parsed_args=None):
+def Get(attribute_name, attribute_to_fallthroughs_map, parsed_args=None):
   """Gets the value of an attribute based on fallthrough information.
 
     If the attribute value is not provided by any of the fallthroughs, an
@@ -286,7 +296,7 @@ def Get(attribute, attribute_to_fallthroughs_map, parsed_args=None):
     attribute.
 
   Args:
-    attribute: str, the name of the attribute.
+    attribute_name: str, the name of the attribute.
     attribute_to_fallthroughs_map: {str: [_FallthroughBase], a map of attribute
       names to lists of fallthroughs.
     parsed_args: a parsed argparse namespace.
@@ -297,7 +307,30 @@ def Get(attribute, attribute_to_fallthroughs_map, parsed_args=None):
   Raises:
     AttributeNotFoundError: if no value can be found.
   """
-  fallthroughs = attribute_to_fallthroughs_map.get(attribute, [])
+  fallthroughs = attribute_to_fallthroughs_map.get(attribute_name, [])
+  return GetFromFallthroughs(fallthroughs, parsed_args,
+                             attribute_name=attribute_name)
+
+
+def GetFromFallthroughs(fallthroughs, parsed_args, attribute_name=None):
+  """Gets the value of an attribute based on fallthrough information.
+
+    If the attribute value is not provided by any of the fallthroughs, an
+    error is raised with a list of ways to provide information about the
+    attribute.
+
+  Args:
+    fallthroughs: [_FallthroughBase], list of fallthroughs.
+    parsed_args: a parsed argparse namespace.
+    attribute_name: str, the name of the attribute. Used for error message,
+      omitted if not provided.
+
+  Returns:
+    the value of the attribute.
+
+  Raises:
+    AttributeNotFoundError: if no value can be found.
+  """
   for fallthrough in fallthroughs:
     try:
       return fallthrough.GetValue(parsed_args)
@@ -306,6 +339,7 @@ def Get(attribute, attribute_to_fallthroughs_map, parsed_args=None):
   fallthroughs_summary = '\n'.join(
       ['- {}'.format(f.hint) for f in fallthroughs])
   raise AttributeNotFoundError(
-      'Failed to find attribute [{}]. The attribute can be set in the '
-      'following ways: \n'
-      '{}'.format(attribute, fallthroughs_summary))
+      'Failed to find attribute{}. The attribute can be set in the '
+      'following ways: \n{}'.format(
+          '' if attribute_name is None else ' [{}]'.format(attribute_name),
+          fallthroughs_summary))

@@ -85,6 +85,9 @@ class _OnGCECache(object):
     if on_gce is not None:
       return on_gce
 
+    return self.CheckServerRefreshAllCaches()
+
+  def CheckServerRefreshAllCaches(self):
     on_gce = self._CheckServer()
     self._WriteDisk(on_gce)
     self._WriteMemory(on_gce, time.time() + _GCE_CACHE_MAX_AGE)
@@ -150,3 +153,8 @@ _SINGLETON_ON_GCE_CACHE = _OnGCECache()
 def GetOnGCE(check_age=True):
   """Helper function to abstract the caching logic of if we're on GCE."""
   return _SINGLETON_ON_GCE_CACHE.GetOnGCE(check_age)
+
+
+def ForceCacheRefresh():
+  """Force rechecking server status and refreshing of all the caches."""
+  return _SINGLETON_ON_GCE_CACHE.CheckServerRefreshAllCaches()

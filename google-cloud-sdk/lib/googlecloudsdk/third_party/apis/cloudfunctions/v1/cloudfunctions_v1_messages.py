@@ -80,7 +80,8 @@ class CloudFunction(_messages.Message):
       organization. The format of this field is either
       `projects/{project}/global/networks/{network}` or `{network}`, where
       {project} is a project id where the network is defined, and {network} is
-      the short name of the network.  See [the VPC
+      the short name of the network.  This field is mutually exclusive with
+      `vpc_connector` and will be replaced by it.  See [the VPC
       documentation](https://cloud.google.com/compute/docs/vpc) for more
       information on connecting Cloud projects.  This feature is currently in
       alpha, available only for whitelisted users.
@@ -101,6 +102,14 @@ class CloudFunction(_messages.Message):
     updateTime: Output only. The last update timestamp of a Cloud Function.
     versionId: Output only. The version identifier of the Cloud Function. Each
       deployment attempt results in a new version of a function being created.
+    vpcConnector: The VPC Network Connector that this cloud function can
+      connect to. It can be either the fully-qualified URI, or the short name
+      of the network connector resource. The format of this field is
+      `projects/*/locations/*/connectors/*`  This field is mutually exclusive
+      with `network` field and will eventually replace it.  See [the VPC
+      documentation](https://cloud.google.com/compute/docs/vpc) for more
+      information on connecting Cloud projects.  This feature is currently in
+      alpha, available only for whitelisted users.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -193,6 +202,7 @@ class CloudFunction(_messages.Message):
   timeout = _messages.StringField(17)
   updateTime = _messages.StringField(18)
   versionId = _messages.IntegerField(19)
+  vpcConnector = _messages.StringField(20)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):

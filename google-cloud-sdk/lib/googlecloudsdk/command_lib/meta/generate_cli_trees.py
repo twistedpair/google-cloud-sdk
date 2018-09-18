@@ -879,7 +879,8 @@ class _ManCommandCollector(_ManPageCollector):
     """Returns the raw man page text."""
     try:
       with files.FileWriter(os.devnull) as f:
-        return subprocess.check_output(['man', self.command], stderr=f)
+        return encoding.Decode(subprocess.check_output(['man', self.command],
+                                                       stderr=f))
     except (OSError, subprocess.CalledProcessError):
       raise NoManPageTextForCommand(
           'Cannot get man(1) command man page text for [{}].'.format(
@@ -890,7 +891,7 @@ class _ManCommandCollector(_ManPageCollector):
     text = self._GetRawManPageText()
     return re.sub(
         '.\b', '', re.sub(
-            '(\u2010|\\u2010)\n *', '', encoding.Decode(text)))
+            '(\u2010|\\u2010)\n *', '', text))
 
 
 class _ManUrlCollector(_ManPageCollector):

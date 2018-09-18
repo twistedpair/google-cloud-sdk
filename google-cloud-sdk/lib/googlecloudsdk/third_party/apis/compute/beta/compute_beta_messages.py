@@ -23920,8 +23920,8 @@ class License(_messages.Message):
     kind: [Output Only] Type of resource. Always compute#license for licenses.
     licenseCode: [Output Only] The unique code used to attach this license to
       images, snapshots, and disks.
-    name: [Output Only] Name of the resource. The name is 1-63 characters long
-      and complies with RFC1035.
+    name: Name of the resource. The name must be 1-63 characters long and
+      comply with RFC1035.
     resourceRequirements: A LicenseResourceRequirements attribute.
     selfLink: [Output Only] Server-defined URL for the resource.
     transferable: If false, licenses will not be copied from the source
@@ -33052,7 +33052,9 @@ class Subnetwork(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource. This field can be set only at
       resource creation time.
-    enableFlowLogs: Whether to enable flow logging for this subnetwork.
+    enableFlowLogs: Whether to enable flow logging for this subnetwork. If
+      this field is not explicitly set, it will not appear in get listings. If
+      not set the default behavior is to disable flow logging.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint

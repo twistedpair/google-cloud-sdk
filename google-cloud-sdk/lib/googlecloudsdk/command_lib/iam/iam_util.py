@@ -112,10 +112,9 @@ def _ConditionArgDict():
   return arg_parsers.ArgDict(spec=condition_spec, allow_key_only=True)
 
 
-# TODO(b/113606810):  Add more help information on specifying a condition
-def _AddConditionFlag(parser, intro, required=False, completer=None):
-  """Create --condition flag and add to parser."""
-  help_str = ("""
+def _ConditionHelpText(intro):
+  """Get the help text for --condition."""
+  help_text = """
 {intro}
 
 *expression*::: (Required) The expression of the condition which
@@ -129,14 +128,64 @@ describing its purpose.
 a longer text which describes the expression
 
 NOTE: an unsatisfied condition will not allow user access via this
-binding.""").format(intro=intro)
-  parser.add_argument(
+binding.""".format(intro=intro)
+  return help_text
+
+
+# TODO(b/113606810):  Add more help information on specifying a condition
+def _AddConditionFlagsForAddBindingToIamPolicy(parser):
+  """Create flags for condition and add to parser."""
+  condition_intro = """
+Condition of the binding to be added. When condition is explicitly
+specified as `None` (e.g. --condition=None), a binding without a condition is
+added."""
+  help_str_condition = _ConditionHelpText(condition_intro)
+  help_str_condition_from_file = """
+Path to a local JSON or YAML file that defines the condition.
+To see available fields, see the help for `--condition`."""
+  condition_group = parser.add_mutually_exclusive_group()
+  condition_group.add_argument(
       '--condition',
       type=_ConditionArgDict(),
-      metavar='PROPERTY=VALUE',
-      required=required,
-      completer=completer,
-      help=help_str)
+      metavar='KEY=VALUE',
+      help=help_str_condition)
+
+  condition_group.add_argument(
+      '--condition-from-file',
+      type=arg_parsers.BufferedFileInput(),
+      help=help_str_condition_from_file)
+
+
+def _AddConditionFlagsForRemoveBindingFromIamPolicy(parser,
+                                                    condition_completer=None):
+  """Create flags for condition and add to parser."""
+  condition_intro = """
+Condition of the binding to be removed. When condition is explicitly
+specified as `None` (e.g. --condition=None), it matches a binding without a
+condition. Otherwise, only the binding with a condition which exactly matches
+the specified condition (including the optional description) will be removed."""
+  help_str_condition = _ConditionHelpText(condition_intro)
+  help_str_condition_from_file = """
+Path to a local JSON or YAML file that defines the condition.
+To see available fields, see the help for `--condition`."""
+  help_str_condition_all = """
+Remove all bindings with this role and member, irrespective of any
+conditions."""
+  condition_group = parser.add_mutually_exclusive_group()
+  condition_group.add_argument(
+      '--condition',
+      type=_ConditionArgDict(),
+      metavar='KEY=VALUE',
+      completer=condition_completer,
+      help=help_str_condition)
+
+  condition_group.add_argument(
+      '--condition-from-file',
+      type=arg_parsers.BufferedFileInput(),
+      help=help_str_condition_from_file)
+
+  condition_group.add_argument(
+      '--all', action='store_true', help=help_str_condition_all)
 
 
 def ValidateConditionArgument(condition):
@@ -170,89 +219,58 @@ def AddArgForPolicyFile(parser):
         """)
 
 
-def AddArgsForAddIamPolicyBinding(parser, completer=None):
+def AddArgsForAddIamPolicyBinding(parser,
+                                  role_completer=None,
+                                  add_condition=False):
   """Adds the IAM policy binding arguments for role and members.
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the argss.
-    completer: A command_lib.iam.completers.IamRolesCompleter class to complete
-      the --role flag value.
+    role_completer: A command_lib.iam.completers.IamRolesCompleter class to
+      complete the --role flag value.
+    add_condition: boolean, If true, add the flags for condition.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
 
   parser.add_argument(
-      '--role', required=True, completer=completer,
+      '--role',
+      required=True,
+      completer=role_completer,
       help='Define the role of the member.')
   _AddMemberFlag(parser, 'to add the binding for')
+  if add_condition:
+    _AddConditionFlagsForAddBindingToIamPolicy(parser)
 
 
-def AddArgsForAddIamPolicyBindingWithCondition(parser,
-                                               role_completer=None,
-                                               condition_completer=None):
-  """Adds the IAM policy binding arguments for role,  member, and condition.
+# TODO (b/114447521): implement a completer for condition
+def AddArgsForRemoveIamPolicyBinding(parser,
+                                     role_completer=None,
+                                     add_condition=False,
+                                     condition_completer=None):
+  """Adds the IAM policy binding arguments for role and members.
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the args.
     role_completer: A command_lib.iam.completers.IamRolesCompleter class to
       complete the --role flag value.
-    condition_completer: A completer for condition to complete the --condition
-      flag value.
-
-  Raises:
-    ArgumentError if one of the arguments is already defined in the parser.
-  """
-  intro_message = ('Specify a condition to be added to the binding. '
-                   'When condition is explicitly specified as `None` '
-                   '(e.g. --condition=None), '
-                   'a binding without a condition is added.')
-  AddArgsForAddIamPolicyBinding(parser, role_completer)
-  _AddConditionFlag(parser, intro=intro_message, completer=condition_completer)
-
-
-def AddArgsForRemoveIamPolicyBinding(parser, completer=None):
-  """Adds the IAM policy binding arguments for role and members.
-
-  Args:
-    parser: An argparse.ArgumentParser-like object to which we add the argss.
-    completer: A command_lib.iam.completers.IamRolesCompleter class to complete
-      the --role flag value.
+    add_condition: boolean, If true, add the flags for condition.
+    condition_completer: A completer to complete the condition flag value.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
 
   parser.add_argument(
-      '--role', required=True, completer=completer,
+      '--role',
+      required=True,
+      completer=role_completer,
       help='The role to remove the member from.')
   _AddMemberFlag(parser, 'to remove the binding for')
-
-
-def AddArgsForRemoveIamPolicyBindingWithCondition(parser,
-                                                  role_completer=None,
-                                                  condition_completer=None):
-  """Adds the IAM policy binding arguments for role, member, and condition.
-
-  Args:
-    parser: An argparse.ArgumentParser-like object to which we add the argss.
-    role_completer: A command_lib.iam.completers.IamRolesCompleter class to
-      complete the --role flag value.
-    condition_completer: A completer for condition to complete the --condition
-      flag value.
-
-  Raises:
-    ArgumentError if one of the arguments is already defined in the parser.
-  """
-  intro_message = ('Specify the condition of the binding to be removed. '
-                   'When condition is explicitly specified as `None` '
-                   '(e.g. --condition=None), it '
-                   'matches a binding without a condition. Otherwise, '
-                   'only the binding with a condition which exactly matches '
-                   'the specified condition (including the optional '
-                   'description) will be removed.')
-  AddArgsForRemoveIamPolicyBinding(parser, role_completer)
-  _AddConditionFlag(parser, intro=intro_message, completer=condition_completer)
+  if add_condition:
+    _AddConditionFlagsForRemoveBindingFromIamPolicy(
+        parser, condition_completer=condition_completer)
 
 
 def AddBindingToIamPolicy(binding_message_type, policy, member, role):

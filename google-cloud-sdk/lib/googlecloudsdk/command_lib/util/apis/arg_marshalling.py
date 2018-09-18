@@ -29,6 +29,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_property
+import six
 
 
 class Error(Exception):
@@ -203,7 +204,9 @@ class DeclarativeArgumentGenerator(object):
     # attributes or for list commands (where everything should be a flag since
     # the parent resource collection is being used).
     anchor_arg_name = self._GetAnchorArgName()
-    no_gen = {n: '' for n in resource_arg_schema.IGNORED_FIELDS}
+    no_gen = {n: '' for _, n
+              in six.iteritems(resource_arg_schema.IGNORED_FIELDS)
+              if n in self.resource_arg.attribute_names}
     no_gen.update({n: '' for n in self.resource_arg.removed_flags})
     command_level_fallthroughs = {}
     concept_parsers.UpdateFallthroughsMap(

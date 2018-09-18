@@ -592,15 +592,19 @@ def AutoscalerForMigByRef(client, resources, igm_ref):
   Returns:
     Autoscaler message with autoscaler targeting the IGM refferenced by
     igm_ref or None if there isn't one.
+  Raises:
+    ValueError: if instance group manager collection path is unknown
   """
   if igm_ref.Collection() == 'compute.instanceGroupManagers':
     scope_type = 'zone'
     location = CreateZoneRef(resources, igm_ref)
     zones, regions = [location], None
-  else:
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
     scope_type = 'region'
     location = CreateRegionRef(resources, igm_ref)
     zones, regions = None, [location]
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
 
   autoscalers = AutoscalersForLocations(
       regions=regions,

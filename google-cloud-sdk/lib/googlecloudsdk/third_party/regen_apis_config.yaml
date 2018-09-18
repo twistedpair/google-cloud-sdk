@@ -186,6 +186,9 @@ apis:
   cloudscheduler:
     v1alpha1:
       discovery_doc: cloudscheduler_v1alpha1.json
+      default: true
+    v1beta1:
+      discovery_doc: cloudscheduler_v1beta1.json
   composer:
     v1beta1:
       discovery_doc: composer_v1beta1.json

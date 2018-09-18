@@ -253,6 +253,8 @@ class BuildOptions(_messages.Message):
   Enums:
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
       behavior to Google Cloud Storage.
+    LoggingValueValuesEnum: Option to specify the logging mode, which
+      determines where the logs are stored.
     MachineTypeValueValuesEnum: Compute Engine machine type on which to run
       the build.
     RequestedVerifyOptionValueValuesEnum: Requested verifiability options.
@@ -270,6 +272,8 @@ class BuildOptions(_messages.Message):
       error.
     logStreamingOption: Option to define build log streaming behavior to
       Google Cloud Storage.
+    logging: Option to specify the logging mode, which determines where the
+      logs are stored.
     machineType: Compute Engine machine type on which to run the build.
     requestedVerifyOption: Requested verifiability options.
     sourceProvenanceHash: Requested hash for SourceProvenance.
@@ -290,6 +294,20 @@ class BuildOptions(_messages.Message):
     STREAM_DEFAULT = 0
     STREAM_ON = 1
     STREAM_OFF = 2
+
+  class LoggingValueValuesEnum(_messages.Enum):
+    r"""Option to specify the logging mode, which determines where the logs
+    are stored.
+
+    Values:
+      LOGGING_UNSPECIFIED: The service determines the logging mode. The
+        default is `LEGACY`
+      LEGACY: Stackdriver logging and Cloud Storage logging are enabled.
+      GCS_ONLY: Only Cloud Storage logging is enabled.
+    """
+    LOGGING_UNSPECIFIED = 0
+    LEGACY = 1
+    GCS_ONLY = 2
 
   class MachineTypeValueValuesEnum(_messages.Enum):
     r"""Compute Engine machine type on which to run the build.
@@ -339,10 +357,11 @@ class BuildOptions(_messages.Message):
 
   diskSizeGb = _messages.IntegerField(1)
   logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 2)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 3)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 4)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 5, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 6)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 3)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 4)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 5)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 6, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 7)
 
 
 class BuildStep(_messages.Message):

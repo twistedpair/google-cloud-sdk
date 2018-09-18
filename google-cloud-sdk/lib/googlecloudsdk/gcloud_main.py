@@ -78,8 +78,8 @@ def CreateCLI(surfaces, translator=None):
   def VersionFunc():
     generated_cli.Execute(['version'])
 
-  def HandleKnownErrorFunc(exc):
-    crash_handling.ReportError(exc, is_crash=False)
+  def HandleKnownErrorFunc():
+    crash_handling.ReportError(is_crash=False)
 
   pkg_root = os.path.dirname(os.path.dirname(surface.__file__))
   loader = cli.CLILoader(
@@ -102,8 +102,9 @@ def CreateCLI(surfaces, translator=None):
     loader.AddModule(dot_path, dir_path, component=None)
 
   # Check for updates on shutdown but not for any of the updater commands.
-  loader.RegisterPostRunHook(UpdateCheck,
-                             exclude_commands=r'gcloud\.components\..*')
+  # Skip update checks for 'gcloud version' command as it does that manually.
+  exclude_commands = r'gcloud\.components\..*|gcloud\.version'
+  loader.RegisterPostRunHook(UpdateCheck, exclude_commands=exclude_commands)
   generated_cli = loader.Generate()
   return generated_cli
 

@@ -43,7 +43,6 @@ class ServicemanagementV1(base_api.BaseApiClient):
     self.services_projectSettings = self.ServicesProjectSettingsService(self)
     self.services_rollouts = self.ServicesRolloutsService(self)
     self.services = self.ServicesService(self)
-    self.v1 = self.V1Service(self)
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
@@ -690,36 +689,6 @@ service, from the newest to the oldest.
       self._upload_configs = {
           }
 
-    def ConvertConfig(self, request, global_params=None):
-      r"""DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide.
-config conversion moving forward.
-
-Converts an API specification (e.g. Swagger spec) to an
-equivalent `google.api.Service`.
-
-      Args:
-        request: (ConvertConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvertConfigResponse) The response message.
-      """
-      config = self.GetMethodConfig('ConvertConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ConvertConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'servicemanagement.services.convertConfig',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path=u'v1/services:convertConfig',
-        request_field='<request>',
-        request_type_name=u'ConvertConfigRequest',
-        response_type_name=u'ConvertConfigResponse',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a new managed service.
 Please note one producer project can own no more than 20 services.
@@ -996,6 +965,7 @@ of "project:{PROJECT-ID}".
       r"""Updates the specified one of the configurations. If the specified service.
 does not exist the patch operation fails.
 
+
 Operation<response: ManagedService>
 
       Args:
@@ -1115,6 +1085,7 @@ Operation<response: UndeleteServiceResponse>
       r"""Updates the configuration of a service.  If the specified service does not.
 already exist, then it is created.
 
+
 Operation<response: ManagedService>
 
       Args:
@@ -1137,45 +1108,5 @@ Operation<response: ManagedService>
         request_field=u'managedService',
         request_type_name=u'ServicemanagementServicesUpdateRequest',
         response_type_name=u'Operation',
-        supports_download=False,
-    )
-
-  class V1Service(base_api.BaseApiService):
-    """Service class for the v1 resource."""
-
-    _NAME = u'v1'
-
-    def __init__(self, client):
-      super(ServicemanagementV1.V1Service, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def ConvertConfig(self, request, global_params=None):
-      r"""DEPRECATED. `SubmitConfigSource` with `validate_only=true` will provide.
-config conversion moving forward.
-
-Converts an API specification (e.g. Swagger spec) to an
-equivalent `google.api.Service`.
-
-      Args:
-        request: (ConvertConfigRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConvertConfigResponse) The response message.
-      """
-      config = self.GetMethodConfig('ConvertConfig')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ConvertConfig.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'servicemanagement.convertConfig',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path=u'v1:convertConfig',
-        request_field='<request>',
-        request_type_name=u'ConvertConfigRequest',
-        response_type_name=u'ConvertConfigResponse',
         supports_download=False,
     )

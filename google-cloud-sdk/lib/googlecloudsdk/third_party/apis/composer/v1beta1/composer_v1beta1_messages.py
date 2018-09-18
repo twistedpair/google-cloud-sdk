@@ -296,9 +296,9 @@ class EnvironmentConfig(_messages.Message):
   r"""Configuration information for an environment.
 
   Fields:
-    airflowUri: The URI of the Apache Airflow Web UI hosted within this
-      environment (see [Airflow web interface](/composer/docs/how-to/accessing
-      /airflow-web-interface)).
+    airflowUri: Output only. The URI of the Apache Airflow Web UI hosted
+      within this environment (see [Airflow web interface](/composer/docs/how-
+      to/accessing/airflow-web-interface)).
     dagGcsPrefix: Output only. The Cloud Storage prefix of the DAGs for this
       environment. Although Cloud Storage objects reside in a flat namespace,
       a hierarchical file tree can be simulated using "/"-delimited object
@@ -387,7 +387,7 @@ class NodeConfig(_messages.Message):
       name](/apis/design/resource_names#relative_resource_name). For example:
       "projects/{projectId}/global/networks/{networkId}".  If unspecified, the
       default network in the environment's project is used. If a [Custom
-      Subnet Network]((/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
+      Subnet Network](/vpc/docs/vpc#vpc_networks_and_subnets) is provided,
       `nodeConfig.subnetwork` must also be provided. For [Shared
       VPC](/vpc/docs/shared-vpc) subnetwork requirements, see
       `nodeConfig.subnetwork`.

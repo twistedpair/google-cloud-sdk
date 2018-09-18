@@ -525,11 +525,11 @@ class AppengineAppsServicesPatchRequest(_messages.Message):
       For gradual traffic migration, the target versions must be located
       within instances that are configured for both warmup requests
       (https://cloud.google.com/appengine/docs/admin-
-      api/reference/rest/v1beta/apps.services.versions#inboundservicetype) and
+      api/reference/rest/v1beta/apps.services.versions#InboundServiceType) and
       automatic scaling (https://cloud.google.com/appengine/docs/admin-
-      api/reference/rest/v1beta/apps.services.versions#automaticscaling). You
+      api/reference/rest/v1beta/apps.services.versions#AutomaticScaling). You
       must specify the shardBy (https://cloud.google.com/appengine/docs/admin-
-      api/reference/rest/v1beta/apps.services#shardby) field in the Service
+      api/reference/rest/v1beta/apps.services#ShardBy) field in the Service
       resource. Gradual traffic migration is not supported in the App Engine
       flexible environment. For examples, see Migrating and Splitting Traffic
       (https://cloud.google.com/appengine/docs/admin-api/migrating-splitting-
@@ -2753,7 +2753,7 @@ class Version(_messages.Message):
     defaultExpiration: Duration that static files should be cached by web
       proxies and browsers. Only applicable if the corresponding
       StaticFilesHandler (https://cloud.google.com/appengine/docs/admin-
-      api/reference/rest/v1beta/apps.services.versions#staticfileshandler)
+      api/reference/rest/v1beta/apps.services.versions#StaticFilesHandler)
       does not specify its own expiration time.Only returned in GET requests
       if view=FULL is set.
     deployment: Code and application artifacts that make up this version.Only

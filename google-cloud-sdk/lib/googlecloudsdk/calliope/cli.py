@@ -808,6 +808,8 @@ class CLI(object):
     old_verbosity = None
     try:
       args = self.__parser.parse_args(argv)
+      if args.CONCEPT_ARGS is not None:
+        args.CONCEPT_ARGS.ParseConcepts()
       calliope_command = args._GetCommand()  # pylint: disable=protected-access
       command_path_string = '.'.join(calliope_command.GetPath())
       specified_arg_names = args.GetSpecifiedArgNames()

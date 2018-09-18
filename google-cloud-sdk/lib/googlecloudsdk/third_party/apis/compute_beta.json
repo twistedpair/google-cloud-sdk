@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20180904",
+ "revision": "20180907",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -9790,7 +9790,7 @@
     },
     "name": {
      "type": "string",
-     "description": "[Output Only] Name of the resource. The name is 1-63 characters long and complies with RFC1035.",
+     "description": "Name of the resource. The name must be 1-63 characters long and comply with RFC1035.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
      "annotations": {
       "required": [
@@ -17940,7 +17940,7 @@
     },
     "enableFlowLogs": {
      "type": "boolean",
-     "description": "Whether to enable flow logging for this subnetwork."
+     "description": "Whether to enable flow logging for this subnetwork. If this field is not explicitly set, it will not appear in get listings. If not set the default behavior is to disable flow logging."
     },
     "fingerprint": {
      "type": "string",
@@ -28772,7 +28772,7 @@
        "type": "string",
        "description": "Name of the instance resource to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {

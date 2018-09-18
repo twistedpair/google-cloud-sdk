@@ -115,19 +115,13 @@ def _SshKeyStartsWithKeyType(key):
   return any(key_starts_with_types)
 
 
-def ConstructMetadataMessage(message_classes,
-                             metadata=None,
-                             metadata_from_file=None,
-                             existing_metadata=None):
-  """Creates a Metadata message from the given dicts of metadata.
+def ConstructMetadataDict(metadata=None, metadata_from_file=None):
+  """Returns the dict of metadata key:value pairs based on the given dicts.
 
   Args:
-    message_classes: An object containing API message classes.
     metadata: A dict mapping metadata keys to metadata values or None.
-    metadata_from_file: A dict mapping metadata keys to file names
-      containing the keys' values or None.
-    existing_metadata: If not None, the given metadata values are
-      combined with this Metadata message.
+    metadata_from_file: A dict mapping metadata keys to file names containing
+      the keys' values or None.
 
   Raises:
     ToolException: If metadata and metadata_from_file contain duplicate
@@ -135,7 +129,7 @@ def ConstructMetadataMessage(message_classes,
       metadata_from_file.
 
   Returns:
-    A Metadata protobuf.
+    A dict of metadata key:value pairs.
   """
   metadata = metadata or {}
   metadata_from_file = metadata_from_file or {}
@@ -146,6 +140,32 @@ def ConstructMetadataMessage(message_classes,
       raise exceptions.ToolException(
           'Encountered duplicate metadata key [{0}].'.format(key))
     new_metadata_dict[key] = files.ReadFileContents(file_path)
+  return new_metadata_dict
+
+
+def ConstructMetadataMessage(message_classes,
+                             metadata=None,
+                             metadata_from_file=None,
+                             existing_metadata=None):
+  """Creates a Metadata message from the given dicts of metadata.
+
+  Args:
+    message_classes: An object containing API message classes.
+    metadata: A dict mapping metadata keys to metadata values or None.
+    metadata_from_file: A dict mapping metadata keys to file names containing
+      the keys' values or None.
+    existing_metadata: If not None, the given metadata values are combined with
+      this Metadata message.
+
+  Raises:
+    ToolException: If metadata and metadata_from_file contain duplicate
+      keys or if there is a problem reading the contents of a file in
+      metadata_from_file.
+
+  Returns:
+    A Metadata protobuf.
+  """
+  new_metadata_dict = ConstructMetadataDict(metadata, metadata_from_file)
 
   existing_metadata_dict = _MetadataMessageToDict(existing_metadata)
   existing_metadata_dict.update(new_metadata_dict)

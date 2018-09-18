@@ -360,7 +360,7 @@ def BuildAndPushDockerImage(
     project,
     service,
     upload_dir,
-    source_file_iterator,
+    source_files,
     version_id,
     code_bucket_ref,
     gcr_domain,
@@ -372,7 +372,7 @@ def BuildAndPushDockerImage(
     project: str, The project being deployed to.
     service: ServiceYamlInfo, The parsed service config.
     upload_dir: str, path to the service's upload directory
-    source_file_iterator: iterator, yields relative paths to upload.
+    source_files: [str], relative paths to upload.
     version_id: The version id to deploy these services under.
     code_bucket_ref: The reference to the GCS bucket where the source will be
       uploaded.
@@ -425,7 +425,7 @@ def BuildAndPushDockerImage(
                                     service.parsed.skip_files, gen_files)
 
   try:
-    cloud_build.UploadSource(upload_dir, source_file_iterator, object_ref,
+    cloud_build.UploadSource(upload_dir, source_files, object_ref,
                              gen_files=gen_files)
   except (OSError, IOError) as err:
     if platforms.OperatingSystem.IsWindows():

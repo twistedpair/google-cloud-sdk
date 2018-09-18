@@ -279,7 +279,7 @@
           "$ref": "NodeConfig"
         },
         "airflowUri": {
-          "description": "The URI of the Apache Airflow Web UI hosted within this environment (see\n[Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
+          "description": "Output only.\nThe URI of the Apache Airflow Web UI hosted within this environment (see\n[Airflow web interface](\/composer\/docs\/how-to\/accessing\/airflow-web-interface)).",
           "type": "string"
         }
       }
@@ -330,7 +330,7 @@
           "type": "string"
         },
         "network": {
-          "description": "Optional. The Compute Engine network to be used for machine\ncommunications, specified as a\n[relative resource name](\/apis\/design\/resource_names#relative_resource_name).\nFor example: \"projects\/{projectId}\/global\/networks\/{networkId}\".\n\n[Shared VPC](\/vpc\/docs\/shared-vpc) is not currently supported. The\nnetwork must belong to the environment's project. If unspecified, the\n\"default\" network ID in the environment's project is used.  If a\n[Custom Subnet Network]((\/vpc\/docs\/vpc#vpc_networks_and_subnets)\nis provided, `nodeConfig.subnetwork` must also be provided.",
+          "description": "Optional. The Compute Engine network to be used for machine\ncommunications, specified as a\n[relative resource name](\/apis\/design\/resource_names#relative_resource_name).\nFor example: \"projects\/{projectId}\/global\/networks\/{networkId}\".\n\n[Shared VPC](\/vpc\/docs\/shared-vpc) is not currently supported. The\nnetwork must belong to the environment's project. If unspecified, the\n\"default\" network ID in the environment's project is used.  If a\n[Custom Subnet Network](\/vpc\/docs\/vpc#vpc_networks_and_subnets)\nis provided, `nodeConfig.subnetwork` must also be provided.",
           "type": "string"
         },
         "subnetwork": {

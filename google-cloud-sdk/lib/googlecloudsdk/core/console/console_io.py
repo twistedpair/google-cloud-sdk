@@ -933,14 +933,16 @@ def More(contents, out=None, prompt=None, check_pager=True):
           pager = command
           break
     if pager:
-      less = encoding.GetEncodedValue(os.environ, 'LESS', None)
-      if less is None:
-        encoding.SetEncodedValue(os.environ, 'LESS', '-R')
+      # If the pager is less(1) then instruct it to display raw ANSI escape
+      # sequences to enable colors and font embellishments.
+      less_orig = encoding.GetEncodedValue(os.environ, 'LESS', None)
+      less = '-R' + (less_orig or '')
+      encoding.SetEncodedValue(os.environ, 'LESS', less)
       p = subprocess.Popen(pager, stdin=subprocess.PIPE, shell=True)
       enc = console_attr.GetConsoleAttr().GetEncoding()
       p.communicate(input=contents.encode(enc))
       p.wait()
-      if less is None:
+      if less_orig is None:
         encoding.SetEncodedValue(os.environ, 'LESS', None)
       return
   # Fall back to the internal pager.

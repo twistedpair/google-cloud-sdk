@@ -3,8 +3,6 @@ $schema: "http://json-schema.org/draft-06/schema#"
 title: dataproc v1beta2 ManagedCluster export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
-required:
-- clusterName
 additionalProperties: false
 properties:
   COMMENT:

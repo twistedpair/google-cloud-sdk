@@ -133,7 +133,17 @@ class Namespace(argparse.Namespace):
 
   @property
   def CONCEPTS(self):  # pylint: disable=invalid-name
+    """The holder for concepts v1 arguments."""
     handler = self._GetCommand().ai.concept_handler
+    if handler is None:
+      return handler
+    handler.parsed_args = self
+    return handler
+
+  @property
+  def CONCEPT_ARGS(self):  # pylint: disable=invalid-name
+    """The holder for concepts v2 arguments."""
+    handler = self._GetCommand().ai.concepts
     if handler is None:
       return handler
     handler.parsed_args = self

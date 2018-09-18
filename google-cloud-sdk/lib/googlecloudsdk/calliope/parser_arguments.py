@@ -28,6 +28,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import display_info
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import parser_errors
+from googlecloudsdk.command_lib.concepts import concept_managers
 from googlecloudsdk.core.cache import completion_cache
 
 
@@ -129,6 +130,8 @@ class ArgumentInterceptor(Argument):
 
       self.ancestor_flag_args = []
       self.concept_handler = None
+      # Concepts v2
+      self.concepts = None
       self.defaults = {}
       self.dests = []
       self.display_info = display_info.DisplayInfo()
@@ -208,7 +211,15 @@ class ArgumentInterceptor(Argument):
   def concept_handler(self):
     return self.data.concept_handler
 
+  @property
+  def concepts(self):
+    return self.data.concepts
+
   def add_concepts(self, handler):
+    # RuntimeParser is the v2 concepts handler.
+    if isinstance(handler, concept_managers.RuntimeParser):
+      self.data.concepts = handler
+      return
     if self.data.concept_handler:
       raise AttributeError(
           'It is not permitted to add two runtime handlers to a command class.')

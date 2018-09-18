@@ -104,17 +104,18 @@ def _GetReportingClient(is_crash=True):
   return client_instance
 
 
-def ReportError(err, is_crash):
+def ReportError(is_crash):
   """Report the anonymous crash information to the Error Reporting service.
 
+  This will report the actively handled exception.
   Args:
-    err: Exception, the error that caused the crash.
     is_crash: bool, True if this is a crash, False if it is a user error.
   """
   if properties.VALUES.core.disable_usage_reporting.GetBool():
     return
 
-  stacktrace = traceback.format_exc(err)
+  # traceback prints the exception that is currently being handled
+  stacktrace = traceback.format_exc()
   stacktrace = error_reporting_util.RemovePrivateInformationFromTraceback(
       stacktrace)
   command = properties.VALUES.metrics.command_name.Get()
@@ -154,7 +155,7 @@ def HandleGcloudCrash(err):
   else:
     log.error('gcloud crashed ({0}): {1}'.format(
         getattr(err, 'error_name', type(err).__name__), err_string))
-    ReportError(err, is_crash=True)
+    ReportError(is_crash=True)
     log.err.Print('\nIf you would like to report this issue, please run the '
                   'following command:')
     log.err.Print('  gcloud feedback')

@@ -24,7 +24,16 @@ from dns import rdata
 from dns import rdataclass
 from dns import rdatatype
 from dns import zone
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.resource import resource_printer
+
+
+class Error(exceptions.Error):
+  """Base exception for all export errors."""
+
+
+class UnableToExportRecordsToFile(Error):
+  """Unable to export records to specified file."""
 
 
 def WriteToZoneFile(zone_file, record_sets, domain):

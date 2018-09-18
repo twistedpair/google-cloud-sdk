@@ -130,7 +130,23 @@ class PresentationSpec(object):
 class ResourcePresentationSpec(PresentationSpec):
   """Class that specifies how resource arguments are presented in a command."""
 
+  def _ValidateFlagNameOverrides(self, flag_name_overrides):
+    if not flag_name_overrides:
+      return
+    for attribute_name in flag_name_overrides.keys():
+      for attribute in self.concept_spec.attributes:
+        if attribute.name == attribute_name:
+          break
+      else:
+        raise ValueError(
+            'Attempting to override the name for an attribute not present in '
+            'the concept: [{}]. Available attributes: [{}]'.format(
+                attribute_name,
+                ', '.join([attribute.name
+                           for attribute in self.concept_spec.attributes])))
+
   def _GetAttributeToArgsMap(self, flag_name_overrides):
+    self._ValidateFlagNameOverrides(flag_name_overrides)
     # Create a rename map for the attributes to their flags.
     attribute_to_args_map = {}
     for i, attribute in enumerate(self._concept_spec.attributes):

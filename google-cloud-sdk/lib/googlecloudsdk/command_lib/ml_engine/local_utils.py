@@ -112,7 +112,7 @@ def RunPredict(model_dir, json_instances=None, text_instances=None,
     log.warning(err)
 
   try:
-    return json.loads(output)
+    return json.loads(encoding.Decode(output))
   except ValueError:
     raise InvalidReturnValueError('The output for prediction is not '
                                   'in JSON format: ' + output)

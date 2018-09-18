@@ -18,15 +18,9 @@ import json
 import logging
 import os
 import re
+import subprocess
 
-try:
-  # This code is also used in googlecloudsdk, which needs the Python
-  # 2.7-compatabile version of subprocess for CentOS support (which uses
-  # Python 2.6). Other environments (which support Python 2.7) can use the
-  # default version.
-  from googlecloudsdk.third_party.py27 import py27_subprocess as subprocess  # pylint: disable=g-import-not-at-top
-except ImportError:
-  import subprocess  # pylint: disable=g-import-not-at-top
+from googlecloudsdk.third_party.appengine._internal import six_subset
 
 _REMOTE_URL_PATTERN = r'remote\.(.*)\.url'
 
@@ -384,7 +378,10 @@ def _CallGit(cwd, *args):
     The raw output of the command, or None if the command failed.
   """
   try:
-    return subprocess.check_output(['git'] + list(args), cwd=cwd)
+    output = subprocess.check_output(['git'] + list(args), cwd=cwd)
+    if six_subset.PY3:
+      output = output.decode('utf-8')
+    return output
   except (OSError, subprocess.CalledProcessError) as e:
     logging.debug('Could not call git with args %s: %s', args, e)
     return None

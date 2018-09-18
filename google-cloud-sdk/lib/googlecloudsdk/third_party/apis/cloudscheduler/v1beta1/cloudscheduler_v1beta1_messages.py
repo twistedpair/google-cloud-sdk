@@ -13,18 +13,18 @@ package = 'cloudscheduler'
 
 
 class AppEngineHttpTarget(_messages.Message):
-  """App Engine target. The job will be pushed to a job handler by means of an
-  HTTP request via an AppEngineHttpTarget.http_method such as HTTP POST, HTTP
-  GET, etc. The job is acknowledged by means of an HTTP response code in the
-  range [200 - 299]. Error 503 is considered an App Engine system error
-  instead of an application error. Requests returning error 503 will be
-  retried regardless of retry configuration and not counted against retry
-  counts. Any other response code, or a failure to receive a response before
-  the deadline, constitutes a failed execution.
+  r"""App Engine target. The job will be pushed to a job handler by means of
+  an HTTP request via an http_method such as HTTP POST, HTTP GET, etc. The job
+  is acknowledged by means of an HTTP response code in the range [200 - 299].
+  Error 503 is considered an App Engine system error instead of an application
+  error. Requests returning error 503 will be retried regardless of retry
+  configuration and not counted against retry counts. Any other response code,
+  or a failure to receive a response before the deadline, constitutes a failed
+  attempt.
 
   Enums:
-    HttpMethodValueValuesEnum: The HTTP method to use for the request. The
-      default is POST.
+    HttpMethodValueValuesEnum: The HTTP method to use for the request. PATCH
+      and OPTIONS are not permitted.
 
   Messages:
     HeadersValue: HTTP request headers.  This map contains the header field
@@ -34,7 +34,34 @@ class AppEngineHttpTarget(_messages.Message):
       (+http://code.google.com/appengine)"`.   This header can be modified,
       but Cloud Scheduler will append   `"AppEngine-Google;
       (+http://code.google.com/appengine)"` to the   modified `User-Agent`.
-      If the job has an AppEngineHttpTarget.payload, Cloud Scheduler sets the
+      If the job has an body, Cloud Scheduler sets the following headers:  *
+      `Content-Type`: By default, the `Content-Type` header is set to
+      `"application/octet-stream"`. The default can be overridden by explictly
+      setting `Content-Type` to a particular media type when the job is
+      created.   For example, `Content-Type` can be set to
+      `"application/json"`. * `Content-Length`: This is computed by Cloud
+      Scheduler. This value is   output only. It cannot be changed.  The
+      headers below are output only. They cannot be set or overridden:  *
+      `X-Google-*`: For Google internal use only. * `X-AppEngine-*`: For
+      Google internal use only. See   [Reading request
+      headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
+      /creating-handlers#reading_request_headers).  In addition, some App
+      Engine headers, which contain job-specific information, are also be sent
+      to the job handler; see [request headers](https://cloud.google.comappeng
+      ine/docs/standard/python/config/cron#securing_urls_for_cron).
+
+  Fields:
+    appEngineRouting: App Engine Routing setting for the job.
+    body: Body.  HTTP request body. A request body is allowed only if the HTTP
+      method is POST or PUT. It will result in invalid argument error to set a
+      body on a job with an incompatible HttpMethod.
+    headers: HTTP request headers.  This map contains the header field names
+      and values. Headers can be set when the job is created.  Cloud Scheduler
+      sets some headers to default values:  * `User-Agent`: By default, this
+      header is   `"AppEngine-Google; (+http://code.google.com/appengine)"`.
+      This header can be modified, but Cloud Scheduler will append
+      `"AppEngine-Google; (+http://code.google.com/appengine)"` to the
+      modified `User-Agent`.  If the job has an body, Cloud Scheduler sets the
       following headers:  * `Content-Type`: By default, the `Content-Type`
       header is set to   `"application/octet-stream"`. The default can be
       overridden by explictly   setting `Content-Type` to a particular media
@@ -44,58 +71,33 @@ class AppEngineHttpTarget(_messages.Message):
       headers below are output only. They cannot be set or overridden:  *
       `X-Google-*`: For Google internal use only. * `X-AppEngine-*`: For
       Google internal use only. See   [Reading request
-      headers](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).  In addition, some App Engine
-      headers, which contain job-specific information, are also be sent to the
-      job handler; see [request headers](/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).
-
-  Fields:
-    appEngineRouting: App Engine Routing setting for the job.
-    headers: HTTP request headers.  This map contains the header field names
-      and values. Headers can be set when the job is created.  Cloud Scheduler
-      sets some headers to default values:  * `User-Agent`: By default, this
-      header is   `"AppEngine-Google; (+http://code.google.com/appengine)"`.
-      This header can be modified, but Cloud Scheduler will append
-      `"AppEngine-Google; (+http://code.google.com/appengine)"` to the
-      modified `User-Agent`.  If the job has an AppEngineHttpTarget.payload,
-      Cloud Scheduler sets the following headers:  * `Content-Type`: By
-      default, the `Content-Type` header is set to   `"application/octet-
-      stream"`. The default can be overridden by explictly   setting `Content-
-      Type` to a particular media type when the job is   created.   For
-      example, `Content-Type` can be set to `"application/json"`. * `Content-
-      Length`: This is computed by Cloud Scheduler. This value is   output
-      only. It cannot be changed.  The headers below are output only. They
-      cannot be set or overridden:  * `X-Google-*`: For Google internal use
-      only. * `X-AppEngine-*`: For Google internal use only. See   [Reading
-      request   headers](/appengine/docs/python/taskqueue/push/creating-
-      handlers#reading_request_headers).  In addition, some App Engine
-      headers, which contain job-specific information, are also be sent to the
-      job handler; see [request headers](/appengine/docs/python/taskqueue/push
-      /creating-handlers#reading_request_headers).
-    httpMethod: The HTTP method to use for the request. The default is POST.
-    payload: Payload.  The payload will be sent as the HTTP message body. A
-      message body, and thus a payload, is allowed only if the HTTP method is
-      POST or PUT. It is an error to set a data payload on a job with an
-      incompatible HttpMethod.
-    relativeUrl: The relative URL.  The relative URL must begin with "/" and
+      headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
+      /creating-handlers#reading_request_headers).  In addition, some App
+      Engine headers, which contain job-specific information, are also be sent
+      to the job handler; see [request headers](https://cloud.google.comappeng
+      ine/docs/standard/python/config/cron#securing_urls_for_cron).
+    httpMethod: The HTTP method to use for the request. PATCH and OPTIONS are
+      not permitted.
+    relativeUri: The relative URI.  The relative URL must begin with "/" and
       must be a valid HTTP relative URL. It can contain a path, query string
       arguments, and `#` fragments. If the relative URL is empty, then the
       root path "/" will be used. No spaces are allowed, and the maximum
       length allowed is 2083 characters.
-    retryConfig: Settings that determine the retry behavior.
   """
 
   class HttpMethodValueValuesEnum(_messages.Enum):
-    """The HTTP method to use for the request. The default is POST.
+    r"""The HTTP method to use for the request. PATCH and OPTIONS are not
+    permitted.
 
     Values:
-      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified
-      POST: HTTP Post
-      GET: HTTP Get
-      HEAD: HTTP Head
-      PUT: HTTP Put
-      DELETE: HTTP Delete
+      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified. Defaults to POST.
+      POST: HTTP POST
+      GET: HTTP GET
+      HEAD: HTTP HEAD
+      PUT: HTTP PUT
+      DELETE: HTTP DELETE
+      PATCH: HTTP PATCH
+      OPTIONS: HTTP OPTIONS
     """
     HTTP_METHOD_UNSPECIFIED = 0
     POST = 1
@@ -103,30 +105,32 @@ class AppEngineHttpTarget(_messages.Message):
     HEAD = 3
     PUT = 4
     DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
-    """HTTP request headers.  This map contains the header field names and
+    r"""HTTP request headers.  This map contains the header field names and
     values. Headers can be set when the job is created.  Cloud Scheduler sets
     some headers to default values:  * `User-Agent`: By default, this header
     is   `"AppEngine-Google; (+http://code.google.com/appengine)"`.   This
     header can be modified, but Cloud Scheduler will append   `"AppEngine-
     Google; (+http://code.google.com/appengine)"` to the   modified `User-
-    Agent`.  If the job has an AppEngineHttpTarget.payload, Cloud Scheduler
-    sets the following headers:  * `Content-Type`: By default, the `Content-
-    Type` header is set to   `"application/octet-stream"`. The default can be
-    overridden by explictly   setting `Content-Type` to a particular media
-    type when the job is   created.   For example, `Content-Type` can be set
-    to `"application/json"`. * `Content-Length`: This is computed by Cloud
+    Agent`.  If the job has an body, Cloud Scheduler sets the following
+    headers:  * `Content-Type`: By default, the `Content-Type` header is set
+    to   `"application/octet-stream"`. The default can be overridden by
+    explictly   setting `Content-Type` to a particular media type when the job
+    is   created.   For example, `Content-Type` can be set to
+    `"application/json"`. * `Content-Length`: This is computed by Cloud
     Scheduler. This value is   output only. It cannot be changed.  The headers
     below are output only. They cannot be set or overridden:  * `X-Google-*`:
     For Google internal use only. * `X-AppEngine-*`: For Google internal use
     only. See   [Reading request
-    headers](/appengine/docs/python/taskqueue/push/creating-
-    handlers#reading_request_headers).  In addition, some App Engine headers,
-    which contain job-specific information, are also be sent to the job
-    handler; see [request headers](/appengine/docs/python/taskqueue/push
-    /creating-handlers#reading_request_headers).
+    headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
+    /creating-handlers#reading_request_headers).  In addition, some App Engine
+    headers, which contain job-specific information, are also be sent to the
+    job handler; see [request headers](https://cloud.google.comappengine/docs/
+    standard/python/config/cron#securing_urls_for_cron).
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.
@@ -136,7 +140,7 @@ class AppEngineHttpTarget(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a HeadersValue object.
+      r"""An additional property for a HeadersValue object.
 
       Fields:
         key: Name of the additional property.
@@ -149,28 +153,31 @@ class AppEngineHttpTarget(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   appEngineRouting = _messages.MessageField('AppEngineRouting', 1)
-  headers = _messages.MessageField('HeadersValue', 2)
-  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 3)
-  payload = _messages.BytesField(4)
-  relativeUrl = _messages.StringField(5)
-  retryConfig = _messages.MessageField('RetryConfig', 6)
+  body = _messages.BytesField(2)
+  headers = _messages.MessageField('HeadersValue', 3)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 4)
+  relativeUri = _messages.StringField(5)
 
 
 class AppEngineRouting(_messages.Message):
-  """App Engine Routing.  For more information about services, versions, and
-  instances see [An Overview of App Engine](/appengine/docs/python/an-
-  overview-of-app-engine), [Microservices Architecture on Google App
-  Engine](/appengine/docs/python/microservices-on-app-engine), [App Engine
-  Standard request routing](/appengine/docs/standard/python/how-requests-are-
-  routed), and [App Engine Flex request
-  routing](/appengine/docs/flexible/python/how-requests-are-routed).
+  r"""App Engine Routing.  For more information about services, versions, and
+  instances see [An Overview of App
+  Engine](https://cloud.google.com/appengine/docs/python/an-overview-of-app-
+  engine), [Microservices Architecture on Google App
+  Engine](https://cloud.google.com/appengine/docs/python/microservices-on-app-
+  engine), [App Engine Standard request
+  routing](https://cloud.google.com/appengine/docs/standard/python/how-
+  requests-are-routed), and [App Engine Flex request
+  routing](https://cloud.google.com/appengine/docs/flexible/python/how-
+  requests-are-routed).
 
   Fields:
-    host: Output only.  The host that the job is sent to. For more information
+    host: Output only. The host that the job is sent to.  For more information
       about how App Engine requests are routed, see
-      [here](/appengine/docs/standard/python/how-requests-are-routed).  The
-      host is constructed as:   * `host = [application_domain_name]`</br>   `|
-      [service] + '.' + [application_domain_name]`</br>   `| [version] + '.' +
+      [here](https://cloud.google.com/appengine/docs/standard/python/how-
+      requests-are-routed).  The host is constructed as:   * `host =
+      [application_domain_name]`</br>   `| [service] + '.' +
+      [application_domain_name]`</br>   `| [version] + '.' +
       [application_domain_name]`</br>   `| [version_dot_service]+ '.' +
       [application_domain_name]`</br>   `| [instance] + '.' +
       [application_domain_name]`</br>   `| [instance_dot_service] + '.' +
@@ -178,40 +185,34 @@ class AppEngineRouting(_messages.Message):
       [application_domain_name]`</br>   `| [instance_dot_version_dot_service]
       + '.' + [application_domain_name]`  * `application_domain_name` = The
       domain name of the app, for   example <app-id>.appspot.com, which is
-      associated with the   job's project ID.  * `service =`
-      AppEngineRouting.service  * `version =` AppEngineRouting.version  *
-      `version_dot_service =`   AppEngineRouting.version `+ '.' +`
-      AppEngineRouting.service  * `instance =` AppEngineRouting.instance  *
-      `instance_dot_service =`   AppEngineRouting.instance `+ '.' +`
-      AppEngineRouting.service  * `instance_dot_version =`
-      AppEngineRouting.instance `+ '.' +` AppEngineRouting.version  *
-      `instance_dot_version_dot_service =`   AppEngineRouting.instance `+ '.'
-      +`   AppEngineRouting.version `+ '.' +` AppEngineRouting.service  If
-      AppEngineRouting.service is empty, then the job will be sent to the
-      service which is the default service when the job is attempted.  If
-      AppEngineRouting.version is empty, then the job will be sent to the
+      associated with the   job's project ID.  * `service =` service  *
+      `version =` version  * `version_dot_service =`   version `+ '.' +`
+      service  * `instance =` instance  * `instance_dot_service =`   instance
+      `+ '.' +`   service  * `instance_dot_version =`   instance `+ '.' +`
+      version  * `instance_dot_version_dot_service =`   instance `+ '.' +`
+      version `+ '.' +`   service   If service is empty, then the job will be
+      sent to the service which is the default service when the job is
+      attempted.  If version is empty, then the job will be sent to the
       version which is the default version when the job is attempted.  If
-      AppEngineRouting.instance is empty, then the job will be sent to an
-      instance which is available when the job is attempted.  When
-      AppEngineRouting.service is "default", AppEngineRouting.version is
-      "default", and AppEngineRouting.instance is empty, AppEngineRouting.host
-      is shortened to just the `application_domain_name`.  If
-      AppEngineRouting.service, AppEngineRouting.version, or
-      AppEngineRouting.instance is invalid, then the job will be sent to the
-      default version of the default service when the job is attempted.
+      instance is empty, then the job will be sent to an instance which is
+      available when the job is attempted.  If service, version, or instance
+      is invalid, then the job will be sent to the default version of the
+      default service when the job is attempted.
     instance: App instance.  By default, the job is sent to an instance which
       is available when the job is attempted.  Requests can only be sent to a
       specific instance if [manual scaling is used in App Engine
-      Standard](/appengine/docs/python/an-overview-of-app-
-      engine?hl=en_US#scaling_types_and_instance_classes). App Engine Flex
+      Standard](https://cloud.google.com/appengine/docs/python/an-overview-of-
+      app-engine?hl=en_US#scaling_types_and_instance_classes). App Engine Flex
       does not support instances. For more information, see [App Engine
-      Standard request routing](/appengine/docs/standard/python/how-requests-
-      are-routed) and [App Engine Flex request
-      routing](/appengine/docs/flexible/python/how-requests-are-routed).
+      Standard request
+      routing](https://cloud.google.com/appengine/docs/standard/python/how-
+      requests-are-routed) and [App Engine Flex request
+      routing](https://cloud.google.com/appengine/docs/flexible/python/how-
+      requests-are-routed).
     service: App service.  By default, the job is sent to the service which is
-      the default service when the job is attempted ("default").
+      the default service when the job is attempted.
     version: App version.  By default, the job is sent to the version which is
-      the default version when the job is attempted ("default").
+      the default version when the job is attempted.
   """
 
   host = _messages.StringField(1)
@@ -221,7 +222,7 @@ class AppEngineRouting(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsGetRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsGetRequest object.
+  r"""A CloudschedulerProjectsLocationsGetRequest object.
 
   Fields:
     name: Resource name for the location.
@@ -231,7 +232,7 @@ class CloudschedulerProjectsLocationsGetRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsJobsCreateRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsCreateRequest object.
+  r"""A CloudschedulerProjectsLocationsJobsCreateRequest object.
 
   Fields:
     job: A Job resource to be passed as the request body.
@@ -244,7 +245,7 @@ class CloudschedulerProjectsLocationsJobsCreateRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsJobsDeleteRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsDeleteRequest object.
+  r"""A CloudschedulerProjectsLocationsJobsDeleteRequest object.
 
   Fields:
     name: Required.  The job name. For example:
@@ -255,116 +256,41 @@ class CloudschedulerProjectsLocationsJobsDeleteRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsJobsGetRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsGetRequest object.
-
-  Enums:
-    ResponseViewValueValuesEnum: The response_view specifies which subset of
-      the Job will be returned.  By default ListJobsRequest.response_view is
-      Job.View.BASIC; not all information is retrieved by default because some
-      data, such as payloads, might be desirable to return only when needed
-      because of its large size or because of the sensitivity of data that it
-      contains.  Authorization for Job.View.FULL requires
-      `cloudscheduler.jobs.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Job.name resource.
+  r"""A CloudschedulerProjectsLocationsJobsGetRequest object.
 
   Fields:
-    name: The job name. For example:
+    name: Required.  The job name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
-    responseView: The response_view specifies which subset of the Job will be
-      returned.  By default ListJobsRequest.response_view is Job.View.BASIC;
-      not all information is retrieved by default because some data, such as
-      payloads, might be desirable to return only when needed because of its
-      large size or because of the sensitivity of data that it contains.
-      Authorization for Job.View.FULL requires `cloudscheduler.jobs.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Job.name
-      resource.
   """
 
-  class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Job will be returned.
-    By default ListJobsRequest.response_view is Job.View.BASIC; not all
-    information is retrieved by default because some data, such as payloads,
-    might be desirable to return only when needed because of its large size or
-    because of the sensitivity of data that it contains.  Authorization for
-    Job.View.FULL requires `cloudscheduler.jobs.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Job.name resource.
-
-    Values:
-      VIEW_UNSPECIFIED: <no description>
-      BASIC: <no description>
-      FULL: <no description>
-    """
-    VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
-
   name = _messages.StringField(1, required=True)
-  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 2)
 
 
 class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsListRequest object.
-
-  Enums:
-    ResponseViewValueValuesEnum: The response_view specifies which subset of
-      the Job will be returned.  By default response_view is Job.View.BASIC;
-      not all information is retrieved by default because some data, such as
-      payloads, might be desirable to return only when needed because of its
-      large size or because of the sensitivity of data that it contains.
-      Authorization for Job.View.FULL requires `cloudscheduler.jobs.fullView`
-      [Google IAM](https://cloud.google.com/iam/) permission on the Job.name
-      resource.
+  r"""A CloudschedulerProjectsLocationsJobsListRequest object.
 
   Fields:
-    pageSize: Requested page size. Fewer jobs than requested might be
-      returned.  The maximum page size is 500. If unspecified, the page size
-      will be the maximum. Fewer jobs than requested might be returned, even
-      if more jobs exist; use next_page_token to determine if more jobs exist.
+    pageSize: Requested page size.  The maximum page size is 500. If
+      unspecified, the page size will be the maximum. Fewer jobs than
+      requested might be returned, even if more jobs exist; use
+      next_page_token to determine if more jobs exist.
     pageToken: A token identifying a page of results the server will return.
       To request the first page results, page_token must be empty. To request
       the next page of results, page_token must be the value of
-      ListJobsResponse.next_page_token returned from the previous call to
-      CloudScheduler.ListJobs. It is an error to switch the value of
-      ListJobsRequest.filter or ListJobsRequest.order_by while iterating
-      through pages.  For JSON requests, the value of this field must be
-      base64-encoded.
+      next_page_token returned from the previous call to ListJobs. It is an
+      error to switch the value of filter or order_by while iterating through
+      pages.
     parent: Required.  The location name. For example:
       `projects/PROJECT_ID/locations/LOCATION_ID`.
-    responseView: The response_view specifies which subset of the Job will be
-      returned.  By default response_view is Job.View.BASIC; not all
-      information is retrieved by default because some data, such as payloads,
-      might be desirable to return only when needed because of its large size
-      or because of the sensitivity of data that it contains.  Authorization
-      for Job.View.FULL requires `cloudscheduler.jobs.fullView` [Google
-      IAM](https://cloud.google.com/iam/) permission on the Job.name resource.
   """
 
-  class ResponseViewValueValuesEnum(_messages.Enum):
-    """The response_view specifies which subset of the Job will be returned.
-    By default response_view is Job.View.BASIC; not all information is
-    retrieved by default because some data, such as payloads, might be
-    desirable to return only when needed because of its large size or because
-    of the sensitivity of data that it contains.  Authorization for
-    Job.View.FULL requires `cloudscheduler.jobs.fullView` [Google
-    IAM](https://cloud.google.com/iam/) permission on the Job.name resource.
-
-    Values:
-      VIEW_UNSPECIFIED: <no description>
-      BASIC: <no description>
-      FULL: <no description>
-    """
-    VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
-
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.BytesField(2)
+  pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-  responseView = _messages.EnumField('ResponseViewValueValuesEnum', 4)
 
 
 class CloudschedulerProjectsLocationsJobsRunRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsJobsRunRequest object.
+  r"""A CloudschedulerProjectsLocationsJobsRunRequest object.
 
   Fields:
     name: Required.  The job name. For example:
@@ -377,7 +303,7 @@ class CloudschedulerProjectsLocationsJobsRunRequest(_messages.Message):
 
 
 class CloudschedulerProjectsLocationsListRequest(_messages.Message):
-  """A CloudschedulerProjectsLocationsListRequest object.
+  r"""A CloudschedulerProjectsLocationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -393,7 +319,7 @@ class CloudschedulerProjectsLocationsListRequest(_messages.Message):
 
 
 class Empty(_messages.Message):
-  """A generic empty message that you can re-use to avoid defining duplicated
+  r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance:      service Foo {
   rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
@@ -402,73 +328,220 @@ class Empty(_messages.Message):
 
 
 
-class Job(_messages.Message):
-  """Configuration for a job.
+class HttpTarget(_messages.Message):
+  r"""Http target. The job will be pushed to the job handler by means of an
+  HTTP request via an http_method such as HTTP POST, HTTP GET, etc. The job is
+  acknowledged by means of an HTTP response code in the range [200 - 299]. A
+  failure to receive a response constitutes a failed execution. For a
+  redirected request, the response returned by the redirected request is
+  considered.
 
   Enums:
-    JobStateValueValuesEnum: Output only.  State of the job. For example:
-      running, paused, or disabled.
+    HttpMethodValueValuesEnum: Which HTTP method to use for the request.
+
+  Messages:
+    HeadersValue: The user can specify HTTP request headers to send with the
+      job's HTTP request. This map contains the header field names and values.
+      Repeated headers are not supported, but a header value can contain
+      commas. These headers represent a subset of the headers that will
+      accompany the job's HTTP request. Some HTTP request headers will be
+      ignored or replaced. A partial list of headers that will be ignored or
+      replaced is below: - Host: This will be computed by Cloud Scheduler and
+      derived from uri. * `Content-Length`: This will be computed by Cloud
+      Scheduler. * `User-Agent`: This will be set to `"Google-Cloud-
+      Scheduler"`. * `X-Google-*`: Google internal use only. *
+      `X-AppEngine-*`: Google internal use only.  The total size of headers
+      must be less than 80KB.
 
   Fields:
-    appEngineHttpTarget: App Engine Http target.
-    jobState: Output only.  State of the job. For example: running, paused, or
-      disabled.
-    name: The job name. For example:
-      `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  Caller-
-      specified in CreateJobRequest, after which it becomes output only.
-    pubsubTarget: Pub/Sub target.
-    schedule: Specifies a schedule of start times. This can be used to specify
-      more complicated, and time-zone-aware schedules than is possible using
-      only Job.period.  A scheduled start time will be skipped if the previous
-      execution has not ended when its scheduled time occurs.  If
-      RetryConfig.retry_count > 0 and a job attempt fails, the job will be a
-      total of tried RetryConfig.retry_count times, with exponential backoff,
-      until the next scheduled start time.
-    userUpdateTime: Output only.  The time of the last user update to the job,
-      or the creation time if there have been no updates.
+    body: HTTP request body. A request body is allowed only if the HTTP method
+      is POST, PUT, or PATCH. It is an error to set body on a job with an
+      incompatible HttpMethod.
+    headers: The user can specify HTTP request headers to send with the job's
+      HTTP request. This map contains the header field names and values.
+      Repeated headers are not supported, but a header value can contain
+      commas. These headers represent a subset of the headers that will
+      accompany the job's HTTP request. Some HTTP request headers will be
+      ignored or replaced. A partial list of headers that will be ignored or
+      replaced is below: - Host: This will be computed by Cloud Scheduler and
+      derived from uri. * `Content-Length`: This will be computed by Cloud
+      Scheduler. * `User-Agent`: This will be set to `"Google-Cloud-
+      Scheduler"`. * `X-Google-*`: Google internal use only. *
+      `X-AppEngine-*`: Google internal use only.  The total size of headers
+      must be less than 80KB.
+    httpMethod: Which HTTP method to use for the request.
+    uri: Required.  The full URI path that the request will be sent to. This
+      string must begin with either "http://" or "https://". Some examples of
+      valid values for uri are: `http://acme.com` and
+      `https://acme.com/sales:8080`. Cloud Scheduler will encode some
+      characters for safety and compatibility. The maximum allowed URL length
+      is 2083 characters after encoding.
   """
 
-  class JobStateValueValuesEnum(_messages.Enum):
-    """Output only.  State of the job. For example: running, paused, or
-    disabled.
+  class HttpMethodValueValuesEnum(_messages.Enum):
+    r"""Which HTTP method to use for the request.
 
     Values:
-      JOB_STATE_UNSPECIFIED: Unspecified state.
-      ENABLED: The job is executing normally.
-      PAUSED: The job is paused by the user. It will not execute. A user can
-        intentionally pause the job using CloudScheduler.PauseJobRequest.
+      HTTP_METHOD_UNSPECIFIED: HTTP method unspecified. Defaults to POST.
+      POST: HTTP POST
+      GET: HTTP GET
+      HEAD: HTTP HEAD
+      PUT: HTTP PUT
+      DELETE: HTTP DELETE
+      PATCH: HTTP PATCH
+      OPTIONS: HTTP OPTIONS
     """
-    JOB_STATE_UNSPECIFIED = 0
+    HTTP_METHOD_UNSPECIFIED = 0
+    POST = 1
+    GET = 2
+    HEAD = 3
+    PUT = 4
+    DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HeadersValue(_messages.Message):
+    r"""The user can specify HTTP request headers to send with the job's HTTP
+    request. This map contains the header field names and values. Repeated
+    headers are not supported, but a header value can contain commas. These
+    headers represent a subset of the headers that will accompany the job's
+    HTTP request. Some HTTP request headers will be ignored or replaced. A
+    partial list of headers that will be ignored or replaced is below: - Host:
+    This will be computed by Cloud Scheduler and derived from uri. * `Content-
+    Length`: This will be computed by Cloud Scheduler. * `User-Agent`: This
+    will be set to `"Google-Cloud-Scheduler"`. * `X-Google-*`: Google internal
+    use only. * `X-AppEngine-*`: Google internal use only.  The total size of
+    headers must be less than 80KB.
+
+    Messages:
+      AdditionalProperty: An additional property for a HeadersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type HeadersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a HeadersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  body = _messages.BytesField(1)
+  headers = _messages.MessageField('HeadersValue', 2)
+  httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 3)
+  uri = _messages.StringField(4)
+
+
+class Job(_messages.Message):
+  r"""Configuration for a job. The maximum allowed size for a job is 100KB.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the job.
+
+  Fields:
+    appEngineHttpTarget: App Engine HTTP target.
+    description: A human-readable description for the job. This string must
+      not contain more than 500 characters.
+    httpTarget: HTTP target.
+    lastAttemptTime: Output only. The time the last job attempt started.
+    name: The job name. For example:
+      `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  * `PROJECT_ID`
+      can contain letters ([A-Za-z]), numbers ([0-9]),    hyphens (-), colons
+      (:), or periods (.).    For more information, see    [Identifying
+      projects](https://cloud.google.com/resource-manager/docs/creating-
+      managing-projects#identifying_projects) * `LOCATION_ID` is the canonical
+      ID for the job's location.    The list of available locations can be
+      obtained by calling    ListLocations.    For more information, see
+      https://cloud.google.com/about/locations/. * `JOB_ID` can contain only
+      letters ([A-Za-z]), numbers ([0-9]),    hyphens (-), or underscores (_).
+      The maximum length is 500 characters.
+    pubsubTarget: Pub/Sub target.
+    retryConfig: Settings that determine the retry behavior.
+    schedule: Required.  Describes the schedule on which the job will be
+      executed.  As a general rule, execution `n + 1` of a job will not begin
+      until execution `n` has finished. Cloud Scheduler will never allow two
+      simultaneously outstanding executions. For example, this implies that if
+      the `n+1`th execution is scheduled to run at 16:00 but the `n`th
+      execution takes until 16:15, the `n+1`th execution will not start until
+      `16:15`. A scheduled start time will be delayed if the previous
+      execution has not ended when its scheduled time occurs.  If retry_count
+      > 0 and a job attempt fails, the job will be tried a total of
+      retry_count times, with exponential backoff, until the next scheduled
+      start time.  The schedule can be either of the following types: *
+      [Crontab](http://en.wikipedia.org/wiki/Cron#Overview) * English-like
+      [schedule](https://cloud.google.com/scheduler/docs/running-cron-jobs-
+      with-cloud-scheduler#defining_the_job_schedule)
+    scheduleTime: Output only. The next time the job is scheduled. Note that
+      this may be a retry of a previously failed attempt or the next execution
+      time according to the schedule.
+    state: Output only. State of the job.
+    status: Output only. The response from the target for the last attempted
+      execution.
+    timeZone: Specifies the time zone to be used in interpreting schedule. The
+      value of this field must be a time zone name from the [tz
+      database](http://en.wikipedia.org/wiki/Tz_database).  Note that some
+      time zones include a provision for daylight savings time. The rules for
+      daylight saving time are determined by the chosen tz. For UTC use the
+      string "utc". If a time zone is not specified, the default will be in
+      UTC (also known as GMT).
+    userUpdateTime: Output only. The creation time of the job.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the job.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      ENABLED: The job is executing normally.
+      DISABLED: The job is disabled by the system due to error. The user
+        cannot directly set a job to be disabled. The error can be viewed in
+        status.
+    """
+    STATE_UNSPECIFIED = 0
     ENABLED = 1
-    PAUSED = 2
+    DISABLED = 2
 
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 2)
-  name = _messages.StringField(3)
-  pubsubTarget = _messages.MessageField('PubsubTarget', 4)
-  schedule = _messages.MessageField('Schedule', 5)
-  userUpdateTime = _messages.StringField(6)
+  description = _messages.StringField(2)
+  httpTarget = _messages.MessageField('HttpTarget', 3)
+  lastAttemptTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  pubsubTarget = _messages.MessageField('PubsubTarget', 6)
+  retryConfig = _messages.MessageField('RetryConfig', 7)
+  schedule = _messages.StringField(8)
+  scheduleTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  status = _messages.MessageField('Status', 11)
+  timeZone = _messages.StringField(12)
+  userUpdateTime = _messages.StringField(13)
 
 
 class ListJobsResponse(_messages.Message):
-  """Response message for listing jobs using CloudScheduler.ListJobs.
+  r"""Response message for listing jobs using ListJobs.
 
   Fields:
     jobs: The list of jobs.
     nextPageToken: A token to retrieve next page of results. Pass this value
-      in the ListJobsRequest.page_token field in the subsequent call to
-      JobQueues.ListJobs to retrieve the next page of results. If this is
-      empty it indicates that there are no more results through which to
-      paginate.  For JSON requests, the value of this field must be
-      base64-encoded.  The page token is valid for only 2 hours.
+      in the page_token field in the subsequent call to ListJobs to retrieve
+      the next page of results. If this is empty it indicates that there are
+      no more results through which to paginate.  The page token is valid for
+      only 2 hours.
   """
 
   jobs = _messages.MessageField('Job', 1, repeated=True)
-  nextPageToken = _messages.BytesField(2)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
-  """The response message for Locations.ListLocations.
+  r"""The response message for Locations.ListLocations.
 
   Fields:
     locations: A list of locations that matches the specified filter in the
@@ -481,7 +554,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class Location(_messages.Message):
-  """A resource that represents Google Cloud Platform location.
+  r"""A resource that represents Google Cloud Platform location.
 
   Messages:
     LabelsValue: Cross-service attributes for the location. For example
@@ -490,6 +563,8 @@ class Location(_messages.Message):
       capacity at the given location.
 
   Fields:
+    displayName: The friendly name for this location, typically a nearby city
+      name. For example, "Tokyo".
     labels: Cross-service attributes for the location. For example
       {"cloud.googleapis.com/region": "us-east1"}
     locationId: The canonical id for this location. For example: `"us-east1"`.
@@ -502,7 +577,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    """Cross-service attributes for the location. For example
+    r"""Cross-service attributes for the location. For example
     {"cloud.googleapis.com/region": "us-east1"}
 
     Messages:
@@ -513,7 +588,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a LabelsValue object.
+      r"""An additional property for a LabelsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -527,7 +602,7 @@ class Location(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    """Service-specific metadata. For example the available capacity at the
+    r"""Service-specific metadata. For example the available capacity at the
     given location.
 
     Messages:
@@ -539,7 +614,7 @@ class Location(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a MetadataValue object.
+      r"""An additional property for a MetadataValue object.
 
       Fields:
         key: Name of the additional property.
@@ -551,22 +626,25 @@ class Location(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  locationId = _messages.StringField(2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
+  displayName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  locationId = _messages.StringField(3)
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
 
 
 class PubsubMessage(_messages.Message):
-  """A message data and its attributes. The message payload must not be empty;
-  it must contain either a non-empty data field, or at least one attribute.
+  r"""A message that is published by publishers and consumed by subscribers.
+  The message must contain either a non-empty data field or at least one
+  attribute.
 
   Messages:
     AttributesValue: Optional attributes for this message.
 
   Fields:
     attributes: Optional attributes for this message.
-    data: The message payload.
+    data: The message data field. If this field is empty, the message must
+      contain at least one attribute.
     messageId: ID of this message, assigned by the server when the message is
       published. Guaranteed to be unique within the topic. This value may be
       read by a subscriber that receives a `PubsubMessage` via a `Pull` call
@@ -579,7 +657,7 @@ class PubsubMessage(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributesValue(_messages.Message):
-    """Optional attributes for this message.
+    r"""Optional attributes for this message.
 
     Messages:
       AdditionalProperty: An additional property for a AttributesValue object.
@@ -589,7 +667,7 @@ class PubsubMessage(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a AttributesValue object.
+      r"""An additional property for a AttributesValue object.
 
       Fields:
         key: Name of the additional property.
@@ -608,16 +686,18 @@ class PubsubMessage(_messages.Message):
 
 
 class PubsubTarget(_messages.Message):
-  """Pub/Sub target. Jobs will be delivered by publishing a message to the
+  r"""Pub/Sub target. The job will be delivered by publishing a message to the
   given Pub/Sub topic.
 
   Messages:
-    PubsubMessageValue: Required.  This pubsub message is sent when the job is
-      attempted.  `pubsub_message` should be a google.pubsub.v1.PubsubMessage.
+    AttributesValue: Attributes for PubsubMessage.  Pubsub message must
+      contain either non-empty data, or at least one attribute.
 
   Fields:
-    pubsubMessage: Required.  This pubsub message is sent when the job is
-      attempted.  `pubsub_message` should be a google.pubsub.v1.PubsubMessage.
+    attributes: Attributes for PubsubMessage.  Pubsub message must contain
+      either non-empty data, or at least one attribute.
+    data: The message payload for PubsubMessage.  Pubsub message must contain
+      either non-empty data, or at least one attribute.
     topicName: Required.  The name of the Cloud Pub/Sub topic to which
       messages will be published when a job is delivered. The topic name must
       be in the same format as required by PubSub's [PublishRequest.name](http
@@ -627,101 +707,87 @@ class PubsubTarget(_messages.Message):
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class PubsubMessageValue(_messages.Message):
-    """Required.  This pubsub message is sent when the job is attempted.
-    `pubsub_message` should be a google.pubsub.v1.PubsubMessage.
+  class AttributesValue(_messages.Message):
+    r"""Attributes for PubsubMessage.  Pubsub message must contain either non-
+    empty data, or at least one attribute.
 
     Messages:
-      AdditionalProperty: An additional property for a PubsubMessageValue
-        object.
+      AdditionalProperty: An additional property for a AttributesValue object.
 
     Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
+      additionalProperties: Additional properties of type AttributesValue
     """
 
     class AdditionalProperty(_messages.Message):
-      """An additional property for a PubsubMessageValue object.
+      r"""An additional property for a AttributesValue object.
 
       Fields:
         key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
+        value: A string attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
+      value = _messages.StringField(2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  pubsubMessage = _messages.MessageField('PubsubMessageValue', 1)
-  topicName = _messages.StringField(2)
+  attributes = _messages.MessageField('AttributesValue', 1)
+  data = _messages.BytesField(2)
+  topicName = _messages.StringField(3)
 
 
 class RetryConfig(_messages.Message):
-  """Settings that determine the retry behavior.  By default, if a job does
+  r"""Settings that determine the retry behavior.  By default, if a job does
   not complete successfully (meaning that an acknowledgement is not received
-  from the handler before the
-  [deadline](/appengine/docs/python/taskqueue/push/#the_task_deadline), then
-  it will be retried with exponential backoff according to the settings in
-  RetryConfig.
+  from the handler, then it will be retried with exponential backoff according
+  to the settings in RetryConfig.
 
   Fields:
-    jobAgeLimit: The time limit for retrying a failed job, measured from when
-      the job was first run. If specified with RetryConfig.retry_count, the
-      job will be retried until both limits are reached.
-    maxBackoffSeconds: The maximum amount of time to wait before retrying a
-      task after it fails.
-    maxDoublings: The maximum number of times that the interval between failed
-      job retries will be doubled before the increase becomes constant. The
-      constant is: 2**(max_doublings - 1) * RetryConfig.min_backoff_seconds.
-    minBackoffSeconds: The minimum amount of time to wait before retrying a
-      task after it fails.
-    retryCount: It determines the total number  attempts that the system will
-      make to deliver a job using the exponential backoff procedure described
-      above.  If retry_count is zero, a job attempt will *not* be retried if
-      it fails. Instead the Cloud Scheduler system will wait for the next
-      scheduled execution time.  If retry_count is set to a non-zero number
-      then Cloud Scheduler will retry failed attempts, using exponential
-      backoff, retry_count times, or until the next scheduled execution time,
-      whichever comes first. A negative value for retry_count is interpreted
-      as unbounded.  Value greater than 5 and negative values are not allowed.
+    maxBackoffDuration: The maximum amount of time to wait before retrying a
+      job after it fails.  The default value of this field is 1 hour.
+    maxDoublings: The time between retries will double `max_doublings` times.
+      A job's retry interval starts at min_backoff_duration, then doubles
+      `max_doublings` times, then increases linearly, and finally retries
+      retries at intervals of max_backoff_duration up to retry_count times.
+      For example, if min_backoff_duration is 10s, max_backoff_duration is
+      300s, and `max_doublings` is 3, then the a job will first be retried in
+      10s. The retry interval will double three times, and then increase
+      linearly by 2^3 * 10s.  Finally, the job will retry at intervals of
+      max_backoff_duration until the job has been attempted retry_count times.
+      Thus, the requests will retry at 10s, 20s, 40s, 80s, 160s, 240s, 300s,
+      300s, ....  The default value of this field is 5.
+    maxRetryDuration: The time limit for retrying a failed job, measured from
+      time when an execution was first attempted. If specified with
+      retry_count, the job will be retried until both limits are reached.  The
+      default value for max_retry_duration is zero, which means retry duration
+      is unlimited.
+    minBackoffDuration: The minimum amount of time to wait before retrying a
+      job after it fails.  The default value of this field is 5 seconds.
+    retryCount: The number of attempts that the system will make to run a job
+      using the exponential backoff procedure described by max_doublings.  The
+      default value of retry_count is zero.  If retry_count is zero, a job
+      attempt will *not* be retried if it fails. Instead the Cloud Scheduler
+      system will wait for the next scheduled execution time.  If retry_count
+      is set to a non-zero number then Cloud Scheduler will retry failed
+      attempts, using exponential backoff, retry_count times, or until the
+      next scheduled execution time, whichever comes first.  Values greater
+      than 5 and negative values are not allowed.
   """
 
-  jobAgeLimit = _messages.StringField(1)
-  maxBackoffSeconds = _messages.StringField(2)
-  maxDoublings = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  minBackoffSeconds = _messages.StringField(4)
+  maxBackoffDuration = _messages.StringField(1)
+  maxDoublings = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxRetryDuration = _messages.StringField(3)
+  minBackoffDuration = _messages.StringField(4)
   retryCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class RunJobRequest(_messages.Message):
-  """Request message for forcing a job to run now using CloudScheduler.RunJob.
-  """
-
-
-
-class Schedule(_messages.Message):
-  """Scheduler schedule in an English-like format.
-
-  Fields:
-    schedule: Required.  Scheduler schedules are specified using an English-
-      like format. See https://cloud.google.com/appengine/docs/standard/python
-      /config/cronref#schedule_format
-    timezone: Specifies the time zone to be used in interpreting
-      ScheduleSpec.schedule. The value of this field must be a time zone name
-      from the tz database: http://en.wikipedia.org/wiki/Tz_database.  Note
-      that some timezones include a includes a provision for daylight savings
-      time. The rules for daylight saving time are determined by the choosen
-      tz. For UTC use the string "utc". If a timezone is not specified, the
-      default will be in UTC (also known as GMT).
-  """
-
-  schedule = _messages.StringField(1)
-  timezone = _messages.StringField(2)
+  r"""Request message for forcing a job to run now using
+RunJob."""
 
 
 class StandardQueryParameters(_messages.Message):
-  """Query parameters accepted by all methods.
+  r"""Query parameters accepted by all methods.
 
   Enums:
     FXgafvValueValuesEnum: V1 error format.
@@ -731,14 +797,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -750,7 +814,7 @@ class StandardQueryParameters(_messages.Message):
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    """Data format for response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
@@ -762,7 +826,7 @@ class StandardQueryParameters(_messages.Message):
     proto = 2
 
   class FXgafvValueValuesEnum(_messages.Enum):
-    """V1 error format.
+    r"""V1 error format.
 
     Values:
       _1: v1 error format
@@ -774,17 +838,93 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
+
+
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). The error model is designed to be:
+  - Simple to use and understand for most users - Flexible enough to meet
+  unexpected needs  # Overview  The `Status` message contains three pieces of
+  data: error code, error message, and error details. The error code should be
+  an enum value of google.rpc.Code, but it may accept additional error codes
+  if needed.  The error message should be a developer-facing English message
+  that helps developers *understand* and *resolve* the error. If a localized
+  user-facing error message is needed, put the localized message in the error
+  details or localize it in the client. The optional error details may contain
+  arbitrary information about the error. There is a predefined set of error
+  detail types in the package `google.rpc` that can be used for common error
+  conditions.  # Language mapping  The `Status` message is the logical
+  representation of the error model, but it is not necessarily the actual wire
+  format. When the `Status` message is exposed in different client libraries
+  and different wire protocols, it can be mapped differently. For example, it
+  will likely be mapped to some exceptions in Java, but more likely mapped to
+  some error codes in C.  # Other uses  The error model and the `Status`
+  message can be used in a variety of environments, either with or without
+  APIs, to provide a consistent developer experience across different
+  environments.  Example uses of this error model include:  - Partial errors.
+  If a service needs to return partial errors to the client,     it may embed
+  the `Status` in the normal response to indicate the partial     errors.  -
+  Workflow errors. A typical workflow has multiple steps. Each step may
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
+  should be used directly inside batch response, one for     each error sub-
+  response.  - Asynchronous operations. If an API call embeds asynchronous
+  operation     results in its response, the status of those operations should
+  be     represented directly using the `Status` message.  - Logging. If some
+  API errors are stored in logs, the message `Status` could     be used
+  directly after any stripping needed for security/privacy reasons.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details.  There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

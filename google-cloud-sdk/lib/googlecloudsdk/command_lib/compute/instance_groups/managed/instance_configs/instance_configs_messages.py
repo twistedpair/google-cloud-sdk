@@ -141,11 +141,13 @@ def CallApplyUpdatesToInstances(holder, igm_ref, instances):
     service = holder.client.apitools_client.instanceGroupManagers
     apply_request = GetApplyUpdatesToInstancesRequestsZonal(
         holder, igm_ref, instances)
-  else:
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
     operation_collection = 'compute.regionOperations'
     service = holder.client.apitools_client.regionInstanceGroupManagers
     apply_request = GetApplyUpdatesToInstancesRequestsRegional(
         holder, igm_ref, instances)
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
   apply_operation = service.ApplyUpdatesToInstances(apply_request)
   apply_operation_ref = holder.resources.Parse(
       apply_operation.selfLink, collection=operation_collection)

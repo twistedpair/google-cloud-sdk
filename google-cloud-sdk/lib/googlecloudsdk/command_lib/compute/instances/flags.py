@@ -431,6 +431,8 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False):
       *name*::: Specifies the name of the disk. This option cannot be
       specified if more than one instance is being created.
 
+      *description*::: Optional textual description for the disk being created.
+
       *mode*::: Specifies the mode of the disk. Supported options
       are ``ro'' for read-only and ``rw'' for read-write. If
       omitted, ``rw'' is used as a default.
@@ -512,6 +514,7 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False):
       """.format(resource='disk', kms_help=kms_utils.KMS_HELP_URL)
   spec = {
       'name': str,
+      'description': str,
       'mode': str,
       'image': str,
       'image-family': str,

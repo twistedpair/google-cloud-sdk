@@ -259,7 +259,7 @@ def CreateInstanceReferences(
           },
           collection='compute.instances'))
     return [instance_ref.SelfLink() for instance_ref in instance_refs]
-  else:
+  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
     service = compute_client.apitools_client.regionInstanceGroupManagers
     request = service.GetRequestType('ListManagedInstances')(
         instanceGroupManager=igm_ref.Name(),
@@ -271,6 +271,8 @@ def CreateInstanceReferences(
     return [instance_ref.instance for instance_ref in results
             if path_simplifier.Name(instance_ref.instance) in instance_names
             or instance_ref.instance in instance_names]
+  else:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
 
 
 def SplitInstancesInRequest(request,

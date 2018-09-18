@@ -191,6 +191,7 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
     user_project: name of user project
     create_disks: disk objects - contains following properties
              * name - the name of disk,
+             * description - an optional description for the disk,
              * mode - 'rw' (R/W), 'ro' (R/O) access mode,
              * size - the size of the disk,
              * type - the type of the disk (HDD or SSD),
@@ -243,6 +244,7 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
         deviceName=disk.get('device-name'),
         initializeParams=client.messages.AttachedDiskInitializeParams(
             diskName=name,
+            description=disk.get('description'),
             sourceImage=image_uri,
             diskSizeGb=disk_size_gb,
             diskType=disk.get('type')),

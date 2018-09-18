@@ -19,16 +19,306 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import io
 import os
+import sys
+import threading
 import time
 
 from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.command_lib.interactive import parser
 from googlecloudsdk.command_lib.meta import generate_cli_trees
 from googlecloudsdk.core import module_util
+from googlecloudsdk.core.console import console_attr
 from prompt_toolkit import completion
 
 import six
+
+
+_INVALID_COMMAND_COUNT = -1
+_INVALID_ARG_COMMAND_COUNT = _INVALID_COMMAND_COUNT - 1
+_URI_SEP = '://'
+
+
+# TODO(b/115505558): add a visual element test framework
+def _GenerateCompletions(event):
+  """completion.generate_completions override that auto selects singletons."""
+
+  b = event.current_buffer
+  if not b.complete_state:
+    # First TAB -- display the completions in a menu.
+    event.cli.start_completion(insert_common_part=True, select_first=False)
+  elif len(b.complete_state.current_completions) == 1:
+    # Second TAB with only one completion -- select it dadgummit.
+    b.apply_completion(b.complete_state.current_completions[0])
+  else:
+    # Second and subsequent TABs -- rotate through the menu.
+    b.complete_next()
+
+
+completion.generate_completions = _GenerateCompletions  # MONKEYPATCH!
+
+
+def _PrettyArgs(args):
+  """Pretty prints args into a string and returns it."""
+  buf = io.StringIO()
+  buf.write('[')
+  for arg in args:
+    buf.write('({},{})'.format(arg.value or '""', arg.token_type.name))
+  buf.write(']')
+  return buf.getvalue()
+
+
+def _Split(path):
+  """Returns the list of component names in path, treating foo:// as a dir."""
+  urisep = _URI_SEP
+  uri_index = path.find(urisep)
+  if uri_index >= 0:
+    n = uri_index + len(_URI_SEP)
+    return [path[:n-1]] + path[n:].split('/')
+  return path.split('/')
+
+
+def _Dirname(path):
+  """Returns the dirname of path, '' if it's '.'."""
+  return '/'.join(_Split(path)[:-1])
+
+
+class CacheArg(object):
+  """A completion cache arg."""
+
+  def __init__(self, prefix, completions):
+    self.prefix = prefix
+    self.completions = completions
+    self.dirs = {}
+
+  def IsValid(self):
+    return self.completions is not None
+
+  def Invalidate(self):
+    self.command_count = _INVALID_ARG_COMMAND_COUNT
+    self.completions = None
+    self.dirs = {}
+
+
+class CompletionCache(object):
+  """A per-arg cache of completions for the command line under construction.
+
+  Since we have no details on the compeleted values this cache is only for the
+  current command line. This means that async activities by other commands
+  (creating files, instances, resources) may not be seen until the current
+  command under construction is executed.
+
+  Attributes:
+    args: The list of CacheArg args holding the completion state for each arg.
+    completer: The completer object.
+    command_count: The completer.cli.command_count value for the current cache.
+  """
+
+  def __init__(self, completer):
+    self.args = []
+    self.completer = completer
+    self.command_count = _INVALID_COMMAND_COUNT
+
+  def IsValid(self):
+    return self.command_count == self.completer.cli.command_count
+
+  def ArgMatch(self, args, index):
+    """Returns True if args[index] matches the cache prefix for index."""
+    if not self.args[index].IsValid():
+      # Only concerned with cached args.
+      return True
+    return args[index].value.startswith(self.args[index].prefix)
+
+  def Lookup(self, args):
+    """Returns the cached completions for the last arg in args or None."""
+
+    # No joy if it's not cached or if the command has already executed.
+
+    if not args or not self.IsValid():
+      return None
+    if len(args) > len(self.args):
+      return None
+
+    # Args before the last must match the cached arg value.
+
+    last_arg_index = len(args) - 1
+    for i in range(last_arg_index):
+      if not self.ArgMatch(args, i):
+        return None
+
+    # The last arg must have completions and match the completion prefix.
+
+    if not self.args[last_arg_index].IsValid():
+      return None
+
+    # Check directory boundaries.
+
+    a = args[last_arg_index].value
+    if a.endswith('/'):
+      # Entering a subdir, maybe it's already cached.
+      parent = a[:-1]
+      self.completer.debug.dir.text(parent)
+      prefix, completions = self.args[last_arg_index].dirs.get(parent,
+                                                               (None, None))
+      if not completions:
+        return None
+      self.args[last_arg_index].prefix = prefix
+      self.args[last_arg_index].completions = completions
+    elif a in self.args[last_arg_index].dirs:
+      # Backing up into a parent dir.
+      self.completer.debug.dir.text(_Dirname(a))
+      prefix, completions = self.args[last_arg_index].dirs.get(_Dirname(a),
+                                                               (None, None))
+      if completions:
+        self.args[last_arg_index].prefix = prefix
+        self.args[last_arg_index].completions = completions
+
+    # The last arg must match the completion prefix.
+
+    if not self.ArgMatch(args, last_arg_index):
+      return None
+
+    # Found valid matching completions in the cache.
+
+    return [c for c in self.args[last_arg_index].completions if c.startswith(a)]
+
+  def Update(self, args, completions):
+    """Updates completions for the last arg in args."""
+    self.command_count = self.completer.cli.command_count
+    last_arg_index = len(args) - 1
+    for i in range(last_arg_index):
+      if i >= len(self.args):
+        # Grow the cache.
+        self.args.append(CacheArg(args[i].value, None))
+      elif not self.ArgMatch(args, i):
+        self.args[i].Invalidate()
+    a = args[last_arg_index].value
+
+    # Extend the cache if necessary.
+
+    if last_arg_index == len(self.args):
+      self.args.append(CacheArg(a, completions))
+
+    # Update the last arg.
+
+    if (not self.args[last_arg_index].IsValid() or
+        not a.startswith(self.args[last_arg_index].prefix) or
+        a.endswith('/')):
+      if a.endswith('/'):
+        # Subdir completions.
+        if not self.args[last_arg_index].dirs:
+          # Default completions belong to ".".
+          self.args[last_arg_index].dirs[''] = (
+              self.args[last_arg_index].prefix,
+              self.args[last_arg_index].completions)
+        self.args[last_arg_index].dirs[a[:-1]] = (a, completions)
+
+    # Check for dir completions trying to slip by.
+
+    if completions and '/' in completions[0][:-1] and '/' not in a:
+      dirs = {}
+      for comp in completions:
+        if comp.endswith('/'):
+          comp = comp[:-1]
+          mark = '/'
+        else:
+          mark = ''
+        parts = _Split(comp)
+        if mark:
+          parts[-1] += mark
+        for i in range(len(parts)):
+          d = '/'.join(parts[:i])
+          if d not in dirs:
+            dirs[d] = []
+          comp = '/'.join(parts[:i + 1])
+          if comp.endswith(':/'):
+            comp += '/'
+          if comp not in dirs[d]:
+            dirs[d].append(comp)
+      for d, c in six.iteritems(dirs):
+        marked = d
+        if marked.endswith(':/'):
+          marked += '/'
+        self.args[last_arg_index].dirs[d] = marked, c
+    else:
+      self.args[last_arg_index].prefix = a
+      self.args[last_arg_index].completions = completions
+
+    # Invalidate the rest of the cache.
+
+    for i in range(last_arg_index + 1, len(self.args)):
+      self.args[i].Invalidate()
+
+
+class Spinner(object):
+  """A Spinner to show when completer takes too long to respond.
+
+  Some completer calls take too long, specially those that fetch remote
+  resources. An instance of this class can be used as a context manager wrapping
+  slow completers to get spinmarks while the completer fetches.
+
+  Attributes:
+    _done_loading: Boolean flag indicating whether ticker thread is working.
+    _set_spinner: Function reference to InteractiveCliCompleter's spinner
+      setter.
+    _spin_marks: List of unicode spinmarks to be cycled while loading.
+    _ticker: Thread instance that handles displaying the spinner.
+    _ticker_index: Integer specifying the last iteration index in _spin_marks.
+    _TICKER_INTERVAL: Float specifying time between ticker rotation in
+      milliseconds.
+    _ticker_length: Integer spcifying length of _spin_marks.
+    _TICKER_WAIT: Float specifying the wait time before ticking in milliseconds.
+    _TICKER_WAIT_CHECK_INTERVAL: Float specifying interval time to break wait
+      in milliseconds.
+  """
+
+  _TICKER_INTERVAL = 100
+  _TICKER_WAIT = 200
+  _TICKER_WAIT_CHECK_INTERVAL = 10
+
+  def __init__(self, set_spinner):
+    self._done_loading = False
+    self._spin_marks = console_attr.GetConsoleAttr()\
+        .GetProgressTrackerSymbols().spin_marks
+    self._ticker = None
+    self._ticker_index = 0
+    self._ticker_length = len(self._spin_marks)
+    self._set_spinner = set_spinner
+
+  def _Mark(self, spin_mark):
+    """Marks spin_mark on stdout and moves cursor back."""
+    sys.stdout.write(spin_mark + '\b')
+    sys.stdout.flush()
+
+  def Stop(self):
+    """Erases last spin_mark and joins the ticker thread."""
+    self._Mark(' ')
+    self._done_loading = True
+    if self._ticker:
+      self._ticker.join()
+
+  def _Ticker(self):
+    """Waits for _TICKER_WAIT and then starts printing the spinner."""
+    for _ in range(Spinner._TICKER_WAIT // Spinner._TICKER_WAIT_CHECK_INTERVAL):
+      time.sleep(Spinner._TICKER_WAIT_CHECK_INTERVAL/1000.0)
+      if self._done_loading:
+        break
+    while not self._done_loading:
+      spin_mark = self._spin_marks[self._ticker_index]
+      self._Mark(spin_mark)
+      self._ticker_index = (self._ticker_index + 1) % self._ticker_length
+      time.sleep(Spinner._TICKER_INTERVAL/1000.0)
+
+  def __enter__(self):
+    self._set_spinner(self)
+    self._ticker = threading.Thread(target=self._Ticker)
+    self._ticker.start()
+    return self
+
+  def __exit__(self, *args):
+    self.Stop()
+    self._set_spinner(None)
 
 
 def _NameSpaceDict(args):
@@ -110,11 +400,14 @@ class InteractiveCliCompleter(completion.Completer):
       command PREFIX TAB completion is enabled. This completion searches PATH
       for executables matching the current PREFIX token. It's fairly expensive
       and volumninous, so we don't want to do it for every completion event.
+    _spinner: Private instance of Spinner used for loading during
+      ArgCompleter.
   """
 
   def __init__(self, cli=None, coshell=None, debug=None,
                interactive_parser=None, args=None, hidden=False,
                manpage_generator=True):
+    self.arg_cache = CompletionCache(self)
     self.cli = cli
     self.coshell = coshell
     self.debug = debug
@@ -124,6 +417,7 @@ class InteractiveCliCompleter(completion.Completer):
     self.parser = interactive_parser
     self.parsed_args = args
     self.empty = False
+    self._spinner = None
     self.last = ''
     generate_cli_trees.CliTreeGenerator.MemoizeFailures(True)
     self.reset()
@@ -131,6 +425,13 @@ class InteractiveCliCompleter(completion.Completer):
   def reset(self):
     """Resets any cached state for the current command being composed."""
     self.DisableExecutableCompletions()
+    if self._spinner:
+      self._spinner.Stop()
+      self._spinner = None
+
+  def SetSpinner(self, spinner):
+    """Sets and Unsets current spinner object."""
+    self._spinner = spinner
 
   def DoExecutableCompletions(self):
     """Returns True if command prefix args should use executable completion."""
@@ -138,7 +439,7 @@ class InteractiveCliCompleter(completion.Completer):
 
   def DisableExecutableCompletions(self):
     """Disables command prefix arg executable completion."""
-    self.prefix_completer_command_count = -1
+    self.prefix_completer_command_count = _INVALID_COMMAND_COUNT
 
   def EnableExecutableCompletions(self):
     """Enables command prefix arg executable completion."""
@@ -166,8 +467,9 @@ class InteractiveCliCompleter(completion.Completer):
       Completion instances for doc.
     """
 
-    self.debug.tabs.count().text(
-        'explicit' if event.completion_requested else 'implicit')
+    self.debug.tabs.count().text('@{}:{}'.format(
+        self.cli.command_count,
+        'explicit' if event.completion_requested else 'implicit'))
 
     # TAB on empty line toggles command PREFIX executable completions.
 
@@ -203,12 +505,8 @@ class InteractiveCliCompleter(completion.Completer):
     self.empty = self.last.isspace()
     self.event = event
 
-    self.debug.commands.text(str(self.cli.command_count))
     self.debug.last.text(self.last)
-    self.debug.tokens.text(str(args)
-                           .replace("u'", "'")
-                           .replace('ArgTokenType.', '')
-                           .replace('ArgToken', ''))
+    self.debug.tokens.text(_PrettyArgs(args))
 
     # Apply the completers in order stopping at the first one that does not
     # return None.
@@ -217,7 +515,7 @@ class InteractiveCliCompleter(completion.Completer):
       choices, offset = completer(args)
       if choices is None:
         continue
-      self.debug.tag(completer.__name__).count().text(str(len(list(choices))))
+      self.debug.tag(completer.__name__).count().text(len(list(choices)))
       if offset is None:
         # The choices are already completion.Completion objects.
         for choice in choices:
@@ -330,7 +628,8 @@ class InteractiveCliCompleter(completion.Completer):
       completer = parser_completer.ArgumentCompleter(
           cache.completer_class,
           parsed_args=self.parsed_args)
-      cache.choices = completer(prefix='')
+      with Spinner(self.SetSpinner):
+        cache.choices = completer(prefix='')
       self.parsed_args.__dict__ = old_dict
       cache.stale = time.time() + cache.timeout
     if arg.get(parser.LOOKUP_TYPE) == 'list':
@@ -425,23 +724,43 @@ class InteractiveCliCompleter(completion.Completer):
         choices - The list of completion strings or None.
         offset - The completion prefix offset.
     """
-    prefix = self.DoExecutableCompletions() and self.IsPrefixArg(args)
-    if not self.event.completion_requested and not prefix:
-      return None, 0
-    command = [arg.value for arg in args]
     # If the input command line ended with a space then the split command line
     # must end with an empty string if it doesn't already. This instructs the
     # completer to complete the next arg.
-    if self.empty and command[-1]:
-      command.append('')
-    self.debug.getcompletions.count()
-    completions = self.coshell.GetCompletions(command, prefix=prefix)
+
+    if self.empty and args[-1].value:
+      args = args[:]
+      args.append(parser.ArgToken('', parser.ArgTokenType.UNKNOWN, None))
+
+    # First check the cache.
+
+    completions = self.arg_cache.Lookup(args)
     if not completions:
-      return None, None
-    last = command[-1]
+
+      # Only call the coshell completer on an explicit TAB request.
+
+      prefix = self.DoExecutableCompletions() and self.IsPrefixArg(args)
+      if not self.event.completion_requested and not prefix:
+        return None, None
+
+      # Call the coshell completer and update the cache.
+
+      command = [arg.value for arg in args]
+      with Spinner(self.SetSpinner):
+        completions = self.coshell.GetCompletions(command, prefix=prefix)
+      self.debug.get.count()
+      if not completions:
+        return None, None
+      self.arg_cache.Update(args, completions)
+    else:
+      self.debug.hit.count()
+
+    last = args[-1].value
     offset = -len(last)
-    if len(completions) == 1:
-      # No dropdown for singletons so just return the original completion.
+
+    # No dropdown for singletons so just return the original completion.
+
+    if False and len(completions) == 1 and completions[0].startswith(last):
       return completions, offset
 
     # Make path completions play nice with dropdowns. Add trailing '/' for dirs
@@ -450,60 +769,47 @@ class InteractiveCliCompleter(completion.Completer):
     #
     # NOTE: '/' instead of os.path.sep since the coshell is bash even on Windows
 
-    prefix = last if last.endswith('/') else os.path.dirname(last)
-    chop = len(prefix) if prefix else 0
-
-    uri_sep = '://'
+    chop = len(os.path.dirname(last))
+    uri_sep = _URI_SEP
     uri_sep_index = completions[0].find(uri_sep)
     if uri_sep_index > 0:
       # Treat the completions as URI paths.
       if not last:
         chop = uri_sep_index + len(uri_sep)
-      make_completion = self.MakeUriPathCompletion
-    else:
-      make_completion = self.MakeFilePathCompletion
-    return [make_completion(c, offset, chop) for c in completions], None
+
+    # Construct the completion result list. No list comprehension here because
+    # MakePathCompletion() could return None.
+    result = []
+    strip_trailing_slash = len(completions) != 1
+    for c in completions:
+      path_completion = self.MakePathCompletion(
+          c, offset, chop, strip_trailing_slash)
+      if path_completion:
+        result.append(path_completion)
+    return result, None
 
   @classmethod
-  def MakeFilePathCompletion(cls, value, offset, chop):
-    """Returns the Completion object for a file path completion value.
+  def MakePathCompletion(cls, value, offset, chop, strip_trailing_slash=True):
+    """Returns the Completion object for a file/uri path completion value.
 
     Args:
       value: The file/path completion value string.
       offset: The Completion object offset used for dropdown display.
       chop: The minimum number of chars to chop from the dropdown items.
+      strip_trailing_slash: Strip trailing '/' if True.
 
     Returns:
-      The Completion object for a file path completion value.
+      The Completion object for a file path completion value or None if the
+      chopped/stripped value is empty.
     """
 
     display = value
     if chop:
-      display = display[chop:]
-      if display.startswith('/'):
-        display = display[1:]
-    if value.endswith('/'):
-      value = value[:-1]
-    return completion.Completion(value, display=display, start_position=offset)
-
-  @classmethod
-  def MakeUriPathCompletion(cls, value, offset, chop):
-    """Returns the Completion object for a URI path completion value.
-
-    Args:
-      value: The file/path completion value string.
-      offset: The Completion object offset used for dropdown display.
-      chop: The minimum number of chars to chop from the dropdown items.
-
-    Returns:
-      The Completion object for a URI path completion value.
-    """
-
-    display = value[chop:]
-    if display.startswith('/'):
-      display = display[1:]
-      if display.startswith('/'):
-        display = display[1:]
-    if value.endswith('/') and not value.endswith('://'):
-      value = value[:-1]
+      display = display[chop:].lstrip('/')
+    if not display:
+      return None
+    if strip_trailing_slash and not value.endswith(_URI_SEP):
+      value = value.rstrip('/')
+    if not value:
+      return None
     return completion.Completion(value, display=display, start_position=offset)

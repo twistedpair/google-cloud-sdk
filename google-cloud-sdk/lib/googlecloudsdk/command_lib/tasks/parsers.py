@@ -315,8 +315,7 @@ def _ParseBodyArgs(args):
 
 def _ParseHeaderArg(args, messages):
   if args.header:
-    headers_dict = {http_encoding.Encode(k): http_encoding.Encode(v)
-                    for k, v in map(_SplitHeaderArgValue, args.header)}
+    headers_dict = {k: v for k, v in map(_SplitHeaderArgValue, args.header)}
     return encoding.DictToAdditionalPropertyMessage(
         headers_dict, messages.AppEngineHttpRequest.HeadersValue)
 

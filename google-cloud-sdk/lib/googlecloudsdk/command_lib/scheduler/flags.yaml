@@ -1,0 +1,57 @@
+args:
+- api_field: job.schedule.schedule
+  arg_name: schedule
+  required: true
+  help_text: |
+    String, English-like description of the schedule at which the job
+    should be run. See
+    https://cloud.google.com/appengine/docs/standard/python/config/cronref#schedule_format
+    for details.
+- api_field: job.schedule.timeZone
+  arg_name: time-zone
+  default: Etc/UTC
+  help_text: |
+    String, a time zone name from the tz database
+    (http://en.wikipedia.org/wiki/Tz_database).
+- api_field: job.description
+  arg_name: description
+  help_text: |
+    A human-readable description of the job.
+retry_args:
+- api_field: job.retryConfig.retryCount
+  arg_name: max-attempts
+  default: 0
+  help_text: |
+    Int, the number of times to retry the request if it fails or times
+    out. Must be in range 0-5 inclusive.
+- api_field: job.retryConfig.maxRetryDuration
+  arg_name: max-retry-duration
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
+  help_text: |
+    The time limit for retrying a failed task, measured from when the task
+    was first run. If specified with `--max-attempts`, the task will be
+    retried until both limits are reached. Default is 0 (which means
+    unlimited)
+- api_field: job.retryConfig.minBackoffDuration
+  arg_name: min-backoff
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
+  default: 5s
+  help_text: |
+    Duration, the minimum amount of time to wait before retrying a task
+    after it fails. Ex. `10s` (default is `5s`).
+- api_field: job.retryConfig.maxBackoffDuration
+  arg_name: max-backoff
+  default: 1h
+  type: googlecloudsdk.core.util.times:ParseDuration
+  processor: googlecloudsdk.core.util.times:FormatDurationForJson
+  help_text: |
+    Duration, the maximum amount of time to wait before retrying a task
+    after it fails. Ex. `10s` (default is `1h`).
+- api_field: job.retryConfig.maxDoublings
+  arg_name: max-doublings
+  default: 16
+  help_text: |
+    Int, the maximum number of times that the interval between failed job
+    retries will be doubled before the increase becomes constant.

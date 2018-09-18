@@ -465,6 +465,8 @@ class Condition(_messages.Message):
   AND 4) the request was sent at a time allowed by the DateTimeRestriction.
 
   Fields:
+    devicePolicy: Device specific restrictions, all restrictions must hold for
+      the Condition to be true. If not specified, all devices are allowed.
     ipSubnetworks: CIDR block IP subnetwork specification. May be IPv4 or
       IPv6. Note that for a CIDR IP address block, the specified IP address
       portion must be properly truncated (i.e. all the host bits must be zero)
@@ -487,10 +489,71 @@ class Condition(_messages.Message):
       "`accessPolicies/MY_POLICY/accessLevels/LEVEL_NAME"`
   """
 
-  ipSubnetworks = _messages.StringField(1, repeated=True)
-  members = _messages.StringField(2, repeated=True)
-  negate = _messages.BooleanField(3)
-  requiredAccessLevels = _messages.StringField(4, repeated=True)
+  devicePolicy = _messages.MessageField('DevicePolicy', 1)
+  ipSubnetworks = _messages.StringField(2, repeated=True)
+  members = _messages.StringField(3, repeated=True)
+  negate = _messages.BooleanField(4)
+  requiredAccessLevels = _messages.StringField(5, repeated=True)
+
+
+class DevicePolicy(_messages.Message):
+  r"""`DevicePolicy` specifies device specific restrictions necessary to
+  acquire a given access level. A `DevicePolicy` specifies requirements for
+  requests from devices to be granted access levels, it does not do any
+  enforcement on the device. `DevicePolicy` acts as an AND over all specified
+  fields, and each repeated field is an OR over its elements. Any unset fields
+  are ignored. For example, if the proto is { os_type : DESKTOP_WINDOWS,
+  os_type : DESKTOP_LINUX, encryption_status: ENCRYPTED}, then the
+  DevicePolicy will be true for requests originating from encrypted Linux
+  desktops and encrypted Windows desktops.
+
+  Enums:
+    AllowedDeviceManagementLevelsValueListEntryValuesEnum:
+    AllowedEncryptionStatusesValueListEntryValuesEnum:
+
+  Fields:
+    allowedDeviceManagementLevels: Allowed device management levels, an empty
+      list allows all management levels.
+    allowedEncryptionStatuses: Allowed encryptions statuses, an empty list
+      allows all statuses.
+    osConstraints: Allowed OS versions, an empty list allows all types and all
+      versions.
+    requireScreenlock: Whether or not screenlock is required for the
+      DevicePolicy to be true. Defaults to `false`.
+  """
+
+  class AllowedDeviceManagementLevelsValueListEntryValuesEnum(_messages.Enum):
+    r"""AllowedDeviceManagementLevelsValueListEntryValuesEnum enum type.
+
+    Values:
+      MANAGEMENT_UNSPECIFIED: <no description>
+      NONE: <no description>
+      BASIC: <no description>
+      COMPLETE: <no description>
+    """
+    MANAGEMENT_UNSPECIFIED = 0
+    NONE = 1
+    BASIC = 2
+    COMPLETE = 3
+
+  class AllowedEncryptionStatusesValueListEntryValuesEnum(_messages.Enum):
+    r"""AllowedEncryptionStatusesValueListEntryValuesEnum enum type.
+
+    Values:
+      ENCRYPTION_UNSPECIFIED: <no description>
+      ENCRYPTION_UNSUPPORTED: <no description>
+      UNENCRYPTED: <no description>
+      ENCRYPTED: <no description>
+    """
+    ENCRYPTION_UNSPECIFIED = 0
+    ENCRYPTION_UNSUPPORTED = 1
+    UNENCRYPTED = 2
+    ENCRYPTED = 3
+
+  allowedDeviceManagementLevels = _messages.EnumField('AllowedDeviceManagementLevelsValueListEntryValuesEnum', 1, repeated=True)
+  allowedEncryptionStatuses = _messages.EnumField('AllowedEncryptionStatusesValueListEntryValuesEnum', 2, repeated=True)
+  osConstraints = _messages.MessageField('OsConstraint', 3, repeated=True)
+  requireScreenlock = _messages.BooleanField(4)
 
 
 class ListAccessLevelsResponse(_messages.Message):
@@ -637,6 +700,44 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OsConstraint(_messages.Message):
+  r"""A restriction on the OS type and version of devices making requests.
+
+  Enums:
+    OsTypeValueValuesEnum: Required. The allowed OS type.
+
+  Fields:
+    minimumVersion: The minimum allowed OS version. If not set, any version of
+      this OS satisfies the constraint. Format: `"major.minor.patch"`.
+      Examples: `"10.5.301"`, `"9.2.1"`.
+    osType: Required. The allowed OS type.
+  """
+
+  class OsTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The allowed OS type.
+
+    Values:
+      OS_UNSPECIFIED: The operating system of the device is not specified or
+        not known.
+      DESKTOP_MAC: A desktop Mac operating system.
+      DESKTOP_WINDOWS: A desktop Windows operating system.
+      DESKTOP_LINUX: A desktop Linux operating system.
+      DESKTOP_CHROME_OS: A desktop ChromeOS operating system.
+      ANDROID: An Android operating system.
+      IOS: An iOS operating system.
+    """
+    OS_UNSPECIFIED = 0
+    DESKTOP_MAC = 1
+    DESKTOP_WINDOWS = 2
+    DESKTOP_LINUX = 3
+    DESKTOP_CHROME_OS = 4
+    ANDROID = 5
+    IOS = 6
+
+  minimumVersion = _messages.StringField(1)
+  osType = _messages.EnumField('OsTypeValueValuesEnum', 2)
 
 
 class StandardQueryParameters(_messages.Message):

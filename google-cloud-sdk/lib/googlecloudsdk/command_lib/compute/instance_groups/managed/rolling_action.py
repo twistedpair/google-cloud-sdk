@@ -45,12 +45,20 @@ def CreateRequest(args,
   Returns:
     ComputeInstanceGroupManagersPatchRequest or
     ComputeRegionInstanceGroupManagersPatchRequest instance
+
+  Raises:
+    ValueError: if instance group manager collection path is unknown
   """
   resource_arg = instance_groups_flags.MULTISCOPE_INSTANCE_GROUP_MANAGER_ARG
   default_scope = compute_scope.ScopeEnum.ZONE
   scope_lister = flags.GetDefaultScopeLister(client)
   igm_ref = resource_arg.ResolveAsResource(
       args, resources, default_scope=default_scope, scope_lister=scope_lister)
+
+  if igm_ref.Collection() not in [
+      'compute.instanceGroupManagers', 'compute.regionInstanceGroupManagers'
+  ]:
+    raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))
 
   update_policy_type = (client.messages.InstanceGroupManagerUpdatePolicy.
                         TypeValueValuesEnum.PROACTIVE)
@@ -84,7 +92,7 @@ def CreateRequest(args,
         instanceGroupManagerResource=igm_resource,
         project=igm_ref.project,
         zone=igm_ref.zone)
-  elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
+  else:
     service = client.apitools_client.regionInstanceGroupManagers
     request = client.messages.ComputeRegionInstanceGroupManagersPatchRequest(
         instanceGroupManager=igm_ref.Name(),

@@ -39,11 +39,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import copy
+import re
 
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
-
 import six
 
 
@@ -132,7 +132,7 @@ class _Attribute(object):
 
   Attributes:
     name: The name of the attribute. Used primarily to control the arg or flag
-      name corresponding to the attribute.
+      name corresponding to the attribute. Must be in all lower case.
     help_text: String describing the attribute's relationship to the concept,
       used to generate help for an attribute flag.
     required: True if the attribute is required.
@@ -149,6 +149,13 @@ class _Attribute(object):
   def __init__(self, name, help_text=None, required=False, fallthroughs=None,
                completer=None, value_type=None):
     """Initializes."""
+    # Check for attributes that mix lower- and uppercase. Camel case is not
+    # handled consistently among libraries.
+    if re.search(r'[A-Z]', name) and re.search('r[a-z]', name):
+      raise ValueError(
+          'Invalid attribute name [{}]: Attribute names should be in lower '
+          'snake case (foo_bar) so they can be transformed to flag names.'
+          .format(name))
     self.name = name
     self.help_text = help_text
     self.required = required
@@ -336,11 +343,16 @@ class ResourceSpec(ConceptSpec):
       return attribute_config.attribute_name
     if anchor:
       return 'name'
-    return param_name
+    return param_name.replace('Id', '_id').lower()
 
   def ParamName(self, attribute_name):
     """Given an attribute name, gets the param name for resource parsing."""
-    return self.attribute_to_params_map.get(attribute_name, '')
+    if attribute_name not in self.attribute_to_params_map:
+      raise ValueError(
+          'No param name found for attribute [{}]. Existing attributes are '
+          '[{}]'.format(attribute_name,
+                        ', '.join(sorted(self.attribute_to_params_map.keys()))))
+    return self.attribute_to_params_map[attribute_name]
 
   def AttributeName(self, param_name):
     """Given a param name, gets the attribute name."""

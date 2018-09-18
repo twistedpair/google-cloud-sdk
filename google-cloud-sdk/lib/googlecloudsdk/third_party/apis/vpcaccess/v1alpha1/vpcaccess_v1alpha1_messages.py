@@ -17,6 +17,7 @@ class Connector(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: Output only. Status of the VPC access connector.
+    TypeValueValuesEnum: Type of the VPC access connector.
 
   Fields:
     id: Identifier for the connector, short form of the name. Example:
@@ -27,6 +28,7 @@ class Connector(_messages.Message):
       `projects/*/locations/*/connectors/*`.
     network: Name of a VPC network.
     status: Output only. Status of the VPC access connector.
+    type: Type of the VPC access connector.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -45,11 +47,24 @@ class Connector(_messages.Message):
     DELETING = 3
     ERROR = 4
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the VPC access connector.
+
+    Values:
+      TYPE_UNSPECIFIED: Invalid type.
+      EXTENDED: Extended functionality with ILB support.
+      BASIC: Basic functionality, only single VM and VPN.
+    """
+    TYPE_UNSPECIFIED = 0
+    EXTENDED = 1
+    BASIC = 2
+
   id = _messages.StringField(1)
   ipCidrRange = _messages.StringField(2)
   name = _messages.StringField(3)
   network = _messages.StringField(4)
   status = _messages.EnumField('StatusValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class ListConnectorsResponse(_messages.Message):

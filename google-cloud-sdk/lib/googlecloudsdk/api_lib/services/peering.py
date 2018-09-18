@@ -24,14 +24,14 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core.util import retry
 
 
-def CreateConnection(project_number, service, network, reserved_ranges):
+def CreateConnection(project_number, service, network, ranges):
   """Make API call to create a connection a specific service.
 
   Args:
     project_number: The number of the project for which to peer the service.
     service: The name of the service to peer with.
     network: The network in consumer project to peer with.
-    reserved_ranges: The IP CIDR ranges for peering service to use.
+    ranges: The IP CIDR ranges for peering service to use.
 
   Raises:
     exceptions.CreateConnectionsPermissionDeniedException: when the create
@@ -50,7 +50,7 @@ def CreateConnection(project_number, service, network, reserved_ranges):
       parent='services/' + service,
       connection=messages.Connection(
           network='projects/%s/global/networks/%s' % (project_number, network),
-          reservedPeeringRanges=reserved_ranges))
+          reservedPeeringRanges=ranges))
   try:
     return client.services_connections.Create(request)
   except (apitools_exceptions.HttpForbiddenError,

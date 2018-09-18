@@ -437,6 +437,7 @@
             "Deprecated. Use JSON instead.",
             "INPUT ONLY. The source file is a TFRecord file.",
             "INPUT ONLY. The source file is a GZIP-compressed TFRecord file.",
+            "INPUT ONLY. Each line of the file is the location of an instance to\nprocess.",
             "OUTPUT ONLY. Output values will be in comma-separated rows, with keys\nin a separate file."
           ],
           "type": "string",
@@ -446,6 +447,7 @@
             "TEXT",
             "TF_RECORD",
             "TF_RECORD_GZIP",
+            "FILE_LIST",
             "CSV"
           ]
         },
@@ -457,6 +459,7 @@
             "Deprecated. Use JSON instead.",
             "INPUT ONLY. The source file is a TFRecord file.",
             "INPUT ONLY. The source file is a GZIP-compressed TFRecord file.",
+            "INPUT ONLY. Each line of the file is the location of an instance to\nprocess.",
             "OUTPUT ONLY. Output values will be in comma-separated rows, with keys\nin a separate file."
           ],
           "type": "string",
@@ -466,6 +469,7 @@
             "TEXT",
             "TF_RECORD",
             "TF_RECORD_GZIP",
+            "FILE_LIST",
             "CSV"
           ]
         },
@@ -980,6 +984,10 @@
         "pythonVersion": {
           "description": "Optional. The version of Python used in prediction. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported runtime versions.",
           "type": "string"
+        },
+        "acceleratorConfig": {
+          "description": "Accelerator config for GPU serving.",
+          "$ref": "GoogleCloudMlV1__AcceleratorConfig"
         }
       }
     },
