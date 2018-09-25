@@ -114,6 +114,20 @@ def GenerateClusterUrl(cluster_ref):
               project=cluster_ref.projectId)
 
 
+def _GetClusterEndpoint(cluster, use_internal_ip):
+  """Get the cluster endpoint suitable for writing to kubeconfig."""
+  if use_internal_ip:
+    if not cluster.privateClusterConfig:
+      raise NonPrivateClusterError(cluster)
+    if not cluster.privateClusterConfig.privateEndpoint:
+      raise MissingPrivateEndpointError(cluster)
+    return cluster.privateClusterConfig.privateEndpoint
+
+  if not cluster.endpoint:
+    raise MissingEndpointError(cluster)
+  return cluster.endpoint
+
+
 KUBECONFIG_USAGE_FMT = '''\
 kubeconfig entry generated for {cluster}.'''
 
@@ -125,6 +139,23 @@ class MissingEndpointError(Error):
     super(MissingEndpointError, self).__init__(
         'cluster {0} is missing endpoint. Is it still PROVISIONING?'.format(
             cluster.name))
+
+
+class NonPrivateClusterError(Error):
+  """Error for attempting to persist internal IP of a non-private cluster."""
+
+  def __init__(self, cluster):
+    super(NonPrivateClusterError, self).__init__(
+        'cluster {0} is not a private cluster.'.format(cluster.name))
+
+
+class MissingPrivateEndpointError(Error):
+  """Error for attempting to persist a cluster that has no internal IP."""
+
+  def __init__(self, cluster):
+    super(MissingPrivateEndpointError, self).__init__(
+        'cluster {0} is missing private endpoint. Is it still '
+        'PROVISIONING?'.format(cluster.name))
 
 
 class ClusterConfig(object):
@@ -222,7 +253,7 @@ class ClusterConfig(object):
         cluster=self.cluster_name, context=context))
 
   @classmethod
-  def Persist(cls, cluster, project_id):
+  def Persist(cls, cluster, project_id, use_internal_ip=False):
     """Save config data for the given cluster.
 
     Persists config file and kubernetes auth file for the given cluster
@@ -232,19 +263,19 @@ class ClusterConfig(object):
     Args:
       cluster: valid Cluster message to persist config data for.
       project_id: project that owns this cluster.
+      use_internal_ip: whether to persist the internal IP of the endpoint.
     Returns:
       ClusterConfig of the persisted data.
     Raises:
       Error: if cluster has no endpoint (will be the case for first few
         seconds while cluster is PROVISIONING).
     """
-    if not cluster.endpoint:
-      raise MissingEndpointError(cluster)
+    endpoint = _GetClusterEndpoint(cluster, use_internal_ip)
     kwargs = {
         'cluster_name': cluster.name,
         'zone_id': cluster.zone,
         'project_id': project_id,
-        'server': 'https://' + cluster.endpoint,
+        'server': 'https://' + endpoint,
     }
     auth = cluster.masterAuth
     if auth and auth.clusterCaCertificate:

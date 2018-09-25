@@ -177,7 +177,7 @@ def AddActivationPolicy(parser):
       required=False,
       choices=['always', 'never', 'on-demand'],
       default=None,
-      help_str=('The activation policy for this instance. This specifies when '
+      help_str=('Activation policy for this instance. This specifies when '
                 'the instance should be activated and is applicable only when '
                 'the instance state is `RUNNABLE`. The default is `on-demand`. '
                 'More information on activation policies can be found here: '
@@ -189,7 +189,7 @@ def AddAssignIp(parser, show_negated_in_help=False):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--assign-ip',
-      help='The instance must be assigned an IP address.', **kwargs)
+      help='If provided, instance must be assigned an IP address.', **kwargs)
 
 
 def AddAuthorizedGAEApps(parser, update=False):
@@ -232,13 +232,13 @@ def AddBackupStartTime(parser):
   parser.add_argument(
       '--backup-start-time',
       required=False,
-      help=('The start time of daily backups, specified in the 24 hour '
+      help=('Start time of daily backups, specified in the 24 hour '
             'format - HH:MM, in the UTC timezone.'))
 
 
 def AddDatabaseFlags(parser, update=False):
   """Adds the `--database-flags` flag."""
-  help_ = ('A comma-separated list of database flags to set on the '
+  help_ = ('Comma-separated list of database flags to set on the '
            'instance. Use an equals sign to separate flag name and value. '
            'Flags without values, like skip_grant_tables, can be written '
            'out without a value after, e.g., `skip_grant_tables=`. Use '
@@ -261,7 +261,7 @@ def AddCPU(parser):
       '--cpu',
       type=int,
       required=False,
-      help=('A whole number value indicating how many cores are desired in '
+      help=('Whole number value indicating how many cores are desired in '
             'the machine. Both --cpu and --memory must be specified if a '
             'custom machine type is desired, and the --tier flag must be '
             'omitted.'))
@@ -418,7 +418,7 @@ def AddMemory(parser):
       '--memory',
       type=arg_parsers.BinarySize(),
       required=False,
-      help=('A whole number value indicating how much memory is desired in '
+      help=('Whole number value indicating how much memory is desired in '
             'the machine. A size unit should be provided (eg. 3072MiB or '
             '9GiB) - if no units are specified, GiB is assumed. Both --cpu '
             'and --memory must be specified if a custom machine type is '
@@ -429,7 +429,7 @@ def AddNetwork(parser):
   """Adds the `--network` flag to the parser."""
   parser.add_argument(
       '--network',
-      help=('The network in the current project that the instance will be part '
+      help=('Network in the current project that the instance will be part '
             'of.'))
 
 
@@ -439,7 +439,7 @@ def AddReplication(parser):
       required=False,
       choices=['synchronous', 'asynchronous'],
       default=None,
-      help_str='The type of replication this instance uses. The default is '
+      help_str='Type of replication this instance uses. The default is '
       'synchronous.').AddToParser(parser)
 
 
@@ -536,32 +536,25 @@ def AddUser(parser, help_text):
   """Add the '--user' flag to the parser, with help text help_text."""
   parser.add_argument('--user', help=help_text)
 
+INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 
-INSTANCES_FORMAT = """
-  table(
-    instance:label=NAME,
-    firstof(gceZone,region):label=LOCATION,
-    settings.tier,
-    ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
-    state:label=STATUS
-  )
-"""
+INSTANCES_FORMAT_COLUMNS = [
+    'name', 'databaseVersion', 'firstof(gceZone,region):label=LOCATION',
+    'settings.tier',
+    'ip_addresses.filter("type:PRIMARY").*extract(ip_address).flatten()'
+    '.yesno(no="-"):label=PRIMARY_ADDRESS',
+    'ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten()'
+    '.yesno(no="-"):label=PRIVATE_ADDRESS',
+    'state:label=STATUS'
+]
 
-INSTANCES_USERLABELS_FORMAT = """
-  :(settings.userLabels:alias=labels:label=LABELS)
-"""
 
-INSTANCES_FORMAT_BETA = """
-  {0}
-  table(
-    name,
-    databaseVersion,
-    firstof(gceZone,region):label=LOCATION,
-    settings.tier,
-    ipAddresses[0].ipAddress.yesno(no="-"):label=ADDRESS,
-    state:label=STATUS
-  )
-""".format(INSTANCES_USERLABELS_FORMAT)
+def GetInstanceListFormat():
+  """Returns the table format for listing instances."""
+  table_format = '{} table({})'.format(INSTANCES_USERLABELS_FORMAT,
+                                       ','.join(INSTANCES_FORMAT_COLUMNS))
+  return table_format
+
 
 OPERATION_FORMAT = """
   table(

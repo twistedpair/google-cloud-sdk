@@ -5,4 +5,6 @@ if [ "$apparent_sdk_dir" == "$script_link" ]; then
 fi
 sdk_dir="$( command cd -P "$apparent_sdk_dir" > /dev/null && command pwd -P )"
 bin_path="$sdk_dir/bin"
-export PATH=$bin_path:$PATH
+if [[ ":${PATH}:" != *":${bin_path}:"* ]]; then
+  export PATH=$bin_path:$PATH
+fi

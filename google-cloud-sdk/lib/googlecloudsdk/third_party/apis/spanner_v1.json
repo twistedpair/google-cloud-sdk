@@ -680,7 +680,7 @@
     },
     "CounterOptions": {
       "id": "CounterOptions",
-      "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nAt present the only supported field names are\n   - \"iam_principal\", corresponding to IAMContext.principal;\n   - \"\" (empty string), resulting in one aggretated counter with no field.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/backend_debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support:\n* multiple field names (though this may be supported in the future)\n* decrementing the counter\n* incrementing it by anything other than 1",
+      "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nSupported field names:\n   - \"authority\", which is \"[token]\" if IAMContext.token is present,\n     otherwise the value of IAMContext.authority_selector if present, and\n     otherwise a representation of IAMContext.principal; or\n   - \"iam_principal\", a representation of IAMContext.principal even if a\n     token or authority selector is present; or\n   - \"\" (empty string), resulting in a counter with no fields.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/backend_debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support multiple field names (though this may be\nsupported in the future).",
       "type": "object",
       "properties": {
         "metric": {
@@ -820,7 +820,7 @@
           "type": "string"
         },
         "expireTime": {
-          "description": "Required for the CreateBackup operation.\nThe expiration time of the backup, with microseconds\ngranularity that must be at least 6 hours and at most 366 days\nfrom `create_time`. The exact `create_time` is determined by the\nsystem when processing the backup creation request, and is\napproximately the time at which the request is submitted. Once\nthe `expire_time` has passed, Cloud Spanner will delete the\nbackup and free the resources used by the backup.",
+          "description": "Required for the CreateBackup\noperation. The expiration time of the backup, with microseconds\ngranularity that must be at least 6 hours and at most 366 days\nfrom `creating_progress.start_time`. The exact\n`creating_progress.start_time` is determined by the system when\nprocessing the backup creation request, and is approximately the\ntime the request is received. Once the `expire_time`\nhas passed, Cloud Spanner will delete the backup and free the\nresources used by the backup.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -832,7 +832,7 @@
           }
         },
         "createTime": {
-          "description": "Output only. Time the CreateBackup\nrequest was received. The backup will contain an externally\nconsistent copy of the database at the point in time specified by\n`create_time`.",
+          "description": "Output only. The backup will contain an externally consistent\ncopy of the database at the point in time specified by\n`create_time`. `create_time` is approximately the time the\nCreateBackup request is received.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -882,7 +882,7 @@
           "format": "google-fieldmask"
         },
         "labelsUpdateOption": {
-          "description": "Required if updating labels. Specify how labels should be updated.",
+          "description": "Required if updating labels. Specify how labels should be updated.\nIf the option specified is LABELS_UPDATE_OPTION_UNSPECIFIED, an error will\nbe returned.",
           "enumDescriptions": [
             "Unspecified option",
             "Set labels with the new labels specified in the update. This option will\nreplace existing labels with the new labels.",
@@ -3482,7 +3482,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "A filter expression that filters resources listed in the response.\nThe expression must specify the field name, a comparison operator,\nand the value that you want to use for filtering. The value must be a\nstring, a number, or a boolean. The comparison operator must be\n<, >, <=, >=, !=, =, or :. Colon \u2018:\u2019 represents a HAS operator which is\nroughly synonymous with equality. Filter rules are case insensitive.\n\nThe fields eligible for filtering are:\n  * `name`\n  * `database_name`\n  * `labels.key` where key is the name of a label\n  * `state`\n  * `create_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)\n  * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)\n  * `size_bytes`\n  * `creating_progress.progress_percent'\n  *      --> Values are integers between 0 and 100 inclusive.\n  * `creating_progress.start_time`\n  * `creating_progress.end_time`\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. By default, each expression is an AND expression. However,\nyou can include AND, OR, and NOT expressions explicitly.\n\nSome examples of using filters are:\n\n  * `name:Howl` --> The backup's name contains the string \"howl\".\n  * `database_name:prod`\n         --> The database's name contains the string \"prod\".\n  * `labels.env:*` --> The backup has the label \"env\".\n  * `state:CREATING` --> The backup is pending creation.\n  * `state:READY` --> The backup is fully created and ready for use.\n  * `(name:howl) AND (create_time < 2018-03-28T14:50:00Z)`\n         --> The backup name contains the string \"howl\" and create_time\n             of the backup is before 2018-03-28T14:50:00Z.\n  * `size_bytes > 10000000000` --> The backup's size is greater than 10GB",
+                      "description": "A filter expression that filters resources listed in the response.\nThe expression must specify the field name, a comparison operator,\nand the value that you want to use for filtering. The value must be a\nstring, a number, or a boolean. The comparison operator must be\n<, >, <=, >=, !=, =, or :. Colon \u2018:\u2019 represents a HAS operator which is\nroughly synonymous with equality. Filter rules are case insensitive.\n\nThe fields eligible for filtering are:\n  * `name`\n  * `database_name`\n  * `labels`\n  * `state`\n  * `create_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)\n  * `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)\n  * `size_bytes`\n  * `creating_progress.progress_percent'\n  *      --> Values are integers between 0 and 100 inclusive.\n  * `creating_progress.start_time`\n  * `creating_progress.end_time`\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. By default, each expression is an AND expression. However,\nyou can include AND, OR, and NOT expressions explicitly.\n\nSome examples of using filters are:\n\n  * `name:Howl` --> The backup's name contains the string \"howl\".\n  * `database_name:prod`\n         --> The database's name contains the string \"prod\".\n  * `labels.env:*` --> The backup has a label with key \"env\".\n  * `labels.env=dev`\n         --> The backup has a label with key \"env\" and value \"dev\"\n  * `state:CREATING` --> The backup is pending creation.\n  * `state:READY` --> The backup is fully created and ready for use.\n  * `(name:howl) AND (create_time < 2018-03-28T14:50:00Z)`\n         --> The backup name contains the string \"howl\" and create_time\n             of the backup is before 2018-03-28T14:50:00Z.\n  * `size_bytes > 10000000000` --> The backup's size is greater than 10GB",
                       "location": "query",
                       "type": "string"
                     },

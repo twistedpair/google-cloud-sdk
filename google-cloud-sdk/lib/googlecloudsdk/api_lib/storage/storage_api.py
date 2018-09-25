@@ -190,21 +190,25 @@ class StorageClient(object):
         name=target_path,
         object=src_obj)
 
+    gsc_path = '{bucket}/{target_path}'.format(
+        bucket=bucket_ref.bucket, target_path=target_path,
+    )
+
     log.info('Uploading [{local_file}] to [{gcs}]'.format(local_file=local_path,
-                                                          gcs=target_path))
+                                                          gcs=gsc_path))
     try:
       response = self.client.objects.Insert(insert_req, upload=upload)
     except api_exceptions.HttpNotFoundError:
       raise BucketNotFoundError(
-          'Could not upload file: [{gcs}] bucket does not exist.'
-          .format(gcs=target_path))
+          'Could not upload file: [{bucket}] bucket does not exist.'
+          .format(bucket=bucket_ref.bucket))
     except api_exceptions.HttpError as err:
       log.debug('Could not upload file [{local_file}] to [{gcs}]: {e}'.format(
-          local_file=local_path, gcs=target_path,
+          local_file=local_path, gcs=gsc_path,
           e=http_exc.HttpException(err)))
       raise UploadError(
           '{code} Could not upload file [{local_file}] to [{gcs}]: {message}'
-          .format(code=err.status_code, local_file=local_path, gcs=target_path,
+          .format(code=err.status_code, local_file=local_path, gcs=gsc_path,
                   message=http_exc.HttpException(
                       err, error_format='{status_message}')))
 
@@ -236,8 +240,12 @@ class StorageClient(object):
         bucket=bucket_ref.bucket,
         object=object_path)
 
+    gsc_path = '{bucket}/{object_path}'.format(
+        bucket=bucket_ref.bucket, object_path=object_path,
+    )
+
     log.info('Downloading [{gcs}] to [{local_file}]'.format(
-        local_file=local_path, gcs=object_path))
+        local_file=local_path, gcs=gsc_path))
     try:
       self.client.objects.Get(get_req, download=download)
       # Close the stream to release the file handle so we can check its contents
@@ -248,7 +256,7 @@ class StorageClient(object):
     except api_exceptions.HttpError as err:
       raise exceptions.BadFileException(
           'Could not copy [{gcs}] to [{local_file}]. Please retry: {err}'
-          .format(local_file=local_path, gcs=object_path,
+          .format(local_file=local_path, gcs=gsc_path,
                   err=http_exc.HttpException(err)))
 
     file_size = _GetFileSize(local_path)

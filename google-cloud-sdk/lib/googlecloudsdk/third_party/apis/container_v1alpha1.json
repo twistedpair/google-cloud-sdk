@@ -127,10 +127,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -213,10 +209,6 @@
           "description": "The fingerprint of the set of labels for this cluster.",
           "type": "string"
         },
-        "masterAuthorizedNetworks": {
-          "description": "The configuration options for master authorized networks\nfeature.\nThis field is deprecated, use master_authorized_networks_config instead.",
-          "$ref": "MasterAuthorizedNetworks"
-        },
         "legacyAbac": {
           "description": "Configuration for the legacy ABAC authorization mode.",
           "$ref": "LegacyAbac"
@@ -268,10 +260,6 @@
         "defaultMaxPodsConstraint": {
           "description": "The default constraint on the maximum number of pods that can be run\nsimultaneously on a node in the node pool of this cluster. Only honored\nif cluster created with IP Alias support.",
           "$ref": "MaxPodsConstraint"
-        },
-        "enableNamespaceLevelIam": {
-          "description": "If this cluster supports namespace-level IAM policies. Clusters that\nsupport namespace-level IAM may have IAM policies set on their namespaces\nusing SetIamPolicy.",
-          "type": "boolean"
         },
         "managedPodIdentityConfig": {
           "description": "Configuration for the use of GCP IAM Service Accounts in applications in\nthis cluster.",
@@ -522,10 +510,6 @@
         "nodeGroup": {
           "description": "The optional node group. Setting this field will assign instances of this\npool to run on the specified node group. This is useful for running\nworkloads on [sole tenant nodes](\/compute\/docs\/nodes\/)",
           "type": "string"
-        },
-        "enableAuditLogging": {
-          "description": "Whether to enable execve audit logging on the nodes.",
-          "type": "boolean"
         }
       }
     },
@@ -944,10 +928,6 @@
         "description": {
           "description": "[Output only] This field is set when upgrades are about to commence\nwith the description of the upgrade.",
           "type": "string"
-        },
-        "requestedUpgradeStartTime": {
-          "description": "User requested start time, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
-          "type": "string"
         }
       }
     },
@@ -986,39 +966,6 @@
         },
         "message": {
           "description": "Human-friendly representation of the condition",
-          "type": "string"
-        }
-      }
-    },
-    "MasterAuthorizedNetworks": {
-      "id": "MasterAuthorizedNetworks",
-      "description": "Configuration options for the master authorized networks\nfeature. Enabled master authorized networks will disallow all external\ntraffic to access Kubernetes master through HTTPS except traffic from the\ngiven CIDR blocks, Google Compute Engine Public IPs and Google Prod IPs.\nThis message is deprecated, use MasterAuthorizedNetworksConfig instead.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Whether or not master authorized networks is enabled.",
-          "type": "boolean"
-        },
-        "cidrs": {
-          "description": "Network CIDRs define up to 10 external networks that could access\nKubernetes master through HTTPS.",
-          "type": "array",
-          "items": {
-            "$ref": "CIDR"
-          }
-        }
-      }
-    },
-    "CIDR": {
-      "id": "CIDR",
-      "description": "CIDR contains an optional name and one CIDR block.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Network name is an optional field for users to identify CIDR blocks.",
-          "type": "string"
-        },
-        "network": {
-          "description": "Authorized network must be specified in CIDR notation.",
           "type": "string"
         }
       }
@@ -1168,10 +1115,6 @@
         "window": {
           "description": "Specifies the maintenance window in which maintenance may be performed.",
           "$ref": "MaintenanceWindow"
-        },
-        "masterUpdateRestriction": {
-          "description": "Specifies additional restrictions applying to when master updates may be\nperformed.",
-          "$ref": "MasterUpdateRestriction"
         }
       }
     },
@@ -1191,11 +1134,6 @@
       "description": "Time window specified for daily maintenance operations.",
       "type": "object",
       "properties": {
-        "daysInCycle": {
-          "description": "Allows to define schedule that runs every nth day of the month.\nNOTE: Unimplemented, reserved for future use.",
-          "type": "integer",
-          "format": "int32"
-        },
         "startTime": {
           "description": "Time within the maintenance window to start the maintenance operations.\nIt must be in format \"HH:MM\u201D, where HH : [00-23] and MM : [00-59] GMT.",
           "type": "string"
@@ -1203,36 +1141,6 @@
         "duration": {
           "description": "[Output only] Duration of the time window, automatically chosen to be\nsmallest possible in the given scenario.",
           "type": "string"
-        }
-      }
-    },
-    "MasterUpdateRestriction": {
-      "id": "MasterUpdateRestriction",
-      "description": "MasterUpdateRestriction defines restrictions that apply only to clusters'\nmaster updates.",
-      "type": "object",
-      "properties": {
-        "freeze": {
-          "description": "MasterUpdateFreeze defines freeze to master updates.",
-          "$ref": "MasterUpdateFreeze"
-        }
-      }
-    },
-    "MasterUpdateFreeze": {
-      "id": "MasterUpdateFreeze",
-      "description": "MasterUpdateFreeze defines freeze on master updates. Some customers want to\navoid master updates during time periods critical to their bussiness.\n\nIn the future each k8s version will have a support window (see\ngo\/gke-supported-versions-design). Then we will allow freezing master until\n~2 weeks before we stop maintaing the version.\n\nFor now we approximate this:\n- Freeze must last at most 13 weeks.\n- Only masters in newest and second newest (minor) versions can be frozen.\n- After freeze user must give us 2 weeks before starting a new one.\n- User can end freeze early.\n- If user ended a freeze early they can resume it (with 13 week duration\n  limit counting from the original freeze time).\n\nWe will apply security updates even to frozen masters.",
-      "type": "object",
-      "properties": {
-        "maxFreezeEndTime": {
-          "description": "[Output only] The time by which the master update freeze must end, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.\nIn the future it will be end of support for master version - 2 weeks.\n\nFor now it is:\n- For clusters that weren't in a freeze during last 2 weeks and are in one\n  of the two newest (minor) versions: now + 13 weeks.\n- For clusters that weren't in a freeze during last 2 weeks and are in an\n  older version: empty\n- For clusters that were in a freeze during last two weeks (including\n  currently frozen clusters): start of the freeze + 13 weeks.",
-          "type": "string"
-        },
-        "scheduledFreezeEndTime": {
-          "description": "The time at which the master update freeze is scheduled to end, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.\nFuture timestamp means the freeze is ongoing. Past timestamp means the\nfreeze ended recently (the cluster is going through period of recovering\nfrom the freeze). Empty string means cluster wasn't affected by a freeze\nrecently.\nThis field can be set only to a timestamp that is:\n- In the future and\n- Earlier than max_freeze_end_time.",
-          "type": "string"
-        },
-        "frozen": {
-          "description": "Indicates if the master version is currently frozen.\nWhen master is frozen scheduled_freeze_end_time must be a future timestamp.\nWhen master is not frozen scheduled_freeze_end_time must be a past\ntimestamp (frozen during last two weeks) or an empty string (not frozen\nduring last two weeks).\nYou can only set this to true if max_freeze_end is a future timestamp.\nWhen setting frozen to true you can set scheduled_freeze_end_time to a\nfuture timestamp not later than max_freeze_end.\nIf you don't set scheduled_freeze_end_time when setting frozen to true it\nwill be set to max_freeze_end.\nAfter scheduled_freeze_end_time this field automatically becomes false.\nIf you chage value of this field to false scheduled_freeze_end_time becomes\ntimestamp of the request.\nWe still apply security updates to frozen masters.",
-          "type": "boolean"
         }
       }
     },
@@ -1312,6 +1220,10 @@
         },
         "enableSharedNetwork": {
           "description": "Deprecated: This flag doesn't need to be flipped for using shared VPC and\nit has no effect.",
+          "type": "boolean"
+        },
+        "enableCloudNat": {
+          "description": "Whether GKE Cloud NAT is enabled for this cluster. Requires that the\ncluster has already set IPAllocationPolicy.use_ip_aliases to true.",
           "type": "boolean"
         }
       }
@@ -1461,10 +1373,6 @@
         },
         "parent": {
           "description": "The parent (project and location) where the cluster will be created.\nSpecified in the format 'projects\/*\/locations\/*'.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         }
       }
@@ -1684,14 +1592,6 @@
         "name": {
           "description": "The name (project, location, cluster) of the cluster to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
-        },
-        "options": {
-          "description": "Additional options that affects how the update is done.",
-          "$ref": "ClusterUpdateOptions"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -1731,10 +1631,6 @@
             "type": "string"
           }
         },
-        "desiredMasterAuthorizedNetworks": {
-          "description": "The desired configuration options for master authorized\nnetworks feature.\nThis field is deprecated, use desired_master_authorized_networks_config\ninstead.",
-          "$ref": "MasterAuthorizedNetworks"
-        },
         "desiredMasterAuthorizedNetworksConfig": {
           "description": "The desired configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
@@ -1754,10 +1650,6 @@
         "desiredBinaryAuthorization": {
           "description": "The desired configuration options for the Binary Authorization feature.",
           "$ref": "BinaryAuthorization"
-        },
-        "desiredUseIpAliases": {
-          "description": "The desired use of IP aliases in a cluster.",
-          "type": "boolean"
         },
         "concurrentNodeCount": {
           "description": "Controls how many nodes to upgrade in parallel. A maximum of 20 concurrent\nnodes is allowed.",
@@ -1780,21 +1672,13 @@
           "description": "Cluster-level Vertical Pod Autoscaling configuration.",
           "$ref": "VerticalPodAutoscaling"
         },
+        "desiredCloudNatStatus": {
+          "description": "The desired status of Cloud NAT for this cluster.",
+          "$ref": "CloudNatStatus"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
-        },
-        "desiredMasterMachineType": {
-          "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
-          "type": "string"
-        },
-        "desiredMasterId": {
-          "description": "An id of master replica to be updated.\nCan be set only when desired_master_version is set.\nIf not set, all replicas will be updated.",
-          "type": "string"
-        },
-        "desiredClusterStatus": {
-          "description": "The desired status fields for the cluster.",
-          "$ref": "ClusterStatus"
         },
         "desiredImage": {
           "description": "The desired name of the image to use for this node.\nThis is used to create clusters using a custom image.",
@@ -1810,49 +1694,13 @@
         }
       }
     },
-    "ClusterStatus": {
-      "id": "ClusterStatus",
-      "description": "ClusterStatus is used for internal only purposes by the monitoring server\nto transition a cluster between DEGRADED AND RUNNING using\nUpdateClusterInternal. The message is used in ClusterUpdate's\nDesiredClusterStatus field and should not be confused with Cluster's Status\nEnum.\nTODO(b\/69364507) Implement a PatchClusterInternal method that takes an\ninternal proto instead so we don't have to define this message here\nTill then, this message should be in sync with the definition in the\ninternal.proto",
+    "CloudNatStatus": {
+      "id": "CloudNatStatus",
+      "description": "CloudNatStatus contains the desired state of the cloud nat functionality\non this cluster.",
       "type": "object",
       "properties": {
-        "status": {
-          "description": "The current status of the cluster.",
-          "enumDescriptions": [
-            "The UNKNOWN status should never be set",
-            "The RUNNING state indicates the cluster has been created and is fully\nusable.",
-            "The DEGRADED state indicates the cluster is not fully functional and\nrequires user action. Details can be found in the `message` field."
-          ],
-          "type": "string",
-          "enum": [
-            "UNKNOWN",
-            "RUNNING",
-            "DEGRADED"
-          ]
-        },
-        "message": {
-          "description": "A human-readable message that describes the status of the cluster.",
-          "type": "string"
-        },
-        "internal": {
-          "description": "An internal field for the sub-error type or other metadata for the\nStatus.",
-          "type": "string"
-        },
-        "conditions": {
-          "description": "Which conditions caused the current cluster state.",
-          "type": "array",
-          "items": {
-            "$ref": "StatusCondition"
-          }
-        }
-      }
-    },
-    "ClusterUpdateOptions": {
-      "id": "ClusterUpdateOptions",
-      "description": "ClusterUpdateOptions specifies extra options or settings that affect\nhow a cluster update operation runs. It is an optional object passed\nin to ClusterUpdate calls.",
-      "type": "object",
-      "properties": {
-        "useMaintenancePolicy": {
-          "description": "Whether the update call should respect the maintenance policy in the\ncluster, if one is set. This flag is used to determine whether the update\nshould be stopped if it finds itself running outside of a configured\nmaintenance policy (if present).",
+        "enabled": {
+          "description": "Enables Cloud Nat on this cluster.\n\nOn an update if update.desired_cloud_nat_status.enabled = true,\nThe API will check if any Routers in the cluster's network has Cloud NAT\nenabled on the pod range.\n  a. If so, then the cluster nodes will be updated to not perform SNAT.\n  b. If no NAT configuration exists, a new Router with Cloud NAT on\n     the secondary range will be created first, and then the nodes will be\n     updated to no longer do SNAT.",
           "type": "boolean"
         }
       }
@@ -1897,10 +1745,6 @@
         "name": {
           "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -1932,10 +1776,6 @@
         "name": {
           "description": "The name (project, location, cluster, node pool) of the node pool to set\nautoscaler settings. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -1962,10 +1802,6 @@
         },
         "name": {
           "description": "The name (project, location, cluster) of the cluster to set logging.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         }
       }
@@ -1994,10 +1830,6 @@
         "name": {
           "description": "The name (project, location, cluster) of the cluster to set monitoring.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2024,10 +1856,6 @@
         },
         "name": {
           "description": "The name (project, location, cluster) of the cluster to set addons.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         }
       }
@@ -2059,10 +1887,6 @@
         "name": {
           "description": "The name (project, location, cluster) of the cluster to set locations.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2087,20 +1911,8 @@
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by Kubernetes Engine or\nversion aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
         },
-        "masterMachineType": {
-          "description": "The name of a Google Compute Engine [machine\ntype](\/compute\/docs\/machine-types)\n(e.g. `n1-standard-8`) to change the master to.",
-          "type": "string"
-        },
         "name": {
           "description": "The name (project, location, cluster) of the cluster to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-          "type": "string"
-        },
-        "securityProfile": {
-          "description": "The security profile name that user must select in the case\nthe current security profile is not supported by the new master version",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         }
       }
@@ -2145,10 +1957,6 @@
         "name": {
           "description": "The name (project, location, cluster) of the cluster to set auth.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2170,10 +1978,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2197,10 +2001,6 @@
         "name": {
           "description": "The name (project, location, operation id) of the operation to cancel.\nSpecified in the format 'projects\/*\/locations\/*\/operations\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2218,10 +2018,6 @@
       "properties": {
         "defaultClusterVersion": {
           "description": "Version of Kubernetes the service deploys by default.",
-          "type": "string"
-        },
-        "buildClientInfo": {
-          "description": "apiserver build BuildData::ClientInfo()",
           "type": "string"
         },
         "validNodeVersions": {
@@ -2289,10 +2085,6 @@
         "parent": {
           "description": "The parent (project, location, cluster id) where the node pool will be\ncreated. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2319,10 +2111,6 @@
         },
         "name": {
           "description": "The name (project, location, cluster, node pool id) of the node poll to\nrollback upgrade.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         }
       }
@@ -2355,10 +2143,6 @@
         "name": {
           "description": "The name (project, location, cluster, node pool id) of the node pool to set\nmanagement properties. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2388,10 +2172,6 @@
         },
         "labelFingerprint": {
           "description": "The fingerprint of the previous set of labels for this resource,\nused to detect conflicts. The fingerprint is initially generated by\nKubernetes Engine and changes after every request to modify or update\nlabels. You must always provide an up-to-date fingerprint hash when\nupdating or changing labels. Make a <code>get()<\/code> request to the\nresource to get the latest fingerprint.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         },
         "name": {
@@ -2424,10 +2204,6 @@
         "name": {
           "description": "The name (project, location, cluster id) of the cluster to set legacy abac.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2455,10 +2231,6 @@
         "rotateCredentials": {
           "description": "Whether to rotate credentials during IP rotation.",
           "type": "boolean"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2481,10 +2253,6 @@
         },
         "name": {
           "description": "The name (project, location, cluster id) of the cluster to complete IP\nrotation. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         }
       }
@@ -2518,10 +2286,6 @@
         "name": {
           "description": "The name (project, location, cluster, node pool id) of the node pool to set\nsize.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2548,10 +2312,6 @@
         },
         "name": {
           "description": "The name (project, location, cluster id) of the cluster to set networking\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         }
       }
@@ -2580,10 +2340,6 @@
         "name": {
           "description": "The name (project, location, cluster id) of the cluster to set maintenance\npolicy.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     },
@@ -2595,11 +2351,6 @@
         "policy": {
           "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
           "$ref": "GoogleIamV1Policy"
-        },
-        "updateMask": {
-          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
-          "type": "string",
-          "format": "google-fieldmask"
         }
       }
     },
@@ -2620,27 +2371,10 @@
             "$ref": "GoogleIamV1Binding"
           }
         },
-        "auditConfigs": {
-          "description": "Specifies cloud audit logging configuration for this policy.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV1AuditConfig"
-          }
-        },
-        "rules": {
-          "description": "If more than one rule is specified, the rules are applied in the following\nmanner:\n- All matching LOG rules are always applied.\n- If any DENY\/DENY_WITH_LOG rule matches, permission is denied.\n  Logging will be applied if one or more matching rule requires logging.\n- Otherwise, if any ALLOW\/ALLOW_WITH_LOG rule matches, permission is\n  granted.\n  Logging will be applied if one or more matching rule requires logging.\n- Otherwise, if no rule applies, permission is denied.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV1Rule"
-          }
-        },
         "etag": {
           "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
           "type": "string",
           "format": "byte"
-        },
-        "iamOwned": {
-          "type": "boolean"
         }
       }
     },
@@ -2689,311 +2423,6 @@
         }
       }
     },
-    "GoogleIamV1AuditConfig": {
-      "id": "GoogleIamV1AuditConfig",
-      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
-      "type": "object",
-      "properties": {
-        "service": {
-          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
-          "type": "string"
-        },
-        "exemptedMembers": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "auditLogConfigs": {
-          "description": "The configuration for logging of each type of permission.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV1AuditLogConfig"
-          }
-        }
-      }
-    },
-    "GoogleIamV1AuditLogConfig": {
-      "id": "GoogleIamV1AuditLogConfig",
-      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
-      "type": "object",
-      "properties": {
-        "logType": {
-          "description": "The log type that this config enables.",
-          "enumDescriptions": [
-            "Default case. Should never be this.",
-            "Admin reads. Example: CloudIAM getIamPolicy",
-            "Data writes. Example: CloudSQL Users create",
-            "Data reads. Example: CloudSQL Users list"
-          ],
-          "type": "string",
-          "enum": [
-            "LOG_TYPE_UNSPECIFIED",
-            "ADMIN_READ",
-            "DATA_WRITE",
-            "DATA_READ"
-          ]
-        },
-        "exemptedMembers": {
-          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GoogleIamV1Rule": {
-      "id": "GoogleIamV1Rule",
-      "description": "A rule to be applied in a Policy.",
-      "type": "object",
-      "properties": {
-        "description": {
-          "description": "Human-readable description of the rule.",
-          "type": "string"
-        },
-        "permissions": {
-          "description": "A permission is a string of form '<service>.<resource type>.<verb>'\n(e.g., 'storage.buckets.list'). A value of '*' matches all permissions,\nand a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "action": {
-          "description": "Required",
-          "enumDescriptions": [
-            "Default no action.",
-            "Matching 'Entries' grant access.",
-            "Matching 'Entries' grant access and the caller promises to log\nthe request per the returned log_configs.",
-            "Matching 'Entries' deny access.",
-            "Matching 'Entries' deny access and the caller promises to log\nthe request per the returned log_configs.",
-            "Matching 'Entries' tell IAM.Check callers to generate logs."
-          ],
-          "type": "string",
-          "enum": [
-            "NO_ACTION",
-            "ALLOW",
-            "ALLOW_WITH_LOG",
-            "DENY",
-            "DENY_WITH_LOG",
-            "LOG"
-          ]
-        },
-        "in": {
-          "description": "If one or more 'in' clauses are specified, the rule matches if\nthe PRINCIPAL\/AUTHORITY_SELECTOR is in at least one of these entries.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "notIn": {
-          "description": "If one or more 'not_in' clauses are specified, the rule matches\nif the PRINCIPAL\/AUTHORITY_SELECTOR is in none of the entries.\nThe format for in and not_in entries can be found at in the Local IAM\ndocumentation (see go\/local-iam#features).",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "conditions": {
-          "description": "Additional restrictions that must be met. All conditions must pass for the\nrule to match.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV1Condition"
-          }
-        },
-        "logConfig": {
-          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries\nthat match the LOG action.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamV1LogConfig"
-          }
-        }
-      }
-    },
-    "GoogleIamV1Condition": {
-      "id": "GoogleIamV1Condition",
-      "description": "A condition to be met.",
-      "type": "object",
-      "properties": {
-        "iam": {
-          "description": "Trusted attributes supplied by the IAM system.",
-          "enumDescriptions": [
-            "Default non-attribute.",
-            "Either principal or (if present) authority selector.",
-            "The principal (even if an authority selector is present), which\nmust only be used for attribution, not authorization.",
-            "Any of the security realms in the IAMContext (go\/security-realms).\nWhen used with IN, the condition indicates \"any of the request's realms\nmatch one of the given values; with NOT_IN, \"none of the realms match\nany of the given values\". Note that a value can be:\n - 'self' (i.e., allow connections from clients that are in the same\n security realm)\n - a realm (e.g., 'campus-abc')\n - a realm group (e.g., 'realms-for-borg-cell-xx', see: go\/realm-groups)\nA match is determined by a realm group\nmembership check performed by a RealmAclRep object (go\/realm-acl-howto).\nIt is not permitted to grant access based on the *absence* of a realm, so\nrealm conditions can only be used in a \"positive\" context (e.g., ALLOW\/IN\nor DENY\/NOT_IN).",
-            "An approver (distinct from the requester) that has authorized this\nrequest.\nWhen used with IN, the condition indicates that one of the approvers\nassociated with the request matches the specified principal, or is a\nmember of the specified group. Approvers can only grant additional\naccess, and are thus only used in a strictly positive context\n(e.g. ALLOW\/IN or DENY\/NOT_IN).",
-            "What types of justifications have been supplied with this request.\nString values should match enum names from tech.iam.JustificationType,\ne.g. \"MANUAL_STRING\". It is not permitted to grant access based on\nthe *absence* of a justification, so justification conditions can only\nbe used in a \"positive\" context (e.g., ALLOW\/IN or DENY\/NOT_IN).\n\nMultiple justifications, e.g., a Buganizer ID and a manually-entered\nreason, are normal and supported.",
-            "What type of credentials have been supplied with this request.\nString values should match enum names from\nsecurity_loas_l2.CredentialsType - currently, only CREDS_TYPE_EMERGENCY\nis supported.\nIt is not permitted to grant access based on the *absence* of a\ncredentials type, so the conditions can only be used in a \"positive\"\ncontext (e.g., ALLOW\/IN or DENY\/NOT_IN)."
-          ],
-          "type": "string",
-          "enum": [
-            "NO_ATTR",
-            "AUTHORITY",
-            "ATTRIBUTION",
-            "SECURITY_REALM",
-            "APPROVER",
-            "JUSTIFICATION_TYPE",
-            "CREDENTIALS_TYPE"
-          ]
-        },
-        "sys": {
-          "description": "Trusted attributes supplied by any service that owns resources and uses\nthe IAM system for access control.",
-          "enumDescriptions": [
-            "Default non-attribute type",
-            "Region of the resource",
-            "Service name",
-            "Resource name",
-            "IP address of the caller"
-          ],
-          "type": "string",
-          "enum": [
-            "NO_ATTR",
-            "REGION",
-            "SERVICE",
-            "NAME",
-            "IP"
-          ]
-        },
-        "svc": {
-          "description": "Trusted attributes discharged by the service.",
-          "type": "string"
-        },
-        "op": {
-          "description": "An operator to apply the subject with.",
-          "enumDescriptions": [
-            "Default no-op.",
-            "DEPRECATED. Use IN instead.",
-            "DEPRECATED. Use NOT_IN instead.",
-            "The condition is true if the subject (or any element of it if it is\na set) matches any of the supplied values.",
-            "The condition is true if the subject (or every element of it if it is\na set) matches none of the supplied values.",
-            "Subject is discharged"
-          ],
-          "type": "string",
-          "enum": [
-            "NO_OP",
-            "EQUALS",
-            "NOT_EQUALS",
-            "IN",
-            "NOT_IN",
-            "DISCHARGED"
-          ]
-        },
-        "value": {
-          "description": "DEPRECATED. Use 'values' instead.",
-          "type": "string"
-        },
-        "values": {
-          "description": "The objects of the condition. This is mutually exclusive with 'value'.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GoogleIamV1LogConfig": {
-      "id": "GoogleIamV1LogConfig",
-      "description": "Specifies what kind of log the caller must write",
-      "type": "object",
-      "properties": {
-        "counter": {
-          "description": "Counter options.",
-          "$ref": "GoogleIamV1CounterOptions"
-        },
-        "dataAccess": {
-          "description": "Data access options.",
-          "$ref": "GoogleIamV1DataAccessOptions"
-        },
-        "cloudAudit": {
-          "description": "Cloud audit options.",
-          "$ref": "GoogleIamV1CloudAuditOptions"
-        }
-      }
-    },
-    "GoogleIamV1CounterOptions": {
-      "id": "GoogleIamV1CounterOptions",
-      "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '\/', generally be lowercase-only,\nand end in \"_count\". Field names should not contain an initial slash.\nThe actual exported metric names will have \"\/iam\/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are\ntheir respective values.\n\nAt present the only supported field names are\n   - \"iam_principal\", corresponding to IAMContext.principal;\n   - \"\" (empty string), resulting in one aggretated counter with no field.\n\nExamples:\n  counter { metric: \"\/debug_access_count\"  field: \"iam_principal\" }\n  ==> increment counter \/iam\/policy\/backend_debug_access_count\n                        {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support:\n* multiple field names (though this may be supported in the future)\n* decrementing the counter\n* incrementing it by anything other than 1",
-      "type": "object",
-      "properties": {
-        "metric": {
-          "description": "The metric to update.",
-          "type": "string"
-        },
-        "field": {
-          "description": "The field value to attribute.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleIamV1DataAccessOptions": {
-      "id": "GoogleIamV1DataAccessOptions",
-      "description": "Write a Data Access (Gin) log",
-      "type": "object",
-      "properties": {
-        "logMode": {
-          "description": "Whether Gin logging should happen in a fail-closed manner at the caller.\nThis is relevant only in the LocalIAM implementation, for now.",
-          "enumDescriptions": [
-            "Client is not required to write a partial Gin log immediately after\nthe authorization check. If client chooses to write one and it fails,\nclient may either fail open (allow the operation to continue) or\nfail closed (handle as a DENY outcome).",
-            "The application's operation in the context of which this authorization\ncheck is being made may only be performed if it is successfully logged\nto Gin. For instance, the authorization library may satisfy this\nobligation by emitting a partial log entry at authorization check time\nand only returning ALLOW to the application if it succeeds.\n\nIf a matching Rule has this directive, but the client has not indicated\nthat it will honor such requirements, then the IAM check will result in\nauthorization failure by setting CheckPolicyResponse.success=false."
-          ],
-          "type": "string",
-          "enum": [
-            "LOG_MODE_UNSPECIFIED",
-            "LOG_FAIL_CLOSED"
-          ]
-        }
-      }
-    },
-    "GoogleIamV1CloudAuditOptions": {
-      "id": "GoogleIamV1CloudAuditOptions",
-      "description": "Write a Cloud Audit log",
-      "type": "object",
-      "properties": {
-        "logName": {
-          "description": "The log_name to populate in the Cloud Audit Record.",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "Corresponds to \"cloudaudit.googleapis.com\/activity\"",
-            "Corresponds to \"cloudaudit.googleapis.com\/data_access\""
-          ],
-          "type": "string",
-          "enum": [
-            "UNSPECIFIED_LOG_NAME",
-            "ADMIN_ACTIVITY",
-            "DATA_ACCESS"
-          ]
-        },
-        "authorizationLoggingOptions": {
-          "description": "Information used by the Cloud Audit Logging pipeline.",
-          "$ref": "AuthorizationLoggingOptions"
-        }
-      }
-    },
-    "AuthorizationLoggingOptions": {
-      "id": "AuthorizationLoggingOptions",
-      "description": "Authorization-related information used by Cloud Audit Logging.",
-      "type": "object",
-      "properties": {
-        "permissionType": {
-          "description": "The type of the permission that was checked.",
-          "enumDescriptions": [
-            "Default. Should not be used.",
-            "A read of admin (meta) data.",
-            "A write of admin (meta) data.",
-            "A read of standard data.",
-            "A write of standard data."
-          ],
-          "type": "string",
-          "enum": [
-            "PERMISSION_TYPE_UNSPECIFIED",
-            "ADMIN_READ",
-            "ADMIN_WRITE",
-            "DATA_READ",
-            "DATA_WRITE"
-          ]
-        }
-      }
-    },
     "GoogleIamV1GetIamPolicyRequest": {
       "id": "GoogleIamV1GetIamPolicyRequest",
       "description": "Request message for `GetIamPolicy` method.",
@@ -3029,53 +2458,6 @@
         }
       }
     },
-    "ListLocationsResponse": {
-      "id": "ListLocationsResponse",
-      "description": "ListLocationsResponse returns the list of all GKE locations and their\nrecommendation state.",
-      "type": "object",
-      "properties": {
-        "locations": {
-          "description": "A full list of GKE locations.",
-          "type": "array",
-          "items": {
-            "$ref": "Location"
-          }
-        },
-        "nextPageToken": {
-          "description": "Only return ListLocationsResponse that occur after the page_token. This\nvalue should be populated from the ListLocationsResponse.next_page_token if\nthat response token was set (which happens when listing more Locations than\nfit in a single ListLocationsResponse). This is currently not used and will\nbe honored once we use pagination.",
-          "type": "string"
-        }
-      }
-    },
-    "Location": {
-      "id": "Location",
-      "description": "Location returns the location name, and if the location is recommended\nfor GKE cluster scheduling.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Contains the type of location this Location is for. Regional or Zonal.",
-          "enumDescriptions": [
-            "LOCATION_TYPE_UNSPECIFIED means the location type was not determined.",
-            "A GKE Location where Zonal clusters can be created.",
-            "A GKE Location where Regional clusters can be created."
-          ],
-          "type": "string",
-          "enum": [
-            "LOCATION_TYPE_UNSPECIFIED",
-            "ZONE",
-            "REGION"
-          ]
-        },
-        "name": {
-          "description": "Contains the name of the resource requested.\nSpecified in the format 'projects\/*\/locations\/*'.",
-          "type": "string"
-        },
-        "recommended": {
-          "description": "Recommended is a bool combining the drain state of the location (ie- has\nthe region been drained manually?), and the stockout status of any zone\naccording to Zone Advisor. This will be internal only for use by pantheon.",
-          "type": "boolean"
-        }
-      }
-    },
     "ListUsableSubnetworksResponse": {
       "id": "ListUsableSubnetworksResponse",
       "description": "ListUsableSubnetworksResponse is the response of\nListUsableSubnetworksRequest.",
@@ -3090,10 +2472,6 @@
         },
         "nextPageToken": {
           "description": "This token allows you to get the next page of results for list requests.\nIf the number of results is larger than `page_size`, use the\n`next_page_token` as a value for the query parameter `page_token` in the\nnext request. The value will become empty when there are no more pages.",
-          "type": "string"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
           "type": "string"
         }
       }
@@ -3158,36 +2536,6 @@
             "IN_USE_SHAREABLE_POD",
             "IN_USE_MANAGED_POD"
           ]
-        }
-      }
-    },
-    "ReplaceClusterRequest": {
-      "id": "ReplaceClusterRequest",
-      "description": "Updates the existing cluster to the provided cluster.",
-      "type": "object",
-      "properties": {
-        "updatedCluster": {
-          "description": "The updated cluster object.",
-          "$ref": "Cluster"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
-        }
-      }
-    },
-    "ReplaceNodePoolRequest": {
-      "id": "ReplaceNodePoolRequest",
-      "description": "Updates the existing node pool to the provided node pool.",
-      "type": "object",
-      "properties": {
-        "updatedNodePool": {
-          "description": "The updated node pool object.",
-          "$ref": "NodePool"
-        },
-        "version": {
-          "description": "API request version that initiates this operation.",
-          "type": "string"
         }
       }
     }
@@ -3306,11 +2654,6 @@
                   "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) to return operations for.\nThis field has been deprecated and replaced by the name field.",
                   "location": "query",
                   "type": "string"
-                },
-                "version": {
-                  "description": "API request version that initiates this operation.",
-                  "location": "query",
-                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3323,47 +2666,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Returns configuration info about the Kubernetes Engine service."
-            },
-            "list": {
-              "id": "container.projects.locations.list",
-              "path": "v1alpha1/{+parent}/locations",
-              "flatPath": "v1alpha1/projects/{projectsId}/locations",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Contains the name of the resource requested.\nSpecified in the format 'projects\/*'.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+$",
-                  "type": "string"
-                },
-                "version": {
-                  "description": "API request version that initiates this operation.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Only return up to this many ListLocationsResponse in the response. If not\nspecified the service will pick the maximum number of results.\nNote: Specifying page_size = 0 is equivalent to not specifying a\npage_size, i.e., will result in the service picking a page_size value.\nThis is currently not used and will be honored once we use pagination.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "Only return Locations that occur after the page_token. This value\nshould be populated from the\nListLocationsResponse.next_page_token if that response token was\nset (which happens when listing more Locations than fit in a\nsingle ListLocationsResponse).\nThis is currently not used and will be honored once we use pagination.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListLocationsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": ""
             }
           }
           ,
@@ -3390,11 +2692,6 @@
                     },
                     "zone": {
                       "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) in which the cluster\nresides, or \"-\" for all zones.\nThis field has been deprecated and replaced by the parent field.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3435,11 +2732,6 @@
                     },
                     "clusterId": {
                       "description": "Deprecated. The name of the cluster to retrieve.\nThis field has been deprecated and replaced by the name field.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -3706,11 +2998,6 @@
                       "description": "Deprecated. The name of the cluster to delete.\nThis field has been deprecated and replaced by the name field.",
                       "location": "query",
                       "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -3891,34 +3178,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Sets the maintenance policy for a cluster."
-                },
-                "replaceCluster": {
-                  "id": "container.projects.locations.clusters.replaceCluster",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}",
-                  "httpMethod": "PUT",
-                  "parameters": {
-                    "name": {
-                      "description": "The name (project, location, cluster) of the cluster to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "ReplaceClusterRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates the existing cluster to the provided cluster."
                 }
               }
               ,
@@ -4008,11 +3267,6 @@
                           "description": "Deprecated. The name of the cluster.\nThis field has been deprecated and replaced by the parent field.",
                           "location": "query",
                           "type": "string"
-                        },
-                        "version": {
-                          "description": "API request version that initiates this operation.",
-                          "location": "query",
-                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -4056,11 +3310,6 @@
                         },
                         "nodePoolId": {
                           "description": "Deprecated. The name of the node pool.\nThis field has been deprecated and replaced by the name field.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "version": {
-                          "description": "API request version that initiates this operation.",
                           "location": "query",
                           "type": "string"
                         }
@@ -4134,11 +3383,6 @@
                         },
                         "nodePoolId": {
                           "description": "Deprecated. The name of the node pool to delete.\nThis field has been deprecated and replaced by the name field.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "version": {
-                          "description": "API request version that initiates this operation.",
                           "location": "query",
                           "type": "string"
                         }
@@ -4237,34 +3481,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Sets the size for a specific node pool."
-                    },
-                    "replaceNodePool": {
-                      "id": "container.projects.locations.clusters.nodePools.replaceNodePool",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
-                      "httpMethod": "PUT",
-                      "parameters": {
-                        "name": {
-                          "description": "The name (project, location, cluster, node pool id) of the node pool\nto update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
-                          "location": "path",
-                          "required": true,
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "ReplaceNodePoolRequest"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates the existing node pool to the provided node pool."
                     }
                   }
                 }
@@ -4292,11 +3508,6 @@
                     },
                     "zone": {
                       "description": "Deprecated. The name of the Google Compute Engine\n[zone](\/compute\/docs\/zones#available) to return operations for, or `-` for\nall zones. This field has been deprecated and replaced by the parent field.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -4337,11 +3548,6 @@
                     },
                     "operationId": {
                       "description": "Deprecated. The server-assigned `name` of the operation.\nThis field has been deprecated and replaced by the name field.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -4413,11 +3619,6 @@
                   "description": "The name (project and location) of the server config to get\nSpecified in the format 'projects\/*\/locations\/*'.",
                   "location": "query",
                   "type": "string"
-                },
-                "version": {
-                  "description": "API request version that initiates this operation.",
-                  "location": "query",
-                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -4457,11 +3658,6 @@
                     },
                     "parent": {
                       "description": "The parent (project and location) where the clusters will be listed.\nSpecified in the format 'projects\/*\/locations\/*'.\nLocation \"-\" matches all zones and all regions.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -4504,11 +3700,6 @@
                     },
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to retrieve.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -4873,11 +4064,6 @@
                     },
                     "name": {
                       "description": "The name (project, location, cluster) of the cluster to delete.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -5270,11 +4456,6 @@
                           "description": "The parent (project, location, cluster id) where the node pools will be\nlisted. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
                           "location": "query",
                           "type": "string"
-                        },
-                        "version": {
-                          "description": "API request version that initiates this operation.",
-                          "location": "query",
-                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -5322,11 +4503,6 @@
                         },
                         "name": {
                           "description": "The name (project, location, cluster, node pool id) of the node pool to\nget. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "version": {
-                          "description": "API request version that initiates this operation.",
                           "location": "query",
                           "type": "string"
                         }
@@ -5418,11 +4594,6 @@
                         },
                         "name": {
                           "description": "The name (project, location, cluster, node pool id) of the node pool to\ndelete. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "version": {
-                          "description": "API request version that initiates this operation.",
                           "location": "query",
                           "type": "string"
                         }
@@ -5613,11 +4784,6 @@
                       "description": "The parent (project and location) where the operations will be listed.\nSpecified in the format 'projects\/*\/locations\/*'.\nLocation \"-\" matches all zones and all regions.",
                       "location": "query",
                       "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
-                      "location": "query",
-                      "type": "string"
                     }
                   },
                   "parameterOrder": [
@@ -5658,11 +4824,6 @@
                     },
                     "name": {
                       "description": "The name (project, location, operation id) of the operation to get.\nSpecified in the format 'projects\/*\/locations\/*\/operations\/*'.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }
@@ -5755,11 +4916,6 @@
                     },
                     "pageToken": {
                       "description": "Specifies a page token to use. Set this to the next_page_token returned by\nprevious list requests to get the next page of results.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "version": {
-                      "description": "API request version that initiates this operation.",
                       "location": "query",
                       "type": "string"
                     }

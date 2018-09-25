@@ -5,6 +5,73 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 218.0.0 (2018-09-25)
+
+### Breaking Changes
+
+*   **(Cloud SQL)** Added the PRIVATE_NETWORK column to the `gcloud sql instances list` default
+  format and renamed ADDRESS to PRIMARY_ADDRESS.
+
+
+### Cloud Dataproc
+
+*   Added `gcloud beta dataproc clusters export` to enable exporting a cluster's
+    configuration to a YAML file.
+*   Added `gcloud beta dataproc clusters import` to enable creating a cluster
+    from configuration in a YAML file.
+*   Added `--optional-components` flag to `gcloud beta dataproc clusters create`
+    command.
+*   Promoted `gcloud dataproc <clusters|jobs|operations|workflow-templates> <get|set>-iam-policy` to GA.
+*   Promoted `gcloud dataproc workflow-templates` to GA.
+
+### Cloud Scheduler
+
+* Promoted `gcloud scheduler` to beta.
+
+### Cloud Tools For PowerShell
+
+*   Updated Cloud Tools for PowerShell to version 1.0.1.10.
+    *   Fixed a bug where fixed key metadata did not work with Google Cloud
+        Storage cmdlets.
+
+### Compute Engine
+
+* Added the `--storage-location` flag to `gcloud beta compute disks snapshot`
+to specify location region of a snapshot.
+
+### Container Analysis
+
+*   Promoted the following alpha flags in `gcloud container images describe` to
+    beta.
+    *   `--metadata-filter`
+    *   `--show-build-details`
+    *   `--show-package-vulnerability`
+    *   `--show-image-basis`
+    *   `--show-deployment`
+    *   `--show-all-metadata`
+*   Promoted the following alpha flags in `gcloud container images list-tags` to
+    beta.
+    *   `--occurrence-filter`
+    *   `--show-occurrences`
+    *   `--show-occurrences-from`
+    For more information about occurrences, see
+    <https://cloud.google.com/container-registry/docs/container-analysis>.
+
+### Firebase Test Lab
+
+* Fixed bug where `--environment-variables` did not work in the 217.0.0 release.
+
+### Kubernetes Engine
+
+* Added `--metadata` and `--metadata-from-file` flags to `gcloud
+  <node-pools|clusters> create`.
+* Added `--internal-ip` flag to `gcloud beta container clusters
+  get-credentials`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 217.0.0 (2018-09-18)
 
 ### Breaking Changes

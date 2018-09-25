@@ -237,13 +237,6 @@
           "description": "The service's generated configuration.\nDEPRECATED, should call GetServiceConfig instead.",
           "$ref": "Service"
         },
-        "operations": {
-          "description": "Read-only view of pending operations affecting this resource, if requested.\nDEPRECATED, should call ListOperations instead.",
-          "type": "array",
-          "items": {
-            "$ref": "Operation"
-          }
-        },
         "projectSettings": {
           "description": "Read-only view of settings for a particular consumer project, if requested.\nDEPRECATED, should call GetProjectSettings instead.",
           "$ref": "ProjectSettings"
@@ -3091,7 +3084,7 @@
               "type": "string"
             },
             "expand": {
-              "description": "Fields to expand in any results.  By default, the following fields\nare not present in the result:\n- `operations`\n- `project_settings`\n- `project_settings.operations`\n- `quota_usage` (It requires `project_settings`)\n- `historical_quota_usage` (It requires `project_settings`)",
+              "description": "Fields to expand in any results.  By default, the following fields\nare not present in the result:\n- `project_settings`\n- `project_settings.operations`\n- `quota_usage` (It requires `project_settings`)\n- `historical_quota_usage` (It requires `project_settings`)",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"

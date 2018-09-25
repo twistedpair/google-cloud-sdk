@@ -177,7 +177,7 @@ class AndroidModel(_messages.Message):
   Enums:
     FormValueValuesEnum: Whether this device is virtual or physical.
       @OutputOnly
-    FormFactorValueValuesEnum: Whther this device is a phone, tablet,
+    FormFactorValueValuesEnum: Whether this device is a phone, tablet,
       wearable, etc. @OutputOnly
 
   Fields:
@@ -186,7 +186,7 @@ class AndroidModel(_messages.Message):
     codename: The name of the industrial design. This corresponds to
       android.os.Build.DEVICE @OutputOnly
     form: Whether this device is virtual or physical. @OutputOnly
-    formFactor: Whther this device is a phone, tablet, wearable, etc.
+    formFactor: Whether this device is a phone, tablet, wearable, etc.
       @OutputOnly
     id: The unique opaque id for this model. Use this for invoking the
       TestExecutionService. @OutputOnly
@@ -216,7 +216,7 @@ class AndroidModel(_messages.Message):
   """
 
   class FormFactorValueValuesEnum(_messages.Enum):
-    r"""Whther this device is a phone, tablet, wearable, etc. @OutputOnly
+    r"""Whether this device is a phone, tablet, wearable, etc. @OutputOnly
 
     Values:
       DEVICE_FORM_FACTOR_UNSPECIFIED: Do not use. For proto versioning only.
@@ -689,11 +689,17 @@ class IosDeviceList(_messages.Message):
 class IosModel(_messages.Message):
   r"""A description of an iOS device tests may be run on.
 
+  Enums:
+    FormFactorValueValuesEnum: Whether this device is a phone, tablet,
+      wearable, etc. @OutputOnly
+
   Fields:
     deviceCapabilities: Output only. Device capabilities. Copied from https://
       developer.apple.com/library/archive/documentation/DeviceInformation/Refe
       rence/iOSDeviceCompatibility/DeviceCompatibilityMatrix/DeviceCompatibili
       tyMatrix.html
+    formFactor: Whether this device is a phone, tablet, wearable, etc.
+      @OutputOnly
     id: Output only. The unique opaque id for this model. Use this for
       invoking the TestExecutionService.
     name: Output only. The human-readable name for this device model.
@@ -704,11 +710,26 @@ class IosModel(_messages.Message):
       "preview", "deprecated"
   """
 
+  class FormFactorValueValuesEnum(_messages.Enum):
+    r"""Whether this device is a phone, tablet, wearable, etc. @OutputOnly
+
+    Values:
+      DEVICE_FORM_FACTOR_UNSPECIFIED: Do not use. For proto versioning only.
+      PHONE: This device has the shape of a phone
+      TABLET: This device has the shape of a tablet
+      WEARABLE: This device has the shape of a watch or other wearable
+    """
+    DEVICE_FORM_FACTOR_UNSPECIFIED = 0
+    PHONE = 1
+    TABLET = 2
+    WEARABLE = 3
+
   deviceCapabilities = _messages.StringField(1, repeated=True)
-  id = _messages.StringField(2)
-  name = _messages.StringField(3)
-  supportedVersionIds = _messages.StringField(4, repeated=True)
-  tags = _messages.StringField(5, repeated=True)
+  formFactor = _messages.EnumField('FormFactorValueValuesEnum', 2)
+  id = _messages.StringField(3)
+  name = _messages.StringField(4)
+  supportedVersionIds = _messages.StringField(5, repeated=True)
+  tags = _messages.StringField(6, repeated=True)
 
 
 class IosRuntimeConfiguration(_messages.Message):

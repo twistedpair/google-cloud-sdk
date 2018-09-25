@@ -21,11 +21,11 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 import enum
 
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import properties
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -75,7 +75,7 @@ def ValidateInstanceInZone(instances, zone):
   invalid_instances = [inst.SelfLink()
                        for inst in instances if inst.zone != zone]
   if any(invalid_instances):
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         'instances', 'The zone of instance must match the instance group zone. '
         'Following instances has invalid zone: %s'
         % ', '.join(invalid_instances))
@@ -123,7 +123,7 @@ def OutputNamedPortsForGroup(group_ref, compute_client):
   return list(UnwrapResponse(results, 'namedPorts'))
 
 
-class FingerprintFetchException(core_exceptions.Error):
+class FingerprintFetchException(exceptions.Error):
   """Exception thrown when there is a problem with getting fingerprint."""
 
 
@@ -202,11 +202,11 @@ def ValidateAndParseNamedPortsArgs(messages, named_ports):
   ports = []
   for named_port in named_ports:
     if named_port.count(':') != 1:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           named_port, 'Named ports should follow NAME:PORT format.')
     host, port = named_port.split(':')
     if not port.isdigit():
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           named_port, 'Named ports should follow NAME:PORT format.')
     ports.append(messages.NamedPort(name=host, port=int(port)))
   return ports

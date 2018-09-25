@@ -25,6 +25,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.services import enable_api as services_api
 from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.api_lib.storage import storage_api
@@ -32,7 +33,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.cloudbuild import execution
 from googlecloudsdk.command_lib.projects import util as projects_util
-from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -101,7 +101,7 @@ class DaisyCloudBuildClient(cb_logs.CloudBuildClient):
     return build
 
 
-class FailedBuildException(core_exceptions.Error):
+class FailedBuildException(exceptions.Error):
   """Exception for builds that did not succeed."""
 
   def __init__(self, build):

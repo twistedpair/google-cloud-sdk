@@ -19,10 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
@@ -50,7 +50,7 @@ GCE_SUGGESTION_SOURCES = {
 }
 
 
-class Error(core_exceptions.Error):
+class Error(exceptions.Error):
   """Exceptions for the scope prompter."""
   pass
 

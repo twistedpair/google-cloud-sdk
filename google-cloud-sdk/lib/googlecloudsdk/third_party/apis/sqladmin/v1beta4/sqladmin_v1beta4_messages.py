@@ -1622,7 +1622,7 @@ class SqlUsersUpdateRequest(_messages.Message):
     user: A User resource to be passed as the request body.
   """
 
-  host = _messages.StringField(1, required=True)
+  host = _messages.StringField(1)
   instance = _messages.StringField(2, required=True)
   name = _messages.StringField(3, required=True)
   project = _messages.StringField(4, required=True)

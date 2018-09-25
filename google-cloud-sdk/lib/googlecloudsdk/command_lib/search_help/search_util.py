@@ -206,7 +206,7 @@ def _Snip(text, length_per_snippet, terms):
 def _FormatHeader(header):
   """Helper function to reformat header string in markdown."""
   if header == lookup.CAPSULE:
-    header = 'summary description'
+    return None
   return '# {}'.format(header.upper())
 
 
@@ -308,7 +308,9 @@ def _AddGenericSectionToSummary(command, summary, length_per_snippet,
     else:
       line = str(section)
   if line:
-    summary.append(_FormatHeader(location[-1]))
+    header = _FormatHeader(location[-1])
+    if header:
+      summary.append(header)
     loc = '.'.join(location)
     summary.append(
         _Snip(line, length_per_snippet, terms))
@@ -322,7 +324,7 @@ def _Priority(x):
   return PRIORITIES.get(x[0], len(PRIORITIES))
 
 
-def GetSummary(command, found_terms, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
+def GetSummary(command, results, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
   """Gets a summary of certain attributes of a command.
 
   This will summarize a json representation of a command using
@@ -338,7 +340,7 @@ def GetSummary(command, found_terms, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
   GetSummary(command, {'alligator': 'capsule'},
              length_per_snippet=200)
 
-  # SUMMARY DESCRIPTION
+  [no heading]
   {200-char excerpt of command['capsule'] with first appearance of 'alligator'}
 
   2) To get a summary with a section (can be first-level or inside 'sections',
@@ -368,41 +370,43 @@ def GetSummary(command, found_terms, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
 
   Args:
     command: dict, a json representation of a command.
-    found_terms: dict, mapping of terms to the locations where they are
-        found. If no term is relevant, a '' is used.
+    results: dict, mapping of terms to the locations where they are found. If a
+      '' is used as the key, a snippet of the location starting from the
+      beginning will be used.
     length_per_snippet: int, length of desired substrings to get from text.
 
   Returns:
     str, a markdown summary
   """
   # Always include capsule.
-  found_terms.update({'': lookup.CAPSULE})
+  results.update({'': lookup.CAPSULE})
   summary = []
   locations = [location.split('.')
-               for location in sorted(set(found_terms.values()))]
+               for location in sorted(set(results.values()))]
 
   for location in sorted(locations, key=_Priority):
-    terms = {t for t, l in six.iteritems(found_terms)
+    terms = {t for t, l in six.iteritems(results)
              if l == '.'.join(location) and t}
     if location[0] == lookup.FLAGS:
       _AddFlagToSummary(command, summary, length_per_snippet, location, terms)
     elif location[0] == lookup.POSITIONALS:
       _AddPositionalToSummary(command, summary, length_per_snippet, location,
                               terms)
-    # Add any other sections of help. path and name are ignored.
-    elif lookup.PATH not in location and lookup.NAME not in location:
+    # path and name are ignored.
+    elif lookup.PATH in location or lookup.NAME in location:
+      continue
+    else:
       _AddGenericSectionToSummary(command, summary, length_per_snippet,
                                   location, terms)
   return '\n'.join(summary)
 
 
-def ProcessResult(command, found_terms):
+def ProcessResult(command, results):
   """Helper function to create help text resource for listing results.
 
   Args:
     command: dict, json representation of command.
-    found_terms: {str: str}, lookup from terms to where they were
-      found.
+    results: {str: str}, lookup from terms to where they were found.
 
   Returns:
     A modified copy of the json command with a summary, and with the dict
@@ -415,17 +419,7 @@ def ProcessResult(command, found_terms):
         for c in new_command[lookup.COMMANDS].values()
         if not c[lookup.IS_HIDDEN]
     ])
-  summary = GetSummary(new_command, found_terms)
-  # Render the summary for console printing, but ignoring console width.
-  md = io.StringIO(summary)
-  rendered_summary = io.StringIO()
-  render_document.RenderDocument(
-      'text', md, out=rendered_summary, width=len(summary))
-  # Remove indents and blank lines so summary can be easily
-  # printed in a table.
-  new_command[lookup.SUMMARY] = '\n'.join([
-      l.lstrip() for l in rendered_summary.getvalue().splitlines()
-      if l.lstrip()])
+  new_command[lookup.RESULTS] = results
   return new_command
 
 
@@ -488,3 +482,29 @@ def LocateTerm(command, term):
   if regexp.search(' '.join(command[lookup.PATH])):
     return lookup.PATH
   return ''
+
+
+def SummaryTransform(r):
+  """Get summary of command with desired terms included."""
+  summary = GetSummary(r, r[lookup.RESULTS])
+  md = io.StringIO(summary)
+  rendered_summary = io.StringIO()
+  # Render summary as markdown, ignoring console width.
+  render_document.RenderDocument('text',
+                                 md,
+                                 out=rendered_summary,
+                                 # Increase length in case of indentation.
+                                 width=len(summary) * 2)
+  final_summary = '\n'.join(
+      [l.lstrip() for l in rendered_summary.getvalue().splitlines()
+       if l.lstrip()])
+  return final_summary
+
+
+_TRANSFORMS = {
+    'summary': SummaryTransform,
+}
+
+
+def GetTransforms():
+  return _TRANSFORMS

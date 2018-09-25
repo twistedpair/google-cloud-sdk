@@ -12,6 +12,19 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
+class ListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
 class LongRunningRecognizeRequest(_messages.Message):
   r"""The top-level message sent by the client for the `LongRunningRecognize`
   method.
@@ -223,15 +236,16 @@ class RecognitionConfig(_messages.Message):
       context to assist the speech recognition. For more information, see
       [Phrase Hints](/speech-to-text/docs/basics#phrase-hints).
     useEnhanced: *Optional* Set to true to use an enhanced model for speech
-      recognition. You must also set the `model` field to a valid, enhanced
-      model. If `use_enhanced` is set to true and the `model` field is not
-      set, then `use_enhanced` is ignored. If `use_enhanced` is true and an
-      enhanced version of the specified model does not exist, then the speech
-      is recognized using the standard version of the specified model.
-      Enhanced speech models require that you opt-in to data logging using
-      instructions in the [documentation](/speech-to-text/enable-data-
-      logging). If you set `use_enhanced` to true and you have not enabled
-      audio logging, then you will receive an error.
+      recognition. If `use_enhanced` is set to true and the `model` field is
+      not set, then an appropriate enhanced model is chosen if: 1. project is
+      eligible for requesting enhanced models 2. an enhanced model exists for
+      the audio  If `use_enhanced` is true and an enhanced version of the
+      specified model does not exist, then the speech is recognized using the
+      standard version of the specified model.  Enhanced speech models require
+      that you opt-in to data logging using instructions in the [documentation
+      ](/speech-to-text/docs/enable-data-logging). If you set `use_enhanced`
+      to true and you have not enabled audio logging, then you will receive an
+      error.
   """
 
   class EncodingValueValuesEnum(_messages.Enum):
@@ -341,6 +355,22 @@ class SpeechOperationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SpeechOperationsListRequest(_messages.Message):
+  r"""A SpeechOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class SpeechRecognitionAlternative(_messages.Message):

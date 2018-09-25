@@ -1410,7 +1410,7 @@
           "type": "string"
         },
         "parameters": {
-          "description": "Optional. Map from parameter names to values that should be used for those parameters.",
+          "description": "Optional. Map from parameter names to values that should be used for those parameters. Values may not exceed 100 characters.",
           "type": "object",
           "additionalProperties": {
             "type": "string"

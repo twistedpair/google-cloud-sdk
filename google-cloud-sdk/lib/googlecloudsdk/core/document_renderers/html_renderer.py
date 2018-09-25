@@ -398,6 +398,26 @@ class HTMLRenderer(renderer.Renderer):
     """
     self._out.write('<dl class="notopmargin"><dt class="hangingindent">'
                     '<span class="normalfont">\n')
+
+    # Add flag local links. NOTE: --no-foo defined under --foo.
+
+    line = re.sub('(<code>)([-a-z0-9]+)(</code>)',
+                  r'\1<a href="#\2">\2</a>\3',
+                  line)
+    line = re.sub('href="#--no-', 'href=#--', line)
+
+    # Add positional local links.
+
+    line = re.sub(r'([^[=]\[*<code><var>)([_A-Z0-9]+)(</var></code>)',
+                  r'\1<a href="#\2">\2</a>\3',
+                  line)
+
+    # Add GCLOUD WIDE FLAGS local link.
+
+    line = re.sub('>GCLOUD_WIDE_FLAG ',
+                  '><a href="#GCLOUD-WIDE-FLAGS">GCLOUD_WIDE_FLAG</a> ',
+                  line)
+
     nest = 0
     chars = collections.deque(line)
     while chars:

@@ -403,11 +403,6 @@
           "description": "ConcurrencyModel specifies the desired concurrency model\n(Single or Multi) for the Revision. Defaults to Multi.\n+optional",
           "type": "string"
         },
-        "timeoutSeconds": {
-          "description": "Maximum time the instance is allowed for responding to a request.\n+optional",
-          "type": "integer",
-          "format": "int32"
-        },
         "serviceAccountName": {
           "description": "ServiceAccountName holds the name of the Kubernetes service account\nas which the underlying K8s resources should be run. If unspecified\nthis will default to the \"default\" service account for the namespace\nin which the Revision exists.\nThis may be used to provide access to private container images by\nfollowing:\nhttps:\/\/kubernetes.io\/docs\/tasks\/configure-pod-container\/configure-service-account\/#add-imagepullsecrets-to-a-service-account",
           "type": "string"

@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import util
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
 from googlecloudsdk.command_lib.dataproc import flags
 from googlecloudsdk.command_lib.util.args import labels_util
@@ -40,18 +41,19 @@ from googlecloudsdk.core.util import times
 GENERATED_LABEL_PREFIX = 'goog-dataproc-'
 
 
-def ArgsForClusterRef(parser, beta=False):
+def ArgsForClusterRef(parser, beta=False, include_deprecated=True):
   """Register flags for creating a dataproc cluster.
 
   Args:
     parser: The argparse.ArgParser to configure with dataproc cluster arguments.
     beta: whether or not this is a beta command (may affect flag visibility)
+    include_deprecated: whether deprecated flags should be included
   """
   labels_util.AddCreateLabelsFlags(parser)
   instances_flags.AddTagsArgs(parser)
   # 30m is backend timeout + 5m for safety buffer.
   flags.AddTimeoutFlag(parser, default='35m')
-  flags.AddZoneFlag(parser)
+  flags.AddZoneFlag(parser, short_flags=include_deprecated)
 
   parser.add_argument(
       '--metadata',
@@ -250,6 +252,63 @@ Alias,URI
     aliases=compute_helpers.SCOPE_ALIASES_FOR_HELP,
     scope_deprecation_msg=compute_constants.DEPRECATED_SCOPES_MESSAGES))
 
+  if include_deprecated:
+    _AddDiskArgsDeprecated(parser)
+  else:
+    _AddDiskArgs(parser)
+
+  # The --no-address argument is present in both GA and Beta tracks,
+  # but it is hidden in the GA track.
+  parser.add_argument(
+      '--no-address',
+      action='store_true',
+      help="""\
+      If provided, the instances in the cluster will not be assigned external
+      IP addresses.
+
+      Note: Dataproc VMs need access to the Dataproc API. This can be achieved
+      without external IP addresses using Private Google Access
+      (https://cloud.google.com/compute/docs/private-google-access).
+      """,
+      hidden=not beta)
+
+  boot_disk_type_detailed_help = """\
+      The type of the boot disk. The value must be ``pd-standard'' or
+      ``pd-ssd''.
+      """
+  parser.add_argument(
+      '--master-boot-disk-type', help=boot_disk_type_detailed_help)
+  parser.add_argument(
+      '--worker-boot-disk-type', help=boot_disk_type_detailed_help)
+  parser.add_argument(
+      '--preemptible-worker-boot-disk-type', help=boot_disk_type_detailed_help)
+
+
+def _AddDiskArgs(parser):
+  """Adds disk related args to the parser."""
+  boot_disk_size_detailed_help = """\
+      The size of the boot disk. The value must be a
+      whole number followed by a size unit of ``KB'' for kilobyte, ``MB''
+      for megabyte, ``GB'' for gigabyte, or ``TB'' for terabyte. For example,
+      ``10GB'' will produce a 10 gigabyte disk. The minimum size a boot disk
+      can have is 10 GB. Disk size must be a multiple of 1 GB.
+      """
+  parser.add_argument(
+      '--master-boot-disk-size',
+      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help=boot_disk_size_detailed_help)
+  parser.add_argument(
+      '--worker-boot-disk-size',
+      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help=boot_disk_size_detailed_help)
+  parser.add_argument(
+      '--preemptible-worker-boot-disk-size',
+      type=arg_parsers.BinarySize(lower_bound='10GB'),
+      help=boot_disk_size_detailed_help)
+
+
+def _AddDiskArgsDeprecated(parser):
+  """Adds deprecated disk related args to the parser."""
   master_boot_disk_size = parser.add_mutually_exclusive_group()
   worker_boot_disk_size = parser.add_mutually_exclusive_group()
 
@@ -293,34 +352,76 @@ Alias,URI
       type=arg_parsers.BinarySize(lower_bound='10GB'),
       help=boot_disk_size_detailed_help)
 
-  # Args that are visible only in Beta track
+
+def BetaArgsForClusterRef(parser):
+  """Register beta-only flags for creating a Dataproc cluster."""
+  flags.AddComponentFlag(parser)
+  flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
+
   parser.add_argument(
-      '--no-address',
-      action='store_true',
+      '--max-idle',
+      type=arg_parsers.Duration(),
       help="""\
-      If provided, the instances in the cluster will not be assigned external
-      IP addresses.
+        The duration before cluster is auto-deleted after last job completes,
+        such as "2h" or "1d".
+        See $ gcloud topic datetimes for information on duration formats.
+        """)
 
-      Note: Dataproc VMs need access to the Dataproc API. This can be achieved
-      without external IP addresses using Private Google Access
-      (https://cloud.google.com/compute/docs/private-google-access).
-      """,
-      hidden=not beta)
+  auto_delete_group = parser.add_mutually_exclusive_group()
+  auto_delete_group.add_argument(
+      '--max-age',
+      type=arg_parsers.Duration(),
+      help="""\
+        The lifespan of the cluster before it is auto-deleted, such as
+        "2h" or "1d".
+        See $ gcloud topic datetimes for information on duration formats.
+        """)
 
-  boot_disk_type_detailed_help = """\
-      The type of the boot disk. The value must be ``pd-standard'' or
-      ``pd-ssd''.
+  auto_delete_group.add_argument(
+      '--expiration-time',
+      type=arg_parsers.Datetime.Parse,
+      help="""\
+        The time when cluster will be auto-deleted, such as
+        "2017-08-29T18:52:51.142Z." See $ gcloud topic datetimes for
+        information on time formats.
+        """)
+
+  for instance_type in ('master', 'worker'):
+    help_msg = """\
+      Attaches accelerators (e.g. GPUs) to the {instance_type}
+      instance(s).
+      """.format(instance_type=instance_type)
+    if instance_type == 'worker':
+      help_msg += """
+      Note:
+      No accelerators will be attached to preemptible workers, because
+      preemptible VMs do not support accelerators.
       """
-  parser.add_argument(
-      '--master-boot-disk-type', help=boot_disk_type_detailed_help)
-  parser.add_argument(
-      '--worker-boot-disk-type', help=boot_disk_type_detailed_help)
-  parser.add_argument(
-      '--preemptible-worker-boot-disk-type',
-      help=boot_disk_type_detailed_help)
+    help_msg += """
+      *type*::: The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla
+      K80) of accelerator to attach to the instances. Use 'gcloud compute
+      accelerator-types list' to learn about all available accelerator
+      types.
+
+      *count*::: The number of pieces of the accelerator to attach to each
+      of the instances. The default value is 1.
+      """
+    parser.add_argument(
+        '--{0}-accelerator'.format(instance_type),
+        type=arg_parsers.ArgDict(spec={
+            'type': str,
+            'count': int,
+        }),
+        metavar='type=TYPE,[count=COUNT]',
+        help=help_msg)
 
 
-def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
+def GetClusterConfig(args,
+                     dataproc,
+                     project_id,
+                     compute_resources,
+                     beta=False,
+                     include_deprecated=True):
   """Get dataproc cluster configuration.
 
   Args:
@@ -329,6 +430,7 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
     project_id: Dataproc project ID
     compute_resources: compute resource for cluster
     beta: use BETA only features
+    include_deprecated: whether to include deprecated args
 
   Returns:
     cluster_config: Dataproc cluster configuration
@@ -376,11 +478,17 @@ def GetClusterConfig(args, dataproc, project_id, compute_resources, beta=False):
   software_config = dataproc.messages.SoftwareConfig(
       imageVersion=args.image_version)
 
-  master_boot_disk_size_gb = args.master_boot_disk_size_gb
+  if include_deprecated:
+    master_boot_disk_size_gb = args.master_boot_disk_size_gb
+  else:
+    master_boot_disk_size_gb = None
   if args.master_boot_disk_size:
     master_boot_disk_size_gb = (api_utils.BytesToGb(args.master_boot_disk_size))
 
-  worker_boot_disk_size_gb = args.worker_boot_disk_size_gb
+  if include_deprecated:
+    worker_boot_disk_size_gb = args.worker_boot_disk_size_gb
+  else:
+    worker_boot_disk_size_gb = None
   if args.worker_boot_disk_size:
     worker_boot_disk_size_gb = (api_utils.BytesToGb(args.worker_boot_disk_size))
 

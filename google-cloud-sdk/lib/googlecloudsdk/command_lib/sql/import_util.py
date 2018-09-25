@@ -37,7 +37,7 @@ def AddBaseImportFlags(parser, filetype):
       ' the import is made. The URI is in the form gs://bucketName/fileName.'
       ' Compressed gzip files (.gz) are also supported.'
       .format(filetype=filetype))
-  flags.AddUser(parser, 'The PostgreSQL user for this import operation')
+  flags.AddUser(parser, 'PostgreSQL user for this import operation.')
 
 
 def RunImportCommand(args, client, import_context):

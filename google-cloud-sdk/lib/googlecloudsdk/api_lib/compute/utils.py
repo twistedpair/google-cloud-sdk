@@ -23,33 +23,34 @@ import io
 import re
 
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 
 
-class InstanceNotReadyError(calliope_exceptions.ToolException):
+class InstanceNotReadyError(exceptions.Error):
   """The user is attempting to perform an operation on a not-ready instance."""
 
 
-class InvalidUserError(calliope_exceptions.ToolException):
+class InvalidUserError(exceptions.Error):
   """The user provided an invalid username."""
 
 
-class MissingDependencyError(calliope_exceptions.ToolException):
+class MissingDependencyError(exceptions.Error):
   """An external dependency is missing."""
 
 
-class TimeoutError(calliope_exceptions.ToolException):
+class TimeoutError(exceptions.Error):
   """The user command timed out."""
 
 
-class WrongInstanceTypeError(calliope_exceptions.ToolException):
+class WrongInstanceTypeError(exceptions.Error):
   """The instance type is not appropriate for this command."""
 
 
-class ImageNotFoundError(calliope_exceptions.ToolException):
+class ImageNotFoundError(exceptions.Error):
   """The image resource could not be found."""
 
 

@@ -362,25 +362,17 @@ def CustomFunctionValidator(fn, description, parser=None):
   return Parse
 
 
-def Duration(lower_bound=None, upper_bound=None):
+def Duration(default_unit='s', lower_bound='0', upper_bound=None):
   """Returns a function that can parse time durations.
 
-  Input to the parsing function must be a string of the form:
-
-    INTEGER[UNIT]
-
-  The integer must be non-negative. Valid units are "s", "m", "h", and
-  "d" for seconds, seconds, minutes, hours, and days,
-  respectively. The casing of the units matters.
-
-  If the unit is omitted, seconds is assumed.
-
-  The result is parsed in seconds. For example:
+  See times.ParseDuration() for details. If the unit is omitted, seconds is
+  assumed. The parsed result is in seconds. For example:
 
     parser = Duration()
     assert parser('10s') == 10
 
   Args:
+    default_unit: str, The default duration unit.
     lower_bound: str, An inclusive lower bound for values.
     upper_bound: str, An inclusive upper bound for values.
 
@@ -395,8 +387,40 @@ def Duration(lower_bound=None, upper_bound=None):
     A function that accepts a single time duration as input to be
       parsed.
   """
-  return _ValueParser(_DURATION_SCALES, type_abbr='', default_unit='s',
-                      lower_bound=lower_bound, upper_bound=upper_bound)
+
+  def Parse(value):
+    """Parses a duration from value and returns integer seconds."""
+    try:
+      return int(
+          times.ParseDuration(value, default_suffix=default_unit).total_seconds)
+    except times.Error as e:
+      message = six.text_type(e).rstrip('.')
+      raise ArgumentTypeError(_GenerateErrorMessage(
+          'Failed to parse duration: {0}'.format(message, user_input=value)))
+
+  parsed_lower_bound = Parse(lower_bound)
+
+  if upper_bound is None:
+    parsed_upper_bound = None
+  else:
+    parsed_upper_bound = Parse(upper_bound)
+
+  def ParseWithBoundsChecking(value):
+    """Same as Parse except bound checking is performed."""
+    if value is None:
+      return None
+    parsed_value = Parse(value)
+    if parsed_lower_bound is not None and parsed_value < parsed_lower_bound:
+      raise ArgumentTypeError(_GenerateErrorMessage(
+          'value must be greater than or equal to {0}'.format(lower_bound),
+          user_input=value))
+    if parsed_upper_bound is not None and parsed_value > parsed_upper_bound:
+      raise ArgumentTypeError(_GenerateErrorMessage(
+          'value must be less than or equal to {0}'.format(upper_bound),
+          user_input=value))
+    return parsed_value
+
+  return ParseWithBoundsChecking
 
 
 def BinarySize(lower_bound=None, upper_bound=None,
@@ -1165,11 +1189,11 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
   Primarily, this Action provides two utility parsers to help a modified
   ArgumentParser parse -- properly.
 
-  There is one additional property:
+  There is one additional property kwarg:
     example: A usage statement used to construct nice additional help.
   """
 
-  def __init__(self, example=None, *args, **kwargs):
+  def __init__(self, *args, **kwargs):
     if kwargs['nargs'] is not argparse.REMAINDER:
       raise ValueError(
           'The RemainderAction should only be used when '
@@ -1182,8 +1206,9 @@ class RemainderAction(argparse._StoreAction):  # pylint: disable=protected-acces
     ).format(metavar=kwargs['metavar'])
     if 'help' in kwargs:
       kwargs['help'] += '\n+\n' + self.explanation
-      if example:
-        kwargs['help'] += ' Example:\n\n' + example
+      if 'example' in kwargs:
+        kwargs['help'] += ' Example:\n\n' + kwargs['example']
+        del kwargs['example']
     super(RemainderAction, self).__init__(*args, **kwargs)
 
   def _SplitOnDash(self, args):

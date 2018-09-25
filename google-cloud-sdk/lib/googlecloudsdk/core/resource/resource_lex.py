@@ -548,6 +548,22 @@ class Lexer(object):
       required = not sep.isspace()
     return args
 
+  def _CheckMapShorthand(self):
+    """Checks for N '*' chars shorthand for .map(N)."""
+    map_level = 0
+    while self.IsCharacter('*'):
+      map_level += 1
+    if not map_level:
+      return
+    # We have map_level '*'s. Do a simple text substitution on the input
+    # expression and let the lexer/parser handle map().
+    self._expr = '{}map({}).{}'.format(
+        self._expr[:self._position - map_level],
+        map_level,
+        self._expr[self._position:])
+    # Adjust the cursor to the beginning of the '*' chars just consumed.
+    self._position -= map_level
+
   def KeyWithAttribute(self):
     """Parses a resource key from the expression.
 
@@ -578,6 +594,7 @@ class Lexer(object):
     key = []
     attribute = None
     while not self.EndOfInput():
+      self._CheckMapShorthand()
       here = self.GetPosition()
       name = self.Token(_RESERVED_OPERATOR_CHARS, space=False)
       if name:

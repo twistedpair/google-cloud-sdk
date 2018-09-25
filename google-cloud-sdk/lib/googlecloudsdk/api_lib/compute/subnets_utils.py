@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 import six
 
 
@@ -92,7 +92,7 @@ def MakeSubnetworkUpdateRequest(client,
 
     for name in remove_secondary_ranges[0]:
       if name not in [r.rangeName for r in subnetwork.secondaryIpRanges]:
-        raise exceptions.UnknownArgumentException(
+        raise calliope_exceptions.UnknownArgumentException(
             'remove-secondary-ranges', 'Subnetwork does not have a range {}, '
             'present ranges are {}.'.format(
                 name, [r.rangeName for r in subnetwork.secondaryIpRanges]))

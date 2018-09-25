@@ -1,7 +1,7 @@
 @echo off
 rem Copyright 2013 Google Inc. All Rights Reserved.
 
-echo %CmdCmdLine% | find /i "%~0" >nul
+echo %CmdCmdLine% | %WINDIR%\System32\find /i "%~0" >nul
 SET INTERACTIVE=%ERRORLEVEL%
 
 echo Welcome to the Google Cloud SDK!

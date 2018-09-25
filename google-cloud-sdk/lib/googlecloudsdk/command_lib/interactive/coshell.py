@@ -21,8 +21,8 @@ pipe. Only one command runs at a time. ctrl-c interrupts and kills the currently
 running command but does not kill the coshell. The coshell process exits when
 the shell 'exit' command is executed. State is maintained by the coshell across
 commands, including the current working directory and local and environment
-variables. ~/.bashrc or the $ENV file, if it exists, is sourced into the coshell
-at startup. This gives the caller the opportunity to set up aliases and default
+variables. ~/.bashrc, if it exists, is sourced into the coshell at startup.
+This gives the caller the opportunity to set up aliases and default
 'set -o ...' shell modes.
 
 Usage:
@@ -473,7 +473,7 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
 
     changed = False
 
-    # Get the caller $ENV emacs/vi mode.
+    # Get the caller emacs/vi mode.
     if self.Run('set -o | grep -q "^vi.*on"', check_modes=False) == 0:
       if self._edit_mode != 'vi':
         changed = True
@@ -483,7 +483,7 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
         changed = True
         self._edit_mode = 'emacs'
 
-    # Get the caller $ENV ignoreeof setting.
+    # Get the caller ignoreeof setting.
     ignore_eof = self._ignore_eof
     self._ignore_eof = self.Run(
         'set -o | grep -q "^ignoreeof.*on"', check_modes=False) == 0
@@ -512,13 +512,9 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
         'COSHELL_VERSION={coshell_version};'
         # Set $? to $1.
         '_status() {{ return $1; }};'
-        # The env rc files configures aliases and set -o modes.
-        'for rc in "$HOME/.bashrc" "$ENV"; do'
-        '  if [[ $rc && -f $rc ]]; then'
-        '    source "$rc";'
-        '    break;'
-        '  fi;'
-        'done;'
+        # .bashrc configures aliases and set -o modes. Must be done explicitly
+        # because the input pipe makes bash think it's not interactive.
+        '[[ -f $HOME/.bashrc ]] && source $HOME/.bashrc;'
         # The exit command hits this trap, reaped by _GetStatus() in Run().
         "trap 'echo $?{exit} >&{fdstatus}' 0;"
         # This catches interrupts so commands die while the coshell stays alive.
@@ -616,6 +612,7 @@ class _UnixCoshell(_UnixCoshellBase):
 
     self._shell = subprocess.Popen(
         [self.SHELL_PATH],
+        env=os.environ,  # NOTE: Needed to pass mocked environ to children.
         stdin=subprocess.PIPE,
         stdout=stdout,
         stderr=stderr,

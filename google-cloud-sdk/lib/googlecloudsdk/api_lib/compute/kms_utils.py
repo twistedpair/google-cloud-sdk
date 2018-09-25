@@ -22,7 +22,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -65,7 +65,7 @@ def _DictToKmsKey(args):
       val = args[key] if key in args else None
       if val:
         return val
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           '--create-disk',
           'KMS cryptokey resource was not fully specified. Key [{}] must '
           'be specified.'.format(key))
@@ -109,11 +109,11 @@ def MaybeGetKmsKey(args, messages, current_value, boot_disk_prefix=False):
   key = key_arg.Parse()
   if bool(_GetSpecifiedKmsArgs(args)) and not key:
     flag = '--boot-disk-kms-key' if boot_disk_prefix else '--kms-key'
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         flag, 'KMS cryptokey resource was not fully specified.')
   if key:
     if current_value:
-      raise exceptions.ConflictingArgumentsException(
+      raise calliope_exceptions.ConflictingArgumentsException(
           '--csek-key-file', *_GetSpecifiedKmsArgs(args))
     return messages.CustomerEncryptionKey(kmsKeyName=key.RelativeName())
   return current_value
@@ -134,7 +134,7 @@ def MaybeGetKmsKeyFromDict(args, messages, current_value):
   """
   if bool(_GetSpecifiedKmsDict(args)):
     if current_value:
-      raise exceptions.ConflictingArgumentsException(
+      raise calliope_exceptions.ConflictingArgumentsException(
           '--csek-key-file', *_GetSpecifiedKmsArgs(args))
     return _DictToMessage(args, messages)
   return current_value

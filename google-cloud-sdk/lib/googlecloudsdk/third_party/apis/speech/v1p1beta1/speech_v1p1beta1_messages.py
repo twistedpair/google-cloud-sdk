@@ -523,15 +523,16 @@ class RecognitionConfig(_messages.Message):
       context to assist the speech recognition. For more information, see
       [Phrase Hints](/speech-to-text/docs/basics#phrase-hints).
     useEnhanced: *Optional* Set to true to use an enhanced model for speech
-      recognition. You must also set the `model` field to a valid, enhanced
-      model. If `use_enhanced` is set to true and the `model` field is not
-      set, then `use_enhanced` is ignored. If `use_enhanced` is true and an
-      enhanced version of the specified model does not exist, then the speech
-      is recognized using the standard version of the specified model.
-      Enhanced speech models require that you opt-in to data logging using
-      instructions in the [documentation](/speech-to-text/enable-data-
-      logging). If you set `use_enhanced` to true and you have not enabled
-      audio logging, then you will receive an error.
+      recognition. If `use_enhanced` is set to true and the `model` field is
+      not set, then an appropriate enhanced model is chosen if: 1. project is
+      eligible for requesting enhanced models 2. an enhanced model exists for
+      the audio  If `use_enhanced` is true and an enhanced version of the
+      specified model does not exist, then the speech is recognized using the
+      standard version of the specified model.  Enhanced speech models require
+      that you opt-in to data logging using instructions in the [documentation
+      ](/speech-to-text/docs/enable-data-logging). If you set `use_enhanced`
+      to true and you have not enabled audio logging, then you will receive an
+      error.
   """
 
   class EncodingValueValuesEnum(_messages.Enum):

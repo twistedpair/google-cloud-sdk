@@ -10754,7 +10754,8 @@ class ComputeMachineImagesInsertRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    sourceInstance: Optional. Source image to restore onto a disk.
+    sourceInstance: Required. Source instance that is used to create the
+      machine image from.
   """
 
   machineImage = _messages.MessageField('MachineImage', 1)
@@ -23499,7 +23500,8 @@ class Instance(_messages.Message):
       by the setLabels method.
 
   Fields:
-    allocationAffinity: A AllocationAffinity attribute.
+    allocationAffinity: The configuration of desired allocations which this
+      Instance could consume capacity from.
     canIpForward: Allows this instance to send and receive packets with non-
       matching destination or source IPs. This is required if you plan to use
       this instance to forward routes. For more information, see Enabling IP
@@ -25820,6 +25822,8 @@ class InstanceProperties(_messages.Message):
       template.
 
   Fields:
+    allocationAffinity: The configuration of desired allocations which this
+      Instance could consume capacity from.
     canIpForward: Enables instances created based on this template to send
       packets with source IP addresses other than their own and receive
       packets with destination IP addresses other than their own. If these
@@ -25884,19 +25888,20 @@ class InstanceProperties(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  canIpForward = _messages.BooleanField(1)
-  description = _messages.StringField(2)
-  disks = _messages.MessageField('AttachedDisk', 3, repeated=True)
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  machineType = _messages.StringField(6)
-  metadata = _messages.MessageField('Metadata', 7)
-  minCpuPlatform = _messages.StringField(8)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 9, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 10)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 11, repeated=True)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 12)
-  tags = _messages.MessageField('Tags', 13)
+  allocationAffinity = _messages.MessageField('AllocationAffinity', 1)
+  canIpForward = _messages.BooleanField(2)
+  description = _messages.StringField(3)
+  disks = _messages.MessageField('AttachedDisk', 4, repeated=True)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  machineType = _messages.StringField(7)
+  metadata = _messages.MessageField('Metadata', 8)
+  minCpuPlatform = _messages.StringField(9)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 11)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 12, repeated=True)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 13)
+  tags = _messages.MessageField('Tags', 14)
 
 
 class InstanceReference(_messages.Message):
@@ -28476,14 +28481,16 @@ class LogConfigCounterOptions(_messages.Message):
   in "_count". Field names should not contain an initial slash. The actual
   exported metric names will have "/iam/policy" prepended.  Field names
   correspond to IAM request parameters and field values are their respective
-  values.  At present the only supported field names are - "iam_principal",
-  corresponding to IAMContext.principal; - "" (empty string), resulting in one
-  aggretated counter with no field.  Examples: counter { metric:
-  "/debug_access_count" field: "iam_principal" } ==> increment counter
-  /iam/policy/backend_debug_access_count {iam_principal=[value of
-  IAMContext.principal]}  At this time we do not support: * multiple field
-  names (though this may be supported in the future) * decrementing the
-  counter * incrementing it by anything other than 1
+  values.  Supported field names: - "authority", which is "[token]" if
+  IAMContext.token is present, otherwise the value of
+  IAMContext.authority_selector if present, and otherwise a representation of
+  IAMContext.principal; or - "iam_principal", a representation of
+  IAMContext.principal even if a token or authority selector is present; or -
+  "" (empty string), resulting in a counter with no fields.  Examples: counter
+  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
+  counter /iam/policy/backend_debug_access_count {iam_principal=[value of
+  IAMContext.principal]}  At this time we do not support multiple field names
+  (though this may be supported in the future).
 
   Fields:
     field: The field value to attribute.
@@ -37503,8 +37510,8 @@ class SourceInstanceProperties(_messages.Message):
       instances will be used as an IP gateway or it will be set as the next-
       hop in a Route resource, specify true. If unsure, leave this set to
       false. See the Enable IP forwarding documentation for more information.
-    deletionProtection: Whether the resource should be protected against
-      deletion.
+    deletionProtection: Whether the instance created from the machine image
+      should be protected against deletion.
     description: An optional text description for the instances that are
       created from this machine image.
     disks: An array of disks that are associated with the instances that are

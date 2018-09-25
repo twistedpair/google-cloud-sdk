@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
 _INVALID_FORMAT_MESSAGE_FOR_INSTANCE = (
     'An alias IP range must contain range name and IP range separated by '
@@ -76,7 +76,7 @@ def _CreateAliasIpRangeMessageFromString(
     alias_ip_range.ipCidrRange = tokens[1]
   else:
     # There are too many or too few tokens.
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         'aliases',
         _INVALID_FORMAT_MESSAGE_FOR_INSTANCE if instance
         else _INVALID_FORMAT_MESSAGE_FOR_INSTANCE_TEMPLATE)

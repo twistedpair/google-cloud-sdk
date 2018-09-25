@@ -46,7 +46,7 @@ FORWARDING_RULES_OVERVIEW = """\
         forwarding rules are only accessible from within their VPC networks. You
         can specify a reserved static external or internal IP address with the
         ``--address=ADDRESS'' flag for the forwarding rule. Otherwise if the
-        flag is unspecified, an external forwaring rule will be automatically
+        flag is unspecified, an external forwarding rule will be automatically
         assigned an ephemeral external IP address (global IP addresses for
         global forwarding rules and regional IP addresses for regional
         forwarding rules); an internal forwarding rule will be automatically
@@ -83,8 +83,8 @@ FORWARDING_RULES_OVERVIEW_ALPHA = """\
         internal forwarding rules are only accessible from within their VPC
         networks. You can specify a reserved static external or internal IP
         address with the ``--address=ADDRESS'' flag for the forwarding rule.
-        Otherwise if the flag is unspecified, an external forwaring rule will be
-        automatically assigned an ephemeral external IP address (global IP
+        Otherwise if the flag is unspecified, an external forwarding rule will
+        be automatically assigned an ephemeral external IP address (global IP
         addresses for global forwarding rules and regional IP addresses for
         regional forwarding rules); an internal forwarding rule will be
         automatically assigned an ephemeral internal IP address from the subnet

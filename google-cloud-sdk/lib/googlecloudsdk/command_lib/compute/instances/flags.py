@@ -209,6 +209,17 @@ def MakeSourceInstanceTemplateArg():
                   '`--source-instance-template` will be used instead.'))
 
 
+def AddMachineImageArg():
+  return compute_flags.ResourceArgument(
+      name='--source-machine-image',
+      resource_name='machine image',
+      completer=compute_completers.MachineImagesCompleter,
+      required=False,
+      global_collection='compute.machineImages',
+      short_help=('The name of the machine image that the instance will '
+                  'be created from.'))
+
+
 def AddImageArgs(parser, enable_snapshots=False):
   """Adds arguments related to images for instances and instance-templates."""
 
@@ -1773,3 +1784,43 @@ def AddHostnameArg(parser):
       the global DNS, and [INSTANCE_NAME].[ZONE].c.[PROJECT_ID].internal
       when using zonal DNS.
       """)
+
+
+def AddAllocationAffinityGroup(parser):
+  """Adds the argument group to handle allocation affinity configurations."""
+  group = parser.add_group(help="""
+Manage the configuration of desired allocation which this instance could take
+capacity from.
+""")
+  group.add_argument(
+      '--allocation-affinity',
+      choices=['any', 'none', 'specific'],
+      default='any',
+      help="""
+Specifies the configuration of desired allocation which this instance could
+take capacity from. Choices are 'any', 'none' and 'specific', default is 'any'.
+""")
+  group.add_argument(
+      '--allocation-label',
+      type=arg_parsers.ArgDict(spec={
+          'key': str,
+          'value': str,
+      }),
+      help="""
+The key and values of the label of the allocation resource. Required if the
+value of `--allocation-affinity` is `specific`.
+
+*key*::: The label key of allocation resource.
+
+*value*::: The label value of allocation resource.
+""")
+
+
+def ValidateAllocationAffinityGroup(args):
+  """Validates flags specifying allocation affinity."""
+  affinity = getattr(args, 'allocation_affinity', None)
+  if affinity == 'specific':
+    if not args.IsSpecified('allocation_label'):
+      raise exceptions.InvalidArgumentException(
+          '--allocation-label',
+          'The label of the specific allocation must be specified.')

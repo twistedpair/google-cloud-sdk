@@ -295,6 +295,25 @@ class SearchInstanceTemplatesCompleter(completers.ResourceSearchCompleter):
         **kwargs)
 
 
+class MachineImagesCompleter(ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(MachineImagesCompleter, self).__init__(
+        collection='compute.machineImages',
+        list_command='alpha compute machine-images list --uri',
+        api_version='alpha',
+        **kwargs)
+
+
+class SearchMachineImagesCompleter(completers.ResourceSearchCompleter):
+
+  def __init__(self, **kwargs):
+    super(SearchMachineImagesCompleter, self).__init__(
+        collection='compute.machineImages',
+        api_version='alpha',
+        **kwargs)
+
+
 class MachineTypesCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):

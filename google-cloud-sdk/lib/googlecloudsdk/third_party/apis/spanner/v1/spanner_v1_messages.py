@@ -137,9 +137,10 @@ class Backup(_messages.Message):
       release.
 
   Fields:
-    createTime: Output only. Time the CreateBackup request was received. The
-      backup will contain an externally consistent copy of the database at the
-      point in time specified by `create_time`.
+    createTime: Output only. The backup will contain an externally consistent
+      copy of the database at the point in time specified by `create_time`.
+      `create_time` is approximately the time the CreateBackup request is
+      received.
     creatingProgress: Output only. The progress of the backup while in the
       `CREATING` state.
     database: Required for the CreateBackup operation. Name of the database
@@ -148,11 +149,12 @@ class Backup(_messages.Message):
       `projects/<project>/instances/<instance>/databases/<database>`.
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
-      hours and at most 366 days from `create_time`. The exact `create_time`
-      is determined by the system when processing the backup creation request,
-      and is approximately the time at which the request is submitted. Once
-      the `expire_time` has passed, Cloud Spanner will delete the backup and
-      free the resources used by the backup.
+      hours and at most 366 days from `creating_progress.start_time`. The
+      exact `creating_progress.start_time` is determined by the system when
+      processing the backup creation request, and is approximately the time
+      the request is received. Once the `expire_time` has passed, Cloud
+      Spanner will delete the backup and free the resources used by the
+      backup.
     labels: The labels for the backup.  Labels are useful for organizing cloud
       resources, by allowing customer specific metadata to be attached to
       resources. See https://goo.gl/xmQnxf for more information on and
@@ -488,14 +490,17 @@ class CounterOptions(_messages.Message):
   in "_count". Field names should not contain an initial slash. The actual
   exported metric names will have "/iam/policy" prepended.  Field names
   correspond to IAM request parameters and field values are their respective
-  values.  At present the only supported field names are    - "iam_principal",
-  corresponding to IAMContext.principal;    - "" (empty string), resulting in
-  one aggretated counter with no field.  Examples:   counter { metric:
-  "/debug_access_count"  field: "iam_principal" }   ==> increment counter
+  values.  Supported field names:    - "authority", which is "[token]" if
+  IAMContext.token is present,      otherwise the value of
+  IAMContext.authority_selector if present, and      otherwise a
+  representation of IAMContext.principal; or    - "iam_principal", a
+  representation of IAMContext.principal even if a      token or authority
+  selector is present; or    - "" (empty string), resulting in a counter with
+  no fields.  Examples:   counter { metric: "/debug_access_count"  field:
+  "iam_principal" }   ==> increment counter
   /iam/policy/backend_debug_access_count
   {iam_principal=[value of IAMContext.principal]}  At this time we do not
-  support: * multiple field names (though this may be supported in the future)
-  * decrementing the counter * incrementing it by anything other than 1
+  support multiple field names (though this may be supported in the future).
 
   Fields:
     field: The field value to attribute.
@@ -2401,19 +2406,20 @@ class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
       <=, >=, !=, =, or :. Colon ':' represents a HAS operator which is
       roughly synonymous with equality. Filter rules are case insensitive.
       The fields eligible for filtering are:   * `name`   * `database_name`
-      * `labels.key` where key is the name of a label   * `state`   *
-      `create_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)   *
-      `expire_time` (and values are of the format YYYY-MM-DDTHH:MM:SSZ)   *
-      `size_bytes`   * `creating_progress.progress_percent'   *      -->
-      Values are integers between 0 and 100 inclusive.   *
-      `creating_progress.start_time`   * `creating_progress.end_time`  To
-      filter on multiple expressions, provide each separate expression within
-      parentheses. By default, each expression is an AND expression. However,
-      you can include AND, OR, and NOT expressions explicitly.  Some examples
-      of using filters are:    * `name:Howl` --> The backup's name contains
-      the string "howl".   * `database_name:prod`          --> The database's
-      name contains the string "prod".   * `labels.env:*` --> The backup has
-      the label "env".   * `state:CREATING` --> The backup is pending
+      * `labels`   * `state`   * `create_time` (and values are of the format
+      YYYY-MM-DDTHH:MM:SSZ)   * `expire_time` (and values are of the format
+      YYYY-MM-DDTHH:MM:SSZ)   * `size_bytes`   *
+      `creating_progress.progress_percent'   *      --> Values are integers
+      between 0 and 100 inclusive.   * `creating_progress.start_time`   *
+      `creating_progress.end_time`  To filter on multiple expressions, provide
+      each separate expression within parentheses. By default, each expression
+      is an AND expression. However, you can include AND, OR, and NOT
+      expressions explicitly.  Some examples of using filters are:    *
+      `name:Howl` --> The backup's name contains the string "howl".   *
+      `database_name:prod`          --> The database's name contains the
+      string "prod".   * `labels.env:*` --> The backup has a label with key
+      "env".   * `labels.env=dev`          --> The backup has a label with key
+      "env" and value "dev"   * `state:CREATING` --> The backup is pending
       creation.   * `state:READY` --> The backup is fully created and ready
       for use.   * `(name:howl) AND (create_time < 2018-03-28T14:50:00Z)`
       --> The backup name contains the string "howl" and create_time
@@ -3519,7 +3525,8 @@ class UpdateBackupRequest(_messages.Message):
 
   Enums:
     LabelsUpdateOptionValueValuesEnum: Required if updating labels. Specify
-      how labels should be updated.
+      how labels should be updated. If the option specified is
+      LABELS_UPDATE_OPTION_UNSPECIFIED, an error will be returned.
 
   Fields:
     backup: Required. The backup to update. `backup.name`, and the fields to
@@ -3527,7 +3534,8 @@ class UpdateBackupRequest(_messages.Message):
       ignored. Update is only supported for the following fields:  *
       `backup.labels`  * `backup.expire_time`.
     labelsUpdateOption: Required if updating labels. Specify how labels should
-      be updated.
+      be updated. If the option specified is LABELS_UPDATE_OPTION_UNSPECIFIED,
+      an error will be returned.
     updateMask: Required. A mask specifying which fields (`backup.labels`
       and/or `backup.expire_time`) in the Backup resource should be updated.
       This mask is relative to the Backup resource, not to the request
@@ -3537,7 +3545,9 @@ class UpdateBackupRequest(_messages.Message):
   """
 
   class LabelsUpdateOptionValueValuesEnum(_messages.Enum):
-    r"""Required if updating labels. Specify how labels should be updated.
+    r"""Required if updating labels. Specify how labels should be updated. If
+    the option specified is LABELS_UPDATE_OPTION_UNSPECIFIED, an error will be
+    returned.
 
     Values:
       LABELS_UPDATE_OPTION_UNSPECIFIED: Unspecified option

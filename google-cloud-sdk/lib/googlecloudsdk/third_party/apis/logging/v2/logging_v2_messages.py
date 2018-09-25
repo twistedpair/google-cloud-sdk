@@ -1121,7 +1121,7 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1160,7 +1160,7 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1495,7 +1495,7 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1534,7 +1534,7 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1834,7 +1834,7 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 
@@ -1873,7 +1873,7 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 
@@ -2189,7 +2189,7 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 
@@ -2228,7 +2228,7 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 
@@ -2345,7 +2345,7 @@ class LoggingSinksUpdateRequest(_messages.Message):
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#FieldMaskExample:
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
       updateMask=filter.
   """
 

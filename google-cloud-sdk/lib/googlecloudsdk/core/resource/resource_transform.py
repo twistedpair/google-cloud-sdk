@@ -550,8 +550,38 @@ def TransformFatal(r, message=None):
   Raises:
     InternalError: This generates a stack trace.
   """
-  raise resource_exceptions.InternalError(message if message is not None
-                                          else str(r))
+  raise resource_exceptions.InternalError(
+      message if message is not None else six.text_type(r))
+
+
+def TransformFilter(r, expression):
+  """Selects elements of r that match the filter expression.
+
+  Args:
+    r: A JSON-serializable object.
+    expression: The filter expression to apply to r.
+
+  Returns:
+    The elements of r that match the filter expression.
+
+  Example:
+    x.filter("key:val") selects elements of r that have 'key' fields containing
+    'val'.
+  """
+
+  # import loop
+  from googlecloudsdk.core.resource import resource_filter  # pylint: disable=g-import-not-at-top
+
+  if not r:
+    return r
+  select = resource_filter.Compile(expression).Evaluate
+  if not resource_property.IsListLike(r):
+    return r if select(r) else ''
+  transformed = []
+  for item in r:
+    if select(item):
+      transformed.append(item)
+  return transformed
 
 
 def TransformFirstOf(r, *keys):
@@ -574,6 +604,50 @@ def TransformFirstOf(r, *keys):
     if v is not None:
       return v
   return ''
+
+
+def TransformFlatten(r, show='', undefined='', separator=','):
+  """Formats nested dicts and/or lists into a compact comma separated list.
+
+  Args:
+    r: A JSON-serializable object.
+    show: If show=*keys* then list dict keys; if show=*values* then list dict
+      values; otherwise list dict key=value pairs.
+    undefined: Return this if the resource is empty.
+    separator: The list item separator string.
+
+  Returns:
+    The key=value pairs for a dict or list values for a list, separated by
+    separator. Returns undefined if r is empty, or r if it is not a dict or
+    list.
+
+  Example:
+    `--format="table(field.map(2).list().map().list().list()"`:::
+    Expression with explicit flattening.
+    `--format="table(field.flatten()"`:::
+    Equivalent expression using .flatten().
+  """
+
+  def Flatten(x):
+    return TransformFlatten(
+        x, show=show, undefined=undefined, separator=separator)
+
+  if isinstance(r, dict):
+    if show == 'keys':
+      r = separator.join(
+          [six.text_type(k) for k in sorted(r)])
+    elif show == 'values':
+      r = separator.join(
+          [Flatten(v) for _, v in sorted(six.iteritems(r))])
+    else:
+      r = separator.join(
+          ['{k}={v}'.format(k=k, v=Flatten(v))
+           for k, v in sorted(six.iteritems(r))])
+  if r and isinstance(r, list):
+    if isinstance(r[0], (dict, list)):
+      r = [Flatten(v) for v in r]
+    return separator.join(map(six.text_type, r))
+  return r or undefined
 
 
 def TransformFloat(r, precision=6, spec=None, undefined=''):
@@ -810,11 +884,15 @@ def TransformMap(r, depth=1):
     `list_field.map().foo().list()`:::
     Applies foo() to each item in list_field and then list() to the resulting
     value to return a compact comma-separated list.
+    `list_field.*foo().list()`:::
+    ```*``` is shorthand for map().
     `list_field.map().foo().map().bar()`:::
     Applies foo() to each item in list_field and then bar() to each item in the
     resulting list.
     `abc.xyz.map(2).foo()`:::
     Applies foo() to each item in xyz[] for all items in abc[].
+    `abc.xyz.**foo()`:::
+    ```**``` is shorthand for map(2).
 
   Args:
     r: A resource.
@@ -919,7 +997,9 @@ def TransformScope(r, *args):
   """
   if not r:
     return ''
+  # pylint: disable=too-many-function-args
   r = urllib.parse.unquote(six.text_type(r))  # pytype: disable=module-attr
+  # pylint: enable=too-many-function-args
   if '/' not in r:
     return r
   # Checking for regions and/or zones is the most common use case.
@@ -945,7 +1025,9 @@ def TransformSegment(r, index=-1, undefined=''):
   """
   if not r:
     return undefined
+  # pylint: disable=too-many-function-args
   r = urllib.parse.unquote(six.text_type(r))  # pytype: disable=module-attr
+  # pylint: enable=too-many-function-args
   segments = r.split('/')
   try:
     return segments[int(index)] or undefined
@@ -1300,7 +1382,9 @@ _BUILTIN_TRANSFORMS = {
     'error': TransformError,
     'extract': TransformExtract,
     'fatal': TransformFatal,
+    'filter': TransformFilter,
     'firstof': TransformFirstOf,
+    'flatten': TransformFlatten,
     'float': TransformFloat,
     'format': TransformFormat,
     'group': TransformGroup,

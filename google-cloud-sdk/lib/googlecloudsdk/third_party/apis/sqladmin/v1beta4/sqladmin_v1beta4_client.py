@@ -1258,7 +1258,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     Update.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'PUT',
         method_id=u'sql.users.update',
-        ordered_params=[u'project', u'instance', u'host', u'name'],
+        ordered_params=[u'project', u'instance', u'name'],
         path_params=[u'instance', u'project'],
         query_params=[u'host', u'name'],
         relative_path=u'projects/{project}/instances/{instance}/users',

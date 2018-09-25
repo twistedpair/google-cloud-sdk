@@ -34,6 +34,12 @@ from googlecloudsdk.core.util import platforms
 
 import six
 
+_DEFAULT_SHELL = 'bash'
+# Shells supported by this module.
+_SUPPORTED_SHELLS = [_DEFAULT_SHELL, 'zsh', 'ksh', 'fish']
+# Map of *.{shell}.inc compatible shells. e.g. ksh can source *.bash.inc.
+_COMPATIBLE_INC_SHELL = {'ksh': 'bash'}
+
 
 # TODO(b/34807345): print to stderr
 def _TraceAction(action):
@@ -108,37 +114,28 @@ Create a new command shell for the changes to take effect.
 """.format(bin_path=bin_path))
 
 
-# The trick where we squash multiple spaces into one optimizes for readability.
-# It shows the control flow, while keeping the actual shell code to one line
-# (important for ease-of-RC-file-management).
-_SOURCE_LINE_SH = ' '.join([f for f in """\
-if [ -f '{rc_path}' ]; then \
-    source '{rc_path}'; \
-fi
-""".split(' ') if f])
-_SOURCE_LINE_FISH = ' '.join([f for f in """\
-if [ -f '{rc_path}' ]; \
-    if type source > /dev/null; \
-       source '{rc_path}'; \
-    else; \
-       . '{rc_path}'; \
-    end; \
-end
-""".split(' ') if f])
+_INJECT_SH = """
+{comment}
+if [ -f '{rc_path}' ]; then . '{rc_path}'; fi
+"""
 
 
-def _GetRcContents(comment, rc_path, rc_contents, pattern=None,
-                   source_line=_SOURCE_LINE_SH):
+_INJECT_FISH = """
+{comment}
+if [ -f '{rc_path}' ]; . '{rc_path}'; end
+"""
+
+
+def _GetRcContents(comment, rc_path, rc_contents, shell, pattern=None):
   """Generates the RC file contents with new comment and `source rc_path` lines.
 
   Args:
     comment: The shell comment string that precedes the source line.
     rc_path: The path of the rc file to source.
     rc_contents: The current contents.
+    shell: The shell base name, specific to this module.
     pattern: A regex pattern that matches comment, None for exact match on
       comment.
-    source_line: str, the template for sourcing a file in the shell being
-      updated ('{rc_path}' will be substituted with the file to source)
 
   Returns:
     The comment and `source rc_path` lines to be inserted into a shell rc file.
@@ -160,13 +157,15 @@ def _GetRcContents(comment, rc_path, rc_contents, pattern=None,
                      '|'
                      'if .*; then\n  source .*\nfi'
                      '|'
-                     'if .*; then source .*; fi'
+                     'if .*; then (\\.|source) .*; fi'
+                     '|'
+                     'if .*; (\\.|source) .*; end'
                      '|'
                      'if .*; if type source .*; end'
                      ')\n', re.MULTILINE)
   # script checks that the rc_path currently exists before sourcing the file
-  line = ('\n{comment}\n' + source_line).format(comment=comment,
-                                                rc_path=rc_path)
+  inject = _INJECT_FISH if shell == 'fish' else _INJECT_SH
+  line = inject.format(comment=comment, rc_path=rc_path)
   filtered_contents = subre.sub('', rc_contents)
   rc_contents = '{filtered_contents}{line}'.format(
       filtered_contents=filtered_contents, line=line)
@@ -180,20 +179,15 @@ class _RcUpdater(object):
     self.completion_update = completion_update
     self.path_update = path_update
     self.rc_path = rc_path
+    compatible_shell = _COMPATIBLE_INC_SHELL.get(shell, shell)
     self.completion = os.path.join(
-        sdk_root, 'completion.{shell}.inc'.format(shell=shell))
+        sdk_root, 'completion.{shell}.inc'.format(shell=compatible_shell))
     self.path = os.path.join(
-        sdk_root, 'path.{shell}.inc'.format(shell=shell))
+        sdk_root, 'path.{shell}.inc'.format(shell=compatible_shell))
     self.shell = shell
 
   def _CompletionExists(self):
     return os.path.exists(self.completion)
-
-  def _GetSourceLine(self):
-    if self.shell == 'fish':
-      return _SOURCE_LINE_FISH
-    else:
-      return _SOURCE_LINE_SH
 
   def Update(self):
     """Creates or updates the RC file."""
@@ -215,14 +209,14 @@ class _RcUpdater(object):
       if self.path_update:
         rc_contents = _GetRcContents(
             '# The next line updates PATH for the Google Cloud SDK.',
-            self.path, rc_contents, source_line=self._GetSourceLine())
+            self.path, rc_contents, self.shell)
 
       # gcloud doesn't (yet?) support completion for Fish, so check whether the
       # completion file exists
       if self.completion_update and self._CompletionExists():
         rc_contents = _GetRcContents(
             '# The next line enables shell command completion for gcloud.',
-            self.completion, rc_contents, source_line=self._GetSourceLine(),
+            self.completion, rc_contents, self.shell,
             pattern=('# The next line enables [a-z][a-z]*'
                      ' command completion for gcloud.'))
 
@@ -269,7 +263,7 @@ class _RcUpdater(object):
           'command line tools to your $PATH.'.format(rc=self.path))
 
 
-def _GetPreferredShell(path, default='bash'):
+def _GetPreferredShell(path, default=_DEFAULT_SHELL):
   """Returns the preferred shell name based on the base file name in path.
 
   Args:
@@ -283,7 +277,7 @@ def _GetPreferredShell(path, default='bash'):
   if not path:
     return default
   name = os.path.basename(path)
-  for shell in ('bash', 'zsh', 'ksh', 'fish'):
+  for shell in _SUPPORTED_SHELLS:
     if shell in six.text_type(name):
       return shell
   return default

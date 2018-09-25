@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
 
 class BackendService(object):
@@ -84,7 +84,7 @@ class BackendService(object):
   def MakeSetSecurityPolicyRequestTuple(self, security_policy):
     region = getattr(self.ref, 'region', None)
     if region is not None:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           'region', 'Can only set security policy for global backend services.')
 
     return (

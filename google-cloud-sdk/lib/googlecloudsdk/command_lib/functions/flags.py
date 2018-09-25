@@ -185,11 +185,19 @@ def AddRuntimeFlag(parser):
           """)
 
 
-def AddConnectedVPCFlag(parser):
-  parser.add_argument(
+def AddConnectedVPCMutexGroup(parser):
+  """Add mutex group for --connected-vpc and --vpc-connector."""
+  mutex_group = parser.add_group(mutex=True)
+  mutex_group.add_argument(
       '--connected-vpc',
       help='Specifies the VPC network to connect the function to.',
-      hidden=True)
+      hidden=True
+  )
+  mutex_group.add_argument(
+      '--vpc-connector',
+      help='The VPC Network Connector that this cloud function can connect to.',
+      hidden=True
+  )
 
 
 def AddEntryPointFlag(parser):

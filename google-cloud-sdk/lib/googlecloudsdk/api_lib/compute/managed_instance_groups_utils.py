@@ -24,12 +24,13 @@ import string
 import sys
 from apitools.base.py import list_pager
 
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -70,15 +71,19 @@ CLOUD_PUB_SUB_VALID_RESOURCE_RE = r'^[A-Za-z][A-Za-z0-9-_.~+%]{2,}$'
 # TODO(b/110191362): resign from passing whole args to functions in this file
 
 
-class ResourceNotFoundException(exceptions.ToolException):
+class Error(exceptions.Error):
+  """Base exception for managed instance group exceptions."""
+
+
+class ResourceNotFoundException(Error):
   """The user tries to get/use/update resource which does not exist."""
 
 
-class ResourceAlreadyExistsException(exceptions.ToolException):
+class ResourceAlreadyExistsException(Error):
   """The user tries to create resource which already exists."""
 
 
-class ResourceCannotBeResolvedException(exceptions.ToolException):
+class ResourceCannotBeResolvedException(Error):
   """The user uses invalid / partial name to resolve URI for the resource."""
 
 
@@ -274,12 +279,12 @@ def GetModeFlag():
 def _ValidateCloudPubSubResource(pubsub_spec_dict, expected_resource_type):
   """Validate Cloud Pub/Sub resource spec format."""
   def RaiseInvalidArgument(message):
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         '--queue-scaling-cloud-pub-sub:{0}'.format(expected_resource_type),
         message)
 
   if expected_resource_type not in pubsub_spec_dict:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'Both topic and subscription are required for Cloud Pub/Sub '
         'queue scaling specification.')
   split_resource = pubsub_spec_dict[expected_resource_type].split('/')
@@ -312,14 +317,14 @@ def ValidateConflictsWithAutoscalingFile(args, conflicting_args):
             '--' + a.replace('_', '-')
             for a in conflicting_args
         ]
-        raise exceptions.ConflictingArgumentsException(
+        raise calliope_exceptions.ConflictingArgumentsException(
             *(['--autoscaling-file'] + conflicting_flags))
 
 
 def _ValidateCustomMetricUtilizationVsUpdateStackdriverMetric(args):
   if (args.IsSpecified('custom_metric_utilization') and
       args.IsSpecified('update_stackdriver_metric')):
-    raise exceptions.ConflictingArgumentsException(
+    raise calliope_exceptions.ConflictingArgumentsException(
         '--custom-metric-utilization', '--update-stackdriver-metric')
 
 
@@ -327,7 +332,7 @@ def _ValidateRemoveStackdriverMetricVsUpdateStackdriverMetric(args):
   if (args.IsSpecified('update_stackdriver_metric') and
       args.IsSpecified('remove_stackdriver_metric') and
       args.update_stackdriver_metric == args.remove_stackdriver_metric):
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         '--update-stackdriver-metric',
         'You can not remove Stackdriver metric you are updating with '
         '[--update-stackdriver-metric] flag.')
@@ -343,7 +348,7 @@ def _ValidateRequiringUpdateStackdriverMetric(args):
     ]
     for f in requiring_flags:
       if args.IsSpecified(f):
-        raise exceptions.RequiredArgumentException(
+        raise calliope_exceptions.RequiredArgumentException(
             '--' + f.replace('_', '-'),
             '[--update-stackdriver-metric] required to use this flag.')
 
@@ -358,7 +363,7 @@ def _ValidateRequiredByUpdateStackdriverMetric(args):
           '[--{}]'.format(f.replace('_', '--')) for f in one_of_required]
       msg = ('You must provide one of {} with '
              '[--update-stackdriver-metric].'.format(', '.join(flags)))
-      raise exceptions.RequiredArgumentException(
+      raise calliope_exceptions.RequiredArgumentException(
           '--update-stackdriver-metric', msg)
 
 
@@ -373,7 +378,7 @@ def _ValidateSingleInstanceAssignmentVsUtilizationTarget(args):
       assignment_flag = '--stackdriver-metric-single-instance-assignment'
       conflicting_flags = [
           '[--{}]'.format(f.replace('_', '-')) for f in conflicting]
-      raise exceptions.ConflictingArgumentsException(
+      raise calliope_exceptions.ConflictingArgumentsException(
           assignment_flag,
           'You cannot use any of {} with `{}`'.format(
               conflicting_flags, assignment_flag))
@@ -382,7 +387,7 @@ def _ValidateSingleInstanceAssignmentVsUtilizationTarget(args):
 def _ValidateUtilizationTargetHasType(args):
   if (args.IsSpecified('stackdriver_metric_utilization_target') and
       not args.IsSpecified('stackdriver_metric_utilization_target_type')):
-    raise exceptions.RequiredArgumentException(
+    raise calliope_exceptions.RequiredArgumentException(
         '--stackdriver-metric-utilization-target-type',
         'Required with [--stackdriver-metric-utilization-target].')
 
@@ -402,7 +407,7 @@ def ValidateGeneratedAutoscalerIsValid(args, autoscaler):
       not autoscaler.autoscalingPolicy.customMetricUtilizations and
       not autoscaler.autoscalingPolicy.cpuUtilization and
       not autoscaler.autoscalingPolicy.loadBalancingUtilization):
-    raise exceptions.InvalidArgumentException(
+    raise calliope_exceptions.InvalidArgumentException(
         '--remove-stackdriver-metric',
         'This would remove the only signal used for autoscaling. If you want '
         'to stop autoscaling the Managed Instance Group use `stop-autoscaling` '
@@ -413,17 +418,17 @@ def ValidateAutoscalerArgs(args):
   """Validates args."""
   if args.min_num_replicas and args.max_num_replicas:
     if args.min_num_replicas > args.max_num_replicas:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           '--max-num-replicas', 'can\'t be less than min num replicas.')
 
   if args.custom_metric_utilization:
     for custom_metric_utilization in args.custom_metric_utilization:
       for field in ('utilization-target', 'metric', 'utilization-target-type'):
         if field not in custom_metric_utilization:
-          raise exceptions.InvalidArgumentException(
+          raise calliope_exceptions.InvalidArgumentException(
               '--custom-metric-utilization', field + ' not present.')
       if custom_metric_utilization['utilization-target'] < 0:
-        raise exceptions.InvalidArgumentException(
+        raise calliope_exceptions.InvalidArgumentException(
             '--custom-metric-utilization utilization-target', 'less than 0.')
 
   if ArgsSupportQueueScaling(args):
@@ -440,7 +445,7 @@ def ValidateAutoscalerArgs(args):
       queue_target_found = True
 
     if queue_spec_found != queue_target_found:
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'Both queue specification and queue scaling target must be provided '
           'for queue-based autoscaling.')
 
@@ -639,7 +644,7 @@ def AutoscalerForMig(mig_name, autoscalers, location, scope_type):
     if len(autoscalers) == 1:
       return autoscalers[0]
     else:
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'More than one Autoscaler with given target.')
   return None
 
@@ -978,7 +983,7 @@ def ValidateVersions(igm_info, new_versions, force=False):
   """
   if (len(new_versions) == 2
       and new_versions[0].instanceTemplate == new_versions[1].instanceTemplate):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'Provided instance templates must be different.')
   if force:
     return
@@ -991,14 +996,14 @@ def ValidateVersions(igm_info, new_versions, force=False):
   elif igm_info.instanceTemplate:
     igm_templates = [igm_info.instanceTemplate]
   else:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'Either versions or instance template must be specified for '
         'managed instance group.')
 
   new_templates = [version.instanceTemplate for version in new_versions]
   version_count = len(_GetInstanceTemplatesSet(igm_templates, new_templates))
   if version_count > 2:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'Update inconsistent with current state. '
         'The only allowed transitions between versions are: '
         'X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y). '

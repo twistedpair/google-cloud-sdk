@@ -258,7 +258,7 @@ class Duration(object):
     else:
       t_implied = True
     amount = [sign]
-    for c in s:
+    for i, c in enumerate(s):
       if c.isdigit():
         amount.append(c)
       elif c == '.' or c == ',':
@@ -267,6 +267,10 @@ class Duration(object):
         if t_separator:
           raise ValueError("A duration may contain at most one 'T' separator.")
         t_separator = t_implied = True
+      elif len(amount) == 1:
+        raise ValueError(
+            "Duration unit '{}' must be preceded by a number.".format(
+                string[i:]))
       else:
         number = float(''.join(amount))
         amount = [sign]
@@ -276,6 +280,16 @@ class Duration(object):
           self.days += number * 7
         elif c == 'D':
           self.days += number
+        elif c in ('M', 'U', 'N')  and len(s) == i + 2 and s[i + 1] == 'S':
+          # ms, us, ns OK if it's the last part.
+          if c == 'M':
+            n = 1000
+          elif c == 'U':
+            n = 1000000
+          else:
+            n = 1000000000
+          self.seconds += number / n
+          break
         elif c == 'M' and not t_implied:
           t_implied = True
           self.months += number

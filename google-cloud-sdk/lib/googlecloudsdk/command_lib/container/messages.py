@@ -33,7 +33,7 @@ def AutoUpdateUpgradeRepairMessage(value, flag_name):
   action = 'enable' if value else 'disable'
   plural = flag_name + 's'
   link = 'node-management' if flag_name == 'autoupgrade' else 'node-auto-repair'
-  return ('This will {0} the {1} feature for nodes. Please see\n'
+  return ('This will {0} the {1} feature for nodes. Please see '
           'https://cloud.google.com/kubernetes-engine/docs/'
-          '{2} for more\n'
-          'information on node {3}.\n').format(action, flag_name, link, plural)
+          '{2} for more '
+          'information on node {3}.').format(action, flag_name, link, plural)

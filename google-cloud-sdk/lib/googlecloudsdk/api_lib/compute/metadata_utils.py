@@ -21,16 +21,16 @@ from __future__ import unicode_literals
 import copy
 
 from googlecloudsdk.api_lib.compute import constants
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
 import six
 
 
-class InvalidSshKeyException(core_exceptions.Error):
+class InvalidSshKeyException(exceptions.Error):
   """InvalidSshKeyException is for invalid ssh keys in metadata"""
 
 
@@ -137,7 +137,7 @@ def ConstructMetadataDict(metadata=None, metadata_from_file=None):
   new_metadata_dict = copy.deepcopy(metadata)
   for key, file_path in six.iteritems(metadata_from_file):
     if key in new_metadata_dict:
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'Encountered duplicate metadata key [{0}].'.format(key))
     new_metadata_dict[key] = files.ReadFileContents(file_path)
   return new_metadata_dict

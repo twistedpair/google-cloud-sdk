@@ -1709,8 +1709,6 @@ class ManagedService(_messages.Message):
     generation: A server-assigned monotonically increasing number that changes
       whenever a mutation is made to the `ManagedService` or any of its
       components via Google Service Management.
-    operations: Read-only view of pending operations affecting this resource,
-      if requested. DEPRECATED, should call ListOperations instead.
     producerProjectId: ID of the project that produces and owns this service.
     projectSettings: Read-only view of settings for a particular consumer
       project, if requested. DEPRECATED, should call GetProjectSettings
@@ -1722,11 +1720,10 @@ class ManagedService(_messages.Message):
   """
 
   generation = _messages.IntegerField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
-  producerProjectId = _messages.StringField(3)
-  projectSettings = _messages.MessageField('ProjectSettings', 4)
-  serviceConfig = _messages.MessageField('Service', 5)
-  serviceName = _messages.StringField(6)
+  producerProjectId = _messages.StringField(2)
+  projectSettings = _messages.MessageField('ProjectSettings', 3)
+  serviceConfig = _messages.MessageField('Service', 4)
+  serviceName = _messages.StringField(5)
 
 
 class MediaDownload(_messages.Message):
@@ -3593,7 +3590,7 @@ class ServicemanagementServicesGetRequest(_messages.Message):
     consumerProjectId: If project_settings is expanded, return settings for
       the specified consumer project.
     expand: Fields to expand in any results.  By default, the following fields
-      are not present in the result: - `operations` - `project_settings` -
+      are not present in the result: - `project_settings` -
       `project_settings.operations` - `quota_usage` (It requires
       `project_settings`) - `historical_quota_usage` (It requires
       `project_settings`)

@@ -6717,7 +6717,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified machine image. Deleting an machine image is permanent and cannot be undone.
+      r"""Deletes the specified machine image. Deleting a machine image is permanent and cannot be undone.
 
       Args:
         request: (ComputeMachineImagesDeleteRequest) input message
@@ -6795,7 +6795,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates an machine image in the specified project using the data that is included in the request. If you are creating a new machine image to update an existing instance, your new machine image must use the same network or, if applicable, the same subnetwork as the original instance.
+      r"""Creates a machine image in the specified project using the data that is included in the request. If you are creating a new machine image to update an existing instance, your new machine image should use the same network or, if applicable, the same subnetwork as the original instance.
 
       Args:
         request: (ComputeMachineImagesInsertRequest) input message

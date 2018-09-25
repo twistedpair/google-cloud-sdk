@@ -526,16 +526,18 @@
           "description": "The available types of accelerators.",
           "enumDescriptions": [
             "Unspecified accelerator type. Default to no GPU.",
-            "Nvidia tesla k80 GPU.",
-            "Nvidia tesla P100 GPU.",
-            "Nvidia tesla V100 GPU. Not supported for batch prediction."
+            "Nvidia Tesla K80 GPU.",
+            "Nvidia Tesla P100 GPU.",
+            "Nvidia Tesla V100 GPU.",
+            "Nvidia Tesla P4 GPU."
           ],
           "type": "string",
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
             "NVIDIA_TESLA_K80",
             "NVIDIA_TESLA_P100",
-            "NVIDIA_TESLA_V100"
+            "NVIDIA_TESLA_V100",
+            "NVIDIA_TESLA_P4"
           ]
         }
       }
@@ -715,9 +717,10 @@
           "description": "Available accelerators for the capability.",
           "enumDescriptions": [
             "Unspecified accelerator type. Default to no GPU.",
-            "Nvidia tesla k80 GPU.",
-            "Nvidia tesla P100 GPU.",
-            "Nvidia tesla V100 GPU. Not supported for batch prediction."
+            "Nvidia Tesla K80 GPU.",
+            "Nvidia Tesla P100 GPU.",
+            "Nvidia Tesla V100 GPU.",
+            "Nvidia Tesla P4 GPU."
           ],
           "type": "array",
           "items": {
@@ -726,7 +729,8 @@
               "ACCELERATOR_TYPE_UNSPECIFIED",
               "NVIDIA_TESLA_K80",
               "NVIDIA_TESLA_P100",
-              "NVIDIA_TESLA_V100"
+              "NVIDIA_TESLA_V100",
+              "NVIDIA_TESLA_P4"
             ]
           }
         }
@@ -966,7 +970,7 @@
           "format": "byte"
         },
         "framework": {
-          "description": "Optional. The machine learning framework Cloud ML Engine uses to train\nthis version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,\nand `XGBOOST`. If you do not specify a framework, Cloud ML Engine uses\nTensorFlow. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set\nthe runtime version of the model to 1.4 or greater.",
+          "description": "Optional. The machine learning framework Cloud ML Engine uses to train\nthis version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,\n`XGBOOST`. If you do not specify a framework, Cloud ML Engine\nwill analyze files in the deployment_uri to determine a framework. If you\nchoose `SCIKIT_LEARN` or `XGBOOST`, you must also set the runtime version\nof the model to 1.4 or greater.",
           "enumDescriptions": [
             "Unspecified framework. Defaults to TensorFlow.",
             "Tensorflow framework.",

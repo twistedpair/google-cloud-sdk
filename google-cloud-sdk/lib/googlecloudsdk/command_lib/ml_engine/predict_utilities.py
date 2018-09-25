@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import codecs
 import io
 import json
 
@@ -27,6 +26,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding
 
 import six
 
@@ -55,8 +55,7 @@ def ReadInstances(input_file, data_format, limit=None):
 
   for line_num, line in enumerate(input_file):
     if isinstance(line, six.binary_type):
-      # TODO(b/79095656): Use encoding library instead of codecs.
-      line = codecs.decode(line, 'utf-8-sig')  # Handle UTF8-BOM
+      line = encoding.Decode(line, encoding='utf-8-sig')  # Handle UTF8-BOM
     line_content = line.rstrip('\r\n')
     if not line_content:
       raise InvalidInstancesFileError('Empty line is not allowed in the '

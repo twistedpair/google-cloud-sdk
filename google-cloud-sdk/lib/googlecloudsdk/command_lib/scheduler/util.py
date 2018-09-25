@@ -20,8 +20,6 @@ from __future__ import unicode_literals
 
 import base64
 
-from apitools.base.py import extra_types
-
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
@@ -37,7 +35,7 @@ def _GetPubsubMessages():
 
 
 def _GetSchedulerMessages():
-  return apis.GetMessagesModule('cloudscheduler', 'v1alpha1')
+  return apis.GetMessagesModule('cloudscheduler', 'v1beta1')
 
 
 def ModifyCreateJobRequest(job_ref, args, create_job_req):
@@ -67,18 +65,10 @@ def ModifyCreatePubsubJobRequest(job_ref, args, create_job_req):
         the job.pubsubTarget.pubsubMessage field populated.
   """
   ModifyCreateJobRequest(job_ref, args, create_job_req)
-  # Unused in ModifyCreatePubsubJobRequest; already populated
-  pubsub_message_type = create_job_req.job.pubsubTarget.PubsubMessageValue
-  props = [
-      pubsub_message_type.AdditionalProperty(
-          key='@type',
-          value=extra_types.JsonValue(string_value=_PUBSUB_MESSAGE_URL)),
-      args.message_body or args.message_body_from_file
-  ]
+  create_job_req.job.pubsubTarget.data = http_encoding.Encode(
+      args.message_body or args.message_body_from_file)
   if args.attributes:
-    props.append(args.attributes)
-  create_job_req.job.pubsubTarget.pubsubMessage = pubsub_message_type(
-      additionalProperties=props)
+    create_job_req.job.pubsubTarget.attributes = args.attributes
   return create_job_req
 
 
@@ -98,25 +88,15 @@ def ParseMessageBody(message_body):
         as the value.
   """
   pubsub_messages = _GetPubsubMessages()
-  scheduler_messages = _GetSchedulerMessages()
 
   # First, put into a PubsubMessage to make sure we've got the general format
   # right.
   pubsub_message = pubsub_messages.PubsubMessage(
       data=http_encoding.Encode(message_body))
 
-  pubsub_message_type = scheduler_messages.PubsubTarget.PubsubMessageValue
   encoded_data = base64.urlsafe_b64encode(pubsub_message.data)
-  # Apitools will convert these messages to JSON values before issuing the
-  # request. Since extra_types is used here, apitools does not handle converting
-  # string_value to unicode before converting to JSON using json.dumps. That
-  # means we have to convert to unicode here before the request goes into
-  # apitools. Since the data is base64 encoded (which is all ascii), encoding it
-  # here will not change it's value.
   encoded_data = http_encoding.Decode(encoded_data)
-  return pubsub_message_type.AdditionalProperty(
-      key='data',
-      value=extra_types.JsonValue(string_value=encoded_data))
+  return encoded_data
 
 
 def ParseMessageBodyFromFile(path):
@@ -134,37 +114,15 @@ def ParseAttributes(attributes):
     attributes: str, the value of the --attributes flag.
 
   Returns:
-    AdditionalProperty, a cloudscheduler additional property object with
-        'attributes' as a key, and a JSON object (with string values) as the
-        value.
+    dict, a dict with 'additionalProperties' as a key, and a list of dicts
+        containing key-value pairs as the value.
   """
   attributes = arg_parsers.ArgDict()(attributes)
-  pubsub_messages = _GetPubsubMessages()
-  scheduler_messages = _GetSchedulerMessages()
-
-  # First, put into a PubsubMessage to make sure we've got the general format
-  # right.
-  pubsub_props = []
-  attributes_class = pubsub_messages.PubsubMessage.AttributesValue
-  for key, value in sorted(attributes.items()):  # sort for unit tests
-    pubsub_props.append(attributes_class.AdditionalProperty(key=key,
-                                                            value=value))
-  pubsub_message = pubsub_messages.PubsubMessage(
-      attributes=attributes_class(additionalProperties=pubsub_props))
-
-  attribute_props = []
-  for prop in pubsub_message.attributes.additionalProperties:
-    attribute_props.append(
-        extra_types.JsonObject.Property(
-            key=prop.key,
-            value=extra_types.JsonValue(string_value=prop.value)
-        )
-    )
-  attributes_value = extra_types.JsonObject(properties=attribute_props)
-  pubsub_message_type = scheduler_messages.PubsubTarget.PubsubMessageValue
-  return pubsub_message_type.AdditionalProperty(
-      key='attributes',
-      value=extra_types.JsonValue(object_value=attributes_value))
+  return {
+      'additionalProperties':
+          [{'key': key, 'value': value}
+           for key, value in sorted(attributes.items())]
+  }
 
 
 _MORE_REGIONS_AVAILABLE_WARNING = """\
@@ -179,6 +137,7 @@ create an app using the following command:
 VALID_REGIONS = [
     region_util.Region('us-central', True, True),
     region_util.Region('europe-west', True, True),
+    region_util.Region('asia-northeast1', True, True),
 ]
 
 

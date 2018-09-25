@@ -1212,7 +1212,9 @@ class Role(_messages.Message):
   r"""A role in the Identity and Access Management API.
 
   Enums:
-    StageValueValuesEnum: The current launch stage of the role.
+    StageValueValuesEnum: The current launch stage of the role. If the `ALPHA`
+      launch stage has been selected for a role, the `stage` field will not be
+      included in the returned definition for the role.
 
   Fields:
     deleted: The current deleted state of the role. This field is read only.
@@ -1226,22 +1228,28 @@ class Role(_messages.Message):
       as UpdateRole, the role name is the complete path, e.g.,
       roles/logging.viewer for curated roles and
       organizations/{ORGANIZATION_ID}/roles/logging.viewer for custom roles.
-    stage: The current launch stage of the role.
+    stage: The current launch stage of the role. If the `ALPHA` launch stage
+      has been selected for a role, the `stage` field will not be included in
+      the returned definition for the role.
     title: Optional.  A human-readable title for the role.  Typically this is
       limited to 100 UTF-8 bytes.
   """
 
   class StageValueValuesEnum(_messages.Enum):
-    r"""The current launch stage of the role.
+    r"""The current launch stage of the role. If the `ALPHA` launch stage has
+    been selected for a role, the `stage` field will not be included in the
+    returned definition for the role.
 
     Values:
-      ALPHA: The user has indicated this role is currently in an alpha phase.
-      BETA: The user has indicated this role is currently in a beta phase.
+      ALPHA: The user has indicated this role is currently in an Alpha phase.
+        If this launch stage is selected, the `stage` field will not be
+        included when requesting the definition for a given role.
+      BETA: The user has indicated this role is currently in a Beta phase.
       GA: The user has indicated this role is generally available.
       DEPRECATED: The user has indicated this role is being deprecated.
       DISABLED: This role is disabled and will not contribute permissions to
         any members it is granted to in policies.
-      EAP: The user has indicated this role is currently in an eap phase.
+      EAP: The user has indicated this role is currently in an EAP phase.
     """
     ALPHA = 0
     BETA = 1

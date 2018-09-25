@@ -1660,11 +1660,11 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
 
   Messages:
     ParametersValue: Optional. Map from parameter names to values that should
-      be used for those parameters.
+      be used for those parameters. Values may not exceed 100 characters.
 
   Fields:
     parameters: Optional. Map from parameter names to values that should be
-      used for those parameters.
+      used for those parameters. Values may not exceed 100 characters.
     requestId: Optional. A tag that prevents multiple concurrent workflow
       instances with the same tag from running. This mitigates risk of
       concurrent instances started due to retries.It is recommended to always
@@ -1681,7 +1681,7 @@ class InstantiateWorkflowTemplateRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ParametersValue(_messages.Message):
     r"""Optional. Map from parameter names to values that should be used for
-    those parameters.
+    those parameters. Values may not exceed 100 characters.
 
     Messages:
       AdditionalProperty: An additional property for a ParametersValue object.

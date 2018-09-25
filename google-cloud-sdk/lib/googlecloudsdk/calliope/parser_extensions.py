@@ -221,7 +221,7 @@ class Namespace(argparse.Namespace):
       The positional argument object for name.
     """
     dest = name.replace('-', '_').lower()
-    meta = name.replace('_', '-').upper()
+    meta = name.replace('-', '_').upper()
     for arg in self._GetCommand().ai.positional_args:
       if isinstance(arg, type):
         continue

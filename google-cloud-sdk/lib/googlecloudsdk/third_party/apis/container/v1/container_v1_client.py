@@ -11,7 +11,7 @@ class ContainerV1(base_api.BaseApiClient):
   BASE_URL = u'https://container.googleapis.com/'
 
   _PACKAGE = u'container'
-  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform', u'https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = [u'https://www.googleapis.com/auth/cloud-platform']
   _VERSION = u'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'
@@ -35,17 +35,6 @@ class ContainerV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.masterProjects_locations_projects_clusters_master = self.MasterProjectsLocationsProjectsClustersMasterService(self)
-    self.masterProjects_locations_projects_clusters_namespaces = self.MasterProjectsLocationsProjectsClustersNamespacesService(self)
-    self.masterProjects_locations_projects_clusters = self.MasterProjectsLocationsProjectsClustersService(self)
-    self.masterProjects_locations_projects = self.MasterProjectsLocationsProjectsService(self)
-    self.masterProjects_locations_signedUrls = self.MasterProjectsLocationsSignedUrlsService(self)
-    self.masterProjects_locations_tokens = self.MasterProjectsLocationsTokensService(self)
-    self.masterProjects_locations = self.MasterProjectsLocationsService(self)
-    self.masterProjects_zones_signedUrls = self.MasterProjectsZonesSignedUrlsService(self)
-    self.masterProjects_zones_tokens = self.MasterProjectsZonesTokensService(self)
-    self.masterProjects_zones = self.MasterProjectsZonesService(self)
-    self.masterProjects = self.MasterProjectsService(self)
     self.projects_locations_clusters_nodePools = self.ProjectsLocationsClustersNodePoolsService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -55,634 +44,6 @@ class ContainerV1(base_api.BaseApiClient):
     self.projects_zones_operations = self.ProjectsZonesOperationsService(self)
     self.projects_zones = self.ProjectsZonesService(self)
     self.projects = self.ProjectsService(self)
-
-  class MasterProjectsLocationsProjectsClustersMasterService(base_api.BaseApiService):
-    """Service class for the masterProjects_locations_projects_clusters_master resource."""
-
-    _NAME = u'masterProjects_locations_projects_clusters_master'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsLocationsProjectsClustersMasterService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def AckRepairwork(self, request, global_params=None):
-      r"""AcknowledgeRepairWork accepts acknowledgements of repair work from the.
-Hosted Master.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsProjectsClustersMasterAckRepairworkRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AckRepairWorkResponse) The response message.
-      """
-      config = self.GetMethodConfig('AckRepairwork')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AckRepairwork.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.projects.clusters.master.ackRepairwork',
-        ordered_params=[u'masterProjectName', u'location', u'projectNumber', u'clusterId', u'masterId'],
-        path_params=[u'clusterId', u'location', u'masterId', u'masterProjectName', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectName}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/master/{masterId}/ackRepairwork',
-        request_field=u'ackRepairWorkRequest',
-        request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersMasterAckRepairworkRequest',
-        response_type_name=u'AckRepairWorkResponse',
-        supports_download=False,
-    )
-
-    def GetRepairwork(self, request, global_params=None):
-      r"""This method requests work from the API server to see if there are.
-any repairs to be done on the Hosted Master.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsProjectsClustersMasterGetRepairworkRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GetRepairWorkResponse) The response message.
-      """
-      config = self.GetMethodConfig('GetRepairwork')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetRepairwork.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'GET',
-        method_id=u'container.masterProjects.locations.projects.clusters.master.getRepairwork',
-        ordered_params=[u'masterProjectName', u'location', u'projectNumber', u'clusterId', u'masterId'],
-        path_params=[u'clusterId', u'location', u'masterId', u'masterProjectName', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectName}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/master/{masterId}/repairwork',
-        request_field='',
-        request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersMasterGetRepairworkRequest',
-        response_type_name=u'GetRepairWorkResponse',
-        supports_download=False,
-    )
-
-  class MasterProjectsLocationsProjectsClustersNamespacesService(base_api.BaseApiService):
-    """Service class for the masterProjects_locations_projects_clusters_namespaces resource."""
-
-    _NAME = u'masterProjects_locations_projects_clusters_namespaces'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsLocationsProjectsClustersNamespacesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Finalize(self, request, global_params=None):
-      r"""FinalizeNamespace finalizes the GKE bits for a Kubernetes namespace.  Right.
-now, this involved purging IAM policies.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsProjectsClustersNamespacesFinalizeRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Finalize')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Finalize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.projects.clusters.namespaces.finalize',
-        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId', u'namespaceId'],
-        path_params=[u'clusterId', u'location', u'masterProjectId', u'namespaceId', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/projects/{projectNumber}/clusters/{clusterId}/namespaces/{namespaceId}/finalize',
-        request_field='',
-        request_type_name=u'ContainerMasterProjectsLocationsProjectsClustersNamespacesFinalizeRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-  class MasterProjectsLocationsProjectsClustersService(base_api.BaseApiService):
-    """Service class for the masterProjects_locations_projects_clusters resource."""
-
-    _NAME = u'masterProjects_locations_projects_clusters'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsLocationsProjectsClustersService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class MasterProjectsLocationsProjectsService(base_api.BaseApiService):
-    """Service class for the masterProjects_locations_projects resource."""
-
-    _NAME = u'masterProjects_locations_projects'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsLocationsProjectsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class MasterProjectsLocationsSignedUrlsService(base_api.BaseApiService):
-    """Service class for the masterProjects_locations_signedUrls resource."""
-
-    _NAME = u'masterProjects_locations_signedUrls'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsLocationsSignedUrlsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates signed URLs that allow for writing a file to a private GCS bucket.
-for storing backups of hosted master data. Signed URLs are explained here:
-https://cloud.google.com/storage/docs/access-control#Signed-URLs
-
-      Args:
-        request: (ContainerMasterProjectsLocationsSignedUrlsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SignedUrls) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.signedUrls.create',
-        ordered_params=[u'masterProjectId', u'location'],
-        path_params=[u'location', u'masterProjectId'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/signedUrls',
-        request_field=u'createSignedUrlsRequest',
-        request_type_name=u'ContainerMasterProjectsLocationsSignedUrlsCreateRequest',
-        response_type_name=u'SignedUrls',
-        supports_download=False,
-    )
-
-  class MasterProjectsLocationsTokensService(base_api.BaseApiService):
-    """Service class for the masterProjects_locations_tokens resource."""
-
-    _NAME = u'masterProjects_locations_tokens'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsLocationsTokensService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a compute-read-write (https://www.googleapis.com/auth/compute).
-scoped OAuth2 access token for <project_number>, to allow a hosted master
-to make modifications to its user's project.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsTokensCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Token) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.tokens.create',
-        ordered_params=[u'masterProjectId', u'location'],
-        path_params=[u'location', u'masterProjectId'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/tokens',
-        request_field=u'createTokenRequest',
-        request_type_name=u'ContainerMasterProjectsLocationsTokensCreateRequest',
-        response_type_name=u'Token',
-        supports_download=False,
-    )
-
-  class MasterProjectsLocationsService(base_api.BaseApiService):
-    """Service class for the masterProjects_locations resource."""
-
-    _NAME = u'masterProjects_locations'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsLocationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Audit(self, request, global_params=None):
-      r"""Audits the provided events to Cloud Audit Logging and/or Gin, depending on.
-policies defined by GKE.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsAuditRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AuditResponse) The response message.
-      """
-      config = self.GetMethodConfig('Audit')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Audit.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.audit',
-        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/audit',
-        request_field=u'auditEventList',
-        request_type_name=u'ContainerMasterProjectsLocationsAuditRequest',
-        response_type_name=u'AuditResponse',
-        supports_download=False,
-    )
-
-    def AuditPolicy(self, request, global_params=None):
-      r"""Check if provided events require write to Cloud Audit Logging and/or Gin,.
-depending on policies defined by GKE.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsAuditPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CheckAuditPolicyResponse) The response message.
-      """
-      config = self.GetMethodConfig('AuditPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AuditPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.auditPolicy',
-        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/auditPolicy',
-        request_field=u'checkAuditPolicyRequest',
-        request_type_name=u'ContainerMasterProjectsLocationsAuditPolicyRequest',
-        response_type_name=u'CheckAuditPolicyResponse',
-        supports_download=False,
-    )
-
-    def Authenticate(self, request, global_params=None):
-      r"""Processes a request to authenticate a token. If it is able to authenticate.
-the token, the email for the authorized user is also returned.
-AuthenticateResponse also contains fields from the AuthenticateRequest. The
-server is expected to only fill in the AuthenticateResponse.Status. This is
-due to how the Authentication types are defined for the Kubernetes webhook
-authenticator:
-https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authentication.k8s.io/v1beta1/types.go.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsAuthenticateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AuthenticateResponse) The response message.
-      """
-      config = self.GetMethodConfig('Authenticate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Authenticate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.authenticate',
-        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authenticate',
-        request_field=u'authenticateRequest',
-        request_type_name=u'ContainerMasterProjectsLocationsAuthenticateRequest',
-        response_type_name=u'AuthenticateResponse',
-        supports_download=False,
-    )
-
-    def Authorize(self, request, global_params=None):
-      r"""Processes the attributes of a user request and determines whether or not.
-to authorize the request. If unauthorized, a reason is also provided. The
-AuthorizeResponse also contains fields from the AuthorizeRequest. The
-server is expected to only fill in the AuthorizeResponse.Status. This is
-due to how the Authorization types are defined for the Kubernetes webhook
-authorizer:
-https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1beta1/types.go.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsAuthorizeRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AuthorizeResponse) The response message.
-      """
-      config = self.GetMethodConfig('Authorize')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Authorize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.authorize',
-        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/authorize',
-        request_field=u'authorizeRequest',
-        request_type_name=u'ContainerMasterProjectsLocationsAuthorizeRequest',
-        response_type_name=u'AuthorizeResponse',
-        supports_download=False,
-    )
-
-    def Imagereview(self, request, global_params=None):
-      r"""Processes a request to verify the container image. If unverified, a reason.
-is also provided. The ImageReviewResponse also contains fields from the
-ImageReviewRequest. The server is expected to only fill in the
-ImageReviewResponse.Status. This is due to how the ImageReview types are
-defined for the Kubernetes webhook image review:
-https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta1/types.go.
-
-      Args:
-        request: (ContainerMasterProjectsLocationsImagereviewRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ImageReviewResponse) The response message.
-      """
-      config = self.GetMethodConfig('Imagereview')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Imagereview.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.imagereview',
-        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/imagereview',
-        request_field=u'imageReviewRequest',
-        request_type_name=u'ContainerMasterProjectsLocationsImagereviewRequest',
-        response_type_name=u'ImageReviewResponse',
-        supports_download=False,
-    )
-
-    def Signcertificate(self, request, global_params=None):
-      r"""Signs a CertificateSigningRequest (CSR) with the cluster's certificate.
-authority (CA).
-
-      Args:
-        request: (CertificateSigningRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CertificateSigningRequest) The response message.
-      """
-      config = self.GetMethodConfig('Signcertificate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Signcertificate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.locations.signcertificate',
-        ordered_params=[u'masterProjectId', u'location', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'location', u'masterProjectId', u'projectNumber'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/locations/{location}/{projectNumber}/{clusterId}/signcertificate',
-        request_field='<request>',
-        request_type_name=u'CertificateSigningRequest',
-        response_type_name=u'CertificateSigningRequest',
-        supports_download=False,
-    )
-
-  class MasterProjectsZonesSignedUrlsService(base_api.BaseApiService):
-    """Service class for the masterProjects_zones_signedUrls resource."""
-
-    _NAME = u'masterProjects_zones_signedUrls'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsZonesSignedUrlsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates signed URLs that allow for writing a file to a private GCS bucket.
-for storing backups of hosted master data. Signed URLs are explained here:
-https://cloud.google.com/storage/docs/access-control#Signed-URLs
-
-      Args:
-        request: (ContainerMasterProjectsZonesSignedUrlsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SignedUrls) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.zones.signedUrls.create',
-        ordered_params=[u'masterProjectId', u'zone'],
-        path_params=[u'masterProjectId', u'zone'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/signedUrls',
-        request_field=u'createSignedUrlsRequest',
-        request_type_name=u'ContainerMasterProjectsZonesSignedUrlsCreateRequest',
-        response_type_name=u'SignedUrls',
-        supports_download=False,
-    )
-
-  class MasterProjectsZonesTokensService(base_api.BaseApiService):
-    """Service class for the masterProjects_zones_tokens resource."""
-
-    _NAME = u'masterProjects_zones_tokens'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsZonesTokensService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a compute-read-write (https://www.googleapis.com/auth/compute).
-scoped OAuth2 access token for <project_number>, to allow a hosted master
-to make modifications to its user's project.
-
-      Args:
-        request: (ContainerMasterProjectsZonesTokensCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Token) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.zones.tokens.create',
-        ordered_params=[u'masterProjectId', u'zone'],
-        path_params=[u'masterProjectId', u'zone'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/tokens',
-        request_field=u'createTokenRequest',
-        request_type_name=u'ContainerMasterProjectsZonesTokensCreateRequest',
-        response_type_name=u'Token',
-        supports_download=False,
-    )
-
-  class MasterProjectsZonesService(base_api.BaseApiService):
-    """Service class for the masterProjects_zones resource."""
-
-    _NAME = u'masterProjects_zones'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsZonesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Audit(self, request, global_params=None):
-      r"""Audits the provided events to Cloud Audit Logging and/or Gin, depending on.
-policies defined by GKE.
-
-      Args:
-        request: (ContainerMasterProjectsZonesAuditRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AuditResponse) The response message.
-      """
-      config = self.GetMethodConfig('Audit')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Audit.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.zones.audit',
-        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/audit',
-        request_field=u'auditEventList',
-        request_type_name=u'ContainerMasterProjectsZonesAuditRequest',
-        response_type_name=u'AuditResponse',
-        supports_download=False,
-    )
-
-    def Authenticate(self, request, global_params=None):
-      r"""Processes a request to authenticate a token. If it is able to authenticate.
-the token, the email for the authorized user is also returned.
-AuthenticateResponse also contains fields from the AuthenticateRequest. The
-server is expected to only fill in the AuthenticateResponse.Status. This is
-due to how the Authentication types are defined for the Kubernetes webhook
-authenticator:
-https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authentication.k8s.io/v1beta1/types.go.
-
-      Args:
-        request: (ContainerMasterProjectsZonesAuthenticateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AuthenticateResponse) The response message.
-      """
-      config = self.GetMethodConfig('Authenticate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Authenticate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.zones.authenticate',
-        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authenticate',
-        request_field=u'authenticateRequest',
-        request_type_name=u'ContainerMasterProjectsZonesAuthenticateRequest',
-        response_type_name=u'AuthenticateResponse',
-        supports_download=False,
-    )
-
-    def Authorize(self, request, global_params=None):
-      r"""Processes the attributes of a user request and determines whether or not.
-to authorize the request. If unauthorized, a reason is also provided. The
-AuthorizeResponse also contains fields from the AuthorizeRequest. The
-server is expected to only fill in the AuthorizeResponse.Status. This is
-due to how the Authorization types are defined for the Kubernetes webhook
-authorizer:
-https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/authorization/v1beta1/types.go.
-
-      Args:
-        request: (ContainerMasterProjectsZonesAuthorizeRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AuthorizeResponse) The response message.
-      """
-      config = self.GetMethodConfig('Authorize')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Authorize.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.zones.authorize',
-        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/authorize',
-        request_field=u'authorizeRequest',
-        request_type_name=u'ContainerMasterProjectsZonesAuthorizeRequest',
-        response_type_name=u'AuthorizeResponse',
-        supports_download=False,
-    )
-
-    def Imagereview(self, request, global_params=None):
-      r"""Processes a request to verify the container image. If unverified, a reason.
-is also provided. The ImageReviewResponse also contains fields from the
-ImageReviewRequest. The server is expected to only fill in the
-ImageReviewResponse.Status. This is due to how the ImageReview types are
-defined for the Kubernetes webhook image review:
-https://github.com/kubernetes/kubernetes/blob/master/pkg/apis/imagepolicy/v1beta1/types.go.
-
-      Args:
-        request: (ContainerMasterProjectsZonesImagereviewRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ImageReviewResponse) The response message.
-      """
-      config = self.GetMethodConfig('Imagereview')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Imagereview.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.zones.imagereview',
-        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/imagereview',
-        request_field=u'imageReviewRequest',
-        request_type_name=u'ContainerMasterProjectsZonesImagereviewRequest',
-        response_type_name=u'ImageReviewResponse',
-        supports_download=False,
-    )
-
-    def Signcertificate(self, request, global_params=None):
-      r"""Signs a CertificateSigningRequest (CSR) with the cluster's certificate.
-authority (CA).
-
-      Args:
-        request: (CertificateSigningRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (CertificateSigningRequest) The response message.
-      """
-      config = self.GetMethodConfig('Signcertificate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Signcertificate.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'POST',
-        method_id=u'container.masterProjects.zones.signcertificate',
-        ordered_params=[u'masterProjectId', u'zone', u'projectNumber', u'clusterId'],
-        path_params=[u'clusterId', u'masterProjectId', u'projectNumber', u'zone'],
-        query_params=[],
-        relative_path=u'v1/masterProjects/{masterProjectId}/zones/{zone}/{projectNumber}/{clusterId}/signcertificate',
-        request_field='<request>',
-        request_type_name=u'CertificateSigningRequest',
-        response_type_name=u'CertificateSigningRequest',
-        supports_download=False,
-    )
-
-  class MasterProjectsService(base_api.BaseApiService):
-    """Service class for the masterProjects resource."""
-
-    _NAME = u'masterProjects'
-
-    def __init__(self, client):
-      super(ContainerV1.MasterProjectsService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ProjectsLocationsClustersNodePoolsService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters_nodePools resource."""
@@ -740,7 +101,7 @@ authority (CA).
         method_id=u'container.projects.locations.clusters.nodePools.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         relative_path=u'v1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsDeleteRequest',
@@ -767,7 +128,7 @@ authority (CA).
         method_id=u'container.projects.locations.clusters.nodePools.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         relative_path=u'v1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsGetRequest',
@@ -794,7 +155,7 @@ authority (CA).
         method_id=u'container.projects.locations.clusters.nodePools.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1/{+parent}/nodePools',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsListRequest',
@@ -1041,7 +402,7 @@ at the initial create time.
         method_id=u'container.projects.locations.clusters.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersDeleteRequest',
@@ -1068,7 +429,7 @@ at the initial create time.
         method_id=u'container.projects.locations.clusters.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersGetRequest',
@@ -1096,7 +457,7 @@ zones.
         method_id=u'container.projects.locations.clusters.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1/{+parent}/clusters',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersListRequest',
@@ -1486,7 +847,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.locations.operations.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'operationId', u'projectId', u'version', u'zone'],
+        query_params=[u'operationId', u'projectId', u'zone'],
         relative_path=u'v1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsOperationsGetRequest',
@@ -1513,7 +874,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.locations.operations.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1/{+parent}/operations',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsOperationsListRequest',
@@ -1550,7 +911,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.locations.getServerConfig',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1/{+name}/serverConfig',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsGetServerConfigRequest',
@@ -1638,7 +999,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.zones.clusters.nodePools.delete',
         ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
@@ -1664,7 +1025,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.zones.clusters.nodePools.get',
         ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
@@ -1690,7 +1051,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.zones.clusters.nodePools.list',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
@@ -1929,7 +1290,7 @@ at the initial create time.
         method_id=u'container.projects.zones.clusters.delete',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersDeleteRequest',
@@ -1955,7 +1316,7 @@ at the initial create time.
         method_id=u'container.projects.zones.clusters.get',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersGetRequest',
@@ -2008,7 +1369,7 @@ zones.
         method_id=u'container.projects.zones.clusters.list',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/clusters',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersListRequest',
@@ -2332,7 +1693,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.zones.operations.get',
         ordered_params=[u'projectId', u'zone', u'operationId'],
         path_params=[u'operationId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/operations/{operationId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesOperationsGetRequest',
@@ -2358,7 +1719,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.zones.operations.list',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/operations',
         request_field='',
         request_type_name=u'ContainerProjectsZonesOperationsListRequest',
@@ -2394,7 +1755,7 @@ This can be either via password generation or explicitly set the password.
         method_id=u'container.projects.zones.getServerconfig',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1/projects/{projectId}/zones/{zone}/serverconfig',
         request_field='',
         request_type_name=u'ContainerProjectsZonesGetServerconfigRequest',

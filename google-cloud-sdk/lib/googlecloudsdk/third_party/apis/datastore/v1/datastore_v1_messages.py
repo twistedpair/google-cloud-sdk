@@ -39,8 +39,9 @@ class ArrayValue(_messages.Message):
   r"""An array value.
 
   Fields:
-    values: Values in the array. The order of this array may not be preserved
-      if it contains a mix of indexed and unindexed values.
+    values: Values in the array. The order of values in an array is preserved
+      as long as all values have identical settings for
+      'exclude_from_indexes'.
   """
 
   values = _messages.MessageField('Value', 1, repeated=True)

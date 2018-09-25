@@ -92,15 +92,16 @@ class GoogleCloudMlV1AcceleratorConfig(_messages.Message):
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: Unspecified accelerator type. Default to
         no GPU.
-      NVIDIA_TESLA_K80: Nvidia tesla k80 GPU.
-      NVIDIA_TESLA_P100: Nvidia tesla P100 GPU.
-      NVIDIA_TESLA_V100: Nvidia tesla V100 GPU. Not supported for batch
-        prediction.
+      NVIDIA_TESLA_K80: Nvidia Tesla K80 GPU.
+      NVIDIA_TESLA_P100: Nvidia Tesla P100 GPU.
+      NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
+      NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
     NVIDIA_TESLA_P100 = 2
     NVIDIA_TESLA_V100 = 3
+    NVIDIA_TESLA_P4 = 4
 
   count = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -159,11 +160,13 @@ class GoogleCloudMlV1Capability(_messages.Message):
       NVIDIA_TESLA_K80: <no description>
       NVIDIA_TESLA_P100: <no description>
       NVIDIA_TESLA_V100: <no description>
+      NVIDIA_TESLA_P4: <no description>
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
     NVIDIA_TESLA_P100 = 2
     NVIDIA_TESLA_V100 = 3
+    NVIDIA_TESLA_P4 = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""TypeValueValuesEnum enum type.
@@ -1102,10 +1105,10 @@ class GoogleCloudMlV1Version(_messages.Message):
   Enums:
     FrameworkValueValuesEnum: Optional. The machine learning framework Cloud
       ML Engine uses to train this version of the model. Valid values are
-      `TENSORFLOW`, `SCIKIT_LEARN`, and `XGBOOST`. If you do not specify a
-      framework, Cloud ML Engine uses TensorFlow. If you choose `SCIKIT_LEARN`
-      or `XGBOOST`, you must also set the runtime version of the model to 1.4
-      or greater.
+      `TENSORFLOW`, `SCIKIT_LEARN`, `XGBOOST`. If you do not specify a
+      framework, Cloud ML Engine will analyze files in the deployment_uri to
+      determine a framework. If you choose `SCIKIT_LEARN` or `XGBOOST`, you
+      must also set the runtime version of the model to 1.4 or greater.
     StateValueValuesEnum: Output only. The state of a version.
 
   Messages:
@@ -1143,9 +1146,10 @@ class GoogleCloudMlV1Version(_messages.Message):
       to ensure that their change will be applied to the model as intended.
     framework: Optional. The machine learning framework Cloud ML Engine uses
       to train this version of the model. Valid values are `TENSORFLOW`,
-      `SCIKIT_LEARN`, and `XGBOOST`. If you do not specify a framework, Cloud
-      ML Engine uses TensorFlow. If you choose `SCIKIT_LEARN` or `XGBOOST`,
-      you must also set the runtime version of the model to 1.4 or greater.
+      `SCIKIT_LEARN`, `XGBOOST`. If you do not specify a framework, Cloud ML
+      Engine will analyze files in the deployment_uri to determine a
+      framework. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set
+      the runtime version of the model to 1.4 or greater.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
       default version by calling [projects.methods.versions.setDefault](/ml-
@@ -1206,9 +1210,10 @@ class GoogleCloudMlV1Version(_messages.Message):
   class FrameworkValueValuesEnum(_messages.Enum):
     r"""Optional. The machine learning framework Cloud ML Engine uses to train
     this version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,
-    and `XGBOOST`. If you do not specify a framework, Cloud ML Engine uses
-    TensorFlow. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set
-    the runtime version of the model to 1.4 or greater.
+    `XGBOOST`. If you do not specify a framework, Cloud ML Engine will analyze
+    files in the deployment_uri to determine a framework. If you choose
+    `SCIKIT_LEARN` or `XGBOOST`, you must also set the runtime version of the
+    model to 1.4 or greater.
 
     Values:
       FRAMEWORK_UNSPECIFIED: Unspecified framework. Defaults to TensorFlow.

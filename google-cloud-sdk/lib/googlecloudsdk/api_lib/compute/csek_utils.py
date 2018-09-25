@@ -23,8 +23,7 @@ import base64
 import json
 import re
 
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 import six
@@ -36,7 +35,11 @@ BASE64_RAW_KEY_LENGTH_IN_CHARS = 44
 BASE64_RSA_ENCRYPTED_KEY_LENGTH_IN_CHARS = 344
 
 
-class InvalidKeyFileException(core_exceptions.Error):
+class Error(exceptions.Error):
+  """Base exception for Csek(customer supplied encryption keys) exceptions."""
+
+
+class InvalidKeyFileException(Error):
   """There's a problem in a CSEK file."""
 
   def __init__(self, base_message):
@@ -211,10 +214,10 @@ class BadKeyTypeException(InvalidKeyFileException):
     super(BadKeyTypeException, self).__init__(msg)
 
 
-class MissingCsekKeyException(exceptions.ToolException):
+class MissingCsekException(Error):
 
   def __init__(self, resource):
-    super(MissingCsekKeyException, self).__init__(
+    super(MissingCsekException, self).__init__(
         'Key required for resource [{0}], but none found.'.format(resource))
 
 
@@ -380,8 +383,8 @@ class CsekKeyStore(object):
 
     Raises:
       InvalidKeyFileException: if there are two records matching the resource.
-      MissingCsekKeyException: if raise_if_missing and no key is found
-        for the provided resoure.
+      MissingCsekException: if raise_if_missing and no key is found
+        for the provided resource.
     """
 
     assert isinstance(self.state, dict)
@@ -398,7 +401,7 @@ class CsekKeyStore(object):
         search_state = (pat, key)
 
     if raise_if_missing and (search_state[1] is None):
-      raise MissingCsekKeyException(resource)
+      raise MissingCsekException(resource)
 
     return search_state[1]
 

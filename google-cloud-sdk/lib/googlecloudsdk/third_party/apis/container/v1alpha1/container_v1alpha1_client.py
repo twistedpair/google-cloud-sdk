@@ -76,7 +76,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
         method_id=u'container.projects.aggregated.usableSubnetworks.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken', u'version'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
         relative_path=u'v1alpha1/{+parent}/aggregated/usableSubnetworks',
         request_field='',
         request_type_name=u'ContainerProjectsAggregatedUsableSubnetworksListRequest',
@@ -150,7 +150,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
         method_id=u'container.projects.locations.clusters.nodePools.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsDeleteRequest',
@@ -177,7 +177,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
         method_id=u'container.projects.locations.clusters.nodePools.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsGetRequest',
@@ -204,38 +204,11 @@ class ContainerV1alpha1(base_api.BaseApiClient):
         method_id=u'container.projects.locations.clusters.nodePools.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+parent}/nodePools',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersNodePoolsListRequest',
         response_type_name=u'ListNodePoolsResponse',
-        supports_download=False,
-    )
-
-    def ReplaceNodePool(self, request, global_params=None):
-      r"""Updates the existing node pool to the provided node pool.
-
-      Args:
-        request: (ContainerProjectsLocationsClustersNodePoolsReplaceNodePoolRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('ReplaceNodePool')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ReplaceNodePool.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}',
-        http_method=u'PUT',
-        method_id=u'container.projects.locations.clusters.nodePools.replaceNodePool',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'replaceNodePoolRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersNodePoolsReplaceNodePoolRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -478,7 +451,7 @@ at the initial create time.
         method_id=u'container.projects.locations.clusters.delete',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersDeleteRequest',
@@ -505,7 +478,7 @@ at the initial create time.
         method_id=u'container.projects.locations.clusters.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'clusterId', u'projectId', u'version', u'zone'],
+        query_params=[u'clusterId', u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersGetRequest',
@@ -533,38 +506,11 @@ zones.
         method_id=u'container.projects.locations.clusters.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+parent}/clusters',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersListRequest',
         response_type_name=u'ListClustersResponse',
-        supports_download=False,
-    )
-
-    def ReplaceCluster(self, request, global_params=None):
-      r"""Updates the existing cluster to the provided cluster.
-
-      Args:
-        request: (ContainerProjectsLocationsClustersReplaceClusterRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('ReplaceCluster')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ReplaceCluster.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}',
-        http_method=u'PUT',
-        method_id=u'container.projects.locations.clusters.replaceCluster',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1alpha1/{+name}',
-        request_field=u'replaceClusterRequest',
-        request_type_name=u'ContainerProjectsLocationsClustersReplaceClusterRequest',
-        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -951,7 +897,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.locations.operations.get',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'operationId', u'projectId', u'version', u'zone'],
+        query_params=[u'operationId', u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+name}',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsOperationsGetRequest',
@@ -978,7 +924,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.locations.operations.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+parent}/operations',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsOperationsListRequest',
@@ -1015,38 +961,11 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.locations.getServerConfig',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[u'projectId', u'version', u'zone'],
+        query_params=[u'projectId', u'zone'],
         relative_path=u'v1alpha1/{+name}/serverConfig',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsGetServerConfigRequest',
         response_type_name=u'ServerConfig',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""List method for the projects_locations service.
-
-      Args:
-        request: (ContainerProjectsLocationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListLocationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations',
-        http_method=u'GET',
-        method_id=u'container.projects.locations.list',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'pageSize', u'pageToken', u'version'],
-        relative_path=u'v1alpha1/{+parent}/locations',
-        request_field='',
-        request_type_name=u'ContainerProjectsLocationsListRequest',
-        response_type_name=u'ListLocationsResponse',
         supports_download=False,
     )
 
@@ -1130,7 +1049,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.delete',
         ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsDeleteRequest',
@@ -1156,7 +1075,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.get',
         ordered_params=[u'projectId', u'zone', u'clusterId', u'nodePoolId'],
         path_params=[u'clusterId', u'nodePoolId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools/{nodePoolId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsGetRequest',
@@ -1182,7 +1101,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.clusters.nodePools.list',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}/nodePools',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersNodePoolsListRequest',
@@ -1421,7 +1340,7 @@ at the initial create time.
         method_id=u'container.projects.zones.clusters.delete',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersDeleteRequest',
@@ -1447,7 +1366,7 @@ at the initial create time.
         method_id=u'container.projects.zones.clusters.get',
         ordered_params=[u'projectId', u'zone', u'clusterId'],
         path_params=[u'clusterId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters/{clusterId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersGetRequest',
@@ -1500,7 +1419,7 @@ zones.
         method_id=u'container.projects.zones.clusters.list',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/clusters',
         request_field='',
         request_type_name=u'ContainerProjectsZonesClustersListRequest',
@@ -1825,7 +1744,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.operations.get',
         ordered_params=[u'projectId', u'zone', u'operationId'],
         path_params=[u'operationId', u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/operations/{operationId}',
         request_field='',
         request_type_name=u'ContainerProjectsZonesOperationsGetRequest',
@@ -1851,7 +1770,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.operations.list',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'parent', u'version'],
+        query_params=[u'parent'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/operations',
         request_field='',
         request_type_name=u'ContainerProjectsZonesOperationsListRequest',
@@ -1887,7 +1806,7 @@ Modify basic_auth.csv and reset the K8S API server.
         method_id=u'container.projects.zones.getServerconfig',
         ordered_params=[u'projectId', u'zone'],
         path_params=[u'projectId', u'zone'],
-        query_params=[u'name', u'version'],
+        query_params=[u'name'],
         relative_path=u'v1alpha1/projects/{projectId}/zones/{zone}/serverconfig',
         request_field='',
         request_type_name=u'ContainerProjectsZonesGetServerconfigRequest',

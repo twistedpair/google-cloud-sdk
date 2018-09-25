@@ -127,7 +127,6 @@ def AddAndroidTestArgs(parser):
   parser.add_argument(
       '--environment-variables',
       type=arg_parsers.ArgDict(),
-      action='append',
       metavar='KEY=VALUE',
       help="""\
       A comma-separated, key=value map of environment variables and their

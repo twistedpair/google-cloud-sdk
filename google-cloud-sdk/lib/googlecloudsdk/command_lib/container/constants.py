@@ -36,17 +36,12 @@ KUBERNETES_ALPHA_PROMPT = (
     "- The cluster will be deleted after 30 days.\n"
 )
 
-KUBERNETES_REGIONAL_CHARGES_PROMPT = (
-    "This will create a regional cluster.\n"
-    "While this feature is available at no charge in Alpha, "
-    "in the future you may be charged for it.\n"
-)
-
 KUBERNETES_GPU_LIMITATION_MSG = (
     "Machines with GPUs have certain limitations "
-    "which may affect your workflow.\nLearn more at "
-    "https://cloud.google.com/kubernetes-engine/docs/concepts/gpus\n"
+    "which may affect your workflow. Learn more at "
+    "https://cloud.google.com/kubernetes-engine/docs/how-to/gpus"
 )
+
 USERNAME_PASSWORD_ERROR_MSG = (
     "Cannot specify --password with empty --username or --no-enable-basic-auth."
 )

@@ -22,9 +22,9 @@ import itertools
 import re
 import enum
 
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import metadata_utils
-from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
@@ -84,7 +84,11 @@ def _GetUserInit(allow_privileged):
   return USER_INIT_TEMPLATE % (allow_privileged_val)
 
 
-class InvalidMetadataKeyException(exceptions.ToolException):
+class Error(exceptions.Error):
+  """Base exception for containers."""
+
+
+class InvalidMetadataKeyException(Error):
   """InvalidMetadataKeyException is for not allowed metadata keys."""
 
   def __init__(self, metadata_key):
@@ -93,7 +97,7 @@ class InvalidMetadataKeyException(exceptions.ToolException):
         .format(metadata_key))
 
 
-class NoGceContainerDeclarationMetadataKey(core_exceptions.Error):
+class NoGceContainerDeclarationMetadataKey(Error):
   """Raised on attempt to update-container on instance without containers."""
 
   def __init__(self):
@@ -150,7 +154,7 @@ def GetLabelsMessageWithCosVersion(
   return resource_class.LabelsValue(additionalProperties=additional_properties)
 
 
-class NoCosImageException(core_exceptions.Error):
+class NoCosImageException(Error):
   """Raised when COS image could not be found."""
 
   def __init__(self):
@@ -186,12 +190,12 @@ def _ValidateAndParsePortMapping(port_mappings):
   for port_mapping in port_mappings:
     mapping_match = re.match(r'^(\d+):(\d+):(\S+)$', port_mapping)
     if not mapping_match:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           '--port-mappings',
           'Port mappings should follow PORT:TARGET_PORT:PROTOCOL format.')
     port, target_port, protocol = mapping_match.groups()
     if protocol not in ALLOWED_PROTOCOLS:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           '--port-mappings',
           'Protocol should be one of [{0}]'.format(
               ', '.join(ALLOWED_PROTOCOLS)))
@@ -297,13 +301,13 @@ def _ReadDictionary(filename):
       # Find first left '=' character
       assignment_op_loc = line.find('=')
       if assignment_op_loc == -1:
-        raise exceptions.BadFileException(
+        raise calliope_exceptions.BadFileException(
             'Syntax error in {}:{}: Expected VAR=VAL, got {}'.format(
                 filename, i, line))
       env = line[:assignment_op_loc]
       val = line[assignment_op_loc+1:]
       if ' ' in env or '\t' in env:
-        raise exceptions.BadFileException(
+        raise calliope_exceptions.BadFileException(
             'Syntax error in {}:{} Variable name cannot contain whitespaces,'
             ' got "{}"'.format(filename, i, env))
       env_vars[env] = val

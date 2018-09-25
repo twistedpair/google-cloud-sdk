@@ -30,7 +30,7 @@ from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute import zone_utils
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags
@@ -97,9 +97,9 @@ def InterpretMachineType(machine_type, custom_cpu, custom_memory, ext=True):
     A string representing the URL naming a machine-type.
 
   Raises:
-    exceptions.RequiredArgumentException when only one of the two custom
-      machine type flags are used.
-    exceptions.InvalidArgumentException when both the machine type and
+    calliope_exceptions.RequiredArgumentException when only one of the two
+      custom machine type flags are used.
+    calliope_exceptions.InvalidArgumentException when both the machine type and
       custom machine type flags are used to generate a new instance.
   """
   # Setting the machine type
@@ -110,15 +110,15 @@ def InterpretMachineType(machine_type, custom_cpu, custom_memory, ext=True):
   # Setting the specs for the custom machine.
   if custom_cpu or custom_memory or ext:
     if not custom_cpu:
-      raise exceptions.RequiredArgumentException(
+      raise calliope_exceptions.RequiredArgumentException(
           '--custom-cpu', 'Both [--custom-cpu] and [--custom-memory] must be '
           'set to create a custom machine type instance.')
     if not custom_memory:
-      raise exceptions.RequiredArgumentException(
+      raise calliope_exceptions.RequiredArgumentException(
           '--custom-memory', 'Both [--custom-cpu] and [--custom-memory] must '
           'be set to create a custom machine type instance.')
     if machine_type:
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           '--machine-type', 'Cannot set both [--machine-type] and '
           '[--custom-cpu]/[--custom-memory] for the same instance.')
     custom_type_string = GetNameForCustom(
@@ -184,18 +184,18 @@ def CreateServiceAccountMessages(messages, scopes, service_account):
       scope_uri = scope
     elif len(parts) == 2:
       # TODO(b/33688878) Remove exception for this deprecated format
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           '--scopes',
           'Flag format --scopes [ACCOUNT=]SCOPE,[[ACCOUNT=]SCOPE, ...] is '
           'removed. Use --scopes [SCOPE,...] --service-account ACCOUNT '
           'instead.')
     else:
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           '[{0}] is an illegal value for [--scopes]. Values must be of the '
           'form [SCOPE].'.format(scope))
 
     if service_account != 'default' and not ssh.Remote.FromArg(service_account):
-      raise exceptions.InvalidArgumentException(
+      raise calliope_exceptions.InvalidArgumentException(
           '--service-account',
           'Invalid format: expected default or user@domain.com, received ' +
           service_account)
@@ -1033,4 +1033,23 @@ def ResolveSnapshotURI(user_project, snapshot, resource_parser):
                                          collection='compute.snapshots',
                                          params={'project': user_project})
     return snapshot_ref.SelfLink()
+  return None
+
+
+def GetAllocationAffinity(args, client):
+  """Returns the message of allocation affinity for the instance."""
+  if args.IsSpecified('allocation_affinity'):
+    label_value = args.allocation_label.get('value', None)
+    type_enums = client.messages.AllocationAffinity.ConsumeAllocationTypeValueValuesEnum  # pylint: disable=line-too-long
+    allocation_type = type_enums.ANY_ALLOCATION
+    if args.allocation_affinity == 'none':
+      allocation_type = type_enums.NO_ALLOCATION
+    elif args.allocation_affinity == 'specific':
+      allocation_type = type_enums.SPECIFIC_ALLOCATION
+
+    return client.messages.AllocationAffinity(
+        consumeAllocationType=allocation_type,
+        key=args.allocation_label.get('key', None),
+        values=[label_value] if label_value else None)
+
   return None

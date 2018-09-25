@@ -366,11 +366,12 @@ def ParseUpdateLabels(client, job_ref, args):
       args, client.job_class.LabelsValue, GetLabels)
 
 
-def Update(jobs_client, operations_client, args):
+def Update(jobs_client, args):
+  """Update a job."""
   job_ref = _ParseJob(args.job)
   labels_update = ParseUpdateLabels(jobs_client, job_ref, args)
   try:
-    op = jobs_client.Patch(job_ref, labels_update)
+    return jobs_client.Patch(job_ref, labels_update)
   except jobs.NoFieldsSpecifiedError:
     if not any(args.IsSpecified(arg) for arg in ('update_labels',
                                                  'clear_labels',
@@ -378,6 +379,3 @@ def Update(jobs_client, operations_client, args):
       raise
     log.status.Print('No update to perform.')
     return None
-  else:
-    return operations_client.WaitForOperation(
-        op, message='Updating job [{}]'.format(job_ref.Name())).response

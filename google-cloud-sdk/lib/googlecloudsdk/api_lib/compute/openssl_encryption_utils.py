@@ -22,7 +22,7 @@ import base64
 import subprocess
 import tempfile
 
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.core import log
 
 import six

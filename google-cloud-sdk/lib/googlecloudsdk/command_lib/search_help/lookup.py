@@ -44,6 +44,7 @@ POSITIONAL = 'positional'
 SUBSECTIONS = 'subsections'
 SUMMARY = 'summary'
 TEXT = 'text'
+RESULTS = 'results'
 
 ALPHA = 'ALPHA'
 BETA = 'BETA'

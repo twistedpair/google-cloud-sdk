@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.forwarding_rules import flags
@@ -30,26 +30,26 @@ from googlecloudsdk.core import properties
 def _ValidateGlobalArgs(args, include_alpha=False):
   """Validate the global forwarding rules args."""
   if args.target_instance:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify [--target-instance] for a global '
         'forwarding rule.')
   if args.target_pool:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify [--target-pool] for a global '
         'forwarding rule.')
 
   if getattr(args, 'backend_service', None):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify [--backend-service] for a global '
         'forwarding rule.')
 
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL':
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify internal [--load-balancing-scheme] for a global '
         'forwarding rule.')
 
   if getattr(args, 'target_vpn_gateway', None):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify [--target-vpn-gateway] for a global '
         'forwarding rule.')
 
@@ -57,18 +57,18 @@ def _ValidateGlobalArgs(args, include_alpha=False):
       getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED'):
     if not (getattr(args, 'target_http_proxy', None) or
             getattr(args, 'target_https_proxy', None)):
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'You must specify either [--target-http-proxy] or '
           '[--target-https-proxy] for an INTERNAL_SELF_MANAGED '
           '[--load-balancing-scheme].')
 
     if getattr(args, 'subnet', None):
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'You cannot specify [--subnet] for an INTERNAL_SELF_MANAGED '
           '[--load-balancing-scheme].')
 
     if not getattr(args, 'address', None):
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'You must specify [--address] for an INTERNAL_SELF_MANAGED '
           '[--load-balancing-scheme]')
 
@@ -96,7 +96,7 @@ def _ValidateRegionalArgs(args, include_alpha=False):
   """
 
   if getattr(args, 'global', None):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify [--global] for a regional '
         'forwarding rule.')
 
@@ -105,24 +105,24 @@ def _ValidateRegionalArgs(args, include_alpha=False):
   # because it can be set as default project setting, so here let backend do
   # validation.
   if args.target_instance_zone and not args.target_instance:
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify [--target-instance-zone] unless you are '
         'specifying [--target-instance].')
 
   if getattr(args, 'load_balancing_scheme', None) == 'INTERNAL':
     if getattr(args, 'port_range', None):
-      raise exceptions.ToolException(
+      raise calliope_exceptions.ToolException(
           'You cannot specify [--port-range] for a forwarding rule '
           'whose [--load-balancing-scheme] is internal, '
           'please use [--ports] flag instead.')
   elif getattr(args, 'subnet', None) or getattr(args, 'network', None):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify [--subnet] or [--network] for non-internal '
         '[--load-balancing-scheme] forwarding rule.')
 
   if (include_alpha and
       getattr(args, 'load_balancing_scheme', None) == 'INTERNAL_SELF_MANAGED'):
-    raise exceptions.ToolException(
+    raise calliope_exceptions.ToolException(
         'You cannot specify an INTERNAL_SELF_MANAGED [--load-balancing-scheme] '
         'for a regional forwarding rule.')
 

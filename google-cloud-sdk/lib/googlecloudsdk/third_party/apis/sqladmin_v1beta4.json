@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20180907",
+ "revision": "20180914",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -3105,7 +3105,6 @@
       "host": {
        "type": "string",
        "description": "Host of the user in the instance.",
-       "required": true,
        "location": "query"
       },
       "instance": {
@@ -3130,7 +3129,6 @@
      "parameterOrder": [
       "project",
       "instance",
-      "host",
       "name"
      ],
      "request": {

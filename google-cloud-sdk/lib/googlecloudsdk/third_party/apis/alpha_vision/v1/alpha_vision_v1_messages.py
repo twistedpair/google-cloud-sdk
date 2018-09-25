@@ -4832,6 +4832,20 @@ class GoogleCloudVisionV1p3beta1Word(_messages.Message):
   symbols = _messages.MessageField('GoogleCloudVisionV1p3beta1Symbol', 4, repeated=True)
 
 
+class GroupedResult(_messages.Message):
+  r"""Information about the products similar to a single product in a query
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon around the product detected in the
+      query image.
+    results: List of results, one for each product match.
+  """
+
+  boundingPoly = _messages.MessageField('BoundingPoly', 1)
+  results = _messages.MessageField('Result', 2, repeated=True)
+
+
 class Image(_messages.Message):
   r"""Client image to perform Google Cloud Vision API tasks over.
 
@@ -5546,11 +5560,17 @@ class ProductSearchResults(_messages.Message):
   Fields:
     indexTime: Timestamp of the index which provided these results. Changes
       made after this time are not reflected in the current results.
+    productGroupedResults: List of results grouped by products detected in the
+      query image. Each entry corresponds to one bounding polygon in the query
+      image, and contains the matching products specific to that region. There
+      may be duplicate product matches in the union of all the per-product
+      results.
     results: List of results, one for each product match.
   """
 
   indexTime = _messages.StringField(1)
-  results = _messages.MessageField('Result', 2, repeated=True)
+  productGroupedResults = _messages.MessageField('GroupedResult', 2, repeated=True)
+  results = _messages.MessageField('Result', 3, repeated=True)
 
 
 class ProductSet(_messages.Message):

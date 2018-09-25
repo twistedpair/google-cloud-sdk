@@ -642,7 +642,8 @@ Enable node autorepair feature for a node-pool.
 """
     if for_create:
       help_text += """
-Node autorepair is enabled by default for node pools using COS as a base image.
+Node autorepair is enabled by default for node pools using COS as a base image,
+use --no-enable-autorepair to disable.
 """
   else:
     help_text = """\
@@ -652,7 +653,8 @@ Enable node autorepair feature for a cluster's default node-pool(s).
 """
     if for_create:
       help_text += """
-Node autorepair is enabled by default for clusters using COS as a base image.
+Node autorepair is enabled by default for clusters using COS as a base image,
+use --no-enable-autorepair to disable.
 """
   help_text += """
 See https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-repair for \

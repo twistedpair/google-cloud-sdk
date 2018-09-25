@@ -1141,8 +1141,6 @@ class RevisionSpec(_messages.Message):
       Kubernetes resources should be in for this Revision. Users must not
       specify this when creating a revision. It is expected that the system
       will manipulate this based on routability and load.
-    timeoutSeconds: Maximum time the instance is allowed for responding to a
-      request. +optional
   """
 
   class ServingStateValueValuesEnum(_messages.Enum):
@@ -1176,7 +1174,6 @@ class RevisionSpec(_messages.Message):
   generation = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   serviceAccountName = _messages.StringField(5)
   servingState = _messages.EnumField('ServingStateValueValuesEnum', 6)
-  timeoutSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class RevisionStatus(_messages.Message):

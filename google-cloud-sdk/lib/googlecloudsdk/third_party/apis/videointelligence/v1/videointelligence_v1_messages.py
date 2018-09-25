@@ -763,10 +763,21 @@ class GoogleCloudVideointelligenceV1p1beta1WordInfo(_messages.Message):
   `enable_word_time_offsets`.
 
   Fields:
+    confidence: Output only. The confidence estimate between 0.0 and 1.0. A
+      higher number indicates an estimated greater likelihood that the
+      recognized words are correct. This field is set only for the top
+      alternative. This field is not guaranteed to be accurate and users
+      should not rely on it to be always provided. The default of 0.0 is a
+      sentinel value indicating `confidence` was not set.
     endTime: Time offset relative to the beginning of the audio, and
       corresponding to the end of the spoken word. This field is only set if
       `enable_word_time_offsets=true` and only in the top hypothesis. This is
       an experimental feature and the accuracy of the time offset can vary.
+    speakerTag: Output only. A distinct integer value is assigned for every
+      speaker within the audio. This field specifies which one of those
+      speakers was detected to have spoken this word. Value ranges from 1 up
+      to diarization_speaker_count, and is only set if speaker diarization is
+      enabled.
     startTime: Time offset relative to the beginning of the audio, and
       corresponding to the start of the spoken word. This field is only set if
       `enable_word_time_offsets=true` and only in the top hypothesis. This is
@@ -774,9 +785,333 @@ class GoogleCloudVideointelligenceV1p1beta1WordInfo(_messages.Message):
     word: The word corresponding to this set of information.
   """
 
-  endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
-  word = _messages.StringField(3)
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  endTime = _messages.StringField(2)
+  speakerTag = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(4)
+  word = _messages.StringField(5)
+
+
+class GoogleCloudVideointelligenceV1p2beta1AnnotateVideoProgress(_messages.Message):
+  r"""Video annotation progress. Included in the `metadata` field of the
+  `Operation` returned by the `GetOperation` call of the
+  `google::longrunning::Operations` service.
+
+  Fields:
+    annotationProgress: Progress metadata for all videos specified in
+      `AnnotateVideoRequest`.
+  """
+
+  annotationProgress = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p2beta1AnnotateVideoResponse(_messages.Message):
+  r"""Video annotation response. Included in the `response` field of the
+  `Operation` returned by the `GetOperation` call of the
+  `google::longrunning::Operations` service.
+
+  Fields:
+    annotationResults: Annotation results for all videos specified in
+      `AnnotateVideoRequest`.
+  """
+
+  annotationResults = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p2beta1Entity(_messages.Message):
+  r"""Detected entity from video analysis.
+
+  Fields:
+    description: Textual description, e.g. `Fixed-gear bicycle`.
+    entityId: Opaque entity ID. Some IDs may be available in [Google Knowledge
+      Graph Search API](https://developers.google.com/knowledge-graph/).
+    languageCode: Language code for `description` in BCP-47 format.
+  """
+
+  description = _messages.StringField(1)
+  entityId = _messages.StringField(2)
+  languageCode = _messages.StringField(3)
+
+
+class GoogleCloudVideointelligenceV1p2beta1ExplicitContentAnnotation(_messages.Message):
+  r"""Explicit content annotation (based on per-frame visual signals only). If
+  no explicit content has been detected in a frame, no annotations are present
+  for that frame.
+
+  Fields:
+    frames: All video frames where explicit content was detected.
+  """
+
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ExplicitContentFrame', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p2beta1ExplicitContentFrame(_messages.Message):
+  r"""Video frame level annotation results for explicit content.
+
+  Enums:
+    PornographyLikelihoodValueValuesEnum: Likelihood of the pornography
+      content..
+
+  Fields:
+    pornographyLikelihood: Likelihood of the pornography content..
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this location.
+  """
+
+  class PornographyLikelihoodValueValuesEnum(_messages.Enum):
+    r"""Likelihood of the pornography content..
+
+    Values:
+      LIKELIHOOD_UNSPECIFIED: Unspecified likelihood.
+      VERY_UNLIKELY: Very unlikely.
+      UNLIKELY: Unlikely.
+      POSSIBLE: Possible.
+      LIKELY: Likely.
+      VERY_LIKELY: Very likely.
+    """
+    LIKELIHOOD_UNSPECIFIED = 0
+    VERY_UNLIKELY = 1
+    UNLIKELY = 2
+    POSSIBLE = 3
+    LIKELY = 4
+    VERY_LIKELY = 5
+
+  pornographyLikelihood = _messages.EnumField('PornographyLikelihoodValueValuesEnum', 1)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1p2beta1LabelAnnotation(_messages.Message):
+  r"""Label annotation.
+
+  Fields:
+    categoryEntities: Common categories for the detected entity. E.g. when the
+      label is `Terrier` the category is likely `dog`. And in some cases there
+      might be more than one categories e.g. `Terrier` could also be a `pet`.
+    entity: Detected entity.
+    frames: All video frames where a label was detected.
+    segments: All video segments where a label was detected.
+  """
+
+  categoryEntities = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Entity', 1, repeated=True)
+  entity = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Entity', 2)
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelFrame', 3, repeated=True)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelSegment', 4, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p2beta1LabelFrame(_messages.Message):
+  r"""Video frame level annotation results for label detection.
+
+  Fields:
+    confidence: Confidence that the label is accurate. Range: [0, 1].
+    timeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the video frame for this location.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1p2beta1LabelSegment(_messages.Message):
+  r"""Video segment level annotation results for label detection.
+
+  Fields:
+    confidence: Confidence that the label is accurate. Range: [0, 1].
+    segment: Video segment where a label was detected.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 2)
+
+
+class GoogleCloudVideointelligenceV1p2beta1NormalizedBoundingBox(_messages.Message):
+  r"""Normalized bounding box. The normalized vertex coordinates are relative
+  to the original image. Range: [0, 1].
+
+  Fields:
+    bottom: Bottom Y coordinate.
+    left: Left X coordinate.
+    right: Right X coordinate.
+    top: Top Y coordinate.
+  """
+
+  bottom = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  left = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  right = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  top = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVideointelligenceV1p2beta1NormalizedBoundingPoly(_messages.Message):
+  r"""Normalized bounding polygon for text (that might not be aligned with
+  axis). Contains list of the corner points in clockwise order starting from
+  top-left corner. For example, for a rectangular bounding box: When the text
+  is horizontal it might look like:         0----1         |    |         3
+  ----2  When it's clockwise rotated 180 degrees around the top-left corner it
+  becomes:         2----3         |    |         1----0  and the vertex order
+  will still be (0, 1, 2, 3). Note that values can be less than 0, or greater
+  than 1 due to trignometric calculations for location of the box.
+
+  Fields:
+    vertices: Normalized vertices of the bounding polygon.
+  """
+
+  vertices = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1NormalizedVertex', 1, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p2beta1NormalizedVertex(_messages.Message):
+  r"""A vertex represents a 2D point in the image. NOTE: the normalized vertex
+  coordinates are relative to the original image and range from 0 to 1.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation(_messages.Message):
+  r"""Annotations corresponding to one tracked object.
+
+  Fields:
+    confidence: Object category's labeling confidence of this track.
+    entity: Entity to specify the object category that this track is labeled
+      as.
+    frames: Information corresponding to all frames where this object track
+      appears.
+    segment: Each object track corresponds to one video segment where it
+      appears.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  entity = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1Entity', 2)
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ObjectTrackingFrame', 3, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 4)
+
+
+class GoogleCloudVideointelligenceV1p2beta1ObjectTrackingFrame(_messages.Message):
+  r"""Video frame level annotations for object detection and tracking. This
+  field stores per frame location, time offset, and confidence.
+
+  Fields:
+    normalizedBoundingBox: The normalized bounding box location of this object
+      track for the frame.
+    timeOffset: The timestamp of the frame in microseconds.
+  """
+
+  normalizedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1NormalizedBoundingBox', 1)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1p2beta1TextAnnotation(_messages.Message):
+  r"""Annotations related to one detected OCR text snippet. This will contain
+  the corresponding text, confidence value, and frame level information for
+  each detection.
+
+  Fields:
+    confidence: Confidence for the track of detected text. It is calculated as
+      the highest over all frames where OCR detected text appears.
+    frames: Information related to the frames where OCR detected text appears.
+    segments: All video segments where OCR detected text appears.
+    text: The detected text.
+  """
+
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextFrame', 2, repeated=True)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextSegment', 3, repeated=True)
+  text = _messages.StringField(4)
+
+
+class GoogleCloudVideointelligenceV1p2beta1TextFrame(_messages.Message):
+  r"""Video frame level annotation results for text annotation (OCR). Contains
+  information regarding timestamp and bounding box locations for the frames
+  containing detected OCR text snippets.
+
+  Fields:
+    rotatedBoundingBox: Bounding polygon of the detected text for this frame.
+    timeOffset: Timestamp of this frame.
+  """
+
+  rotatedBoundingBox = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1NormalizedBoundingPoly', 1)
+  timeOffset = _messages.StringField(2)
+
+
+class GoogleCloudVideointelligenceV1p2beta1TextSegment(_messages.Message):
+  r"""Video segment level annotation results for text detection.
+
+  Fields:
+    segment: Video segment where a text snippet was detected.
+  """
+
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 1)
+
+
+class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress(_messages.Message):
+  r"""Annotation progress for a single video.
+
+  Fields:
+    inputUri: Video file location in [Google Cloud
+      Storage](https://cloud.google.com/storage/).
+    progressPercent: Approximate percentage processed thus far. Guaranteed to
+      be 100 when fully processed.
+    startTime: Time when the request was received.
+    updateTime: Time of the most recent update.
+  """
+
+  inputUri = _messages.StringField(1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationResults(_messages.Message):
+  r"""Annotation results for a single video.
+
+  Fields:
+    error: If set, indicates an error. Note that for a single
+      `AnnotateVideoRequest` some videos may succeed and some may fail.
+    explicitAnnotation: Explicit content annotation.
+    frameLabelAnnotations: Label annotations on frame level. There is exactly
+      one element for each unique label.
+    inputUri: Video file location in [Google Cloud
+      Storage](https://cloud.google.com/storage/).
+    objectAnnotations: Annotations for list of objects detected and tracked in
+      video.
+    segmentLabelAnnotations: Label annotations on video level or user
+      specified segment level. There is exactly one element for each unique
+      label.
+    shotAnnotations: Shot annotations. Each shot is represented as a video
+      segment.
+    shotLabelAnnotations: Label annotations on shot level. There is exactly
+      one element for each unique label.
+    textAnnotations: OCR text detection and tracking. Annotations for list of
+      detected text snippets. Each will have list of frame information
+      associated with it.
+  """
+
+  error = _messages.MessageField('GoogleRpcStatus', 1)
+  explicitAnnotation = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ExplicitContentAnnotation', 2)
+  frameLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 3, repeated=True)
+  inputUri = _messages.StringField(4)
+  objectAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1ObjectTrackingAnnotation', 5, repeated=True)
+  segmentLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 6, repeated=True)
+  shotAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 7, repeated=True)
+  shotLabelAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1LabelAnnotation', 8, repeated=True)
+  textAnnotations = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextAnnotation', 9, repeated=True)
+
+
+class GoogleCloudVideointelligenceV1p2beta1VideoSegment(_messages.Message):
+  r"""Video segment.
+
+  Fields:
+    endTimeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the end of the segment (inclusive).
+    startTimeOffset: Time-offset, relative to the beginning of the video,
+      corresponding to the start of the segment (inclusive).
+  """
+
+  endTimeOffset = _messages.StringField(1)
+  startTimeOffset = _messages.StringField(2)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):

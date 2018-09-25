@@ -1451,6 +1451,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.firestore = self._Add('firestore')
     self.genomics = self._Add('genomics')
     self.iam = self._Add('iam')
+    self.kubernetespolicy = self._Add('kubernetespolicy')
     self.language = self._Add('language')
     self.logging = self._Add('logging')
     self.manager = self._Add('manager')
@@ -1564,6 +1565,13 @@ class _SectionStorage(_Section):
         default=1048576,  # Apitool's default chunksize
         help_text='Chunk size used for uploading and downloading from '
                   'Cloud Storage.')
+    # TODO(b/109938541): Remove this after implementation seems stable.
+    self.use_gsutil = self._AddBool(
+        'use_gsutil',
+        default=False,
+        hidden=True,
+        help_text='If True, use the deprecated upload implementation which '
+                  'uses gsutil.')
 
 
 class _Property(object):

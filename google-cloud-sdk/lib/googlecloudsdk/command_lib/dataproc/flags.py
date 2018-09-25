@@ -28,15 +28,16 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
 
-def AddZoneFlag(parser):
+def AddZoneFlag(parser, short_flags=True):
+  """Add zone flag."""
   parser.add_argument(
       '--zone',
-      '-z',
+      *['-z'] if short_flags else [],
       help="""
-          The compute zone (e.g. us-central1-a) for the cluster. If empty,
-          and --region is set to a value other than `global`, the server will
-          pick a zone in the region.
-          """,
+            The compute zone (e.g. us-central1-a) for the cluster. If empty
+            and --region is set to a value other than `global`, the server will
+            pick a zone in the region.
+            """,
       action=actions.StoreProperty(properties.VALUES.compute.zone))
 
 
@@ -53,16 +54,16 @@ def AddFileFlag(parser, input_type, action):
       required=True)
 
 
-def AddTemplateSourceFlag(parser):
+def AddTemplateSourceFlag(parser, schema_path):
   parser.add_argument(
       '--source',
       help="""Path to a YAML file containing a Dataproc WorkflowTemplate
       resource. The provided YAML file must not contain id, version, or any
       output-only fields.
       Alternatively, you may omit this flag to read from standard input.
-      For more information, see:
-      https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.locations.workflowTemplates#WorkflowTemplate
-      """,
+      A schema describing the import format can be found in:
+      $CLOUDSDKROOT/lib/googlecloudsdk/api_lib/dataproc/schemas/{}.
+      """.format(schema_path),
       # Allow reading from stdin.
       required=False)
 
@@ -80,16 +81,16 @@ def AddClusterSourceFlag(parser):
       required=False)
 
 
-def AddTemplateDestinationFlag(parser):
+def AddTemplateDestinationFlag(parser, schema_path):
   parser.add_argument(
       '--destination',
       help="""Path to a YAML file to which the Dataproc WorkflowTemplate
       resource will be exported. The exported template will not contain id,
       version, or any output-only fields.
       Alternatively, you may omit this flag to write to standard output.
-      For more information, see:
-      https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.locations.workflowTemplates#WorkflowTemplate
-      """,
+      A schema describing the export format can be found in:
+      $CLOUDSDKROOT/lib/googlecloudsdk/api_lib/dataproc/schemas/{}.
+      """.format(schema_path),
       # Allow writing to stdout.
       required=False)
 
@@ -185,7 +186,6 @@ def AddComponentFlag(parser):
       metavar='COMPONENT',
       type=arg_parsers.ArgList(element_type=lambda val: val.upper()),
       dest='components',
-      hidden=True,
       help=help_text)
 
 
@@ -224,10 +224,10 @@ def RegionAttributeConfig():
   )
 
 
-def GetTemplateResourceSpec():
+def GetTemplateResourceSpec(api_version):
   return concepts.ResourceSpec(
       'dataproc.projects.regions.workflowTemplates',
-      api_version='v1beta2',
+      api_version=api_version,
       resource_name='template',
       disable_auto_completers=False,
       projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
@@ -236,18 +236,19 @@ def GetTemplateResourceSpec():
   )
 
 
-def AddTemplateResourceArg(parser, verb, positional=True):
+def AddTemplateResourceArg(parser, verb, api_version, positional=True):
   """Adds a workflow template resource argument.
 
   Args:
     parser: the argparse parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    api_version: api version, for example v1 or v1beta2
     positional: bool, if True, means that the instance ID is a positional rather
       than a flag.
   """
   name = 'TEMPLATE' if positional else '--template'
   concept_parsers.ConceptParser.ForResource(
       name,
-      GetTemplateResourceSpec(),
+      GetTemplateResourceSpec(api_version=api_version),
       'The name of the workflow template to {}.'.format(verb),
       required=True).AddToParser(parser)

@@ -16,20 +16,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class ClientList(_messages.Message):
-  r"""The sets of network addresses and DNS names for hosts to which a given
-  export or share should be allowed or denied.
-
-  Fields:
-    hostNames: DNS names of hosts, with optional wildcards.
-    ipAddresses: IPv4 addresses in the format {octet 1}.{octet 2}.{octet
-      3}.{octet 4}.
-  """
-
-  hostNames = _messages.StringField(1, repeated=True)
-  ipAddresses = _messages.StringField(2, repeated=True)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -38,32 +24,6 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class Export(_messages.Message):
-  r"""File share export specification.
-
-  Fields:
-    allowedClients: The clients which may connect.
-    async: Writes may be completed when not yet on stable storage.
-    deniedClients: The clients which may not connect.
-    networks: Networks on which the export should appear. If none are
-      specified, the default is all networks to which the instance is
-      connected to.
-    nfsExport: Export rule for NFS
-    path: Path to export (either "" or of the form /file_share_name[/subdir]).
-    readOnly: Whether the file share should be exported as read-only.
-    smbExport: Export rule for SMB
-  """
-
-  allowedClients = _messages.MessageField('ClientList', 1)
-  async = _messages.BooleanField(2)
-  deniedClients = _messages.MessageField('ClientList', 3)
-  networks = _messages.MessageField('NetworkConfig', 4, repeated=True)
-  nfsExport = _messages.MessageField('NfsExport', 5)
-  path = _messages.StringField(6)
-  readOnly = _messages.BooleanField(7)
-  smbExport = _messages.MessageField('SmbExport', 8)
 
 
 class FileProjectsLocationsGetRequest(_messages.Message):
@@ -224,48 +184,14 @@ class FileProjectsLocationsOperationsListRequest(_messages.Message):
 class FileShareConfig(_messages.Message):
   r"""File share configuration for the instance.
 
-  Enums:
-    ProtocolsValueListEntryValuesEnum:
-
   Fields:
     capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
       1 GB as 1024^3 bytes.
-    deleted: Delete requested. The file share will be deleted.
-    enabled: Service enabled.  When enabled, the instance exposes the exports
-      to the user for mounting.
-    exports: Exports. If protocols and exports are both zero-length, a default
-      protocol of NFSV3 and a default export of "*" are provided, and enabled
-      is set to true.
     name: The name of the file share (must be 16 characters or less).
-    protocols: Protocols supported.
   """
 
-  class ProtocolsValueListEntryValuesEnum(_messages.Enum):
-    r"""ProtocolsValueListEntryValuesEnum enum type.
-
-    Values:
-      FILE_SHARE_PROTOCOL_UNSPECIFIED: <no description>
-      NFS_V3: <no description>
-      NFS_V4_0: <no description>
-      NFS_V4_1: <no description>
-      SMB_V2_0: <no description>
-      SMB_V2_1: <no description>
-      SMB_V3: <no description>
-    """
-    FILE_SHARE_PROTOCOL_UNSPECIFIED = 0
-    NFS_V3 = 1
-    NFS_V4_0 = 2
-    NFS_V4_1 = 3
-    SMB_V2_0 = 4
-    SMB_V2_1 = 5
-    SMB_V3 = 6
-
   capacityGb = _messages.IntegerField(1)
-  deleted = _messages.BooleanField(2)
-  enabled = _messages.BooleanField(3)
-  exports = _messages.MessageField('Export', 4, repeated=True)
-  name = _messages.StringField(5)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 6, repeated=True)
+  name = _messages.StringField(2)
 
 
 class Instance(_messages.Message):
@@ -287,16 +213,6 @@ class Instance(_messages.Message):
     fileShares: File system shares on the instance. For this version, only a
       single file share is supported.
     labels: Resource labels to represent user provided metadata.
-    loggingService: The logging service the instance should use to write logs.
-      Currently available options:  * `logging.googleapis.com` - the Google
-      Cloud Logging service. * `none` - no logs will be exported from the
-      instance. * if left as an empty string,`logging.googleapis.com` will be
-      used.
-    monitoringService: The monitoring service the instance should use to write
-      metrics. Currently available options:  * `monitoring.googleapis.com` -
-      the Google Cloud Monitoring service. * `none` - no metrics will be
-      exported from the instance. * if left as an empty string,
-      `monitoring.googleapis.com` will be used.
     name: Output only. The resource name of the instance, in the format
       projects/{project_id}/locations/{location_id}/instances/{instance_id}.
     networks: VPC networks to which the instance is connected. For this
@@ -369,13 +285,11 @@ class Instance(_messages.Message):
   etag = _messages.StringField(3)
   fileShares = _messages.MessageField('FileShareConfig', 4, repeated=True)
   labels = _messages.MessageField('LabelsValue', 5)
-  loggingService = _messages.StringField(6)
-  monitoringService = _messages.StringField(7)
-  name = _messages.StringField(8)
-  networks = _messages.MessageField('NetworkConfig', 9, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  statusMessage = _messages.StringField(11)
-  tier = _messages.EnumField('TierValueValuesEnum', 12)
+  name = _messages.StringField(6)
+  networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  statusMessage = _messages.StringField(9)
+  tier = _messages.EnumField('TierValueValuesEnum', 10)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -524,9 +438,6 @@ class NetworkConfig(_messages.Message):
       example, 10.0.0.0/29 or 192.168.0.0/29. The range you specify can't
       overlap with either existing subnets or assigned IP address ranges for
       other Cloud Filestore instances in the selected VPC network.
-    subnetwork: Output only. The name of the Google Compute Engine
-      [subnetwork](/compute/docs/subnetworks) to which the instance is
-      connected.
   """
 
   class ModesValueListEntryValuesEnum(_messages.Enum):
@@ -535,67 +446,14 @@ class NetworkConfig(_messages.Message):
     Values:
       ADDRESS_MODE_UNSPECIFIED: <no description>
       MODE_IPV4: <no description>
-      MODE_IPV6: <no description>
     """
     ADDRESS_MODE_UNSPECIFIED = 0
     MODE_IPV4 = 1
-    MODE_IPV6 = 2
 
   ipAddresses = _messages.StringField(1, repeated=True)
   modes = _messages.EnumField('ModesValueListEntryValuesEnum', 2, repeated=True)
   network = _messages.StringField(3)
   reservedIpRange = _messages.StringField(4)
-  subnetwork = _messages.StringField(5)
-
-
-class NfsExport(_messages.Message):
-  r"""NfsExport specifies attributes of a given NFS export rule.
-
-  Enums:
-    ProtocolsValueListEntryValuesEnum:
-    SquashValueValuesEnum: The mode of mapping of UIDs and GIDs (if any).
-
-  Fields:
-    anonymousGid: GID for anonymous or squashed GIDs.
-    anonymousUid: UID for anonymous or squashed UIDs.
-    protocols: Network transport protocols to be enabled. The default is TCP.
-    squash: The mode of mapping of UIDs and GIDs (if any).
-    unauthenticatedLocksAllowed: If unauthenticated_locks_allowed is true,
-      locking requests do not require authentication.
-    userPortsAllowed: If user_ports_allowed is true, client ports greater than
-      or equal to 1024 are allowed.
-  """
-
-  class ProtocolsValueListEntryValuesEnum(_messages.Enum):
-    r"""ProtocolsValueListEntryValuesEnum enum type.
-
-    Values:
-      NETWORK_PROTOCOLS_UNSPECIFIED: <no description>
-      TCP: <no description>
-      UDP: <no description>
-    """
-    NETWORK_PROTOCOLS_UNSPECIFIED = 0
-    TCP = 1
-    UDP = 2
-
-  class SquashValueValuesEnum(_messages.Enum):
-    r"""The mode of mapping of UIDs and GIDs (if any).
-
-    Values:
-      SQUASH_MODE_UNSPECIFIED: No mapping.
-      ROOT: UID 0 maps to anon_uid and GID 0 maps to anon_gid.
-      ALL: All UIDs map to anon_uid and all GIDs map to anon_gid.
-    """
-    SQUASH_MODE_UNSPECIFIED = 0
-    ROOT = 1
-    ALL = 2
-
-  anonymousGid = _messages.IntegerField(1)
-  anonymousUid = _messages.IntegerField(2)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 3, repeated=True)
-  squash = _messages.EnumField('SquashValueValuesEnum', 4)
-  unauthenticatedLocksAllowed = _messages.BooleanField(5)
-  userPortsAllowed = _messages.BooleanField(6)
 
 
 class Operation(_messages.Message):
@@ -730,19 +588,6 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
-
-
-class SmbExport(_messages.Message):
-  r"""SmbExport defines attributes of a given SMB sharing rule.
-
-  Fields:
-    browsable: If true, allow clients to see this share when browsing the
-      instance for shares.
-    fileShare: The published name of the share (if different from name).
-  """
-
-  browsable = _messages.BooleanField(1)
-  fileShare = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

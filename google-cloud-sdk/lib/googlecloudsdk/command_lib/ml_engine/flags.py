@@ -164,6 +164,38 @@ Path to the job configuration file. This file should be a YAML document (JSON
 also accepted) containing a Job resource as defined in the API (all fields are
 optional): https://cloud.google.com/ml/reference/rest/v1/projects.jobs
 
+EXAMPLES:\n
+JSON:
+
+  {
+    "jobId": "my_job",
+    "labels": {
+      "type": "prod",
+      "owner": "alice"
+    },
+    "trainingInput": {
+      "scaleTier": "BASIC",
+      "packageUris": [
+        "gs://my/package/path"
+      ],
+      "region": "us-east1"
+    }
+  }
+
+YAML:
+
+  jobId: my_job
+  labels:
+    type: prod
+    owner: alice
+  trainingInput:
+    scaleTier: BASIC
+    packageUris:
+    - gs://my/package/path
+    region: us-east1
+
+
+
 If an option is specified both in the configuration file **and** via command line
 arguments, the command line arguments override the configuration file.
 """)

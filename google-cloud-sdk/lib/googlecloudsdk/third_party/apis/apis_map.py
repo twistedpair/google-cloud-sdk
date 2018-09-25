@@ -258,13 +258,13 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1alpha1',
             client_classpath='cloudscheduler_v1alpha1_client.CloudschedulerV1alpha1',
             messages_modulepath='cloudscheduler_v1alpha1_messages',
-            default_version=True
+            default_version=False
         ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudscheduler.v1beta1',
             client_classpath='cloudscheduler_v1beta1_client.CloudschedulerV1beta1',
             messages_modulepath='cloudscheduler_v1beta1_messages',
-            default_version=False
+            default_version=True
         ),
     },
     'cloudshell': {
@@ -355,6 +355,12 @@ MAP = {
             client_classpath='containeranalysis_v1alpha1_client.ContaineranalysisV1alpha1',
             messages_modulepath='containeranalysis_v1alpha1_messages',
             default_version=True
+        ),
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.containeranalysis.v1beta1',
+            client_classpath='containeranalysis_v1beta1_client.ContaineranalysisV1beta1',
+            messages_modulepath='containeranalysis_v1beta1_messages',
+            default_version=False
         ),
     },
     'dataflow': {

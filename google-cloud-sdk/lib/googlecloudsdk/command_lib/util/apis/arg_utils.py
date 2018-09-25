@@ -511,6 +511,7 @@ def GetRecursiveMessageSpec(message):
     field_data = {'description': field_helps.get(field.name)}
     field_data['repeated'] = field.repeated
     if field.variant == messages.Variant.MESSAGE:
+      field_data['type'] = field.type.__name__
       field_data['fields'] = GetRecursiveMessageSpec(field.type)
     else:
       field_data['type'] = field.variant

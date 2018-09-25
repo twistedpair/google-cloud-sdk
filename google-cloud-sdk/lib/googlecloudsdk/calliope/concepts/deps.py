@@ -200,7 +200,7 @@ class ArgFallthrough(_FallthroughBase):
         resource argument is plural (i.e. parses to a list).
     """
     super(ArgFallthrough, self).__init__(
-        'provide the flag [{}] on the command line'.format(arg_name),
+        'provide the argument [{}] on the command line'.format(arg_name),
         active=True, plural=plural)
     self.arg_name = arg_name
 

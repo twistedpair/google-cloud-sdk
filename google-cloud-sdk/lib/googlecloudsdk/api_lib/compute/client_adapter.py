@@ -21,11 +21,11 @@ from __future__ import unicode_literals
 
 from apitools.base.py import batch
 from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
-from googlecloudsdk.core import exceptions as core_exceptions
 
 from six.moves.urllib import parse
 
@@ -35,7 +35,7 @@ from six.moves.urllib import parse
 _BATCH_SIZE_LIMIT = 1000
 
 
-class Error(core_exceptions.Error):
+class Error(exceptions.Error):
   """Errors raised by this module."""
 
 
