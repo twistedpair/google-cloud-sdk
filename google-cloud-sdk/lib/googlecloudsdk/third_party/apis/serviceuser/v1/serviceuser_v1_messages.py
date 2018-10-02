@@ -826,13 +826,6 @@ class HttpRule(_messages.Message):
     delete: Maps to HTTP DELETE. Used for deleting a resource.
     get: Maps to HTTP GET. Used for listing and getting information about
       resources.
-    mediaDownload: Use this only for Scotty Requests. Do not use this for
-      bytestream methods. For media support, add instead
-      [][google.bytestream.RestByteStream] as an API to your configuration.
-    mediaUpload: Use this only for Scotty Requests. Do not use this for media
-      support using Bytestream, add instead
-      [][google.bytestream.RestByteStream] as an API to your configuration for
-      Bytestream methods.
     patch: Maps to HTTP PATCH. Used for updating a resource.
     post: Maps to HTTP POST. Used for creating a resource or performing an
       action.
@@ -850,13 +843,11 @@ class HttpRule(_messages.Message):
   custom = _messages.MessageField('CustomHttpPattern', 3)
   delete = _messages.StringField(4)
   get = _messages.StringField(5)
-  mediaDownload = _messages.MessageField('MediaDownload', 6)
-  mediaUpload = _messages.MessageField('MediaUpload', 7)
-  patch = _messages.StringField(8)
-  post = _messages.StringField(9)
-  put = _messages.StringField(10)
-  responseBody = _messages.StringField(11)
-  selector = _messages.StringField(12)
+  patch = _messages.StringField(6)
+  post = _messages.StringField(7)
+  put = _messages.StringField(8)
+  responseBody = _messages.StringField(9)
+  selector = _messages.StringField(10)
 
 
 class LabelDescriptor(_messages.Message):
@@ -975,68 +966,6 @@ class LoggingDestination(_messages.Message):
 
   logs = _messages.StringField(1, repeated=True)
   monitoredResource = _messages.StringField(2)
-
-
-class MediaDownload(_messages.Message):
-  r"""Defines the Media configuration for a service in case of a download. Use
-  this only for Scotty Requests. Do not use this for media support using
-  Bytestream, add instead [][google.bytestream.RestByteStream] as an API to
-  your configuration for Bytestream methods.
-
-  Fields:
-    completeNotification: A boolean that determines whether a notification for
-      the completion of a download should be sent to the backend.
-    downloadService: DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS
-      REMOVED.  Specify name of the download service if one is used for
-      download.
-    dropzone: Name of the Scotty dropzone to use for the current API.
-    enabled: Whether download is enabled.
-    maxDirectDownloadSize: Optional maximum acceptable size for direct
-      download. The size is specified in bytes.
-    useDirectDownload: A boolean that determines if direct download from ESF
-      should be used for download of this media.
-  """
-
-  completeNotification = _messages.BooleanField(1)
-  downloadService = _messages.StringField(2)
-  dropzone = _messages.StringField(3)
-  enabled = _messages.BooleanField(4)
-  maxDirectDownloadSize = _messages.IntegerField(5)
-  useDirectDownload = _messages.BooleanField(6)
-
-
-class MediaUpload(_messages.Message):
-  r"""Defines the Media configuration for a service in case of an upload. Use
-  this only for Scotty Requests. Do not use this for media support using
-  Bytestream, add instead [][google.bytestream.RestByteStream] as an API to
-  your configuration for Bytestream methods.
-
-  Fields:
-    completeNotification: A boolean that determines whether a notification for
-      the completion of an upload should be sent to the backend. These
-      notifications will not be seen by the client and will not consume quota.
-    dropzone: Name of the Scotty dropzone to use for the current API.
-    enabled: Whether upload is enabled.
-    maxSize: Optional maximum acceptable size for an upload. The size is
-      specified in bytes.
-    mimeTypes: An array of mimetype patterns. Esf will only accept uploads
-      that match one of the given patterns.
-    progressNotification: Whether to receive a notification for progress
-      changes of media upload.
-    startNotification: Whether to receive a notification on the start of media
-      upload.
-    uploadService: DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS
-      REMOVED.  Specify name of the upload service if one is used for upload.
-  """
-
-  completeNotification = _messages.BooleanField(1)
-  dropzone = _messages.StringField(2)
-  enabled = _messages.BooleanField(3)
-  maxSize = _messages.IntegerField(4)
-  mimeTypes = _messages.StringField(5, repeated=True)
-  progressNotification = _messages.BooleanField(6)
-  startNotification = _messages.BooleanField(7)
-  uploadService = _messages.StringField(8)
 
 
 class Method(_messages.Message):
@@ -1700,14 +1629,15 @@ class Quota(_messages.Message):
   defines a set of metrics. - For API calls, the quota.metric_rules maps
   methods to metrics with   corresponding costs. - The quota.limits defines
   limits on the metrics, which will be used for   quota checks at runtime.  An
-  example quota configuration in yaml format:     quota:       - name:
-  apiWriteQpsPerProject        metric: library.googleapis.com/write_calls
-  unit: "1/min/{project}"  # rate limit for consumer projects        values:
-  STANDARD: 10000        # The metric rules bind all methods to the read_calls
-  metric,      # except for the UpdateBook and DeleteBook methods. These two
-  methods      # are mapped to the write_calls metric, with the UpdateBook
-  method      # consuming at twice rate as the DeleteBook method.
-  metric_rules:      - selector: "*"        metric_costs:
+  example quota configuration in yaml format:     quota:      limits:       -
+  name: apiWriteQpsPerProject        metric:
+  library.googleapis.com/write_calls        unit: "1/min/{project}"  # rate
+  limit for consumer projects        values:          STANDARD: 10000        #
+  The metric rules bind all methods to the read_calls metric,      # except
+  for the UpdateBook and DeleteBook methods. These two methods      # are
+  mapped to the write_calls metric, with the UpdateBook method      #
+  consuming at twice rate as the DeleteBook method.      metric_rules:      -
+  selector: "*"        metric_costs:
   library.googleapis.com/read_calls: 1      - selector:
   google.example.library.v1.LibraryService.UpdateBook        metric_costs:
   library.googleapis.com/write_calls: 2      - selector:

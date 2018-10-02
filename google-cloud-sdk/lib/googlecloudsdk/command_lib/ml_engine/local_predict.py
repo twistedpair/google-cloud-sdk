@@ -141,15 +141,26 @@ def _verify_ml_libs(framework):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--model-dir', required=True, help='Path of the model.')
-  parser.add_argument('--framework', required=False, default='tensorflow',
-                      help=('The ML framework used to train this version of '
-                            'the model. If not specified, defaults to '
-                            '`tensorflow`'))
+  parser.add_argument(
+      '--framework',
+      required=False,
+      default=None,
+      help=('The ML framework used to train this version of the model. '
+            'If not specified, the framework will be identified based on'
+            ' the model file name stored in the specified model-dir'))
   parser.add_argument('--signature-name', required=False,
                       help='Tensorflow signature to select input/output map.')
   args, _ = parser.parse_known_args()
 
-  _verify_ml_libs(args.framework)
+  if args.framework is None:
+    from cloud.ml.prediction import prediction_utils  # pylint: disable=g-import-not-at-top
+    framework = prediction_utils.detect_framework(args.model_dir)
+  else:
+    framework = args.framework
+
+  if framework:
+    _verify_ml_libs(framework)
+
   # We want to do this *after* we verify ml libs so the user gets a nicer
   # error message.
   # pylint: disable=g-import-not-at-top
@@ -161,10 +172,11 @@ def main():
     instance = json.loads(line.rstrip('\n'))
     instances.append(instance)
 
-  predictions = prediction_lib.local_predict(model_dir=args.model_dir,
-                                             instances=instances,
-                                             framework=args.framework,
-                                             signature_name=args.signature_name)
+  predictions = prediction_lib.local_predict(
+      model_dir=args.model_dir,
+      instances=instances,
+      framework=framework,
+      signature_name=args.signature_name)
   print(json.dumps(predictions))
 
 

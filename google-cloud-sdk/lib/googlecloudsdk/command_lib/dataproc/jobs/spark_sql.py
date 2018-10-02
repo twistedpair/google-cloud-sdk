@@ -85,10 +85,10 @@ class SparkSqlBase(job_base.JobBase):
     if args.queries:
       spark_sql_job.queryList = messages.QueryList(queries=args.queries)
     if args.params:
-      spark_sql_job.scriptVariables = encoding.DictToMessage(
+      spark_sql_job.scriptVariables = encoding.DictToAdditionalPropertyMessage(
           args.params, messages.SparkSqlJob.ScriptVariablesValue)
     if args.properties:
-      spark_sql_job.properties = encoding.DictToMessage(
+      spark_sql_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.SparkSqlJob.PropertiesValue)
 
     job.sparkSqlJob = spark_sql_job

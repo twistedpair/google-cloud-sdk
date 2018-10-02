@@ -3937,8 +3937,8 @@ class GoogleCloudVisionV1p3beta1Product(_messages.Message):
       `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
       is ignored when creating a product.
     productCategory: The category for the product identified by the reference
-      image. This should be either "homegoods" or "apparel".  This field is
-      immutable.
+      image. This should be either "homegoods", "apparel", or "toys".  This
+      field is immutable.
     productLabels: Key-value pairs that can be attached to a product. At query
       time, constraints can be specified based on the product_labels.  Note
       that integer values can be provided as strings, e.g. "1199". Only

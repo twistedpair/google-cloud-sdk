@@ -283,6 +283,10 @@
           "description": "Optional. The span ID within the trace associated with the log entry. For Trace spans, this is the same format that the Trace API v2 uses: a 16-character hexadecimal encoding of an 8-byte array, such as <code>\"000000000000004a\"<\/code>.",
           "type": "string"
         },
+        "traceSampled": {
+          "description": "Optional. The sampling decision of the trace associated with the log entry. True means that the trace resource name in the trace field was sampled for storage in a trace backend. False means that the trace was not sampled for storage when this log entry was written, or the sampling decision was unknown at the time. A non-sampled trace value is still useful as a request correlation identifier. The default is False.",
+          "type": "boolean"
+        },
         "sourceLocation": {
           "description": "Optional. Source code location information associated with the log entry, if any.",
           "$ref": "LogEntrySourceLocation"

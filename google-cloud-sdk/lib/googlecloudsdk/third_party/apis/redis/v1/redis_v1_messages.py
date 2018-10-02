@@ -79,7 +79,7 @@ class GoogleCloudRedisV1OperationMetadata(_messages.Message):
   Fields:
     apiVersion: API version.
     cancelRequested: Specifies if cancellation was requested for the
-      operaiton.
+      operation.
     createTime: Creation timestamp.
     endTime: End timestamp.
     statusDetail: Operation status details.

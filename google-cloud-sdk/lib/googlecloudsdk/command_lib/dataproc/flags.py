@@ -252,3 +252,53 @@ def AddTemplateResourceArg(parser, verb, api_version, positional=True):
       GetTemplateResourceSpec(api_version=api_version),
       'The name of the workflow template to {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddListOperationsFormat(parser):
+  parser.display_info.AddTransforms(
+      {'operationState': _TransformOperationState,
+       'operationTimestamp': _TransformOperationTimestamp,
+       'operationType': _TransformOperationType,
+       'operationWarnings': _TransformOperationWarnings,
+      })
+  parser.display_info.AddFormat(
+      'table(name.segment():label=NAME, '
+      'metadata.operationTimestamp():label=TIMESTAMP,'
+      'metadata.operationType():label=TYPE, '
+      'metadata.operationState():label=STATE, '
+      'status.code.yesno(no=\'\'):label=ERROR, '
+      'metadata.operationWarnings():label=WARNINGS)')
+
+
+def _TransformOperationType(metadata):
+  """Extract operation type from metadata."""
+  if 'operationType' in metadata:
+    return metadata['operationType']
+  elif 'graph' in metadata:
+    return 'WORKFLOW'
+  return ''
+
+
+def _TransformOperationState(metadata):
+  """Extract operation state from metadata."""
+  if 'status' in metadata:
+    return metadata['status']['state']
+  elif 'state' in metadata:
+    return metadata['state']
+  return ''
+
+
+def _TransformOperationTimestamp(metadata):
+  """Extract operation start timestamp from metadata."""
+  if 'statusHistory' in metadata:
+    return metadata['statusHistory'][0]['stateStartTime']
+  elif 'startTime' in metadata:
+    return metadata['startTime']
+  return ''
+
+
+def _TransformOperationWarnings(metadata):
+  """Returns a count of operations if any are present."""
+  if 'warnings' in metadata:
+    return len(metadata['warnings'])
+  return ''

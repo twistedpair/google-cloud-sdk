@@ -111,9 +111,10 @@ class Searcher(object):
     """
     if command[lookup.RELEASE] == lookup.GA:
       locations = [search_util.LocateTerm(command, term) for term in self.terms]
-      terms_to_locations = dict(zip(self.terms, locations))
+      results = dict(zip(self.terms, locations))
       # Return command only if at least one term is outside its ancestry path.
       if all(locations) and set(locations) != {lookup.PATH}:
-        new_command = search_util.ProcessResult(command, terms_to_locations)
+        new_command = search_util.ProcessResult(command, results)
         return new_command
+
 

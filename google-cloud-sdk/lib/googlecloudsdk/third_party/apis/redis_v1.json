@@ -406,7 +406,7 @@
           "type": "string"
         },
         "cancelRequested": {
-          "description": "Specifies if cancellation was requested for the operaiton.",
+          "description": "Specifies if cancellation was requested for the operation.",
           "type": "boolean"
         },
         "apiVersion": {

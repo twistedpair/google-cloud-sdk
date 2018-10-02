@@ -116,7 +116,7 @@ Authorization requires the following [Google IAM](https://cloud.google.com/iam) 
     )
 
     def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request.&#13;.
+      r"""Lists operations that match the specified filter in the request.
 Authorization requires the following [Google IAM](https://cloud.google.com/iam) permission&#58;
 
 * `genomics.operations.list`

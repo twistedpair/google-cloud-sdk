@@ -1941,15 +1941,21 @@ class Backend(_messages.Message):
       is [0.0,1.0].  This cannot be used for internal load balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    group: The fully-qualified URL of a Instance Group resource. This instance
-      group defines the list of instances that serve traffic. Member virtual
-      machine instances from each instance group must live in the same zone as
-      the instance group itself. No two backends in a backend service are
-      allowed to use same Instance Group resource.  Note that you must specify
-      an Instance Group resource using the fully-qualified URL, rather than a
-      partial URL.  When the BackendService has load balancing scheme
+    group: The fully-qualified URL of an Instance Group or Network Endpoint
+      Group resource. In case of instance group this defines the list of
+      instances that serve traffic. Member virtual machine instances from each
+      instance group must live in the same zone as the instance group itself.
+      No two backends in a backend service are allowed to use same Instance
+      Group resource.  For Network Endpoint Groups this defines list of
+      endpoints. All endpoints of Network Endpoint Group must be hosted on
+      instances located in the same zone as the Network Endpoint Group.
+      Backend service can not contain mix of Instance Group and Network
+      Endpoint Group backends.  Note that you must specify an Instance Group
+      or Network Endpoint Group resource using the fully-qualified URL, rather
+      than a partial URL.  When the BackendService has load balancing scheme
       INTERNAL, the instance group must be within the same region as the
-      BackendService.
+      BackendService. Network Endpoint Groups are not supported for INTERNAL
+      load balancing scheme.
     maxConnections: The max number of simultaneous connections for the group.
       Can be used with either CONNECTION or UTILIZATION balancing modes. For
       CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
@@ -2524,7 +2530,9 @@ class BackendServiceGroupHealth(_messages.Message):
   r"""A BackendServiceGroupHealth object.
 
   Fields:
-    healthStatus: A HealthStatus attribute.
+    healthStatus: Health state of the backend instances or endpoints in
+      requested instance or network endpoint group, determined based on
+      configured health checks.
     kind: [Output Only] Type of resource. Always
       compute#backendServiceGroupHealth for the health of backend services.
   """
@@ -17796,6 +17804,9 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
     restarting: [Output Only] The number of instances in the managed instance
       group that are scheduled to be restarted or are currently being
       restarted.
+    verifying: [Output Only] The number of instances in the managed instance
+      group that are being verified. See the managedInstances[].currentAction
+      property in the listManagedInstances method documentation.
   """
 
   abandoning = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -17806,6 +17817,7 @@ class InstanceGroupManagerActionsSummary(_messages.Message):
   recreating = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   refreshing = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   restarting = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  verifying = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class InstanceGroupManagerAggregatedList(_messages.Message):
@@ -21411,6 +21423,7 @@ class ManagedInstance(_messages.Message):
       RECREATING: <no description>
       REFRESHING: <no description>
       RESTARTING: <no description>
+      VERIFYING: <no description>
     """
     ABANDONING = 0
     CREATING = 1
@@ -21420,6 +21433,7 @@ class ManagedInstance(_messages.Message):
     RECREATING = 5
     REFRESHING = 6
     RESTARTING = 7
+    VERIFYING = 8
 
   class InstanceStatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the instance. This field is empty when the
@@ -21551,26 +21565,25 @@ class NamedPort(_messages.Message):
 
 
 class Network(_messages.Message):
-  r"""Represents a Network resource. Read Networks and Firewalls for more
-  information. (== resource_for v1.networks ==) (== resource_for beta.networks
-  ==)
+  r"""Represents a Network resource. Read Virtual Private Cloud (VPC) Network
+  Overview for more information. (== resource_for v1.networks ==) (==
+  resource_for beta.networks ==)
 
   Fields:
     IPv4Range: The range of internal addresses that are legal on this network.
       This range is a CIDR specification, for example: 192.168.0.0/16.
       Provided by the client when the network is created.
-    autoCreateSubnetworks: When set to true, the network is created in "auto
-      subnet mode". When set to false, the network is in "custom subnet mode".
-      In "auto subnet mode", a newly created network is assigned the default
-      CIDR of 10.128.0.0/9 and it automatically creates one subnetwork per
-      region.
+    autoCreateSubnetworks: When set to true, the VPC network is created in
+      "auto" mode. When set to false, the VPC network is created in "custom"
+      mode.  An auto mode VPC network starts with one subnet per region. Each
+      subnet has a predetermined range as described in Auto mode VPC network
+      IP ranges.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    gatewayIPv4: A gateway address for default routing to other networks. This
-      value is read only and is selected by the Google Compute Engine,
-      typically as the first usable address in the IPv4Range.
+    gatewayIPv4: [Output Only] The gateway address for default routing out of
+      the network. This value is read only and is selected by GCP.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#network for
@@ -21588,7 +21601,7 @@ class Network(_messages.Message):
       behavior to enforce.
     selfLink: [Output Only] Server-defined URL for the resource.
     subnetworks: [Output Only] Server-defined fully-qualified URLs for all
-      subnetworks in this network.
+      subnetworks in this VPC network.
   """
 
   IPv4Range = _messages.StringField(1)
@@ -21837,24 +21850,24 @@ class NetworkRoutingConfig(_messages.Message):
   Enums:
     RoutingModeValueValuesEnum: The network-wide routing mode to use. If set
       to REGIONAL, this network's cloud routers will only advertise routes
-      with subnetworks of this network in the same region as the router. If
-      set to GLOBAL, this network's cloud routers will advertise routes with
-      all subnetworks of this network, across regions.
+      with subnets of this network in the same region as the router. If set to
+      GLOBAL, this network's cloud routers will advertise routes with all
+      subnets of this network, across regions.
 
   Fields:
     routingMode: The network-wide routing mode to use. If set to REGIONAL,
-      this network's cloud routers will only advertise routes with subnetworks
-      of this network in the same region as the router. If set to GLOBAL, this
-      network's cloud routers will advertise routes with all subnetworks of
-      this network, across regions.
+      this network's cloud routers will only advertise routes with subnets of
+      this network in the same region as the router. If set to GLOBAL, this
+      network's cloud routers will advertise routes with all subnets of this
+      network, across regions.
   """
 
   class RoutingModeValueValuesEnum(_messages.Enum):
     r"""The network-wide routing mode to use. If set to REGIONAL, this
-    network's cloud routers will only advertise routes with subnetworks of
-    this network in the same region as the router. If set to GLOBAL, this
-    network's cloud routers will advertise routes with all subnetworks of this
-    network, across regions.
+    network's cloud routers will only advertise routes with subnets of this
+    network in the same region as the router. If set to GLOBAL, this network's
+    cloud routers will advertise routes with all subnets of this network,
+    across regions.
 
     Values:
       GLOBAL: <no description>
@@ -25459,8 +25472,8 @@ class ResourceGroupReference(_messages.Message):
   r"""A ResourceGroupReference object.
 
   Fields:
-    group: A URI referencing one of the instance groups listed in the backend
-      service.
+    group: A URI referencing one of the instance groups or network endpoint
+      groups listed in the backend service.
   """
 
   group = _messages.StringField(1)

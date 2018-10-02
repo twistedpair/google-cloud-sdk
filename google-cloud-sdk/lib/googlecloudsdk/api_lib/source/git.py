@@ -31,6 +31,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+import six
 from six.moves import range  # pylint: disable=redefined-builtin
 import uritemplate
 
@@ -77,9 +78,6 @@ class GitVersionException(Error):
 class InvalidGitException(Error):
   """Exceptions for when git version is empty or invalid."""
 
-  def __init__(self, message):
-    super(InvalidGitException, self).__init__(message)
-
 
 class GcloudIsNotInPath(Error):
   """Exception for when the gcloud cannot be found."""
@@ -102,25 +100,24 @@ def CheckGitVersion(version_lower_bound=None):
     NoGitException: if `git` was not found.
   """
   try:
-    output = encoding.Decode(subprocess.check_output(['git', 'version']))
-    if not output:
+    cur_version = encoding.Decode(subprocess.check_output(['git', 'version']))
+    if not cur_version:
       raise InvalidGitException('The git version string is empty.')
-    if not output.startswith('git version '):
+    if not cur_version.startswith('git version '):
       raise InvalidGitException(('The git version string must start with '
                                  'git version .'))
-    match = re.search(r'(\d+)\.(\d+)\.(\d+)', output)
+    match = re.search(r'(\d+)\.(\d+)\.(\d+)', cur_version)
     if not match:
       raise InvalidGitException('The git version string must contain a '
                                 'version number.')
 
-    cur_version = match.group(1, 2, 3)
-    current_version = tuple([int(item) for item in cur_version])
+    current_version = tuple([int(item) for item in match.group(1, 2, 3)])
     if version_lower_bound and current_version < version_lower_bound:
-      min_version = '.'.join(str(i) for i in version_lower_bound)
+      min_version = '.'.join(six.text_type(i) for i in version_lower_bound)
       raise GitVersionException(
-          ('Your git version {cur_version} is older than the minimum version '
-           '{min_version}. Please install a newer version of git.'),
-          output, min_version)
+          'Your git version {cur_version} is older than the minimum version '
+          '{min_version}. Please install a newer version of git.',
+          cur_version=cur_version, min_version=min_version)
   except OSError as e:
     if e.errno == errno.ENOENT:
       raise NoGitException()
@@ -222,7 +219,7 @@ def _GetCredHelperCommand(uri, full_path=False, min_version=_HELPER_MIN):
     try:
       CheckGitVersion(min_version)
     except GitVersionException as e:
-      helper_min_str = '.'.join(str(i) for i in min_version)
+      helper_min_str = '.'.join(six.text_type(i) for i in min_version)
       log.warning(
           textwrap.dedent("""\
           You are using a Google-hosted repository with a

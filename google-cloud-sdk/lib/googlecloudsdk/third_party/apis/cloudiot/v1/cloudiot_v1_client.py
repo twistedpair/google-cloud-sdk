@@ -296,6 +296,45 @@ its metadata.
         supports_download=False,
     )
 
+    def SendCommandToDevice(self, request, global_params=None):
+      r"""Sends a command to the specified device. In order for a device to be able.
+to receive commands, it must:
+1) be connected to Cloud IoT Core using the MQTT protocol, and
+2) be subscribed to the group of MQTT topics specified by
+   /devices/{device-id}/commands/#. This subscription will receive commands
+   at the top-level topic /devices/{device-id}/commands as well as commands
+   for subfolders, like /devices/{device-id}/commands/subfolder.
+   Note that subscribing to specific subfolders is not supported.
+If the command could not be delivered to the device, this method will
+return an error; in particular, if the device is not subscribed, this
+method will return FAILED_PRECONDITION. Otherwise, this method will
+return OK. If the subscription is QoS 1, at least once delivery will be
+guaranteed; for QoS 0, no acknowledgment will be expected from the device.
+
+      Args:
+        request: (CloudiotProjectsLocationsRegistriesDevicesSendCommandToDeviceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SendCommandToDeviceResponse) The response message.
+      """
+      config = self.GetMethodConfig('SendCommandToDevice')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SendCommandToDevice.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}:sendCommandToDevice',
+        http_method=u'POST',
+        method_id=u'cloudiot.projects.locations.registries.devices.sendCommandToDevice',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:sendCommandToDevice',
+        request_field=u'sendCommandToDeviceRequest',
+        request_type_name=u'CloudiotProjectsLocationsRegistriesDevicesSendCommandToDeviceRequest',
+        response_type_name=u'SendCommandToDeviceResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRegistriesGroupsDevicesConfigVersionsService(base_api.BaseApiService):
     """Service class for the projects_locations_registries_groups_devices_configVersions resource."""
 
@@ -489,6 +528,45 @@ its metadata.
         request_field=u'device',
         request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesPatchRequest',
         response_type_name=u'Device',
+        supports_download=False,
+    )
+
+    def SendCommandToDevice(self, request, global_params=None):
+      r"""Sends a command to the specified device. In order for a device to be able.
+to receive commands, it must:
+1) be connected to Cloud IoT Core using the MQTT protocol, and
+2) be subscribed to the group of MQTT topics specified by
+   /devices/{device-id}/commands/#. This subscription will receive commands
+   at the top-level topic /devices/{device-id}/commands as well as commands
+   for subfolders, like /devices/{device-id}/commands/subfolder.
+   Note that subscribing to specific subfolders is not supported.
+If the command could not be delivered to the device, this method will
+return an error; in particular, if the device is not subscribed, this
+method will return FAILED_PRECONDITION. Otherwise, this method will
+return OK. If the subscription is QoS 1, at least once delivery will be
+guaranteed; for QoS 0, no acknowledgment will be expected from the device.
+
+      Args:
+        request: (CloudiotProjectsLocationsRegistriesGroupsDevicesSendCommandToDeviceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SendCommandToDeviceResponse) The response message.
+      """
+      config = self.GetMethodConfig('SendCommandToDevice')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SendCommandToDevice.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/groups/{groupsId}/devices/{devicesId}:sendCommandToDevice',
+        http_method=u'POST',
+        method_id=u'cloudiot.projects.locations.registries.groups.devices.sendCommandToDevice',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:sendCommandToDevice',
+        request_field=u'sendCommandToDeviceRequest',
+        request_type_name=u'CloudiotProjectsLocationsRegistriesGroupsDevicesSendCommandToDeviceRequest',
+        response_type_name=u'SendCommandToDeviceResponse',
         supports_download=False,
     )
 

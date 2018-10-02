@@ -1078,7 +1078,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/genomics"
           ],
-          "description": "Lists operations that match the specified filter in the request.&#13;\nAuthorization requires the following [Google IAM](https:\/\/cloud.google.com\/iam) permission&#58;\n\n* `genomics.operations.list`"
+          "description": "Lists operations that match the specified filter in the request.\nAuthorization requires the following [Google IAM](https:\/\/cloud.google.com\/iam) permission&#58;\n\n* `genomics.operations.list`"
         },
         "get": {
           "id": "genomics.operations.get",

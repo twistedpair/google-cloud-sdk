@@ -23,7 +23,10 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.compute.allocations import flags as allocation_flags
+from googlecloudsdk.command_lib.compute.allocations import resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
+
 
 VALID_PLANS = ['12-month', '36-month']
 _REQUIRED_RESOURCES = sorted(['VCPU', 'MEMORY'])
@@ -116,3 +119,43 @@ def GetTypeMapperFlag(messages):
       default='general-purpose',
       include_filter=lambda x: x != 'TYPE_UNSPECIFIED')
 
+
+def AddAllocationArgGroup(parser):
+  """Adds all flags needed for allocation(s) creation."""
+  allocations_manage_group = parser.add_group(
+      'Manage the allocations to be created with the commitment.', mutex=True)
+
+  allocations_manage_group.add_argument(
+      '--allocations-from-file',
+      type=arg_parsers.BufferedFileInput(),
+      help='The path to a YAML file of multiple allocations\' configuration.')
+
+  single_allocation_group = allocations_manage_group.add_argument_group(
+      help='Manage the allocation to be created with the commitment.')
+  resource_args.GetAllocationResourceArg(
+      positional=False).AddArgument(single_allocation_group)
+  single_allocation_group.add_argument(
+      '--allocation-type',
+      hidden=True,
+      choices=['specific'],
+      default='specific',
+      help='The type of the allocation to be created.')
+
+  specific_sku_allocation_group = single_allocation_group.add_argument_group(
+      help='Manage the specific SKU allocation properties to create.')
+  AddFlagsToSpecificSkuGroup(specific_sku_allocation_group)
+
+
+def AddFlagsToSpecificSkuGroup(group):
+  """Adds flags needed for a specific sku zonal allocation."""
+  args = [
+      allocation_flags.GetRequireSpecificAllocation(),
+      allocation_flags.GetVmCountFlag(required=False),
+      allocation_flags.GetMinCpuPlatform(),
+      allocation_flags.GetMachineType(required=False),
+      allocation_flags.GetLocalSsdFlag(),
+      allocation_flags.GetAcceleratorFlag(),
+  ]
+
+  for arg in args:
+    arg.AddToParser(group)

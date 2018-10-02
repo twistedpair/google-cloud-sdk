@@ -132,7 +132,7 @@ def ParseResourceNameArgs(args, arg_name, current_value_thunk, resource_parser):
     current_value_thunk: zero-arg function that returns the current value of the
       attribute to be updated. Will be called lazily if required.
     resource_parser: one-arg function that returns a resource reference that
-      corresponds to the resource name list to be udpated.
+      corresponds to the resource name list to be updated.
 
   Raises:
     ValueError: if more than one arg is set.
@@ -222,8 +222,13 @@ def _ModifyCurrentValue(remove, add, clear, set_, current_value_thunk):
     return None
 
 
-def AddPrimitiveArgs(parser, resource_name, arg_name, property_name,
-                     additional_help='', metavar=None):
+def AddPrimitiveArgs(parser,
+                     resource_name,
+                     arg_name,
+                     property_name,
+                     additional_help='',
+                     metavar=None,
+                     is_dict_args=False):
   """Add arguments for updating a field to the given parser.
 
   Adds `--{add,remove,set,clear-<resource>` arguments.
@@ -239,6 +244,7 @@ def AddPrimitiveArgs(parser, resource_name, arg_name, property_name,
     additional_help: str, additional help text describing the property.
     metavar: str, the name of the metavar to use (if different from
       arg_name.upper()).
+    is_dict_args: boolean, True when the primitive args are dict args.
   """
   properties_name = property_name
   group_help = 'These flags modify the member {} of this {}.'.format(
@@ -248,29 +254,61 @@ def AddPrimitiveArgs(parser, resource_name, arg_name, property_name,
   group = parser.add_mutually_exclusive_group(group_help)
   metavar = metavar or arg_name.upper()
   args = [
-      base.Argument(
-          '--add-{}'.format(arg_name),
-          type=arg_parsers.ArgList(),
-          metavar=metavar,
-          help='Append the given values to the current {}.'.format(
-              properties_name)),
-      base.Argument(
-          '--remove-{}'.format(arg_name),
-          metavar=metavar,
-          type=arg_parsers.ArgList(),
-          help='Remove the given values from the current {}.'.format(
-              properties_name)),
-      base.Argument(
-          '--set-{}'.format(arg_name),
-          type=arg_parsers.ArgList(),
-          metavar=metavar,
-          help=(
-              'Completely replace the current {} with the given values.'.format(
-                  properties_name))),
-      base.Argument(
-          '--clear-{}'.format(arg_name),
-          action='store_true',
-          help='Empty the current {}.'.format(properties_name)),
+      _GetAppendArg(arg_name, metavar, properties_name, is_dict_args),
+      _GetRemoveArg(arg_name, metavar, properties_name, is_dict_args),
+      _GetSetArg(arg_name, metavar, properties_name, is_dict_args),
+      _GetClearArg(arg_name, properties_name),
   ]
   for arg in args:
     arg.AddToParser(group)
+
+
+def _GetAppendArg(arg_name, metavar, prop_name, is_dict_args):
+  list_name = '--add-{}'.format(arg_name)
+  list_help = 'Append the given values to the current {}.'.format(prop_name)
+  dict_name = '--update-{}'.format(arg_name)
+  dict_help = 'Update the given key-value pairs in the current {}.'.format(
+      prop_name)
+  return base.Argument(
+      dict_name if is_dict_args else list_name,
+      type=_GetArgType(is_dict_args),
+      metavar=metavar,
+      help=_GetArgHelp(dict_help, list_help, is_dict_args))
+
+
+def _GetRemoveArg(arg_name, metavar, prop_name, is_dict_args):
+  list_help = 'Remove the given values from the current {}.'.format(prop_name)
+  dict_help = ('Remove the key-value pairs from the current {} with the given '
+               'keys.').format(prop_name)
+  return base.Argument(
+      '--remove-{}'.format(arg_name),
+      metavar=metavar,
+      type=_GetArgType(is_dict_args),
+      help=_GetArgHelp(dict_help, list_help, is_dict_args))
+
+
+def _GetSetArg(arg_name, metavar, prop_name, is_dict_args):
+  list_help = 'Completely replace the current {} with the given values.'.format(
+      prop_name)
+  dict_help = ('Completely replace the current {} with the given key-value '
+               'pairs.').format(prop_name)
+  return base.Argument(
+      '--set-{}'.format(arg_name),
+      type=_GetArgType(is_dict_args),
+      metavar=metavar,
+      help=_GetArgHelp(dict_help, list_help, is_dict_args))
+
+
+def _GetClearArg(arg_name, prop_name):
+  return base.Argument(
+      '--clear-{}'.format(arg_name),
+      action='store_true',
+      help='Empty the current {}.'.format(prop_name))
+
+
+def _GetArgType(is_dict_args):
+  return arg_parsers.ArgDict() if is_dict_args else arg_parsers.ArgList()
+
+
+def _GetArgHelp(dict_help, list_help, is_dict_args):
+  return dict_help if is_dict_args else list_help

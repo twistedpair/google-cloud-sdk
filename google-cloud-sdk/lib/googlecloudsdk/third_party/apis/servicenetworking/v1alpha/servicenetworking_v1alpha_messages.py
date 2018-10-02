@@ -244,31 +244,6 @@ class AuthorizationConfig(_messages.Message):
   provider = _messages.StringField(1)
 
 
-class AuthorizationRule(_messages.Message):
-  r"""Authorization rule for API services.  It specifies the permission(s)
-  required for an API element for the overall API request to succeed. It is
-  typically used to mark request message fields that contain the name of the
-  resource and indicates the permissions that will be checked on that
-  resource.  For example:      package google.storage.v1;      message
-  CopyObjectRequest {       string source = 1 [
-  (google.api.authz).permissions = "storage.objects.get"];        string
-  destination = 2 [         (google.api.authz).permissions =
-  "storage.objects.create,storage.objects.update"];     }
-
-  Fields:
-    permissions: The required permissions. The acceptable values vary depend
-      on the authorization system used. For Google APIs, it should be a comma-
-      separated Google IAM permission values. When multiple permissions are
-      listed, the semantics is not defined by the system. Additional
-      documentation must be provided manually.
-    selector: Selects the API elements to which this rule applies.  Refer to
-      selector for syntax details.
-  """
-
-  permissions = _messages.StringField(1)
-  selector = _messages.StringField(2)
-
-
 class Backend(_messages.Message):
   r"""`Backend` defines the backend configuration for a service.
 
@@ -878,10 +853,6 @@ class HttpRule(_messages.Message):
     additionalBindings: Additional HTTP bindings for the selector. Nested
       bindings must not contain an `additional_bindings` field themselves
       (that is, the nesting may only be one level deep).
-    authorizations: Specifies the permission(s) required for an API element
-      for the overall API request to succeed. It is typically used to mark
-      request message fields that contain the name of the resource and
-      indicates the permissions that will be checked on that resource.
     body: The name of the request field whose value is mapped to the HTTP
       request body, or `*` for mapping all request fields not captured by the
       path pattern to the HTTP body, or omitted for not having any HTTP
@@ -894,13 +865,6 @@ class HttpRule(_messages.Message):
     delete: Maps to HTTP DELETE. Used for deleting a resource.
     get: Maps to HTTP GET. Used for listing and getting information about
       resources.
-    mediaDownload: Use this only for Scotty Requests. Do not use this for
-      bytestream methods. For media support, add instead
-      [][google.bytestream.RestByteStream] as an API to your configuration.
-    mediaUpload: Use this only for Scotty Requests. Do not use this for media
-      support using Bytestream, add instead
-      [][google.bytestream.RestByteStream] as an API to your configuration for
-      Bytestream methods.
     patch: Maps to HTTP PATCH. Used for updating a resource.
     post: Maps to HTTP POST. Used for creating a resource or performing an
       action.
@@ -909,46 +873,20 @@ class HttpRule(_messages.Message):
       mapped to the HTTP response body. When omitted, the entire response
       message will be used as the HTTP response body.  NOTE: The referred
       field must be present at the top-level of the response message type.
-    restCollection: DO NOT USE. This is an experimental field.  Optional. The
-      REST collection name is by default derived from the URL pattern. If
-      specified, this field overrides the default collection name. Example:
-      rpc AddressesAggregatedList(AddressesAggregatedListRequest)
-      returns (AddressesAggregatedListResponse) {       option
-      (google.api.http) = {         get:
-      "/v1/projects/{project_id}/aggregated/addresses"
-      rest_collection: "projects.addresses"       };     }  This method has
-      the automatically derived collection name "projects.aggregated".
-      Because, semantically, this rpc is actually an operation on the
-      "projects.addresses" collection, the `rest_collection` field is
-      configured to override the derived collection name.
-    restMethodName: DO NOT USE. This is an experimental field.  Optional. The
-      rest method name is by default derived from the URL pattern. If
-      specified, this field overrides the default method name. Example:
-      rpc CreateResource(CreateResourceRequest)         returns
-      (CreateResourceResponse) {       option (google.api.http) = {
-      post: "/v1/resources",         body: "resource",
-      rest_method_name: "insert"       };     }  This method has the
-      automatically derived rest method name "create", but for backwards
-      compatibility with apiary, it is specified as insert.
     selector: Selects a method to which this rule applies.  Refer to selector
       for syntax details.
   """
 
   additionalBindings = _messages.MessageField('HttpRule', 1, repeated=True)
-  authorizations = _messages.MessageField('AuthorizationRule', 2, repeated=True)
-  body = _messages.StringField(3)
-  custom = _messages.MessageField('CustomHttpPattern', 4)
-  delete = _messages.StringField(5)
-  get = _messages.StringField(6)
-  mediaDownload = _messages.MessageField('MediaDownload', 7)
-  mediaUpload = _messages.MessageField('MediaUpload', 8)
-  patch = _messages.StringField(9)
-  post = _messages.StringField(10)
-  put = _messages.StringField(11)
-  responseBody = _messages.StringField(12)
-  restCollection = _messages.StringField(13)
-  restMethodName = _messages.StringField(14)
-  selector = _messages.StringField(15)
+  body = _messages.StringField(2)
+  custom = _messages.MessageField('CustomHttpPattern', 3)
+  delete = _messages.StringField(4)
+  get = _messages.StringField(5)
+  patch = _messages.StringField(6)
+  post = _messages.StringField(7)
+  put = _messages.StringField(8)
+  responseBody = _messages.StringField(9)
+  selector = _messages.StringField(10)
 
 
 class LabelDescriptor(_messages.Message):
@@ -1065,68 +1003,6 @@ class LoggingDestination(_messages.Message):
 
   logs = _messages.StringField(1, repeated=True)
   monitoredResource = _messages.StringField(2)
-
-
-class MediaDownload(_messages.Message):
-  r"""Defines the Media configuration for a service in case of a download. Use
-  this only for Scotty Requests. Do not use this for media support using
-  Bytestream, add instead [][google.bytestream.RestByteStream] as an API to
-  your configuration for Bytestream methods.
-
-  Fields:
-    completeNotification: A boolean that determines whether a notification for
-      the completion of a download should be sent to the backend.
-    downloadService: DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS
-      REMOVED.  Specify name of the download service if one is used for
-      download.
-    dropzone: Name of the Scotty dropzone to use for the current API.
-    enabled: Whether download is enabled.
-    maxDirectDownloadSize: Optional maximum acceptable size for direct
-      download. The size is specified in bytes.
-    useDirectDownload: A boolean that determines if direct download from ESF
-      should be used for download of this media.
-  """
-
-  completeNotification = _messages.BooleanField(1)
-  downloadService = _messages.StringField(2)
-  dropzone = _messages.StringField(3)
-  enabled = _messages.BooleanField(4)
-  maxDirectDownloadSize = _messages.IntegerField(5)
-  useDirectDownload = _messages.BooleanField(6)
-
-
-class MediaUpload(_messages.Message):
-  r"""Defines the Media configuration for a service in case of an upload. Use
-  this only for Scotty Requests. Do not use this for media support using
-  Bytestream, add instead [][google.bytestream.RestByteStream] as an API to
-  your configuration for Bytestream methods.
-
-  Fields:
-    completeNotification: A boolean that determines whether a notification for
-      the completion of an upload should be sent to the backend. These
-      notifications will not be seen by the client and will not consume quota.
-    dropzone: Name of the Scotty dropzone to use for the current API.
-    enabled: Whether upload is enabled.
-    maxSize: Optional maximum acceptable size for an upload. The size is
-      specified in bytes.
-    mimeTypes: An array of mimetype patterns. Esf will only accept uploads
-      that match one of the given patterns.
-    progressNotification: Whether to receive a notification for progress
-      changes of media upload.
-    startNotification: Whether to receive a notification on the start of media
-      upload.
-    uploadService: DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS
-      REMOVED.  Specify name of the upload service if one is used for upload.
-  """
-
-  completeNotification = _messages.BooleanField(1)
-  dropzone = _messages.StringField(2)
-  enabled = _messages.BooleanField(3)
-  maxSize = _messages.IntegerField(4)
-  mimeTypes = _messages.StringField(5, repeated=True)
-  progressNotification = _messages.BooleanField(6)
-  startNotification = _messages.BooleanField(7)
-  uploadService = _messages.StringField(8)
 
 
 class Method(_messages.Message):
@@ -1800,14 +1676,15 @@ class Quota(_messages.Message):
   defines a set of metrics. - For API calls, the quota.metric_rules maps
   methods to metrics with   corresponding costs. - The quota.limits defines
   limits on the metrics, which will be used for   quota checks at runtime.  An
-  example quota configuration in yaml format:     quota:       - name:
-  apiWriteQpsPerProject        metric: library.googleapis.com/write_calls
-  unit: "1/min/{project}"  # rate limit for consumer projects        values:
-  STANDARD: 10000        # The metric rules bind all methods to the read_calls
-  metric,      # except for the UpdateBook and DeleteBook methods. These two
-  methods      # are mapped to the write_calls metric, with the UpdateBook
-  method      # consuming at twice rate as the DeleteBook method.
-  metric_rules:      - selector: "*"        metric_costs:
+  example quota configuration in yaml format:     quota:      limits:       -
+  name: apiWriteQpsPerProject        metric:
+  library.googleapis.com/write_calls        unit: "1/min/{project}"  # rate
+  limit for consumer projects        values:          STANDARD: 10000        #
+  The metric rules bind all methods to the read_calls metric,      # except
+  for the UpdateBook and DeleteBook methods. These two methods      # are
+  mapped to the write_calls metric, with the UpdateBook method      #
+  consuming at twice rate as the DeleteBook method.      metric_rules:      -
+  selector: "*"        metric_costs:
   library.googleapis.com/read_calls: 1      - selector:
   google.example.library.v1.LibraryService.UpdateBook        metric_costs:
   library.googleapis.com/write_calls: 2      - selector:

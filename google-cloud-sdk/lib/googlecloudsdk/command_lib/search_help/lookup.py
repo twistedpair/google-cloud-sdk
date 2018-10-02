@@ -46,6 +46,8 @@ SUMMARY = 'summary'
 TEXT = 'text'
 RESULTS = 'results'
 
+DOT = '.'
+
 ALPHA = 'ALPHA'
 BETA = 'BETA'
 GA = 'GA'

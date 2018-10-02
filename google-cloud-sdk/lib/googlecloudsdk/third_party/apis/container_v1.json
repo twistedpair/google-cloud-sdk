@@ -318,6 +318,13 @@
         "location": {
           "description": "[Output only] The name of the Google Compute Engine\n[zone](\/compute\/docs\/regions-zones\/regions-zones#available) or\n[region](\/compute\/docs\/regions-zones\/regions-zones#available) in which\nthe cluster resides.",
           "type": "string"
+        },
+        "conditions": {
+          "description": "Which conditions caused the current cluster state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -649,6 +656,13 @@
         "management": {
           "description": "NodeManagement configuration for this NodePool.",
           "$ref": "NodeManagement"
+        },
+        "conditions": {
+          "description": "Which conditions caused the current node pool state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },
@@ -703,6 +717,33 @@
         },
         "description": {
           "description": "[Output only] This field is set when upgrades are about to commence\nwith the description of the upgrade.",
+          "type": "string"
+        }
+      }
+    },
+    "StatusCondition": {
+      "id": "StatusCondition",
+      "description": "StatusCondition describes why a cluster or a node pool has a certain status\n(e.g., ERROR or DEGRADED).",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Machine-friendly representation of the condition",
+          "enumDescriptions": [
+            "UNKNOWN indicates a generic condition.",
+            "GCE_STOCKOUT indicates a GCE stockout.",
+            "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.",
+            "GCE quota was exceeded.\nMore codes TBA"
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "GCE_STOCKOUT",
+            "GKE_SERVICE_ACCOUNT_DELETED",
+            "GCE_QUOTA_EXCEEDED"
+          ]
+        },
+        "message": {
+          "description": "Human-friendly representation of the condition",
           "type": "string"
         }
       }
@@ -1027,6 +1068,20 @@
         "endTime": {
           "description": "[Output only] The time the operation completed, in\n[RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
           "type": "string"
+        },
+        "clusterConditions": {
+          "description": "Which conditions caused the current cluster state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
+        },
+        "nodepoolConditions": {
+          "description": "Which conditions caused the current node pool state.",
+          "type": "array",
+          "items": {
+            "$ref": "StatusCondition"
+          }
         }
       }
     },

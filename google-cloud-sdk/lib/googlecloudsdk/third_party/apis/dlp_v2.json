@@ -194,6 +194,13 @@
               "CONTENT_IMAGE"
             ]
           }
+        },
+        "ruleSet": {
+          "description": "Set of rules to apply to the findings for this InspectConfig.\nExclusion rules, contained in the set are executed in the end, other\nrules are executed in the order they are specified for each info type.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2InspectionRuleSet"
+          }
         }
       }
     },
@@ -253,7 +260,7 @@
       "type": "object",
       "properties": {
         "infoType": {
-          "description": "All CustomInfoTypes must have a name\nthat does not conflict with built-in InfoTypes or other CustomInfoTypes.",
+          "description": "CustomInfoType can either be a new infoType, or an extension of built-in\ninfoType, when the name matches one of existing infoTypes and that infoType\nis specified in `InspectContent.info_types` field. Specifying the latter\nadds findings to the one detected by the system. If built-in info type is\nnot specified in `InspectContent.info_types` list then the name is treated\nas a custom info type.",
           "$ref": "GooglePrivacyDlpV2InfoType"
         },
         "likelihood": {
@@ -298,6 +305,17 @@
           "items": {
             "$ref": "GooglePrivacyDlpV2DetectionRule"
           }
+        },
+        "exclusionType": {
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "EXCLUSION_TYPE_UNSPECIFIED",
+            "EXCLUSION_TYPE_EXCLUDE"
+          ]
         }
       }
     },
@@ -454,6 +472,91 @@
         }
       }
     },
+    "GooglePrivacyDlpV2InspectionRuleSet": {
+      "id": "GooglePrivacyDlpV2InspectionRuleSet",
+      "description": "Rule set for modifying a set of infoTypes to alter behavior under certain\ncircumstances, depending on the specific details of the rules within the set.",
+      "type": "object",
+      "properties": {
+        "infoTypes": {
+          "description": "List of infoTypes this rule set is applied to.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2InfoType"
+          }
+        },
+        "rules": {
+          "description": "Set of rules to be applied to infoTypes. The rules are applied in order.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2InspectionRule"
+          }
+        }
+      }
+    },
+    "GooglePrivacyDlpV2InspectionRule": {
+      "id": "GooglePrivacyDlpV2InspectionRule",
+      "description": "A single inspection rule to be applied to infoTypes, specified in\n`InspectionRuleSet`.",
+      "type": "object",
+      "properties": {
+        "hotwordRule": {
+          "description": "Hotword-based detection rule.",
+          "$ref": "GooglePrivacyDlpV2HotwordRule"
+        },
+        "exclusionRule": {
+          "description": "Exclusion rule.",
+          "$ref": "GooglePrivacyDlpV2ExclusionRule"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2ExclusionRule": {
+      "id": "GooglePrivacyDlpV2ExclusionRule",
+      "description": "The rule that specifies conditions when findings of infoTypes specified in\n`InspectionRuleSet` are removed from results.",
+      "type": "object",
+      "properties": {
+        "dictionary": {
+          "description": "Dictionary which defines the rule.",
+          "$ref": "GooglePrivacyDlpV2Dictionary"
+        },
+        "regex": {
+          "description": "Regular expression which defines the rule.",
+          "$ref": "GooglePrivacyDlpV2Regex"
+        },
+        "excludeInfoTypes": {
+          "description": "Set of infoTypes for which findings would affect this rule.",
+          "$ref": "GooglePrivacyDlpV2ExcludeInfoTypes"
+        },
+        "matchingType": {
+          "description": "How the rule is applied, see MatchingType documentation for details.",
+          "enumDescriptions": [
+            "Invalid.",
+            "Full match.\n\n- Dictionary: join of Dictionary results matched complete finding quote\n- Regex: all regex matches fill a finding quote start to end\n- Exclude info type: completely inside affecting info types findings",
+            "Partial match.\n\n- Dictionary: at least one of the tokens in the finding matches\n- Regex: substring of the finding matches\n- Exclude info type: intersects with affecting info types findings",
+            "Inverse match.\n\n- Dictionary: no tokens in the finding match the dictionary\n- Regex: finding doesn't match the regex\n- Exclude info type: no intersection with affecting info types findings"
+          ],
+          "type": "string",
+          "enum": [
+            "MATCHING_TYPE_UNSPECIFIED",
+            "MATCHING_TYPE_FULL_MATCH",
+            "MATCHING_TYPE_PARTIAL_MATCH",
+            "MATCHING_TYPE_INVERSE_MATCH"
+          ]
+        }
+      }
+    },
+    "GooglePrivacyDlpV2ExcludeInfoTypes": {
+      "id": "GooglePrivacyDlpV2ExcludeInfoTypes",
+      "description": "List of exclude infoTypes.",
+      "type": "object",
+      "properties": {
+        "infoTypes": {
+          "description": "InfoType list in ExclusionRule rule drops a finding when it overlaps or\ncontained within with a finding of an infoType from this list. For\nexample, for `InspectionRuleSet.info_types` containing \"PHONE_NUMBER\"` and\n`exclusion_rule` containing `exclude_info_types.info_types` with\n\"EMAIL_ADDRESS\" the phone number findings are dropped if they overlap\nwith EMAIL_ADDRESS finding.\nThat leads to \"555-222-2222@example.org\" to generate only a single\nfinding, namely email address.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2InfoType"
+          }
+        }
+      }
+    },
     "GooglePrivacyDlpV2ContentItem": {
       "id": "GooglePrivacyDlpV2ContentItem",
       "description": "Container structure for the content to inspect.",
@@ -598,7 +701,7 @@
     },
     "GoogleTypeDate": {
       "id": "GoogleTypeDate",
-      "description": "Represents a whole calendar date, for example date of birth. The time of day\nand time zone are either specified elsewhere or are not significant. The date\nis relative to the Proleptic Gregorian Calendar. The day can be 0 to\nrepresent a year and month where the day is not significant, for example\ncredit card expiration date. The year can be 0 to represent a month and day\nindependent of year, for example anniversary date. Related types are\ngoogle.type.TimeOfDay and `google.protobuf.Timestamp`.",
+      "description": "Represents a whole or partial calendar date, e.g. a birthday. The time of day\nand time zone are either specified elsewhere or are not significant. The date\nis relative to the Proleptic Gregorian Calendar. This can represent:\n\n* A full date, with non-zero year, month and day values\n* A month and day value, with a zero year, e.g. an anniversary\n* A year on its own, with zero month and day values\n* A year and month value, with a zero day, e.g. a credit card expiration date\n\nRelated types are google.type.TimeOfDay and `google.protobuf.Timestamp`.",
       "type": "object",
       "properties": {
         "year": {
@@ -607,12 +710,12 @@
           "format": "int32"
         },
         "month": {
-          "description": "Month of year. Must be from 1 to 12, or 0 if specifying a date without a\nmonth.",
+          "description": "Month of year. Must be from 1 to 12, or 0 if specifying a year without a\nmonth and day.",
           "type": "integer",
           "format": "int32"
         },
         "day": {
-          "description": "Day of month. Must be from 1 to 31 and valid for the year and month, or 0\nif specifying a year\/month where the day is not significant.",
+          "description": "Day of month. Must be from 1 to 31 and valid for the year and month, or 0\nif specifying a year by itself or a year and month where the day is not\nsignificant.",
           "type": "integer",
           "format": "int32"
         }
@@ -4411,6 +4514,11 @@
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
+                },
+                "orderBy": {
+                  "description": "Optional comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc, display_name, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the most recent version of the\nresource was created.\n- `state`: corresponds to the state of the resource.\n- `name`: corresponds to resource name.\n- `display_name`: corresponds to info type's display name.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -4894,6 +5002,11 @@
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
+                },
+                "orderBy": {
+                  "description": "Optional comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc, display_name, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the most recent version of the\nresource was created.\n- `state`: corresponds to the state of the resource.\n- `name`: corresponds to resource name.\n- `display_name`: corresponds to info type's display name.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [

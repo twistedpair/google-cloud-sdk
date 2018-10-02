@@ -56,12 +56,18 @@ SERVICE_ACCOUNT_KEY_FORMAT = """
         validBeforeTime:label=EXPIRES_AT
     )
 """
-_CONDITION_FORMAT_EXCEPTION = gcloud_exceptions.InvalidArgumentException(
+CONDITION_FORMAT_EXCEPTION = gcloud_exceptions.InvalidArgumentException(
     'condition',
     'condition must be either `None` or a list of key=value pairs. '
     'If not `None`, `expression` and `title` are required keys.\n'
     'Example: --condition=expression=[expression],title=[title],'
-    'description=[description].')
+    'description=[description]')
+
+CONDITION_FILE_FORMAT_EXCEPTION = gcloud_exceptions.InvalidArgumentException(
+    'condition-from-file',
+    'condition-from-file must be a path to a YAML or JSON file containing the '
+    'condition. `expression` and `title` are required keys. `description` is '
+    'optional. To specify a `None` condition, use --condition=None.')
 
 _ALL_CONDITIONS = {'All': None}
 
@@ -78,7 +84,11 @@ class IamPolicyBindingNotFound(core_exceptions.Error):
   """Raised when the specified IAM policy binding is not found."""
 
 
-class IamPolicyBindingIncompleteError(core_exceptions.Error):
+class IamPolicyBindingInvalidError(core_exceptions.Error):
+  """Raised when the specified IAM policy binding is invalid."""
+
+
+class IamPolicyBindingIncompleteError(IamPolicyBindingInvalidError):
   """Raised when the specified IAM policy binding is incomplete."""
 
 
@@ -117,17 +127,17 @@ def _ConditionHelpText(intro):
   help_text = """
 {intro}
 
-*expression*::: (Required) The expression of the condition which
+*expression*::: (Required) Expression of the condition which
 evaluates to True or False. This uses a subset of Common Expression
 Language syntax.
 
-*title*::: (Required) A title for the expression, i.e. a short string
+*title*::: (Required) Title for the expression, i.e. a short string
 describing its purpose.
 
-*description*::: (Optional) An description of the expression. This is
+*description*::: (Optional) Description for the expression. This is
 a longer text which describes the expression
 
-NOTE: an unsatisfied condition will not allow user access via this
+NOTE: An unsatisfied condition will not allow access via this
 binding.""".format(intro=intro)
   return help_text
 
@@ -138,7 +148,9 @@ def _AddConditionFlagsForAddBindingToIamPolicy(parser):
   condition_intro = """
 Condition of the binding to be added. When condition is explicitly
 specified as `None` (e.g. --condition=None), a binding without a condition is
-added."""
+added. When --condition is specified and is not a `None` condition, `--role`
+cannot be a primitive role. Primitive roles are `roles/editor`, `roles/owner`,
+and `roles/viewer`."""
   help_str_condition = _ConditionHelpText(condition_intro)
   help_str_condition_from_file = """
 Path to a local JSON or YAML file that defines the condition.
@@ -188,14 +200,24 @@ conditions."""
       '--all', action='store_true', help=help_str_condition_all)
 
 
-def ValidateConditionArgument(condition):
+def ValidateConditionArgument(condition, exception):
   if 'None' in condition:
     if ('expression' in condition or 'description' in condition or
         'title' in condition):
-      raise _CONDITION_FORMAT_EXCEPTION
+      raise exception
   else:
     if not condition.get('expression') or not condition.get('title'):
-      raise _CONDITION_FORMAT_EXCEPTION
+      raise exception
+
+
+def ValidateMutexConditionAndPrimitiveRoles(condition, role):
+  primitive_roles = ['roles/editor', 'roles/owner', 'roles/viewer']
+  if (_ConditionIsSpecified(condition) and not _IsNoneCondition(condition) and
+      role in primitive_roles):
+    raise IamPolicyBindingInvalidError(
+        'Binding with a condition and a primitive role is not allowed. '
+        'Primitive roles are `roles/editor`, `roles/owner`, '
+        'and `roles/viewer`.')
 
 
 def AddArgForPolicyFile(parser):
@@ -261,7 +283,6 @@ def AddArgsForRemoveIamPolicyBinding(parser,
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
-
   parser.add_argument(
       '--role',
       required=True,
@@ -348,7 +369,8 @@ def AddBindingToIamPolicyWithCondition(binding_message_type,
           'mode. Run the command again with `--condition=None`')
       raise IamPolicyBindingIncompleteError(message)
     condition = _PromptForConditionAddBindingToIamPolicy(policy)
-    ValidateConditionArgument(condition)
+    ValidateConditionArgument(condition, CONDITION_FORMAT_EXCEPTION)
+    ValidateMutexConditionAndPrimitiveRoles(condition, role)
   if (not _PolicyContainsCondition(policy) and
       _ConditionIsSpecified(condition) and not _IsNoneCondition(condition)):
     log.warning('Adding binding with condition to a policy without condition '
@@ -735,12 +757,29 @@ def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
   return (policy, update_mask)
 
 
+def ParseYamlOrJsonCondition(condition_file_content):
+  """Create a condition of IAM policy binding from content of YAML or JSON file.
+
+  Args:
+    condition_file_content: string, the content of a YAML or JSON file
+      containing a condition.
+
+  Returns:
+    a dictionary representation of the condition.
+  """
+
+  condition = yaml.load(condition_file_content)
+  ValidateConditionArgument(condition, CONDITION_FILE_FORMAT_EXCEPTION)
+  return condition
+
+
 def ParseYamlToRole(file_path, role_message_type):
   """Construct an IAM Role protorpc.Message from a Yaml formatted file.
 
   Args:
     file_path: Path to the Yaml IAM Role file.
     role_message_type: Role message type to convert Yaml to.
+
   Returns:
     a protorpc.Message of type role_message_type filled in from the Yaml
     role file.
@@ -808,8 +847,11 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id='',
   }
 
 
-def GetDetailedHelpForAddIamPolicyBinding(collection, example_id,
-                                          role='roles/editor', use_an=False):
+def GetDetailedHelpForAddIamPolicyBinding(collection,
+                                          example_id,
+                                          role='roles/editor',
+                                          use_an=False,
+                                          condition=False):
   """Returns a detailed_help for an add-iam-policy-binding command.
 
   Args:
@@ -819,43 +861,58 @@ def GetDetailedHelpForAddIamPolicyBinding(collection, example_id,
     role: The sample role to use in the documentation. The default of
         'roles/editor' is usually sufficient, but if your command group's
         users would more likely use a different role, you can override it here.
-     use_an: If True, uses "an" instead of "a" for the article preceding uses of
+    use_an: If True, uses "an" instead of "a" for the article preceding uses of
          the collection.
+    condition: If True, add help text for condition.
+
   Returns:
     a dict with boilerplate help text for the add-iam-policy-binding command
   """
   a = 'an' if use_an else 'a'
-  return {
-      'brief': 'Add IAM policy binding for {0} {1}.'.format(a, collection),
-      'DESCRIPTION': '{description}',
+  note = ('See https://cloud.google.com/iam/docs/managing-policies for details '
+          'of policy role and member types.')
+  detailed_help = {
+      'brief':
+          'Add IAM policy binding for {0} {1}.'.format(a, collection),
+      'DESCRIPTION':
+          '{description}',
       'EXAMPLES': """\
-          The following command will add an IAM policy binding for the role
-          of '{role}' for the user 'test-user@gmail.com' on {a} {collection} with
-          identifier '{example_id}'
+To add an IAM policy binding for the role of '{role}' for the user
+'test-user@gmail.com' on {a} {collection} with identifier
+'{example_id}', run:
 
-            $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
+  $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
 
-          For a service account `test-proj1@example.domain.com`,
-          the following command will add an IAM policy binding for the role of
-          '{role}' to the given service account:
+To add an IAM policy binding for the role of '{role}' to the service
+account 'test-proj1@example.domain.com', run:
 
-            $ {{command}} test-proj1@example.domain.com --member='serviceAccount:test-proj1@example.domain.com' --role='{role}'
+  $ {{command}} test-proj1@example.domain.com --member='serviceAccount:test-proj1@example.domain.com' --role='{role}'
 
-          The following command will add an IAM policy binding for the role of
-          '{role}' for all authenticated users on {a} {collection} with
-          identifier '{example_id}':
+To add an IAM policy binding for the role of '{role}' for all
+authenticated users on {a} {collection} with identifier
+'{example_id}', run:
 
-            $ {{command}} {example_id} --member='allAuthenticatedUsers' --role='{role}'
-
-          See https://cloud.google.com/iam/docs/managing-policies for details
-          of policy role and member types.
-          """.format(collection=collection, example_id=example_id, role=role,
-                     a=a)
+  $ {{command}} {example_id} --member='allAuthenticatedUsers' --role='{role}'
+  """.format(collection=collection, example_id=example_id, role=role, a=a)
   }
+  if condition:
+    detailed_help['EXAMPLES'] = detailed_help['EXAMPLES'] + """\n
+To add an IAM policy binding which expires at the end of the year 2018 for the
+role of '{role}' and the user 'test-user@gmail.com' on {a} {collection} with
+identifier '{example_id}', run:
+
+  $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}' --condition='expression=request.time < timestamp("2019-01-01T00:00:00Z"),title=expires_end_of_2018,description=Expires at midnight on 2018-12-31'
+  """.format(
+      collection=collection, example_id=example_id, role='roles/browser', a=a)
+  detailed_help['EXAMPLES'] = '\n'.join([detailed_help['EXAMPLES'], note])
+  return detailed_help
 
 
-def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id,
-                                             role='roles/editor', use_an=False):
+def GetDetailedHelpForRemoveIamPolicyBinding(collection,
+                                             example_id,
+                                             role='roles/editor',
+                                             use_an=False,
+                                             condition=False):
   """Returns a detailed_help for a remove-iam-policy-binding command.
 
   Args:
@@ -865,32 +922,53 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection, example_id,
     role: The sample role to use in the documentation. The default of
         'roles/editor' is usually sufficient, but if your command group's
         users would more likely use a different role, you can override it here.
-     use_an: If True, uses "an" instead of "a" for the article preceding uses of
+    use_an: If True, uses "an" instead of "a" for the article preceding uses of
          the collection.
+    condition: If True, add help text for condition.
   Returns:
     a dict with boilerplate help text for the remove-iam-policy-binding command
   """
   a = 'an' if use_an else 'a'
-  return {
-      'brief': 'Remove IAM policy binding for {0} {1}.'.format(a, collection),
-      'DESCRIPTION': '{description}',
-      'EXAMPLES': """\
-          The following command will remove an IAM policy binding for the role
-          of '{role}' for the user 'test-user@gmail.com' on {collection} with
-          identifier '{example_id}'
+  note = ('See https://cloud.google.com/iam/docs/managing-policies for details'
+          ' of policy role and member types.')
+  detailed_help = {
+      'brief':
+          'Remove IAM policy binding for {0} {1}.'.format(a, collection),
+      'DESCRIPTION':
+          '{description}',
+      'EXAMPLES':
+          """\
+To remove an IAM policy binding for the role of '{role}' for the
+user 'test-user@gmail.com' on {collection} with identifier
+'{example_id}', run:
 
-            $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
+  $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
 
-          The following command will remove an IAM policy binding for the role
-          of '{role}' from all authenticated users on {collection}
-          '{example_id}':
+To remove an IAM policy binding for the role of '{role}' from all
+authenticated users on {collection} '{example_id}', run:
 
-            $ {{command}} {example_id} --member='allAuthenticatedUsers' --role='{role}'
-
-          See https://cloud.google.com/iam/docs/managing-policies for details
-          of policy role and member types.
-          """.format(collection=collection, example_id=example_id, role=role)
+  $ {{command}} {example_id} --member='allAuthenticatedUsers' --role='{role}'
+  """.format(collection=collection, example_id=example_id, role=role)
   }
+  if condition:
+    detailed_help['EXAMPLES'] = detailed_help['EXAMPLES'] + """\n
+To remove an IAM policy binding with a condition of
+expression='request.time < timestamp("2019-01-01T00:00:00Z")',
+title='expires_end_of_2018', and description='Expires at midnight on 2018-12-31'
+for the role of '{role}' for the user 'test-user@gmail.com' on {collection}
+with identifier '{example_id}', run:
+
+  $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}' --condition='expression=request.time < timestamp("2019-01-01T00:00:00Z"),title=expires_end_of_2018,description=Expires at midnight on 2018-12-31'
+
+To remove all IAM policy bindings regardless of the condition for the role of
+'{role}' and for the user 'test-user@gmail.com' on {collection} with
+identifier '{example_id}', run:
+
+  $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}' --all
+  """.format(
+      collection=collection, example_id=example_id, role='roles/browser')
+  detailed_help['EXAMPLES'] = '\n'.join([detailed_help['EXAMPLES'], note])
+  return detailed_help
 
 
 def GetHintForServiceAccountResource(action='act on'):

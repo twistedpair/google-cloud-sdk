@@ -23,6 +23,8 @@ import collections
 
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
+from googlecloudsdk.core.yaml import dict_like
+from googlecloudsdk.core.yaml import list_like
 
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -116,11 +118,11 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     """
     if isinstance(val, six.string_types) and '\n' in val:
       return YamlPrinter._LiteralLines(val)
-    if isinstance(val, list):
+    if list_like(val):
       for i in range(len(val)):
         val[i] = self._UpdateTypesForOutput(val[i])
       return val
-    if isinstance(val, dict):
+    if dict_like(val):
       for key in val:
         val[key] = self._UpdateTypesForOutput(val[key])
       return val

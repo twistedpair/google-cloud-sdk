@@ -766,41 +766,38 @@ def AddNetworkPolicyFlags(parser, hidden=False):
       '--update-addons=NetworkPolicy=ENABLED flag.')
 
 
-def AddPrivateClusterFlags(parser, hidden=False):
+def AddPrivateClusterFlags(parser, with_deprecated=False):
   """Adds flags related to private clusters to parser."""
   group = parser.add_argument_group('Private Clusters')
-  group.add_argument(
-      '--private-cluster',
-      help=('Cluster is created with no public IP addresses on the cluster '
-            'nodes.'),
-      default=None,
-      action=actions.DeprecationAction(
-          'private-cluster',
-          warn='The --private-cluster flag is deprecated and will be removed '
-               'in a future release. Use --enable-private-nodes instead.',
-          action='store_true'),
-      hidden=hidden)
+  if with_deprecated:
+    group.add_argument(
+        '--private-cluster',
+        help=('Cluster is created with no public IP addresses on the cluster '
+              'nodes.'),
+        default=None,
+        action=actions.DeprecationAction(
+            'private-cluster',
+            warn='The --private-cluster flag is deprecated and will be removed '
+            'in a future release. Use --enable-private-nodes instead.',
+            action='store_true'))
   group.add_argument(
       '--enable-private-nodes',
       help=('Cluster is created with no public IP addresses on the cluster '
             'nodes.'),
       default=None,
-      action='store_true',
-      hidden=hidden)
+      action='store_true')
   group.add_argument(
       '--enable-private-endpoint',
       help=('Cluster is managed using the private IP address of the master '
             'API endpoint.'),
       default=None,
-      action='store_true',
-      hidden=hidden)
+      action='store_true')
   group.add_argument(
       '--master-ipv4-cidr',
-      help=('IPv4 CIDR range to use for the master network.  This should be a '
-            '/28 and should be used in conjunction with the '
+      help=('IPv4 CIDR range to use for the master network.  This should have '
+            'a netmask of size /28 and should be used in conjunction with the '
             '--enable-private-nodes flag.'),
-      default=None,
-      hidden=hidden)
+      default=None)
 
 
 def AddEnableLegacyAuthorizationFlag(parser, hidden=False):

@@ -304,6 +304,26 @@ def AddLocalSsdArgs(parser):
       """)
 
 
+def AddLocalNvdimmArgs(parser):
+  """Adds local NVDIMM argument for instances and instance-templates."""
+
+  parser.add_argument(
+      '--local-nvdimm',
+      type=arg_parsers.ArgDict(spec={
+          'size': arg_parsers.BinarySize(),
+      }),
+      action='append',
+      help="""\
+      Attaches a local NVDIMM to the instances.
+
+      *size*::: Optional. Size of the NVDIMM disk. The value must be a whole
+      number followed by a size unit of ``KB'' for kilobyte, ``MB'' for
+      megabyte, ``GB'' for gigabyte, or ``TB'' for terabyte. For example,
+      ``3TB'' will produce a 3 terabyte disk. Allowed values are: 3TB and 6TB
+      and the default is 3 TB.
+      """)
+
+
 def AddLocalSsdArgsWithSize(parser):
   """Adds local SSD argument for instances and instance-templates."""
 

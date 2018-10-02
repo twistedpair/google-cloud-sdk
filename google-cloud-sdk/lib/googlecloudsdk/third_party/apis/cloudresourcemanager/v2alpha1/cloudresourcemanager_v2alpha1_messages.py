@@ -13,10 +13,82 @@ from apitools.base.py import extra_types
 package = 'cloudresourcemanager'
 
 
+class AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
+  multiple AuditConfigs:      {       "audit_configs": [         {
+  "service": "allServices"           "audit_log_configs": [             {
+  "log_type": "DATA_READ",               "exempted_members": [
+  "user:foo@gmail.com"               ]             },             {
+  "log_type": "DATA_WRITE",             },             {
+  "log_type": "ADMIN_READ",             }           ]         },         {
+  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE",               "exempted_members": [
+  "user:bar@gmail.com"               ]             }           ]         }
+  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
+  and bar@gmail.com from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example:
+  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
+  "exempted_members": [             "user:foo@gmail.com"           ]
+  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+  foo@gmail.com from DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -24,18 +96,19 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
-      `domain:{domain}`: A Google Apps domain name that represents all the
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CloudresourcemanagerFoldersCreateRequest(_messages.Message):
@@ -67,8 +140,8 @@ class CloudresourcemanagerFoldersGetIamPolicyRequest(_messages.Message):
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
-      is being requested. `resource` is usually specified as a path. For
-      example, a Project resource is specified as `projects/{project}`.
+      is being requested. See the operation documentation for the appropriate
+      value for this field.
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -99,7 +172,8 @@ class CloudresourcemanagerFoldersListRequest(_messages.Message):
       This field is optional.
     parent: The resource name of the Organization or Folder whose Folders are
       being listed. Must be of the form `folders/{folder_id}` or
-      `organizations/{org_id}`.
+      `organizations/{org_id}`. Access to this method is controlled by
+      checking the `resourcemanager.folders.list` permission on the `parent`.
     showDeleted: Controls whether Folders in the [DELETE_REQUESTED} state
       should be returned.
   """
@@ -129,8 +203,8 @@ class CloudresourcemanagerFoldersSetIamPolicyRequest(_messages.Message):
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
-      is being specified. `resource` is usually specified as a path. For
-      example, a Project resource is specified as `projects/{project}`.
+      is being specified. See the operation documentation for the appropriate
+      value for this field.
     setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
       request body.
   """
@@ -144,8 +218,8 @@ class CloudresourcemanagerFoldersTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     foldersId: Part of `resource`. REQUIRED: The resource for which the policy
-      detail is being requested. `resource` is usually specified as a path.
-      For example, a Project resource is specified as `projects/{project}`.
+      detail is being requested. See the operation documentation for the
+      appropriate value for this field.
     testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
       passed as the request body.
   """
@@ -180,6 +254,30 @@ class CloudresourcemanagerFoldersUpdateRequest(_messages.Message):
 
   folder = _messages.MessageField('Folder', 1)
   foldersId = _messages.StringField(2, required=True)
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class Folder(_messages.Message):
@@ -278,31 +376,34 @@ class FolderOperationError(_messages.Message):
 
     Values:
       ERROR_TYPE_UNSPECIFIED: The error type was unrecognized or unspecified.
-      FOLDER_HEIGHT_VIOLATION: The attempted action would violate the max
-        folder depth constraint.
+      ACTIVE_FOLDER_HEIGHT_VIOLATION: The attempted action would violate the
+        max folder depth constraint.
       MAX_CHILD_FOLDERS_VIOLATION: The attempted action would violate the max
         child folders constraint.
       FOLDER_NAME_UNIQUENESS_VIOLATION: The attempted action would violate the
         locally-unique folder display_name constraint.
-      RESOURCE_DELETED: The resource being moved has been deleted.
-      PARENT_DELETED: The resource a folder was being added to has been
-        deleted.
-      CYCLE_INTRODUCED_ERROR: The attempted action would introduce cycle in
-        resource path.
-      FOLDER_ALREADY_BEING_MOVED: The attempted action would move a folder
+      RESOURCE_DELETED_VIOLATION: The resource being moved has been deleted.
+      PARENT_DELETED_VIOLATION: The resource a folder was being added to has
+        been deleted.
+      CYCLE_INTRODUCED_VIOLATION: The attempted action would introduce cycle
+        in resource path.
+      FOLDER_BEING_MOVED_VIOLATION: The attempted action would move a folder
         that is already being moved.
-      FOLDER_TO_DELETE_NON_EMPTY: The folder the caller is trying to delete
-        contains active resources.
+      FOLDER_TO_DELETE_NON_EMPTY_VIOLATION: The folder the caller is trying to
+        delete contains active resources.
+      DELETED_FOLDER_HEIGHT_VIOLATION: The attempted action would violate the
+        max deleted folder depth constraint.
     """
     ERROR_TYPE_UNSPECIFIED = 0
-    FOLDER_HEIGHT_VIOLATION = 1
+    ACTIVE_FOLDER_HEIGHT_VIOLATION = 1
     MAX_CHILD_FOLDERS_VIOLATION = 2
     FOLDER_NAME_UNIQUENESS_VIOLATION = 3
-    RESOURCE_DELETED = 4
-    PARENT_DELETED = 5
-    CYCLE_INTRODUCED_ERROR = 6
-    FOLDER_ALREADY_BEING_MOVED = 7
-    FOLDER_TO_DELETE_NON_EMPTY = 8
+    RESOURCE_DELETED_VIOLATION = 4
+    PARENT_DELETED_VIOLATION = 5
+    CYCLE_INTRODUCED_VIOLATION = 6
+    FOLDER_BEING_MOVED_VIOLATION = 7
+    FOLDER_TO_DELETE_NON_EMPTY_VIOLATION = 8
+    DELETED_FOLDER_HEIGHT_VIOLATION = 9
 
   errorMessageId = _messages.EnumField('ErrorMessageIdValueValuesEnum', 1)
 
@@ -358,7 +459,7 @@ class Operation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
@@ -448,22 +549,27 @@ class Operation(_messages.Message):
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
-    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
-      must not be specified for the same `role`. `bindings` with no members
-      will result in an error.
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -473,12 +579,13 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
-  bindings = _messages.MessageField('Binding', 1, repeated=True)
-  etag = _messages.BytesField(2)
-  version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class ProjectCreationStatus(_messages.Message):
@@ -507,9 +614,14 @@ class SetIamPolicyRequest(_messages.Message):
       size of the policy is limited to a few 10s of KB. An empty policy is a
       valid policy but certain Cloud Platform services (such as Projects)
       might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, the following default mask is used: paths: "bindings, etag"
+      This field is only used by Cloud IAM.
   """
 
   policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -523,14 +635,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -566,17 +676,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):
@@ -592,7 +700,7 @@ class Status(_messages.Message):
   user-facing error message is needed, put the localized message in the error
   details or localize it in the client. The optional error details may contain
   arbitrary information about the error. There is a predefined set of error
-  detail types in the package `google.rpc` which can be used for common error
+  detail types in the package `google.rpc` that can be used for common error
   conditions.  # Language mapping  The `Status` message is the logical
   representation of the error model, but it is not necessarily the actual wire
   format. When the `Status` message is exposed in different client libraries
@@ -605,8 +713,8 @@ class Status(_messages.Message):
   If a service needs to return partial errors to the client,     it may embed
   the `Status` in the normal response to indicate the partial     errors.  -
   Workflow errors. A typical workflow has multiple steps. Each step may
-  have a `Status` message for error reporting purpose.  - Batch operations. If
-  a client uses batch request and batch response, the     `Status` message
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
   should be used directly inside batch response, one for     each error sub-
   response.  - Asynchronous operations. If an API call embeds asynchronous
   operation     results in its response, the status of those operations should
@@ -619,7 +727,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

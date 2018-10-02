@@ -30,6 +30,18 @@ class AclEntry(_messages.Message):
   value = _messages.StringField(4)
 
 
+class ApiWarning(_messages.Message):
+  r"""An Admin API warning message.
+
+  Fields:
+    code: Code to uniquely identify the warning type.
+    message: The warning message.
+  """
+
+  code = _messages.StringField(1)
+  message = _messages.StringField(2)
+
+
 class BackupConfiguration(_messages.Message):
   r"""Database instance backup configuration.
 
@@ -607,11 +619,13 @@ class InstancesListResponse(_messages.Message):
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
+    warnings: List of warnings that ocurred while handling the request.
   """
 
   items = _messages.MessageField('DatabaseInstance', 1, repeated=True)
   kind = _messages.StringField(2, default=u'sql#instancesList')
   nextPageToken = _messages.StringField(3)
+  warnings = _messages.MessageField('ApiWarning', 4, repeated=True)
 
 
 class InstancesListServerCasResponse(_messages.Message):

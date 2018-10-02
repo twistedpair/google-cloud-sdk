@@ -81,6 +81,8 @@ class CloudresourcemanagerV1(base_api.BaseApiClient):
       r"""Gets the effective `Policy` on a resource. This is the result of merging.
 `Policies` in the resource hierarchy. The returned `Policy` will not have
 an `etag`set because it is a computed `Policy` across multiple resources.
+Subtrees of Resource Manager resource hierarchy with 'under:' prefix will
+not be expanded.
 
       Args:
         request: (CloudresourcemanagerFoldersGetEffectiveOrgPolicyRequest) input message
@@ -290,6 +292,37 @@ For example, a Lien with a `parent` of `projects/1234` requires permission
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Retrieve a Lien by `name`.
+
+Callers of this method will require permission on the `parent` resource.
+For example, a Lien with a `parent` of `projects/1234` requires permission
+requires permission `resourcemanager.projects.get` or
+`resourcemanager.projects.updateLiens`.
+
+      Args:
+        request: (CloudresourcemanagerLiensGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Lien) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'cloudresourcemanager.liens.get',
+        ordered_params=[u'liensId'],
+        path_params=[u'liensId'],
+        query_params=[],
+        relative_path=u'v1/liens/{liensId}',
+        request_field='',
+        request_type_name=u'CloudresourcemanagerLiensGetRequest',
+        response_type_name=u'Lien',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""List all Liens applied to the `parent` resource.
 
@@ -424,6 +457,8 @@ service.
       r"""Gets the effective `Policy` on a resource. This is the result of merging.
 `Policies` in the resource hierarchy. The returned `Policy` will not have
 an `etag`set because it is a computed `Policy` across multiple resources.
+Subtrees of Resource Manager resource hierarchy with 'under:' prefix will
+not be expanded.
 
       Args:
         request: (CloudresourcemanagerOrganizationsGetEffectiveOrgPolicyRequest) input message
@@ -452,6 +487,9 @@ an `etag`set because it is a computed `Policy` across multiple resources.
       r"""Gets the access control policy for an Organization resource. May be empty.
 if no such policy or resource exists. The `resource` field should be the
 organization's resource name, e.g. "organizations/123".
+
+Authorization requires the Google IAM permission
+`resourcemanager.organizations.getIamPolicy` on the specified organization
 
       Args:
         request: (CloudresourcemanagerOrganizationsGetIamPolicyRequest) input message
@@ -565,6 +603,9 @@ the specified filter. This method returns Organizations in an unspecified
 order. New Organizations do not necessarily appear at the end of the
 results.
 
+Search will only return organizations on which the user has the permission
+`resourcemanager.organizations.get`
+
       Args:
         request: (SearchOrganizationsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -592,6 +633,9 @@ results.
       r"""Sets the access control policy on an Organization resource. Replaces any.
 existing policy. The `resource` field should be the organization's resource
 name, e.g. "organizations/123".
+
+Authorization requires the Google IAM permission
+`resourcemanager.organizations.setIamPolicy` on the specified organization
 
       Args:
         request: (CloudresourcemanagerOrganizationsSetIamPolicyRequest) input message
@@ -650,6 +694,8 @@ write of the `Policy`.
       r"""Returns permissions that a caller has on the specified Organization.
 The `resource` field should be the organization's resource name,
 e.g. "organizations/123".
+
+There are no permissions required for making this API call.
 
       Args:
         request: (CloudresourcemanagerOrganizationsTestIamPermissionsRequest) input message
@@ -720,6 +766,16 @@ percentile. As of 2016-08-29, we are observing 6 seconds 50th percentile
 latency. 95th percentile latency is around 11 seconds. We recommend
 polling at the 5th second with an exponential backoff.
 
+Authorization requires the Google IAM permission
+`resourcemanager.projects.create` on the specified parent for the new
+project. The parent is identified by a specified ResourceId,
+which must include both an ID and a type, such as organization.
+
+This method does not associate the new project with a billing account.
+You can set or update the billing account associated with a project using
+the [`projects.updateBillingInfo`]
+(/billing/reference/rest/v1/projects/updateBillingInfo) method.
+
       Args:
         request: (Project) input message
         global_params: (StandardQueryParameters, default: None) global arguments
@@ -746,10 +802,7 @@ polling at the 5th second with an exponential backoff.
     def Delete(self, request, global_params=None):
       r"""Marks the Project identified by the specified.
 `project_id` (for example, `my-project-123`) for deletion.
-This method will only affect the Project if the following criteria are met:
-
-+ The Project does not have a billing account associated with it.
-+ The Project has a lifecycle state of
+This method will only affect the Project if it has a lifecycle state of
 ACTIVE.
 
 This method changes the Project's lifecycle state from
@@ -854,6 +907,8 @@ The caller must have read permissions for this Project.
       r"""Gets the effective `Policy` on a resource. This is the result of merging.
 `Policies` in the resource hierarchy. The returned `Policy` will not have
 an `etag`set because it is a computed `Policy` across multiple resources.
+Subtrees of Resource Manager resource hierarchy with 'under:' prefix will
+not be expanded.
 
       Args:
         request: (CloudresourcemanagerProjectsGetEffectiveOrgPolicyRequest) input message
@@ -881,6 +936,12 @@ an `etag`set because it is a computed `Policy` across multiple resources.
     def GetIamPolicy(self, request, global_params=None):
       r"""Returns the IAM access control policy for the specified Project.
 Permission is denied if the policy or the resource does not exist.
+
+Authorization requires the Google IAM permission
+`resourcemanager.projects.getIamPolicy` on the project.
+
+For additional information about resource structure and identification,
+see [Resource Names](/apis/design/resource_names).
 
       Args:
         request: (CloudresourcemanagerProjectsGetIamPolicyRequest) input message
@@ -939,7 +1000,11 @@ values including `POLICY_TYPE_NOT_SET` for the `policy_type oneof`. The
     def List(self, request, global_params=None):
       r"""Lists Projects that are visible to the user and satisfy the.
 specified filter. This method returns Projects in an unspecified order.
-New Projects do not necessarily appear at the end of the list.
+This method is eventually consistent with project mutations; this means
+that a newly created project may not appear in the results or recent
+updates to an existing project may not be reflected in the results. To
+retrieve the latest state of a project, use the
+GetProject method.
 
       Args:
         request: (CloudresourcemanagerProjectsListRequest) input message
@@ -1017,7 +1082,7 @@ New Projects do not necessarily appear at the end of the list.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the IAM access control policy for the specified Project. Replaces.
+      r"""Sets the IAM access control policy for the specified Project. Overwrites.
 any existing policy.
 
 The following constraints apply when using `setIamPolicy()`:
@@ -1035,26 +1100,33 @@ invited via Cloud Platform console and must accept the invitation.
 must be granted the owner role using the Cloud Platform Console and must
 explicitly accept the invitation.
 
-+ Invitations to grant the owner role cannot be sent using
-`setIamPolicy()`;
-they must be sent only using the Cloud Platform Console.
++ You can only grant ownership of a project to a member by using the
+GCP Console. Inviting a member will deliver an invitation email that
+they must accept. An invitation email is not generated if you are
+granting a role other than owner, or if both the member you are inviting
+and the project are part of your organization.
 
 + Membership changes that leave the project without any owners that have
 accepted the Terms of Service (ToS) will be rejected.
 
-+ There must be at least one owner who has accepted the Terms of
-Service (ToS) agreement in the policy. Calling `setIamPolicy()` to
-remove the last ToS-accepted owner from the policy will fail. This
-restriction also applies to legacy projects that no longer have owners
-who have accepted the ToS. Edits to IAM policies will be rejected until
-the lack of a ToS-accepting owner is rectified.
++ If the project is not part of an organization, there must be at least
+one owner who has accepted the Terms of Service (ToS) agreement in the
+policy. Calling `setIamPolicy()` to remove the last ToS-accepted owner
+from the policy will fail. This restriction also applies to legacy
+projects that no longer have owners who have accepted the ToS. Edits to
+IAM policies will be rejected until the lack of a ToS-accepting owner is
+rectified.
 
-+ Calling this method requires enabling the App Engine Admin API.
++ This method will replace the existing policy, and cannot be used to
+append additional IAM settings.
 
 Note: Removing service accounts from policies or changing their roles
 can render services completely inoperable. It is important to understand
 how the service account is being used before removing or updating its
 roles.
+
+Authorization requires the Google IAM permission
+`resourcemanager.projects.setIamPolicy` on the project
 
       Args:
         request: (CloudresourcemanagerProjectsSetIamPolicyRequest) input message
@@ -1111,6 +1183,8 @@ write of the `Policy`.
 
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified Project.
+
+There are no permissions required for making this API call.
 
       Args:
         request: (CloudresourcemanagerProjectsTestIamPermissionsRequest) input message

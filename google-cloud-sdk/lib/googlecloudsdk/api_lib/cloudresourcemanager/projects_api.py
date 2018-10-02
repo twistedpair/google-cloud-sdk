@@ -24,21 +24,27 @@ from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.command_lib.iam import iam_util
 
+DEFAULT_API_VERSION = projects_util.DEFAULT_API_VERSION
 
-def List(limit=None, filter=None, batch_size=500):  # pylint: disable=redefined-builtin
+
+def List(limit=None,
+         filter=None,  # pylint: disable=redefined-builtin
+         batch_size=500,
+         api_version=DEFAULT_API_VERSION):
   """Make API calls to List active projects.
 
   Args:
-    limit: The number of projects to limit the resutls to. This limit is passed
-           to the server and the server does the limiting.
+    limit: The number of projects to limit the results to. This limit is passed
+      to the server and the server does the limiting.
     filter: The client side filter expression.
     batch_size: the number of projects to get with each request.
+    api_version: the version of the api
 
   Returns:
     Generator that yields projects
   """
-  client = projects_util.GetClient()
-  messages = projects_util.GetMessages()
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
   return list_pager.YieldFromList(
       client.projects,
       messages.CloudresourcemanagerProjectsListRequest(
@@ -55,15 +61,19 @@ def _AddActiveProjectFilter(filter_expr):
   return 'lifecycleState:ACTIVE AND ({})'.format(filter_expr)
 
 
-def Get(project_ref):
+def Get(project_ref, api_version=DEFAULT_API_VERSION):
   """Get project information."""
-  client = projects_util.GetClient()
+  client = projects_util.GetClient(api_version)
   return client.projects.Get(
       client.MESSAGES_MODULE.CloudresourcemanagerProjectsGetRequest(
           projectId=project_ref.projectId))
 
 
-def Create(project_ref, display_name=None, parent=None, labels=None):
+def Create(project_ref,
+           display_name=None,
+           parent=None,
+           labels=None,
+           api_version=DEFAULT_API_VERSION):
   """Create a new project.
 
   Args:
@@ -71,13 +81,14 @@ def Create(project_ref, display_name=None, parent=None, labels=None):
     display_name: Optional display name for the project
     parent: Optional for the project (ex. folders/123 or organizations/5231)
     labels: Optional labels to apply to the project
+    api_version: the version of the api
 
   Returns:
     An Operation object which can be used to check on the progress of the
     project creation.
   """
-  client = projects_util.GetClient()
-  messages = projects_util.GetMessages()
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
   return client.projects.Create(
       messages.Project(
           projectId=project_ref.Name(),
@@ -86,10 +97,10 @@ def Create(project_ref, display_name=None, parent=None, labels=None):
           labels=labels))
 
 
-def Delete(project_ref):
+def Delete(project_ref, api_version=DEFAULT_API_VERSION):
   """Delete an existing project."""
-  client = projects_util.GetClient()
-  messages = projects_util.GetMessages()
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
 
   client.projects.Delete(
       messages.CloudresourcemanagerProjectsDeleteRequest(
@@ -97,10 +108,10 @@ def Delete(project_ref):
   return projects_util.DeletedResource(project_ref.Name())
 
 
-def Undelete(project_ref):
+def Undelete(project_ref, api_version=DEFAULT_API_VERSION):
   """Undelete a project that has been deleted."""
-  client = projects_util.GetClient()
-  messages = projects_util.GetMessages()
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
 
   client.projects.Undelete(
       messages.CloudresourcemanagerProjectsUndeleteRequest(
@@ -111,10 +122,11 @@ def Undelete(project_ref):
 def Update(project_ref,
            name=None,
            parent=None,
-           labels_diff=None):
+           labels_diff=None,
+           api_version=DEFAULT_API_VERSION):
   """Update project information."""
-  client = projects_util.GetClient()
-  messages = projects_util.GetMessages()
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
 
   project = client.projects.Get(
       client.MESSAGES_MODULE.CloudresourcemanagerProjectsGetRequest(
@@ -135,10 +147,10 @@ def Update(project_ref,
   return client.projects.Update(project)
 
 
-def GetIamPolicy(project_ref):
+def GetIamPolicy(project_ref, api_version=DEFAULT_API_VERSION):
   """Get IAM policy for a given project."""
-  client = projects_util.GetClient()
-  messages = projects_util.GetMessages()
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
 
   policy_request = messages.CloudresourcemanagerProjectsGetIamPolicyRequest(
       resource=project_ref.Name(),
@@ -146,10 +158,13 @@ def GetIamPolicy(project_ref):
   return client.projects.GetIamPolicy(policy_request)
 
 
-def SetIamPolicy(project_ref, policy, update_mask=None):
+def SetIamPolicy(project_ref,
+                 policy,
+                 update_mask=None,
+                 api_version=DEFAULT_API_VERSION):
   """Set IAM policy, for a given project."""
-  client = projects_util.GetClient()
-  messages = projects_util.GetMessages()
+  client = projects_util.GetClient(api_version)
+  messages = projects_util.GetMessages(api_version)
 
   set_iam_policy_request = messages.SetIamPolicyRequest(policy=policy)
   # Only include update_mask if provided, otherwise, leave the field unset.
@@ -162,9 +177,11 @@ def SetIamPolicy(project_ref, policy, update_mask=None):
   return client.projects.SetIamPolicy(policy_request)
 
 
-def SetIamPolicyFromFile(project_ref, policy_file):
+def SetIamPolicyFromFile(project_ref,
+                         policy_file,
+                         api_version=DEFAULT_API_VERSION):
   """Read projects IAM policy from a file, and set it."""
-  messages = projects_util.GetMessages()
+  messages = projects_util.GetMessages(api_version)
   policy = iam_util.ParsePolicyFile(policy_file, messages.Policy)
   update_mask = iam_util.ConstructUpdateMaskFromPolicy(policy_file)
 
@@ -175,25 +192,58 @@ def SetIamPolicyFromFile(project_ref, policy_file):
   if 'etag' not in update_mask:
     update_mask += ',etag'
 
-  return SetIamPolicy(project_ref, policy, update_mask)
+  return SetIamPolicy(project_ref, policy, update_mask, api_version)
 
 
-def AddIamPolicyBinding(project_ref, member, role):
-  messages = projects_util.GetMessages()
+def AddIamPolicyBinding(project_ref,
+                        member,
+                        role,
+                        api_version=DEFAULT_API_VERSION):
+  messages = projects_util.GetMessages(api_version)
 
-  policy = GetIamPolicy(project_ref)
+  policy = GetIamPolicy(project_ref, api_version)
   iam_util.AddBindingToIamPolicy(messages.Binding, policy, member, role)
-  return SetIamPolicy(project_ref, policy)
+  return SetIamPolicy(project_ref, policy, api_version=api_version)
 
 
-def RemoveIamPolicyBinding(project_ref, member, role):
-  policy = GetIamPolicy(project_ref)
+def AddIamPolicyBindingWithCondition(project_ref,
+                                     member,
+                                     role,
+                                     condition,
+                                     api_version=DEFAULT_API_VERSION):
+  """Add iam binding with condition to project_ref's iam policy."""
+  messages = projects_util.GetMessages(api_version)
+
+  policy = GetIamPolicy(project_ref, api_version=api_version)
+  iam_util.AddBindingToIamPolicyWithCondition(messages.Binding, messages.Expr,
+                                              policy, member, role, condition)
+  return SetIamPolicy(project_ref, policy, api_version=api_version)
+
+
+def RemoveIamPolicyBinding(project_ref,
+                           member,
+                           role,
+                           api_version=DEFAULT_API_VERSION):
+  policy = GetIamPolicy(project_ref, api_version=api_version)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
-  return SetIamPolicy(project_ref, policy)
+  return SetIamPolicy(project_ref, policy, api_version=api_version)
 
 
-def ParentNameToResourceId(parent_name):
-  messages = projects_util.GetMessages()
+def RemoveIamPolicyBindingWithCondition(project_ref,
+                                        member,
+                                        role,
+                                        condition,
+                                        all_conditions,
+                                        api_version=DEFAULT_API_VERSION):
+  """Remove iam binding with condition from project_ref's iam policy."""
+  policy = GetIamPolicy(project_ref, api_version=api_version)
+  iam_util.RemoveBindingFromIamPolicyWithCondition(policy, member, role,
+                                                   condition, all_conditions)
+  return SetIamPolicy(project_ref, policy, api_version=api_version)
+
+
+def ParentNameToResourceId(parent_name, api_version=DEFAULT_API_VERSION):
+  messages = projects_util.GetMessages(api_version)
   if not parent_name:
     return None
   elif parent_name.startswith('folders/'):

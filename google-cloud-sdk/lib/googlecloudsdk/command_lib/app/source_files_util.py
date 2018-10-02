@@ -47,7 +47,9 @@ _PHP_GCLOUDIGNORE = '\n'.join([
 _PYTHON_GCLOUDIGNORE = '\n'.join([
     gcloudignore.DEFAULT_IGNORE_FILE,
     '# Python pycache:',
-    '__pycache__/'
+    '__pycache__/',
+    '# Ignored by the build system',
+    '/setup.cfg'
 ])
 
 _GO_GCLOUDIGNORE = '\n'.join([

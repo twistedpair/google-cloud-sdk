@@ -21,11 +21,13 @@ from __future__ import unicode_literals
 
 import datetime
 import re
+
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.core import resources
 
 
 PROJECTS_COLLECTION = 'cloudresourcemanager.projects'
-PROJECTS_API_VERSION = 'v1'
+PROJECTS_API_VERSION = projects_util.DEFAULT_API_VERSION
 _CLOUD_CONSOLE_LAUNCH_DATE = datetime.datetime(2012, 10, 11)
 LIST_FORMAT = """
     table(
@@ -36,17 +38,17 @@ LIST_FORMAT = """
 """
 
 
-def ParseProject(project_id):
+def ParseProject(project_id, api_version=PROJECTS_API_VERSION):
   # Override the default API map version so we can increment API versions on a
   # API interface basis.
   registry = resources.REGISTRY.Clone()
-  registry.RegisterApiByName('cloudresourcemanager', PROJECTS_API_VERSION)
+  registry.RegisterApiByName('cloudresourcemanager', api_version)
   return registry.Parse(
       None, params={'projectId': project_id}, collection=PROJECTS_COLLECTION)
 
 
-def ProjectsUriFunc(resource):
-  ref = ParseProject(resource.projectId)
+def ProjectsUriFunc(resource, api_version=PROJECTS_API_VERSION):
+  ref = ParseProject(resource.projectId, api_version)
   return ref.SelfLink()
 
 

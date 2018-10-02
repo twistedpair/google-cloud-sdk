@@ -32,6 +32,29 @@ zone:
 
 # resource name parameters
 
+allocation:
+  name: allocation
+  collection: compute.allocations
+  attributes:
+  - *project
+  - *zone
+  - &allocation
+    parameter_name: allocation
+    attribute_name: allocation
+    help:
+      The name of the Google Compute Engine zonal allocation.
+
+commitment:
+  name: commitment
+  collection: compute.regionCommitments
+  attributes:
+  - *project
+  - *region
+  - &commitment
+    parameter_name: commitment
+    attribute_name: commitment
+    help: The name of the Google Compute Engine regional commitment.
+
 disk:
   name: disk
   collection: compute.disks

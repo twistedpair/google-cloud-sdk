@@ -1924,15 +1924,17 @@ class JobStatus(_messages.Message):
 
 
 class LifecycleConfig(_messages.Message):
-  r"""Specifies the cluster auto delete related schedule configuration.
+  r"""Specifies the cluster auto-delete schedule configuration.
 
   Fields:
     autoDeleteTime: Optional. The time when cluster will be auto-deleted.
-    autoDeleteTtl: Optional. The life duration of cluster, the cluster will be
-      auto-deleted at the end of this duration.
-    idleDeleteTtl: Optional. The longest duration that cluster would keep
-      alive while staying  idle; passing this threshold will cause cluster to
-      be auto-deleted.
+    autoDeleteTtl: Optional. The lifetime duration of cluster. The cluster
+      will be auto-deleted at the end of this period. Valid range: 10m,
+      14d.Example: "1d", to delete the cluster 1 day after its creation..
+    idleDeleteTtl: Optional. The duration to keep the cluster alive while
+      idling. Passing this threshold will cause the cluster to be deleted.
+      Valid range: 10m, 14d.Example: "10m", the minimum value, to delete the
+      cluster when it has had no jobs running for 10 minutes.
     idleStartTime: Output only. The time when cluster became idle (most recent
       job finished) and became eligible for deletion due to idleness.
   """

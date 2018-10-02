@@ -948,34 +948,11 @@
           "description": "Optional. The name of the response field whose value is mapped to the HTTP\nresponse body. When omitted, the entire response message will be used\nas the HTTP response body.\n\nNOTE: The referred field must be present at the top-level of the response\nmessage type.",
           "type": "string"
         },
-        "mediaUpload": {
-          "description": "Use this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead\n[][google.bytestream.RestByteStream] as an API to your\nconfiguration for Bytestream methods.",
-          "$ref": "MediaUpload"
-        },
-        "mediaDownload": {
-          "description": "Use this only for Scotty Requests. Do not use this for bytestream methods.\nFor media support, add instead [][google.bytestream.RestByteStream] as an\nAPI to your configuration.",
-          "$ref": "MediaDownload"
-        },
         "additionalBindings": {
           "description": "Additional HTTP bindings for the selector. Nested bindings must\nnot contain an `additional_bindings` field themselves (that is,\nthe nesting may only be one level deep).",
           "type": "array",
           "items": {
             "$ref": "HttpRule"
-          }
-        },
-        "restCollection": {
-          "description": "DO NOT USE. This is an experimental field.\n\nOptional. The REST collection name is by default derived from the URL\npattern. If specified, this field overrides the default collection name.\nExample:\n\n    rpc AddressesAggregatedList(AddressesAggregatedListRequest)\n        returns (AddressesAggregatedListResponse) {\n      option (google.api.http) = {\n        get: \"\/v1\/projects\/{project_id}\/aggregated\/addresses\"\n        rest_collection: \"projects.addresses\"\n      };\n    }\n\nThis method has the automatically derived collection name\n\"projects.aggregated\". Because, semantically, this rpc is actually an\noperation on the \"projects.addresses\" collection, the `rest_collection`\nfield is configured to override the derived collection name.",
-          "type": "string"
-        },
-        "restMethodName": {
-          "description": "DO NOT USE. This is an experimental field.\n\nOptional. The rest method name is by default derived from the URL\npattern. If specified, this field overrides the default method name.\nExample:\n\n    rpc CreateResource(CreateResourceRequest)\n        returns (CreateResourceResponse) {\n      option (google.api.http) = {\n        post: \"\/v1\/resources\",\n        body: \"resource\",\n        rest_method_name: \"insert\"\n      };\n    }\n\nThis method has the automatically derived rest method name\n\"create\", but for backwards compatibility with apiary, it is specified as\ninsert.",
-          "type": "string"
-        },
-        "authorizations": {
-          "description": "Specifies the permission(s) required for an API element for the overall\nAPI request to succeed. It is typically used to mark request message fields\nthat contain the name of the resource and indicates the permissions that\nwill be checked on that resource.",
-          "type": "array",
-          "items": {
-            "$ref": "AuthorizationRule"
           }
         }
       }
@@ -995,99 +972,9 @@
         }
       }
     },
-    "MediaUpload": {
-      "id": "MediaUpload",
-      "description": "Defines the Media configuration for a service in case of an upload.\nUse this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead [][google.bytestream.RestByteStream] as an API to\nyour configuration for Bytestream methods.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Whether upload is enabled.",
-          "type": "boolean"
-        },
-        "uploadService": {
-          "description": "DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the upload service if one is used for upload.",
-          "type": "string"
-        },
-        "dropzone": {
-          "description": "Name of the Scotty dropzone to use for the current API.",
-          "type": "string"
-        },
-        "mimeTypes": {
-          "description": "An array of mimetype patterns. Esf will only accept uploads that match one\nof the given patterns.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "maxSize": {
-          "description": "Optional maximum acceptable size for an upload.\nThe size is specified in bytes.",
-          "type": "string",
-          "format": "int64"
-        },
-        "startNotification": {
-          "description": "Whether to receive a notification on the start of media upload.",
-          "type": "boolean"
-        },
-        "progressNotification": {
-          "description": "Whether to receive a notification for progress changes of media upload.",
-          "type": "boolean"
-        },
-        "completeNotification": {
-          "description": "A boolean that determines whether a notification for the completion of an\nupload should be sent to the backend. These notifications will not be seen\nby the client and will not consume quota.",
-          "type": "boolean"
-        }
-      }
-    },
-    "MediaDownload": {
-      "id": "MediaDownload",
-      "description": "Defines the Media configuration for a service in case of a download.\nUse this only for Scotty Requests. Do not use this for media support using\nBytestream, add instead [][google.bytestream.RestByteStream] as an API to\nyour configuration for Bytestream methods.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Whether download is enabled.",
-          "type": "boolean"
-        },
-        "downloadService": {
-          "description": "DO NOT USE FIELDS BELOW THIS LINE UNTIL THIS WARNING IS REMOVED.\n\nSpecify name of the download service if one is used for download.",
-          "type": "string"
-        },
-        "dropzone": {
-          "description": "Name of the Scotty dropzone to use for the current API.",
-          "type": "string"
-        },
-        "completeNotification": {
-          "description": "A boolean that determines whether a notification for the completion of a\ndownload should be sent to the backend.",
-          "type": "boolean"
-        },
-        "useDirectDownload": {
-          "description": "A boolean that determines if direct download from ESF should be used for\ndownload of this media.",
-          "type": "boolean"
-        },
-        "maxDirectDownloadSize": {
-          "description": "Optional maximum acceptable size for direct download.\nThe size is specified in bytes.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "AuthorizationRule": {
-      "id": "AuthorizationRule",
-      "description": "Authorization rule for API services.\n\nIt specifies the permission(s) required for an API element for the overall\nAPI request to succeed. It is typically used to mark request message fields\nthat contain the name of the resource and indicates the permissions that\nwill be checked on that resource.\n\nFor example:\n\n    package google.storage.v1;\n\n    message CopyObjectRequest {\n      string source = 1 [\n        (google.api.authz).permissions = \"storage.objects.get\"];\n\n      string destination = 2 [\n        (google.api.authz).permissions =\n            \"storage.objects.create,storage.objects.update\"];\n    }",
-      "type": "object",
-      "properties": {
-        "selector": {
-          "description": "Selects the API elements to which this rule applies.\n\nRefer to selector for syntax details.",
-          "type": "string"
-        },
-        "permissions": {
-          "description": "The required permissions. The acceptable values vary depend on the\nauthorization system used. For Google APIs, it should be a comma-separated\nGoogle IAM permission values. When multiple permissions are listed, the\nsemantics is not defined by the system. Additional documentation must\nbe provided manually.",
-          "type": "string"
-        }
-      }
-    },
     "Quota": {
       "id": "Quota",
-      "description": "Quota configuration helps to achieve fairness and budgeting in service\nusage.\n\nThe quota configuration works this way:\n- The service configuration defines a set of metrics.\n- For API calls, the quota.metric_rules maps methods to metrics with\n  corresponding costs.\n- The quota.limits defines limits on the metrics, which will be used for\n  quota checks at runtime.\n\nAn example quota configuration in yaml format:\n\n   quota:\n\n     - name: apiWriteQpsPerProject\n       metric: library.googleapis.com\/write_calls\n       unit: \"1\/min\/{project}\"  # rate limit for consumer projects\n       values:\n         STANDARD: 10000\n\n\n     # The metric rules bind all methods to the read_calls metric,\n     # except for the UpdateBook and DeleteBook methods. These two methods\n     # are mapped to the write_calls metric, with the UpdateBook method\n     # consuming at twice rate as the DeleteBook method.\n     metric_rules:\n     - selector: \"*\"\n       metric_costs:\n         library.googleapis.com\/read_calls: 1\n     - selector: google.example.library.v1.LibraryService.UpdateBook\n       metric_costs:\n         library.googleapis.com\/write_calls: 2\n     - selector: google.example.library.v1.LibraryService.DeleteBook\n       metric_costs:\n         library.googleapis.com\/write_calls: 1\n\n Corresponding Metric definition:\n\n     metrics:\n     - name: library.googleapis.com\/read_calls\n       display_name: Read requests\n       metric_kind: DELTA\n       value_type: INT64\n\n     - name: library.googleapis.com\/write_calls\n       display_name: Write requests\n       metric_kind: DELTA\n       value_type: INT64",
+      "description": "Quota configuration helps to achieve fairness and budgeting in service\nusage.\n\nThe quota configuration works this way:\n- The service configuration defines a set of metrics.\n- For API calls, the quota.metric_rules maps methods to metrics with\n  corresponding costs.\n- The quota.limits defines limits on the metrics, which will be used for\n  quota checks at runtime.\n\nAn example quota configuration in yaml format:\n\n   quota:\n     limits:\n\n     - name: apiWriteQpsPerProject\n       metric: library.googleapis.com\/write_calls\n       unit: \"1\/min\/{project}\"  # rate limit for consumer projects\n       values:\n         STANDARD: 10000\n\n\n     # The metric rules bind all methods to the read_calls metric,\n     # except for the UpdateBook and DeleteBook methods. These two methods\n     # are mapped to the write_calls metric, with the UpdateBook method\n     # consuming at twice rate as the DeleteBook method.\n     metric_rules:\n     - selector: \"*\"\n       metric_costs:\n         library.googleapis.com\/read_calls: 1\n     - selector: google.example.library.v1.LibraryService.UpdateBook\n       metric_costs:\n         library.googleapis.com\/write_calls: 2\n     - selector: google.example.library.v1.LibraryService.DeleteBook\n       metric_costs:\n         library.googleapis.com\/write_calls: 1\n\n Corresponding Metric definition:\n\n     metrics:\n     - name: library.googleapis.com\/read_calls\n       display_name: Read requests\n       metric_kind: DELTA\n       value_type: INT64\n\n     - name: library.googleapis.com\/write_calls\n       display_name: Write requests\n       metric_kind: DELTA\n       value_type: INT64",
       "type": "object",
       "properties": {
         "limits": {

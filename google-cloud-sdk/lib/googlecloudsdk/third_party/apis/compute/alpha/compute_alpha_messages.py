@@ -2812,15 +2812,21 @@ class Backend(_messages.Message):
       property when you create the resource.
     failover: This field designates whether this is a failover backend. More
       than one failover backend can be configured for a given BackendService.
-    group: The fully-qualified URL of a Instance Group resource. This instance
-      group defines the list of instances that serve traffic. Member virtual
-      machine instances from each instance group must live in the same zone as
-      the instance group itself. No two backends in a backend service are
-      allowed to use same Instance Group resource.  Note that you must specify
-      an Instance Group resource using the fully-qualified URL, rather than a
-      partial URL.  When the BackendService has load balancing scheme
+    group: The fully-qualified URL of an Instance Group or Network Endpoint
+      Group resource. In case of instance group this defines the list of
+      instances that serve traffic. Member virtual machine instances from each
+      instance group must live in the same zone as the instance group itself.
+      No two backends in a backend service are allowed to use same Instance
+      Group resource.  For Network Endpoint Groups this defines list of
+      endpoints. All endpoints of Network Endpoint Group must be hosted on
+      instances located in the same zone as the Network Endpoint Group.
+      Backend service can not contain mix of Instance Group and Network
+      Endpoint Group backends.  Note that you must specify an Instance Group
+      or Network Endpoint Group resource using the fully-qualified URL, rather
+      than a partial URL.  When the BackendService has load balancing scheme
       INTERNAL, the instance group must be within the same region as the
-      BackendService.
+      BackendService. Network Endpoint Groups are not supported for INTERNAL
+      load balancing scheme.
     maxConnections: The max number of simultaneous connections for the group.
       Can be used with either CONNECTION or UTILIZATION balancing modes. For
       CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
@@ -3485,7 +3491,9 @@ class BackendServiceGroupHealth(_messages.Message):
   r"""A BackendServiceGroupHealth object.
 
   Fields:
-    healthStatus: A HealthStatus attribute.
+    healthStatus: Health state of the backend instances or endpoints in
+      requested instance or network endpoint group, determined based on
+      configured health checks.
     kind: [Output Only] Type of resource. Always
       compute#backendServiceGroupHealth for the health of backend services.
   """
@@ -28507,16 +28515,29 @@ class LogConfigDataAccessOptions(_messages.Message):
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
       manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
+      implementation, for now.  NOTE: Logging to Gin in a fail-closed manner
+      is currently unsupported while work is being done to satisfy the
+      requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will
+      have no effect, but still exists because there is active work being done
+      to support it (b/115874152).
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
       caller. This is relevant only in the LocalIAM implementation, for now.
+      NOTE: Logging to Gin in a fail-closed manner is currently unsupported
+      while work is being done to satisfy the requirements of go/345.
+      Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still
+      exists because there is active work being done to support it
+      (b/115874152).
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
     caller. This is relevant only in the LocalIAM implementation, for now.
+    NOTE: Logging to Gin in a fail-closed manner is currently unsupported
+    while work is being done to satisfy the requirements of go/345. Currently,
+    setting LOG_FAIL_CLOSED mode will have no effect, but still exists because
+    there is active work being done to support it (b/115874152).
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -29494,9 +29515,9 @@ class NamedPort(_messages.Message):
 
 
 class Network(_messages.Message):
-  r"""Represents a Network resource. Read Networks and Firewalls for more
-  information. (== resource_for v1.networks ==) (== resource_for beta.networks
-  ==)
+  r"""Represents a Network resource. Read Virtual Private Cloud (VPC) Network
+  Overview for more information. (== resource_for v1.networks ==) (==
+  resource_for beta.networks ==)
 
   Enums:
     CrossVmEncryptionValueValuesEnum: [Output Only] Type of VM-to-VM traffic
@@ -29508,20 +29529,19 @@ class Network(_messages.Message):
     IPv4Range: The range of internal addresses that are legal on this network.
       This range is a CIDR specification, for example: 192.168.0.0/16.
       Provided by the client when the network is created.
-    autoCreateSubnetworks: When set to true, the network is created in "auto
-      subnet mode". When set to false, the network is in "custom subnet mode".
-      In "auto subnet mode", a newly created network is assigned the default
-      CIDR of 10.128.0.0/9 and it automatically creates one subnetwork per
-      region.
+    autoCreateSubnetworks: When set to true, the VPC network is created in
+      "auto" mode. When set to false, the VPC network is created in "custom"
+      mode.  An auto mode VPC network starts with one subnet per region. Each
+      subnet has a predetermined range as described in Auto mode VPC network
+      IP ranges.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     crossVmEncryption: [Output Only] Type of VM-to-VM traffic encryption for
       this network.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    gatewayIPv4: A gateway address for default routing to other networks. This
-      value is read only and is selected by the Google Compute Engine,
-      typically as the first usable address in the IPv4Range.
+    gatewayIPv4: [Output Only] The gateway address for default routing out of
+      the network. This value is read only and is selected by GCP.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#network for
@@ -29541,7 +29561,7 @@ class Network(_messages.Message):
       behavior to enforce.
     selfLink: [Output Only] Server-defined URL for the resource.
     subnetworks: [Output Only] Server-defined fully-qualified URLs for all
-      subnetworks in this network.
+      subnetworks in this VPC network.
   """
 
   class CrossVmEncryptionValueValuesEnum(_messages.Enum):
@@ -30518,24 +30538,24 @@ class NetworkRoutingConfig(_messages.Message):
   Enums:
     RoutingModeValueValuesEnum: The network-wide routing mode to use. If set
       to REGIONAL, this network's cloud routers will only advertise routes
-      with subnetworks of this network in the same region as the router. If
-      set to GLOBAL, this network's cloud routers will advertise routes with
-      all subnetworks of this network, across regions.
+      with subnets of this network in the same region as the router. If set to
+      GLOBAL, this network's cloud routers will advertise routes with all
+      subnets of this network, across regions.
 
   Fields:
     routingMode: The network-wide routing mode to use. If set to REGIONAL,
-      this network's cloud routers will only advertise routes with subnetworks
-      of this network in the same region as the router. If set to GLOBAL, this
-      network's cloud routers will advertise routes with all subnetworks of
-      this network, across regions.
+      this network's cloud routers will only advertise routes with subnets of
+      this network in the same region as the router. If set to GLOBAL, this
+      network's cloud routers will advertise routes with all subnets of this
+      network, across regions.
   """
 
   class RoutingModeValueValuesEnum(_messages.Enum):
     r"""The network-wide routing mode to use. If set to REGIONAL, this
-    network's cloud routers will only advertise routes with subnetworks of
-    this network in the same region as the router. If set to GLOBAL, this
-    network's cloud routers will advertise routes with all subnetworks of this
-    network, across regions.
+    network's cloud routers will only advertise routes with subnets of this
+    network in the same region as the router. If set to GLOBAL, this network's
+    cloud routers will advertise routes with all subnets of this network,
+    across regions.
 
     Values:
       GLOBAL: <no description>
@@ -34502,6 +34522,8 @@ class ResourceCommitment(_messages.Message):
       Possible values are VCPU and MEMORY
 
   Fields:
+    acceleratorType: Name of the accelerator type resource. Applicable only
+      when the type is ACCELERATOR.
     amount: The amount of the resource purchased (in a type-dependent unit,
       such as bytes). For vCPUs, this can just be an integer. For memory, this
       must be provided in MB. Memory must be a multiple of 256 MB, with up to
@@ -34515,26 +34537,29 @@ class ResourceCommitment(_messages.Message):
     are VCPU and MEMORY
 
     Values:
+      ACCELERATOR: <no description>
       LOCAL_SSD: <no description>
       MEMORY: <no description>
       UNSPECIFIED: <no description>
       VCPU: <no description>
     """
-    LOCAL_SSD = 0
-    MEMORY = 1
-    UNSPECIFIED = 2
-    VCPU = 3
+    ACCELERATOR = 0
+    LOCAL_SSD = 1
+    MEMORY = 2
+    UNSPECIFIED = 3
+    VCPU = 4
 
-  amount = _messages.IntegerField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  acceleratorType = _messages.StringField(1)
+  amount = _messages.IntegerField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class ResourceGroupReference(_messages.Message):
   r"""A ResourceGroupReference object.
 
   Fields:
-    group: A URI referencing one of the instance groups listed in the backend
-      service.
+    group: A URI referencing one of the instance groups or network endpoint
+      groups listed in the backend service.
   """
 
   group = _messages.StringField(1)
@@ -34849,7 +34874,13 @@ class ResourcePolicyBackupSchedulePolicy(_messages.Message):
   to be created for the target disk. Also specifies how many and how long
   these automatically created snapshot should be retained.
 
+  Enums:
+    OnSourceDiskDeleteValueValuesEnum: Specifies the behavior to apply to
+      automatically-created snapshots when the source disk is deleted.
+
   Fields:
+    onSourceDiskDelete: Specifies the behavior to apply to automatically-
+      created snapshots when the source disk is deleted.
     retentionPolicy: Retention policy applied to snapshots created by this
       resource policy.
     schedule: A Vm Maintenance Policy specifies what kind of infrastructure
@@ -34859,19 +34890,53 @@ class ResourcePolicyBackupSchedulePolicy(_messages.Message):
       lables, encryption keys.
   """
 
-  retentionPolicy = _messages.MessageField('ResourcePolicyBackupSchedulePolicyRetentionPolicy', 1)
-  schedule = _messages.MessageField('ResourcePolicyBackupSchedulePolicySchedule', 2)
-  snapshotProperties = _messages.MessageField('ResourcePolicyBackupSchedulePolicySnapshotProperties', 3)
+  class OnSourceDiskDeleteValueValuesEnum(_messages.Enum):
+    r"""Specifies the behavior to apply to automatically-created snapshots
+    when the source disk is deleted.
+
+    Values:
+      APPLY_RETENTION_POLICY: <no description>
+      KEEP_AUTO_SNAPSHOTS: <no description>
+      UNSPECIFIED: <no description>
+    """
+    APPLY_RETENTION_POLICY = 0
+    KEEP_AUTO_SNAPSHOTS = 1
+    UNSPECIFIED = 2
+
+  onSourceDiskDelete = _messages.EnumField('OnSourceDiskDeleteValueValuesEnum', 1)
+  retentionPolicy = _messages.MessageField('ResourcePolicyBackupSchedulePolicyRetentionPolicy', 2)
+  schedule = _messages.MessageField('ResourcePolicyBackupSchedulePolicySchedule', 3)
+  snapshotProperties = _messages.MessageField('ResourcePolicyBackupSchedulePolicySnapshotProperties', 4)
 
 
 class ResourcePolicyBackupSchedulePolicyRetentionPolicy(_messages.Message):
   r"""Policy for retention of automatically created snapshots.
 
+  Enums:
+    OnPolicySwitchValueValuesEnum: Specifies the behavior to apply to
+      existing, automatically-created snapshots if the policy is changed.
+
   Fields:
     maxRetentionDays: Maximum age of the snapshot that is allowed to be kept.
+    onPolicySwitch: Specifies the behavior to apply to existing,
+      automatically-created snapshots if the policy is changed.
   """
 
+  class OnPolicySwitchValueValuesEnum(_messages.Enum):
+    r"""Specifies the behavior to apply to existing, automatically-created
+    snapshots if the policy is changed.
+
+    Values:
+      DO_NOT_RETROACTIVELY_APPLY: <no description>
+      RETROACTIVELY_APPLY: <no description>
+      UNSPECIFIED: <no description>
+    """
+    DO_NOT_RETROACTIVELY_APPLY = 0
+    RETROACTIVELY_APPLY = 1
+    UNSPECIFIED = 2
+
   maxRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  onPolicySwitch = _messages.EnumField('OnPolicySwitchValueValuesEnum', 2)
 
 
 class ResourcePolicyBackupSchedulePolicySchedule(_messages.Message):
@@ -36031,6 +36096,7 @@ class RouterNat(_messages.Message):
   Fields:
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
+    logConfig: Configure logging on this NAT.
     minPortsPerVm: Minimum number of ports allocated to a VM from this NAT
       config. If not set, a default number of ports is allocated to a VM. This
       gets rounded up to the nearest power of 2. Eg. if the value of this
@@ -36084,15 +36150,46 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS = 2
 
   icmpIdleTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minPortsPerVm = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 4)
-  natIps = _messages.StringField(5, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 6)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 7, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 2)
+  minPortsPerVm = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 5)
+  natIps = _messages.StringField(6, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 7)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 8, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+
+
+class RouterNatLogConfig(_messages.Message):
+  r"""Configuration of logging on a NAT.
+
+  Enums:
+    FilterValueValuesEnum: Specifies the desired filtering of logs on this
+      NAT. If unspecified, logs are exported for all connections handled by
+      this NAT.
+
+  Fields:
+    enabled: Indicates whether or not to export logs. This is false by
+      default.
+    filter: Specifies the desired filtering of logs on this NAT. If
+      unspecified, logs are exported for all connections handled by this NAT.
+  """
+
+  class FilterValueValuesEnum(_messages.Enum):
+    r"""Specifies the desired filtering of logs on this NAT. If unspecified,
+    logs are exported for all connections handled by this NAT.
+
+    Values:
+      ERRORS_ONLY: <no description>
+      TRANSLATIONS_ONLY: <no description>
+    """
+    ERRORS_ONLY = 0
+    TRANSLATIONS_ONLY = 1
+
+  enabled = _messages.BooleanField(1)
+  filter = _messages.EnumField('FilterValueValuesEnum', 2)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):

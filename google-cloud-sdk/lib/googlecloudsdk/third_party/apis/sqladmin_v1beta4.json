@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20180914",
+ "revision": "20180921",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -101,6 +101,21 @@
     "value": {
      "type": "string",
      "description": "The whitelisted value for the access control list."
+    }
+   }
+  },
+  "ApiWarning": {
+   "id": "ApiWarning",
+   "type": "object",
+   "description": "An Admin API warning message.",
+   "properties": {
+    "code": {
+     "type": "string",
+     "description": "Code to uniquely identify the warning type."
+    },
+    "message": {
+     "type": "string",
+     "description": "The warning message."
     }
    }
   },
@@ -821,6 +836,13 @@
     "nextPageToken": {
      "type": "string",
      "description": "The continuation token, used to page through large result sets. Provide this value in a subsequent request to return the next page of results."
+    },
+    "warnings": {
+     "type": "array",
+     "description": "List of warnings that ocurred while handling the request.",
+     "items": {
+      "$ref": "ApiWarning"
+     }
     }
    }
   },
@@ -2686,7 +2708,6 @@
       "project",
       "instance"
      ],
-     "etagRequired": true,
      "request": {
       "$ref": "DatabaseInstance"
      },

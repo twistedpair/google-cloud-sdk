@@ -404,6 +404,10 @@
           "items": {
             "$ref": "StatusCondition"
           }
+        },
+        "resourceVersion": {
+          "description": "Server-defined resource version (etag).",
+          "type": "string"
         }
       }
     },
@@ -869,6 +873,10 @@
           "items": {
             "$ref": "StatusCondition"
           }
+        },
+        "resourceVersion": {
+          "description": "Server-defined resource version (etag).",
+          "type": "string"
         }
       }
     },
@@ -1058,8 +1066,12 @@
           "type": "boolean"
         },
         "tpuIpv4CidrBlock": {
-          "description": "The IP address range of the Cloud TPUs in this cluster. If unspecified, a\nrange will be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true.\n\nUnspecified to have a range chosen with the default size `\/20`.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
+          "description": "The IP address range of the Cloud TPUs in this cluster. If unspecified, a\nrange will be automatically chosen with the default size.\n\nThis field is only applicable when `use_ip_aliases` is true, and it must\nnot be specified when the `tpu_use_service_networking` is `true`.\n\nUnspecified to have a range chosen with the default size `\/20`.\n\nSet to \/netmask (e.g. `\/14`) to have a range chosen with a specific\nnetmask.\n\nSet to a\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `10.96.0.0\/14`) from the RFC-1918 private networks (e.g.\n`10.0.0.0\/8`, `172.16.0.0\/12`, `192.168.0.0\/16`) to pick a specific range\nto use.",
           "type": "string"
+        },
+        "tpuUseServiceNetworking": {
+          "description": "Enable Cloud TPU's Service Networking mode. In this mode, the CIDR blocks\nused by the Cloud TPUs will be allocated and managed by Service Networking,\ninstead of GKE.\n\nThis field must be `false` when `tpu_ipv4_cidr_block` is specified.",
+          "type": "boolean"
         }
       }
     },
@@ -1236,6 +1248,10 @@
         "enabled": {
           "description": "Enable the use of GCP IAM Service Accounts in applications in this cluster.",
           "type": "boolean"
+        },
+        "federatingServiceAccount": {
+          "description": "Email of the federating GCP SA that has permission to act on behalf of\ncustomer SAs through Managed Pod Identity.",
+          "type": "string"
         }
       }
     },
@@ -1589,6 +1605,10 @@
           "description": "A description of the update.",
           "$ref": "ClusterUpdate"
         },
+        "updatedCluster": {
+          "description": "The updated cluster object.\nThis field must be empty if 'update' is set.",
+          "$ref": "Cluster"
+        },
         "name": {
           "description": "The name (project, location, cluster) of the cluster to update.\nSpecified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
           "type": "string"
@@ -1741,6 +1761,10 @@
         "imageProject": {
           "description": "The project containing the desired image to use for this node pool.\nThis is used to create clusters using a custom image.",
           "type": "string"
+        },
+        "updatedNodePool": {
+          "description": "The updated node pool object.\nThis field must be empty if 'node_version' or 'image_type' is set.",
+          "$ref": "NodePool"
         },
         "name": {
           "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",

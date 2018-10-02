@@ -100,7 +100,7 @@ class SparkBase(job_base.JobBase):
         loggingConfig=logging_config)
 
     if args.properties:
-      spark_job.properties = encoding.DictToMessage(
+      spark_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.SparkJob.PropertiesValue)
 
     job.sparkJob = spark_job

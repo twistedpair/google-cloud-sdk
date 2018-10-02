@@ -325,6 +325,7 @@ class Cluster(_messages.Message):
       related GCE resources.
     resourceUsageExportConfig: Configuration for exporting resource usages.
       Resource usage export is disabled when this config unspecified.
+    resourceVersion: Server-defined resource version (etag).
     securityProfile: User selected security profile
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
@@ -463,15 +464,16 @@ class Cluster(_messages.Message):
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 45)
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 46)
   resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 47)
-  securityProfile = _messages.MessageField('SecurityProfile', 48)
-  selfLink = _messages.StringField(49)
-  servicesIpv4Cidr = _messages.StringField(50)
-  status = _messages.EnumField('StatusValueValuesEnum', 51)
-  statusMessage = _messages.StringField(52)
-  subnetwork = _messages.StringField(53)
-  tpuIpv4CidrBlock = _messages.StringField(54)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 55)
-  zone = _messages.StringField(56)
+  resourceVersion = _messages.StringField(48)
+  securityProfile = _messages.MessageField('SecurityProfile', 49)
+  selfLink = _messages.StringField(50)
+  servicesIpv4Cidr = _messages.StringField(51)
+  status = _messages.EnumField('StatusValueValuesEnum', 52)
+  statusMessage = _messages.StringField(53)
+  subnetwork = _messages.StringField(54)
+  tpuIpv4CidrBlock = _messages.StringField(55)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 56)
+  zone = _messages.StringField(57)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1435,13 +1437,18 @@ class IPAllocationPolicy(_messages.Message):
       for the new subnetwork.
     tpuIpv4CidrBlock: The IP address range of the Cloud TPUs in this cluster.
       If unspecified, a range will be automatically chosen with the default
-      size.  This field is only applicable when `use_ip_aliases` is true.
-      Unspecified to have a range chosen with the default size `/20`.  Set to
-      /netmask (e.g. `/14`) to have a range chosen with a specific netmask.
-      Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
+      size.  This field is only applicable when `use_ip_aliases` is true, and
+      it must not be specified when the `tpu_use_service_networking` is
+      `true`.  Unspecified to have a range chosen with the default size `/20`.
+      Set to /netmask (e.g. `/14`) to have a range chosen with a specific
+      netmask.  Set to a [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `10.96.0.0/14`) from the RFC-1918 private
       networks (e.g. `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick
       a specific range to use.
+    tpuUseServiceNetworking: Enable Cloud TPU's Service Networking mode. In
+      this mode, the CIDR blocks used by the Cloud TPUs will be allocated and
+      managed by Service Networking, instead of GKE.  This field must be
+      `false` when `tpu_ipv4_cidr_block` is specified.
     useIpAliases: Whether alias IPs will be used for pod IPs in the cluster.
   """
 
@@ -1457,7 +1464,8 @@ class IPAllocationPolicy(_messages.Message):
   servicesSecondaryRangeName = _messages.StringField(10)
   subnetworkName = _messages.StringField(11)
   tpuIpv4CidrBlock = _messages.StringField(12)
-  useIpAliases = _messages.BooleanField(13)
+  tpuUseServiceNetworking = _messages.BooleanField(13)
+  useIpAliases = _messages.BooleanField(14)
 
 
 class IstioConfig(_messages.Message):
@@ -1628,9 +1636,13 @@ class ManagedPodIdentityConfig(_messages.Message):
   Fields:
     enabled: Enable the use of GCP IAM Service Accounts in applications in
       this cluster.
+    federatingServiceAccount: Email of the federating GCP SA that has
+      permission to act on behalf of customer SAs through Managed Pod
+      Identity.
   """
 
   enabled = _messages.BooleanField(1)
+  federatingServiceAccount = _messages.StringField(2)
 
 
 class MasterAuth(_messages.Message):
@@ -2007,6 +2019,7 @@ class NodePool(_messages.Message):
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.
     name: The name of the node pool.
+    resourceVersion: Server-defined resource version (etag).
     selfLink: [Output only] Server-defined URL for the resource.
     status: [Output only] The status of the nodes in this pool instance.
     statusMessage: [Output only] Additional information about the current
@@ -2051,10 +2064,11 @@ class NodePool(_messages.Message):
   management = _messages.MessageField('NodeManagement', 6)
   maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 7)
   name = _messages.StringField(8)
-  selfLink = _messages.StringField(9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  statusMessage = _messages.StringField(11)
-  version = _messages.StringField(12)
+  resourceVersion = _messages.StringField(9)
+  selfLink = _messages.StringField(10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  statusMessage = _messages.StringField(12)
+  version = _messages.StringField(13)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -2914,6 +2928,8 @@ class UpdateClusterRequest(_messages.Message):
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
     update: A description of the update.
+    updatedCluster: The updated cluster object. This field must be empty if
+      'update' is set.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field has been deprecated and replaced by the name field.
@@ -2923,7 +2939,8 @@ class UpdateClusterRequest(_messages.Message):
   name = _messages.StringField(2)
   projectId = _messages.StringField(3)
   update = _messages.MessageField('ClusterUpdate', 4)
-  zone = _messages.StringField(5)
+  updatedCluster = _messages.MessageField('Cluster', 5)
+  zone = _messages.StringField(6)
 
 
 class UpdateMasterRequest(_messages.Message):
@@ -2982,6 +2999,8 @@ class UpdateNodePoolRequest(_messages.Message):
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
+    updatedNodePool: The updated node pool object. This field must be empty if
+      'node_version' or 'image_type' is set.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field has been deprecated and replaced by the name field.
@@ -2995,7 +3014,8 @@ class UpdateNodePoolRequest(_messages.Message):
   nodePoolId = _messages.StringField(6)
   nodeVersion = _messages.StringField(7)
   projectId = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  updatedNodePool = _messages.MessageField('NodePool', 9)
+  zone = _messages.StringField(10)
 
 
 class UsableSubnetwork(_messages.Message):

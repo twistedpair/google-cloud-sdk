@@ -147,19 +147,30 @@ def DirDiff(old_dir, new_dir, diff):
     The return value of the first diff.AddChange() call that returns non-zero
     or None if all diff.AddChange() calls returned zero.
   """
+
+  def GetFileContents(compared_file):
+    try:
+      contents = file_utils.ReadFileContents(compared_file)
+      is_binary = False
+    except UnicodeError:
+      contents = file_utils.ReadBinaryFileContents(compared_file)
+      is_binary = True
+    return (contents, is_binary)
+
   new_files = GetDirFilesRecursive(new_dir)
   old_files = GetDirFilesRecursive(old_dir)
   for new_file in new_files:
     relative_file = os.path.relpath(new_file, new_dir)
     if diff.Ignore(relative_file):
       continue
-    new_contents = file_utils.ReadFileContents(new_file)
-    diff.Validate(relative_file, new_contents)
+    new_contents, new_binary = GetFileContents(new_file)
+    if not new_binary:
+      diff.Validate(relative_file, new_contents)
     old_contents = None
     old_file = os.path.normpath(os.path.join(old_dir, relative_file))
     if old_file in old_files:
-      old_contents = file_utils.ReadFileContents(old_file)
-      if old_contents == new_contents:
+      old_contents, old_binary = GetFileContents(old_file)
+      if old_binary == new_binary and old_contents == new_contents:
         continue
       op = 'edit'
     else:
@@ -250,10 +261,11 @@ class HelpUpdater(object):
     _cli: The Current CLI.
     _directory: The help document directory.
     _generator: The document generator.
+    _hidden: Boolean indicating whether to update hidden commands.
     _test: Show but do not apply operations if True.
   """
 
-  def __init__(self, cli, directory, generator, test=False):
+  def __init__(self, cli, directory, generator, test=False, hidden=False):
     """Constructor.
 
     Args:
@@ -261,6 +273,7 @@ class HelpUpdater(object):
       directory: The help document directory.
       generator: An uninstantiated walker_util document generator.
       test: Show but do not apply operations if True.
+      hidden: Boolean indicating whether the hidden commands should be used.
 
     Raises:
       HelpUpdateError: If the destination directory does not exist.
@@ -271,6 +284,7 @@ class HelpUpdater(object):
     self._cli = cli
     self._directory = directory
     self._generator = generator
+    self._hidden = hidden
     self._test = test
 
   def _Update(self, restrict):

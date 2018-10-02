@@ -1278,6 +1278,7 @@ class TestIssue(_messages.Message):
       encounteredNonAndroidUiWidgetScreen: <no description>
       failedToInstall: <no description>
       fatalException: <no description>
+      inAppPurchases: <no description>
       incompleteRoboScriptExecution: <no description>
       iosCrash: <no description>
       iosException: <no description>
@@ -1285,9 +1286,11 @@ class TestIssue(_messages.Message):
       nativeCrash: <no description>
       nonSdkApiUsageViolation: <no description>
       performedGoogleLogin: <no description>
+      performedMonkeyActions: <no description>
       startActivityNotFound: <no description>
       unspecifiedType: <no description>
       unusedRoboDirective: <no description>
+      usedRoboDirective: <no description>
     """
     anr = 0
     availableDeepLinks = 1
@@ -1297,16 +1300,19 @@ class TestIssue(_messages.Message):
     encounteredNonAndroidUiWidgetScreen = 5
     failedToInstall = 6
     fatalException = 7
-    incompleteRoboScriptExecution = 8
-    iosCrash = 9
-    iosException = 10
-    launcherActivityNotFound = 11
-    nativeCrash = 12
-    nonSdkApiUsageViolation = 13
-    performedGoogleLogin = 14
-    startActivityNotFound = 15
-    unspecifiedType = 16
-    unusedRoboDirective = 17
+    inAppPurchases = 8
+    incompleteRoboScriptExecution = 9
+    iosCrash = 10
+    iosException = 11
+    launcherActivityNotFound = 12
+    nativeCrash = 13
+    nonSdkApiUsageViolation = 14
+    performedGoogleLogin = 15
+    performedMonkeyActions = 16
+    startActivityNotFound = 17
+    unspecifiedType = 18
+    unusedRoboDirective = 19
+    usedRoboDirective = 20
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)
@@ -1421,7 +1427,7 @@ class Timestamp(_messages.Message):
   example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past 01:30 UTC on
   January 15, 2017.  In JavaScript, one can convert a Date object to this
   format using the standard [toISOString()](https://developer.mozilla.org/en-
-  US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString] method. In
+  US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString) method. In
   Python, a standard `datetime.datetime` object can be converted to this
   format using
   [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with

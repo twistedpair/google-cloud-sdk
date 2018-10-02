@@ -790,7 +790,7 @@ class GoogleCloudMlV1PredictRequest(_messages.Message):
 
 
 class GoogleCloudMlV1PredictionInput(_messages.Message):
-  r"""Represents input parameters for a prediction job.
+  r"""Represents input parameters for a prediction job. Next field: 19
 
   Enums:
     DataFormatValueValuesEnum: Required. The format of the input data files.

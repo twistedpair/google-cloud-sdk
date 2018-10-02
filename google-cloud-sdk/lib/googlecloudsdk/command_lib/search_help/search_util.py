@@ -24,7 +24,6 @@ import io
 import re
 
 from googlecloudsdk.command_lib.search_help import lookup
-from googlecloudsdk.core import log
 from googlecloudsdk.core.document_renderers import render_document
 
 import six
@@ -215,117 +214,13 @@ def _FormatItem(item):
   return '{}::'.format(item)
 
 
-def _AddFlagToSummary(command, summary, length_per_snippet, location, terms):
-  """Adds flag summary, given location such as ['flags']['--myflag']."""
-  flags = command.get(location[0], {})
-  lines = []
-  line = ''
-  if _FormatHeader(lookup.FLAGS) not in summary:
-    lines.append(_FormatHeader(lookup.FLAGS))
-
-  # Add specific flag if given.
-  if len(location) > 1:
-    # Add flag name and description of flag if not added yet.
-    flag = flags.get(location[1])
-    if flag and not flag[lookup.IS_HIDDEN]:
-      if _FormatItem(location[1]) not in summary:
-        lines.append(_FormatItem(location[1]))
-        desc_line = flag.get(lookup.DESCRIPTION, '')
-        desc_line = _Snip(desc_line, length_per_snippet, terms)
-        if desc_line:
-          line = desc_line
-        else:
-          log.warning('Attempted to look up a location [{}] that was not '
-                      'found.'.format(location[1]))
-
-      # Add subsections of flag if given.
-      if len(location) > 2:
-        if location[2] == lookup.DEFAULT:
-          default = flags.get(location[1]).get(lookup.DEFAULT)
-          if default:
-            lines.append(line)
-            if isinstance(default, dict):
-              default = ', '.join([x for x in sorted(default.keys())])
-            elif isinstance(default, list):
-              default = ', '.join([x for x in default])
-            line = 'Default: {}.'.format(default)
-        else:
-          log.warning('Attempted to look up a location [{}] that was not '
-                      'found.'.format(location[-1]))
-
-  # If no specific flag given, get list of all flags.
-  else:
-    line = ', '.join(sorted(command.get(location[0], {}).keys()))
-    line = _Snip(line, length_per_snippet, terms)
-
-  if line:
-    lines.append(line)
-    summary += lines
-
-
-def _AddPositionalToSummary(command, summary, length_per_snippet,
-                            location, terms):
-  """Adds summary of arg, given location such as ['positionals']['myarg']."""
-  positionals = command.get(lookup.POSITIONALS)
-  lines = []
-  line = ''
-  if _FormatHeader(lookup.POSITIONALS) not in summary:
-    lines.append(_FormatHeader(lookup.POSITIONALS))
-
-  # Add specific positional if given in location.
-  if len(location) > 1:
-    lines.append(_FormatItem(location[1]))
-    positionals = [p for p in positionals if p[lookup.NAME] == location[1]]
-    if positionals:
-      positional = positionals[0]
-      line = positional.get(lookup.DESCRIPTION, '')
-      line = _Snip(line, length_per_snippet, terms)
-    else:
-      log.warning('Attempted to look up a location [{}] that was not '
-                  'found.'.format(location[1]))
-
-  # If no specific positional given, just add list of all available.
-  else:
-    line = ', '.join(sorted([p[lookup.NAME] for p in positionals]))
-  if line:
-    lines.append(line)
-    summary += lines
-
-
-def _AddGenericSectionToSummary(command, summary, length_per_snippet,
-                                location, terms):
-  """Helper function for adding sections in the form ['loc1','loc2',...]."""
-  section = command
-  for loc in location:
-    section = section.get(loc, {})
-    if isinstance(section, str):
-      line = section
-    # if dict or list, use commas to join keys or items, respectively.
-    elif isinstance(section, list):
-      line = ', '.join(sorted(section))
-    elif isinstance(section, dict):
-      line = ', '.join(sorted(section.keys()))
-    else:
-      line = str(section)
-  if line:
-    header = _FormatHeader(location[-1])
-    if header:
-      summary.append(header)
-    loc = '.'.join(location)
-    summary.append(
-        _Snip(line, length_per_snippet, terms))
-  else:
-    log.warning('Attempted to look up a location [{}] that was not found.'
-                .format(location[-1]))
-
-
 def _Priority(x):
   # Ensure the summary is built in the right order.
   return PRIORITIES.get(x[0], len(PRIORITIES))
 
 
-def GetSummary(command, results, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
-  """Gets a summary of certain attributes of a command.
+class SummaryBuilder(object):
+  """Class that builds a summary of certain attributes of a command.
 
   This will summarize a json representation of a command using
   cloud SDK-style markdown (but with no text wrapping) by taking snippets
@@ -337,30 +232,30 @@ def GetSummary(command, results, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
   Uses a small amount of simple Cloud SDK markdown.
 
   1) To get a summary with just the brief help:
-  GetSummary(command, {'alligator': 'capsule'},
-             length_per_snippet=200)
+  SummaryBuilder(command, {'alligator': 'capsule'}).GetSummary()
 
   [no heading]
-  {200-char excerpt of command['capsule'] with first appearance of 'alligator'}
+  {excerpt of command['capsule'] with first appearance of 'alligator'}
 
   2) To get a summary with a section (can be first-level or inside 'sections',
   which is the same as detailed_help):
-  GetSummary(command, {'': 'sections.SECTION_NAME'})
+  SummaryBuilder(command, {'': 'sections.SECTION_NAME'}).GetSummary()
 
   # SECTION_NAME
   {excerpt of 'SECTION_NAME' section of detailed help. If it is a list
    it will be joined by ', '.}
 
   3) To get a summary with a specific positional arg:
-  GetSummary(command, {'crocodile': 'positionals.myarg'})
+  SummaryBuilder(command, {'crocodile': 'positionals.myarg.name'}).GetSummary()
 
   # POSITIONALS
   myarg::
-  {200-char excerpt of 'myarg' positional help containing 'crocodile'}
+  {excerpt of 'myarg' positional help containing 'crocodile'}
 
   4) To get a summary with specific flags, possibly including choices/defaults:
   GetSummary(command,
-            {'a': 'flags.myflag.choices', 'b': 'flags.myotherflag.default'})
+            {'a': 'flags.--my-flag.choices',
+             'b': 'flags.--my-other-flag.default'})
 
   # FLAGS
   myflag::
@@ -368,37 +263,166 @@ def GetSummary(command, results, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
   myotherflag::
   {excerpt of help} Default: {flag default}
 
-  Args:
+  Attributes:
     command: dict, a json representation of a command.
     results: dict, mapping of terms to the locations where they are found. If a
       '' is used as the key, a snippet of the location starting from the
-      beginning will be used.
+      beginning will be used. Locations have segments separated by dots, such as
+      sections.DESCRIPTION. If the first segment is "flags" or "positionals",
+      there must be three segments.
     length_per_snippet: int, length of desired substrings to get from text.
-
-  Returns:
-    str, a markdown summary
   """
-  # Always include capsule.
-  results.update({'': lookup.CAPSULE})
-  summary = []
-  locations = [location.split('.')
-               for location in sorted(set(results.values()))]
 
-  for location in sorted(locations, key=_Priority):
-    terms = {t for t, l in six.iteritems(results)
-             if l == '.'.join(location) and t}
-    if location[0] == lookup.FLAGS:
-      _AddFlagToSummary(command, summary, length_per_snippet, location, terms)
-    elif location[0] == lookup.POSITIONALS:
-      _AddPositionalToSummary(command, summary, length_per_snippet, location,
-                              terms)
-    # path and name are ignored.
-    elif lookup.PATH in location or lookup.NAME in location:
-      continue
+  _INVALID_LOCATION_MESSAGE = (
+      'Attempted to look up a location [{}] that was not found or invalid.')
+
+  def __init__(self, command, results, length_per_snippet=200):
+    """Create the class."""
+    self.command = command
+    self.results = results
+    self.length_per_snippet = length_per_snippet
+    self._lines = []
+
+  def _AddFlagToSummary(self, location, terms):
+    """Adds flag summary, given location such as ['flags']['--myflag']."""
+    flags = self.command.get(location[0], {})
+    line = ''
+    if _FormatHeader(lookup.FLAGS) not in self._lines:
+      self._lines.append(_FormatHeader(lookup.FLAGS))
+
+    if len(location) > 1:
+      # Add flag name and description of flag if not added yet.
+      flag = flags.get(location[1])
+      assert flag and not flag[lookup.IS_HIDDEN], (
+          self._INVALID_LOCATION_MESSAGE.format(DOT.join(location)))
+      if _FormatItem(location[1]) not in self._lines:
+        self._lines.append(_FormatItem(location[1]))
+        desc_line = flag.get(lookup.DESCRIPTION, '')
+        desc_line = _Snip(desc_line, self.length_per_snippet, terms)
+        assert desc_line, self._INVALID_LOCATION_MESSAGE.format(
+            DOT.join(location))
+        line = desc_line
+
+      if len(location) > 2:
+        # Add default if needed.
+        if location[2] == lookup.DEFAULT:
+          default = flags.get(location[1]).get(lookup.DEFAULT)
+          if default:
+            if line not in self._lines:
+              self._lines.append(line)
+            if isinstance(default, dict):
+              default = ', '.join([x for x in sorted(default.keys())])
+            elif isinstance(default, list):
+              default = ', '.join([x for x in default])
+            line = 'Default: {}.'.format(default)
+        else:
+          # The other three sub-locations for flags are covered by adding the
+          # snippet of the description.
+          valid_subattributes = [
+              lookup.NAME, lookup.DESCRIPTION, lookup.CHOICES]
+          assert location[2] in valid_subattributes, (
+              self._INVALID_LOCATION_MESSAGE.format(DOT.join(location)))
+
+    # If no specific flag given, get list of all flags.
+    # TODO(b/67707688): Always require a specific flag.
     else:
-      _AddGenericSectionToSummary(command, summary, length_per_snippet,
-                                  location, terms)
-  return '\n'.join(summary)
+      line = ', '.join(sorted(self.command.get(location[0], {}).keys()))
+      line = _Snip(line, self.length_per_snippet, terms)
+
+    if line:
+      self._lines.append(line)
+
+  def _AddPositionalToSummary(self, location, terms):
+    """Adds summary of arg, given location such as ['positionals']['myarg']."""
+    positionals = self.command.get(lookup.POSITIONALS)
+    line = ''
+    if _FormatHeader(lookup.POSITIONALS) not in self._lines:
+      self._lines.append(_FormatHeader(lookup.POSITIONALS))
+
+    if len(location) > 1:
+      matching_positionals = [p for p in positionals
+                              if p[lookup.NAME] == location[1]]
+      assert matching_positionals, self._INVALID_LOCATION_MESSAGE.format(
+          DOT.join(location))
+      self._lines.append(_FormatItem(location[1]))
+      positional = matching_positionals[0]
+      line = positional.get(lookup.DESCRIPTION, '')
+      line = _Snip(line, self.length_per_snippet, terms)
+
+    # TODO(b/67707688): Always require a specific positional.
+    # If no specific positional given, just add list of all available.
+    else:
+      line = ', '.join(sorted([p[lookup.NAME] for p in positionals]))
+
+    if line:
+      self._lines.append(line)
+
+  def _AddGenericSectionToSummary(self, location, terms):
+    """Helper function for adding sections in the form ['loc1','loc2',...]."""
+    section = self.command
+    for loc in location:
+      section = section.get(loc, {})
+      if isinstance(section, str):
+        line = section
+      # if dict or list, use commas to join keys or items, respectively.
+      elif isinstance(section, list):
+        line = ', '.join(sorted(section))
+      elif isinstance(section, dict):
+        line = ', '.join(sorted(section.keys()))
+      else:
+        line = str(section)
+    assert line, self._INVALID_LOCATION_MESSAGE.format(DOT.join(location))
+    header = _FormatHeader(location[-1])
+    if header:
+      self._lines.append(header)
+    loc = '.'.join(location)
+    self._lines.append(
+        _Snip(line, self.length_per_snippet, terms))
+
+  def GetSummary(self):
+    """Builds a summary.
+
+    Returns:
+      str, a markdown summary
+    """
+    all_locations = set(self.results.values())
+    if lookup.CAPSULE not in all_locations:
+      all_locations.add(lookup.CAPSULE)
+
+    def _Equivalent(location, other_location):
+      """Returns True if both locations correspond to same summary section."""
+      if location == other_location:
+        return True
+      if len(location) != len(other_location):
+        return False
+      if location[:-1] != other_location[:-1]:
+        return False
+      equivalent = [lookup.NAME, lookup.CHOICES, lookup.DESCRIPTION]
+      if location[-1] in equivalent and other_location[-1] in equivalent:
+        return True
+      return False
+
+    # Sort alphabetically first to make sure everything is alphabetical within
+    # the same priority.
+    for full_location in sorted(sorted(all_locations), key=_Priority):
+      location = full_location.split(DOT)
+      terms = {t for t, l in six.iteritems(self.results)
+               if _Equivalent(l.split(DOT), location) and t}
+      if location[0] == lookup.FLAGS:
+        self._AddFlagToSummary(location, terms)
+      elif location[0] == lookup.POSITIONALS:
+        self._AddPositionalToSummary(location, terms)
+      # path and name are ignored.
+      elif lookup.PATH in location or lookup.NAME in location:
+        continue
+      else:
+        self._AddGenericSectionToSummary(location, terms)
+    return '\n'.join(self._lines)
+
+
+def GetSummary(command, results, length_per_snippet=DEFAULT_SNIPPET_LENGTH):
+  """Gets a summary of certain attributes of a command."""
+  return SummaryBuilder(command, results, length_per_snippet).GetSummary()
 
 
 def ProcessResult(command, results):
@@ -508,3 +532,4 @@ _TRANSFORMS = {
 
 def GetTransforms():
   return _TRANSFORMS
+

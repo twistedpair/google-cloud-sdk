@@ -27,7 +27,10 @@ class Collections(enum.Enum):
   LIENS = (
       'liens',
       'liens/{liensId}',
-      {},
+      {
+          '':
+              'liens/{liensId}',
+      },
       [u'liensId'],
       True
   )

@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import collections
 import os
 
 from apitools.base.py import encoding
@@ -98,9 +99,13 @@ class JobBase(six.with_metaclass(abc.ABCMeta, object)):
     if not driver_logging:
       return None
 
+    value_enum = (messages.LoggingConfig.DriverLogLevelsValue.
+                  AdditionalProperty.ValueValueValuesEnum)
+    config = collections.OrderedDict(
+        [(key, value_enum(value)) for key, value in driver_logging.items()])
     return messages.LoggingConfig(
-        driverLogLevels=encoding.DictToMessage(
-            driver_logging,
+        driverLogLevels=encoding.DictToAdditionalPropertyMessage(
+            config,
             messages.LoggingConfig.DriverLogLevelsValue))
 
   def PopulateFilesByType(self, args):

@@ -636,16 +636,29 @@ class DataAccessOptions(_messages.Message):
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
       manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
+      implementation, for now.  NOTE: Logging to Gin in a fail-closed manner
+      is currently unsupported while work is being done to satisfy the
+      requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will
+      have no effect, but still exists because there is active work being done
+      to support it (b/115874152).
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
       caller. This is relevant only in the LocalIAM implementation, for now.
+      NOTE: Logging to Gin in a fail-closed manner is currently unsupported
+      while work is being done to satisfy the requirements of go/345.
+      Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still
+      exists because there is active work being done to support it
+      (b/115874152).
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
     caller. This is relevant only in the LocalIAM implementation, for now.
+    NOTE: Logging to Gin in a fail-closed manner is currently unsupported
+    while work is being done to satisfy the requirements of go/345. Currently,
+    setting LOG_FAIL_CLOSED mode will have no effect, but still exists because
+    there is active work being done to support it (b/115874152).
 
     Values:
       LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
@@ -660,7 +673,10 @@ class DataAccessOptions(_messages.Message):
         if it succeeds.  If a matching Rule has this directive, but the client
         has not indicated that it will honor such requirements, then the IAM
         check will result in authorization failure by setting
-        CheckPolicyResponse.success=false.
+        CheckPolicyResponse.success=false.  NOTE: This is currently
+        unsupported. See the note on LogMode below. LOG_FAIL_CLOSED shouldn't
+        be used unless the application wants fail-closed logging to be turned
+        on implicitly when b/115874152 is resolved.
     """
     LOG_MODE_UNSPECIFIED = 0
     LOG_FAIL_CLOSED = 1
@@ -786,10 +802,23 @@ class ExecuteSqlRequest(_messages.Message):
       new SQL statement execution to resume where the last one left off. The
       rest of the request parameters must exactly match the request that
       yielded this token.
-    seqno: A string attribute.
+    seqno: A per-transaction sequence number used to identify this request.
+      This makes each request idempotent such that if the request is received
+      multiple times, at most one will succeed.  The sequence number must be
+      monotonically increasing within the transaction. If a request arrives
+      for the first time with an out-of-order sequence number, the transaction
+      may be aborted. Replays of previously handled requests will yield the
+      same response as the first execution.  Required for DML statements.
+      Ignored for queries.
     sql: Required. The SQL string.
     transaction: The transaction to use. If none is provided, the default is a
-      temporary read-only transaction with strong concurrency.
+      temporary read-only transaction with strong concurrency.  The
+      transaction to use.  For queries, if none is provided, the default is a
+      temporary read-only transaction with strong concurrency.  Standard DML
+      statements require a ReadWrite transaction. Single-use transactions are
+      not supported (to avoid replay).  The caller must either supply an
+      existing transaction ID or begin a new transaction.  Partitioned DML
+      requires an existing PartitionedDml transaction ID.
   """
 
   class QueryModeValueValuesEnum(_messages.Enum):
@@ -1447,7 +1476,8 @@ class PartialResultSet(_messages.Message):
     stats: Query plan and execution statistics for the statement that produced
       this streaming result set. These can be requested by setting
       ExecuteSqlRequest.query_mode and are sent only once with the last
-      response in the stream.
+      response in the stream. This field will also be present in the last
+      response for DML statements.
     values: A streamed result set consists of a stream of values, which might
       be split into many `PartialResultSet` messages to accommodate large rows
       and/or large values. Every N complete values defines a row, where N is
@@ -1573,7 +1603,9 @@ class PartitionQueryRequest(_messages.Message):
       partitionable query has a single distributed union operator. A
       distributed union operator conceptually divides one or more tables into
       multiple splits, remotely evaluates a subquery independently on each
-      split, and then unions all results.
+      split, and then unions all results.  This must not contain DML commands,
+      such as INSERT, UPDATE, or DELETE. Use ExecuteStreamingSql with a
+      PartitionedDml transaction for large, partition-friendly DML operations.
     transaction: Read only snapshot transactions are supported, read/write and
       single use transactions are not.
   """
@@ -2023,6 +2055,10 @@ class ResultSet(_messages.Message):
       metadata.row_type. Elements are encoded based on type as described here.
     stats: Query plan and execution statistics for the SQL statement that
       produced this result set. These can be requested by setting
+      ExecuteSqlRequest.query_mode. DML statements always produce stats
+      containing the number of rows modified, unless executed using the
+      ExecuteSqlRequest.QueryMode.PLAN ExecuteSqlRequest.query_mode. Other
+      fields may or may not be populated, based on the
       ExecuteSqlRequest.query_mode.
   """
 
@@ -2951,6 +2987,10 @@ class SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest(_messa
       --> The created database name contains the string "howl" and
       the progress.start_time of the restore operation is before
       2018-03-28T14:50:00Z.
+    instanceId: The ID of the instance that contains the backups from which
+      the restore operations were initiated. The `instance_id` appended to
+      `parent/instances/` forms the full instance name of the form
+      `projects/<project>/instances/<instance_id>`.
     orderBy: An expression for specifying the sort order of the results of the
       request. The string value should follow SQL syntax: comma separated list
       of fields in CreateDatabaseFromBackupMetadata. Fields supported are:
@@ -2968,16 +3008,17 @@ class SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest(_messa
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListCreateDatabaseFromBackupMetadataResponse to the same
       `parent` and with the same `filter`.
-    parent: Required. The instance containing the backups from which the
-      restore operations were initiated. Values are of the form
-      `projects/<project>/instances/<instance>`.
+    parent: Required. The project of the instance that contains the backups
+      from which the restore operations were initiated. Values are of the form
+      `projects/<project>`.
   """
 
   filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  instanceId = _messages.StringField(2)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
 
 
 class SpannerProjectsInstancesListRequest(_messages.Message):
@@ -3307,50 +3348,53 @@ class TransactionOptions(_messages.Message):
   a time. After the active transaction is completed, the session can
   immediately be re-used for the next transaction. It is not necessary to
   create a new session for each transaction.  # Transaction Modes  Cloud
-  Spanner supports two transaction modes:    1. Locking read-write. This type
-  of transaction is the only way      to write data into Cloud Spanner. These
-  transactions rely on      pessimistic locking and, if necessary, two-phase
-  commit.      Locking read-write transactions may abort, requiring the
+  Spanner supports three transaction modes:    1. Locking read-write. This
+  type of transaction is the only way      to write data into Cloud Spanner.
+  These transactions rely on      pessimistic locking and, if necessary, two-
+  phase commit.      Locking read-write transactions may abort, requiring the
   application to retry.    2. Snapshot read-only. This transaction type
   provides guaranteed      consistency across several reads, but does not
   allow      writes. Snapshot read-only transactions can be configured to
   read at timestamps in the past. Snapshot read-only      transactions do not
-  need to be committed.   For transactions that only read, snapshot read-only
-  transactions provide simpler semantics and are almost always faster. In
-  particular, read-only transactions do not take locks, so they do not
-  conflict with read-write transactions. As a consequence of not taking locks,
-  they also do not abort, so retry loops are not needed.  Transactions may
-  only read/write data in a single database. They may, however, read/write
-  data in different tables within that database.  ## Locking Read-Write
-  Transactions  Locking transactions may be used to atomically read-modify-
-  write data anywhere in a database. This type of transaction is externally
-  consistent.  Clients should attempt to minimize the amount of time a
-  transaction is active. Faster transactions commit with higher probability
-  and cause less contention. Cloud Spanner attempts to keep read locks active
-  as long as the transaction continues to do reads, and the transaction has
-  not been terminated by Commit or Rollback.  Long periods of inactivity at
-  the client may cause Cloud Spanner to release a transaction's locks and
-  abort it.  Reads performed within a transaction acquire locks on the data
-  being read. Writes can only be done at commit time, after all reads have
-  been completed. Conceptually, a read-write transaction consists of zero or
-  more reads or SQL queries followed by Commit. At any time before Commit, the
-  client can send a Rollback request to abort the transaction.  ### Semantics
-  Cloud Spanner can commit the transaction if all read locks it acquired are
-  still valid at commit time, and it is able to acquire write locks for all
-  writes. Cloud Spanner can abort the transaction for any reason. If a commit
-  attempt returns `ABORTED`, Cloud Spanner guarantees that the transaction has
-  not modified any user data in Cloud Spanner.  Unless the transaction
-  commits, Cloud Spanner makes no guarantees about how long the transaction's
-  locks were held for. It is an error to use Cloud Spanner locks for any sort
-  of mutual exclusion other than between Cloud Spanner transactions
-  themselves.  ### Retrying Aborted Transactions  When a transaction aborts,
-  the application can choose to retry the whole transaction again. To maximize
-  the chances of successfully committing the retry, the client should execute
-  the retry in the same session as the original attempt. The original
-  session's lock priority increases with each consecutive abort, meaning that
-  each attempt has a slightly better chance of success than the previous.
-  Under some circumstances (e.g., many transactions attempting to modify the
-  same row(s)), a transaction can abort many times in a short period before
+  need to be committed.    3. Partitioned DML. This type of transaction is
+  used to execute      a single Partitioned DML statement. Partitioned DML
+  partitions      the key space and runs the DML statement over each partition
+  in parallel using separate, internal transactions that commit
+  independently. Partitioned DML transactions do not need to be
+  committed.  For transactions that only read, snapshot read-only transactions
+  provide simpler semantics and are almost always faster. In particular, read-
+  only transactions do not take locks, so they do not conflict with read-write
+  transactions. As a consequence of not taking locks, they also do not abort,
+  so retry loops are not needed.  Transactions may only read/write data in a
+  single database. They may, however, read/write data in different tables
+  within that database.  ## Locking Read-Write Transactions  Locking
+  transactions may be used to atomically read-modify-write data anywhere in a
+  database. This type of transaction is externally consistent.  Clients should
+  attempt to minimize the amount of time a transaction is active. Faster
+  transactions commit with higher probability and cause less contention. Cloud
+  Spanner attempts to keep read locks active as long as the transaction
+  continues to do reads, and the transaction has not been terminated by Commit
+  or Rollback.  Long periods of inactivity at the client may cause Cloud
+  Spanner to release a transaction's locks and abort it.  Conceptually, a
+  read-write transaction consists of zero or more reads or SQL statements
+  followed by Commit. At any time before Commit, the client can send a
+  Rollback request to abort the transaction.  ### Semantics  Cloud Spanner can
+  commit the transaction if all read locks it acquired are still valid at
+  commit time, and it is able to acquire write locks for all writes. Cloud
+  Spanner can abort the transaction for any reason. If a commit attempt
+  returns `ABORTED`, Cloud Spanner guarantees that the transaction has not
+  modified any user data in Cloud Spanner.  Unless the transaction commits,
+  Cloud Spanner makes no guarantees about how long the transaction's locks
+  were held for. It is an error to use Cloud Spanner locks for any sort of
+  mutual exclusion other than between Cloud Spanner transactions themselves.
+  ### Retrying Aborted Transactions  When a transaction aborts, the
+  application can choose to retry the whole transaction again. To maximize the
+  chances of successfully committing the retry, the client should execute the
+  retry in the same session as the original attempt. The original session's
+  lock priority increases with each consecutive abort, meaning that each
+  attempt has a slightly better chance of success than the previous.  Under
+  some circumstances (e.g., many transactions attempting to modify the same
+  row(s)), a transaction can abort many times in a short period before
   successfully committing. Thus, it is not a good idea to cap the number of
   retries a transaction can attempt; instead, it is better to limit the total
   amount of wall time spent retrying.  ### Idle Transactions  A transaction is
@@ -3427,10 +3471,51 @@ class TransactionOptions(_messages.Message):
   read timestamps more than one hour in the past. This restriction also
   applies to in-progress reads and/or SQL queries whose timestamp become too
   old while executing. Reads and SQL queries with too-old read timestamps fail
-  with the error `FAILED_PRECONDITION`.  ##
+  with the error `FAILED_PRECONDITION`.  ## Partitioned DML Transactions
+  Partitioned DML transactions are used to execute DML statements with a
+  different execution strategy that provides different, and often better,
+  scalability properties for large, table-wide operations than DML in a
+  ReadWrite transaction. Smaller scoped statements, such as an OLTP workload,
+  should prefer using ReadWrite transactions.  Partitioned DML partitions the
+  keyspace and runs the DML statement on each partition in separate, internal
+  transactions. These transactions commit automatically when complete, and run
+  independently from one another.  To reduce lock contention, this execution
+  strategy only acquires read locks on rows that match the WHERE clause of the
+  statement. Additionally, the smaller per-partition transactions hold locks
+  for less time.  That said, Partitioned DML is not a drop-in replacement for
+  standard DML used in ReadWrite transactions.   - The DML statement must be
+  fully-partitionable. Specifically, the statement    must be expressible as
+  the union of many statements which each access only    a single row of the
+  table.   - The statement is not applied atomically to all rows of the table.
+  Rather,    the statement is applied atomically to partitions of the table,
+  in    independent transactions. Secondary index rows are updated atomically
+  with the base table rows.   - Partitioned DML does not guarantee exactly-
+  once execution semantics    against a partition. The statement will be
+  applied at least once to each    partition. It is strongly recommended that
+  the DML statement should be    idempotent to avoid unexpected results. For
+  instance, it is potentially    dangerous to run a statement such as
+  `UPDATE table SET column = column + 1` as it could be run multiple times
+  against some rows.   - The partitions are committed automatically - there is
+  no support for    Commit or Rollback. If the call returns an error, or if
+  the client issuing    the ExecuteSql call dies, it is possible that some
+  rows had the statement    executed on them successfully. It is also possible
+  that statement was    never executed against other rows.   - Partitioned DML
+  transactions may only contain the execution of a single    DML statement via
+  ExecuteSql or ExecuteStreamingSql.   - If any error is encountered during
+  the execution of the partitioned DML    operation (for instance, a UNIQUE
+  INDEX violation, division by zero, or a    value that cannot be stored due
+  to schema constraints), then the    operation is stopped at that point and
+  an error is returned. It is    possible that at this point, some partitions
+  have been committed (or even    committed multiple times), and other
+  partitions have not been run at all.  Given the above, Partitioned DML is
+  good fit for large, database-wide, operations that are idempotent, such as
+  deleting old rows from a very large table.
 
   Fields:
-    partitionedDml: A PartitionedDml attribute.
+    partitionedDml: Partitioned DML transaction.  Authorization to begin a
+      Partitioned DML transaction requires
+      `spanner.databases.beginPartitionedDmlTransaction` permission on the
+      `session` resource.
     readOnly: Transaction will not write.  Authorization to begin a read-only
       transaction requires `spanner.databases.beginReadOnlyTransaction`
       permission on the `session` resource.

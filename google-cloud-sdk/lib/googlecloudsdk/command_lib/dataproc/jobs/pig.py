@@ -89,10 +89,10 @@ class PigBase(job_base.JobBase):
     if args.queries:
       pig_job.queryList = messages.QueryList(queries=args.queries)
     if args.params:
-      pig_job.scriptVariables = encoding.DictToMessage(
+      pig_job.scriptVariables = encoding.DictToAdditionalPropertyMessage(
           args.params, messages.PigJob.ScriptVariablesValue)
     if args.properties:
-      pig_job.properties = encoding.DictToMessage(
+      pig_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.PigJob.PropertiesValue)
 
     job.pigJob = pig_job

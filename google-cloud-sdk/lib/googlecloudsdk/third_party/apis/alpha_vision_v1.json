@@ -266,7 +266,7 @@
           "type": "string"
         },
         "productCategory": {
-          "description": "The category for the product identified by the reference image. This should\nbe either \"homegoods\" or \"apparel\".\n\nThis field is immutable.",
+          "description": "The category for the product identified by the reference image. This should\nbe either \"homegoods\", \"apparel\", or \"toys\".\n\nThis field is immutable.",
           "type": "string"
         },
         "productLabels": {
@@ -701,7 +701,7 @@
           "type": "string"
         },
         "productCategories": {
-          "description": "The list of product categories to search in. Currently, we only consider\nthe first category, and either \"homegoods\" or \"apparel\" should be\nspecified.",
+          "description": "The list of product categories to search in. Currently, we only consider\nthe first category, and either \"homegoods\", \"apparel\", or \"toys\" should be\nspecified.",
           "type": "array",
           "items": {
             "type": "string"
@@ -5861,7 +5861,7 @@
           "type": "string"
         },
         "productCategory": {
-          "description": "The category for the product identified by the reference image. This should\nbe either \"homegoods\" or \"apparel\".\n\nThis field is immutable.",
+          "description": "The category for the product identified by the reference image. This should\nbe either \"homegoods\", \"apparel\", or \"toys\".\n\nThis field is immutable.",
           "type": "string"
         },
         "productLabels": {

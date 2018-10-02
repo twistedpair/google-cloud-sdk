@@ -30,7 +30,7 @@ class AuditConfig(_messages.Message):
   AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditConfig are exempted.  Example Policy with
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
   multiple AuditConfigs:      {       "audit_configs": [         {
   "service": "allServices"           "audit_log_configs": [             {
   "log_type": "DATA_READ",               "exempted_members": [
@@ -47,7 +47,6 @@ class AuditConfig(_messages.Message):
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
-      Next ID: 4
     service: Specifies a service that will be enabled for audit logging. For
       example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
       `allServices` is a special value that covers all services.
@@ -96,6 +95,10 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
     members: Specifies the identities requesting access for a Cloud Platform
       resource. `members` can have the following values:  * `allUsers`: A
       special identifier that represents anyone who is    on the internet;
@@ -103,18 +106,19 @@ class Binding(_messages.Message):
       identifier that represents anyone    who is authenticated with a Google
       account or a service account.  * `user:{emailid}`: An email address that
       represents a specific Google    account. For example, `alice@gmail.com`
-      or `joe@example.com`.   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
       app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
       that represents a Google group.    For example, `admins@example.com`.
       * `domain:{domain}`: A Google Apps domain name that represents all the
       users of that domain. For example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`. Required
+      `roles/editor`, or `roles/owner`.
   """
 
-  members = _messages.StringField(1, repeated=True)
-  role = _messages.StringField(2)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class BooleanConstraint(_messages.Message):
@@ -265,6 +269,16 @@ class CloudresourcemanagerLiensDeleteRequest(_messages.Message):
 
   Fields:
     liensId: Part of `name`. The name/identifier of the Lien to delete.
+  """
+
+  liensId = _messages.StringField(1, required=True)
+
+
+class CloudresourcemanagerLiensGetRequest(_messages.Message):
+  r"""A CloudresourcemanagerLiensGetRequest object.
+
+  Fields:
+    liensId: Part of `name`. The name/identifier of the Lien.
   """
 
   liensId = _messages.StringField(1, required=True)
@@ -573,7 +587,16 @@ class CloudresourcemanagerProjectsListRequest(_messages.Message):
       |labels.color:*|The project has the label `color`.|
       |labels.color:red|The project's label `color` has the value `red`.|
       |labels.color:red&nbsp;labels.size:big|The project's label `color` has
-      the value `red` and its label `size` has the value `big`.  Optional.
+      the value `red` and its label `size` has the value `big`.  If you
+      specify a filter that has both `parent.type` and `parent.id`, then the
+      `resourcemanager.projects.list` permission is checked on the parent. If
+      the user has this permission, all projects under the parent will be
+      returned after remaining filters have been applied. If the user lacks
+      this permission, then all projects for which the user has the
+      `resourcemanager.projects.get` permission will be returned after
+      remaining filters have been applied. If no filter is specified, the call
+      will return projects for which the user has
+      `resourcemanager.projects.get` permissions.  Optional.
     pageSize: The maximum number of Projects to return in the response. The
       server can return fewer Projects than requested. If unspecified, server
       picks an appropriate default.  Optional.
@@ -709,6 +732,63 @@ class Empty(_messages.Message):
 
 
 
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
+class FolderOperation(_messages.Message):
+  r"""Metadata describing a long running folder operation
+
+  Enums:
+    OperationTypeValueValuesEnum: The type of this operation.
+
+  Fields:
+    destinationParent: The resource name of the folder or organization we are
+      either creating the folder under or moving the folder to.
+    displayName: The display name of the folder.
+    operationType: The type of this operation.
+    sourceParent: The resource name of the folder's parent. Only applicable
+      when the operation_type is MOVE.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The type of this operation.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: Operation type not specified.
+      CREATE: A create folder operation.
+      MOVE: A move folder operation.
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    MOVE = 2
+
+  destinationParent = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 3)
+  sourceParent = _messages.StringField(4)
+
+
 class GetAncestryRequest(_messages.Message):
   r"""The request sent to the
 GetAncestry
@@ -721,7 +801,7 @@ class GetAncestryResponse(_messages.Message):
   Fields:
     ancestor: Ancestors are ordered from bottom to top of the resource
       hierarchy. The first ancestor is the project itself, followed by the
-      project's parent, etc.
+      project's parent, etc..
   """
 
   ancestor = _messages.MessageField('Ancestor', 1, repeated=True)
@@ -767,7 +847,7 @@ class Lien(_messages.Message):
       will validate the parent against those for which Liens are supported.
       Example: `projects/1234`
     reason: Concise user-visible strings indicating why an action cannot be
-      performed on a resource. Maximum lenth of 200 characters.  Example:
+      performed on a resource. Maximum length of 200 characters.  Example:
       'Holds production API key'
     restrictions: The types of operations which should be blocked as a result
       of this Lien. Each value should correspond to an IAM permission. The
@@ -825,9 +905,14 @@ class ListConstraint(_messages.Message):
   Fields:
     suggestedValue: Optional. The Google Cloud Console will try to default to
       a configuration that matches the value specified in this `Constraint`.
+    supportsUnder: Indicates whether subtrees of Cloud Resource Manager
+      resource hierarchy can be used in `Policy.allowed_values` and
+      `Policy.denied_values`. For example, `"under:folders/123"` would match
+      any resource under the 'folders/123' folder.
   """
 
   suggestedValue = _messages.StringField(1)
+  supportsUnder = _messages.BooleanField(2)
 
 
 class ListLiensResponse(_messages.Message):
@@ -877,25 +962,33 @@ class ListOrgPoliciesResponse(_messages.Message):
 
 class ListPolicy(_messages.Message):
   r"""Used in `policy_type` to specify how `list_policy` behaves at this
-  resource.  A `ListPolicy` can define specific values that are allowed or
-  denied by setting either the `allowed_values` or `denied_values` fields. It
-  can also be used to allow or deny all values, by setting the `all_values`
-  field. If `all_values` is `ALL_VALUES_UNSPECIFIED`, exactly one of
-  `allowed_values` or `denied_values` must be set (attempting to set both or
-  neither will result in a failed request). If `all_values` is set to either
-  `ALLOW` or `DENY`, `allowed_values` and `denied_values` must be unset.
+  resource.  `ListPolicy` can define specific values and subtrees of Cloud
+  Resource Manager resource hierarchy (`Organizations`, `Folders`, `Projects`)
+  that are allowed or denied by setting the `allowed_values` and
+  `denied_values` fields. This is achieved by using the `under:` and optional
+  `is:` prefixes. The `under:` prefix is used to denote resource subtree
+  values. The `is:` prefix is used to denote specific values, and is required
+  only if the value contains a ":". Values prefixed with "is:" are treated the
+  same as values with no prefix. Ancestry subtrees must be in one of the
+  following formats:     - "projects/<project-id>", e.g. "projects/tokyo-
+  rain-123"     - "folders/<folder-id>", e.g. "folders/1234"     -
+  "organizations/<organization-id>", e.g. "organizations/1234" The
+  `supports_under` field of the associated `Constraint`  defines whether
+  ancestry prefixes can be used. You can set `allowed_values` and
+  `denied_values` in the same `Policy` if `all_values` is
+  `ALL_VALUES_UNSPECIFIED`. `ALLOW` or `DENY` are used to allow or deny all
+  values. If `all_values` is set to either `ALLOW` or `DENY`, `allowed_values`
+  and `denied_values` must be unset.
 
   Enums:
     AllValuesValueValuesEnum: The policy all_values state.
 
   Fields:
     allValues: The policy all_values state.
-    allowedValues: List of values allowed  at this resource. an only be set if
-      no values are set for `denied_values` and `all_values` is set to
-      `ALL_VALUES_UNSPECIFIED`.
+    allowedValues: List of values allowed  at this resource. Can only be set
+      if `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
     deniedValues: List of values denied at this resource. Can only be set if
-      no values are set for `allowed_values` and `all_values` is set to
-      `ALL_VALUES_UNSPECIFIED`.
+      `all_values` is set to `ALL_VALUES_UNSPECIFIED`.
     inheritFromParent: Determines the inheritance behavior for this `Policy`.
       By default, a `ListPolicy` set at a resource supercedes any `Policy` set
       anywhere up the resource hierarchy. However, if `inherit_from_parent` is
@@ -915,18 +1008,19 @@ class ListPolicy(_messages.Message):
       Then, if a `Policy` is applied to a project below the Organization that
       has `inherit_from_parent` set to `false` and field all_values set to
       DENY, then an attempt to activate any API will be denied.  The following
-      examples demonstrate different possible layerings:  Example 1 (no
-      inherited values):   `organizations/foo` has a `Policy` with values:
-      {allowed_values: "E1" allowed_values:"E2"}   ``projects/bar`` has
-      `inherit_from_parent` `false` and values:     {allowed_values: "E3"
-      allowed_values: "E4"} The accepted values at `organizations/foo` are
-      `E1`, `E2`. The accepted values at `projects/bar` are `E3`, and `E4`.
-      Example 2 (inherited values):   `organizations/foo` has a `Policy` with
-      values:     {allowed_values: "E1" allowed_values:"E2"}   `projects/bar`
-      has a `Policy` with values:     {value: "E3" value: "E4"
-      inherit_from_parent: true} The accepted values at `organizations/foo`
-      are `E1`, `E2`. The accepted values at `projects/bar` are `E1`, `E2`,
-      `E3`, and `E4`.  Example 3 (inheriting both allowed and denied values):
+      examples demonstrate different possible layerings for `projects/bar`
+      parented by `organizations/foo`:  Example 1 (no inherited values):
+      `organizations/foo` has a `Policy` with values:     {allowed_values:
+      "E1" allowed_values:"E2"}   `projects/bar` has `inherit_from_parent`
+      `false` and values:     {allowed_values: "E3" allowed_values: "E4"} The
+      accepted values at `organizations/foo` are `E1`, `E2`. The accepted
+      values at `projects/bar` are `E3`, and `E4`.  Example 2 (inherited
+      values):   `organizations/foo` has a `Policy` with values:
+      {allowed_values: "E1" allowed_values:"E2"}   `projects/bar` has a
+      `Policy` with values:     {value: "E3" value: "E4" inherit_from_parent:
+      true} The accepted values at `organizations/foo` are `E1`, `E2`. The
+      accepted values at `projects/bar` are `E1`, `E2`, `E3`, and `E4`.
+      Example 3 (inheriting both allowed and denied values):
       `organizations/foo` has a `Policy` with values:     {allowed_values:
       "E1" allowed_values: "E2"}   `projects/bar` has a `Policy` with:
       {denied_values: "E1"} The accepted values at `organizations/foo` are
@@ -949,7 +1043,16 @@ class ListPolicy(_messages.Message):
       `organizations/foo` has a `Policy` with values:     {allowed_values:
       "E1" allowed_values: "E2"}   `projects/bar` has a `Policy` with:
       {all: DENY} The accepted values at `organizations/foo` are `E1`, E2`. No
-      value is accepted at `projects/bar`.
+      value is accepted at `projects/bar`.  Example 10 (allowed and denied
+      subtrees of Resource Manager hierarchy): Given the following resource
+      hierarchy   O1->{F1, F2}; F1->{P1}; F2->{P2, P3},   `organizations/foo`
+      has a `Policy` with values:     {allowed_values:
+      "under:organizations/O1"}   `projects/bar` has a `Policy` with:
+      {allowed_values: "under:projects/P3"}     {denied_values:
+      "under:folders/F2"} The accepted values at `organizations/foo` are
+      `organizations/O1`,   `folders/F1`, `folders/F2`, `projects/P1`,
+      `projects/P2`,   `projects/P3`. The accepted values at `projects/bar`
+      are `organizations/O1`,   `folders/F1`, `projects/P1`.
     suggestedValue: Optional. The Google Cloud Console will try to default to
       a configuration that matches the value specified in this `Policy`. If
       `suggested_value` is not set, it will inherit the value specified higher
@@ -960,8 +1063,8 @@ class ListPolicy(_messages.Message):
     r"""The policy all_values state.
 
     Values:
-      ALL_VALUES_UNSPECIFIED: Indicates that either allowed_values or
-        denied_values must be set.
+      ALL_VALUES_UNSPECIFIED: Indicates that allowed_values or denied_values
+        must be set.
       ALLOW: A policy with this set allows all values.
       DENY: A policy with this set denies all values.
     """
@@ -1018,7 +1121,7 @@ class Operation(_messages.Message):
 
   Fields:
     done: If the value is `false`, it means the operation is still in
-      progress. If true, the operation is completed, and either `error` or
+      progress. If `true`, the operation is completed, and either `error` or
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
@@ -1154,9 +1257,11 @@ class Organization(_messages.Message):
   Fields:
     creationTime: Timestamp when the Organization was created. Assigned by the
       server. @OutputOnly
-    displayName: A friendly string to be used to refer to the Organization in
-      the UI. Assigned by the server, set to the primary domain of the G Suite
-      customer that owns the organization. @OutputOnly
+    displayName: A human-readable string that refers to the Organization in
+      the GCP Console UI. This string is set by the server and cannot be
+      changed. The string will be set to the primary domain (for example,
+      "google.com") of the G Suite customer that owns the organization.
+      @OutputOnly
     lifecycleState: The organization's current lifecycle state. Assigned by
       the server. @OutputOnly
     name: Output Only. The resource name of the organization. This is the
@@ -1195,8 +1300,7 @@ class OrganizationOwner(_messages.Message):
   will be deleted.
 
   Fields:
-    directoryCustomerId: The Google for Work customer id used in the Directory
-      API.
+    directoryCustomerId: The G Suite customer id used in the Directory API.
   """
 
   directoryCustomerId = _messages.StringField(1)
@@ -1205,23 +1309,27 @@ class OrganizationOwner(_messages.Message):
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
-  consists of a list of `bindings`. A `Binding` binds a list of `members` to a
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
   `role`, where the members can be user accounts, Google groups, Google
   domains, and service accounts. A `role` is a named list of permissions
-  defined by IAM.  **Example**      {       "bindings": [         {
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
   "role": "roles/owner",           "members": [
   "user:mike@example.com",             "group:admins@example.com",
   "domain:google.com",             "serviceAccount:my-other-
-  app@appspot.gserviceaccount.com",           ]         },         {
+  app@appspot.gserviceaccount.com"           ]         },         {
   "role": "roles/viewer",           "members": ["user:sean@example.com"]
-  }       ]     }  For a description of IAM and its features, see the [IAM
-  developer's guide](https://cloud.google.com/iam).
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Multiple `bindings`
-      must not be specified for the same `role`. `bindings` with no members
-      will result in an error.
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1231,7 +1339,7 @@ class Policy(_messages.Message):
       to ensure that their change will be applied to the same version of the
       policy.  If no `etag` is provided in the call to `setIamPolicy`, then
       the existing policy is overwritten blindly.
-    version: Version of the `Policy`. The default version is 0.
+    version: Deprecated.
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1275,11 +1383,11 @@ class Project(_messages.Message):
       characters. Allowed characters are: lowercase and uppercase letters,
       numbers, hyphen, single-quote, double-quote, space, and exclamation
       point.  Example: <code>My Project</code> Read-write.
-    parent: An optional reference to a parent Resource.  The only supported
-      parent type is "organization". Once set, the parent cannot be modified.
-      The `parent` can be set on creation or using the `UpdateProject` method;
-      the end user must have the `resourcemanager.projects.create` permission
-      on the parent.  Read-write.
+    parent: An optional reference to a parent Resource.  Supported parent
+      types include "organization" and "folder". Once set, the parent cannot
+      be cleared. The `parent` can be set on creation or using the
+      `UpdateProject` method; the end user must have the
+      `resourcemanager.projects.create` permission on the parent.  Read-write.
     projectId: The unique, user-assigned ID of the Project. It must be 6 to 30
       lowercase letters, digits, or hyphens. It must start with a letter.
       Trailing hyphens are prohibited.  Example: <code>tokyo-rain-123</code>
@@ -1374,7 +1482,7 @@ class ResourceId(_messages.Message):
     id: Required field for the type-specific id. This should correspond to the
       id used in the type-specific API's.
     type: Required field representing the resource type this id is for. At
-      present, the valid types are: "organization"
+      present, the valid types are: "organization" and "folder".
   """
 
   id = _messages.StringField(1)
@@ -1403,7 +1511,7 @@ class SearchOrganizationsRequest(_messages.Message):
     filter: An optional query string used to filter the Organizations to
       return in the response. Filter rules are case-insensitive.
       Organizations may be filtered by `owner.directoryCustomerId` or by
-      `domain`, where the domain is a Google for Work domain, for example:
+      `domain`, where the domain is a G Suite domain, for example:
       |Filter|Description| |------|-----------|
       |owner.directorycustomerid:123456789|Organizations with
       `owner.directory_customer_id` equal to `123456789`.|
@@ -1477,14 +1585,12 @@ class StandardQueryParameters(_messages.Message):
     f__xgafv: V1 error format.
     access_token: OAuth access token.
     alt: Data format for response.
-    bearer_token: OAuth bearer token.
     callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
-    pp: Pretty-print response.
     prettyPrint: Returns response with indentations and line breaks.
     quotaUser: Available to use for quota purposes for server-side
       applications. Can be any arbitrary string assigned to a user, but should
@@ -1520,17 +1626,15 @@ class StandardQueryParameters(_messages.Message):
   f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
   access_token = _messages.StringField(2)
   alt = _messages.EnumField('AltValueValuesEnum', 3, default=u'json')
-  bearer_token = _messages.StringField(4)
-  callback = _messages.StringField(5)
-  fields = _messages.StringField(6)
-  key = _messages.StringField(7)
-  oauth_token = _messages.StringField(8)
-  pp = _messages.BooleanField(9, default=True)
-  prettyPrint = _messages.BooleanField(10, default=True)
-  quotaUser = _messages.StringField(11)
-  trace = _messages.StringField(12)
-  uploadType = _messages.StringField(13)
-  upload_protocol = _messages.StringField(14)
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class Status(_messages.Message):
@@ -1573,7 +1677,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There will be a
+    details: A list of messages that carry the error details.  There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the

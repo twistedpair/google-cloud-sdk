@@ -82,10 +82,10 @@ class HiveBase(job_base.JobBase):
     if args.queries:
       hive_job.queryList = messages.QueryList(queries=args.queries)
     if args.params:
-      hive_job.scriptVariables = encoding.DictToMessage(
+      hive_job.scriptVariables = encoding.DictToAdditionalPropertyMessage(
           args.params, messages.HiveJob.ScriptVariablesValue)
     if args.properties:
-      hive_job.properties = encoding.DictToMessage(
+      hive_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.HiveJob.PropertiesValue)
 
     job.hiveJob = hive_job

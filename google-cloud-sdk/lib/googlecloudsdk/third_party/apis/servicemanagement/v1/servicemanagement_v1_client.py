@@ -1080,33 +1080,3 @@ Operation<response: UndeleteServiceResponse>
         response_type_name=u'Operation',
         supports_download=False,
     )
-
-    def Update(self, request, global_params=None):
-      r"""Updates the configuration of a service.  If the specified service does not.
-already exist, then it is created.
-
-
-Operation<response: ManagedService>
-
-      Args:
-        request: (ServicemanagementServicesUpdateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Update')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Update.method_config = lambda: base_api.ApiMethodInfo(
-        http_method=u'PUT',
-        method_id=u'servicemanagement.services.update',
-        ordered_params=[u'serviceName'],
-        path_params=[u'serviceName'],
-        query_params=[u'updateMask'],
-        relative_path=u'v1/services/{serviceName}',
-        request_field=u'managedService',
-        request_type_name=u'ServicemanagementServicesUpdateRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )

@@ -183,7 +183,7 @@ class SemVer(object):
     return major_diff, minor_diff, patch_diff
 
   def __eq__(self, other):
-    return (
+    return other and (
         (self.major, self.minor, self.patch, self.prerelease, self.build) ==
         (other.major, other.minor, other.patch, other.prerelease, other.build))
 

@@ -92,7 +92,7 @@ class HadoopBase(job_base.JobBase):
         loggingConfig=logging_config)
 
     if args.properties:
-      hadoop_job.properties = encoding.DictToMessage(
+      hadoop_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.HadoopJob.PropertiesValue)
 
     job.hadoopJob = hadoop_job

@@ -21,6 +21,9 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 
+_API_NAME = 'cloudresourcemanager'
+DEFAULT_API_VERSION = 'v1'
+
 
 class DeletedResource(object):
   """A deleted/undeleted resource returned by Run()."""
@@ -29,18 +32,28 @@ class DeletedResource(object):
     self.projectId = project_id  # pylint: disable=invalid-name, This is a resource attribute name.
 
 
-def GetMessages():
-  """Import and return the appropriate projects messages module."""
-  return apis.GetMessagesModule('cloudresourcemanager', 'v1')
+def GetMessages(version=DEFAULT_API_VERSION):
+  """Import and return the appropriate projects messages module.
+
+  Args:
+    version: the API version
+
+  Returns:
+    Cloud Resource Manager message.
+  """
+  return apis.GetMessagesModule(_API_NAME, version)
 
 
-def GetClient():
+def GetClient(version=DEFAULT_API_VERSION):
   """Import and return the appropriate projects client.
+
+  Args:
+    version: the API version
 
   Returns:
     Cloud Resource Manager client for the appropriate release track.
   """
-  return apis.GetClientInstance('cloudresourcemanager', 'v1')
+  return apis.GetClientInstance(_API_NAME, version)
 
 
 def IsActive(project):

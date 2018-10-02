@@ -479,11 +479,15 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     # We must flush directly to the output just in case there is a Windows-like
     # colorizer. This complicates the trailing space logic.
     first = True
+    # Used for boxed tables to determine whether any subformats are visible.
+    has_visible_subformats = box and self._subformats and any(
+        [(not subformat.hidden and subformat.printer)
+         for subformat in self._subformats])
     for row in heading + rows:
       if first:
         first = False
       elif box:
-        if self._subformats:
+        if has_visible_subformats:
           self._out.write(t_rule)
           self._out.write('\n')
         elif all_box:
@@ -569,9 +573,10 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
                 subformat.out.seek(0)
         else:
           self._out.write('\n')
-    if box and not self._subformats:
-      self._out.write(b_rule)
-      self._out.write('\n')
+    if box:
+      if not has_visible_subformats:
+        self._out.write(b_rule)
+        self._out.write('\n')
 
   def Page(self):
     """Flushes the current resource page output."""

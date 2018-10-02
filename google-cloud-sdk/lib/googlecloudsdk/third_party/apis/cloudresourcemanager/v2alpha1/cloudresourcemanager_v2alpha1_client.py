@@ -295,6 +295,8 @@ on the identified folder.
 The `resource` field should be the Folder's resource name,
 e.g. "folders/1234".
 
+There are no permissions required for making this API call.
+
       Args:
         request: (CloudresourcemanagerFoldersTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments

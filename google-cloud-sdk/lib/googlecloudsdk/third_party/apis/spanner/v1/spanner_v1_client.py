@@ -1586,7 +1586,7 @@ resource.
         method_id=u'spanner.projects.instances.listCreateDatabaseFromBackupMetadata',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'instanceId', u'orderBy', u'pageSize', u'pageToken'],
         relative_path=u'v1/{+parent}:ListCreateDatabaseFromBackupMetadata',
         request_field='',
         request_type_name=u'SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest',

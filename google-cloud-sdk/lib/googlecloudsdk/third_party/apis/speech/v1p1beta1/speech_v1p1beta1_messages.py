@@ -467,9 +467,11 @@ class RecognitionConfig(_messages.Message):
       for each recognized word in the top alternative of the recognition
       result using a speaker_tag provided in the WordInfo. Note: When this is
       true, we send all the words from the beginning of the audio for the top
-      alternative in every consecutive responses. This is done in order to
-      improve our speaker tags as our models learn to identify the speakers in
-      the conversation over time.
+      alternative in every consecutive STREAMING responses. This is done in
+      order to improve our speaker tags as our models learn to identify the
+      speakers in the conversation over time. For non-streaming requests, the
+      diarization results will be provided only in the top alternative of the
+      FINAL SpeechRecognitionResult.
     enableWordConfidence: *Optional* If `true`, the top result includes a list
       of words and the confidence for those words. If `false`, no word-level
       confidence information is returned. The default is `false`.

@@ -119,7 +119,7 @@ class Configuration(_messages.Message):
   Revisions, and optionally how the containers those revisions reference are
   built. Users create new Revisions by updating the Configuration's spec. The
   "latest created" revision's name is available under status, as is the
-  "latest ready" revision's name. See also: https://github.com/elafros/elafros
+  "latest ready" revision's name. See also: https://github.com/knative/serving
   /blob/master/docs/spec/overview.md#configuration
 
   Fields:
@@ -155,7 +155,7 @@ class ConfigurationCondition(_messages.Message):
     status: Status of the condition, one of True, False, Unknown.
     type: ConfigurationConditionType is used to communicate the status of the
       reconciliation process. See also:
-      https://github.com/elafros/elafros/blob/master/docs/spec/errors.md
+      https://github.com/knative/serving/blob/master/docs/spec/errors.md
       #error-conditions-and-reporting Types include:"LatestRevisionReady"
   """
 
@@ -1065,7 +1065,7 @@ class ResourceRequirements(_messages.Message):
 
 class Revision(_messages.Message):
   r"""Revision is an immutable snapshot of code and configuration. See also: h
-  ttps://github.com/elafros/elafros/blob/master/docs/spec/overview.md#revision
+  ttps://github.com/knative/serving/blob/master/docs/spec/overview.md#revision
 
   Fields:
     apiVersion: The API version for this call such as "v1alpha1".
@@ -1099,7 +1099,7 @@ class RevisionCondition(_messages.Message):
     status: Status of the condition, one of True, False, Unknown.
     type: RevisionConditionType is used to communicate the status of the
       reconciliation process. See also:
-      https://github.com/elafros/elafros/blob/master/docs/spec/errors.md
+      https://github.com/knative/serving/blob/master/docs/spec/errors.md
       #error-conditions-and-reporting Types include: "Ready", "Failed",
       "BuildComplete", "BuildFailed"
   """
@@ -1223,7 +1223,7 @@ class Route(_messages.Message):
   these cases the Route is additionally responsible for monitoring the
   Configuration for "latest ready" revision changes, and smoothly rolling out
   latest revisions. See also:
-  https://github.com/elafros/elafros/blob/master/docs/spec/overview.md#route
+  https://github.com/knative/serving/blob/master/docs/spec/overview.md#route
 
   Fields:
     apiVersion: The API version for this call such as "v1alpha1".
@@ -1257,7 +1257,7 @@ class RouteCondition(_messages.Message):
     status: Status of the condition, one of "True", "False", "Unknown".
     type: RouteConditionType is used to communicate the status of the
       reconciliation process. See also:
-      https://github.com/elafros/elafros/blob/master/docs/spec/errors.md
+      https://github.com/knative/serving/blob/master/docs/spec/errors.md
       #error-conditions-and-reporting Types include: "RolloutInProgress",
       "TrafficDropped".
   """
@@ -1276,7 +1276,7 @@ class RouteSpec(_messages.Message):
     generation: For open Knative: metadata.generation does not work yet, this
       is a stopgap way of specifying generation IGNORED BY GSE. +optional
     traffic: Traffic specifies how to distribute traffic over a collection of
-      Elafros Revisions and Configurations.
+      Knative Revisions and Configurations.
   """
 
   generation = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1925,7 +1925,7 @@ class Service(_messages.Message):
   r"""Service is a convenience resource to create, group and manipulate a
   Route, Configuration(s), and Revision(s) that represent a single function,
   application, or microservice. The Service spec has several modes/types that
-  represent different patterns for interacting the underlying Elafros
+  represent different patterns for interacting the underlying Knative
   resources, from always deploying the latest Revision, pinning specific
   revisions, to canarying gradual rollouts.
 
@@ -1961,7 +1961,7 @@ class ServiceCondition(_messages.Message):
     status: Status of the condition, one of True, False, Unknown.
     type: ServiceConditionType is used to communicate the status of the
       reconciliation process. See also:
-      https://github.com/elafros/elafros/blob/master/docs/spec/errors.md
+      https://github.com/knative/serving/blob/master/docs/spec/errors.md
       #error-conditions-and-reporting Types include: "Ready", "Failed".
   """
 
@@ -2026,11 +2026,16 @@ class ServiceStatus(_messages.Message):
     domain: The top-level domain from the underlying Route.
     observedGeneration: Generation of the service that was last processed by
       the controller.
+    traffic: Traffic holds the configured traffic distribution from the
+      related Route. These entries will always contain RevisionName
+      references. When ConfigurationName appears in the spec for runLatest,
+      this will hold the LatestReadyRevisionName that was last observed.
   """
 
   conditions = _messages.MessageField('ServiceCondition', 1, repeated=True)
   domain = _messages.StringField(2)
   observedGeneration = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  traffic = _messages.MessageField('TrafficTarget', 4, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):

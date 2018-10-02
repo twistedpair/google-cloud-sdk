@@ -156,7 +156,7 @@
     },
     "Service": {
       "id": "Service",
-      "description": "Service is a convenience resource to create, group and manipulate a Route,\nConfiguration(s), and Revision(s) that represent a single function,\napplication, or microservice. The Service spec has several modes\/types that\nrepresent different patterns for interacting the underlying Elafros\nresources, from always deploying the latest Revision, pinning specific\nrevisions, to canarying gradual rollouts.",
+      "description": "Service is a convenience resource to create, group and manipulate a Route,\nConfiguration(s), and Revision(s) that represent a single function,\napplication, or microservice. The Service spec has several modes\/types that\nrepresent different patterns for interacting the underlying Knative\nresources, from always deploying the latest Revision, pinning specific\nrevisions, to canarying gradual rollouts.",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -1002,6 +1002,13 @@
           "description": "Generation of the service that was last processed by the controller.",
           "type": "integer",
           "format": "int32"
+        },
+        "traffic": {
+          "description": "Traffic holds the configured traffic distribution from the related Route.\nThese entries will always contain RevisionName references.\nWhen ConfigurationName appears in the spec for runLatest, this will hold\nthe LatestReadyRevisionName that was last observed.",
+          "type": "array",
+          "items": {
+            "$ref": "TrafficTarget"
+          }
         }
       }
     },
@@ -1011,7 +1018,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "ServiceConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/elafros\/elafros\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\", \"Failed\".",
+          "description": "ServiceConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\", \"Failed\".",
           "type": "string"
         },
         "status": {
@@ -1030,6 +1037,30 @@
           "description": "Last time the condition transitioned from one status to another.\n+optional",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "TrafficTarget": {
+      "id": "TrafficTarget",
+      "description": "TrafficTarget holds a single entry of the routing table for a Route.",
+      "type": "object",
+      "properties": {
+        "configurationName": {
+          "description": "ConfigurationName of a configuration to whose latest revision we will\nsend this portion of traffic. When the \"status.latestReadyRevisionName\"\nof the referenced configuration changes, we will automatically migrate\ntraffic from the prior \"latest ready\" revision to the new one. This field\nis never set in Route's status, only its spec. This is mutually exclusive\nwith RevisionName.",
+          "type": "string"
+        },
+        "revisionName": {
+          "description": "RevisionName of a specific revision to which to send this portion of\ntraffic. This is mutually exclusive with ConfigurationName.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name is optionally used to expose a dedicated hostname for referencing this\ntarget exclusively. It has the form: {name}.${route.status.domain}\n+optional",
+          "type": "string"
+        },
+        "percent": {
+          "description": "Percent specifies percent of the traffic to this Revision or Configuration.\nThis defaults to zero if unspecified.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1095,7 +1126,7 @@
     },
     "Route": {
       "id": "Route",
-      "description": "Route is responsible for configuring ingress over a collection of Revisions.\nSome of the Revisions a Route distributes traffic over may be specified by\nreferencing the Configuration responsible for creating them; in these cases\nthe Route is additionally responsible for monitoring the Configuration for\n\"latest ready\" revision changes, and smoothly rolling out latest revisions.\nSee also:\nhttps:\/\/github.com\/elafros\/elafros\/blob\/master\/docs\/spec\/overview.md#route",
+      "description": "Route is responsible for configuring ingress over a collection of Revisions.\nSome of the Revisions a Route distributes traffic over may be specified by\nreferencing the Configuration responsible for creating them; in these cases\nthe Route is additionally responsible for monitoring the Configuration for\n\"latest ready\" revision changes, and smoothly rolling out latest revisions.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#route",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -1126,7 +1157,7 @@
       "type": "object",
       "properties": {
         "traffic": {
-          "description": "Traffic specifies how to distribute traffic over a collection of Elafros\nRevisions and Configurations.",
+          "description": "Traffic specifies how to distribute traffic over a collection of Knative\nRevisions and Configurations.",
           "type": "array",
           "items": {
             "$ref": "TrafficTarget"
@@ -1134,30 +1165,6 @@
         },
         "generation": {
           "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIGNORED BY GSE.\n+optional",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "TrafficTarget": {
-      "id": "TrafficTarget",
-      "description": "TrafficTarget holds a single entry of the routing table for a Route.",
-      "type": "object",
-      "properties": {
-        "configurationName": {
-          "description": "ConfigurationName of a configuration to whose latest revision we will\nsend this portion of traffic. When the \"status.latestReadyRevisionName\"\nof the referenced configuration changes, we will automatically migrate\ntraffic from the prior \"latest ready\" revision to the new one. This field\nis never set in Route's status, only its spec. This is mutually exclusive\nwith RevisionName.",
-          "type": "string"
-        },
-        "revisionName": {
-          "description": "RevisionName of a specific revision to which to send this portion of\ntraffic. This is mutually exclusive with ConfigurationName.",
-          "type": "string"
-        },
-        "name": {
-          "description": "Name is optionally used to expose a dedicated hostname for referencing this\ntarget exclusively. It has the form: {name}.${route.status.domain}\n+optional",
-          "type": "string"
-        },
-        "percent": {
-          "description": "Percent specifies percent of the traffic to this Revision or Configuration.\nThis defaults to zero if unspecified.",
           "type": "integer",
           "format": "int32"
         }
@@ -1203,7 +1210,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "RouteConditionType is used to communicate the status of the reconciliation\nprocess. See also:\nhttps:\/\/github.com\/elafros\/elafros\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"RolloutInProgress\", \"TrafficDropped\".",
+          "description": "RouteConditionType is used to communicate the status of the reconciliation\nprocess. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"RolloutInProgress\", \"TrafficDropped\".",
           "type": "string"
         },
         "status": {
@@ -1253,7 +1260,7 @@
     },
     "Configuration": {
       "id": "Configuration",
-      "description": "Configuration represents the \"floating HEAD\" of a linear history of\nRevisions, and optionally how the containers those revisions reference are\nbuilt. Users create new Revisions by updating the Configuration's spec. The\n\"latest created\" revision's name is available under status, as is the \"latest\nready\" revision's name. See also:\nhttps:\/\/github.com\/elafros\/elafros\/blob\/master\/docs\/spec\/overview.md#configuration",
+      "description": "Configuration represents the \"floating HEAD\" of a linear history of\nRevisions, and optionally how the containers those revisions reference are\nbuilt. Users create new Revisions by updating the Configuration's spec. The\n\"latest created\" revision's name is available under status, as is the \"latest\nready\" revision's name. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#configuration",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -1311,7 +1318,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "ConfigurationConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/elafros\/elafros\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\"LatestRevisionReady\"",
+          "description": "ConfigurationConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\"LatestRevisionReady\"",
           "type": "string"
         },
         "status": {
@@ -1361,7 +1368,7 @@
     },
     "Revision": {
       "id": "Revision",
-      "description": "Revision is an immutable snapshot of code and configuration.\nSee also:\nhttps:\/\/github.com\/elafros\/elafros\/blob\/master\/docs\/spec\/overview.md#revision",
+      "description": "Revision is an immutable snapshot of code and configuration.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#revision",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -1419,7 +1426,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "RevisionConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/elafros\/elafros\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\", \"Failed\", \"BuildComplete\", \"BuildFailed\"",
+          "description": "RevisionConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\", \"Failed\", \"BuildComplete\", \"BuildFailed\"",
           "type": "string"
         },
         "status": {

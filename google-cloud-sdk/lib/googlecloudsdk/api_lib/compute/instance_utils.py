@@ -739,6 +739,41 @@ def UseExistingBootDisk(disks):
   return any(disk.get('boot') == 'yes' for disk in disks)
 
 
+# TODO(b/116515070) Replace `aep-nvdimm` with `local-nvdimm`
+NVDIMM_DISK_TYPE = 'aep-nvdimm'
+
+
+def CreateLocalNvdimmMessage(resources, messages, size_bytes=None, zone=None,
+                             project=None):
+  """Create a message representing a local NVDIMM."""
+
+  if zone:
+    disk_type_ref = resources.Parse(
+        NVDIMM_DISK_TYPE,
+        collection='compute.diskTypes',
+        params={
+            'project': project,
+            'zone': zone
+        })
+    disk_type = disk_type_ref.SelfLink()
+  else:
+    disk_type = NVDIMM_DISK_TYPE
+
+  local_nvdimm = messages.AttachedDisk(
+      type=messages.AttachedDisk.TypeValueValuesEnum.SCRATCH,
+      autoDelete=True,
+      interface=messages.AttachedDisk.InterfaceValueValuesEnum.NVDIMM,
+      mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
+      initializeParams=messages.AttachedDiskInitializeParams(
+          diskType=disk_type),
+      )
+
+  if size_bytes is not None:
+    local_nvdimm.diskSizeGb = utils.BytesToGb(size_bytes)
+
+  return local_nvdimm
+
+
 def CreateLocalSsdMessage(resources, messages, device_name, interface,
                           size_bytes=None, zone=None, project=None):
   """Create a message representing a local ssd."""
@@ -768,7 +803,7 @@ def CreateLocalSsdMessage(resources, messages, device_name, interface,
       mode=messages.AttachedDisk.ModeValueValuesEnum.READ_WRITE,
       initializeParams=messages.AttachedDiskInitializeParams(
           diskType=disk_type),
-      )
+  )
 
   if size_bytes is not None:
     local_ssd.diskSizeGb = utils.BytesToGb(size_bytes)
@@ -955,10 +990,13 @@ def GetCanIpForward(args, skip_defaults):
 def CreateDiskMessages(
     holder, args, boot_disk_size_gb, image_uri, instance_ref, skip_defaults):
   """Creates API messages with disks attached to VM instance."""
+  flags_to_check = ['create_disk', 'local_ssd',
+                    'boot_disk_type', 'boot_disk_device_name',
+                    'boot_disk_auto_delete']
+  if hasattr(args, 'local_nvdimm'):
+    flags_to_check.append('local_nvdimm')
   if (skip_defaults and not args.IsSpecified('disk') and not
-      IsAnySpecified(
-          args, 'create_disk', 'local_ssd', 'boot_disk_type',
-          'boot_disk_device_name', 'boot_disk_auto_delete')):
+      IsAnySpecified(args, *flags_to_check)):
     return []
   else:
     persistent_disks, _ = (
@@ -969,6 +1007,16 @@ def CreateDiskMessages(
         CreatePersistentCreateDiskMessages(
             holder.client, holder.resources, None,
             getattr(args, 'create_disk', []), instance_ref))
+    local_nvdimms = []
+    if hasattr(args, 'local_nvdimm'):
+      for x in args.local_nvdimm or []:
+        local_nvdimm = CreateLocalNvdimmMessage(
+            holder.resources,
+            holder.client.messages,
+            x.get('size'),
+            instance_ref.zone,
+            instance_ref.project)
+        local_nvdimms.append(local_nvdimm)
     local_ssds = []
     if hasattr(args, 'local_ssd'):
       for x in args.local_ssd or []:
@@ -992,7 +1040,8 @@ def CreateDiskMessages(
         instance_ref=instance_ref,
         csek_keys=None)
     return (
-        [boot_disk] + persistent_disks + persistent_create_disks + local_ssds)
+        [boot_disk] + persistent_disks + persistent_create_disks + local_nvdimms
+        + local_ssds)
 
 
 def GetTags(args, client):

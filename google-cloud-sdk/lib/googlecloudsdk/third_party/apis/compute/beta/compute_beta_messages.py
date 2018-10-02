@@ -2139,15 +2139,21 @@ class Backend(_messages.Message):
       is [0.0,1.0].  This cannot be used for internal load balancing.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    group: The fully-qualified URL of a Instance Group resource. This instance
-      group defines the list of instances that serve traffic. Member virtual
-      machine instances from each instance group must live in the same zone as
-      the instance group itself. No two backends in a backend service are
-      allowed to use same Instance Group resource.  Note that you must specify
-      an Instance Group resource using the fully-qualified URL, rather than a
-      partial URL.  When the BackendService has load balancing scheme
+    group: The fully-qualified URL of an Instance Group or Network Endpoint
+      Group resource. In case of instance group this defines the list of
+      instances that serve traffic. Member virtual machine instances from each
+      instance group must live in the same zone as the instance group itself.
+      No two backends in a backend service are allowed to use same Instance
+      Group resource.  For Network Endpoint Groups this defines list of
+      endpoints. All endpoints of Network Endpoint Group must be hosted on
+      instances located in the same zone as the Network Endpoint Group.
+      Backend service can not contain mix of Instance Group and Network
+      Endpoint Group backends.  Note that you must specify an Instance Group
+      or Network Endpoint Group resource using the fully-qualified URL, rather
+      than a partial URL.  When the BackendService has load balancing scheme
       INTERNAL, the instance group must be within the same region as the
-      BackendService.
+      BackendService. Network Endpoint Groups are not supported for INTERNAL
+      load balancing scheme.
     maxConnections: The max number of simultaneous connections for the group.
       Can be used with either CONNECTION or UTILIZATION balancing modes. For
       CONNECTION mode, either maxConnections or maxConnectionsPerInstance must
@@ -2740,7 +2746,9 @@ class BackendServiceGroupHealth(_messages.Message):
   r"""A BackendServiceGroupHealth object.
 
   Fields:
-    healthStatus: A HealthStatus attribute.
+    healthStatus: Health state of the backend instances or endpoints in
+      requested instance or network endpoint group, determined based on
+      configured health checks.
     kind: [Output Only] Type of resource. Always
       compute#backendServiceGroupHealth for the health of backend services.
   """
@@ -8037,6 +8045,34 @@ class ComputeInstancesResetRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesResumeRequest(_messages.Message):
+  r"""A ComputeInstancesResumeRequest object.
+
+  Fields:
+    instance: Name of the instance resource to resume.
+    instancesResumeRequest: A InstancesResumeRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesResumeRequest = _messages.MessageField('InstancesResumeRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetDeletionProtectionRequest(_messages.Message):
   r"""A ComputeInstancesSetDeletionProtectionRequest object.
 
@@ -8451,6 +8487,34 @@ class ComputeInstancesStopRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   zone = _messages.StringField(4, required=True)
+
+
+class ComputeInstancesSuspendRequest(_messages.Message):
+  r"""A ComputeInstancesSuspendRequest object.
+
+  Fields:
+    discardLocalSsd: If true, discard the contents of any attached localSSD
+      partitions. Default value is false (== preserve localSSD data).
+    instance: Name of the instance resource to suspend.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  discardLocalSsd = _messages.BooleanField(1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
@@ -19880,6 +19944,7 @@ class Instance(_messages.Message):
       be created before you can assign them.
     guestAccelerators: A list of the type and count of accelerator cards
       attached to the instance.
+    hostname: A string attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#instance for
@@ -20002,25 +20067,26 @@ class Instance(_messages.Message):
   description = _messages.StringField(5)
   disks = _messages.MessageField('AttachedDisk', 6, repeated=True)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#instance')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  machineType = _messages.StringField(12)
-  metadata = _messages.MessageField('Metadata', 13)
-  minCpuPlatform = _messages.StringField(14)
-  name = _messages.StringField(15)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 16, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 17)
-  selfLink = _messages.StringField(18)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 20)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 21)
-  startRestricted = _messages.BooleanField(22)
-  status = _messages.EnumField('StatusValueValuesEnum', 23)
-  statusMessage = _messages.StringField(24)
-  tags = _messages.MessageField('Tags', 25)
-  zone = _messages.StringField(26)
+  hostname = _messages.StringField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#instance')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  machineType = _messages.StringField(13)
+  metadata = _messages.MessageField('Metadata', 14)
+  minCpuPlatform = _messages.StringField(15)
+  name = _messages.StringField(16)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 17, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 18)
+  selfLink = _messages.StringField(19)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 20, repeated=True)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 21)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 22)
+  startRestricted = _messages.BooleanField(23)
+  status = _messages.EnumField('StatusValueValuesEnum', 24)
+  statusMessage = _messages.StringField(25)
+  tags = _messages.MessageField('Tags', 26)
+  zone = _messages.StringField(27)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -22219,6 +22285,26 @@ class InstanceWithNamedPorts(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
+class InstancesResumeRequest(_messages.Message):
+  r"""A InstancesResumeRequest object.
+
+  Fields:
+    disks: Array of disks associated with this instance that are protected
+      with a customer-supplied encryption key.  In order to resume the
+      instance, the disk url and its corresponding key must be provided.  If
+      the disk is not protected with a customer-supplied encryption key it
+      should not be specified.
+    instanceEncryptionKey: Decrypts data associated with an instance that is
+      protected with a customer-supplied encryption key.  If the instance you
+      are starting is protected with a customer-supplied encryption key, the
+      correct key must be provided otherwise the instance resume will not
+      succeed.
+  """
+
+  disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
+  instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 2)
+
+
 class InstancesScopedList(_messages.Message):
   r"""A InstancesScopedList object.
 
@@ -24216,16 +24302,29 @@ class LogConfigDataAccessOptions(_messages.Message):
   Enums:
     LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
       manner at the caller. This is relevant only in the LocalIAM
-      implementation, for now.
+      implementation, for now.  NOTE: Logging to Gin in a fail-closed manner
+      is currently unsupported while work is being done to satisfy the
+      requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will
+      have no effect, but still exists because there is active work being done
+      to support it (b/115874152).
 
   Fields:
     logMode: Whether Gin logging should happen in a fail-closed manner at the
       caller. This is relevant only in the LocalIAM implementation, for now.
+      NOTE: Logging to Gin in a fail-closed manner is currently unsupported
+      while work is being done to satisfy the requirements of go/345.
+      Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still
+      exists because there is active work being done to support it
+      (b/115874152).
   """
 
   class LogModeValueValuesEnum(_messages.Enum):
     r"""Whether Gin logging should happen in a fail-closed manner at the
     caller. This is relevant only in the LocalIAM implementation, for now.
+    NOTE: Logging to Gin in a fail-closed manner is currently unsupported
+    while work is being done to satisfy the requirements of go/345. Currently,
+    setting LOG_FAIL_CLOSED mode will have no effect, but still exists because
+    there is active work being done to support it (b/115874152).
 
     Values:
       LOG_FAIL_CLOSED: <no description>
@@ -24919,26 +25018,25 @@ class NamedPort(_messages.Message):
 
 
 class Network(_messages.Message):
-  r"""Represents a Network resource. Read Networks and Firewalls for more
-  information. (== resource_for v1.networks ==) (== resource_for beta.networks
-  ==)
+  r"""Represents a Network resource. Read Virtual Private Cloud (VPC) Network
+  Overview for more information. (== resource_for v1.networks ==) (==
+  resource_for beta.networks ==)
 
   Fields:
     IPv4Range: The range of internal addresses that are legal on this network.
       This range is a CIDR specification, for example: 192.168.0.0/16.
       Provided by the client when the network is created.
-    autoCreateSubnetworks: When set to true, the network is created in "auto
-      subnet mode". When set to false, the network is in "custom subnet mode".
-      In "auto subnet mode", a newly created network is assigned the default
-      CIDR of 10.128.0.0/9 and it automatically creates one subnetwork per
-      region.
+    autoCreateSubnetworks: When set to true, the VPC network is created in
+      "auto" mode. When set to false, the VPC network is created in "custom"
+      mode.  An auto mode VPC network starts with one subnet per region. Each
+      subnet has a predetermined range as described in Auto mode VPC network
+      IP ranges.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
-    gatewayIPv4: A gateway address for default routing to other networks. This
-      value is read only and is selected by the Google Compute Engine,
-      typically as the first usable address in the IPv4Range.
+    gatewayIPv4: [Output Only] The gateway address for default routing out of
+      the network. This value is read only and is selected by GCP.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#network for
@@ -24956,7 +25054,7 @@ class Network(_messages.Message):
       behavior to enforce.
     selfLink: [Output Only] Server-defined URL for the resource.
     subnetworks: [Output Only] Server-defined fully-qualified URLs for all
-      subnetworks in this network.
+      subnetworks in this VPC network.
   """
 
   IPv4Range = _messages.StringField(1)
@@ -25893,24 +25991,24 @@ class NetworkRoutingConfig(_messages.Message):
   Enums:
     RoutingModeValueValuesEnum: The network-wide routing mode to use. If set
       to REGIONAL, this network's cloud routers will only advertise routes
-      with subnetworks of this network in the same region as the router. If
-      set to GLOBAL, this network's cloud routers will advertise routes with
-      all subnetworks of this network, across regions.
+      with subnets of this network in the same region as the router. If set to
+      GLOBAL, this network's cloud routers will advertise routes with all
+      subnets of this network, across regions.
 
   Fields:
     routingMode: The network-wide routing mode to use. If set to REGIONAL,
-      this network's cloud routers will only advertise routes with subnetworks
-      of this network in the same region as the router. If set to GLOBAL, this
-      network's cloud routers will advertise routes with all subnetworks of
-      this network, across regions.
+      this network's cloud routers will only advertise routes with subnets of
+      this network in the same region as the router. If set to GLOBAL, this
+      network's cloud routers will advertise routes with all subnets of this
+      network, across regions.
   """
 
   class RoutingModeValueValuesEnum(_messages.Enum):
     r"""The network-wide routing mode to use. If set to REGIONAL, this
-    network's cloud routers will only advertise routes with subnetworks of
-    this network in the same region as the router. If set to GLOBAL, this
-    network's cloud routers will advertise routes with all subnetworks of this
-    network, across regions.
+    network's cloud routers will only advertise routes with subnets of this
+    network in the same region as the router. If set to GLOBAL, this network's
+    cloud routers will advertise routes with all subnets of this network,
+    across regions.
 
     Values:
       GLOBAL: <no description>
@@ -29632,8 +29730,8 @@ class ResourceGroupReference(_messages.Message):
   r"""A ResourceGroupReference object.
 
   Fields:
-    group: A URI referencing one of the instance groups listed in the backend
-      service.
+    group: A URI referencing one of the instance groups or network endpoint
+      groups listed in the backend service.
   """
 
   group = _messages.StringField(1)

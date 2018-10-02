@@ -52,6 +52,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+import collections
 import copy
 import re
 
@@ -957,7 +958,7 @@ class ArgDict(ArgList):
   def __call__(self, arg_value):  # pylint:disable=missing-docstring
     arg_list = super(ArgDict, self).__call__(arg_value)
 
-    arg_dict = {}
+    arg_dict = collections.OrderedDict()
     for arg in arg_list:
       match = self.key_op_value.match(arg)
       # TODO(b/35944028): These exceptions won't present well to the user.
@@ -1110,7 +1111,8 @@ class UpdateAction(argparse.Action):
 
     if isinstance(values, dict):
       # Get the existing arg value (if any)
-      items = copy.copy(argparse._ensure_value(namespace, self.dest, {}))
+      items = copy.copy(argparse._ensure_value(
+          namespace, self.dest, collections.OrderedDict()))
       # Merge the new key/value pair(s) in
       for k, v in six.iteritems(values):
         if k in items:

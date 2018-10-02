@@ -298,6 +298,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
         man_name=self._file_name,
         top_command=self._top,
         parent_command=' '.join(self._command_path[:-1]),
+        grandparent_command=' '.join(self._command_path[:-2]),
         index=self._capsule,
         **self._sections
     )

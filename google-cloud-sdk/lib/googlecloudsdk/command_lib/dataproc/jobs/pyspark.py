@@ -113,7 +113,7 @@ class PySparkBase(job_base.JobBase):
         loggingConfig=logging_config)
 
     if args.properties:
-      pyspark_job.properties = encoding.DictToMessage(
+      pyspark_job.properties = encoding.DictToAdditionalPropertyMessage(
           args.properties, messages.PySparkJob.PropertiesValue)
 
     job.pysparkJob = pyspark_job

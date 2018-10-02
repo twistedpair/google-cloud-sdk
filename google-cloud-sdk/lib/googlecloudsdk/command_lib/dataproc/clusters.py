@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.compute import constants as compute_constants
@@ -502,7 +504,7 @@ def GetClusterConfig(args,
     args.properties[constants.ALLOW_ZERO_WORKERS_PROPERTY] = 'true'
 
   if args.properties:
-    software_config.properties = encoding.DictToMessage(
+    software_config.properties = encoding.DictToAdditionalPropertyMessage(
         args.properties, dataproc.messages.SoftwareConfig.PropertiesValue)
 
   if beta:
@@ -524,8 +526,9 @@ def GetClusterConfig(args,
     gce_cluster_config.tags = args.tags
 
   if args.metadata:
-    flat_metadata = dict((k, v) for d in args.metadata for k, v in d.items())
-    gce_cluster_config.metadata = encoding.DictToMessage(
+    flat_metadata = collections.OrderedDict(
+        [(k, v) for d in args.metadata for k, v in d.items()])
+    gce_cluster_config.metadata = encoding.DictToAdditionalPropertyMessage(
         flat_metadata, dataproc.messages.GceClusterConfig.MetadataValue)
 
   master_accelerators = []
@@ -726,5 +729,5 @@ def DeleteGeneratedLabels(cluster, dataproc):
     if not labels:
       cluster.labels = None
     else:
-      cluster.labels = encoding.DictToMessage(
+      cluster.labels = encoding.DictToAdditionalPropertyMessage(
           labels, dataproc.messages.Cluster.LabelsValue)
