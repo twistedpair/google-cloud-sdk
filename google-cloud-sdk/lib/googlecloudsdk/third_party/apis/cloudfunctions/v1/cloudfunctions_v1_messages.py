@@ -140,6 +140,7 @@ class CallFunctionResponse(_messages.Message):
 class CloudFunction(_messages.Message):
   r"""Describes a Cloud Function that contains user computation executed in
   response to an event. It encapsulate function and triggers configurations.
+  LINT.IfChange
 
   Enums:
     StatusValueValuesEnum: Output only. Status of the function deployment.

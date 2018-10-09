@@ -25,12 +25,29 @@ class Error(exceptions.Error):
   """Base class for errors in this module."""
 
 
+class ConstraintError(Error):
+  """Error when converting a constraint."""
+
+  def __init__(self, concept_name, kind, string, message):
+    super(ConstraintError, self).__init__(
+        'Invalid {} [{}] for [{}]. {}'.format(
+            kind, string, concept_name, message))
+
+
 class ParseError(Error):
   """Error when parsing a concept."""
 
   def __init__(self, concept_name, message):
     super(ParseError, self).__init__(
         'Failed to parse [{}]. {}'.format(concept_name, message))
+
+
+class ValidationError(Error):
+  """Error when validating a concept."""
+
+  def __init__(self, concept_name, message):
+    super(ValidationError, self).__init__(
+        'Failed to validate [{}]. {}'.format(concept_name, message))
 
 
 class MissingRequiredArgumentException(Error):

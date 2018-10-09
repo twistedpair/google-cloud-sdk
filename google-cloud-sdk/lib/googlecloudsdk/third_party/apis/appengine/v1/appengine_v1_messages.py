@@ -716,7 +716,7 @@ class Application(_messages.Message):
       App Engine.@OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
-      dependent. Up to 20 dispatch rules can be supported.@OutputOnly
+      dependent. Up to 20 dispatch rules can be supported.
     featureSettings: The feature specific settings to be used in the
       application.
     gcrDomain: The Google Container Registry domain used for storing managed
@@ -1161,6 +1161,8 @@ class EndpointsApiService(_messages.Message):
       called RolloutStrategy.MANAGED. When using this, Endpoints fetches the
       latest configuration and does not need the configuration ID. In this
       case, config_id must be omitted.
+    disableTraceSampling: Enable or disable trace sampling. By default, this
+      is set to false for enabled.
     name: Endpoints service name which is the name of the "service" resource
       in the Service Management API. For example
       "myapi.endpoints.myproject.cloud.goog"
@@ -1184,8 +1186,9 @@ class EndpointsApiService(_messages.Message):
     MANAGED = 2
 
   configId = _messages.StringField(1)
-  name = _messages.StringField(2)
-  rolloutStrategy = _messages.EnumField('RolloutStrategyValueValuesEnum', 3)
+  disableTraceSampling = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  rolloutStrategy = _messages.EnumField('RolloutStrategyValueValuesEnum', 4)
 
 
 class Entrypoint(_messages.Message):

@@ -671,11 +671,13 @@ class IosDeviceCatalog(_messages.Message):
     runtimeConfiguration: Output only. The set of supported runtime
       configurations.
     versions: Output only. The set of supported iOS software versions.
+    xcodeVersions: Output only. The set of supported Xcode versions.
   """
 
   models = _messages.MessageField('IosModel', 1, repeated=True)
   runtimeConfiguration = _messages.MessageField('IosRuntimeConfiguration', 2)
   versions = _messages.MessageField('IosVersion', 3, repeated=True)
+  xcodeVersions = _messages.MessageField('XcodeVersion', 4, repeated=True)
 
 
 class IosDeviceList(_messages.Message):
@@ -769,6 +771,8 @@ class IosVersion(_messages.Message):
       Examples: "8", "9"
     minorVersion: Output only. An integer representing the minor iOS version.
       Examples: "1", "2"
+    supportedXcodeVersionIds: Output only. The available Xcode versions for
+      this version.
     tags: Output only. Tags for this dimension. Examples: "default",
       "preview", "deprecated"
   """
@@ -776,7 +780,8 @@ class IosVersion(_messages.Message):
   id = _messages.StringField(1)
   majorVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   minorVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  tags = _messages.StringField(4, repeated=True)
+  supportedXcodeVersionIds = _messages.StringField(4, repeated=True)
+  tags = _messages.StringField(5, repeated=True)
 
 
 class IosXcTest(_messages.Message):
@@ -791,6 +796,9 @@ class IosXcTest(_messages.Message):
     testsZip: Required. The .zip containing the .xctestrun file and the
       contents of the DerivedData/Build/Products directory. The .xctestrun
       file in this zip is ignored if the xctestrun field is specified.
+    xcodeVersion: Optional. The Xcode version that should be used for the
+      test. Use the EnvironmentDiscoveryService to get supported options.
+      Defaults to the latest Xcode version Firebase Test Lab supports.
     xctestrun: Optional. An .xctestrun file that will override the .xctestrun
       file in the tests zip. Because the .xctestrun file contains environment
       variables along with test methods to run and/or ignore, this can be
@@ -798,7 +806,8 @@ class IosXcTest(_messages.Message):
   """
 
   testsZip = _messages.MessageField('FileReference', 1)
-  xctestrun = _messages.MessageField('FileReference', 2)
+  xcodeVersion = _messages.StringField(2)
+  xctestrun = _messages.MessageField('FileReference', 3)
 
 
 class LauncherActivityIntent(_messages.Message):
@@ -1258,6 +1267,8 @@ class TestMatrix(_messages.Message):
         disallowed.
       TEST_NOT_APP_HOSTED: XC tests which run on physical devices must have
         "IsAppHostedTestBundle" == "true" in the xctestrun file.
+      PLIST_CANNOT_BE_PARSED: An Info.plist file in in the XCTest zip could
+        not be parsed.
       TEST_ONLY_APK: The APK is marked as "testOnly". NOT USED
       MALFORMED_IPA: The input IPA could not be parsed. NOT USED
       NO_CODE_APK: APK contains no code. See also
@@ -1293,11 +1304,12 @@ class TestMatrix(_messages.Message):
     NO_TESTS_IN_XC_TEST_ZIP = 21
     USE_DESTINATION_ARTIFACTS = 22
     TEST_NOT_APP_HOSTED = 23
-    TEST_ONLY_APK = 24
-    MALFORMED_IPA = 25
-    NO_CODE_APK = 26
-    INVALID_INPUT_APK = 27
-    INVALID_APK_PREVIEW_SDK = 28
+    PLIST_CANNOT_BE_PARSED = 24
+    TEST_ONLY_APK = 25
+    MALFORMED_IPA = 26
+    NO_CODE_APK = 27
+    INVALID_INPUT_APK = 28
+    INVALID_APK_PREVIEW_SDK = 29
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Indicates the current progress of the test matrix (e.g., FINISHED)
@@ -1562,6 +1574,18 @@ class TrafficRule(_messages.Message):
   delay = _messages.StringField(3)
   packetDuplicationRatio = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
   packetLossRatio = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+
+
+class XcodeVersion(_messages.Message):
+  r"""An Xcode version that an iOS version is compatible with.
+
+  Fields:
+    tags: Output only. Tags for this Xcode version. Examples: "default"
+    version: Output only. The id for this version. Example: "9.2"
+  """
+
+  tags = _messages.StringField(1, repeated=True)
+  version = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

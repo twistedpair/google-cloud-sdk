@@ -356,8 +356,14 @@ def HttpHealthCheckArgument(required=False):
       required=required,
       global_collection='compute.httpHealthChecks',
       short_help="""\
-      Specifies a list of HTTP health check objects for checking the health
-      of the backend service.
+      Specifies a list of legacy HTTP health check objects for checking the
+      health of the backend service.
+
+      Legacy health checks are not recommended for backend services. It is
+      possible to use a legacy health check on a backend service for a HTTP(S)
+      load balancer if that backend service uses instance groups. For more
+      information, see this guide:
+      https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide
       """)
 
 
@@ -370,8 +376,14 @@ def HttpsHealthCheckArgument(required=False):
       required=required,
       global_collection='compute.httpsHealthChecks',
       short_help="""\
-      Specifies a list of HTTPS health check objects for checking the health
-      of the backend service.
+      Specifies a list of legacy HTTPS health check objects for checking the
+      health of the backend service.
+
+      Legacy health checks are not recommended for backend services. It is
+      possible to use a legacy health check on a backend service for a HTTP(S)
+      load balancer if that backend service uses instance groups. For more
+      information, see this guide:
+      https://cloud.google.com/load-balancing/docs/health-check-concepts#lb_guide
       """)
 
 

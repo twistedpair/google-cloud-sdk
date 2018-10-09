@@ -139,6 +139,7 @@ class PrinterAttributes(resource_printer_base.ResourcePrinter):
     disable: Disables formatted output and does not consume the resources.
     json-decode: Decodes string values that are JSON compact encodings of list
       and dictionary objects. This may become the default.
+    pager: If True, sends output to a pager.
     private: Disables log file output. Use this for sensitive resource data
       that should not be displayed in log files. Explicit command line IO
       redirection overrides this attribute.

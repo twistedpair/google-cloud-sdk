@@ -129,6 +129,10 @@ ENABLE_PRIVATE_NODES_WITH_PRIVATE_CLUSTER_ERROR_MSG = """\
 Cannot specify both --[no-]enable-private-nodes and --[no-]private-cluster at the same time.
 """
 
+ENABLE_MPI_EMPTY_ERROR_MSG = """\
+Cannot use --managed-pod-identity-federating-sa without --enable-managed-pod-identity
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_CONCURRENT_NODE_COUNT = 20
@@ -368,6 +372,7 @@ class CreateClusterOptions(object):
                enable_tpu=None,
                default_max_pods_per_node=None,
                enable_managed_pod_identity=None,
+               managed_pod_identity_federating_sa=None,
                resource_usage_bigquery_dataset=None,
                security_group=None,
                enable_vertical_pod_autoscaling=None,
@@ -440,6 +445,7 @@ class CreateClusterOptions(object):
     self.issue_client_certificate = issue_client_certificate
     self.default_max_pods_per_node = default_max_pods_per_node
     self.enable_managed_pod_identity = enable_managed_pod_identity
+    self.managed_pod_identity_federating_sa = managed_pod_identity_federating_sa
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
     self.security_group = security_group
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
@@ -791,11 +797,7 @@ class APIAdapter(object):
     node_config = self.ParseNodeConfig(options)
     pools = self.ParseNodePools(options, node_config)
 
-    cluster = self.messages.Cluster(
-        name=cluster_ref.clusterId,
-        nodePools=pools,
-        masterAuth=self.messages.MasterAuth(username=options.user,
-                                            password=options.password))
+    cluster = self.messages.Cluster(name=cluster_ref.clusterId, nodePools=pools)
     if options.additional_zones:
       cluster.locations = sorted([cluster_ref.zone] + options.additional_zones)
     if options.node_locations:
@@ -859,11 +861,6 @@ class APIAdapter(object):
       cluster.podSecurityPolicyConfig = self.messages.PodSecurityPolicyConfig(
           enabled=options.enable_pod_security_policy)
 
-    if options.issue_client_certificate is not None:
-      cluster.masterAuth.clientCertificateConfig = (
-          self.messages.ClientCertificateConfig(
-              issueClientCertificate=options.issue_client_certificate))
-
     if options.security_group is not None:
       # The presence of the --security_group="foo" flag implies enabled=True.
       cluster.authenticatorGroupsConfig = (
@@ -878,6 +875,20 @@ class APIAdapter(object):
     if options.enable_vertical_pod_autoscaling is not None:
       cluster.verticalPodAutoscaling = self.messages.VerticalPodAutoscaling(
           enabled=options.enable_vertical_pod_autoscaling)
+
+    # Only instantiate the masterAuth struct if one or both of `user` or
+    # `issue_client_certificate` is configured. Server-side Basic auth default
+    # behavior is dependent on the absence of the MasterAuth struct. For this
+    # reason, if only `issue_client_certificate` is configured, Basic auth will
+    # be disabled.
+    if options.user is not None or options.issue_client_certificate is not None:
+      cluster.masterAuth = self.messages.MasterAuth(
+          username=options.user, password=options.password)
+      if options.issue_client_certificate is not None:
+        cluster.masterAuth.clientCertificateConfig = (
+            self.messages.ClientCertificateConfig(
+                issueClientCertificate=options.issue_client_certificate))
+
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1660,8 +1671,13 @@ class APIAdapter(object):
     return (cluster.status ==
             self.messages.Cluster.StatusValueValuesEnum.DEGRADED)
 
-  def GetDegradedWarning(self, cluster):  # pylint: disable=unused-argument
-    return gke_constants.DEFAULT_DEGRADED_WARNING
+  def GetDegradedWarning(self, cluster):
+    if cluster.conditions:
+      codes = [condition.code for condition in cluster.conditions]
+      messages = [condition.message for condition in cluster.conditions]
+      return ('Codes: {0}\n' 'Messages: {1}.').format(codes, messages)
+    else:
+      return gke_constants.DEFAULT_DEGRADED_WARNING
 
   def GetOperationError(self, operation):
     return operation.statusMessage
@@ -1913,14 +1929,6 @@ class V1Beta1Adapter(V1Adapter):
         enableNodeAutoprovisioning=options.enable_autoprovisioning,
         resourceLimits=resource_limits)
 
-  def GetDegradedWarning(self, cluster):
-    if cluster.conditions:
-      codes = [condition.code for condition in cluster.conditions]
-      messages = [condition.message for condition in cluster.conditions]
-      return ('Codes: {0}\n' 'Messages: {1}.').format(codes, messages)
-    else:
-      return gke_constants.DEFAULT_DEGRADED_WARNING
-
   def UpdateNodePool(self, node_pool_ref, options):
     if options.IsAutoscalingUpdate():
       autoscaling = self.UpdateNodePoolAutoscaling(node_pool_ref, options)
@@ -2017,7 +2025,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             disabled=False, auth=istio_auth)
     if options.enable_managed_pod_identity:
       cluster.managedPodIdentityConfig = self.messages.ManagedPodIdentityConfig(
-          enabled=options.enable_managed_pod_identity)
+          enabled=options.enable_managed_pod_identity,
+          federatingServiceAccount=options.managed_pod_identity_federating_sa)
+    elif options.managed_pod_identity_federating_sa is not None:
+      raise util.Error(ENABLE_MPI_EMPTY_ERROR_MSG)
     if options.resource_usage_bigquery_dataset:
       bigquery_destination = self.messages.BigQueryDestination(
           datasetId=options.resource_usage_bigquery_dataset)

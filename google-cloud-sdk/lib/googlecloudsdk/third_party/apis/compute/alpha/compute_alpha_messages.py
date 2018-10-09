@@ -26586,8 +26586,6 @@ class InterconnectAttachment(_messages.Message):
   ==)
 
   Enums:
-    AvailabilityZoneValueValuesEnum: [Deprecated] Replaced by
-      edge_availability_domain.
     BandwidthValueValuesEnum: Provisioned bandwidth capacity for the
       interconnectAttachment. Can be set by the partner to update the
       customer's provisioned bandwidth. Output only for for PARTNER type,
@@ -26613,7 +26611,6 @@ class InterconnectAttachment(_messages.Message):
   Fields:
     adminEnabled: Determines whether this Attachment will carry packets. Not
       present for PARTNER_PROVIDER.
-    availabilityZone: [Deprecated] Replaced by edge_availability_domain.
     bandwidth: Provisioned bandwidth capacity for the interconnectAttachment.
       Can be set by the partner to update the customer's provisioned
       bandwidth. Output only for for PARTNER type, mutable for
@@ -26698,18 +26695,6 @@ class InterconnectAttachment(_messages.Message):
       802.1q VLAN tag, also known as IEEE 802.1Q Only specified at creation
       time.
   """
-
-  class AvailabilityZoneValueValuesEnum(_messages.Enum):
-    r"""[Deprecated] Replaced by edge_availability_domain.
-
-    Values:
-      ZONE_1: <no description>
-      ZONE_2: <no description>
-      ZONE_ANY: <no description>
-    """
-    ZONE_1 = 0
-    ZONE_2 = 1
-    ZONE_ANY = 2
 
   class BandwidthValueValuesEnum(_messages.Enum):
     r"""Provisioned bandwidth capacity for the interconnectAttachment. Can be
@@ -26828,32 +26813,31 @@ class InterconnectAttachment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   adminEnabled = _messages.BooleanField(1)
-  availabilityZone = _messages.EnumField('AvailabilityZoneValueValuesEnum', 2)
-  bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 3)
-  candidateSubnets = _messages.StringField(4, repeated=True)
-  cloudRouterIpAddress = _messages.StringField(5)
-  creationTimestamp = _messages.StringField(6)
-  customerRouterIpAddress = _messages.StringField(7)
-  description = _messages.StringField(8)
-  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 9)
-  googleReferenceId = _messages.StringField(10)
-  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  interconnect = _messages.StringField(12)
-  kind = _messages.StringField(13, default=u'compute#interconnectAttachment')
-  labelFingerprint = _messages.BytesField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  name = _messages.StringField(16)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 17)
-  pairingKey = _messages.StringField(18)
-  partnerAsn = _messages.IntegerField(19)
-  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 20)
-  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 21)
-  region = _messages.StringField(22)
-  router = _messages.StringField(23)
-  selfLink = _messages.StringField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  type = _messages.EnumField('TypeValueValuesEnum', 26)
-  vlanTag8021q = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  bandwidth = _messages.EnumField('BandwidthValueValuesEnum', 2)
+  candidateSubnets = _messages.StringField(3, repeated=True)
+  cloudRouterIpAddress = _messages.StringField(4)
+  creationTimestamp = _messages.StringField(5)
+  customerRouterIpAddress = _messages.StringField(6)
+  description = _messages.StringField(7)
+  edgeAvailabilityDomain = _messages.EnumField('EdgeAvailabilityDomainValueValuesEnum', 8)
+  googleReferenceId = _messages.StringField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  interconnect = _messages.StringField(11)
+  kind = _messages.StringField(12, default=u'compute#interconnectAttachment')
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 16)
+  pairingKey = _messages.StringField(17)
+  partnerAsn = _messages.IntegerField(18)
+  partnerMetadata = _messages.MessageField('InterconnectAttachmentPartnerMetadata', 19)
+  privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 20)
+  region = _messages.StringField(21)
+  router = _messages.StringField(22)
+  selfLink = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  type = _messages.EnumField('TypeValueValuesEnum', 25)
+  vlanTag8021q = _messages.IntegerField(26, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -31275,7 +31259,7 @@ class NodeTemplate(_messages.Message):
       long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
-      charaicter, which cannot be a dash.
+      character, which cannot be a dash.
     nodeAffinityLabels: Labels to use for node affinity, which will be used in
       instance scheduling.
     nodeType: The node type to use for nodes group that are created from this
@@ -34872,27 +34856,27 @@ class ResourcePolicyAggregatedList(_messages.Message):
 class ResourcePolicyBackupSchedulePolicy(_messages.Message):
   r"""A backup schedule policy specifies when and how frequently snapshots are
   to be created for the target disk. Also specifies how many and how long
-  these automatically created snapshot should be retained.
+  these scheduled snapshots should be retained.
 
   Enums:
     OnSourceDiskDeleteValueValuesEnum: Specifies the behavior to apply to
-      automatically-created snapshots when the source disk is deleted.
+      scheduled snapshots when the source disk is deleted.
 
   Fields:
-    onSourceDiskDelete: Specifies the behavior to apply to automatically-
-      created snapshots when the source disk is deleted.
+    onSourceDiskDelete: Specifies the behavior to apply to scheduled snapshots
+      when the source disk is deleted.
     retentionPolicy: Retention policy applied to snapshots created by this
       resource policy.
     schedule: A Vm Maintenance Policy specifies what kind of infrastructure
       maintenance we are allowed to perform on this VM and when. Schedule that
       is applied to disks covered by this policy.
     snapshotProperties: Properties with which snapshots are created such as
-      lables, encryption keys.
+      labels, encryption keys.
   """
 
   class OnSourceDiskDeleteValueValuesEnum(_messages.Enum):
-    r"""Specifies the behavior to apply to automatically-created snapshots
-    when the source disk is deleted.
+    r"""Specifies the behavior to apply to scheduled snapshots when the source
+    disk is deleted.
 
     Values:
       APPLY_RETENTION_POLICY: <no description>
@@ -34910,20 +34894,20 @@ class ResourcePolicyBackupSchedulePolicy(_messages.Message):
 
 
 class ResourcePolicyBackupSchedulePolicyRetentionPolicy(_messages.Message):
-  r"""Policy for retention of automatically created snapshots.
+  r"""Policy for retention of scheduled snapshots.
 
   Enums:
     OnPolicySwitchValueValuesEnum: Specifies the behavior to apply to
-      existing, automatically-created snapshots if the policy is changed.
+      existing, scheduled snapshots snapshots if the policy is changed.
 
   Fields:
     maxRetentionDays: Maximum age of the snapshot that is allowed to be kept.
-    onPolicySwitch: Specifies the behavior to apply to existing,
-      automatically-created snapshots if the policy is changed.
+    onPolicySwitch: Specifies the behavior to apply to existing, scheduled
+      snapshots snapshots if the policy is changed.
   """
 
   class OnPolicySwitchValueValuesEnum(_messages.Enum):
-    r"""Specifies the behavior to apply to existing, automatically-created
+    r"""Specifies the behavior to apply to existing, scheduled snapshots
     snapshots if the policy is changed.
 
     Values:
@@ -34954,16 +34938,16 @@ class ResourcePolicyBackupSchedulePolicySchedule(_messages.Message):
 
 
 class ResourcePolicyBackupSchedulePolicySnapshotProperties(_messages.Message):
-  r"""Specified snapshot properties for automatic snapshots created by this
+  r"""Specified snapshot properties for scheduled snapshots created by this
   policy.
 
   Messages:
-    LabelsValue: Labels to apply to automatic snapshots. These can be later
+    LabelsValue: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
 
   Fields:
     guestFlush: Indication to perform a ?guest aware? snapshot.
-    labels: Labels to apply to automatic snapshots. These can be later
+    labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
     storageLocations: GCS bucket storage location of the auto snapshot
       (regional or multi-regional).
@@ -34971,7 +34955,7 @@ class ResourcePolicyBackupSchedulePolicySnapshotProperties(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to automatic snapshots. These can be later modified by
+    r"""Labels to apply to scheduled snapshots. These can be later modified by
     the setLabels method. Label values may be empty.
 
     Messages:
@@ -37126,7 +37110,6 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     expr: User defined CEVAL expression. A CEVAL expression is used to specify
       match criteria such as origin.ip, source.region_code and contents in the
       request header.
-    srcIpRanges: CIDR IP address range.
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
       expressions along with their requirements are: SRC_IPS_V1 - must specify
@@ -37146,8 +37129,7 @@ class SecurityPolicyRuleMatcher(_messages.Message):
 
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
   expr = _messages.MessageField('Expr', 2)
-  srcIpRanges = _messages.StringField(3, repeated=True)
-  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 4)
+  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 3)
 
 
 class SecurityPolicyRuleMatcherConfig(_messages.Message):
@@ -40043,8 +40025,9 @@ class TargetHttpsProxy(_messages.Message):
       TargetHttpsProxies.
     selfLink: [Output Only] Server-defined URL for the resource.
     sslCertificates: URLs to SslCertificate resources that are used to
-      authenticate connections between users and the load balancer. Currently,
-      exactly one SSL certificate must be specified.
+      authenticate connections between users and the load balancer. At least
+      one SSL certificate must be specified. Currently, you may specify up to
+      15 SSL certificates.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource
       will not have any SSL policy configured.
@@ -41460,8 +41443,8 @@ class TargetSslProxy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     service: URL to the BackendService resource.
     sslCertificates: URLs to SslCertificate resources that are used to
-      authenticate connections to Backends. Currently exactly one SSL
-      certificate must be specified.
+      authenticate connections to Backends. At least one SSL certificate must
+      be specified. Currently, you may specify up to 15 SSL certificates.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetSslProxy resource. If not set, the TargetSslProxy resource will
       not have any SSL policy configured.

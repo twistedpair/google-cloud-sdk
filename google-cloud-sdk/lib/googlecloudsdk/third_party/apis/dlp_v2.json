@@ -307,9 +307,10 @@
           }
         },
         "exclusionType": {
+          "description": "If set to EXCLUSION_TYPE_EXCLUDE this infoType will not cause a finding\nto be returned. It still can be used for rules matching.",
           "enumDescriptions": [
-            "",
-            ""
+            "A finding of this custom info type will not be excluded from results.",
+            "A finding of this custom info type will be excluded from final results,\nbut can still affect rule execution."
           ],
           "type": "string",
           "enum": [
@@ -877,7 +878,7 @@
       "type": "object",
       "properties": {
         "containerName": {
-          "description": "Name of the container where the finding is located.\nThe top level name is the source file name or table name. Nested names\ncould be absent if the embedded object has no string identifier\n(for an example an image contained within a document).",
+          "description": "Name of the container where the finding is located.\nThe top level name is the source file name or table name. Names of some\ncommon storage containers are formatted as follows:\n\n* BigQuery tables:  `<project_id>:<dataset_id>.<table_id>`\n* Cloud Storage files: `gs:\/\/<bucket>\/<path>`\n* Datastore namespace: <namespace>\n\nNested names could be absent if the embedded object has no string\nidentifier (for an example an image contained within a document).",
           "type": "string"
         },
         "recordLocation": {
@@ -4315,6 +4316,11 @@
                     "INSPECT_JOB",
                     "RISK_ANALYSIS_JOB"
                   ]
+                },
+                "orderBy": {
+                  "description": "Optional comma separated list of fields to order by,\nfollowed by `asc` or `desc` postfix. This list is case-insensitive,\ndefault sorting order is ascending, redundant space characters are\ninsignificant.\n\nExample: `name asc, end_time asc, create_time desc`\n\nSupported fields are:\n\n- `create_time`: corresponds to time the job was created.\n- `end_time`: corresponds to time the job ended.\n- `name`: corresponds to job's name.\n- `state`: corresponds to `state`",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [

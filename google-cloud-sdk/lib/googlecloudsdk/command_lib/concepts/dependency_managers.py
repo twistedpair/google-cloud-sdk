@@ -54,7 +54,7 @@ class DependencyManager(object):
 
     def _ParseConcept(node):
       """Recursive parsing."""
-      if not node.dependencies:
+      if not node.dependencies or node.marshalled:
         fallthroughs = []
         if node.arg_name:
           fallthroughs.append(deps_lib.ArgFallthrough(node.arg_name))
@@ -62,7 +62,8 @@ class DependencyManager(object):
         return node.concept.Parse(
             DependencyViewFromValue(
                 functools.partial(
-                    deps_lib.GetFromFallthroughs, fallthroughs, parsed_args)))
+                    deps_lib.GetFromFallthroughs, fallthroughs, parsed_args),
+                marshalled_dependencies=node.dependencies))
       return node.concept.Parse(
           DependencyView(
               {name: _ParseConcept(child)
@@ -82,8 +83,9 @@ class DependencyView(object):
 class DependencyViewFromValue(object):
   """Simple namespace for single value."""
 
-  def __init__(self, value_getter):
+  def __init__(self, value_getter, marshalled_dependencies=None):
     self._value_getter = value_getter
+    self._marshalled_dependencies = marshalled_dependencies
 
   @property
   def value(self):
@@ -95,7 +97,15 @@ class DependencyViewFromValue(object):
     Raises:
       deps_lib.AttributeNotFoundError: if the value cannot be found.
     """
-    return self._value_getter()
+    try:
+      return self._value_getter()
+    except TypeError:
+      return self._value_getter
+
+  @property
+  def marshalled_dependencies(self):
+    """Returns the marshalled dependencies or None if not marshalled."""
+    return self._marshalled_dependencies
 
 
 class DependencyNode(object):
@@ -110,24 +120,38 @@ class DependencyNode(object):
     arg_name: str, the argument name of the attribute.
     fallthroughs: [deps_lib._Fallthrough], the list of fallthroughs for the
       dependency.
+    marshalled: [base.Concept], the list of concepts marshalled by concept.
+      The marshalled dependencies are generated here, but concept handles the
+      parsing.
   """
 
   def __init__(self, name, concept=None, dependencies=None, arg_name=None,
-               fallthroughs=None):
+               fallthroughs=None, marshalled=False):
     self.name = name
     self.concept = concept
     self.dependencies = dependencies
     self.arg_name = arg_name
     self.fallthroughs = fallthroughs or []
+    self.marshalled = marshalled
 
   @classmethod
   def FromAttribute(cls, attribute):
     """Builds the dependency tree from the attribute."""
-    if isinstance(attribute, base.Attribute):
-      return DependencyNode(attribute.concept.key, concept=attribute.concept,
-                            arg_name=attribute.arg_name,
-                            fallthroughs=attribute.fallthroughs)
-    return DependencyNode(attribute.concept.key, concept=attribute.concept,
-                          dependencies={
-                              a.concept.key: DependencyNode.FromAttribute(a)
-                              for a in attribute.attributes})
+    kwargs = {
+        'concept': attribute.concept,
+    }
+    marshal = attribute.concept.Marshal()
+    if marshal:
+      kwargs['marshalled'] = True
+      attributes = [concept.Attribute() for concept in marshal]
+    elif not isinstance(attribute, base.Attribute):
+      attributes = attribute.attributes
+    else:
+      attributes = None
+    if marshal or not attributes:
+      kwargs['arg_name'] = attribute.arg_name
+      kwargs['fallthroughs'] = attribute.fallthroughs
+    if attributes:
+      kwargs['dependencies'] = {a.concept.key: DependencyNode.FromAttribute(a)
+                                for a in attributes}
+    return DependencyNode(attribute.concept.key, **kwargs)

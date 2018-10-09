@@ -135,7 +135,7 @@ Language syntax.
 describing its purpose.
 
 *description*::: (Optional) Description for the expression. This is
-a longer text which describes the expression
+a longer text which describes the expression.
 
 NOTE: An unsatisfied condition will not allow access via this
 binding.""".format(intro=intro)
@@ -218,6 +218,24 @@ def ValidateMutexConditionAndPrimitiveRoles(condition, role):
         'Binding with a condition and a primitive role is not allowed. '
         'Primitive roles are `roles/editor`, `roles/owner`, '
         'and `roles/viewer`.')
+
+
+def ValidateAndExtractConditionMutexRole(args):
+  """Extract IAM condition from arguments and validate conditon/role mutex."""
+  condition = ValidateAndExtractCondition(args)
+  ValidateMutexConditionAndPrimitiveRoles(condition, args.role)
+  return condition
+
+
+def ValidateAndExtractCondition(args):
+  """Extract IAM condition from arguments."""
+  condition = None
+  if args.IsSpecified('condition'):
+    ValidateConditionArgument(args.condition, CONDITION_FORMAT_EXCEPTION)
+    condition = args.condition
+  if args.IsSpecified('condition_from_file'):
+    condition = ParseYamlOrJsonCondition(args.condition_from_file)
+  return condition
 
 
 def AddArgForPolicyFile(parser):

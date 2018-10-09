@@ -92,7 +92,8 @@ class MatrixCreator(object):
         testTimeout=matrix_ops.ReformatDuration(self._args.timeout),
         iosXcTest=self._messages.IosXcTest(
             testsZip=self._BuildFileReference(self._args.test),
-            xctestrun=self._BuildFileReference(self._args.xctestrun_file)))
+            xctestrun=self._BuildFileReference(self._args.xctestrun_file),
+            xcodeVersion=self._args.xcode_version))
     return spec
 
   def _TestSpecFromType(self, test_type):

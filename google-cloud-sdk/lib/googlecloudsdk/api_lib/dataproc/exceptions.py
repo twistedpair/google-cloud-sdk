@@ -47,3 +47,7 @@ class OperationTimeoutError(OperationError):
 
 class ParseError(Error):
   """File parsing error."""
+
+
+class FileUploadError(Error):
+  """File upload error."""

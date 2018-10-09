@@ -682,7 +682,10 @@ class IpConfiguration(_messages.Message):
       connect to the instance using the IP. In CIDR notation, also known as
       'slash' notation (e.g. 192.168.100.0/24).
     ipv4Enabled: Whether the instance should be assigned an IP address or not.
-    privateNetwork: Reserved for future use.
+    privateNetwork: The resource link for the VPC network from which the Cloud
+      SQL instance is accessible for private IP. For example,
+      /projects/myProject/global/networks/default. This setting can be
+      updated, but it cannot be removed after it is set.
     requireSsl: Whether SSL connections over IP should be enforced or not.
   """
 

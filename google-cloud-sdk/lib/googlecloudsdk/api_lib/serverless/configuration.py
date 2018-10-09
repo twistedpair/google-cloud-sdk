@@ -144,15 +144,30 @@ class Configuration(k8s_object.KubernetesObject):
     )
 
   @property
-  def concurrency(self):
-    """The concurrency model in the revisionTemplate."""
+  def deprecated_string_concurrency(self):
+    """The string-enum concurrency model in the revisionTemplate.
+
+    This is deprecated in favor of the numeric field containerConcurrency
+    """
     return self.spec.revisionTemplate.spec.concurrencyModel
+
+  @deprecated_string_concurrency.setter
+  def deprecated_string_concurrency(self, value):
+    self.spec.revisionTemplate.spec.concurrencyModel = value
+
+  @property
+  def concurrency(self):
+    """The concurrency number in the revisionTemplate.
+
+    0: Multiple concurrency, max unspecified.
+    1: Single concurrency
+    n>1: Allow n simultaneous requests per instance.
+    """
+    return self.spec.revisionTemplate.spec.containerConcurrency
 
   @concurrency.setter
   def concurrency(self, value):
-    if value == 'default':
-      value = None
-    self.spec.revisionTemplate.spec.concurrencyModel = value
+    self.spec.revisionTemplate.spec.containerConcurrency = value
 
   @property
   def build_template_arguments(self):

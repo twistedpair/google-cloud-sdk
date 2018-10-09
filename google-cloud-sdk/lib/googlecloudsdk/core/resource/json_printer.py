@@ -101,3 +101,5 @@ class JsonPrinter(resource_printer_base.ResourcePrinter):
     elif self._delimiter != self._BEGIN_DELIMITER:
       self._out.write('\n]\n')
       self._delimiter = self._BEGIN_DELIMITER
+
+    super(JsonPrinter, self).Finish()

@@ -67,7 +67,7 @@ def _UnitsByMagnitude(units, type_abbr):
   return [key + type_abbr for key, _ in scale_items if key]
 
 
-def _DeleteTypeAbbr(suffix, type_abbr='B'):
+def DeleteTypeAbbr(suffix, type_abbr='B'):
   """Returns suffix with trailing type abbreviation deleted."""
   if not suffix:
     return suffix
@@ -98,7 +98,7 @@ def GetUnitSize(suffix, type_abbr='B', default_unit='', units=None):
   Returns:
     The binary size per unit for a unit+type_abbr suffix.
   """
-  prefix = _DeleteTypeAbbr(suffix, type_abbr)
+  prefix = DeleteTypeAbbr(suffix, type_abbr)
   if not prefix:
     unit = default_unit
     if not unit:

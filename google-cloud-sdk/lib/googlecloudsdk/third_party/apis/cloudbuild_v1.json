@@ -456,7 +456,7 @@
           }
         },
         "volumes": {
-          "description": "List of volumes to mount into the build step.\n\nEach volume will be created as an empty volume prior to execution of the\nbuild step. Upon completion of the build, volumes and their contents will\nbe discarded.\n\nUsing a named volume in only one step is not valid as it is indicative\nof a mis-configured build request.",
+          "description": "List of volumes to mount into the build step.\n\nEach volume is created as an empty volume prior to execution of the\nbuild step. Upon completion of the build, volumes and their contents are\ndiscarded.\n\nUsing a named volume in only one step is not valid as it is indicative\nof a build request with an incorrect configuration.",
           "type": "array",
           "items": {
             "$ref": "Volume"
@@ -464,6 +464,10 @@
         },
         "timing": {
           "description": "Output only. Stores timing information for executing this build step.",
+          "$ref": "TimeSpan"
+        },
+        "pullTiming": {
+          "description": "Output only. Stores timing information for pulling this build step's\nbuilder image only.",
           "$ref": "TimeSpan"
         },
         "timeout": {
@@ -780,6 +784,27 @@
             "LEGACY",
             "GCS_ONLY"
           ]
+        },
+        "env": {
+          "description": "A list of global environment variable definitions that will exist for all\nbuild steps in this build. If a variable is defined in both globally and in\na build step, the variable will use the build step value.\n\nThe elements are of the form \"KEY=VALUE\" for the environment variable \"KEY\"\nbeing given the value \"VALUE\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "secretEnv": {
+          "description": "A list of global environment variables, which are encrypted using a Cloud\nKey Management Service crypto key. These values must be specified in the\nbuild's `Secret`. These variables will be available to all build steps\nin this build.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "volumes": {
+          "description": "Global list of volumes to mount for ALL build steps\n\nEach volume is created as an empty volume prior to starting the build\nprocess. Upon completion of the build, volumes and their contents are\ndiscarded. Global volume names and paths cannot conflict with the volumes\ndefined a build step.\n\nUsing a global volume in a build with only one step is not valid as\nit is indicative of a build request with an incorrect configuration.",
+          "type": "array",
+          "items": {
+            "$ref": "Volume"
+          }
         }
       }
     },
@@ -793,7 +818,7 @@
           "type": "string"
         },
         "secretEnv": {
-          "description": "Map of environment variable name to its encrypted value.\n\nSecret environment variables must be unique across all of a build's\nsecrets, and must be used by at least one build step. Values can be at most\n1 KB in size. There can be at most ten secret values across all of a\nbuild's secrets.",
+          "description": "Map of environment variable name to its encrypted value.\n\nSecret environment variables must be unique across all of a build's\nsecrets, and must be used by at least one build step. Values can be at most\n2 KB in size. There can be at most ten secret values across all of a\nbuild's secrets.",
           "type": "object",
           "additionalProperties": {
             "type": "string",

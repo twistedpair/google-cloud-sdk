@@ -38,7 +38,7 @@ def TypedArgRules():
   return {
       'xctest': {
           'required': [],
-          'optional': ['xctestrun_file'],
+          'optional': ['xcode_version', 'xctestrun_file'],
           'defaults': {}
       },
   }
@@ -133,6 +133,7 @@ class IosArgsManager(object):
                                          self._shared_arg_rules,
                                          all_test_args_set)
     arg_validate.ValidateDeviceList(args, self._catalog_mgr)
+    arg_validate.ValidateXcodeVersion(args, self._catalog_mgr)
     arg_validate.ValidateResultsBucket(args)
     arg_validate.ValidateResultsDir(args)
 

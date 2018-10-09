@@ -716,7 +716,7 @@ class Application(_messages.Message):
       App Engine.@OutputOnly
     dispatchRules: HTTP path dispatch rules for requests to the application
       that do not explicitly target a service or version. Rules are order-
-      dependent. Up to 20 dispatch rules can be supported.@OutputOnly
+      dependent. Up to 20 dispatch rules can be supported.
     featureSettings: The feature specific settings to be used in the
       application.
     gcrDomain: The Google Container Registry domain used for storing managed

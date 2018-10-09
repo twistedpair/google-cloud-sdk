@@ -245,8 +245,7 @@ class ConsoleAttr(object):
     self._term = os.getenv('TERM', '').lower()
 
     # ANSI "standard" attributes.
-    if self._encoding != 'ascii' and ('screen' in self._term or
-                                      'xterm' in self._term):
+    if self.SupportsAnsi():
       # Select Graphic Rendition paramaters from
       # http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
       # Italic '3' would be nice here but its not widely supported.
@@ -530,6 +529,10 @@ class ConsoleAttr(object):
     if chunk or keep:
       lines.append(chunk)
     return lines
+
+  def SupportsAnsi(self):
+    return (self._encoding != 'ascii' and
+            ('screen' in self._term or 'xterm' in self._term))
 
 
 class Colorizer(object):

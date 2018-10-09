@@ -145,9 +145,14 @@ class RegistriesClient(object):
         self._service, list_req, batch_size=page_size, limit=limit,
         field='deviceRegistries', batch_size_attribute='pageSize')
 
-  def Patch(self, registry_ref, credentials=None,
-            event_notification_configs=None, state_pubsub_topic=None,
-            mqtt_enabled_state=None, http_enabled_state=None):
+  def Patch(self,
+            registry_ref,
+            credentials=None,
+            event_notification_configs=None,
+            state_pubsub_topic=None,
+            mqtt_enabled_state=None,
+            http_enabled_state=None,
+            log_level=None):
     """Updates a DeviceRegistry.
 
     Any fields not specified will not be updated; at least one field must be
@@ -167,6 +172,8 @@ class RegistriesClient(object):
         the registry.
       http_enabled_state: HttpConfigStateValuEnabledsEnum, the state of HTTP for
         the registry.
+      log_level: LogLevelValueValuesEnum, the default logging verbosity for the
+        devices in the registry.
 
     Returns:
       DeviceRegistry: the created registry.
@@ -196,26 +203,19 @@ class RegistriesClient(object):
       http_config = None
 
     device_registry_update_settings = [
-        _DeviceRegistryUpdateSetting(
-            'credentials',
-            'credentials',
-            credentials),
-        _DeviceRegistryUpdateSetting(
-            'eventNotificationConfigs',
-            'event_notification_configs',
-            event_notification_configs),
+        _DeviceRegistryUpdateSetting('credentials', 'credentials', credentials),
+        _DeviceRegistryUpdateSetting('eventNotificationConfigs',
+                                     'event_notification_configs',
+                                     event_notification_configs),
         _DeviceRegistryUpdateSetting(
             'stateNotificationConfig',
             'state_notification_config.pubsub_topic_name',
             state_notification_config),
         _DeviceRegistryUpdateSetting(
-            'mqttConfig',
-            'mqtt_config.mqtt_enabled_state',
-            mqtt_config),
+            'mqttConfig', 'mqtt_config.mqtt_enabled_state', mqtt_config),
         _DeviceRegistryUpdateSetting(
-            'httpConfig',
-            'http_config.http_enabled_state',
-            http_config)
+            'httpConfig', 'http_config.http_enabled_state', http_config),
+        _DeviceRegistryUpdateSetting('logLevel', 'logLevel', log_level)
     ]
     update_mask = []
     for update_setting in device_registry_update_settings:

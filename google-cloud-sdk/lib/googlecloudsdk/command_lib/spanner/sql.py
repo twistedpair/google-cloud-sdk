@@ -22,6 +22,8 @@ from functools import partial
 from apitools.base.py import encoding
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import text
+from sqlparse import lexer
+from sqlparse import tokens as T
 
 
 def _GetAdditionalProperty(properties, property_key, not_found_value='Unknown'):
@@ -86,6 +88,43 @@ def _ConvertToStringValue(prop):
   return getattr(prop, 'string_value', prop)
 
 
+def _DisplayNumberOfRowsModified(row_count_exact, out):
+  """Prints number of rows modified by a DML statement.
+
+  Args:
+    row_count_exact: Number of rows modified by statement.
+    out: Output stream to which we print.
+  """
+  output_str = 'Statement modified {} {}'
+  if row_count_exact is None:
+    out.Print('Statement modified rows')
+  elif row_count_exact is 1:
+    out.Print(output_str.format(row_count_exact, 'row'))
+  else:
+    out.Print(output_str.format(row_count_exact, 'rows'))
+
+
+def QueryHasDml(sql):
+  """Determines if the sql string contains a DML query.
+
+  Args:
+    sql (string): The sql string entered by the user.
+
+  Returns:
+    A boolean.
+  """
+  sql = sql.lstrip().lower()
+  tokenized = lexer.tokenize(sql)
+  for token in list(tokenized):
+    has_dml = (
+        token == (T.Keyword.DML, 'insert') or
+        token == (T.Keyword.DML, 'update') or
+        token == (T.Keyword.DML, 'delete'))
+    if has_dml is True:
+      return True
+  return False
+
+
 def QueryHasAggregateStats(result):
   """Checks if the given results have aggregate statistics.
 
@@ -141,18 +180,25 @@ def DisplayQueryResults(result, out):
     result (spanner_v1_messages.ResultSet): The server response to a query.
     out: Output stream to which we print.
   """
-  # Print "(Unspecified)" for computed columns.
-  fields = [
-      field.name or '(Unspecified)' for field in result.metadata.rowType.fields
-  ]
+  if hasattr(result.stats, 'rowCountExact'):
+    _DisplayNumberOfRowsModified(result.stats.rowCountExact, out)
 
-  # Create the format string we pass to the table layout.
-  table_format = ','.join('row.slice({0}).join():label="{1}"'.format(i, f)
-                          for i, f in enumerate(fields))
-  rows = [{'row': encoding.MessageToPyValue(row.entry)} for row in result.rows]
+  if len(result.metadata.rowType.fields) is not 0:
+    # Print "(Unspecified)" for computed columns.
+    fields = [
+        field.name or '(Unspecified)'
+        for field in result.metadata.rowType.fields
+    ]
 
-  # Can't use the PrintText method because we want special formatting.
-  resource_printer.Print(rows, 'table({0})'.format(table_format), out=out)
+    # Create the format string we pass to the table layout.
+    table_format = ','.join('row.slice({0}).join():label="{1}"'.format(i, f)
+                            for i, f in enumerate(fields))
+    rows = [{
+        'row': encoding.MessageToPyValue(row.entry)
+    } for row in result.rows]
+
+    # Can't use the PrintText method because we want special formatting.
+    resource_printer.Print(rows, 'table({0})'.format(table_format), out=out)
 
 
 class Node(object):

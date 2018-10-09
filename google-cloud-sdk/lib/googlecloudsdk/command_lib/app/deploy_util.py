@@ -27,7 +27,6 @@ import re
 from apitools.base.py import exceptions as apitools_exceptions
 import enum
 
-from googlecloudsdk.api_lib.app import appengine_client
 from googlecloudsdk.api_lib.app import build as app_cloud_build
 from googlecloudsdk.api_lib.app import deploy_app_command_util
 from googlecloudsdk.api_lib.app import deploy_command_util
@@ -571,6 +570,10 @@ def RunDeploy(
     # isn't being improved. We're in the process of migrating all of the calls
     # over to the Admin API, but a few things (notably config deployments)
     # haven't been ported over yet.
+    # Import only when necessary, to decrease startup time.
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.api_lib.app import appengine_client
+    # pylint: enable=g-import-not-at-top
     ac_client = appengine_client.AppengineClient(
         args.server, args.ignore_bad_certs)
 

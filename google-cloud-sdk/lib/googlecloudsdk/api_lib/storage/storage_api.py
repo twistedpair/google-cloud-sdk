@@ -113,9 +113,9 @@ class StorageClient(object):
     return self.client.objects.Copy(
         self.messages.StorageObjectsCopyRequest(
             sourceBucket=src.bucket,
-            sourceObject=src.object,
+            sourceObject=src.name,
             destinationBucket=dst.bucket,
-            destinationObject=dst.object,
+            destinationObject=dst.name,
         ))
 
   def Rewrite(self, src, dst):

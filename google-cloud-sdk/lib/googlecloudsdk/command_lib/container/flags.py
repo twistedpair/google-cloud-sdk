@@ -1718,9 +1718,9 @@ of RAM:
       help=help_text)
 
 
-def AddManagedPodIdentityFlag(parser):
-  """Adds --enable-managed-pod-identity flag to the parser."""
-  help_text = """\
+def AddManagedPodIdentityFlags(parser):
+  """Adds Managed Pod Identity flags to the parser."""
+  enable_help_text = """\
 Enable Managed Pod Identity on the cluster.
 
 When enabled, pods with cloud.google.com/service-account annotations will be
@@ -1733,7 +1733,21 @@ specified in the annotation.
       default=False,
       # TODO(b/109942548): unhide this flag for Beta
       hidden=True,
-      help=help_text)
+      help=enable_help_text)
+  sa_help_text = """\
+Federating Service Account to use with Managed Pod Identity.
+
+Sets the name (email) of the GCP Service Account used to connect
+Kubernetes Service Accounts to GCP Service Accounts.
+
+Must be set with `--enable-managed-pod-identity`.
+"""
+  parser.add_argument(
+      '--managed-pod-identity-federating-sa',
+      default=None,
+      # TODO(b/109942548): unhide this flag for Beta
+      hidden=True,
+      help=sa_help_text)
 
 
 def AddResourceUsageBigqueryDatasetFlag(parser, add_clear_flag=False):

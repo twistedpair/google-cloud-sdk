@@ -5,6 +5,126 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 220.0.0 (2018-10-09)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Modified output of `gcloud container clusters list` for DEGRADED clusters
+    to include reason for degradation.
+*   **(Kubernetes Engine)** Starting in 1.12, new node pools (and default node pools in new clusters) will
+    be created with their legacy Compute Engine instance metadata APIs disabled
+    by default.
+    *   To create a new node pool (or default pool in a new cluster) with
+        legacy metadata APIs disabled, use the flag
+        `--metadata disable-legacy-endpoints=true`. See:
+        <https://cloud.google.com/kubernetes-engine/docs/how-to/protecting-cluster-metadata#disable-legacy-apis>
+
+
+### Cloud SDK
+
+* Updated the `storage/chunk_size` property. Commands that upload to Google
+  Cloud Storage can now control the upload/download chunksize using this
+  property.
+* Some commands no longer call gsutil in their implementation in order to
+  support Python 3. The gsutil implementation is now deprecated. Use the
+  `storage/use_gsutil` property to temporarily get this behavior back. This
+  property and old implementation will eventaully be removed. The following
+  commands are affected by this change:
+    *   `functions deploy`
+    *   `compute images import`
+    *   `dataproc jobs submit <pyspark|hadoop|pig|hive|spark|spark-sql>`
+    *   `composer environments storage <dags|data|plugins>
+        <delete|export|import>`
+*  Added functionality to `gcloud beta help` that allows running a search for
+   terms of interest within the help text of gcloud commands. For more
+   information, run $ gcloud beta help --help.
+
+### App Engine
+
+
+* Updated the Java SDK to version 1.9.66.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+* Updated the Python SDK to version 1.9.77.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+### Cloud Build
+
+*  Added a warning message to `gcloud builds submit` for builds submitted with
+configs that don't specify a logging option. See
+https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.builds#loggingmode.
+
+### Cloud Composer
+
+* Added the `--python-version` flag to `gcloud beta composer environments
+  create` to specify the Python version used within the created environment.
+
+### Cloud Dataproc
+
+* Added the `--gce-pd-kms-key` flag to `dataproc clusters create` to
+  enable protecting clusters with Google Cloud KMS encryption.
+
+### Cloud Key Management Service
+
+* Modified `gcloud kms locations list` to display information about the
+  availability of Hardware Security Modules in each location.
+
+### Cloud Spanner
+
+* Updated `gcloud spanner execute-sql` to accept DML statements.
+
+### Compute Engine
+
+* Added support for managed ssl certificates to `gcloud beta compute
+  ssl-certificates`.
+
+### Internet of Things
+
+* Added `--log-level` flag for `gcloud iot <devices|registries> <create|update>` for alpha and beta.
+* Added `gcloud iot commands` to alpha and beta.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 219.0.1 (2018-10-02)
+
+### Cloud SDK
+
+* Updated to a new version of ruamel that fixes
+  [Unicode issues](https://issuetracker.google.com/issues/113348923)
+  on OS X and Windows.
+
+### App Engine
+
+* Updated the Python SDK to version 1.9.76.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/python/release-notes>
+
+### Compute Engine
+
+* Promoted `compute routers nats` to beta.
+* Promoted 'gcloud compute interconnects get-diagnostics' to beta.
+* Promoted the following flags to GA to support using KMS keys to protect disks and images:
+    *   `--kms-key-*` flags of `gcloud compute <disks|images>`
+    *   `--boot-disk-kms-*` flags of `gcloud compute <instances|instance-templates>`.
+* Promoted `gcloud compute instance-templates create-with-container` from beta to GA.
+
+### Interactive
+
+* Promoted `gcloud interactive` to beta.
+
+### Kubernetes Engine
+
+* Added `--enable-private-nodes`, `--enable-private-endpoint`, and
+  `--master-ipv4-cidr` flags to `gcloud container clusters create`.
+* Added `--internal-ip` flag to `gcloud container clusters get-credentials`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 218.0.0 (2018-09-25)
 
 ### Breaking Changes

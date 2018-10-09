@@ -223,6 +223,24 @@ maximum number of key-value pairs is 500.
   return flags
 
 
+def AddLogLevelFlagToParser(parser):
+  choices = {
+      'none': 'Disables logging.',
+      'info': 'Informational events will be logged, such as connections and '
+              'disconnections. Also includes error events.',
+      'error': 'Error events will be logged.',
+      'debug': 'All events will be logged'
+  }
+  return base.ChoiceArgument(
+      '--log-level',
+      choices=choices,
+      help_str="""\
+      The default logging verbosity for activity from devices in this
+        registry. The verbosity level can be overridden by setting a specific
+        device's log level.
+      """).AddToParser(parser)
+
+
 class KeyTypes(enum.Enum):
   """Valid key types for device credentials."""
   RS256 = 1

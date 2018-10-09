@@ -28,7 +28,7 @@ DEFAULT_LIST_FORMAT = """\
       creationTimestamp
     )"""
 
-ALPHA_LIST_FORMAT = """\
+BETA_LIST_FORMAT = """\
     table(
       name,
       type,
@@ -37,6 +37,8 @@ ALPHA_LIST_FORMAT = """\
       managed.status:label=MANAGED_STATUS,
       managed.domainStatus:format="yaml"
     )"""
+
+ALPHA_LIST_FORMAT = BETA_LIST_FORMAT
 
 
 class SslCertificatesCompleter(compute_completers.ListCommandCompleter):

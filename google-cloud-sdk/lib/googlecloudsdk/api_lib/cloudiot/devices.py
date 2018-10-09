@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 
 
@@ -127,7 +128,12 @@ class DevicesClient(object):
         self._service, list_req, batch_size=page_size, limit=limit,
         field='devices', batch_size_attribute='pageSize')
 
-  def Patch(self, device_ref, blocked=None, credentials=None, metadata=None):
+  def Patch(self,
+            device_ref,
+            blocked=None,
+            credentials=None,
+            metadata=None,
+            log_level=None):
     """Updates a Device.
 
     Any fields not specified will not be updated; at least one field must be
@@ -141,6 +147,8 @@ class DevicesClient(object):
       credentials: List of DeviceCredential or None. If given, update the
         credentials for the device.
       metadata: MetadataValue, the metadata message for the device.
+      log_level: LogLevelValueValuesEnum, the default logging verbosity for the
+        device.
 
     Returns:
       Device: the updated device.
@@ -150,23 +158,16 @@ class DevicesClient(object):
     """
     device = self.messages.Device()
     update_settings = [
-        _DeviceUpdateSetting(
-            'blocked',
-            'blocked',
-            blocked),
-        _DeviceUpdateSetting(
-            'credentials',
-            'credentials',
-            credentials),
-        _DeviceUpdateSetting(
-            'metadata',
-            'metadata',
-            metadata)
+        _DeviceUpdateSetting('blocked', 'blocked', blocked),
+        _DeviceUpdateSetting('credentials', 'credentials', credentials),
+        _DeviceUpdateSetting('metadata', 'metadata', metadata),
+        _DeviceUpdateSetting('logLevel', 'logLevel', log_level),
     ]
     update_mask = []
     for update_setting in update_settings:
       if update_setting.value is not None:
-        setattr(device, update_setting.field_name, update_setting.value)
+        arg_utils.SetFieldInMessage(device, update_setting.field_name,
+                                    update_setting.value)
         update_mask.append(update_setting.update_mask)
     if not update_mask:
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')

@@ -298,6 +298,9 @@ apis:
       discovery_doc: dns_v1beta2.json
     v2beta1:
       discovery_doc: dns_v2beta1.json
+  eventflow:
+    v1beta2:
+      discovery_doc: eventflow_v1beta2.json
   file:
     v1alpha1:
       discovery_doc: file_v1alpha1.json

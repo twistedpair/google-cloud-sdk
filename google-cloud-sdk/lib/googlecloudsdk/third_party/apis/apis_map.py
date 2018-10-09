@@ -467,6 +467,14 @@ MAP = {
             default_version=False
         ),
     },
+    'eventflow': {
+        'v1beta2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.eventflow.v1beta2',
+            client_classpath='eventflow_v1beta2_client.EventflowV1beta2',
+            messages_modulepath='eventflow_v1beta2_messages',
+            default_version=True
+        ),
+    },
     'file': {
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.file.v1alpha1',

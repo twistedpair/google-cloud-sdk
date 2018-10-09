@@ -38,8 +38,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import io
+
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
 
@@ -138,6 +141,8 @@ class ResourcePrinter(object):
     self._non_empty_projection_required = non_empty_projection_required
     self._out = out or log.out
     self._printer = printer
+    self._pager = False
+    self._pager_out = None
 
     if not projector:
       projector = resource_projector.Compile()
@@ -164,6 +169,11 @@ class ResourcePrinter(object):
         self._out = self._out.GetConsoleWriterStream()
       except AttributeError:
         pass
+
+    if 'pager' in self.attributes and out is None:
+      self._pager_out = self._out
+      self._out = io.StringIO()
+      self._pager = True
 
   def AddHeading(self, heading):
     """Overrides the default heading.
@@ -203,8 +213,16 @@ class ResourcePrinter(object):
       self._AddRecord(self._process_record(record), delimit)
 
   def Finish(self):
-    """Prints the results for non-streaming formats."""
-    pass
+    """Prints the results for non-streaming formats.
+
+    Must be called via super if overridden.
+    """
+    if self._pager and self._out:
+      try:
+        console_io.More(self._out.getvalue(), out=self._pager_out)
+      # Can happen if caller provided a different out that is not type StringIO.
+      except AttributeError:
+        pass
 
   def ResourcesWerePrinted(self):
     """Returns True if some resource items were printed or printer disabled."""

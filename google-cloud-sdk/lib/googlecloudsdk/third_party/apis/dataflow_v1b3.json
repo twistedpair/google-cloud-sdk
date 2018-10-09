@@ -2871,6 +2871,10 @@
         "stageName": {
           "description": "System-defined name of the stage containing this MapTask.\nUnique across the workflow.",
           "type": "string"
+        },
+        "counterPrefix": {
+          "description": "Counter prefix that can be used to prefix counters. Not currently used in\nDataflow.",
+          "type": "string"
         }
       }
     },

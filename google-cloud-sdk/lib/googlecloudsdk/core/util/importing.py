@@ -26,6 +26,22 @@ import types
 
 import six
 
+try:
+  # pytype: disable=import-error
+  # pylint: disable=g-import-not-at-top
+  from importlib._bootstrap import _ImportLockContext
+except ImportError:
+  # _ImportLockContext not available in PY2
+
+  class _ImportLockContext(object):
+    """Context manager for the import lock."""
+
+    def __enter__(self):
+      imp.acquire_lock()
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+      imp.release_lock()
+
 
 def _find_module(module_name):
   parent_module_name, _, submodule_name = module_name.rpartition('.')
@@ -42,40 +58,43 @@ def _load_module(module):
   if not getattr(module, 'IS_UNLOADED_LAZY_MODULE'):
     return
 
-  module_name = six.text_type(module.__name__)
-  parent_module_name, _, submodule_name = module_name.rpartition('.')
+  with _ImportLockContext():
+    module_name = six.text_type(module.__name__)
+    parent_module_name, _, submodule_name = module_name.rpartition('.')
 
-  module_class = type(module)
-  module_class.IS_LOADING = True
+    module_class = type(module)
+    module_class.IS_LOADING = True
 
-  if parent_module_name:
-    # Set the submodule attribute and force the parent module to load.
-    setattr(sys.modules[parent_module_name], submodule_name, module)
+    if parent_module_name:
+      # Set the submodule attribute and force the parent module to load.
+      setattr(sys.modules[parent_module_name], submodule_name, module)
 
-    # Loading the parent may have caused the submodule to load as well.
-    if not getattr(module_class, 'IS_LOADING', None):
-      return
+      # Loading the parent may have caused the submodule to load as well.
+      if not getattr(module_class, 'IS_LOADING', None):
+        return
 
-  # Can't remove inherited method, so set it to be the same as __getattribute__
-  module_class.__getattr__ = types.ModuleType.__getattribute__
-  module_class.__setattr__ = types.ModuleType.__setattr__
-  module_class.__repr__ = types.ModuleType.__repr__
+    # Can't remove inherited method, so set it to be same as __getattribute__
+    module_class.__getattr__ = types.ModuleType.__getattribute__
+    module_class.__setattr__ = types.ModuleType.__setattr__
+    module_class.__repr__ = types.ModuleType.__repr__
 
-  del module_class.IS_LOADING
-  del module_class.IS_UNLOADED_LAZY_MODULE
+    del module_class.IS_LOADING
+    del module_class.IS_UNLOADED_LAZY_MODULE
 
-  # Actually load the module from source and add all its attributes.
-  module_file = getattr(module, '__file__', None)
-  module_path = getattr(module, '__path__', None)
-  module_desc = getattr(module, '__desc__')
-  del module.__desc__
-  # pytype: disable=wrong-arg-types
-  real_module = imp.load_module(
-      module_name, module_file, module_path, module_desc)
-  # pytype: enable=wrong-arg-types
-  if module_file:
-    module_file.close()
-  module.__dict__.update(real_module.__dict__)
+    # Actually load the module from source and add all its attributes.
+    module_file = getattr(module, '__file__', None)
+    if module_file:
+      module_file = open(module_file.name)
+    module_path = getattr(module, '__path__', [None])[0]
+    module_desc = getattr(module, '__desc__')
+    del module.__desc__
+    # pytype: disable=wrong-arg-types
+    real_module = imp.load_module(
+        module_name, module_file, module_path, module_desc)
+    # pytype: enable=wrong-arg-types
+    if module_file:
+      module_file.close()
+    module.__dict__.update(real_module.__dict__)
 
 
 class LazyImporter(types.ModuleType):
@@ -114,32 +133,34 @@ def lazy_load_module(module_name):
   Returns:
     The module that is now in sys.modules (it may have been there before).
   """
-  if module_name in sys.modules:
+  with _ImportLockContext():
+    if module_name in sys.modules:
+      return sys.modules[module_name]
+
+    # Prevent lazy loading from masking an import failure by finding the module.
+    module_file, path, description = _find_module(module_name)
+
+    class _LazyImporter(LazyImporter):
+      """This subclass makes it possible to reset class functions after loading.
+      """
+      IS_UNLOADED_LAZY_MODULE = True
+      IS_LOADING = False
+
+    module = _LazyImporter(module_name)
+    # Use ModuleType.__setattr__ to avoid triggering full loading.
+    if module_file:
+      module_file.close()
+      types.ModuleType.__setattr__(module, '__file__', module_file)
+    if path:
+      types.ModuleType.__setattr__(module, '__path__', [path])
+    types.ModuleType.__setattr__(module, '__desc__', description)
+
+    # Set this lazy module as a property on the parent (possibly lazy) module
+    parent_module_name, _, submodule_name = module_name.rpartition('.')
+    if parent_module_name:
+      parent_module = lazy_load_module(parent_module_name)
+      if parent_module:
+        types.ModuleType.__setattr__(parent_module, submodule_name, module)
+
+    sys.modules[module_name] = module
     return sys.modules[module_name]
-
-  # Prevent lazy loading from masking an import failure by finding the module.
-  module_file, path, description = _find_module(module_name)
-
-  class _LazyImporter(LazyImporter):
-    """This subclass makes it possible to reset class functions after loading.
-    """
-    IS_UNLOADED_LAZY_MODULE = True
-    IS_LOADING = False
-
-  module = _LazyImporter(module_name)
-  # Use ModuleType.__setattr__ to avoid triggering full loading.
-  if module_file:
-    types.ModuleType.__setattr__(module, '__file__', module_file)
-  if path:
-    types.ModuleType.__setattr__(module, '__path__', path)
-  types.ModuleType.__setattr__(module, '__desc__', description)
-
-  # Set this lazy module as a property on the parent (possibly lazy) module
-  parent_module_name, _, submodule_name = module_name.rpartition('.')
-  if parent_module_name:
-    parent_module = lazy_load_module(parent_module_name)
-    if parent_module:
-      types.ModuleType.__setattr__(parent_module, submodule_name, module)
-
-  sys.modules[module_name] = module
-  return sys.modules[module_name]

@@ -135,7 +135,7 @@ def ImportPythonHook(path):
         raise InvalidSchemaError(
             'Invalid Python hook: [{}]. Args must be in the form arg=value,'
             'arg=value,...'.format(path))
-      kwargs[arg_parts[0]] = arg_parts[1]
+      kwargs[arg_parts[0].strip()] = arg_parts[1].strip()
 
   return Hook(attr, kwargs)
 

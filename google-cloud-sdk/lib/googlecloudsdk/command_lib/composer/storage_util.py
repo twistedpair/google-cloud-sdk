@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import io
 import os.path
 import posixpath
+import re
 
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import transfer
@@ -30,12 +31,34 @@ from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.composer import util as command_util
+from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 import six
 
 
 BUCKET_MISSING_MSG = 'Could not retrieve Cloud Storage bucket for environment.'
+
+
+def WarnIfWildcardIsPresent(path, flag_name):
+  """Logs deprecation warning if gsutil wildcards are in args."""
+  if path and ('*' in path or '?' in path or re.search(r'\[.*\]', path)):
+    log.warning('Use of gsutil wildcards is no longer supported in {0}. '
+                'Set the storage/use_gsutil property to get the old behavior '
+                'back temporarily. However, this property will eventually be '
+                'removed.'.format(flag_name))
+
+
+# NOTE: Only support 2 paths instead of *args so the gsutil_path doesn't get
+# hidden in **kwargs.
+def _JoinPaths(path1, path2, gsutil_path=False):
+  """Joins paths using the appropriate separator for local or gsutil."""
+  if gsutil_path:
+    return posixpath.join(path1, path2)
+  else:
+    return os.path.join(path1, path2)
 
 
 def List(env_ref, gcs_subdir, release_track=base.ReleaseTrack.GA):
@@ -59,13 +82,13 @@ def List(env_ref, gcs_subdir, release_track=base.ReleaseTrack.GA):
   return storage_client.ListBucket(bucket_ref, prefix=gcs_subdir + '/')
 
 
-def Import(env_ref, sources, destination, release_track=base.ReleaseTrack.GA):
+def Import(env_ref, source, destination, release_track=base.ReleaseTrack.GA):
   """Imports files and directories into a bucket.
 
   Args:
     env_ref: googlecloudsdk.core.resources.Resource, Resource representing
         the Environment whose bucket into which to import.
-    sources: [str], a list of paths from which to import files into the
+    source: str, a path from which to import files into the
         environment's bucket. Directory sources are imported recursively; the
         directory itself will be present in the destination bucket.
         Must contain at least one non-empty value.
@@ -83,12 +106,70 @@ def Import(env_ref, sources, destination, release_track=base.ReleaseTrack.GA):
     command_util.GsutilError: the gsutil command failed
   """
   gcs_bucket = _GetStorageBucket(env_ref, release_track=release_track)
-  destination_ref = storage_util.ObjectReference(gcs_bucket, destination)
 
+  use_gsutil = properties.VALUES.storage.use_gsutil.GetBool()
+  if use_gsutil:
+    _ImportGsutil(gcs_bucket, source, destination)
+  else:
+    _ImportStorageApi(gcs_bucket, source, destination)
+
+
+def _ImportStorageApi(gcs_bucket, source, destination):
+  """Imports files and directories into a bucket."""
+  client = storage_api.StorageClient()
+
+  old_source = source
+  source = source.rstrip('*')
+  # Source ends with an asterisk. This means the user indicates that the source
+  # is a directory so we shouldn't bother trying to see if source is an object.
+  # This is important because we always have certain subdirs created as objects
+  # (e.g. dags/), so if we don't do this check, import/export will just try
+  # and copy this empty object.
+  object_is_subdir = old_source != source
+  if not object_is_subdir:
+    # If source is not indicated to be a subdir, then strip the ending slash
+    # so the specified directory is present in the destination.
+    source = source.rstrip(posixpath.sep)
+
+  source_is_local = not source.startswith('gs://')
+  if source_is_local and not os.path.exists(source):
+    raise command_util.Error('Source for import does not exist.')
+
+  # Don't include the specified directory as we want that present in the
+  # destination bucket.
+  source_dirname = _JoinPaths(
+      os.path.dirname(source), '', gsutil_path=not source_is_local)
+  if source_is_local:
+    if os.path.isdir(source):
+      file_chooser = gcloudignore.GetFileChooserForDir(source)
+      for rel_path in file_chooser.GetIncludedFiles(source):
+        file_path = _JoinPaths(source, rel_path)
+        if os.path.isdir(file_path):
+          continue
+        dest_path = _GetDestPath(source_dirname, file_path, destination, False)
+        client.CopyFileToGCS(gcs_bucket, file_path, dest_path)
+    else:  # Just upload the file.
+      dest_path = _GetDestPath(source_dirname, source, destination, False)
+      client.CopyFileToGCS(gcs_bucket, source, dest_path)
+  else:
+    source_ref = storage_util.ObjectReference.FromUrl(source)
+    to_import = _GetObjectOrSubdirObjects(
+        source_ref, object_is_subdir=object_is_subdir, client=client)
+    for obj in to_import:
+      dest_object = storage_util.ObjectReference(
+          gcs_bucket,
+          # Use obj.ToUrl() to ensure that the dirname is properly stripped.
+          _GetDestPath(source_dirname, obj.ToUrl(), destination, False))
+      client.Copy(obj, dest_object)
+
+
+def _ImportGsutil(gcs_bucket, source, destination):
+  """Imports files and directories into a bucket."""
+  destination_ref = storage_util.ObjectReference(gcs_bucket, destination)
   try:
     retval = storage_util.RunGsutilCommand(
         'cp',
-        command_args=(['-r'] + sources + [destination_ref.ToUrl()]),
+        command_args=(['-r', source, destination_ref.ToUrl()]),
         run_concurrent=True,
         out_func=log.out.write,
         err_func=log.err.write)
@@ -99,13 +180,13 @@ def Import(env_ref, sources, destination, release_track=base.ReleaseTrack.GA):
     raise command_util.GsutilError('gsutil returned non-zero status code.')
 
 
-def Export(env_ref, sources, destination, release_track=base.ReleaseTrack.GA):
+def Export(env_ref, source, destination, release_track=base.ReleaseTrack.GA):
   """Exports files and directories from an environment's Cloud Storage bucket.
 
   Args:
     env_ref: googlecloudsdk.core.resources.Resource, Resource representing
         the Environment whose bucket from which to export.
-    sources: [str], a list of bucket-relative paths from which to export files.
+    source: str, a  bucket-relative path from which to export files.
         Directory sources are imported recursively; the directory itself will
         be present in the destination bucket. Can also include wildcards.
     destination: str, existing local directory or path to a Cloud Storage
@@ -124,21 +205,63 @@ def Export(env_ref, sources, destination, release_track=base.ReleaseTrack.GA):
     command_util.GsutilError: the gsutil command failed
   """
   gcs_bucket = _GetStorageBucket(env_ref, release_track=release_track)
-  source_refs = [
-      storage_util.ObjectReference(gcs_bucket, source)
-      for source in sources
-  ]
+
+  use_gsutil = properties.VALUES.storage.use_gsutil.GetBool()
+  if use_gsutil:
+    _ExportGsutil(gcs_bucket, source, destination)
+  else:
+    _ExportStorageApi(gcs_bucket, source, destination)
+
+
+def _ExportStorageApi(gcs_bucket, source, destination):
+  """Exports files and directories from an environment's GCS bucket."""
+  old_source = source
+  source = source.rstrip('*')
+  # Source ends with an asterisk. This means the user indicates that the source
+  # is a directory so we shouldn't bother trying to see if source is an object.
+  # This is important because we always have certain subdirs created as objects
+  # (e.g. dags/), so if we don't do this check, import/export will just try
+  # and copy this empty object.
+  object_is_subdir = old_source != source
+
+  client = storage_api.StorageClient()
+  source_ref = storage_util.ObjectReference(gcs_bucket, source)
+  dest_is_local = True
   if destination.startswith('gs://'):
-    destination = posixpath.join(destination.strip(posixpath.sep), '')
+    destination = _JoinPaths(
+        destination.strip(posixpath.sep), '', gsutil_path=True)
+    dest_is_local = False
+  elif not os.path.isdir(destination):
+    raise command_util.Error('Destination for export must be a directory.')
+
+  source_dirname = _JoinPaths(os.path.dirname(source), '', gsutil_path=True)
+  to_export = _GetObjectOrSubdirObjects(
+      source_ref, object_is_subdir=object_is_subdir, client=client)
+  if dest_is_local:
+    for obj in to_export:
+      dest_path = _GetDestPath(source_dirname, obj.name, destination, True)
+      files.MakeDir(os.path.dirname(dest_path))
+      client.CopyFileFromGCS(obj.bucket_ref, obj.name, dest_path)
+  else:
+    for obj in to_export:
+      dest_object = storage_util.ObjectReference.FromUrl(
+          _GetDestPath(source_dirname, obj.name, destination, False))
+      client.Copy(obj, dest_object)
+
+
+def _ExportGsutil(gcs_bucket, source, destination):
+  """Exports files and directories from an environment's GCS bucket."""
+  source_ref = storage_util.ObjectReference(gcs_bucket, source)
+  if destination.startswith('gs://'):
+    destination = _JoinPaths(
+        destination.strip(posixpath.sep), '', gsutil_path=True)
   elif not os.path.isdir(destination):
     raise command_util.Error('Destination for export must be a directory.')
 
   try:
     retval = storage_util.RunGsutilCommand(
         'cp',
-        command_args=(['-r']
-                      + [s.ToUrl() for s in source_refs]
-                      + [destination]),
+        command_args=['-r', source_ref.ToUrl(), destination],
         run_concurrent=True,
         out_func=log.out.write,
         err_func=log.err.write)
@@ -147,6 +270,19 @@ def Export(env_ref, sources, destination, release_track=base.ReleaseTrack.GA):
     raise command_util.GsutilError(six.text_type(e))
   if retval:
     raise command_util.GsutilError('gsutil returned non-zero status code.')
+
+
+def _GetDestPath(source_dirname, source_path, destination, dest_is_local):
+  """Get dest path without the dirname of the source dir if present."""
+  dest_path_suffix = source_path
+  if source_path.startswith(source_dirname):
+    dest_path_suffix = source_path[len(source_dirname):]
+  # For Windows, replace path separators with the posix path separators.
+  if not dest_is_local:
+    dest_path_suffix = dest_path_suffix.replace(os.path.sep, posixpath.sep)
+
+  return _JoinPaths(
+      destination, dest_path_suffix, gsutil_path=not dest_is_local)
 
 
 def Delete(env_ref, target, gcs_subdir, release_track=base.ReleaseTrack.GA):
@@ -163,15 +299,47 @@ def Delete(env_ref, target, gcs_subdir, release_track=base.ReleaseTrack.GA):
     env_ref: googlecloudsdk.core.resources.Resource, Resource representing
         the Environment in whose corresponding bucket to delete objects.
     target: str, the path within the gcs_subdir directory in the bucket
-        to delete.
+        to delete. If this is equal to '*', then delete everything in
+        gcs_subdir.
     gcs_subdir: str, subdir of the Cloud Storage bucket in which to delete.
         Should not contain slashes, for example "dags".
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
   """
   gcs_bucket = _GetStorageBucket(env_ref, release_track=release_track)
-  target_ref = storage_util.ObjectReference(gcs_bucket,
-                                            posixpath.join(gcs_subdir, target))
+
+  use_gsutil = properties.VALUES.storage.use_gsutil.GetBool()
+  if use_gsutil:
+    _DeleteGsutil(gcs_bucket, target, gcs_subdir)
+  else:
+    _DeleteStorageApi(gcs_bucket, target, gcs_subdir)
+  _EnsureSubdirExists(gcs_bucket, gcs_subdir)
+
+
+def _DeleteStorageApi(gcs_bucket, target, gcs_subdir):
+  """Deletes objects in a folder of an environment's bucket with storage API."""
+  client = storage_api.StorageClient()
+  # Explicitly only support target = '*' and no other globbing notation.
+  # This is because the flag help text explicitly says to give a subdir.
+  # Star also has a special meaning and tells the delete function to not try
+  # and get the object. This is necessary because subdirs in the GCS buckets
+  # are created as objects to ensure they exist.
+  delete_all = target == '*'
+  # Listing in a bucket uses a prefix match and doesn't support * notation.
+  target = '' if delete_all else target
+  target_ref = storage_util.ObjectReference(
+      gcs_bucket, _JoinPaths(gcs_subdir, target, gsutil_path=True))
+
+  to_delete = _GetObjectOrSubdirObjects(
+      target_ref, object_is_subdir=delete_all, client=client)
+  for obj_ref in to_delete:
+    client.DeleteObject(gcs_bucket, obj_ref.name)
+
+
+def _DeleteGsutil(gcs_bucket, target, gcs_subdir):
+  """Deletes objects in a folder of an environment's bucket with gsutil."""
+  target_ref = storage_util.ObjectReference(
+      gcs_bucket, _JoinPaths(gcs_subdir, target, gsutil_path=True))
   try:
     retval = storage_util.RunGsutilCommand(
         'rm',
@@ -184,7 +352,29 @@ def Delete(env_ref, target, gcs_subdir, release_track=base.ReleaseTrack.GA):
     raise command_util.GsutilError(six.text_type(e))
   if retval:
     raise command_util.GsutilError('gsutil returned non-zero status code.')
-  _EnsureSubdirExists(gcs_bucket, gcs_subdir)
+
+
+def _GetObjectOrSubdirObjects(object_ref, object_is_subdir=False, client=None):
+  """Gets object_ref or the objects under object_ref is it's a subdir."""
+  client = client or storage_api.StorageClient()
+  objects = []
+  # Check if object_ref referes to an actual object. If it does not exist, we
+  # assume the user is specfying a subdirectory.
+  target_is_subdir = False
+  try:
+    if not object_is_subdir:
+      client.GetObject(object_ref)
+      objects.append(object_ref)
+  except apitools_exceptions.HttpNotFoundError:
+    target_is_subdir = True
+
+  if target_is_subdir or object_is_subdir:
+    target_path = posixpath.join(object_ref.name, '')
+    subdir_objects = client.ListBucket(object_ref.bucket_ref, target_path)
+    for obj in subdir_objects:
+      objects.append(
+          storage_util.ObjectReference(object_ref.bucket_ref, obj.name))
+  return objects
 
 
 def _EnsureSubdirExists(bucket_ref, subdir):

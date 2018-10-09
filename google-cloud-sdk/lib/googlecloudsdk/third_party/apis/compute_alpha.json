@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20180921",
+ "revision": "20180928",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -9887,20 +9887,6 @@
      "type": "boolean",
      "description": "Determines whether this Attachment will carry packets. Not present for PARTNER_PROVIDER."
     },
-    "availabilityZone": {
-     "type": "string",
-     "description": "[Deprecated] Replaced by edge_availability_domain.",
-     "enum": [
-      "ZONE_1",
-      "ZONE_2",
-      "ZONE_ANY"
-     ],
-     "enumDescriptions": [
-      "",
-      "",
-      ""
-     ]
-    },
     "bandwidth": {
      "type": "string",
      "description": "Provisioned bandwidth capacity for the interconnectAttachment. Can be set by the partner to update the customer's provisioned bandwidth. Output only for for PARTNER type, mutable for PARTNER_PROVIDER, not available for DEDICATED.",
@@ -14056,7 +14042,7 @@
     },
     "name": {
      "type": "string",
-     "description": "The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last charaicter, which cannot be a dash."
+     "description": "The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash."
     },
     "nodeAffinityLabels": {
      "type": "object",
@@ -17264,11 +17250,11 @@
   "ResourcePolicyBackupSchedulePolicy": {
    "id": "ResourcePolicyBackupSchedulePolicy",
    "type": "object",
-   "description": "A backup schedule policy specifies when and how frequently snapshots are to be created for the target disk. Also specifies how many and how long these automatically created snapshot should be retained.",
+   "description": "A backup schedule policy specifies when and how frequently snapshots are to be created for the target disk. Also specifies how many and how long these scheduled snapshots should be retained.",
    "properties": {
     "onSourceDiskDelete": {
      "type": "string",
-     "description": "Specifies the behavior to apply to automatically-created snapshots when the source disk is deleted.",
+     "description": "Specifies the behavior to apply to scheduled snapshots when the source disk is deleted.",
      "enum": [
       "APPLY_RETENTION_POLICY",
       "KEEP_AUTO_SNAPSHOTS",
@@ -17290,14 +17276,14 @@
     },
     "snapshotProperties": {
      "$ref": "ResourcePolicyBackupSchedulePolicySnapshotProperties",
-     "description": "Properties with which snapshots are created such as lables, encryption keys."
+     "description": "Properties with which snapshots are created such as labels, encryption keys."
     }
    }
   },
   "ResourcePolicyBackupSchedulePolicyRetentionPolicy": {
    "id": "ResourcePolicyBackupSchedulePolicyRetentionPolicy",
    "type": "object",
-   "description": "Policy for retention of automatically created snapshots.",
+   "description": "Policy for retention of scheduled snapshots.",
    "properties": {
     "maxRetentionDays": {
      "type": "integer",
@@ -17306,7 +17292,7 @@
     },
     "onPolicySwitch": {
      "type": "string",
-     "description": "Specifies the behavior to apply to existing, automatically-created snapshots if the policy is changed.",
+     "description": "Specifies the behavior to apply to existing, scheduled snapshots snapshots if the policy is changed.",
      "enum": [
       "DO_NOT_RETROACTIVELY_APPLY",
       "RETROACTIVELY_APPLY",
@@ -17339,7 +17325,7 @@
   "ResourcePolicyBackupSchedulePolicySnapshotProperties": {
    "id": "ResourcePolicyBackupSchedulePolicySnapshotProperties",
    "type": "object",
-   "description": "Specified snapshot properties for automatic snapshots created by this policy.",
+   "description": "Specified snapshot properties for scheduled snapshots created by this policy.",
    "properties": {
     "guestFlush": {
      "type": "boolean",
@@ -17347,7 +17333,7 @@
     },
     "labels": {
      "type": "object",
-     "description": "Labels to apply to automatic snapshots. These can be later modified by the setLabels method. Label values may be empty.",
+     "description": "Labels to apply to scheduled snapshots. These can be later modified by the setLabels method. Label values may be empty.",
      "additionalProperties": {
       "type": "string"
      }
@@ -19302,13 +19288,6 @@
     "expr": {
      "$ref": "Expr",
      "description": "User defined CEVAL expression. A CEVAL expression is used to specify match criteria such as origin.ip, source.region_code and contents in the request header."
-    },
-    "srcIpRanges": {
-     "type": "array",
-     "description": "CIDR IP address range.",
-     "items": {
-      "type": "string"
-     }
     },
     "versionedExpr": {
      "type": "string",
@@ -21737,7 +21716,7 @@
     },
     "sslCertificates": {
      "type": "array",
-     "description": "URLs to SslCertificate resources that are used to authenticate connections between users and the load balancer. Currently, exactly one SSL certificate must be specified.",
+     "description": "URLs to SslCertificate resources that are used to authenticate connections between users and the load balancer. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates.",
      "items": {
       "type": "string"
      }
@@ -22912,7 +22891,7 @@
     },
     "sslCertificates": {
      "type": "array",
-     "description": "URLs to SslCertificate resources that are used to authenticate connections to Backends. Currently exactly one SSL certificate must be specified.",
+     "description": "URLs to SslCertificate resources that are used to authenticate connections to Backends. At least one SSL certificate must be specified. Currently, you may specify up to 15 SSL certificates.",
      "items": {
       "type": "string"
      }
@@ -28248,7 +28227,7 @@
        "type": "string",
        "description": "Name of the persistent disk to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -31086,7 +31065,7 @@
        "type": "string",
        "description": "Name of the image resource to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33359,7 +33338,7 @@
        "type": "string",
        "description": "Name of the instance resource to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -45718,7 +45697,7 @@
        "type": "string",
        "description": "Name of the Snapshot resource to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },

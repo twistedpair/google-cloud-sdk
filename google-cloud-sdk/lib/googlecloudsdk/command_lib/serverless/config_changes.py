@@ -87,4 +87,12 @@ class ConcurrencyChanges(ConfigChanger):
   def AdjustConfiguration(self, config, metadata):
     """Mutates the given config's resource limits to match what's desired."""
     del metadata  # Unused, but requred by ConfigChanger's signature.
-    config.concurrency = self._concurrency
+    if self._concurrency is None:
+      config.deprecated_string_concurrency = None
+      config.concurrency = None
+    elif isinstance(self._concurrency, int):
+      config.concurrency = self._concurrency
+      config.deprecated_string_concurrency = None
+    else:
+      config.deprecated_string_concurrency = self._concurrency
+      config.concurrency = None

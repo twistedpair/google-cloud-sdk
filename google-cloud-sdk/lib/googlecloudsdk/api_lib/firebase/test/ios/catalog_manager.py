@@ -117,3 +117,8 @@ class IosCatalogManager(object):
     else:
       raise exceptions.InvalidDimensionNameError(dim_name)
     return dim_value
+
+  def ValidateXcodeVersion(self, xcode_version):
+    """Validates that an Xcode version is in the TestEnvironmentCatalog."""
+    if xcode_version not in [xv.version for xv in self.catalog.xcodeVersions]:
+      raise exceptions.XcodeVersionNotFoundError(xcode_version)

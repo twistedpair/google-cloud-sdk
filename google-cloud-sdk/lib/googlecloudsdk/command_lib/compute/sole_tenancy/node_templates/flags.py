@@ -22,6 +22,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core.util import scaled_integer
 
 
 def MakeNodeTemplateArg():
@@ -34,7 +35,7 @@ def MakeNodeTemplateArg():
 def _BinarySizeOrAny(default_unit):
   """Parses the value 'any' or a binary size converted to the default unit."""
   # pylint: disable=protected-access
-  bytes_per_unit = arg_parsers.GetBinarySizePerUnit(default_unit)
+  bytes_per_unit = scaled_integer.GetBinaryUnitSize(default_unit)
   def _Parse(value):
     value = value.lower()
     if value == 'any':

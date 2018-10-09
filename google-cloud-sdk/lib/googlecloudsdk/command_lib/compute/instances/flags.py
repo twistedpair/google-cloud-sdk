@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import functools
 
 from googlecloudsdk.api_lib.compute import constants
@@ -26,6 +27,7 @@ from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
@@ -291,8 +293,6 @@ def AddLocalSsdArgs(parser):
       help="""\
       Attaches a local SSD to the instances.
 
-      This flag is currently in BETA and may change without notice.
-
       *device-name*::: Optional. A name that indicates the disk name
       the guest operating system will see.  If omitted, a device name
       of the form ``local-ssd-N'' will be used.
@@ -357,8 +357,30 @@ def AddLocalSsdArgsWithSize(parser):
       """)
 
 
-def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
+def _GetDiskDeviceNameHelp(container_mount_enabled=False):
+  """Helper to get documentation for "device-name" param of disk spec."""
+  if container_mount_enabled:
+    return (
+        'An optional name that indicates the disk name the guest operating '
+        'system will see. Must be the same as `name` if used with '
+        '`--container-mount-disk`. If omitted, a device name of the form '
+        '`persistent-disk-N` will be used. If omitted and used with '
+        '`--container-mount-disk` (where the `name` of the container mount '
+        'disk is the same as in this flag), a device name equal to disk `name` '
+        'will be used.')
+  else:
+    return (
+        'An optional name that indicates the disk name the guest operating '
+        'system will see. If omitted, a device name of the form '
+        '`persistent-disk-N` will be used.')
+
+
+def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
+                container_mount_enabled=False):
   """Adds arguments related to disks for instances and instance-templates."""
+
+  disk_device_name_help = _GetDiskDeviceNameHelp(
+      container_mount_enabled=container_mount_enabled)
 
   parser.add_argument(
       '--boot-disk-device-name',
@@ -429,15 +451,13 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       virtual machines will use the first partition of the disk for
       their root file systems. The default value for this is ``no''.
 
-      *device-name*::: An optional name that indicates the disk name
-      the guest operating system will see. If omitted, a device name
-      of the form ``persistent-disk-N'' will be used.
+      *device-name*::: {}
 
       *auto-delete*::: If ``yes'',  this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
       won't apply. The default value for this is ``no''.
-      """
+      """.format(disk_device_name_help)
   if enable_regional_disks:
     disk_help += """
       *scope*::: Can be `zonal` or `regional`. If ``zonal'', the disk is
@@ -453,20 +473,30 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False):
       help=disk_help)
 
 
-def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False):
+def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False,
+                      container_mount_enabled=False):
   """Adds create-disk argument for instances and instance-templates."""
+
+  disk_device_name_help = _GetDiskDeviceNameHelp(
+      container_mount_enabled=container_mount_enabled)
+  disk_name_extra_help = '' if not container_mount_enabled else (
+      ' Must specify this option if attaching the disk '
+      'to a container with `--container-mount-disk`.')
+  disk_mode_extra_help = '' if not container_mount_enabled else (
+      ' It is an error to create a disk in `ro` mode '
+      'if attaching it to a container with `--container-mount-disk`.')
 
   disk_help = """\
       Creates and attaches persistent disks to the instances.
 
       *name*::: Specifies the name of the disk. This option cannot be
-      specified if more than one instance is being created.
+      specified if more than one instance is being created.{}
 
       *description*::: Optional textual description for the disk being created.
 
       *mode*::: Specifies the mode of the disk. Supported options
       are ``ro'' for read-only and ``rw'' for read-write. If
-      omitted, ``rw'' is used as a default.
+      omitted, ``rw'' is used as a default.{}
 
       *image*::: Specifies the name of the image that the disk will be
       initialized with. A new disk will be created based on the given
@@ -502,15 +532,14 @@ def AddCreateDiskArgs(parser, enable_kms=False, enable_snapshots=False):
       types, run $ gcloud compute disk-types list. The default disk type
       is ``pd-standard''.
 
-      *device-name*::: An optional name that indicates the disk name
-      the guest operating system will see. If omitted, a device name
-      of the form ``persistent-disk-N'' will be used.
+      *device-name*::: {}
 
       *auto-delete*::: If ``yes'',  this persistent disk will be
       automatically deleted when the instance is deleted. However,
       if the disk is later detached from the instance, this option
       won't apply. The default value for this is ``no''.
-      """
+      """.format(disk_name_extra_help, disk_mode_extra_help,
+                 disk_device_name_help)
   if enable_kms:
     disk_help += """
       *kms-key*::: Fully qualified Cloud KMS cryptokey name that will
@@ -1486,44 +1515,8 @@ def AddKonletArgs(parser):
       Default: `--no-container-privileged`.
       """)
 
-  def ParseMountVolumeMode(mode):
-    if not mode or mode == 'rw':
-      return containers_utils.MountVolumeMode.READ_WRITE
-    elif mode == 'ro':
-      return containers_utils.MountVolumeMode.READ_ONLY
-    else:
-      raise exceptions.InvalidArgumentException(
-          '--run-mount-volume', 'Mode can only be "ro" or "rw".')
-
-  parser.add_argument(
-      '--container-mount-host-path',
-      metavar='host-path=HOSTPATH,mount-path=MOUNTPATH[,mode=MODE]',
-      type=arg_parsers.ArgDict(spec={'host-path': str,
-                                     'mount-path': str,
-                                     'mode': ParseMountVolumeMode}),
-      action='append',
-      help="""\
-      Mounts a volume by using host-path.
-
-      *host-path*::: Path on host to mount from.
-
-      *mount-path*::: Path on container to mount to.
-
-      *mode*::: Volume mount mode: rw (read/write) or ro (read-only).
-
-      Default: rw.
-      """)
-
-  parser.add_argument(
-      '--container-mount-tmpfs',
-      metavar='mount-path=MOUNTPATH',
-      type=arg_parsers.ArgDict(spec={'mount-path': str}),
-      action='append',
-      help="""\
-      Mounts empty tmpfs into container at MOUNTPATH.
-
-      *mount-path*::: Path on container to mount to.
-      """)
+  _AddContainerMountHostPathFlag(parser)
+  _AddContainerMountTmpfsFlag(parser)
 
   parser.add_argument(
       '--container-env',
@@ -1844,3 +1837,453 @@ def ValidateAllocationAffinityGroup(args):
       raise exceptions.InvalidArgumentException(
           '--allocation-label',
           'The label of the specific allocation must be specified.')
+
+
+def _GetContainerMountDescriptionAndNameDescription(for_update=False):
+  """Get description text for --container-mount-disk flag."""
+  if for_update:
+    description = ("""\
+Mounts a disk to the container by using mount-path or updates how the volume is
+mounted if the same mount path has already been declared. The disk must already
+be attached to the instance with a device-name that matches the disk name.
+Multiple flags are allowed.
+""")
+    name_description = ("""\
+Name of the disk. Can be omitted if exactly one additional disk is attached to
+the instance. The name of the single additional disk will be used by default.
+""")
+    return description, name_description
+  else:
+    description = ("""\
+Mounts a disk to the specified mount path in the container. Multiple '
+flags are allowed. Must be used with `--disk` or `--create-disk`.
+""")
+    name_description = ("""\
+Name of the disk. If exactly one additional disk is attached
+to the instance using `--disk` or `--create-disk`, specifying disk
+name here is optional. The name of the single additional disk will be
+used by default.
+""")
+    return description, name_description
+
+
+def ParseMountVolumeMode(argument_name, mode):
+  """Parser for mode option in ArgDict specs."""
+  if not mode or mode == 'rw':
+    return containers_utils.MountVolumeMode.READ_WRITE
+  elif mode == 'ro':
+    return containers_utils.MountVolumeMode.READ_ONLY
+  else:
+    raise exceptions.InvalidArgumentException(
+        argument_name, 'Mode can only be [ro] or [rw].')
+
+
+def AddContainerMountDiskFlag(parser, for_update=False):
+  """Add --container-mount-disk flag."""
+  description, name_description = (
+      _GetContainerMountDescriptionAndNameDescription(for_update=for_update))
+  help_text = ("""\
+{}
+
+*name*::: {}
+
+*mount-path*::: Path on container to mount to. Mount paths with spaces
+      and commas (and other special characters) are not supported by this
+      command.
+
+*partition*::: Optional. The partition of the disk to mount. Multiple
+partitions of a disk may be mounted.{}
+
+*mode*::: Volume mount mode: `rw` (read/write) or `ro` (read-only).
+Defaults to `rw`. Fails if the disk mode is `ro` and volume mount mode
+is `rw`.
+""".format(description, name_description,
+           '' if for_update else ' May not be used with --create-disk.'))
+
+  spec = {
+      'name': str,
+      'mount-path': str,
+      'partition': int,
+      'mode': functools.partial(ParseMountVolumeMode,
+                                '--container-mount-disk')}
+  parser.add_argument(
+      '--container-mount-disk',
+      type=arg_parsers.ArgDict(spec=spec, required_keys=['mount-path']),
+      help=help_text,
+      action='append')
+
+
+def _GetMatchingDiskFromMessages(holder, mount_disk_name, disk, client=None):
+  """Helper to match a mount disk's name to a disk message."""
+  if client is None:
+    client = apis.GetClientClass('compute', 'alpha')
+  if mount_disk_name is None and len(disk) == 1:
+    return {
+        'name': holder.resources.Parse(disk[0].source).Name(),
+        'device_name': disk[0].deviceName,
+        'ro': (disk[0].mode ==
+               client.MESSAGES_MODULE.AttachedDisk.ModeValueValuesEnum
+               .READ_WRITE)}, False
+  for disk_spec in disk:
+    disk_name = holder.resources.Parse(disk_spec.source).Name()
+    if disk_name == mount_disk_name:
+      return {
+          'name': disk_name,
+          'device_name': disk_spec.deviceName,
+          'ro': (disk_spec.mode ==
+                 client.MESSAGES_MODULE.AttachedDisk.ModeValueValuesEnum
+                 .READ_WRITE)}, False
+  return None, None
+
+
+def _GetMatchingDiskFromFlags(mount_disk_name, disk, create_disk):
+  """Helper to match a mount disk's name to a disk spec from a flag."""
+
+  def _GetMatchingDiskFromSpec(spec):
+    return {'name': spec.get('name'),
+            'device_name': spec.get('device-name'),
+            'ro': spec.get('mode') == 'ro'}
+
+  if mount_disk_name is None and len(disk + create_disk) == 1:
+    disk_spec = (disk + create_disk)[0]
+    return _GetMatchingDiskFromSpec(disk_spec), bool(create_disk)
+  for disk_spec in disk:
+    if disk_spec.get('name') == mount_disk_name:
+      return _GetMatchingDiskFromSpec(disk_spec), False
+  for disk_spec in create_disk:
+    if disk_spec.get('name') == mount_disk_name:
+      return _GetMatchingDiskFromSpec(disk_spec), True
+  return None, None
+
+
+def _CheckMode(name, mode_value, mount_disk, matching_disk, create):
+  """Make sure the correct mode is specified for container mount disk."""
+  partition = mount_disk.get('partition')
+  if (mode_value == containers_utils.MountVolumeMode.READ_WRITE and
+      matching_disk.get('ro')):
+    raise exceptions.InvalidArgumentException(
+        '--container-mount-disk',
+        'Value for [mode] in [--container-mount-disk] cannot be [rw] if the '
+        'disk is attached in [ro] mode: disk name [{}], partition [{}]'
+        .format(name, partition))
+  if matching_disk.get('ro') and create:
+    raise exceptions.InvalidArgumentException(
+        '--container-mount-disk',
+        'Cannot mount disk named [{}] to container: disk is created in [ro] '
+        'mode and thus cannot be formatted.'.format(
+            name))
+
+
+def GetValidatedContainerMountDisk(holder, container_mount_disk, disk,
+                                   create_disk, for_update=False, client=None):
+  """Validate --container-mount-disk value."""
+  disk = disk or []
+  create_disk = create_disk or []
+  if not container_mount_disk:
+    return
+  if not (disk or create_disk or for_update):
+    raise exceptions.InvalidArgumentException(
+        '--container-mount-disk',
+        'Must be used with `--disk` or `--create-disk`')
+
+  message = '' if for_update else ' using `--disk` or `--create-disk`.'
+  validated_disks = []
+  for mount_disk in container_mount_disk:
+    if for_update:
+      matching_disk, create = _GetMatchingDiskFromMessages(
+          holder, mount_disk.get('name'), disk, client=client)
+    else:
+      matching_disk, create = _GetMatchingDiskFromFlags(
+          mount_disk.get('name'), disk, create_disk)
+    if not mount_disk.get('name'):
+      if len(disk + create_disk) != 1:
+        raise exceptions.InvalidArgumentException(
+            '--container-mount-disk',
+            'Must specify the name of the disk to be mounted unless exactly '
+            'one disk is attached to the instance{}.'.format(message))
+      name = matching_disk.get('name')
+      if not name:
+        raise exceptions.InvalidArgumentException(
+            '--container-mount-disk',
+            'When attaching or creating a disk that is also being mounted to '
+            'a container, must specify the disk name.')
+    else:
+      name = mount_disk.get('name')
+      if not matching_disk:
+        raise exceptions.InvalidArgumentException(
+            '--container-mount-disk',
+            'Attempting to mount a disk that is not attached to the instance: '
+            'must attach a disk named [{}]{}'.format(name, message))
+    if (matching_disk and
+        matching_disk.get('device_name') and
+        matching_disk.get('device_name') != matching_disk.get('name')):
+      raise exceptions.InvalidArgumentException(
+          '--container-mount-disk',
+          'Container mount disk cannot be used with a device whose device-name '
+          'is different from its name. The disk with name [{}] has the '
+          'device-name [{}].'.format(matching_disk.get('name'),
+                                     matching_disk.get('device_name')))
+
+    mode_value = mount_disk.get('mode')
+    if matching_disk:
+      _CheckMode(name, mode_value, mount_disk, matching_disk, create)
+    if matching_disk and create and mount_disk.get('partition'):
+      raise exceptions.InvalidArgumentException(
+          '--container-mount-disk',
+          'Container mount disk cannot specify a partition when the disk '
+          'is created with --create-disk: disk name [{}], partition [{}]'
+          .format(name, mount_disk.get('partition')))
+    mount_disk = copy.deepcopy(mount_disk)
+    mount_disk['name'] = mount_disk.get('name') or name
+    validated_disks.append(mount_disk)
+  return validated_disks
+
+
+def NonEmptyString(parameter_name):
+  def Factory(string):
+    if not string:
+      raise exceptions.InvalidArgumentException(
+          parameter_name, 'Empty string is not allowed.')
+    return string
+  return Factory
+
+
+def _AddContainerEnvGroup(parser):
+  """Add flags to update the container environment."""
+
+  env_group = parser.add_argument_group()
+
+  env_group.add_argument(
+      '--container-env',
+      type=arg_parsers.ArgDict(),
+      action='append',
+      metavar='KEY=VALUE, ...',
+      help="""\
+      Update environment variables `KEY` with value `VALUE` passed to
+      container.
+      - Sets `KEY` to the specified value.
+      - Adds `KEY` = `VALUE`, if `KEY` is not yet declared.
+      - Only the last value of `KEY` is taken when `KEY` is repeated more
+      than once.
+
+      Values, declared with `--container-env` flag override those with the
+      same `KEY` from file, provided in `--container-env-file`.
+      """)
+
+  env_group.add_argument(
+      '--container-env-file',
+      help="""\
+      Update environment variables from a file.
+      Same update rules as for `--container-env` apply.
+      Values, declared with `--container-env` flag override those with the
+      same `KEY` from file.
+
+      File with environment variables declarations in format used by docker
+      (almost). This means:
+      - Lines are in format KEY=VALUE
+      - Values must contain equality signs.
+      - Variables without values are not supported (this is different from
+      docker format).
+      - If # is first non-whitespace character in a line the line is ignored
+      as a comment.
+      """)
+
+  env_group.add_argument(
+      '--remove-container-env',
+      type=arg_parsers.ArgList(),
+      action='append',
+      metavar='KEY',
+      help="""\
+      Removes environment variables `KEY` from container declaration Does
+      nothing, if a variable is not present.
+      """)
+
+
+def _AddContainerArgGroup(parser):
+  """Add flags to update the container arg."""
+
+  arg_group = parser.add_mutually_exclusive_group()
+
+  arg_group.add_argument(
+      '--container-arg',
+      action='append',
+      help="""\
+      Completely replaces the list of arguments with the new list.
+      Each argument must have a separate --container-arg flag.
+      Arguments are appended the new list in the order of flags.
+
+      Cannot be used in the same command with `--clear-container-arg`.
+      """)
+
+  arg_group.add_argument(
+      '--clear-container-args',
+      action='store_true',
+      default=None,
+      help="""\
+      Removes the list of arguments from container declaration.
+
+      Cannot be used in the same command with `--container-arg`.
+      """
+  )
+
+
+def _AddContainerCommandGroup(parser):
+  """Add flags to update the command in the container declaration."""
+  command_group = parser.add_mutually_exclusive_group()
+
+  command_group.add_argument(
+      '--container-command',
+      type=NonEmptyString('--container-command'),
+      help="""\
+      Sets command in the declaration to the specified value.
+      Empty string is not allowed.
+
+      Cannot be used in the same command with `--clear-container-command`.
+      """)
+
+  command_group.add_argument(
+      '--clear-container-command',
+      action='store_true',
+      default=None,
+      help="""\
+      Removes command from container declaration.
+
+      Cannot be used in the same command with `--container-command`.
+      """)
+
+
+def _AddContainerMountHostPathFlag(parser, for_update=False):
+  """Helper to add --container-mount-host-path flag."""
+  if for_update:
+    additional = """\
+
+      - Adds a volume, if `mount-path` is not yet declared.
+      - Replaces a volume, if `mount-path` is declared.
+      All parameters (`host-path`, `mount-path`, `mode`) are completely
+      replaced."""
+  else:
+    additional = ''
+  parser.add_argument(
+      '--container-mount-host-path',
+      metavar='host-path=HOSTPATH,mount-path=MOUNTPATH[,mode=MODE]',
+      type=arg_parsers.ArgDict(spec={'host-path': str,
+                                     'mount-path': str,
+                                     'mode': functools.partial(
+                                         ParseMountVolumeMode,
+                                         '--container-mount-host-path')}),
+      action='append',
+      help="""\
+      Mounts a volume by using host-path.{}
+
+      *host-path*::: Path on host to mount from.
+
+      *mount-path*::: Path on container to mount to. Mount paths with spaces
+      and commas (and other special characters) are not supported by this
+      command.
+
+      *mode*::: Volume mount mode: rw (read/write) or ro (read-only).
+
+      Default: rw.
+      """.format(additional))
+
+
+def _AddContainerMountTmpfsFlag(parser):
+  """Helper to add --container-mount-tmpfs flag."""
+  parser.add_argument(
+      '--container-mount-tmpfs',
+      metavar='mount-path=MOUNTPATH',
+      type=arg_parsers.ArgDict(spec={'mount-path': str}),
+      action='append',
+      help="""\
+      Mounts empty tmpfs into container at MOUNTPATH.
+
+      *mount-path*::: Path on container to mount to. Mount paths with spaces
+      and commas (and other special characters) are not supported by this
+      command.
+      """)
+
+
+def _AddContainerMountGroup(parser, container_mount_disk_enabled=False):
+  """Add flags to update what is mounted to the container."""
+
+  mount_group = parser.add_argument_group()
+
+  _AddContainerMountHostPathFlag(mount_group, for_update=True)
+  _AddContainerMountTmpfsFlag(mount_group)
+
+  if container_mount_disk_enabled:
+    AddContainerMountDiskFlag(parser, for_update=True)
+
+  mount_types = ['`host-path`', '`tmpfs`']
+  if container_mount_disk_enabled:
+    mount_types.append('`disk`')
+  mount_group.add_argument(
+      '--remove-container-mounts',
+      type=arg_parsers.ArgList(),
+      metavar='MOUNTPATH[,MOUNTPATH,...]',
+      help="""\
+      Removes volume mounts ({}) with
+      `mountPath: MOUNTPATH` from container declaration.
+
+      Does nothing, if a volume mount is not declared.
+      """.format(', '.join(mount_types))
+  )
+
+
+def _AddContainerArgs(parser):
+  """Add basic args for update-container."""
+
+  parser.add_argument(
+      '--container-image',
+      type=NonEmptyString('--container-image'),
+      help="""\
+      Sets container image in the declaration to the specified value.
+
+      Empty string is not allowed.
+      """)
+
+  parser.add_argument(
+      '--container-privileged',
+      action='store_true',
+      default=None,
+      help="""\
+      Sets permission to run container to the specified value.
+      """)
+
+  parser.add_argument(
+      '--container-stdin',
+      action='store_true',
+      default=None,
+      help="""\
+      Sets configuration whether to keep container `STDIN` always open to the
+      specified value.
+      """)
+
+  parser.add_argument(
+      '--container-tty',
+      action='store_true',
+      default=None,
+      help="""\
+      Sets configuration whether to allocate a pseudo-TTY for the container
+      to the specified value.
+      """)
+
+  parser.add_argument(
+      '--container-restart-policy',
+      choices=['never', 'on-failure', 'always'],
+      metavar='POLICY',
+      type=lambda val: val.lower(),
+      help="""\
+      Sets container restart policy to the specified value.
+      """)
+
+
+def AddUpdateContainerArgs(parser, container_mount_disk_enabled=False):
+  INSTANCE_ARG.AddArgument(parser, operation_type='update')
+  _AddContainerCommandGroup(parser)
+  _AddContainerEnvGroup(parser)
+  _AddContainerArgGroup(parser)
+  _AddContainerMountGroup(
+      parser,
+      container_mount_disk_enabled=container_mount_disk_enabled)
+  _AddContainerArgs(parser)

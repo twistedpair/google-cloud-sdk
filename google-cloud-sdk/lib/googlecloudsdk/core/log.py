@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from collections import OrderedDict
 import contextlib
+import copy
 import datetime
 import errno
 import json
@@ -31,6 +32,8 @@ import time
 
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.console.style import parser as style_parser
+from googlecloudsdk.core.console.style import text
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import times
@@ -157,30 +160,61 @@ class _ConsoleWriter(object):
     self.__stream_wrapper = stream_wrapper
     self.__always_flush = always_flush
 
-  def Print(self, *msg):
-    """Writes the given message to the output stream, and adds a newline.
+  def ParseMsg(self, msg):
+    """Converts msg to a console safe pair of plain and ANSI-annotated strings.
+
+    Args:
+      msg: str or text.TypedText, the message to parse into plain and
+        ANSI-annotated strings.
+    Returns:
+      str, str: A plain text string and a string that may also contain ANSI
+        constrol sequences. If ANSI is not supported or color is disabled,
+        then the second string will be identical to the first.
+    """
+    plain_text, styled_text = msg, msg
+    if isinstance(msg, text.TypedText):
+      typed_text_parser = style_parser.GetTypedTextParser()
+      plain_text = typed_text_parser.ParseTypedTextToString(msg, stylize=False)
+      styled_text = typed_text_parser.ParseTypedTextToString(
+          msg, stylize=self.isatty())
+    plain_text = console_attr.SafeText(
+        plain_text, encoding=LOG_FILE_ENCODING, escape=False)
+    styled_text = console_attr.SafeText(
+        styled_text, encoding=LOG_FILE_ENCODING, escape=False)
+    return plain_text, styled_text
+
+  def Print(self, *tokens):
+    """Writes the given tokens to the output stream, and adds a newline.
 
     This method has the same output behavior as the builtin print method but
     respects the configured verbosity.
 
     Args:
-      *msg: str, The messages to print.
+      *tokens: str or text.TypedTextor any object with a str() or unicode()
+        method, The messages to print, which are joined with ' '.
     """
-    msg = (console_attr.SafeText(
-        x, encoding=LOG_FILE_ENCODING, escape=False) for x in msg)
-    message = ' '.join(msg)
-    self._Write(message + '\n')
+    plain_tokens, styled_tokens = [], []
+    for token in tokens:
+      plain_text, styled_text = self.ParseMsg(token)
+      plain_tokens.append(plain_text)
+      styled_tokens.append(styled_text)
+
+    plain_text = ' '.join(plain_tokens) + '\n'
+    styled_text = ' '.join(styled_tokens) + '\n'
+    self._Write(plain_text, styled_text)
 
   def GetConsoleWriterStream(self):
     """Returns the console writer output stream."""
     return self.__stream_wrapper.stream
 
-  def _Write(self, msg):
+  def _Write(self, msg, styled_msg):
     """Just a helper so we don't have to double encode from Print and write.
 
     Args:
       msg: A text string that only has characters that are safe to encode with
         utf-8.
+      styled_msg: A text string with the same properties as msg but also
+        contains ANSI control sequences.
     """
     # The log file always uses utf-8 encoding, just give it the string.
     self.__logger.info(msg)
@@ -190,18 +224,18 @@ class _ConsoleWriter(object):
       # have a more restrictive encoding than utf-8.
       stream_encoding = console_attr.GetConsoleAttr().GetEncoding()
       stream_msg = console_attr.SafeText(
-          msg, encoding=stream_encoding, escape=False)
+          styled_msg, encoding=stream_encoding, escape=False)
       if six.PY2:
         # Encode to byte strings for output only on Python 2.
-        stream_msg = msg.encode(stream_encoding or 'utf8', 'replace')
+        stream_msg = styled_msg.encode(stream_encoding or 'utf8', 'replace')
       self.__stream_wrapper.stream.write(stream_msg)
       if self.__always_flush:
         self.flush()
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def write(self, msg):
-    self._Write(
-        console_attr.SafeText(msg, encoding=LOG_FILE_ENCODING, escape=False))
+    plain_text, styled_text = self.ParseMsg(msg)
+    self._Write(plain_text, styled_text)
 
   # pylint: disable=g-bad-name, This must match file-like objects
   def writelines(self, lines):
@@ -271,6 +305,38 @@ def _SafeDecodedLogRecord(record, encoding):
     record.msg = original_msg
 
 
+class _LogFileFormatter(logging.Formatter):
+  """A formatter for log file contents."""
+  # TODO(b/116495229): Add a test to ensure consitency.
+  # Note: if this ever changes, please update LOG_PREFIX_PATTERN
+  FORMAT = _FmtString('%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
+
+  def __init__(self):
+    super(_LogFileFormatter, self).__init__(fmt=_LogFileFormatter.FORMAT)
+
+  def format(self, record):
+    record = copy.copy(record)
+
+    if isinstance(record.msg, text.TypedText):
+      record.msg = style_parser.GetTypedTextParser().ParseTypedTextToString(
+          record.msg, stylize=False)
+
+    # There are some cases where record.args ends up being a dict.
+    if isinstance(record.args, tuple):
+      new_args = []
+      for arg in record.args:
+        if isinstance(arg, text.TypedText):
+          arg = style_parser.GetTypedTextParser().ParseTypedTextToString(
+              arg, stylize=False)
+        new_args.append(arg)
+      record.args = tuple(new_args)
+    # The log file handler expects text strings always, and encodes them to
+    # utf-8 before writing to the file.
+    with _SafeDecodedLogRecord(record, LOG_FILE_ENCODING):
+      msg = super(_LogFileFormatter, self).format(record)
+    return msg
+
+
 class _ConsoleFormatter(logging.Formatter):
   """A formatter for the console logger, handles colorizing messages."""
 
@@ -291,6 +357,7 @@ class _ConsoleFormatter(logging.Formatter):
 
   def __init__(self, out_stream):
     super(_ConsoleFormatter, self).__init__()
+    # TODO(b/113585509): Remove this coloring code.
     use_color = not properties.VALUES.core.disable_color.GetBool(validate=False)
     use_color &= out_stream.isatty()
     use_color &= (platforms.OperatingSystem.Current() !=
@@ -316,22 +383,6 @@ class _ConsoleFormatter(logging.Formatter):
       msg = super(_ConsoleFormatter, self).format(record)
     if six.PY2:
       msg = msg.encode(stream_encoding or 'utf8', 'replace')
-    return msg
-
-
-class _LogFileFormatter(logging.Formatter):
-  """A formatter for log file contents."""
-  # Note: if this ever changes, please update LOG_PREFIX_PATTERN
-  FORMAT = _FmtString('%(asctime)s %(levelname)-8s %(name)-15s %(message)s')
-
-  def __init__(self):
-    super(_LogFileFormatter, self).__init__(fmt=_LogFileFormatter.FORMAT)
-
-  def format(self, record):
-    # The log file handler expects text strings always, and encodes them to
-    # utf-8 before writing to the file.
-    with _SafeDecodedLogRecord(record, LOG_FILE_ENCODING):
-      msg = super(_LogFileFormatter, self).format(record)
     return msg
 
 
@@ -415,7 +466,7 @@ class _JsonFormatter(logging.Formatter):
     return self.LogRecordToJson(record)
 
 
-class _StructuredFormatWrapper(logging.Formatter):
+class _ConsoleLoggingFormatterMuxer(logging.Formatter):
   """Logging Formatter Composed of other formatters."""
 
   def __init__(self,
@@ -438,7 +489,27 @@ class _StructuredFormatWrapper(logging.Formatter):
     return False
 
   def format(self, record):
-    if self.ShowStructuredOutput():
+    """Formats the record using the proper formatter."""
+    show_structured_output = self.ShowStructuredOutput()
+
+    # The logged msg was a TypedText so convert msg to a normal str.
+    stylize = self.terminal and not show_structured_output
+    record = copy.copy(record)
+    if isinstance(record.msg, text.TypedText):
+      record.msg = style_parser.GetTypedTextParser().ParseTypedTextToString(
+          record.msg, stylize=stylize)
+
+    # There are some cases where record.args ends up being a dict.
+    if isinstance(record.args, tuple):
+      new_args = []
+      for arg in record.args:
+        if isinstance(arg, text.TypedText):
+          arg = style_parser.GetTypedTextParser().ParseTypedTextToString(
+              arg, stylize=stylize)
+        new_args.append(arg)
+      record.args = tuple(new_args)
+
+    if show_structured_output:
       return self.structured_formatter.format(record)
     return self.default_formatter.format(record)
 
@@ -498,11 +569,12 @@ class _LogManager(object):
     # Configure Formatters
     json_formatter = _JsonFormatter(REQUIRED_STRUCTURED_RECORD_FIELDS)
     std_console_formatter = _ConsoleFormatter(stderr)
-    wrapped_console_formatter = _StructuredFormatWrapper(json_formatter,
-                                                         self.stderr_writer,
-                                                         std_console_formatter)
+    console_formatter = _ConsoleLoggingFormatterMuxer(
+        json_formatter,
+        self.stderr_writer,
+        default_formatter=std_console_formatter)
     # Reset the color and structured output handling.
-    self._console_formatter = wrapped_console_formatter
+    self._console_formatter = console_formatter
     # A handler to redirect logs to stderr, this one is standard.
     self.stderr_handler = logging.StreamHandler(stderr)
     self.stderr_handler.setFormatter(self._console_formatter)

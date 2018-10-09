@@ -1698,6 +1698,16 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "startTime": {
+          "description": "Output only. Workflow start time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. Workflow end time.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

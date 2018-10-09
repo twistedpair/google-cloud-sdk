@@ -24,14 +24,12 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import json
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
 from ruamel import yaml
-import six
 
 
 # YAML unfortunately uses a bunch of global class state for this kind of stuff.
@@ -246,20 +244,3 @@ def list_like(item):
 def dict_like(item):
   """Return True if the item is like a dict: a MutableMapping."""
   return isinstance(item, collections.MutableMapping)
-
-
-# TODO(b/113928012): Remove when the following issue is fixed and vendored:
-# https://bitbucket.org/ruamel/yaml/issues/231/commentedmap-isnt-json-serializable
-class YAMLRoundTripJSONEncoder(json.JSONEncoder):
-  """The ruamel RoundTripEncoder fails to return JSON-serializable objects.
-
-  This class encodes them properly.
-  """
-
-  def default(self, obj):
-    if (not isinstance(obj, six.string_types + (list, six.binary_type))
-        and isinstance(obj, collections.Sequence)):
-      return list(obj)
-    elif not isinstance(obj, dict) and isinstance(obj, collections.Mapping):
-      return dict(**obj)
-    return super(YAMLRoundTripJSONEncoder, self).default(obj)

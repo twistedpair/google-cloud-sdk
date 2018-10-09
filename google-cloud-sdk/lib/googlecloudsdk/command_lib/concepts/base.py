@@ -15,8 +15,8 @@
 """Abstract base class for concepts.
 
 This base class cannot be used as a concept on its own but must be subclassed,
-and the methods Attribute(), GetPresentationName(), Parse(), and BuildHelpText()
-must be implemented.
+and the methods Attribute(), GetPresentationName(), and Parse() must be
+implemented.
 
 Example usage:
 
@@ -39,7 +39,7 @@ class IntConcept(Concept):
         self.name)
 
   def BuildHelpText(self):
-    return self.help_text + ' Must be an int.'
+    super(IntConcept, self).BuildHelpText() + ' Must be an int.'
 
   def Parse(self, dependencies):
     try:
@@ -108,14 +108,17 @@ class Concept(six.with_metaclass(abc.ABCMeta, object)):
     """Returns the main name for the concept."""
     raise NotImplementedError
 
-  @abc.abstractmethod
   def BuildHelpText(self):
     """Builds and returns the help text.
 
     Returns:
       str, the help text for the concept.
     """
-    raise NotImplementedError
+    return self.help_text
+
+  def Marshal(self):
+    """Returns the list of concepts that this concept marshals."""
+    return None
 
   @abc.abstractmethod
   def Parse(self, dependencies):

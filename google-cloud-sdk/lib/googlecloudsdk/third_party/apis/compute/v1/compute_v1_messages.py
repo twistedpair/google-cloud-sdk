@@ -7862,6 +7862,18 @@ class ComputeInterconnectsDeleteRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ComputeInterconnectsGetDiagnosticsRequest(_messages.Message):
+  r"""A ComputeInterconnectsGetDiagnosticsRequest object.
+
+  Fields:
+    interconnect: Name of the interconnect resource to query.
+    project: Project ID for this request.
+  """
+
+  interconnect = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeInterconnectsGetRequest(_messages.Message):
   r"""A ComputeInterconnectsGetRequest object.
 
@@ -20196,6 +20208,122 @@ class InterconnectCircuitInfo(_messages.Message):
   googleDemarcId = _messages.StringField(3)
 
 
+class InterconnectDiagnostics(_messages.Message):
+  r"""Diagnostics information about interconnect, contains detailed and
+  current technical information about Google?s side of the connection.
+
+  Fields:
+    arpCaches: A list of InterconnectDiagnostics.ARPEntry objects, describing
+      individual neighbors currently seen by the Google router in the ARP
+      cache for the Interconnect. This will be empty when the Interconnect is
+      not bundled.
+    links: A list of InterconnectDiagnostics.LinkStatus objects, describing
+      the status for each link on the Interconnect.
+    macAddress: The MAC address of the Interconnect's bundle interface.
+  """
+
+  arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
+  links = _messages.MessageField('InterconnectDiagnosticsLinkStatus', 2, repeated=True)
+  macAddress = _messages.StringField(3)
+
+
+class InterconnectDiagnosticsARPEntry(_messages.Message):
+  r"""Describing the ARP neighbor entries seen on this link
+
+  Fields:
+    ipAddress: The IP address of this ARP neighbor.
+    macAddress: The MAC address of this ARP neighbor.
+  """
+
+  ipAddress = _messages.StringField(1)
+  macAddress = _messages.StringField(2)
+
+
+class InterconnectDiagnosticsLinkLACPStatus(_messages.Message):
+  r"""A InterconnectDiagnosticsLinkLACPStatus object.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    googleSystemId: System ID of the port on Google?s side of the LACP
+      exchange.
+    neighborSystemId: System ID of the port on the neighbor?s side of the LACP
+      exchange.
+    state: A StateValueValuesEnum attribute.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      ACTIVE: <no description>
+      DETACHED: <no description>
+    """
+    ACTIVE = 0
+    DETACHED = 1
+
+  googleSystemId = _messages.StringField(1)
+  neighborSystemId = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class InterconnectDiagnosticsLinkOpticalPower(_messages.Message):
+  r"""A InterconnectDiagnosticsLinkOpticalPower object.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    state: A StateValueValuesEnum attribute.
+    value: Value of the current optical power, read in dBm.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      HIGH_ALARM: <no description>
+      HIGH_WARNING: <no description>
+      LOW_ALARM: <no description>
+      LOW_WARNING: <no description>
+      OK: <no description>
+    """
+    HIGH_ALARM = 0
+    HIGH_WARNING = 1
+    LOW_ALARM = 2
+    LOW_WARNING = 3
+    OK = 4
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  value = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class InterconnectDiagnosticsLinkStatus(_messages.Message):
+  r"""A InterconnectDiagnosticsLinkStatus object.
+
+  Fields:
+    arpCaches: A list of InterconnectDiagnostics.ARPEntry objects, describing
+      the ARP neighbor entries seen on this link. This will be empty if the
+      link is bundled
+    circuitId: The unique ID for this link assigned during turn up by Google.
+    googleDemarc: The Demarc address assigned by Google and provided in the
+      LoA.
+    lacpStatus: A InterconnectDiagnosticsLinkLACPStatus attribute.
+    receivingOpticalPower: A InterconnectDiagnosticsLinkOpticalPower
+      attribute.
+    transmittingOpticalPower: A InterconnectDiagnosticsLinkOpticalPower
+      attribute.
+  """
+
+  arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
+  circuitId = _messages.StringField(2)
+  googleDemarc = _messages.StringField(3)
+  lacpStatus = _messages.MessageField('InterconnectDiagnosticsLinkLACPStatus', 4)
+  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 5)
+  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 6)
+
+
 class InterconnectList(_messages.Message):
   r"""Response to the list request, and contains a list of interconnects.
 
@@ -20643,6 +20771,16 @@ class InterconnectOutageNotification(_messages.Message):
   source = _messages.EnumField('SourceValueValuesEnum', 6)
   startTime = _messages.IntegerField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)
+
+
+class InterconnectsGetDiagnosticsResponse(_messages.Message):
+  r"""Response for the InterconnectsGetDiagnosticsRequest.
+
+  Fields:
+    result: A InterconnectDiagnostics attribute.
+  """
+
+  result = _messages.MessageField('InterconnectDiagnostics', 1)
 
 
 class License(_messages.Message):
@@ -22571,7 +22709,7 @@ class NodeTemplate(_messages.Message):
       long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
-      charaicter, which cannot be a dash.
+      character, which cannot be a dash.
     nodeAffinityLabels: Labels to use for node affinity, which will be used in
       instance scheduling.
     nodeType: The node type to use for nodes group that are created from this
@@ -28567,8 +28705,9 @@ class TargetHttpsProxy(_messages.Message):
       DISABLE. Not specifying this field is equivalent to specifying NONE.
     selfLink: [Output Only] Server-defined URL for the resource.
     sslCertificates: URLs to SslCertificate resources that are used to
-      authenticate connections between users and the load balancer. Currently,
-      exactly one SSL certificate must be specified.
+      authenticate connections between users and the load balancer. At least
+      one SSL certificate must be specified. Currently, you may specify up to
+      15 SSL certificates.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource
       will not have any SSL policy configured.
@@ -29832,8 +29971,8 @@ class TargetSslProxy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     service: URL to the BackendService resource.
     sslCertificates: URLs to SslCertificate resources that are used to
-      authenticate connections to Backends. Currently exactly one SSL
-      certificate must be specified.
+      authenticate connections to Backends. At least one SSL certificate must
+      be specified. Currently, you may specify up to 15 SSL certificates.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetSslProxy resource. If not set, the TargetSslProxy resource will
       not have any SSL policy configured.

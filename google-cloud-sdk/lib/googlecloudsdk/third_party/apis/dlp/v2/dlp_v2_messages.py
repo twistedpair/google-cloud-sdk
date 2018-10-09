@@ -468,6 +468,13 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       inspected_storage = cloud_storage OR inspected_storage = bigquery *
       inspected_storage = cloud_storage AND (state = done OR state = canceled)
       The length of this field should be no more than 500 characters.
+    orderBy: Optional comma separated list of fields to order by, followed by
+      `asc` or `desc` postfix. This list is case-insensitive, default sorting
+      order is ascending, redundant space characters are insignificant.
+      Example: `name asc, end_time asc, create_time desc`  Supported fields
+      are:  - `create_time`: corresponds to time the job was created. -
+      `end_time`: corresponds to time the job ended. - `name`: corresponds to
+      job's name. - `state`: corresponds to `state`
     pageSize: The standard list page size.
     pageToken: The standard list page token.
     parent: The parent resource name, for example projects/my-project-id.
@@ -487,10 +494,11 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
     RISK_ANALYSIS_JOB = 2
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class DlpProjectsImageRedactRequest(_messages.Message):
@@ -1281,9 +1289,12 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
 
   Fields:
     containerName: Name of the container where the finding is located. The top
-      level name is the source file name or table name. Nested names could be
-      absent if the embedded object has no string identifier (for an example
-      an image contained within a document).
+      level name is the source file name or table name. Names of some common
+      storage containers are formatted as follows:  * BigQuery tables:
+      `<project_id>:<dataset_id>.<table_id>` * Cloud Storage files:
+      `gs://<bucket>/<path>` * Datastore namespace: <namespace>  Nested names
+      could be absent if the embedded object has no string identifier (for an
+      example an image contained within a document).
     containerTimestamp: Findings container modification timestamp, if
       applicable. For Google Cloud Storage contains last file modification
       timestamp. For BigQuery table contains last_modified_time property. For
@@ -1498,7 +1509,9 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   specific sensitive information configurable to the data in question.
 
   Enums:
-    ExclusionTypeValueValuesEnum:
+    ExclusionTypeValueValuesEnum: If set to EXCLUSION_TYPE_EXCLUDE this
+      infoType will not cause a finding to be returned. It still can be used
+      for rules matching.
     LikelihoodValueValuesEnum: Likelihood to return for this CustomInfoType.
       This base value can be altered by a detection rule if the finding meets
       the criteria specified by the rule. Defaults to `VERY_LIKELY` if not
@@ -1509,7 +1522,8 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
       CustomInfoType. Rules are applied in order that they are specified. Not
       supported for the `surrogate_type` CustomInfoType.
     dictionary: A list of phrases to detect as a CustomInfoType.
-    exclusionType: A ExclusionTypeValueValuesEnum attribute.
+    exclusionType: If set to EXCLUSION_TYPE_EXCLUDE this infoType will not
+      cause a finding to be returned. It still can be used for rules matching.
     infoType: CustomInfoType can either be a new infoType, or an extension of
       built-in infoType, when the name matches one of existing infoTypes and
       that infoType is specified in `InspectContent.info_types` field.
@@ -1527,11 +1541,14 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
   """
 
   class ExclusionTypeValueValuesEnum(_messages.Enum):
-    r"""ExclusionTypeValueValuesEnum enum type.
+    r"""If set to EXCLUSION_TYPE_EXCLUDE this infoType will not cause a
+    finding to be returned. It still can be used for rules matching.
 
     Values:
-      EXCLUSION_TYPE_UNSPECIFIED: <no description>
-      EXCLUSION_TYPE_EXCLUDE: <no description>
+      EXCLUSION_TYPE_UNSPECIFIED: A finding of this custom info type will not
+        be excluded from results.
+      EXCLUSION_TYPE_EXCLUDE: A finding of this custom info type will be
+        excluded from final results, but can still affect rule execution.
     """
     EXCLUSION_TYPE_UNSPECIFIED = 0
     EXCLUSION_TYPE_EXCLUDE = 1

@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from apitools.base.py import extra_types
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.spanner.sql import QueryHasDml
 
 
 def Create(database_ref):
@@ -84,16 +85,43 @@ def ExecuteSql(session_ref, sql, query_mode):
       encoder=_ToJson, decoder=_FromJson)(
           msgs.ResultSet.RowsValueListEntry)
 
-  execute_sql_request = msgs.ExecuteSqlRequest(
-      sql=sql,
-      queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(query_mode))
+  execute_sql_request = _GetQueryRequest(sql, query_mode)
   req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
       session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
   resp = client.projects_instances_databases_sessions.ExecuteSql(req)
+  if QueryHasDml(sql):
+    result_set = msgs.ResultSet(metadata=resp.metadata)
+    Commit(session_ref, [], result_set.metadata.transaction.id)
   return resp
 
 
-def Commit(session_ref, mutations):
+def _GetQueryRequest(sql, query_mode):
+  """Formats the request based on whether the statement contains DML.
+
+  Args:
+    sql: String, The SQL to execute.
+    query_mode: String, The mode in which to run the query. Must be one of
+      'NORMAL', 'PLAN', or 'PROFILE'
+
+  Returns:
+    ExecuteSqlRequest parameters
+  """
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+
+  if QueryHasDml(sql):
+    transaction_options = msgs.TransactionOptions(readWrite=msgs.ReadWrite())
+    transaction = msgs.TransactionSelector(begin=transaction_options)
+  else:
+    transaction_options = msgs.TransactionOptions(
+        readOnly=msgs.ReadOnly(strong=True))
+    transaction = msgs.TransactionSelector(singleUse=transaction_options)
+  return msgs.ExecuteSqlRequest(
+      sql=sql,
+      queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(query_mode),
+      transaction=transaction)
+
+
+def Commit(session_ref, mutations, transaction_id=None):
   """Commit a transaction through a session.
 
   In Cloud Spanner, each session can have at most one active transaction at a
@@ -106,6 +134,7 @@ def Commit(session_ref, mutations):
     session_ref: Session, through which the transaction would be committed.
     mutations: A list of mutations, each represents a modification to one or
         more Cloud Spanner rows.
+    transaction_id: An optional string for the transaction id.
 
   Returns:
     The Cloud Spanner timestamp at which the transaction committed.
@@ -113,14 +142,19 @@ def Commit(session_ref, mutations):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
 
-  req = msgs.SpannerProjectsInstancesDatabasesSessionsCommitRequest(
-      session=session_ref.RelativeName(),
-      commitRequest=msgs.CommitRequest(
-          mutations=mutations,
-          singleUseTransaction=msgs.TransactionOptions(
-              readWrite=msgs.ReadWrite())))
-  resp = client.projects_instances_databases_sessions.Commit(req)
-  return resp
+  if transaction_id is not None:
+    req = msgs.SpannerProjectsInstancesDatabasesSessionsCommitRequest(
+        session=session_ref.RelativeName(),
+        commitRequest=msgs.CommitRequest(
+            mutations=mutations, transactionId=transaction_id))
+  else:
+    req = msgs.SpannerProjectsInstancesDatabasesSessionsCommitRequest(
+        session=session_ref.RelativeName(),
+        commitRequest=msgs.CommitRequest(
+            mutations=mutations,
+            singleUseTransaction=msgs.TransactionOptions(
+                readWrite=msgs.ReadWrite())))
+  return client.projects_instances_databases_sessions.Commit(req)
 
 
 class MutationFactory(object):

@@ -363,6 +363,15 @@ def AddIosTestArgs(parser):
       'given path may be in the local filesystem or in Google Cloud Storage '
       'using a URL beginning with `gs://`.')
   parser.add_argument(
+      '--xcode-version',
+      category=base.COMMONLY_USED_FLAGS,
+      help="""\
+      The version of Xcode that should be used to run an XCTest. Defaults to the
+      latest Xcode version supported in Firebase Test Lab. This Xcode version
+      must be supported by all iOS versions selected in the test matrix. The
+      list of Xcode versions supported by each version of iOS can be viewed by
+      running `$ {parent_command} versions list`.""")
+  parser.add_argument(
       '--device',
       category=base.COMMONLY_USED_FLAGS,
       type=arg_parsers.ArgDict(min_length=1),

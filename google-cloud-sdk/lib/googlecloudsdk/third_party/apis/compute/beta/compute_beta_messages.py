@@ -26712,7 +26712,7 @@ class NodeTemplate(_messages.Message):
       long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
-      charaicter, which cannot be a dash.
+      character, which cannot be a dash.
     nodeAffinityLabels: Labels to use for node affinity, which will be used in
       instance scheduling.
     nodeType: The node type to use for nodes group that are created from this
@@ -30041,7 +30041,7 @@ class ResourcePolicyAggregatedList(_messages.Message):
 class ResourcePolicyBackupSchedulePolicy(_messages.Message):
   r"""A backup schedule policy specifies when and how frequently snapshots are
   to be created for the target disk. Also specifies how many and how long
-  these automatically created snapshot should be retained.
+  these scheduled snapshots should be retained.
 
   Fields:
     retentionPolicy: Retention policy applied to snapshots created by this
@@ -30050,7 +30050,7 @@ class ResourcePolicyBackupSchedulePolicy(_messages.Message):
       maintenance we are allowed to perform on this VM and when. Schedule that
       is applied to disks covered by this policy.
     snapshotProperties: Properties with which snapshots are created such as
-      lables, encryption keys.
+      labels, encryption keys.
   """
 
   retentionPolicy = _messages.MessageField('ResourcePolicyBackupSchedulePolicyRetentionPolicy', 1)
@@ -30059,7 +30059,7 @@ class ResourcePolicyBackupSchedulePolicy(_messages.Message):
 
 
 class ResourcePolicyBackupSchedulePolicyRetentionPolicy(_messages.Message):
-  r"""Policy for retention of automatically created snapshots.
+  r"""Policy for retention of scheduled snapshots.
 
   Fields:
     maxRetentionDays: Maximum age of the snapshot that is allowed to be kept.
@@ -30083,16 +30083,16 @@ class ResourcePolicyBackupSchedulePolicySchedule(_messages.Message):
 
 
 class ResourcePolicyBackupSchedulePolicySnapshotProperties(_messages.Message):
-  r"""Specified snapshot properties for automatic snapshots created by this
+  r"""Specified snapshot properties for scheduled snapshots created by this
   policy.
 
   Messages:
-    LabelsValue: Labels to apply to automatic snapshots. These can be later
+    LabelsValue: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
 
   Fields:
     guestFlush: Indication to perform a ?guest aware? snapshot.
-    labels: Labels to apply to automatic snapshots. These can be later
+    labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
     storageLocations: GCS bucket storage location of the auto snapshot
       (regional or multi-regional).
@@ -30100,7 +30100,7 @@ class ResourcePolicyBackupSchedulePolicySnapshotProperties(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels to apply to automatic snapshots. These can be later modified by
+    r"""Labels to apply to scheduled snapshots. These can be later modified by
     the setLabels method. Label values may be empty.
 
     Messages:
@@ -30381,6 +30381,14 @@ class Route(_messages.Message):
     nextHopGateway: The URL to a gateway that should handle matching packets.
       You can only specify the internet gateway using a full or partial valid
       URL:  projects/<project-id>/global/gateways/default-internet-gateway
+    nextHopIlb: The URL to a forwarding rule of type
+      loadBalancingScheme=INTERNAL that should handle matching packets. You
+      can only specify the forwarding rule as a partial or full URL. For
+      example, the following are all valid URLs:   - https://www.googleapis.co
+      m/compute/v1/projects/project/regions/region/forwardingRules/forwardingR
+      ule  - regions/region/forwardingRules/forwardingRule  Note that this can
+      only be used when the destination_range is a public (non-RFC 1918) IP
+      CIDR range.
     nextHopInstance: The URL to an instance that should handle matching
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
@@ -30509,15 +30517,16 @@ class Route(_messages.Message):
   name = _messages.StringField(6)
   network = _messages.StringField(7)
   nextHopGateway = _messages.StringField(8)
-  nextHopInstance = _messages.StringField(9)
-  nextHopIp = _messages.StringField(10)
-  nextHopNetwork = _messages.StringField(11)
-  nextHopPeering = _messages.StringField(12)
-  nextHopVpnTunnel = _messages.StringField(13)
-  priority = _messages.IntegerField(14, variant=_messages.Variant.UINT32)
-  selfLink = _messages.StringField(15)
-  tags = _messages.StringField(16, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 17, repeated=True)
+  nextHopIlb = _messages.StringField(9)
+  nextHopInstance = _messages.StringField(10)
+  nextHopIp = _messages.StringField(11)
+  nextHopNetwork = _messages.StringField(12)
+  nextHopPeering = _messages.StringField(13)
+  nextHopVpnTunnel = _messages.StringField(14)
+  priority = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
+  selfLink = _messages.StringField(16)
+  tags = _messages.StringField(17, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 18, repeated=True)
 
 
 class RouteList(_messages.Message):
@@ -32009,7 +32018,6 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     expr: User defined CEVAL expression. A CEVAL expression is used to specify
       match criteria such as origin.ip, source.region_code and contents in the
       request header.
-    srcIpRanges: CIDR IP address range.
     versionedExpr: Preconfigured versioned expression. If this field is
       specified, config must also be specified. Available preconfigured
       expressions along with their requirements are: SRC_IPS_V1 - must specify
@@ -32029,8 +32037,7 @@ class SecurityPolicyRuleMatcher(_messages.Message):
 
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
   expr = _messages.MessageField('Expr', 2)
-  srcIpRanges = _messages.StringField(3, repeated=True)
-  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 4)
+  versionedExpr = _messages.EnumField('VersionedExprValueValuesEnum', 3)
 
 
 class SecurityPolicyRuleMatcherConfig(_messages.Message):
@@ -33979,8 +33986,9 @@ class TargetHttpsProxy(_messages.Message):
       DISABLE. Not specifying this field is equivalent to specifying NONE.
     selfLink: [Output Only] Server-defined URL for the resource.
     sslCertificates: URLs to SslCertificate resources that are used to
-      authenticate connections between users and the load balancer. Currently,
-      exactly one SSL certificate must be specified.
+      authenticate connections between users and the load balancer. At least
+      one SSL certificate must be specified. Currently, you may specify up to
+      15 SSL certificates.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource
       will not have any SSL policy configured.
@@ -35244,8 +35252,8 @@ class TargetSslProxy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     service: URL to the BackendService resource.
     sslCertificates: URLs to SslCertificate resources that are used to
-      authenticate connections to Backends. Currently exactly one SSL
-      certificate must be specified.
+      authenticate connections to Backends. At least one SSL certificate must
+      be specified. Currently, you may specify up to 15 SSL certificates.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetSslProxy resource. If not set, the TargetSslProxy resource will
       not have any SSL policy configured.

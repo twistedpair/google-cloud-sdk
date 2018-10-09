@@ -44,11 +44,11 @@ target project:  [{project}]
 """
 
 CONFIG_TYPES = {
-    yaml_parsing.ConfigYamlInfo.INDEX: 'datastore indexes',
-    yaml_parsing.ConfigYamlInfo.CRON: 'cron jobs',
-    yaml_parsing.ConfigYamlInfo.QUEUE: 'task queues',
-    yaml_parsing.ConfigYamlInfo.DISPATCH: 'routing rules',
-    yaml_parsing.ConfigYamlInfo.DOS: 'DoS blacklist',
+    'index': 'datastore indexes',
+    'cron': 'cron jobs',
+    'queue': 'task queues',
+    'dispatch': 'routing rules',
+    'dos': 'DoS blacklist',
 }
 
 PROMOTE_MESSAGE_TEMPLATE = """\

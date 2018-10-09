@@ -27,7 +27,6 @@ import os
 import tarfile
 
 from apitools.base.py import encoding
-from docker import docker
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.core import log
@@ -111,6 +110,9 @@ def _GetIncludedPaths(upload_dir, source_files, exclude):
   Returns:
     Set of paths (relative to upload_dir) to include.
   """
+  # Import only when necessary, to decrease startup time.
+  # pylint: disable=g-import-not-at-top
+  from docker import docker
   # This code replicates how docker.utils.tar() finds the root
   # and excluded paths.
   root = os.path.abspath(upload_dir)

@@ -207,7 +207,7 @@
           "type": "string"
         },
         "dispatchRules": {
-          "description": "HTTP path dispatch rules for requests to the application that do not explicitly target a service or version. Rules are order-dependent. Up to 20 dispatch rules can be supported.@OutputOnly",
+          "description": "HTTP path dispatch rules for requests to the application that do not explicitly target a service or version. Rules are order-dependent. Up to 20 dispatch rules can be supported.",
           "type": "array",
           "items": {
             "$ref": "UrlDispatchRule"
@@ -1397,6 +1397,10 @@
             "FIXED",
             "MANAGED"
           ]
+        },
+        "disableTraceSampling": {
+          "description": "Enable or disable trace sampling. By default, this is set to false for enabled.",
+          "type": "boolean"
         }
       }
     },

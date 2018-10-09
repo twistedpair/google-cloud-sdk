@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.cloudiot import devices
 from googlecloudsdk.api_lib.cloudiot import registries
 from googlecloudsdk.command_lib.iot import flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -110,6 +111,12 @@ def ParseEnableHttpConfig(enable_http_config, client=None):
     return http_config_enum.HTTP_ENABLED
   else:
     return http_config_enum.HTTP_DISABLED
+
+
+def ParseLogLevel(log_level, enum_class):
+  if log_level is None:
+    return None
+  return arg_utils.ChoiceToEnum(log_level, enum_class)
 
 
 def AddBlockedToRequest(ref, args, req):
@@ -427,3 +434,23 @@ def AddEventNotificationConfigsToRequest(ref, args, req):
                                          args.event_pubsub_topic)
   req.deviceRegistry.eventNotificationConfigs = configs or []
   return req
+
+
+# Argument Processors
+def GetCommandFromFileProcessor(path):
+  """Builds a binary data for a SendCommandToDeviceRequest message from a path.
+
+  Args:
+    path: the path arg given to the command.
+
+  Raises:
+    ValueError: if the path does not exist or can not be read.
+
+  Returns:
+    binary data to be set on a message.
+  """
+  try:
+    return files.ReadBinaryFileContents(path)
+
+  except Exception as e:
+    raise ValueError('Command File [{}] can not be opened: {}'.format(path, e))

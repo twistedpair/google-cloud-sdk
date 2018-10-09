@@ -207,6 +207,7 @@
             "The .xctestrun file did not specify any test targets.",
             "One or more of the test targets defined in the .xctestrun file specifies\n\"UseDestinationArtifacts\", which is disallowed.",
             "XC tests which run on physical devices must have\n\"IsAppHostedTestBundle\" == \"true\" in the xctestrun file.",
+            "An Info.plist file in in the XCTest zip could not be parsed.",
             "The APK is marked as \"testOnly\".\nNOT USED",
             "The input IPA could not be parsed.\nNOT USED",
             "APK contains no code.\nSee also\nhttps:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code",
@@ -239,6 +240,7 @@
             "NO_TESTS_IN_XC_TEST_ZIP",
             "USE_DESTINATION_ARTIFACTS",
             "TEST_NOT_APP_HOSTED",
+            "PLIST_CANNOT_BE_PARSED",
             "TEST_ONLY_APK",
             "MALFORMED_IPA",
             "NO_CODE_APK",
@@ -695,6 +697,10 @@
         "xctestrun": {
           "description": "Optional. An .xctestrun file that will override the .xctestrun file in the\ntests zip. Because the .xctestrun file contains environment variables along\nwith test methods to run and\/or ignore, this can be useful for sharding\ntests. Default is taken from the tests zip.",
           "$ref": "FileReference"
+        },
+        "xcodeVersion": {
+          "description": "Optional. The Xcode version that should be used for the test.\nUse the EnvironmentDiscoveryService to get supported options.\nDefaults to the latest Xcode version Firebase Test Lab supports.",
+          "type": "string"
         }
       }
     },
@@ -1445,6 +1451,13 @@
             "$ref": "IosVersion"
           }
         },
+        "xcodeVersions": {
+          "description": "Output only. The set of supported Xcode versions.",
+          "type": "array",
+          "items": {
+            "$ref": "XcodeVersion"
+          }
+        },
         "runtimeConfiguration": {
           "description": "Output only. The set of supported runtime configurations.",
           "$ref": "IosRuntimeConfiguration"
@@ -1524,6 +1537,31 @@
         },
         "tags": {
           "description": "Output only. Tags for this dimension.\nExamples: \"default\", \"preview\", \"deprecated\"",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supportedXcodeVersionIds": {
+          "description": "Output only. The available Xcode versions for this version.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "XcodeVersion": {
+      "id": "XcodeVersion",
+      "description": "An Xcode version that an iOS version is compatible with.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Output only. The id for this version.\nExample: \"9.2\"",
+          "type": "string"
+        },
+        "tags": {
+          "description": "Output only. Tags for this Xcode version.\nExamples: \"default\"",
           "type": "array",
           "items": {
             "type": "string"

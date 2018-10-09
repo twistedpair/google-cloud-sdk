@@ -108,8 +108,10 @@ def AddMemoryFlag(parser):
 
 def AddConcurrencyFlag(parser):
   parser.add_argument('--concurrency',
-                      help='Set instance concurrency preference. Set to '
-                      '`default` to revert to automatic default.')
+                      help='Set the number of concurrent requests allowed per '
+                      'instance. A concurrency of 0 indicates any number of '
+                      'concurrent requests are allowed. To unset this field, '
+                      'provide the special value `default`.')
 
 
 def AddCleanFlag(parser):
@@ -152,8 +154,14 @@ def GetConfigurationChanges(args):
   if 'memory' in args and args.memory:
     changes.append(config_changes.ResourceChanges(memory=args.memory))
   if 'concurrency' in args and args.concurrency:
-    changes.append(config_changes.ConcurrencyChanges(
-        concurrency=args.concurrency))
+    try:
+      c = int(args.concurrency)
+    except ValueError:
+      c = args.concurrency
+      if c != 'default':
+        log.warning('Specifying concurrency as Single or Multi is deprecated; '
+                    'an integer is preferred.')
+    changes.append(config_changes.ConcurrencyChanges(concurrency=c))
   return changes
 
 

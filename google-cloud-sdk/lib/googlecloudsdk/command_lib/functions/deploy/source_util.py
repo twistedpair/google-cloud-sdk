@@ -29,7 +29,9 @@ from apitools.base.py import transfer
 
 from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import util as api_util
+from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import http as http_utils
 from googlecloudsdk.core import log
@@ -108,13 +110,38 @@ def _UploadFileToGcs(source, function_ref, stage_bucket):
   zip_file = _GenerateRemoteZipFileName(function_ref.RelativeName())
   bucket_ref = storage_util.BucketReference.FromArgument(
       stage_bucket)
-  gcs_url = storage_util.ObjectReference(bucket_ref, zip_file).ToUrl()
-  upload_result = storage_util.RunGsutilCommand('cp', [source, gcs_url])
-  if upload_result != 0:
+  dest_object = storage_util.ObjectReference(bucket_ref, zip_file)
+
+  # TODO(b/109938541): Remove gsutil implementation after the new implementation
+  # seems stable.
+  use_gsutil = properties.VALUES.storage.use_gsutil.GetBool()
+  if use_gsutil:
+    upload_success = _UploadFileToGcsGsutil(source, dest_object)
+  else:
+    upload_success = _UploadFileToGcsStorageApi(bucket_ref, source, dest_object)
+
+  if not upload_success:
     raise exceptions.FunctionsError(
         'Failed to upload the function source code to the bucket {0}'
         .format(stage_bucket))
-  return gcs_url
+  return dest_object.ToUrl()
+
+
+def _UploadFileToGcsGsutil(source, dest_object):
+  """Upload local source files to GCS staging bucket. Returns upload success."""
+  ret_code = storage_util.RunGsutilCommand(
+      'cp', [source, dest_object.ToUrl()])
+  return ret_code == 0
+
+
+def _UploadFileToGcsStorageApi(bucket_ref, source, dest_object):
+  """Upload local source files to GCS staging bucket. Returns upload success."""
+  client = storage_api.StorageClient()
+  try:
+    client.CopyFileToGCS(bucket_ref, source, dest_object.name)
+    return True
+  except calliope_exceptions.BadFileException:
+    return False
 
 
 def _AddDefaultBranch(source_archive_url):

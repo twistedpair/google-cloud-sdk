@@ -101,6 +101,14 @@ class InvalidDimensionNameError(TestingError):
         "['model', 'version', 'locale', 'orientation']".format(d=dim_name))
 
 
+class XcodeVersionNotFoundError(TestingError):
+  """Failed to find an Xcode version in the test environment catalog."""
+
+  def __init__(self, version):
+    super(XcodeVersionNotFoundError, self).__init__(
+        "'{v}' is not a supported Xcode version".format(v=version))
+
+
 class TestExecutionNotFoundError(TestingError):
   """A test execution ID was not found within a test matrix."""
 

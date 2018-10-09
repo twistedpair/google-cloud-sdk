@@ -42,6 +42,7 @@ def Create(environment_ref,
            oauth_scopes=None,
            tags=None,
            disk_size_gb=None,
+           python_version=None,
            release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Create method.
 
@@ -68,6 +69,8 @@ def Create(environment_ref,
     oauth_scopes: [str], the user-provided OAuth scopes
     tags: [str], the user-provided networking tags
     disk_size_gb: int, the disk size of node VMs, in GB
+    python_version: string or None, major python version to use within created
+        environment.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -96,7 +99,7 @@ def Create(environment_ref,
     if tags:
       config.nodeConfig.tags = list(
           OrderedDict((t.strip(), None) for t in tags).keys())
-  if env_variables or airflow_config_overrides:
+  if env_variables or airflow_config_overrides or python_version:
     is_config_empty = False
     config.softwareConfig = messages.SoftwareConfig()
     if env_variables:
@@ -106,7 +109,8 @@ def Create(environment_ref,
       config.softwareConfig.airflowConfigOverrides = api_util.DictToMessage(
           airflow_config_overrides,
           messages.SoftwareConfig.AirflowConfigOverridesValue)
-
+    if python_version:
+      config.softwareConfig.pythonVersion = python_version
   environment = messages.Environment(name=environment_ref.RelativeName())
   if not is_config_empty:
     environment.config = config

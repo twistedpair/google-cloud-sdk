@@ -980,7 +980,7 @@ https://cloud.google.com/dlp/docs/compute-risk-analysis to learn more.
         method_id=u'dlp.projects.dlpJobs.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'filter', u'pageSize', u'pageToken', u'type'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken', u'type'],
         relative_path=u'v2/{+parent}/dlpJobs',
         request_field='',
         request_type_name=u'DlpProjectsDlpJobsListRequest',

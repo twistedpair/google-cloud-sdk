@@ -174,6 +174,8 @@ def _ErrorFromInvalidMatrix(matrix):
       enum_values.INVALID_APK_PREVIEW_SDK:
           "Your app targets a preview version of the Android SDK that's "
           'incompatible with the selected devices.',
+      enum_values.PLIST_CANNOT_BE_PARSED:
+          'One or more of the Info.plist files in the zip could not be parsed',
   }
   details_enum = matrix.invalidMatrixDetails
   if details_enum in error_dict:

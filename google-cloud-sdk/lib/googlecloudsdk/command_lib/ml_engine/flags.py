@@ -200,10 +200,6 @@ If an option is specified both in the configuration file **and** via command lin
 arguments, the command line arguments override the configuration file.
 """)
 JOB_NAME = base.Argument('job', help='Name of the job.')
-MODULE_NAME = base.Argument(
-    '--module-name',
-    required=True,
-    help='Name of the module to run.')
 PACKAGE_PATH = base.Argument(
     '--package-path',
     help="""\
@@ -249,6 +245,13 @@ online prediction. Currently supported machine_types are:
 * `mls1-highmem-1` - A virtual machine with 1 core and 2 Gb RAM (will be deprecated soon).
 * `mls1-highcpu-4` - A virtual machine with 4 core and 2 Gb RAM (will be deprecated soon).
 """)
+
+
+def GetModuleNameFlag(required=True):
+  return base.Argument(
+      '--module-name',
+      required=required,
+      help='Name of the module to run.')
 
 
 def GetJobDirFlag(upload_help=True, allow_local=False):

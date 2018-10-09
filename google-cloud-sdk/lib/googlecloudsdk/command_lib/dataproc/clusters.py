@@ -593,7 +593,7 @@ def GetClusterConfig(args,
     if changed_config:
       cluster_config.lifecycleConfig = lifecycle_config
 
-  if beta and hasattr(args.CONCEPTS, 'kms_key'):
+  if hasattr(args.CONCEPTS, 'kms_key'):
     kms_ref = args.CONCEPTS.kms_key.Parse()
     if kms_ref:
       encryption_config = dataproc.messages.EncryptionConfig()

@@ -24,6 +24,8 @@ import enum
 
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import metadata_utils
+from googlecloudsdk.api_lib.compute.operations import poller
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
@@ -76,6 +78,17 @@ RESTART_POLICY_API = {
     'on-failure': 'OnFailure',
     'always': 'Always'
 }
+
+
+class MountVolumeMode(enum.Enum):
+  READ_ONLY = 1,
+  READ_WRITE = 2,
+
+  def isReadOnly(self):
+    return self == MountVolumeMode.READ_ONLY
+
+
+_DEFAULT_MODE = MountVolumeMode.READ_WRITE
 
 
 def _GetUserInit(allow_privileged):
@@ -206,14 +219,6 @@ def _ValidateAndParsePortMapping(port_mappings):
   return ports_config
 
 
-class MountVolumeMode(enum.Enum):
-  READ_ONLY = 1,
-  READ_WRITE = 2,
-
-  def isReadOnly(self):
-    return self == MountVolumeMode.READ_ONLY
-
-
 def ExpandKonletCosImageFlag(compute_client):
   """Select a COS image to run Konlet.
 
@@ -322,7 +327,75 @@ def _GetTmpfsDiskName(idx):
   return 'tmpfs-{}'.format(idx)
 
 
-def _CreateContainerManifest(args, instance_name):
+def _GetPersistentDiskName(idx):
+  return 'pd-{}'.format(idx)
+
+
+def _AddMountedDisksToManifest(container_mount_disk, volumes, volume_mounts,
+                               used_names=None, disks=None):
+  """Add volume specs from --container-mount-disk."""
+  used_names = used_names or []
+  disks = disks or []
+  idx = 0
+  for mount_disk in container_mount_disk:
+    while _GetPersistentDiskName(idx) in used_names:
+      idx += 1
+
+    device_name = mount_disk.get('name')
+    partition = mount_disk.get('partition')
+
+    def _GetMatchingVolume(device_name, partition):
+      for volume_spec in volumes:
+        pd = volume_spec.get('gcePersistentDisk', {})
+        if (pd.get('pdName') == device_name
+            and pd.get('partition') == partition):
+          return volume_spec
+
+    repeated = _GetMatchingVolume(device_name, partition)
+    if repeated:
+      name = repeated['name']
+    else:
+      name = _GetPersistentDiskName(idx)
+      used_names.append(name)
+
+    if not device_name:
+      # This should not be needed - any command that accepts container mount
+      # disks should validate that there is only one disk before calling this
+      # function.
+      if len(disks) != 1:
+        raise calliope_exceptions.InvalidArgumentException(
+            '--container-mount-disk',
+            'Must specify the name of the disk to be mounted unless exactly '
+            'one disk is attached to the instance.')
+      device_name = disks[0].get('name')
+      if disks[0].get('device-name', device_name) != device_name:
+        raise exceptions.InvalidArgumentException(
+            '--container-mount-disk',
+            'Must not have a device-name that is different from disk name if '
+            'disk is being attached to the instance and mounted to a container:'
+            ' [{}]'.format(disks[0].get('device-name')))
+
+    volume_mounts.append({
+        'name': name,
+        'mountPath': mount_disk['mount-path'],
+        'readOnly': mount_disk.get('mode', _DEFAULT_MODE).isReadOnly()})
+
+    if repeated:
+      continue
+    volume_spec = {
+        'name': name,
+        'gcePersistentDisk': {
+            'pdName': device_name,
+            'fsType': 'ext4'}}
+    if partition:
+      volume_spec['gcePersistentDisk'].update({'partition': partition})
+    volumes.append(volume_spec)
+    idx += 1
+
+
+def _CreateContainerManifest(args, instance_name,
+                             container_mount_disk_enabled=False,
+                             container_mount_disk=None):
   """Create container manifest from argument namespace and instance name."""
   container = {'image': args.container_image, 'name': instance_name}
 
@@ -348,7 +421,7 @@ def _CreateContainerManifest(args, instance_name):
 
   volumes = []
   volume_mounts = []
-  default_mode = MountVolumeMode.READ_WRITE
+
   for idx, volume in enumerate(args.container_mount_host_path or []):
     volumes.append({
         'name': _GetHostPathDiskName(idx),
@@ -359,13 +432,20 @@ def _CreateContainerManifest(args, instance_name):
     volume_mounts.append({
         'name': _GetHostPathDiskName(idx),
         'mountPath': volume['mount-path'],
-        'readOnly': volume.get('mode', default_mode).isReadOnly()
+        'readOnly': volume.get('mode', _DEFAULT_MODE).isReadOnly()
     })
+
   for idx, tmpfs in enumerate(args.container_mount_tmpfs or []):
     volumes.append(
         {'name': _GetTmpfsDiskName(idx), 'emptyDir': {'medium': 'Memory'}})
     volume_mounts.append(
         {'name': _GetTmpfsDiskName(idx), 'mountPath': tmpfs['mount-path']})
+
+  if container_mount_disk_enabled:
+    container_mount_disk = container_mount_disk or []
+    disks = (args.disk or []) + (args.create_disk or [])
+    _AddMountedDisksToManifest(container_mount_disk, volumes, volume_mounts,
+                               disks=disks)
 
   container['volumeMounts'] = volume_mounts
 
@@ -385,14 +465,26 @@ def DumpYaml(data):
   return MANIFEST_DISCLAIMER + yaml.dump(data)
 
 
-def _CreateYamlContainerManifest(args, instance_name):
-  return DumpYaml(_CreateContainerManifest(args, instance_name))
+def _CreateYamlContainerManifest(args, instance_name,
+                                 container_mount_disk_enabled=False,
+                                 container_mount_disk=None):
+  """Helper to create the container manifest."""
+  return DumpYaml(_CreateContainerManifest(
+      args, instance_name,
+      container_mount_disk_enabled=container_mount_disk_enabled,
+      container_mount_disk=container_mount_disk))
 
 
-def CreateKonletMetadataMessage(messages, args, instance_name, user_metadata):
+def CreateKonletMetadataMessage(messages, args, instance_name, user_metadata,
+                                container_mount_disk_enabled=False,
+                                container_mount_disk=None):
+  """Helper to create the metadata for konlet."""
   konlet_metadata = {
       GCE_CONTAINER_DECLARATION:
-          _CreateYamlContainerManifest(args, instance_name),
+          _CreateYamlContainerManifest(
+              args, instance_name,
+              container_mount_disk_enabled=container_mount_disk_enabled,
+              container_mount_disk=container_mount_disk),
       # Since COS 69, having logs for Container-VMs written requires enabling
       # Stackdriver Logging agent.
       STACKDRIVER_LOGGING_AGENT_CONFIGURATION: 'true',
@@ -401,7 +493,79 @@ def CreateKonletMetadataMessage(messages, args, instance_name, user_metadata):
       messages, metadata=konlet_metadata, existing_metadata=user_metadata)
 
 
-def UpdateMetadata(metadata, args):
+def UpdateInstance(holder, client, instance_ref, instance, args,
+                   container_mount_disk_enabled=False,
+                   container_mount_disk=None):
+  """Update an instance and its container metadata."""
+
+  # find gce-container-declaration metadata entry
+  for metadata in instance.metadata.items:
+    if metadata.key == GCE_CONTAINER_DECLARATION:
+      UpdateMetadata(
+          holder, metadata, args, instance,
+          container_mount_disk_enabled=container_mount_disk_enabled,
+          container_mount_disk=container_mount_disk)
+
+      # update Google Compute Engine resource
+      operation = client.apitools_client.instances.SetMetadata(
+          client.messages.ComputeInstancesSetMetadataRequest(
+              metadata=instance.metadata, **instance_ref.AsDict()))
+
+      operation_ref = holder.resources.Parse(
+          operation.selfLink, collection='compute.zoneOperations')
+
+      operation_poller = poller.Poller(client.apitools_client.instances)
+      set_metadata_waiter = waiter.WaitFor(
+          operation_poller, operation_ref,
+          'Updating specification of container [{0}]'.format(
+              instance_ref.Name()))
+
+      if (instance.status ==
+          client.messages.Instance.StatusValueValuesEnum.TERMINATED):
+        return set_metadata_waiter
+      elif (instance.status ==
+            client.messages.Instance.StatusValueValuesEnum.SUSPENDED):
+        return _StopVm(holder, client, instance_ref)
+      else:
+        _StopVm(holder, client, instance_ref)
+        return _StartVm(holder, client, instance_ref)
+
+  raise NoGceContainerDeclarationMetadataKey()
+
+
+def _StopVm(holder, client, instance_ref):
+  """Stop the Virtual Machine."""
+  operation = client.apitools_client.instances.Stop(
+      client.messages.ComputeInstancesStopRequest(
+          **instance_ref.AsDict()))
+
+  operation_ref = holder.resources.Parse(
+      operation.selfLink, collection='compute.zoneOperations')
+
+  operation_poller = poller.Poller(client.apitools_client.instances)
+  return waiter.WaitFor(
+      operation_poller, operation_ref,
+      'Stopping instance [{0}]'.format(instance_ref.Name()))
+
+
+def _StartVm(holder, client, instance_ref):
+  """Start the Virtual Machine."""
+  operation = client.apitools_client.instances.Start(
+      client.messages.ComputeInstancesStartRequest(
+          **instance_ref.AsDict()))
+
+  operation_ref = holder.resources.Parse(
+      operation.selfLink, collection='compute.zoneOperations')
+
+  operation_poller = poller.Poller(client.apitools_client.instances)
+  return waiter.WaitFor(
+      operation_poller, operation_ref,
+      'Starting instance [{0}]'.format(instance_ref.Name()))
+
+
+def UpdateMetadata(holder, metadata, args, instance,
+                   container_mount_disk_enabled=False,
+                   container_mount_disk=None):
   """Update konlet metadata entry using user-supplied data."""
   # precondition: metadata.key == GCE_CONTAINER_DECLARATION
 
@@ -428,9 +592,18 @@ def UpdateMetadata(metadata, args):
   if args.container_privileged is False:
     manifest['spec']['containers'][0]['securityContext']['privileged'] = False
 
-  _UpdateMounts(manifest, args.remove_container_mounts or [],
+  if container_mount_disk_enabled:
+    container_mount_disk = container_mount_disk or []
+    disks = instance.disks
+  else:
+    container_mount_disk = []
+    # Only need disks for updating the container mount disk.
+    disks = []
+  _UpdateMounts(holder, manifest, args.remove_container_mounts or [],
                 args.container_mount_host_path or [],
-                args.container_mount_tmpfs or [])
+                args.container_mount_tmpfs or [],
+                container_mount_disk,
+                disks)
 
   _UpdateEnv(manifest,
              itertools.chain.from_iterable(args.remove_container_env or []),
@@ -455,18 +628,19 @@ def UpdateMetadata(metadata, args):
   metadata.value = DumpYaml(manifest)
 
 
-def _UpdateMounts(manifest, remove_container_mounts, container_mount_host_path,
-                  container_mount_tmpfs):
+def _UpdateMounts(holder, manifest, remove_container_mounts,
+                  container_mount_host_path, container_mount_tmpfs,
+                  container_mount_disk, disks):
   """Updates mounts in container manifest."""
 
   _CleanupMounts(manifest, remove_container_mounts, container_mount_host_path,
-                 container_mount_tmpfs)
+                 container_mount_tmpfs,
+                 container_mount_disk=container_mount_disk)
 
   used_names = [volume['name'] for volume in manifest['spec']['volumes']]
   volumes = []
   volume_mounts = []
   next_volume_index = 0
-  default_mode = MountVolumeMode.READ_WRITE
   for volume in container_mount_host_path:
     while _GetHostPathDiskName(next_volume_index) in used_names:
       next_volume_index += 1
@@ -481,7 +655,7 @@ def _UpdateMounts(manifest, remove_container_mounts, container_mount_host_path,
     volume_mounts.append({
         'name': name,
         'mountPath': volume['mount-path'],
-        'readOnly': volume.get('mode', default_mode).isReadOnly()
+        'readOnly': volume.get('mode', _DEFAULT_MODE).isReadOnly()
     })
   for tmpfs in container_mount_tmpfs:
     while _GetTmpfsDiskName(next_volume_index) in used_names:
@@ -491,20 +665,33 @@ def _UpdateMounts(manifest, remove_container_mounts, container_mount_host_path,
     volumes.append({'name': name, 'emptyDir': {'medium': 'Memory'}})
     volume_mounts.append({'name': name, 'mountPath': tmpfs['mount-path']})
 
+  if container_mount_disk:
+    # Convert to dict to match helper input needs.
+    # The disk must already have a device name that matches its
+    # name. For disks that were attached to the instance already.
+    disks = [{'device-name': disk.deviceName,
+              'name': holder.resources.Parse(disk.source).Name()}
+             for disk in disks]
+    _AddMountedDisksToManifest(container_mount_disk, volumes, volume_mounts,
+                               used_names=used_names, disks=disks)
+
   manifest['spec']['containers'][0]['volumeMounts'].extend(volume_mounts)
   manifest['spec']['volumes'].extend(volumes)
 
 
 def _CleanupMounts(manifest, remove_container_mounts, container_mount_host_path,
-                   container_mount_tmpfs):
+                   container_mount_tmpfs, container_mount_disk=None):
   """Remove all specified mounts from container manifest."""
+  container_mount_disk = container_mount_disk or []
 
-  # valumeMounts stored in this list should be removed
+  # volumeMounts stored in this list should be removed
   mount_paths_to_remove = remove_container_mounts[:]
   for host_path in container_mount_host_path:
     mount_paths_to_remove.append(host_path['mount-path'])
   for tmpfs in container_mount_tmpfs:
     mount_paths_to_remove.append(tmpfs['mount-path'])
+  for disk in container_mount_disk:
+    mount_paths_to_remove.append(disk['mount-path'])
 
   # volumeMounts stored in this list are used
   used_mounts = []

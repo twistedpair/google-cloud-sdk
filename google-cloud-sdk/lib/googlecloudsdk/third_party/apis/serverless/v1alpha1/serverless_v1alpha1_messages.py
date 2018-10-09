@@ -1124,10 +1124,16 @@ class RevisionSpec(_messages.Message):
     buildName: BuildName optionally holds the name of the Build responsible
       for producing the container image for its Revision.
     concurrencyModel: ConcurrencyModel specifies the desired concurrency model
-      (Single or Multi) for the Revision. Defaults to Multi. +optional
+      (Single or Multi) for the Revision. Defaults to Multi. Deprecated in
+      favor of ContainerConcurrency. +optional
     container: Container defines the unit of execution for this Revision. In
       the context of a Revision, we disallow a number of the fields of this
       Container, including: name, resources, ports, and volumeMounts.
+    containerConcurrency: ContainerConcurrency specifies the maximum allowed
+      in-flight (concurrent) requests per container of the Revision. Values
+      are: - `0` thread-safe, the system should manage the max concurrency.
+      This is    the default value. - `1` not-thread-safe. Single concurrency
+      - `2-N` thread-safe, max concurrency of N
     generation: For open Knative: metadata.generation does not work yet, this
       is a stopgap way of specifying generation IGNORED BY GSE. +optional
     serviceAccountName: ServiceAccountName holds the name of the Kubernetes
@@ -1171,9 +1177,10 @@ class RevisionSpec(_messages.Message):
   buildName = _messages.StringField(1)
   concurrencyModel = _messages.StringField(2)
   container = _messages.MessageField('Container', 3)
-  generation = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  serviceAccountName = _messages.StringField(5)
-  servingState = _messages.EnumField('ServingStateValueValuesEnum', 6)
+  containerConcurrency = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  generation = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  serviceAccountName = _messages.StringField(6)
+  servingState = _messages.EnumField('ServingStateValueValuesEnum', 7)
 
 
 class RevisionStatus(_messages.Message):

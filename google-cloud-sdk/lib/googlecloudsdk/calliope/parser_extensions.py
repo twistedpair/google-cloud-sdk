@@ -404,8 +404,16 @@ class ArgumentParser(argparse.ArgumentParser):
         messages.append(arg)
 
     # If there is a single arg, put it on the same line.  If there are multiple
-    # add each on it's own line for better clarity.
-    separator = '\n  ' if len(messages) > 1 else ' '
+    # add each on its own line for better clarity.
+    if len(messages) > 1:
+      separator, prefix = '\n  ', ''
+    else:
+      separator, prefix = ' ', '\n\n'
+    # Always add a final message suggesting gcloud help. Set off with new line
+    # if this will be the only new line.
+    messages.append(
+        '{}To search the help text of gcloud commands, run:\n'
+        '  gcloud beta help -- SEARCH_TERMS'.format(prefix))
     self._Error(parser_errors.UnrecognizedArgumentsError(
         'unrecognized arguments:{0}{1}'.format(
             separator, separator.join(messages)),

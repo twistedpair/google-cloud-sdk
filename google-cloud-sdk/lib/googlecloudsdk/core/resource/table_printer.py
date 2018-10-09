@@ -578,6 +578,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         self._out.write(b_rule)
         self._out.write('\n')
 
+    super(TablePrinter, self).Finish()
+
   def Page(self):
     """Flushes the current resource page output."""
     self._page_count += 1

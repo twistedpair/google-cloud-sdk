@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20180921",
+ "revision": "20180928",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -919,7 +919,7 @@
     },
     "privateNetwork": {
      "type": "string",
-     "description": "Reserved for future use."
+     "description": "The resource link for the VPC network from which the Cloud SQL instance is accessible for private IP. For example, /projects/myProject/global/networks/default. This setting can be updated, but it cannot be removed after it is set."
     },
     "requireSsl": {
      "type": "boolean",

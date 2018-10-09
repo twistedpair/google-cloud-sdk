@@ -20,6 +20,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core.util import importing
 from googlecloudsdk.core.util import lazy_regex
+
+# Lazy loader doesn't work in some environments, such as par files
+try:
+  importing.lazy_load_module('googlecloudsdk.api_lib.app.yaml_parsing')
+except ImportError:
+  pass
 
 lazy_regex.initialize_lazy_compile()

@@ -3168,9 +3168,11 @@ class WorkflowMetadata(_messages.Message):
     clusterName: Output only. The name of the managed cluster.
     createCluster: Output only. The create cluster operation metadata.
     deleteCluster: Output only. The delete cluster operation metadata.
+    endTime: Output only. Workflow end time.
     graph: Output only. The workflow graph.
     parameters: Map from parameter names to values that were used for those
       parameters.
+    startTime: Output only. Workflow start time.
     state: Output only. The workflow state.
     template: Output only. The "resource name" of the template.
     version: Output only. The version of template at the time of workflow
@@ -3219,11 +3221,13 @@ class WorkflowMetadata(_messages.Message):
   clusterName = _messages.StringField(1)
   createCluster = _messages.MessageField('ClusterOperation', 2)
   deleteCluster = _messages.MessageField('ClusterOperation', 3)
-  graph = _messages.MessageField('WorkflowGraph', 4)
-  parameters = _messages.MessageField('ParametersValue', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  template = _messages.StringField(7)
-  version = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  endTime = _messages.StringField(4)
+  graph = _messages.MessageField('WorkflowGraph', 5)
+  parameters = _messages.MessageField('ParametersValue', 6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  template = _messages.StringField(9)
+  version = _messages.IntegerField(10, variant=_messages.Variant.INT32)
 
 
 class WorkflowNode(_messages.Message):

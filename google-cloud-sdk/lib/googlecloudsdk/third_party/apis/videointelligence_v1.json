@@ -1051,6 +1051,10 @@
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p1beta1_SpeechRecognitionAlternative"
           }
+        },
+        "languageCode": {
+          "description": "Output only. The\n[BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag of the\nlanguage in this result. This language code was detected to have the most\nlikelihood of being spoken in the audio.",
+          "type": "string"
         }
       }
     },

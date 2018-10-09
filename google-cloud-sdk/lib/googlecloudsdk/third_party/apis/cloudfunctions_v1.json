@@ -377,7 +377,7 @@
     },
     "CloudFunction": {
       "id": "CloudFunction",
-      "description": "Describes a Cloud Function that contains user computation executed in\nresponse to an event. It encapsulate function and triggers configurations.",
+      "description": "Describes a Cloud Function that contains user computation executed in\nresponse to an event. It encapsulate function and triggers configurations.\nLINT.IfChange",
       "type": "object",
       "properties": {
         "name": {

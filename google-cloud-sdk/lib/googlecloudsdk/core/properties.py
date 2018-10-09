@@ -1560,9 +1560,7 @@ class _SectionStorage(_Section):
     super(_SectionStorage, self).__init__('storage')
     self.chunk_size = self._Add(
         'chunk_size',
-        # TODO(b/109938541): Update this to 104857600 which is gsutil's default
-        # chunksize (1024 * 1024 * 100)
-        default=1048576,  # Apitool's default chunksize
+        default=104857600,  # gsutil's default chunksize (1024 * 1024 * 100)
         help_text='Chunk size used for uploading and downloading from '
                   'Cloud Storage.')
     # TODO(b/109938541): Remove this after implementation seems stable.
