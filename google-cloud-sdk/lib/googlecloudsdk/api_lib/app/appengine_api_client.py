@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import itertools
 import json
 import operator
@@ -39,7 +40,6 @@ from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core import yaml
 import six
 from six.moves import filter  # pylint: disable=redefined-builtin
 from six.moves import map  # pylint: disable=redefined-builtin
@@ -628,8 +628,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     # pylint: disable=g-import-not-at-top
     from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
 
-    parsed_yaml = service_config.parsed.ToYAML()
-    config_dict = yaml.load(parsed_yaml)
+    config_dict = copy.deepcopy(service_config.parsed.ToDict())
 
     # We always want to set a value for entrypoint when sending the request
     # to Zeus, even if one wasn't specified in the yaml file
@@ -665,6 +664,10 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
             build.identifier)
     version_resource = encoding.PyValueToMessage(self.messages.Version,
                                                  json_version_resource)
+    # For consistency in the tests:
+    if version_resource.envVariables:
+      version_resource.envVariables.additionalProperties.sort(
+          key=lambda x: x.key)
 
     # We need to pipe some settings to the server as beta settings.
     if extra_config_settings:
@@ -697,3 +700,34 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     # Add an ID for the version which is to be created.
     version_resource.id = version_id
     return version_resource
+
+  def UpdateDispatchRules(self, dispatch_rules):
+    """Updates an application's dispatch rules.
+
+    Args:
+      dispatch_rules: [{'service': str, 'domain': str, 'path': str}], dispatch-
+          rules to set-and-replace.
+
+    Returns:
+      Long running operation.
+    """
+
+    # Create a configuration update request.
+    update_mask = 'dispatchRules,'
+
+    application_update = self.messages.Application()
+    application_update.dispatchRules = [self.messages.UrlDispatchRule(**r)
+                                        for r in dispatch_rules]
+    update_request = self.messages.AppengineAppsPatchRequest(
+        name=self._FormatApp(),
+        application=application_update,
+        updateMask=update_mask)
+
+    operation = self.client.apps.Patch(update_request)
+
+    log.debug('Received operation: [{operation}] with mask [{mask}]'.format(
+        operation=operation.name,
+        mask=update_mask))
+
+    return operations_util.WaitForOperation(self.client.apps_operations,
+                                            operation)

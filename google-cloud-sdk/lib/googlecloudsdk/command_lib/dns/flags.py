@@ -27,13 +27,25 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
+class BetaKeyCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(BetaKeyCompleter, self).__init__(
+        collection='dns.dnsKeys',
+        api_version='v1beta2',
+        list_command=('beta dns dns-keys list --format=value(keyTag)'),
+        parse_output=True,
+        flags=['zone'],
+        **kwargs)
+
+
 class KeyCompleter(completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(KeyCompleter, self).__init__(
         collection='dns.dnsKeys',
-        api_version='v2beta1',
-        list_command=('beta dns dns-keys list --format=value(keyTag)'),
+        api_version='v1',
+        list_command=('dns dns-keys list --format=value(keyTag)'),
         parse_output=True,
         flags=['zone'],
         **kwargs)
@@ -48,11 +60,11 @@ class ManagedZoneCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
-def GetKeyArg(help_text='The DNS key identifier.'):
+def GetKeyArg(help_text='The DNS key identifier.', is_beta=False):
   return base.Argument(
       'key_id',
       metavar='KEY-ID',
-      completer=KeyCompleter,
+      completer=BetaKeyCompleter if is_beta else KeyCompleter,
       help=help_text)
 
 
@@ -149,20 +161,20 @@ def GetDoeFlagMapper(messages):
       help_str='Requires DNSSEC enabled.')
 
 
+def GetKeyAlgorithmFlag(key_type, messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--{}-algorithm'.format(key_type),
+      messages.DnsKeySpec.AlgorithmValueValuesEnum,
+      help_str='String mnemonic specifying the DNSSEC algorithm of the '
+               'key-signing key. Requires DNSSEC enabled')
+
+
 def AddCommonManagedZonesDnssecArgs(parser, messages):
   """Add Common DNSSEC flags for the managed-zones group."""
   GetDnsSecStateFlagMapper(messages).choice_arg.AddToParser(parser)
   GetDoeFlagMapper(messages).choice_arg.AddToParser(parser)
-  parser.add_argument(
-      '--ksk-algorithm',
-      help='String mnemonic specifying the DNSSEC algorithm of the '
-           'key-signing key. Requires DNSSEC enabled. Example algorithms: '
-           'RSASHA1, RSASHA256, RSASHA512, ECDSAP256SHA256, ECDSAP384SHA384')
-  parser.add_argument(
-      '--zsk-algorithm',
-      help='String mnemonic specifying the DNSSEC algorithm of the '
-           'zone-signing key. Requires DNSSEC enabled. Example algorithms: '
-           'RSASHA1, RSASHA256, RSASHA512, ECDSAP256SHA256, ECDSAP384SHA384')
+  GetKeyAlgorithmFlag('ksk', messages).choice_arg.AddToParser(parser)
+  GetKeyAlgorithmFlag('zsk', messages).choice_arg.AddToParser(parser)
   parser.add_argument(
       '--ksk-key-length',
       type=int,

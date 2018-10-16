@@ -88,20 +88,24 @@ def _ConvertToStringValue(prop):
   return getattr(prop, 'string_value', prop)
 
 
-def _DisplayNumberOfRowsModified(row_count_exact, out):
+def _DisplayNumberOfRowsModified(row_count, is_exact_count, out):
   """Prints number of rows modified by a DML statement.
 
   Args:
-    row_count_exact: Number of rows modified by statement.
+    row_count: Either the exact number of rows modified by statement or the
+      lower bound of rows modified by a Partitioned DML statement.
+    is_exact_count: Boolean stating whether the number is the exact count.
     out: Output stream to which we print.
   """
-  output_str = 'Statement modified {} {}'
-  if row_count_exact is None:
-    out.Print('Statement modified rows')
-  elif row_count_exact is 1:
-    out.Print(output_str.format(row_count_exact, 'row'))
+  if is_exact_count is True:
+    output_str = 'Statement modified {} {}'
   else:
-    out.Print(output_str.format(row_count_exact, 'rows'))
+    output_str = 'Statement modified a lower bound of {} {}'
+
+  if row_count is 1:
+    out.Print(output_str.format(row_count, 'row'))
+  else:
+    out.Print(output_str.format(row_count, 'rows'))
 
 
 def QueryHasDml(sql):
@@ -180,8 +184,14 @@ def DisplayQueryResults(result, out):
     result (spanner_v1_messages.ResultSet): The server response to a query.
     out: Output stream to which we print.
   """
-  if hasattr(result.stats, 'rowCountExact'):
-    _DisplayNumberOfRowsModified(result.stats.rowCountExact, out)
+  if hasattr(result.stats,
+             'rowCountExact') and result.stats.rowCountExact is not None:
+    _DisplayNumberOfRowsModified(result.stats.rowCountExact, True, out)
+
+  if hasattr(
+      result.stats,
+      'rowCountLowerBound') and result.stats.rowCountLowerBound is not None:
+    _DisplayNumberOfRowsModified(result.stats.rowCountLowerBound, False, out)
 
   if len(result.metadata.rowType.fields) is not 0:
     # Print "(Unspecified)" for computed columns.

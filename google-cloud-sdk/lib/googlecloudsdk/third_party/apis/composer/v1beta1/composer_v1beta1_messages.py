@@ -651,8 +651,8 @@ class SoftwareConfig(_messages.Message):
     imageVersion: Immutable. The version of the software running in the
       environment. This encapsulates both the version of Cloud Composer
       functionality and the version of Apache Airflow. It must match the
-      regular expression `composer-([0-9]+\.[0-9]+(\.[0-9]+)?|latest)-airflow-
-      [0-9]+\.[0-9]+(\.[0-9]+.*)?`. When used as input, the server will also
+      regular expression `composer-([0-9]+\.[0-9]+\.[0-9]+|latest)-airflow-[0-
+      9]+\.[0-9]+(\.[0-9]+.*)?`. When used as input, the server will also
       check if the provided version is supported and deny the creation request
       for an unsupported version.  The Cloud Composer portion of the version
       is a [semantic version](https://semver.org) or `latest`. The patch
@@ -663,11 +663,10 @@ class SoftwareConfig(_messages.Message):
       the image version that follows <em>airflow-</em> is an official Apache
       Airflow repository [release name](https://github.com/apache/incubator-
       airflow/releases).  Supported values for input are: * `composer-latest-
-      airflow-latest` * `composer-latest-airflow-1.10.0` * `composer-latest-
-      airflow-1.9.0` * `composer-latest-airflow-1.10` * `composer-latest-
-      airflow-1.9` * `composer-1.1.1-airflow-latest` *
-      `composer-1.1.1-airflow-1.10.0` * `composer-1.1.1-airflow-1.9.0` *
-      `composer-1.1.1-airflow-1.10` * `composer-1.1.1-airflow-1.9`  See also
+      airflow-1.10.0` * `composer-latest-airflow-1.9.0` * `composer-latest-
+      airflow-1.10` * `composer-latest-airflow-1.9` *
+      `composer-1.3.0-airflow-1.10.0` * `composer-1.3.0-airflow-1.9.0` *
+      `composer-1.3.0-airflow-1.10` * `composer-1.3.0-airflow-1.9`  See also
       [Release Notes](/composer/docs/release-notes).
     pypiPackages: Optional. Custom Python Package Index (PyPI) packages to be
       installed in the environment.  Keys refer to the lowercase package name

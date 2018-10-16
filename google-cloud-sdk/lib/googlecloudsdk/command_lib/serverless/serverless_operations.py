@@ -419,6 +419,14 @@ class ServerlessOperations(object):
       response = self._client.namespaces_services.List(request)
     return [service.Service(item, messages) for item in response.items]
 
+  def ListConfigurations(self, namespace_ref):
+    messages = self._messages_module
+    request = messages.ServerlessNamespacesConfigurationsListRequest(
+        parent=namespace_ref.RelativeName())
+    with metrics.record_duration(metrics.LIST_CONFIGURATIONS):
+      response = self._client.namespaces_configurations.List(request)
+    return [service.Service(item, messages) for item in response.items]
+
   def GetService(self, service_ref):
     """Return the relevant Service from the server, or None if 404."""
     messages = self._messages_module
@@ -433,15 +441,18 @@ class ServerlessOperations(object):
     except api_exceptions.HttpNotFoundError:
       return None
 
-  def GetConfiguration(self, service_ref):
+  def GetConfiguration(self, service_or_configuration_ref):
     """Return the relevant Configuration from the server, or None if 404."""
     messages = self._messages_module
-    name = self._registry.Parse(
-        service_ref.servicesId,
-        params={
-            'namespacesId': service_ref.namespacesId,
-        },
-        collection='serverless.namespaces.configurations').RelativeName()
+    if hasattr(service_or_configuration_ref, 'servicesId'):
+      name = self._registry.Parse(
+          service_or_configuration_ref.servicesId,
+          params={
+              'namespacesId': service_or_configuration_ref.namespacesId,
+          },
+          collection='serverless.namespaces.configurations').RelativeName()
+    else:
+      name = service_or_configuration_ref.RelativeName()
     configuration_get_request = (
         messages.ServerlessNamespacesConfigurationsGetRequest(
             name=name))

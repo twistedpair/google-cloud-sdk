@@ -1014,17 +1014,12 @@ class GoogleCloudVideointelligenceV1p2beta1TextAnnotation(_messages.Message):
   each detection.
 
   Fields:
-    confidence: Confidence for the track of detected text. It is calculated as
-      the highest over all frames where OCR detected text appears.
-    frames: Information related to the frames where OCR detected text appears.
     segments: All video segments where OCR detected text appears.
     text: The detected text.
   """
 
-  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextFrame', 2, repeated=True)
-  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextSegment', 3, repeated=True)
-  text = _messages.StringField(4)
+  segments = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextSegment', 1, repeated=True)
+  text = _messages.StringField(2)
 
 
 class GoogleCloudVideointelligenceV1p2beta1TextFrame(_messages.Message):
@@ -1045,10 +1040,15 @@ class GoogleCloudVideointelligenceV1p2beta1TextSegment(_messages.Message):
   r"""Video segment level annotation results for text detection.
 
   Fields:
+    confidence: Confidence for the track of detected text. It is calculated as
+      the highest over all frames where OCR detected text appears.
+    frames: Information related to the frames where OCR detected text appears.
     segment: Video segment where a text snippet was detected.
   """
 
-  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 1)
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  frames = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1TextFrame', 2, repeated=True)
+  segment = _messages.MessageField('GoogleCloudVideointelligenceV1p2beta1VideoSegment', 3)
 
 
 class GoogleCloudVideointelligenceV1p2beta1VideoAnnotationProgress(_messages.Message):

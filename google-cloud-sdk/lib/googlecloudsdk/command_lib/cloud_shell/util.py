@@ -129,6 +129,21 @@ def PrepareEnvironment(args):
   )
 
 
+def AuthorizeEnvironment():
+  client = apis.GetClientInstance('cloudshell', 'v1alpha1')
+  messages = apis.GetMessagesModule('cloudshell', 'v1alpha1')
+
+  creds = store.LoadIfEnabled()
+  access_token = None
+  if creds is not None:
+    access_token = creds.get_access_token().access_token
+    client.users_environments.Authorize(
+        messages.CloudshellUsersEnvironmentsAuthorizeRequest(
+            name=DEFAULT_ENVIRONMENT_NAME,
+            authorizeEnvironmentRequest=messages.AuthorizeEnvironmentRequest(
+                accessToken=access_token)))
+
+
 class ConnectionInfo(object):
 
   def __init__(self, ssh_env, user, host, port, key):

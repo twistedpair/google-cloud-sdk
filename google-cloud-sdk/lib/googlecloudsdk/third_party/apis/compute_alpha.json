@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20180928",
+ "revision": "20181009",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -12242,6 +12242,13 @@
      "type": "string",
      "description": "[Output Only] The URL of the instance. The URL can exist even if the instance has not yet been created."
     },
+    "instanceHealth": {
+     "type": "array",
+     "description": "[Output Only] Health state of the instance per health-check.",
+     "items": {
+      "$ref": "ManagedInstanceInstanceHealth"
+     }
+    },
     "instanceStatus": {
      "type": "string",
      "description": "[Output Only] The status of the instance. This field is empty when the instance does not exist.",
@@ -12285,6 +12292,28 @@
     "version": {
      "$ref": "ManagedInstanceVersion",
      "description": "[Output Only] Intended version of this instance."
+    }
+   }
+  },
+  "ManagedInstanceInstanceHealth": {
+   "id": "ManagedInstanceInstanceHealth",
+   "type": "object",
+   "properties": {
+    "healthCheck": {
+     "type": "string",
+     "description": "[Output Only] The URL for the health check that verifies whether the instance is healthy."
+    },
+    "healthState": {
+     "type": "string",
+     "description": "[Output Only] The current instance health state.",
+     "enum": [
+      "HEALTHY",
+      "UNHEALTHY"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     }
    }
   },
@@ -13768,9 +13797,11 @@
       "CREATING",
       "DELETING",
       "INVALID",
-      "READY"
+      "READY",
+      "REPAIRING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -15347,7 +15378,7 @@
    "properties": {
     "defaultService": {
      "type": "string",
-     "description": "The full or partial URL to the BackendService resource. This will be used if none of the pathRules defined by this PathMatcher is matched by the URL's path portion. For example, the following are all valid URLs to a BackendService resource:  \n- https://www.googleapis.com/compute/v1/projects/project/global/backendServices/backendService \n- compute/v1/projects/project/global/backendServices/backendService \n- global/backendServices/backendService"
+     "description": "The full or partial URL to the BackendService resource. This will be used if none of the pathRules or routeRules defined by this PathMatcher are matched. For example, the following are all valid URLs to a BackendService resource:  \n- https://www.googleapis.com/compute/v1/projects/project/global/backendServices/backendService \n- compute/v1/projects/project/global/backendServices/backendService \n- global/backendServices/backendService  \nUse defaultService instead of defaultRouteAction when simple routing to a backend service is desired and other advanced capabilities like traffic splitting and URL rewrites are not required.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect must be set.\nAuthorization requires one or more of the following Google IAM permissions on the specified resource default_service:  \n- compute.backendBuckets.use \n- compute.backendServices.use"
     },
     "description": {
      "type": "string",
@@ -15359,7 +15390,7 @@
     },
     "pathRules": {
      "type": "array",
-     "description": "The list of path rules.",
+     "description": "The list of path rules. Use this list instead of routeRules when routing based on simple path matching is all that's required. The order by which path rules are specified does not matter. Matches are always done on the longest-path-first basis.\nFor example: a pathRule with a path /a/b/c/* will match before /a/b/* irrespective of the order in which those paths appear in this list.\nOnly one of pathRules or routeRules must be set.",
      "items": {
       "$ref": "PathRule"
      }
@@ -15380,7 +15411,7 @@
     },
     "service": {
      "type": "string",
-     "description": "The URL of the BackendService resource if this rule is matched."
+     "description": "The URL of the backend service resource if this rule is matched.\nUse service instead of routeAction when simple routing to a backend service is desired and other advanced capabilities like traffic splitting and rewrites are not required.\nOnly one of service, routeAction or urlRedirect should must be set."
     }
    }
   },
@@ -15672,6 +15703,8 @@
       "NVIDIA_P100_VWS_GPUS",
       "NVIDIA_P4_GPUS",
       "NVIDIA_P4_VWS_GPUS",
+      "NVIDIA_T4_GPUS",
+      "NVIDIA_T4_VWS_GPUS",
       "NVIDIA_V100_GPUS",
       "PREEMPTIBLE_CPUS",
       "PREEMPTIBLE_LOCAL_SSD_GB",
@@ -15680,6 +15713,8 @@
       "PREEMPTIBLE_NVIDIA_P100_VWS_GPUS",
       "PREEMPTIBLE_NVIDIA_P4_GPUS",
       "PREEMPTIBLE_NVIDIA_P4_VWS_GPUS",
+      "PREEMPTIBLE_NVIDIA_T4_GPUS",
+      "PREEMPTIBLE_NVIDIA_T4_VWS_GPUS",
       "PREEMPTIBLE_NVIDIA_V100_GPUS",
       "PRIVATE_V6_ACCESS_SUBNETWORKS",
       "REGIONAL_AUTOSCALERS",
@@ -15705,6 +15740,10 @@
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
       "",
       "",
       "",
@@ -17252,20 +17291,6 @@
    "type": "object",
    "description": "A backup schedule policy specifies when and how frequently snapshots are to be created for the target disk. Also specifies how many and how long these scheduled snapshots should be retained.",
    "properties": {
-    "onSourceDiskDelete": {
-     "type": "string",
-     "description": "Specifies the behavior to apply to scheduled snapshots when the source disk is deleted.",
-     "enum": [
-      "APPLY_RETENTION_POLICY",
-      "KEEP_AUTO_SNAPSHOTS",
-      "UNSPECIFIED"
-     ],
-     "enumDescriptions": [
-      "",
-      "",
-      ""
-     ]
-    },
     "retentionPolicy": {
      "$ref": "ResourcePolicyBackupSchedulePolicyRetentionPolicy",
      "description": "Retention policy applied to snapshots created by this resource policy."
@@ -17296,7 +17321,21 @@
      "enum": [
       "DO_NOT_RETROACTIVELY_APPLY",
       "RETROACTIVELY_APPLY",
-      "UNSPECIFIED"
+      "UNSPECIFIED_ON_POLICY_SWITCH"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "onSourceDiskDelete": {
+     "type": "string",
+     "description": "Specifies the behavior to apply to scheduled snapshots when the source disk is deleted.",
+     "enum": [
+      "APPLY_RETENTION_POLICY",
+      "KEEP_AUTO_SNAPSHOTS",
+      "UNSPECIFIED_ON_SOURCE_DISK_DELETE"
      ],
      "enumDescriptions": [
       "",
@@ -17363,7 +17402,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-59] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -17383,7 +17422,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-59] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -17569,7 +17608,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-59] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -23694,7 +23733,7 @@
     },
     "defaultService": {
      "type": "string",
-     "description": "The URL of the BackendService resource if none of the hostRules match."
+     "description": "The URL of the backendService resource if none of the hostRules match.\nUse defaultService instead of defaultRouteAction when simple routing to a backendService is desired and other advanced capabilities like traffic splitting and rewrites are not required.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect should must be set."
     },
     "description": {
      "type": "string",

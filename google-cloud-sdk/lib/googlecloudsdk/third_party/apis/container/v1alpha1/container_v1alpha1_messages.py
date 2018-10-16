@@ -267,7 +267,7 @@ class Cluster(_messages.Message):
       [region](/compute/docs/regions-zones/regions-zones#available) in which
       the cluster resides.
     locations: The list of Google Compute Engine
-      [locations](/compute/docs/zones#available) in which the cluster's nodes
+      [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options:  * `logging.googleapis.com` - the Google
@@ -516,7 +516,7 @@ class ClusterUpdate(_messages.Message):
     desiredImageType: The desired image type for the node pool. NOTE: Set the
       "desired_node_pool" field as well.
     desiredLocations: The desired list of Google Compute Engine
-      [locations](/compute/docs/zones#available) in which the cluster's nodes
+      [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located. Changing the locations a cluster is in will result in
       nodes being either created or removed from the cluster, depending on
       whether locations are being added or removed.  This list must always
@@ -2539,7 +2539,7 @@ class SetLocationsRequest(_messages.Message):
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
     locations: The desired list of Google Compute Engine
-      [locations](/compute/docs/zones#available) in which the cluster's nodes
+      [zones](/compute/docs/zones#available) in which the cluster's nodes
       should be located. Changing the locations a cluster is in will result in
       nodes being either created or removed from the cluster, depending on
       whether locations are being added or removed.  This list must always
@@ -2902,10 +2902,11 @@ class StatusCondition(_messages.Message):
 
     Values:
       UNKNOWN: UNKNOWN indicates a generic condition.
-      GCE_STOCKOUT: GCE_STOCKOUT indicates a GCE stockout.
+      GCE_STOCKOUT: GCE_STOCKOUT indicates a Google Compute Engine stockout.
       GKE_SERVICE_ACCOUNT_DELETED: GKE_SERVICE_ACCOUNT_DELETED indicates that
         the user deleted their robot service account.
-      GCE_QUOTA_EXCEEDED: GCE quota was exceeded. More codes TBA
+      GCE_QUOTA_EXCEEDED: Google Compute Engine quota was exceeded. More codes
+        TBA
     """
     UNKNOWN = 0
     GCE_STOCKOUT = 1

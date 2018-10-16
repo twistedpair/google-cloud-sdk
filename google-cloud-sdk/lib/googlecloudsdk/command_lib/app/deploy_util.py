@@ -146,8 +146,6 @@ class DeployOptions(object):
       externalized runtimes).
     parallel_build: bool, whether to use parallel build and deployment path.
       Only supported in v1beta and v1alpha App Engine Admin API.
-    use_service_management: bool, whether to prepare for Flexible deployments
-      using Service Management.
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
       should upload files so that the server can build the image, or build the
       image on client.
@@ -158,13 +156,11 @@ class DeployOptions(object):
                stop_previous_version,
                runtime_builder_strategy,
                parallel_build=False,
-               use_service_management=True,
                flex_image_build_option=FlexImageBuildOptions.ON_CLIENT):
     self.promote = promote
     self.stop_previous_version = stop_previous_version
     self.runtime_builder_strategy = runtime_builder_strategy
     self.parallel_build = parallel_build
-    self.use_service_management = use_service_management
     self.flex_image_build_option = flex_image_build_option
 
   @classmethod
@@ -191,10 +187,8 @@ class DeployOptions(object):
     promote = properties.VALUES.app.promote_by_default.GetBool()
     stop_previous_version = (
         properties.VALUES.app.stop_previous_version.GetBool())
-    service_management = (
-        not properties.VALUES.app.use_deprecated_preparation.GetBool())
     return cls(promote, stop_previous_version,
-               runtime_builder_strategy, parallel_build, service_management,
+               runtime_builder_strategy, parallel_build,
                flex_image_build_option)
 
 
@@ -521,7 +515,8 @@ def RunDeploy(
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     parallel_build=True,
     flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
-    disable_build_cache=False):
+    disable_build_cache=False,
+    dispatch_admin_api=False):
   """Perform a deployment based on the given args.
 
   Args:
@@ -540,6 +535,8 @@ def RunDeploy(
       should upload files so that the server can build the image or build the
       image on client.
     disable_build_cache: bool, disable the build cache.
+    dispatch_admin_api: bool, speak to the (new) Admin API rather than the (old)
+      Admin Console for config push of dispatch.yaml.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -596,10 +593,7 @@ def RunDeploy(
 
       # Prepare Flex if any service is going to deploy an image.
       if any([s.RequiresImage() for s in service_infos]):
-        if deploy_options.use_service_management:
-          deploy_command_util.PossiblyEnableFlex(project)
-        else:
-          deploy_command_util.DoPrepareManagedVms(ac_client)
+        deploy_command_util.PossiblyEnableFlex(project)
 
       all_services = dict([(s.id, s) for s in api_client.ListServices()])
     else:
@@ -637,7 +631,10 @@ def RunDeploy(
     for config in configs:
       message = 'Updating config [{config}]'.format(config=config.name)
       with progress_tracker.ProgressTracker(message):
-        ac_client.UpdateConfig(config.name, config.parsed)
+        if config.name == 'dispatch' and dispatch_admin_api:
+          api_client.UpdateDispatchRules(config.GetRules())
+        else:
+          ac_client.UpdateConfig(config.name, config.parsed)
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
 
   updated_configs = [c.name for c in configs]

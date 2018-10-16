@@ -188,7 +188,7 @@
           }
         },
         "locations": {
-          "description": "The list of Google Compute Engine\n[locations](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located.",
+          "description": "The list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located.",
           "type": "array",
           "items": {
             "type": "string"
@@ -960,9 +960,9 @@
           "description": "Machine-friendly representation of the condition",
           "enumDescriptions": [
             "UNKNOWN indicates a generic condition.",
-            "GCE_STOCKOUT indicates a GCE stockout.",
+            "GCE_STOCKOUT indicates a Google Compute Engine stockout.",
             "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.",
-            "GCE quota was exceeded.\nMore codes TBA"
+            "Google Compute Engine quota was exceeded.\nMore codes TBA"
           ],
           "type": "string",
           "enum": [
@@ -1645,7 +1645,7 @@
           "$ref": "NodePoolAutoscaling"
         },
         "desiredLocations": {
-          "description": "The desired list of Google Compute Engine\n[locations](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
+          "description": "The desired list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1902,7 +1902,7 @@
           "type": "string"
         },
         "locations": {
-          "description": "The desired list of Google Compute Engine\n[locations](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
+          "description": "The desired list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the cluster's nodes\nshould be located. Changing the locations a cluster is in will result\nin nodes being either created or removed from the cluster, depending on\nwhether locations are being added or removed.\n\nThis list must always include the cluster's primary zone.",
           "type": "array",
           "items": {
             "type": "string"

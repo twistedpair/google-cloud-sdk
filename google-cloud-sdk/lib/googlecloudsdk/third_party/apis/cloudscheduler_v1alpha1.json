@@ -218,7 +218,7 @@
           "enumDescriptions": [
             "Unspecified state.",
             "The job is executing normally.",
-            "The job is disabled by the system due to error. The user\ncannot directly set a job to be disabled. The error can be\nviewed in Job.status."
+            "The job is disabled by the system due to error. The user\ncannot directly set a job to be disabled."
           ],
           "type": "string",
           "enum": [
@@ -477,7 +477,7 @@
     },
     "PubsubMessage": {
       "id": "PubsubMessage",
-      "description": "A message that is published by publishers and consumed by subscribers. The\nmessage must contain either a non-empty data field or at least one attribute.",
+      "description": "A message that is published by publishers and consumed by subscribers. The\nmessage must contain either a non-empty data field or at least one attribute.\nSee <a href=\"\/pubsub\/quotas\">Quotas and limits<\/a> for more information about\nmessage limits.",
       "type": "object",
       "properties": {
         "data": {

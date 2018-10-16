@@ -285,7 +285,7 @@
     },
     "PubsubMessage": {
       "id": "PubsubMessage",
-      "description": "A message that is published by publishers and consumed by subscribers. The\nmessage must contain either a non-empty data field or at least one attribute.",
+      "description": "A message that is published by publishers and consumed by subscribers. The\nmessage must contain either a non-empty data field or at least one attribute.\nSee <a href=\"\/pubsub\/quotas\">Quotas and limits<\/a> for more information about\nmessage limits.",
       "type": "object",
       "properties": {
         "data": {

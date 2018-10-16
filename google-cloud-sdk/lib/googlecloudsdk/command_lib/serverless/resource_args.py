@@ -163,6 +163,12 @@ def ServiceAttributeConfig(prompt=False):
       fallthroughs=fallthroughs)
 
 
+def ConfigurationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='configuration',
+      help_text='The Configuration for the {resource}.')
+
+
 def RevisionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='revision',
@@ -201,6 +207,14 @@ def GetServiceResourceSpec(prompt=False):
       namespacesId=NamespaceAttributeConfig(),
       servicesId=ServiceAttributeConfig(prompt),
       resource_name='service')
+
+
+def GetConfigurationResourceSpec():
+  return concepts.ResourceSpec(
+      'serverless.namespaces.configurations',
+      namespacesId=NamespaceAttributeConfig(),
+      configurationsId=ConfigurationAttributeConfig(),
+      resource_name='configuration')
 
 
 def GetRevisionResourceSpec():

@@ -772,9 +772,9 @@
           ]
         },
         "logging": {
-          "description": "Option to specify the logging mode, which determines where the logs are stored.",
+          "description": "Option to specify the logging mode, which determines where the logs are\nstored.",
           "enumDescriptions": [
-            "The service determines the logging mode. The default is `LEGACY`",
+            "The service determines the logging mode. The default is `LEGACY`. Do not\nrely on the default logging behavior as it may change in the future.",
             "Stackdriver logging and Cloud Storage logging are enabled.",
             "Only Cloud Storage logging is enabled."
           ],
@@ -818,7 +818,7 @@
           "type": "string"
         },
         "secretEnv": {
-          "description": "Map of environment variable name to its encrypted value.\n\nSecret environment variables must be unique across all of a build's\nsecrets, and must be used by at least one build step. Values can be at most\n2 KB in size. There can be at most ten secret values across all of a\nbuild's secrets.",
+          "description": "Map of environment variable name to its encrypted value.\n\nSecret environment variables must be unique across all of a build's\nsecrets, and must be used by at least one build step. Values can be at most\n64 KB in size. There can be at most 100 secret values across all of a\nbuild's secrets.",
           "type": "object",
           "additionalProperties": {
             "type": "string",

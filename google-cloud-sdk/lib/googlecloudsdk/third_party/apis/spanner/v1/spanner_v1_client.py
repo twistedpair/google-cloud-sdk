@@ -621,6 +621,46 @@ periodically, e.g., `"SELECT 1"`.
         supports_download=False,
     )
 
+    def ExecuteBatchDml(self, request, global_params=None):
+      r"""Executes a batch of SQL DML statements, returning an array of.
+ResultSets for each statement in the batch in a single reply. This API
+allows many DML statements to be run with lower latency than submitting
+them serially with ExecuteSql.
+
+Statements are executed in order, sequentially. If there is a problem
+executing any of the statements, the operation will fail; the remaining
+statements are not executed and `ABORTED` will be returned, with an error
+message specifying the index of the failed statement and the reason for
+the failure. If this occurs, the application should restart the
+transaction from the beginning. See Transaction for more details.
+
+Each individual statement must be a DML statement. Otherwise the
+transaction will be aborted.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesSessionsExecuteBatchDmlRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExecuteBatchDmlResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExecuteBatchDml')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExecuteBatchDml.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeBatchDml',
+        http_method=u'POST',
+        method_id=u'spanner.projects.instances.databases.sessions.executeBatchDml',
+        ordered_params=[u'session'],
+        path_params=[u'session'],
+        query_params=[],
+        relative_path=u'v1/{+session}:executeBatchDml',
+        request_field=u'executeBatchDmlRequest',
+        request_type_name=u'SpannerProjectsInstancesDatabasesSessionsExecuteBatchDmlRequest',
+        response_type_name=u'ExecuteBatchDmlResponse',
+        supports_download=False,
+    )
+
     def ExecuteSql(self, request, global_params=None):
       r"""Executes an SQL statement, returning all results in a single reply. This.
 method cannot be used to return a result set larger than 10 MiB;

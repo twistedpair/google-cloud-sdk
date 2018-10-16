@@ -7,14 +7,14 @@
   "version": "v1alpha",
   "revision": "0",
   "title": "Service Networking API",
-  "description": "The Service Networking API provides automatic management of network configurations necessary for certain services.",
+  "description": "Provides automatic management of network configurations necessary for certain services.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/service-networking/docs/overview",
+  "documentationLink": "https://cloud.google.com/service-infrastructure/docs/service-networking/getting-started",
   "protocol": "rest",
   "rootUrl": "https://servicenetworking.googleapis.com/",
   "servicePath": "",
@@ -99,178 +99,7 @@
       "location": "query"
     }
   },
-  "auth": {
-    "oauth2": {
-      "scopes": {
-        "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "View and manage your data across Google Cloud Platform services"
-        },
-        "https://www.googleapis.com/auth/service.management": {
-          "description": "Manage your Google API service configuration"
-        }
-      }
-    }
-  },
   "schemas": {
-    "Operation": {
-      "id": "Operation",
-      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "done": {
-          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
-          "type": "boolean"
-        },
-        "error": {
-          "description": "The error result of the operation in case of failure or cancellation.",
-          "$ref": "Status"
-        },
-        "response": {
-          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        }
-      }
-    },
-    "Status": {
-      "id": "Status",
-      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "The status code, which should be an enum value of google.rpc.Code.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
-          "type": "string"
-        },
-        "details": {
-          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "any",
-              "description": "Properties of the object. Contains field @type with type URL."
-            }
-          }
-        }
-      }
-    },
-    "PeerSharedNetworkRequest": {
-      "id": "PeerSharedNetworkRequest",
-      "description": "Request to create a peering to a managed service from a shared\nservice consumer network to a producer network hosting service resources.\nThis method may be invoked repeatedly if peering connection had been\ndisconnected on the consumer side. In such a case previously provisioned\nsubnetwork on the service producer side may conflict with a newly provisioned\nsubnetworks on the consumer side if reserved range had been changed.\nIn such a case services would need to be deprovisioned first, or conflicting\nconsumer subnetworks removed.",
-      "type": "object",
-      "properties": {
-        "network": {
-          "description": "Name of an existing VPC network that will be peered with\nservice provider.\nMust be in a form 'projects\/{project}\/global\/networks\/{network}'.\n{project} is a project number, as in '12345'\n{network} is network name.",
-          "type": "string"
-        },
-        "reservedPeeringRanges": {
-          "description": "Named IP address range(s) of PEERING type reserved for this service\nprovider.\nNote that invoking this method with a different range when connection is\nalready established will not reallocate already provisioned service\nproducer subnetworks.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "AddSubnetworkRequest": {
-      "id": "AddSubnetworkRequest",
-      "description": "Request to create a subnetwork in a previously peered service network.",
-      "type": "object",
-      "properties": {
-        "consumerNetwork": {
-          "description": "Network name in the consumer project.   This network must have been\nalready peered with a shared VPC network using PeerSharedServiceNetwork\nmethod.\nMust be in a form 'projects\/{project}\/global\/networks\/{network}'.\n{project} is a project number, as in '12345'\n{network} is network name.",
-          "type": "string"
-        },
-        "subnetwork": {
-          "description": "Name for the new subnetwork.\nMust be a legal [subnetwork](compute\/docs\/reference\/rest\/v1\/subnetworks)\nname.",
-          "type": "string"
-        },
-        "region": {
-          "description": "Cloud [region](\/compute\/docs\/reference\/rest\/v1\/regions) for the new\nsubnetwork.",
-          "type": "string"
-        },
-        "ipPrefixLength": {
-          "description": "The prefix length of the IP range.\nUse usual CIDR range notation.\nFor example, '30' to provision subnet with x.x.x.x\/30 CIDR range.\nActual range will determined using reserved range for the consumer\npeered network and returned in the result.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "description": {
-          "description": "Description of the subnetwork.",
-          "type": "string"
-        },
-        "subnetworkUsers": {
-          "description": "List of members that will be granted 'compute.networkUser' role\non the newly added subnetwork.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "consumer": {
-          "description": "Resource representing service consumer. It may be different from\nthe project number in consumer network parameter in case of that network\nbeing a shared VPC network. In that case, Service Networking will validate\nthat this resource belongs to that shared VPC.  Required.\nFor example 'projects\/123456'.",
-          "type": "string"
-        }
-      }
-    },
-    "ListPeeringStatesResponse": {
-      "id": "ListPeeringStatesResponse",
-      "description": "ListPeeringStatesResponse is the response to list peering states for the\ngiven service and consumer project.",
-      "type": "object",
-      "properties": {
-        "peeringStates": {
-          "description": "The list of peerings.",
-          "type": "array",
-          "items": {
-            "$ref": "PeeringState"
-          }
-        }
-      }
-    },
-    "PeeringState": {
-      "id": "PeeringState",
-      "description": "The state of existing peerings.",
-      "type": "object",
-      "properties": {
-        "service": {
-          "description": "The name of the service, for example 'servicenetworking.googleapis.com'.",
-          "type": "string"
-        },
-        "network": {
-          "description": "consumer network name.",
-          "type": "string"
-        },
-        "reservedPeeringRanges": {
-          "description": "Named IP address range(s) of PEERING type reserved for this service\nprovider.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "peering": {
-          "description": "The name of peering from GCE network.",
-          "type": "string"
-        }
-      }
-    },
     "Service": {
       "id": "Service",
       "description": "`Service` is the root object of Google service configuration schema. It\ndescribes basic information about a service, such as the name and the\ntitle, and delegates other aspects to sub-sections. Each sub-section is\neither a proto message or a repeated proto message that configures a\nspecific aspect, such as auth. See each proto message definition for details.\n\nExample:\n\n    type: google.api.Service\n    config_version: 3\n    name: calendar.googleapis.com\n    title: Google Calendar API\n    apis:\n    - name: google.calendar.v3.Calendar\n    authentication:\n      providers:\n      - id: google_calendar_auth\n        jwks_uri: https:\/\/www.googleapis.com\/oauth2\/v1\/certs\n        issuer: https:\/\/securetoken.google.com\n      rules:\n      - selector: \"*\"\n        requirements:\n          provider_id: google_calendar_auth",
@@ -909,7 +738,7 @@
     },
     "HttpRule": {
       "id": "HttpRule",
-      "description": "# gRPC Transcoding\n\ngRPC Transcoding is a feature for mapping between a gRPC method and one or\nmore HTTP REST endpoints. It allows developers to build a single API service\nthat supports both gRPC APIs and REST APIs. Many systems, including [Google\nAPIs](https:\/\/github.com\/googleapis\/googleapis),\n[Cloud Endpoints](https:\/\/cloud.google.com\/endpoints), [gRPC\nGateway](https:\/\/github.com\/grpc-ecosystem\/grpc-gateway),\nand [Envoy](https:\/\/github.com\/envoyproxy\/envoy) proxy support this feature\nand use it for large scale production services.\n\n`HttpRule` defines the schema of the gRPC\/REST mapping. The mapping specifies\nhow different portions of the gRPC request message are mapped to the URL\npath, URL query parameters, and HTTP request body. It also controls how the\ngRPC response message is mapped to the HTTP response body. `HttpRule` is\ntypically specified as an `google.api.http` annotation on the gRPC method.\n\nEach mapping specifies a URL path template and an HTTP method. The path\ntemplate may refer to one or more fields in the gRPC request message, as long\nas each field is a non-repeated field with a primitive (non-message) type.\nThe path template controls how fields of the request message are mapped to\nthe URL path.\n\nExample:\n\n    service Messaging {\n      rpc GetMessage(GetMessageRequest) returns (Message) {\n        option (google.api.http) = {\n            get: \"\/v1\/{name=messages\/*\"}\"\n        };\n      }\n    }\n    message GetMessageRequest {\n      string name = 1; \/\/ Mapped to URL path.\n    }\n    message Message {\n      string text = 1; \/\/ The resource content.\n    }\n\nThis enables an HTTP REST to gRPC mapping as below:\n\nHTTP | gRPC\n-----|-----\n`GET \/v1\/messages\/123456`  | `GetMessage(name: \"messages\/123456\")`\n\nAny fields in the request message which are not bound by the path template\nautomatically become HTTP query parameters if there is no HTTP request body.\nFor example:\n\n    service Messaging {\n      rpc GetMessage(GetMessageRequest) returns (Message) {\n        option (google.api.http) = {\n            get:\"\/v1\/messages\/{message_id}\"\n        };\n      }\n    }\n    message GetMessageRequest {\n      message SubMessage {\n        string subfield = 1;\n      }\n      string message_id = 1; \/\/ Mapped to URL path.\n      int64 revision = 2;    \/\/ Mapped to URL query parameter `revision`.\n      SubMessage sub = 3;    \/\/ Mapped to URL query parameter `sub.subfield`.\n    }\n\nThis enables a HTTP JSON to RPC mapping as below:\n\nHTTP | gRPC\n-----|-----\n`GET \/v1\/messages\/123456?revision=2&sub.subfield=foo` | `GetMessage(message_id: \"123456\" revision: 2 sub: SubMessage(subfield: \"foo\"))`\n\nNote that fields which are mapped to URL query parameters must have a\nprimitive type or a repeated primitive type or a non-repeated message type.\nIn the case of a repeated type, the parameter can be repeated in the URL\nas `...?param=A&param=B`. In the case of a message type, each field of the\nmessage is mapped to a separate parameter, such as\n`...?foo.a=A&foo.b=B&foo.c=C`.\n\nFor HTTP methods that allow a request body, the `body` field\nspecifies the mapping. Consider a REST update method on the\nmessage resource collection:\n\n    service Messaging {\n      rpc UpdateMessage(UpdateMessageRequest) returns (Message) {\n        option (google.api.http) = {\n          patch: \"\/v1\/messages\/{message_id}\"\n          body: \"message\"\n        };\n      }\n    }\n    message UpdateMessageRequest {\n      string message_id = 1; \/\/ mapped to the URL\n      Message message = 2;   \/\/ mapped to the body\n    }\n\nThe following HTTP JSON to RPC mapping is enabled, where the\nrepresentation of the JSON in the request body is determined by\nprotos JSON encoding:\n\nHTTP | gRPC\n-----|-----\n`PATCH \/v1\/messages\/123456 { \"text\": \"Hi!\" }` | `UpdateMessage(message_id: \"123456\" message { text: \"Hi!\" })`\n\nThe special name `*` can be used in the body mapping to define that\nevery field not bound by the path template should be mapped to the\nrequest body.  This enables the following alternative definition of\nthe update method:\n\n    service Messaging {\n      rpc UpdateMessage(Message) returns (Message) {\n        option (google.api.http) = {\n          patch: \"\/v1\/messages\/{message_id}\"\n          body: \"*\"\n        };\n      }\n    }\n    message Message {\n      string message_id = 1;\n      string text = 2;\n    }\n\n\nThe following HTTP JSON to RPC mapping is enabled:\n\nHTTP | gRPC\n-----|-----\n`PATCH \/v1\/messages\/123456 { \"text\": \"Hi!\" }` | `UpdateMessage(message_id: \"123456\" text: \"Hi!\")`\n\nNote that when using `*` in the body mapping, it is not possible to\nhave HTTP parameters, as all fields not bound by the path end in\nthe body. This makes this option more rarely used in practice when\ndefining REST APIs. The common usage of `*` is in custom methods\nwhich don't use the URL at all for transferring data.\n\nIt is possible to define multiple HTTP methods for one RPC by using\nthe `additional_bindings` option. Example:\n\n    service Messaging {\n      rpc GetMessage(GetMessageRequest) returns (Message) {\n        option (google.api.http) = {\n          get: \"\/v1\/messages\/{message_id}\"\n          additional_bindings {\n            get: \"\/v1\/users\/{user_id}\/messages\/{message_id}\"\n          }\n        };\n      }\n    }\n    message GetMessageRequest {\n      string message_id = 1;\n      string user_id = 2;\n    }\n\nThis enables the following two alternative HTTP JSON to RPC mappings:\n\nHTTP | gRPC\n-----|-----\n`GET \/v1\/messages\/123456` | `GetMessage(message_id: \"123456\")`\n`GET \/v1\/users\/me\/messages\/123456` | `GetMessage(user_id: \"me\" message_id: \"123456\")`\n\n## Rules for HTTP mapping\n\n1. Leaf request fields (recursive expansion nested messages in the request\n   message) are classified into three categories:\n   - Fields referred by the path template. They are passed via the URL path.\n   - Fields referred by the HttpRule.body. They are passed via the HTTP\n     request body.\n   - All other fields are passed via the URL query parameters, and the\n     parameter name is the field path in the request message. A repeated\n     field can be represented as multiple query parameters under the same\n     name.\n 2. If HttpRule.body is \"*\", there is no URL query parameter, all fields\n    are passed via URL path and HTTP request body.\n 3. If HttpRule.body is omitted, there is no HTTP request body, all\n    fields are passed via URL path and URL query parameters.\n\n### Path template syntax\n\n    Template = \"\/\" Segments [ Verb ] ;\n    Segments = Segment { \"\/\" Segment } ;\n    Segment  = \"*\" | \"**\" | LITERAL | Variable ;\n    Variable = \"{\" FieldPath [ \"=\" Segments ] \"}\" ;\n    FieldPath = IDENT { \".\" IDENT } ;\n    Verb     = \":\" LITERAL ;\n\nThe syntax `*` matches a single URL path segment. The syntax `**` matches\nzero or more URL path segments, which must be the last part of the URL path\nexcept the `Verb`.\n\nThe syntax `Variable` matches part of the URL path as specified by its\ntemplate. A variable template must not contain other variables. If a variable\nmatches a single path segment, its template may be omitted, e.g. `{var}`\nis equivalent to `{var=*}`.\n\nThe syntax `LITERAL` matches literal text in the URL path. If the `LITERAL`\ncontains any reserved character, such characters should be percent-encoded\nbefore the matching.\n\nIf a variable contains exactly one path segment, such as `\"{var}\"` or\n`\"{var=*}\"`, when such a variable is expanded into a URL path on the client\nside, all characters except `[-_.~0-9a-zA-Z]` are percent-encoded. The\nserver side does the reverse decoding. Such variables show up in the\n[Discovery Document](https:\/\/developers.google.com\/discovery\/v1\/reference\/apis)\nas `{var}`.\n\nIf a variable contains multiple path segments, such as `\"{var=foo\/*}\"`\nor `\"{var=**}\"`, when such a variable is expanded into a URL path on the\nclient side, all characters except `[-_.~\/0-9a-zA-Z]` are percent-encoded.\nThe server side does the reverse decoding, except \"%2F\" and \"%2f\" are left\nunchanged. Such variables show up in the\n[Discovery Document](https:\/\/developers.google.com\/discovery\/v1\/reference\/apis)\nas `{+var}`.\n\n## Using gRPC API Service Configuration\n\ngRPC API Service Configuration (service config) is a configuration language\nfor configuring a gRPC service to become a user-facing product. The\nservice config is simply the YAML representation of the `google.api.Service`\nproto message.\n\nAs an alternative to annotating your proto file, you can configure gRPC\ntranscoding in your service config YAML files. You do this by specifying a\n`HttpRule` that maps the gRPC method to a REST endpoint, achieving the same\neffect as the proto annotation. This can be particularly useful if you\nhave a proto that is reused in multiple services. Note that any transcoding\nspecified in the service config will override any matching transcoding\nconfiguration in the proto.\n\nExample:\n\n    http:\n      rules:\n        # Selects a gRPC method and applies HttpRule to it.\n        - selector: example.v1.Messaging.GetMessage\n          get: \/v1\/messages\/{message_id}\/{sub.subfield}\n\n## Special notes\n\nWhen gRPC Transcoding is used to map a gRPC to JSON REST endpoints, the\nproto to JSON conversion must follow the [proto3\nspecification](https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json).\n\nWhile the single segment variable follows the semantics of\n[RFC 6570](https:\/\/tools.ietf.org\/html\/rfc6570) Section 3.2.2 Simple String\nExpansion, the multi segment variable **does not** follow RFC 6570 Section\n3.2.3 Reserved Expansion. The reason is that the Reserved Expansion\ndoes not expand special characters like `?` and `#`, which would lead\nto invalid URLs. As the result, gRPC Transcoding uses a custom encoding\nfor multi segment variables.\n\nThe path variables **must not** refer to any repeated or mapped field,\nbecause client libraries are not capable of handling such variable expansion.\n\nThe path variables **must not** capture the leading \"\/\" character. The reason\nis that the most common use case \"{var}\" does not capture the leading \"\/\"\ncharacter. For consistency, all path variables must share the same behavior.\n\nRepeated message fields must not be mapped to URL query parameters, because\nno client library can support such complicated mapping.\n\nIf an API needs to use a JSON array for request or response body, it can map\nthe request or response body to a repeated field. However, some gRPC\nTranscoding implementations may not support this feature.",
+      "description": "# gRPC Transcoding\n\ngRPC Transcoding is a feature for mapping between a gRPC method and one or\nmore HTTP REST endpoints. It allows developers to build a single API service\nthat supports both gRPC APIs and REST APIs. Many systems, including [Google\nAPIs](https:\/\/github.com\/googleapis\/googleapis),\n[Cloud Endpoints](https:\/\/cloud.google.com\/endpoints), [gRPC\nGateway](https:\/\/github.com\/grpc-ecosystem\/grpc-gateway),\nand [Envoy](https:\/\/github.com\/envoyproxy\/envoy) proxy support this feature\nand use it for large scale production services.\n\n`HttpRule` defines the schema of the gRPC\/REST mapping. The mapping specifies\nhow different portions of the gRPC request message are mapped to the URL\npath, URL query parameters, and HTTP request body. It also controls how the\ngRPC response message is mapped to the HTTP response body. `HttpRule` is\ntypically specified as an `google.api.http` annotation on the gRPC method.\n\nEach mapping specifies a URL path template and an HTTP method. The path\ntemplate may refer to one or more fields in the gRPC request message, as long\nas each field is a non-repeated field with a primitive (non-message) type.\nThe path template controls how fields of the request message are mapped to\nthe URL path.\n\nExample:\n\n    service Messaging {\n      rpc GetMessage(GetMessageRequest) returns (Message) {\n        option (google.api.http) = {\n            get: \"\/v1\/{name=messages\/*}\"\n        };\n      }\n    }\n    message GetMessageRequest {\n      string name = 1; \/\/ Mapped to URL path.\n    }\n    message Message {\n      string text = 1; \/\/ The resource content.\n    }\n\nThis enables an HTTP REST to gRPC mapping as below:\n\nHTTP | gRPC\n-----|-----\n`GET \/v1\/messages\/123456`  | `GetMessage(name: \"messages\/123456\")`\n\nAny fields in the request message which are not bound by the path template\nautomatically become HTTP query parameters if there is no HTTP request body.\nFor example:\n\n    service Messaging {\n      rpc GetMessage(GetMessageRequest) returns (Message) {\n        option (google.api.http) = {\n            get:\"\/v1\/messages\/{message_id}\"\n        };\n      }\n    }\n    message GetMessageRequest {\n      message SubMessage {\n        string subfield = 1;\n      }\n      string message_id = 1; \/\/ Mapped to URL path.\n      int64 revision = 2;    \/\/ Mapped to URL query parameter `revision`.\n      SubMessage sub = 3;    \/\/ Mapped to URL query parameter `sub.subfield`.\n    }\n\nThis enables a HTTP JSON to RPC mapping as below:\n\nHTTP | gRPC\n-----|-----\n`GET \/v1\/messages\/123456?revision=2&sub.subfield=foo` | `GetMessage(message_id: \"123456\" revision: 2 sub: SubMessage(subfield: \"foo\"))`\n\nNote that fields which are mapped to URL query parameters must have a\nprimitive type or a repeated primitive type or a non-repeated message type.\nIn the case of a repeated type, the parameter can be repeated in the URL\nas `...?param=A&param=B`. In the case of a message type, each field of the\nmessage is mapped to a separate parameter, such as\n`...?foo.a=A&foo.b=B&foo.c=C`.\n\nFor HTTP methods that allow a request body, the `body` field\nspecifies the mapping. Consider a REST update method on the\nmessage resource collection:\n\n    service Messaging {\n      rpc UpdateMessage(UpdateMessageRequest) returns (Message) {\n        option (google.api.http) = {\n          patch: \"\/v1\/messages\/{message_id}\"\n          body: \"message\"\n        };\n      }\n    }\n    message UpdateMessageRequest {\n      string message_id = 1; \/\/ mapped to the URL\n      Message message = 2;   \/\/ mapped to the body\n    }\n\nThe following HTTP JSON to RPC mapping is enabled, where the\nrepresentation of the JSON in the request body is determined by\nprotos JSON encoding:\n\nHTTP | gRPC\n-----|-----\n`PATCH \/v1\/messages\/123456 { \"text\": \"Hi!\" }` | `UpdateMessage(message_id: \"123456\" message { text: \"Hi!\" })`\n\nThe special name `*` can be used in the body mapping to define that\nevery field not bound by the path template should be mapped to the\nrequest body.  This enables the following alternative definition of\nthe update method:\n\n    service Messaging {\n      rpc UpdateMessage(Message) returns (Message) {\n        option (google.api.http) = {\n          patch: \"\/v1\/messages\/{message_id}\"\n          body: \"*\"\n        };\n      }\n    }\n    message Message {\n      string message_id = 1;\n      string text = 2;\n    }\n\n\nThe following HTTP JSON to RPC mapping is enabled:\n\nHTTP | gRPC\n-----|-----\n`PATCH \/v1\/messages\/123456 { \"text\": \"Hi!\" }` | `UpdateMessage(message_id: \"123456\" text: \"Hi!\")`\n\nNote that when using `*` in the body mapping, it is not possible to\nhave HTTP parameters, as all fields not bound by the path end in\nthe body. This makes this option more rarely used in practice when\ndefining REST APIs. The common usage of `*` is in custom methods\nwhich don't use the URL at all for transferring data.\n\nIt is possible to define multiple HTTP methods for one RPC by using\nthe `additional_bindings` option. Example:\n\n    service Messaging {\n      rpc GetMessage(GetMessageRequest) returns (Message) {\n        option (google.api.http) = {\n          get: \"\/v1\/messages\/{message_id}\"\n          additional_bindings {\n            get: \"\/v1\/users\/{user_id}\/messages\/{message_id}\"\n          }\n        };\n      }\n    }\n    message GetMessageRequest {\n      string message_id = 1;\n      string user_id = 2;\n    }\n\nThis enables the following two alternative HTTP JSON to RPC mappings:\n\nHTTP | gRPC\n-----|-----\n`GET \/v1\/messages\/123456` | `GetMessage(message_id: \"123456\")`\n`GET \/v1\/users\/me\/messages\/123456` | `GetMessage(user_id: \"me\" message_id: \"123456\")`\n\n## Rules for HTTP mapping\n\n1. Leaf request fields (recursive expansion nested messages in the request\n   message) are classified into three categories:\n   - Fields referred by the path template. They are passed via the URL path.\n   - Fields referred by the HttpRule.body. They are passed via the HTTP\n     request body.\n   - All other fields are passed via the URL query parameters, and the\n     parameter name is the field path in the request message. A repeated\n     field can be represented as multiple query parameters under the same\n     name.\n 2. If HttpRule.body is \"*\", there is no URL query parameter, all fields\n    are passed via URL path and HTTP request body.\n 3. If HttpRule.body is omitted, there is no HTTP request body, all\n    fields are passed via URL path and URL query parameters.\n\n### Path template syntax\n\n    Template = \"\/\" Segments [ Verb ] ;\n    Segments = Segment { \"\/\" Segment } ;\n    Segment  = \"*\" | \"**\" | LITERAL | Variable ;\n    Variable = \"{\" FieldPath [ \"=\" Segments ] \"}\" ;\n    FieldPath = IDENT { \".\" IDENT } ;\n    Verb     = \":\" LITERAL ;\n\nThe syntax `*` matches a single URL path segment. The syntax `**` matches\nzero or more URL path segments, which must be the last part of the URL path\nexcept the `Verb`.\n\nThe syntax `Variable` matches part of the URL path as specified by its\ntemplate. A variable template must not contain other variables. If a variable\nmatches a single path segment, its template may be omitted, e.g. `{var}`\nis equivalent to `{var=*}`.\n\nThe syntax `LITERAL` matches literal text in the URL path. If the `LITERAL`\ncontains any reserved character, such characters should be percent-encoded\nbefore the matching.\n\nIf a variable contains exactly one path segment, such as `\"{var}\"` or\n`\"{var=*}\"`, when such a variable is expanded into a URL path on the client\nside, all characters except `[-_.~0-9a-zA-Z]` are percent-encoded. The\nserver side does the reverse decoding. Such variables show up in the\n[Discovery Document](https:\/\/developers.google.com\/discovery\/v1\/reference\/apis)\nas `{var}`.\n\nIf a variable contains multiple path segments, such as `\"{var=foo\/*}\"`\nor `\"{var=**}\"`, when such a variable is expanded into a URL path on the\nclient side, all characters except `[-_.~\/0-9a-zA-Z]` are percent-encoded.\nThe server side does the reverse decoding, except \"%2F\" and \"%2f\" are left\nunchanged. Such variables show up in the\n[Discovery Document](https:\/\/developers.google.com\/discovery\/v1\/reference\/apis)\nas `{+var}`.\n\n## Using gRPC API Service Configuration\n\ngRPC API Service Configuration (service config) is a configuration language\nfor configuring a gRPC service to become a user-facing product. The\nservice config is simply the YAML representation of the `google.api.Service`\nproto message.\n\nAs an alternative to annotating your proto file, you can configure gRPC\ntranscoding in your service config YAML files. You do this by specifying a\n`HttpRule` that maps the gRPC method to a REST endpoint, achieving the same\neffect as the proto annotation. This can be particularly useful if you\nhave a proto that is reused in multiple services. Note that any transcoding\nspecified in the service config will override any matching transcoding\nconfiguration in the proto.\n\nExample:\n\n    http:\n      rules:\n        # Selects a gRPC method and applies HttpRule to it.\n        - selector: example.v1.Messaging.GetMessage\n          get: \/v1\/messages\/{message_id}\/{sub.subfield}\n\n## Special notes\n\nWhen gRPC Transcoding is used to map a gRPC to JSON REST endpoints, the\nproto to JSON conversion must follow the [proto3\nspecification](https:\/\/developers.google.com\/protocol-buffers\/docs\/proto3#json).\n\nWhile the single segment variable follows the semantics of\n[RFC 6570](https:\/\/tools.ietf.org\/html\/rfc6570) Section 3.2.2 Simple String\nExpansion, the multi segment variable **does not** follow RFC 6570 Section\n3.2.3 Reserved Expansion. The reason is that the Reserved Expansion\ndoes not expand special characters like `?` and `#`, which would lead\nto invalid URLs. As the result, gRPC Transcoding uses a custom encoding\nfor multi segment variables.\n\nThe path variables **must not** refer to any repeated or mapped field,\nbecause client libraries are not capable of handling such variable expansion.\n\nThe path variables **must not** capture the leading \"\/\" character. The reason\nis that the most common use case \"{var}\" does not capture the leading \"\/\"\ncharacter. For consistency, all path variables must share the same behavior.\n\nRepeated message fields must not be mapped to URL query parameters, because\nno client library can support such complicated mapping.\n\nIf an API needs to use a JSON array for request or response body, it can map\nthe request or response body to a repeated field. However, some gRPC\nTranscoding implementations may not support this feature.",
       "type": "object",
       "properties": {
         "selector": {
@@ -1742,18 +1571,65 @@
         }
       }
     },
-    "AddSubnetworkResponse": {
-      "id": "AddSubnetworkResponse",
-      "description": "Message returning the name of the created service subnetwork.",
+    "Operation": {
+      "id": "Operation",
+      "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Subnetwork name.\nSee https:\/\/cloud.google.com\/compute\/docs\/vpc\/",
+          "description": "The server-assigned name, which is only unique within the same service that\noriginally returns it. If you use the default HTTP mapping, the\n`name` should have the format of `operations\/some\/unique\/name`.",
           "type": "string"
         },
-        "ipCidrRange": {
-          "description": "Subnetwork CIDR range in \"10.x.x.x\/y\" format.",
+        "metadata": {
+          "description": "Service-specific metadata associated with the operation.  It typically\ncontains progress information and common metadata such as create time.\nSome services might not provide such metadata.  Any method that returns a\nlong-running operation should document the metadata type, if any.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        },
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress.\nIf `true`, the operation is completed, and either `error` or `response` is\navailable.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "The error result of the operation in case of failure or cancellation.",
+          "$ref": "Status"
+        },
+        "response": {
+          "description": "The normal response of the operation in case of success.  If the original\nmethod returns no data on success, such as `Delete`, the response is\n`google.protobuf.Empty`.  If the original method is standard\n`Get`\/`Create`\/`Update`, the response should be the resource.  For other\nmethods, the response should have the type `XxxResponse`, where `Xxx`\nis the original method name.  For example, if the original method name\nis `TakeSnapshot()`, the inferred response type is\n`TakeSnapshotResponse`.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object. Contains field @type with type URL."
+          }
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
           "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
         }
       }
     },
@@ -1774,131 +1650,6 @@
     }
   },
   "resources": {
-    "operations": {
-      "methods": {
-        "get": {
-          "id": "servicenetworking.operations.get",
-          "path": "v1alpha/{+name}",
-          "flatPath": "v1alpha/operations/{operationsId}",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^operations\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
-          ],
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
-        }
-      }
-    },
-    "services": {
-      "methods": {
-        "peer": {
-          "id": "servicenetworking.services.peer",
-          "path": "v1alpha/{+name}:peer",
-          "flatPath": "v1alpha/services/{servicesId}:peer",
-          "httpMethod": "POST",
-          "parameters": {
-            "name": {
-              "description": "Provider that needs to be connected.\nservices\/{peering service}\n{peering service} is the service managing peering connectivity for\nservice provider organization.\nFor Google services that support this functionality it is\n'servicenetworking.googleapis.com'.",
-              "location": "path",
-              "required": true,
-              "pattern": "^services\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "PeerSharedNetworkRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
-          ],
-          "description": "To connect service to a VPC network peering connection\nmust be established prior to service provisioning.\nThis method must be invoked by the consumer VPC network administrator\nIt will establish a permanent peering connection with a shared\nnetwork created in the service producer organization and register a\nreserved IP range(s) to be used for service subnetwork provisioning.\nThis connection will be used for all supported services in the service\nproducer organization, so it only needs to be invoked once.\nOperation<response: Empty>."
-        },
-        "addSubnetwork": {
-          "id": "servicenetworking.services.addSubnetwork",
-          "path": "v1alpha/{+parent}:addSubnetwork",
-          "flatPath": "v1alpha/services/{servicesId}/{servicesId1}/{servicesId2}:addSubnetwork",
-          "httpMethod": "POST",
-          "parameters": {
-            "parent": {
-              "description": "Project and region where a subnetwork will be created.\nThis is a 'tenant' project in the service producer organization.\nservices\/{service}\/{collection-id}\/{resource-id}\n{collection id} is the cloud resource collection type representing the\ntenant project. Only 'projects' are currently supported.\n{resource id} is the tenant project numeric id: '123456'.\n{service} the name of the peering service, for example\n'service.googleapis.com'. This service must be whitelisted that has\nestablished the connection with consumer project.",
-              "location": "path",
-              "required": true,
-              "pattern": "^services\/[^\/]+\/[^\/]+\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "parent"
-          ],
-          "request": {
-            "$ref": "AddSubnetworkRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform",
-            "https://www.googleapis.com/auth/service.management"
-          ],
-          "description": "Service provider use this method to provision a new subnet in a\npeered service shared VPC network.\nIt will validate previously provided reserved ranges, find non-conflicting\nsub-range of requested size (expressed in\nnumber of leading bits of ipv4 network mask, as in CIDR range notation).\nIt will then create a subnetwork in the request region.\nOperation<response: AddSubnetworkResponse>"
-        }
-      }
-      ,
-      "resources": {
-        "peeringStates": {
-          "methods": {
-            "list": {
-              "id": "servicenetworking.services.peeringStates.list",
-              "path": "v1alpha/{+parent}/peeringStates",
-              "flatPath": "v1alpha/services/{servicesId}/{servicesId1}/{servicesId2}/peeringStates",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Provider that needs to be listed.\nservices\/{peering service}\/{collection id}\/{resource id}\n{peering service} is the service managing peering connectivity for\nservice provider organization.\nFor Google services that support this functionality it is\n'servicenetworking.googleapis.com'.\n{collection id} is the cloud resource collection type representing the\nservice consumer, for example 'projects', or 'organizations'.\n{resource id} is the consumer numeric id, such as project number: '123456'.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^services\/[^\/]+\/[^\/]+\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListPeeringStatesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform",
-                "https://www.googleapis.com/auth/service.management"
-              ],
-              "description": "Service provider or consumer use this method to lists peering states for\nthe given service and consumer project."
-            }
-          }
-        }
-      }
-    }
   },
   "basePath": ""
 }

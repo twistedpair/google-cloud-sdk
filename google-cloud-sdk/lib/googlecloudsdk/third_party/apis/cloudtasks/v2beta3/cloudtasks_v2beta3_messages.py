@@ -983,7 +983,7 @@ class Queue(_messages.Message):
 
   Fields:
     appEngineHttpQueue: App Engine HTTP queue.  An App Engine queue is a queue
-      that has an AppEngineHttpQeueue type.
+      that has an AppEngineHttpQueue type.
     name: Caller-specified and required in CreateQueue, after which it becomes
       output only.  The queue name.  The queue name must have the following
       format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *

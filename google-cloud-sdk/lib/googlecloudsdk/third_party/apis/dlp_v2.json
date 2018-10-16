@@ -2379,8 +2379,37 @@
       "type": "object",
       "properties": {
         "url": {
-          "description": "The Cloud Storage url of the file(s) to scan, in the format\n`gs:\/\/<bucket>\/<path>`. Trailing wildcard in the path is allowed.",
+          "description": "The Cloud Storage url of the file(s) to scan, in the format\n`gs:\/\/<bucket>\/<path>`. Trailing wildcard in the path is allowed. Exactly\none of `url` or `regex_file_set` must be set.",
           "type": "string"
+        },
+        "regexFileSet": {
+          "description": "The regex-filtered set of files to scan. Exactly one of `url` or\n`regex_file_set` must be set.",
+          "$ref": "GooglePrivacyDlpV2CloudStorageRegexFileSet"
+        }
+      }
+    },
+    "GooglePrivacyDlpV2CloudStorageRegexFileSet": {
+      "id": "GooglePrivacyDlpV2CloudStorageRegexFileSet",
+      "description": "Message representing a set of files in a Cloud Storage bucket. Regular\nexpressions are used to allow fine-grained control over which files in the\nbucket to include.\n\nIncluded files are those that match at least one item in `include_regex` and\ndo not match any items in `exclude_regex`. Note that a file that matches\nitems from both lists will _not_ be included. For a match to occur, the\nentire file path (i.e., everything in the url after the bucket name) must\nmatch the regular expression.\n\nFor example, given the input `{bucket_name: \"mybucket\", include_regex:\n[\"directory1\/.*\"], exclude_regex:\n[\"directory1\/excluded.*\"]}`:\n\n* `gs:\/\/mybucket\/directory1\/myfile` will be included\n* `gs:\/\/mybucket\/directory1\/directory2\/myfile` will be included (`.*` matches\nacross `\/`)\n* `gs:\/\/mybucket\/directory0\/directory1\/myfile` will _not_ be included (the\nfull path doesn't match any items in `include_regex`)\n* `gs:\/\/mybucket\/directory1\/excludedfile` will _not_ be included (the path\nmatches an item in `exclude_regex`)\n\nIf `include_regex` is left empty, it will match all files by default\n(this is equivalent to setting `include_regex: [\".*\"]`).\n\nSome other common use cases:\n\n* `{bucket_name: \"mybucket\", exclude_regex: [\".*\\.pdf\"]}` will include all\nfiles in `mybucket` except for .pdf files\n* `{bucket_name: \"mybucket\", include_regex: [\"directory\/[^\/]+\"]}` will\ninclude all files directly under `gs:\/\/mybucket\/directory\/`, without matching\nacross `\/`",
+      "type": "object",
+      "properties": {
+        "bucketName": {
+          "description": "The name of a Cloud Storage bucket. Required.",
+          "type": "string"
+        },
+        "includeRegex": {
+          "description": "A list of regular expressions matching file paths to include. All files in\nthe bucket that match at least one of these regular expressions will be\nincluded in the set of files, except for those that also match an item in\n`exclude_regex`. Leaving this field empty will match all files by default\n(this is equivalent to including `.*` in the list).\n\nRegular expressions use RE2\n[syntax](https:\/\/github.com\/google\/re2\/wiki\/Syntax); a guide can be found\nunder the google\/re2 repository on GitHub.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludeRegex": {
+          "description": "A list of regular expressions matching file paths to exclude. All files in\nthe bucket that match at least one of these regular expressions will be\nexcluded from the scan.\n\nRegular expressions use RE2\n[syntax](https:\/\/github.com\/google\/re2\/wiki\/Syntax); a guide can be found\nunder the google\/re2 repository on GitHub.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

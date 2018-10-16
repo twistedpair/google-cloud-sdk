@@ -90,11 +90,11 @@ DESCRIBE_HELP = {
 }
 
 
-def AddDescribeFlags(parser, hide_short_zone_flag=False):
+def AddDescribeFlags(parser, hide_short_zone_flag=False, is_beta=False):
   flags.GetZoneArg(
       'The name of the managed-zone the DNSKEY record belongs to',
       hide_short_zone_flag=hide_short_zone_flag).AddToParser(parser)
-  flags.GetKeyArg().AddToParser(parser)
+  flags.GetKeyArg(is_beta=is_beta).AddToParser(parser)
   parser.display_info.AddTransforms(GetTransforms())
 
 

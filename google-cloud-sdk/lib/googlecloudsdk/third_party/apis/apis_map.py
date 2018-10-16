@@ -442,28 +442,10 @@ MAP = {
             messages_modulepath='dns_v1_messages',
             default_version=True
         ),
-        'v1alpha2': APIDef(
-            class_path='googlecloudsdk.third_party.apis.dns.v1alpha2',
-            client_classpath='dns_v1alpha2_client.DnsV1alpha2',
-            messages_modulepath='dns_v1alpha2_messages',
-            default_version=False
-        ),
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.dns.v1beta1',
-            client_classpath='dns_v1beta1_client.DnsV1beta1',
-            messages_modulepath='dns_v1beta1_messages',
-            default_version=False
-        ),
         'v1beta2': APIDef(
             class_path='googlecloudsdk.third_party.apis.dns.v1beta2',
             client_classpath='dns_v1beta2_client.DnsV1beta2',
             messages_modulepath='dns_v1beta2_messages',
-            default_version=False
-        ),
-        'v2beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.dns.v2beta1',
-            client_classpath='dns_v2beta1_client.DnsV2beta1',
-            messages_modulepath='dns_v2beta1_messages',
             default_version=False
         ),
     },

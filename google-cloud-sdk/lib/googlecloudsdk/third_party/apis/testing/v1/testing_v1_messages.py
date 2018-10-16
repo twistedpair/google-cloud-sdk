@@ -1267,8 +1267,8 @@ class TestMatrix(_messages.Message):
         disallowed.
       TEST_NOT_APP_HOSTED: XC tests which run on physical devices must have
         "IsAppHostedTestBundle" == "true" in the xctestrun file.
-      PLIST_CANNOT_BE_PARSED: An Info.plist file in in the XCTest zip could
-        not be parsed.
+      PLIST_CANNOT_BE_PARSED: An Info.plist file in the XCTest zip could not
+        be parsed.
       TEST_ONLY_APK: The APK is marked as "testOnly". NOT USED
       MALFORMED_IPA: The input IPA could not be parsed. NOT USED
       NO_CODE_APK: APK contains no code. See also

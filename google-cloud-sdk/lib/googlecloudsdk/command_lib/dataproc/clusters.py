@@ -43,7 +43,9 @@ from googlecloudsdk.core.util import times
 GENERATED_LABEL_PREFIX = 'goog-dataproc-'
 
 
-def ArgsForClusterRef(parser, beta=False, include_deprecated=True):
+# beta is unused but still useful when we add new beta features
+def ArgsForClusterRef(parser, beta=False, include_deprecated=True): \
+    # pylint: disable=unused-argument
   """Register flags for creating a dataproc cluster.
 
   Args:
@@ -259,8 +261,8 @@ Alias,URI
   else:
     _AddDiskArgs(parser)
 
-  # The --no-address argument is present in both GA and Beta tracks,
-  # but it is hidden in the GA track.
+  # --no-address is an exception to the no negative-flag style guildline to be
+  # consistent with gcloud compute instances create --no-address
   parser.add_argument(
       '--no-address',
       action='store_true',
@@ -268,11 +270,13 @@ Alias,URI
       If provided, the instances in the cluster will not be assigned external
       IP addresses.
 
+      If omitted the instances in the cluster will each be assigned an
+      ephemeral external IP address.
+
       Note: Dataproc VMs need access to the Dataproc API. This can be achieved
       without external IP addresses using Private Google Access
       (https://cloud.google.com/compute/docs/private-google-access).
-      """,
-      hidden=not beta)
+      """)
 
   boot_disk_type_detailed_help = """\
       The type of the boot disk. The value must be ``pd-standard'' or

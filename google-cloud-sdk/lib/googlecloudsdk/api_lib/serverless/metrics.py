@@ -36,6 +36,9 @@ LIST_SERVICES = _SERVERLESS_PREFIX + 'list_services'
 # Time to list revisions
 LIST_REVISIONS = _SERVERLESS_PREFIX + 'list_revisions'
 
+# Time to list services
+LIST_CONFIGURATIONS = _SERVERLESS_PREFIX + 'list_configurations'
+
 # Time to get a revision
 GET_REVISION = _SERVERLESS_PREFIX + 'get_revision'
 

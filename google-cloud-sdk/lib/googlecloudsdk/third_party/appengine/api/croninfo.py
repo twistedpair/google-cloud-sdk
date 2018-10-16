@@ -104,9 +104,6 @@ class TimezoneValidator(validation.Validator):
 
   def Validate(self, value, key=None):
     """Validates a timezone."""
-    if value is None:
-      # optional
-      return
     if not isinstance(value, six_subset.string_types):
       raise TypeError('timezone must be a string, not \'%r\'' % type(value))
     if pytz is None:
@@ -173,7 +170,7 @@ class CronEntry(validation.Validated):
   ATTRIBUTES = {
       URL: _URL_REGEX,
       SCHEDULE: GrocValidator(),
-      TIMEZONE: TimezoneValidator(),
+      TIMEZONE: validation.Optional(TimezoneValidator()),
       DESCRIPTION: validation.Optional(_DESCRIPTION_REGEX),
       RETRY_PARAMETERS: validation.Optional(RetryParameters),
       TARGET: validation.Optional(_VERSION_REGEX),

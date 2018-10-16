@@ -328,3 +328,198 @@ class SuffixConsoleMessage(object):
 
   def _WriteLine(self, line):
     self._stream.write(self._level * INDENTATION_WIDTH * ' ' + line)
+
+
+class MultilineConsoleOutput(ConsoleOutput):
+  r"""An implementation of ConsoleOutput which supports multiline updates.
+
+  This means all messages can be updated and actually have their output
+  be updated on the terminal. The main difference between this class and
+  the simple suffix version is that updates here are updates to the entire
+  message as this provides more flexibility.
+  """
+
+  def __init__(self, stream):
+    """Constructor.
+
+    Args:
+      stream: The output stream to write to.
+    """
+    self._stream = stream
+    self._messages = []
+    self._last_print_index = 0
+    self._lock = threading.Lock()
+    self._last_total_lines = 0
+    self._may_have_update = False
+
+  def AddMessage(self, message, indentation_level=0):
+    """Adds a MultilineConsoleMessage to the MultilineConsoleOutput object.
+
+    Args:
+      message: str, The message that will be displayed.
+      indentation_level: int, The indentation level of the message. Each
+        indentation is represented by two spaces.
+
+    Returns:
+      MultilineConsoleMessage, a message object that can be used to dynamically
+      change the printed message.
+    """
+    with self._lock:
+      return self._AddMessage(
+          message,
+          indentation_level=indentation_level)
+
+  def _AddMessage(self, message, indentation_level=0):
+    self._may_have_update = True
+    console_message = MultilineConsoleMessage(
+        message,
+        self._stream,
+        indentation_level=indentation_level)
+    self._messages.append(console_message)
+    return console_message
+
+  def UpdateMessage(self, message, new_message):
+    """Updates the message of the given MultilineConsoleMessage."""
+    if not message:
+      raise ValueError('A message must be passed.')
+    if message not in self._messages:
+      raise ValueError(
+          'The given message does not belong to this output object.')
+    with self._lock:
+      message._UpdateMessage(new_message)  # pylint: disable=protected-access
+      self._may_have_update = True
+
+  def UpdateConsole(self):
+    with self._lock:
+      self._UpdateConsole()
+
+  def _GetAnsiCursorUpSequence(self, num_lines):
+    """Returns an ANSI control sequences that moves the cursor up num_lines."""
+    return '\x1b[{}A'.format(num_lines)
+
+  def _UpdateConsole(self):
+    """Updates the console output to show any updated or added messages."""
+    if not self._may_have_update:
+      return
+
+    # Reset at the start so if gcloud exits, the cursor is in the proper place.
+    # We need to track the number of outputted lines of the last update because
+    # new messages may have been added so it can't be computed from _messages.
+    if self._last_total_lines:
+      self._stream.write(self._GetAnsiCursorUpSequence(self._last_total_lines))
+
+    total_lines = 0
+    force_print_rest = False
+    for message in self._messages:
+      num_lines = message.num_lines
+      total_lines += num_lines
+      if message.has_update or force_print_rest:
+        force_print_rest |= message.num_lines_changed
+        message.Print()
+      else:
+        # Move onto next message
+        self._stream.write('\n' * num_lines)
+    self._last_total_lines = total_lines
+    self._may_have_update = False
+
+
+class MultilineConsoleMessage(object):
+  """A multiline implementation of ConsoleMessage."""
+
+  def __init__(self, message, stream, indentation_level=0):
+    """Constructor.
+
+    Args:
+      message: str, the message that this object represents.
+      stream: The output stream to write to.
+      indentation_level: int, The indentation level of the message. Each
+        indentation is represented by two spaces.
+    """
+    self._stream = stream
+    # Some terminals will move the cursor to the next line once console_width
+    # characters have been written. So for now we need to use 1 less than the
+    # actual console width to prevent automatic wrapping leading to improper
+    # text formatting.
+    self._console_width = console_attr.ConsoleAttr().GetTermSize()[0] - 1
+    if self._console_width < 0:
+      self._console_width = 0
+    self._level = indentation_level
+
+    # Private attributes used for printing.
+    self._no_output = False
+    if (self._console_width - (INDENTATION_WIDTH * indentation_level)) <= 0:
+      # The indentation won't fit into the width of the console. In this case
+      # just don't output. This should be rare and better than failing the
+      # command.
+      self._no_output = True
+
+    self._message = None
+    self._lines = []
+    self._has_update = False
+    self._num_lines_changed = False
+    self._UpdateMessage(message)
+
+  @property
+  def lines(self):
+    return self._lines
+
+  @property
+  def num_lines(self):
+    return len(self._lines)
+
+  @property
+  def has_update(self):
+    return self._has_update
+
+  @property
+  def num_lines_changed(self):
+    return self._num_lines_changed
+
+  def _UpdateMessage(self, new_message):
+    """Updates the message for this Message object."""
+    if not isinstance(new_message, six.string_types):
+      raise TypeError('expected a string or other character buffer object')
+    if new_message != self._message:
+      self._message = new_message
+      if self._no_output:
+        return
+      num_old_lines = len(self._lines)
+      self._lines = self._SplitMessageIntoLines(self._message)
+      self._has_update = True
+      self._num_lines_changed = num_old_lines != len(self._lines)
+
+  def _SplitMessageIntoLines(self, message):
+    """Converts message into a list of strs, each representing a line."""
+    lines = []
+    pos = 0
+    # Add check for width being less than indentation
+    while pos < len(message):
+      lines.append(message[pos:pos+self.effective_width])
+      pos += self.effective_width
+      lines[-1] += '\n'
+    return lines
+
+  def Print(self):
+    """Prints out the message to the console.
+
+    The implementation of this function assumes that when called, the
+    cursor position of the terminal is where the message should start printing.
+    """
+    if self._no_output:
+      return
+
+    for line in self._lines:
+      self._ClearLine()
+      self._WriteLine(line)
+    self._has_update = False
+
+  @property
+  def effective_width(self):
+    """The effective width when the indentation level is considered."""
+    return self._console_width - (INDENTATION_WIDTH * self._level)
+
+  def _ClearLine(self):
+    self._stream.write('\r{}\r'.format(' ' * self._console_width))
+
+  def _WriteLine(self, line):
+    self._stream.write(self._level * INDENTATION_WIDTH * ' ' + line)

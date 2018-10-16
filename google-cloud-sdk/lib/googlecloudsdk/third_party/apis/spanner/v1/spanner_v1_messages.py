@@ -747,6 +747,45 @@ class Empty(_messages.Message):
 
 
 
+class ExecuteBatchDmlRequest(_messages.Message):
+  r"""The request for ExecuteBatchDml
+
+  Fields:
+    seqno: A per-transaction sequence number used to identify this request.
+      This is used in the same space as the seqno in ExecuteSqlRequest. See
+      more details in ExecuteSqlRequest.
+    statements: The list of statements to execute in this batch.  Statements
+      are executed serially, such that the effects of statement i are visible
+      to statement i+1. Each statement must be a DML statement. If there is a
+      problem executing any of the statements, the operation will fail; the
+      remaining statements are not executed and `ABORTED` will be returned,
+      with an error message specifying the index of the failed statement.
+    transaction: The transaction to use. A ReadWrite transaction is required.
+      Single-use transactions are not supported (to avoid replay).  The caller
+      must either supply an existing transaction ID or begin a new
+      transaction.
+  """
+
+  seqno = _messages.IntegerField(1)
+  statements = _messages.MessageField('Statement', 2, repeated=True)
+  transaction = _messages.MessageField('TransactionSelector', 3)
+
+
+class ExecuteBatchDmlResponse(_messages.Message):
+  r"""The response for ExecuteBatchDml. Only the first ResultSet in the
+  response contains a valid ResultSetMetadata.
+
+  Fields:
+    resultSets: ResultSets, one for each statement in the batch, in the same
+      order as the request. Each ResultSet will not contain any rows. The
+      ResultSetStats in each ResultSet will contain updated row count for each
+      statement. The ResultSetMetadata in the first ResultSet will contain row
+      type and transaction information.
+  """
+
+  resultSets = _messages.MessageField('ResultSet', 1, repeated=True)
+
+
 class ExecuteSqlRequest(_messages.Message):
   r"""The request for ExecuteSql and ExecuteStreamingSql.
 
@@ -2749,6 +2788,21 @@ class SpannerProjectsInstancesDatabasesSessionsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class SpannerProjectsInstancesDatabasesSessionsExecuteBatchDmlRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesSessionsExecuteBatchDmlRequest
+  object.
+
+  Fields:
+    executeBatchDmlRequest: A ExecuteBatchDmlRequest resource to be passed as
+      the request body.
+    session: Required. The session in which the DML statements should be
+      performed.
+  """
+
+  executeBatchDmlRequest = _messages.MessageField('ExecuteBatchDmlRequest', 1)
+  session = _messages.StringField(2, required=True)
+
+
 class SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(_messages.Message):
   r"""A SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest object.
 
@@ -3207,6 +3261,112 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Statement(_messages.Message):
+  r"""A single DML statement.
+
+  Messages:
+    ParamTypesValue: It is not always possible for Cloud Spanner to infer the
+      right SQL type from a JSON value.  For example, values of type `BYTES`
+      and values of type `STRING` both appear in params as JSON strings.  In
+      these cases, `param_types` can be used to specify the exact SQL type for
+      some or all of the SQL statement parameters. See the definition of Type
+      for more information about SQL types.
+    ParamsValue: The DML string can contain parameter placeholders. A
+      parameter placeholder consists of `'@'` followed by the parameter name.
+      Parameter names consist of any combination of letters, numbers, and
+      underscores.  Parameters can appear anywhere that a literal value is
+      expected.  The same parameter name can be used more than once, for
+      example:   `"WHERE id > @msg_id AND id < @msg_id + 100"`  It is an error
+      to execute an SQL statement with unbound parameters.  Parameter values
+      are specified using `params`, which is a JSON object whose keys are
+      parameter names, and whose values are the corresponding parameter
+      values.
+
+  Fields:
+    paramTypes: It is not always possible for Cloud Spanner to infer the right
+      SQL type from a JSON value.  For example, values of type `BYTES` and
+      values of type `STRING` both appear in params as JSON strings.  In these
+      cases, `param_types` can be used to specify the exact SQL type for some
+      or all of the SQL statement parameters. See the definition of Type for
+      more information about SQL types.
+    params: The DML string can contain parameter placeholders. A parameter
+      placeholder consists of `'@'` followed by the parameter name. Parameter
+      names consist of any combination of letters, numbers, and underscores.
+      Parameters can appear anywhere that a literal value is expected.  The
+      same parameter name can be used more than once, for example:   `"WHERE
+      id > @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL
+      statement with unbound parameters.  Parameter values are specified using
+      `params`, which is a JSON object whose keys are parameter names, and
+      whose values are the corresponding parameter values.
+    sql: Required. The DML string.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParamTypesValue(_messages.Message):
+    r"""It is not always possible for Cloud Spanner to infer the right SQL
+    type from a JSON value.  For example, values of type `BYTES` and values of
+    type `STRING` both appear in params as JSON strings.  In these cases,
+    `param_types` can be used to specify the exact SQL type for some or all of
+    the SQL statement parameters. See the definition of Type for more
+    information about SQL types.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParamTypesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParamTypesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParamTypesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Type attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Type', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParamsValue(_messages.Message):
+    r"""The DML string can contain parameter placeholders. A parameter
+    placeholder consists of `'@'` followed by the parameter name. Parameter
+    names consist of any combination of letters, numbers, and underscores.
+    Parameters can appear anywhere that a literal value is expected.  The same
+    parameter name can be used more than once, for example:   `"WHERE id >
+    @msg_id AND id < @msg_id + 100"`  It is an error to execute an SQL
+    statement with unbound parameters.  Parameter values are specified using
+    `params`, which is a JSON object whose keys are parameter names, and whose
+    values are the corresponding parameter values.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParamsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  paramTypes = _messages.MessageField('ParamTypesValue', 1)
+  params = _messages.MessageField('ParamsValue', 2)
+  sql = _messages.StringField(3)
 
 
 class Status(_messages.Message):

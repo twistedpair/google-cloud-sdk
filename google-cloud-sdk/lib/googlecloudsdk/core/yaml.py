@@ -26,6 +26,7 @@ from __future__ import unicode_literals
 import collections
 
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import yaml_location_value
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
@@ -91,8 +92,8 @@ class FileLoadError(Error):
     super(FileLoadError, self).__init__(e, verb='load', f=f)
 
 
-def load(stream, file_hint=None, round_trip=False):
-  # type: (typing.Union[str, typing.IO[typing.AnyStr]], typing.Optional[str], typing.Optional[bool]) -> typing.Any  # pylint: disable=line-too-long
+def load(stream, file_hint=None, round_trip=False, location_value=False):
+  # type: (typing.Union[str, typing.IO[typing.AnyStr]], typing.Optional[str], typing.Optional[bool], typing.Optional[bool]) -> typing.Any  # pylint: disable=line-too-long
   """Loads YAML from the given steam.
 
   Args:
@@ -104,6 +105,10 @@ def load(stream, file_hint=None, round_trip=False):
       coming from.
     round_trip: bool, True to use the RoundTripLoader which preserves ordering
       and line numbers.
+    location_value: bool, True to use a loader that preserves ordering and line
+      numbers for all values. Each YAML data item is an object with value and
+      lc attributes, where lc.line and lc.col are the line and column location
+      for the item in the YAML source file.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -112,6 +117,8 @@ def load(stream, file_hint=None, round_trip=False):
     The parsed YAML data.
   """
   try:
+    if location_value:
+      return yaml_location_value.LocationValueLoad(stream)
     loader = yaml.RoundTripLoader if round_trip else yaml.SafeLoader
     return yaml.load(stream, loader, version='1.1')
   except yaml.YAMLError as e:
@@ -140,14 +147,18 @@ def load_all(stream, file_hint=None):
     raise YAMLParseError(e, f=file_hint)
 
 
-def load_path(path, round_trip=False):
-  # type: (str, typing.Optional[bool]) -> typing.Any
+def load_path(path, round_trip=False, location_value=False):
+  # type: (str, typing.Optional[bool], typing.Optional[bool]) -> typing.Any
   """Loads YAML from the given file path.
 
   Args:
     path: str, A file path to open and read from.
     round_trip: bool, True to use the RoundTripLoader which preserves ordering
       and line numbers.
+    location_value: bool, True to use a loader that preserves ordering and line
+      numbers for all values. Each YAML data item is an object with value and
+      lc attributes, where lc.line and lc.col are the line and column location
+      for the item in the YAML source file.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -158,7 +169,8 @@ def load_path(path, round_trip=False):
   """
   try:
     with files.FileReader(path) as fp:
-      return load(fp, file_hint=path, round_trip=round_trip)
+      return load(fp, file_hint=path, round_trip=round_trip,
+                  location_value=location_value)
   except files.Error as e:
     raise FileLoadError(e, f=path)
 

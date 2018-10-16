@@ -5,6 +5,53 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 221.0.0 (2018-10-16)
+
+### Breaking Changes
+
+*   **(Cloud SQL)** Removed the deprecated `host` positional argument from `gcloud sql users
+  <create|delete|set-password>`.
+
+
+### App Engine
+
+* Fixed a bug where environment variables with values of 'on' or 'off' were
+  ending up as 'true' or 'false' when deployed.
+* `gcloud app logs <read|tail>` now displays stdout and stderr from the
+  App Engine standard environment Python 3.7, PHP 7.2, Go 1.11, Java 8,
+  and Node.js 8 runtimes by default, or explicitly by supplying
+  `--logs=<stdout|stderr>`.
+
+### BigQuery
+
+* Added flags for setting a default table partition expiration for a dataset.
+
+### Cloud Dataproc
+
+* Promoted the `--no-address` flag of `gcloud dataproc clusters create` and
+`gcloud dataproc workflow-templates set-managed-cluster` to GA.
+
+### Cloud SQL
+
+* Updated the `cloud_sql_proxy` component to version 1.13.0. Please visit the
+  following release notes for details:
+  https://github.com/GoogleCloudPlatform/cloudsql-proxy/releases
+
+### Cloud Spanner
+
+* Added --enable-partitioned-dml flag for `gcloud beta spanner execute-sql`
+
+### Compute Engine
+
+* Added `gcloud beta compute instances get-guest-attributes` command for
+  retrieving guest attributes.
+* Promoted `--response` flag of `gcloud compute health-checks` for HTTP/S
+  commands to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 220.0.0 (2018-10-09)
 
 ### Breaking Changes
@@ -28,7 +75,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Some commands no longer call gsutil in their implementation in order to
   support Python 3. The gsutil implementation is now deprecated. Use the
   `storage/use_gsutil` property to temporarily get this behavior back. This
-  property and old implementation will eventaully be removed. The following
+  property and its old implementation will eventually be removed. The following
   commands are affected by this change:
     *   `functions deploy`
     *   `compute images import`
@@ -44,16 +91,16 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Java SDK to version 1.9.66.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  <https://cloud.google.com/appengine/docs/java/release-notes>
 * Updated the Python SDK to version 1.9.77.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  <https://cloud.google.com/appengine/docs/python/release-notes>
 
 ### Cloud Build
 
 *  Added a warning message to `gcloud builds submit` for builds submitted with
 configs that don't specify a logging option. See
-https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.builds#loggingmode.
+<https://cloud.google.com/cloud-build/docs/api/reference/rest/v1/projects.builds#loggingmode>.
 
 ### Cloud Composer
 

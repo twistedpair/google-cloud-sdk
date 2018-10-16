@@ -189,7 +189,7 @@
           "type": "string"
         },
         "appEngineHttpQueue": {
-          "description": "App Engine HTTP queue.\n\nAn App Engine queue is a queue that has an AppEngineHttpQeueue type.",
+          "description": "App Engine HTTP queue.\n\nAn App Engine queue is a queue that has an AppEngineHttpQueue type.",
           "$ref": "AppEngineHttpQueue"
         },
         "rateLimits": {

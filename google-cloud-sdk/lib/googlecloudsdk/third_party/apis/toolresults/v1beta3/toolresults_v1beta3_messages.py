@@ -1280,6 +1280,7 @@ class TestIssue(_messages.Message):
       fatalException: <no description>
       inAppPurchases: <no description>
       incompleteRoboScriptExecution: <no description>
+      insufficientCoverage: <no description>
       iosCrash: <no description>
       iosException: <no description>
       launcherActivityNotFound: <no description>
@@ -1302,17 +1303,18 @@ class TestIssue(_messages.Message):
     fatalException = 7
     inAppPurchases = 8
     incompleteRoboScriptExecution = 9
-    iosCrash = 10
-    iosException = 11
-    launcherActivityNotFound = 12
-    nativeCrash = 13
-    nonSdkApiUsageViolation = 14
-    performedGoogleLogin = 15
-    performedMonkeyActions = 16
-    startActivityNotFound = 17
-    unspecifiedType = 18
-    unusedRoboDirective = 19
-    usedRoboDirective = 20
+    insufficientCoverage = 10
+    iosCrash = 11
+    iosException = 12
+    launcherActivityNotFound = 13
+    nativeCrash = 14
+    nonSdkApiUsageViolation = 15
+    performedGoogleLogin = 16
+    performedMonkeyActions = 17
+    startActivityNotFound = 18
+    unspecifiedType = 19
+    unusedRoboDirective = 20
+    usedRoboDirective = 21
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   errorMessage = _messages.StringField(2)

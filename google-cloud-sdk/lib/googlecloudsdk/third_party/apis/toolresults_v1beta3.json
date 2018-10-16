@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20180928",
+ "revision": "20181009",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -1266,6 +1266,7 @@
       "fatalException",
       "inAppPurchases",
       "incompleteRoboScriptExecution",
+      "insufficientCoverage",
       "iosCrash",
       "iosException",
       "launcherActivityNotFound",
@@ -1279,6 +1280,7 @@
       "usedRoboDirective"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",

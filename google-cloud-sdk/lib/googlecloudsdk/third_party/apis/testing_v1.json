@@ -207,7 +207,7 @@
             "The .xctestrun file did not specify any test targets.",
             "One or more of the test targets defined in the .xctestrun file specifies\n\"UseDestinationArtifacts\", which is disallowed.",
             "XC tests which run on physical devices must have\n\"IsAppHostedTestBundle\" == \"true\" in the xctestrun file.",
-            "An Info.plist file in in the XCTest zip could not be parsed.",
+            "An Info.plist file in the XCTest zip could not be parsed.",
             "The APK is marked as \"testOnly\".\nNOT USED",
             "The input IPA could not be parsed.\nNOT USED",
             "APK contains no code.\nSee also\nhttps:\/\/developer.android.com\/guide\/topics\/manifest\/application-element.html#code",

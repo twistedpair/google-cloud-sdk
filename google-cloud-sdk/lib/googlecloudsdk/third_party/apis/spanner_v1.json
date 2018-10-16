@@ -1604,6 +1604,69 @@
         }
       }
     },
+    "ExecuteBatchDmlRequest": {
+      "id": "ExecuteBatchDmlRequest",
+      "description": "The request for ExecuteBatchDml",
+      "type": "object",
+      "properties": {
+        "transaction": {
+          "description": "The transaction to use. A ReadWrite transaction is required. Single-use\ntransactions are not supported (to avoid replay).  The caller must either\nsupply an existing transaction ID or begin a new transaction.",
+          "$ref": "TransactionSelector"
+        },
+        "statements": {
+          "description": "The list of statements to execute in this batch.  Statements are executed\nserially, such that the effects of statement i are visible to\nstatement i+1. Each statement must be a DML statement. If there is a\nproblem executing any of the statements, the operation will fail; the\nremaining statements are not executed and `ABORTED` will be returned, with\nan error message specifying the index of the failed statement.",
+          "type": "array",
+          "items": {
+            "$ref": "Statement"
+          }
+        },
+        "seqno": {
+          "description": "A per-transaction sequence number used to identify this request. This is\nused in the same space as the seqno in\nExecuteSqlRequest. See more details\nin ExecuteSqlRequest.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "Statement": {
+      "id": "Statement",
+      "description": "A single DML statement.",
+      "type": "object",
+      "properties": {
+        "sql": {
+          "description": "Required. The DML string.",
+          "type": "string"
+        },
+        "params": {
+          "description": "The DML string can contain parameter placeholders. A parameter\nplaceholder consists of `'@'` followed by the parameter\nname. Parameter names consist of any combination of letters,\nnumbers, and underscores.\n\nParameters can appear anywhere that a literal value is expected.  The\nsame parameter name can be used more than once, for example:\n  `\"WHERE id > @msg_id AND id < @msg_id + 100\"`\n\nIt is an error to execute an SQL statement with unbound parameters.\n\nParameter values are specified using `params`, which is a JSON\nobject whose keys are parameter names, and whose values are the\ncorresponding parameter values.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "paramTypes": {
+          "description": "It is not always possible for Cloud Spanner to infer the right SQL type\nfrom a JSON value.  For example, values of type `BYTES` and values\nof type `STRING` both appear in params as JSON strings.\n\nIn these cases, `param_types` can be used to specify the exact\nSQL type for some or all of the SQL statement parameters. See the\ndefinition of Type for more information\nabout SQL types.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Type"
+          }
+        }
+      }
+    },
+    "ExecuteBatchDmlResponse": {
+      "id": "ExecuteBatchDmlResponse",
+      "description": "The response for ExecuteBatchDml. Only the first\nResultSet in the response contains a valid ResultSetMetadata.",
+      "type": "object",
+      "properties": {
+        "resultSets": {
+          "description": "ResultSets, one for each statement in the batch, in the same order as the\nrequest. Each ResultSet will not contain any rows. The ResultSetStats\nin each ResultSet will contain updated row count for each statement. The\nResultSetMetadata in the first ResultSet will contain row type and\ntransaction information.",
+          "type": "array",
+          "items": {
+            "$ref": "ResultSet"
+          }
+        }
+      }
+    },
     "ReadRequest": {
       "id": "ReadRequest",
       "description": "The request for Read and\nStreamingRead.",
@@ -3068,6 +3131,35 @@
                         "https://www.googleapis.com/auth/spanner.data"
                       ],
                       "description": "Like ExecuteSql, except returns the result\nset as a stream. Unlike ExecuteSql, there\nis no limit on the size of the returned result set. However, no\nindividual row in the result set can exceed 100 MiB, and no\ncolumn value can exceed 10 MiB."
+                    },
+                    "executeBatchDml": {
+                      "id": "spanner.projects.instances.databases.sessions.executeBatchDml",
+                      "path": "v1/{+session}:executeBatchDml",
+                      "flatPath": "v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/sessions/{sessionsId}:executeBatchDml",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "session": {
+                          "description": "Required. The session in which the DML statements should be performed.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/databases\/[^\/]+\/sessions\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "session"
+                      ],
+                      "request": {
+                        "$ref": "ExecuteBatchDmlRequest"
+                      },
+                      "response": {
+                        "$ref": "ExecuteBatchDmlResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/spanner.data"
+                      ],
+                      "description": "Executes a batch of SQL DML statements, returning an array of\nResultSets for each statement in the batch in a single reply. This API\nallows many DML statements to be run with lower latency than submitting\nthem serially with ExecuteSql.\n\nStatements are executed in order, sequentially. If there is a problem\nexecuting any of the statements, the operation will fail; the remaining\nstatements are not executed and `ABORTED` will be returned, with an error\nmessage specifying the index of the failed statement and the reason for\nthe failure. If this occurs, the application should restart the\ntransaction from the beginning. See Transaction for more details.\n\nEach individual statement must be a DML statement. Otherwise the\ntransaction will be aborted."
                     },
                     "read": {
                       "id": "spanner.projects.instances.databases.sessions.read",

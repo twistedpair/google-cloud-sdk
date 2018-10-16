@@ -1613,8 +1613,8 @@ class ServerlessNamespacesServicesCreateRequest(_messages.Message):
   r"""A ServerlessNamespacesServicesCreateRequest object.
 
   Fields:
-    parent: The project and location in which the service should be created,
-      specified in the format `projects/*/locations/*`.
+    parent: The project name (and optionally the region) in which this service
+      should be created.
     service: A Service resource to be passed as the request body.
   """
 
@@ -1840,8 +1840,8 @@ class ServerlessProjectsLocationsServicesCreateRequest(_messages.Message):
   r"""A ServerlessProjectsLocationsServicesCreateRequest object.
 
   Fields:
-    parent: The project and location in which the service should be created,
-      specified in the format `projects/*/locations/*`.
+    parent: The project name (and optionally the region) in which this service
+      should be created.
     service: A Service resource to be passed as the request body.
   """
 

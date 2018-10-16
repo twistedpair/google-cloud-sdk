@@ -91,7 +91,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import abc
 import os
 import sys
 import unicodedata
@@ -162,14 +161,8 @@ class BoxLineCharactersAscii(BoxLineCharacters):
   d_vr = '#'
 
 
-@six.add_metaclass(abc.ABCMeta)
 class ProgressTrackerSymbols(object):
   """Characters used by progress trackers."""
-
-  @property
-  @abc.abstractmethod
-  def spin_marks(self):
-    pass
 
 
 class ProgressTrackerSymbolsUnicode(ProgressTrackerSymbols):
@@ -179,6 +172,12 @@ class ProgressTrackerSymbolsUnicode(ProgressTrackerSymbols):
   def spin_marks(self):
     return ['⠏', '⠛', '⠹', '⠼', '⠶', '⠧']
 
+  success = '✓'
+  failed = 'X'
+  interrupted = '-'
+  not_started = '.'
+  prefix_length = 2
+
 
 class ProgressTrackerSymbolsAscii(ProgressTrackerSymbols):
   """Characters used by progress trackers."""
@@ -186,6 +185,12 @@ class ProgressTrackerSymbolsAscii(ProgressTrackerSymbols):
   @property
   def spin_marks(self):
     return ['|', '/', '-', '\\',]
+
+  success = 'OK'
+  failed = 'X'
+  interrupted = '-'
+  not_started = '.'
+  prefix_length = 3
 
 
 class ConsoleAttr(object):

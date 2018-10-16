@@ -1383,6 +1383,24 @@
           "description": "The detected text.",
           "type": "string"
         },
+        "segments": {
+          "description": "All video segments where OCR detected text appears.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVideointelligenceV1p2beta1_TextSegment"
+          }
+        }
+      }
+    },
+    "GoogleCloudVideointelligenceV1p2beta1_TextSegment": {
+      "id": "GoogleCloudVideointelligenceV1p2beta1_TextSegment",
+      "description": "Video segment level annotation results for text detection.",
+      "type": "object",
+      "properties": {
+        "segment": {
+          "description": "Video segment where a text snippet was detected.",
+          "$ref": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment"
+        },
         "confidence": {
           "description": "Confidence for the track of detected text. It is calculated as the highest\nover all frames where OCR detected text appears.",
           "type": "number",
@@ -1393,13 +1411,6 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudVideointelligenceV1p2beta1_TextFrame"
-          }
-        },
-        "segments": {
-          "description": "All video segments where OCR detected text appears.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudVideointelligenceV1p2beta1_TextSegment"
           }
         }
       }
@@ -1448,17 +1459,6 @@
           "description": "Y coordinate.",
           "type": "number",
           "format": "float"
-        }
-      }
-    },
-    "GoogleCloudVideointelligenceV1p2beta1_TextSegment": {
-      "id": "GoogleCloudVideointelligenceV1p2beta1_TextSegment",
-      "description": "Video segment level annotation results for text detection.",
-      "type": "object",
-      "properties": {
-        "segment": {
-          "description": "Video segment where a text snippet was detected.",
-          "$ref": "GoogleCloudVideointelligenceV1p2beta1_VideoSegment"
         }
       }
     },

@@ -22399,11 +22399,13 @@ class NodeGroupNode(_messages.Message):
       DELETING: <no description>
       INVALID: <no description>
       READY: <no description>
+      REPAIRING: <no description>
     """
     CREATING = 0
     DELETING = 1
     INVALID = 2
     READY = 3
+    REPAIRING = 4
 
   instances = _messages.StringField(1, repeated=True)
   name = _messages.StringField(2)
@@ -24250,16 +24252,29 @@ class PathMatcher(_messages.Message):
 
   Fields:
     defaultService: The full or partial URL to the BackendService resource.
-      This will be used if none of the pathRules defined by this PathMatcher
-      is matched by the URL's path portion. For example, the following are all
-      valid URLs to a BackendService resource:   - https://www.googleapis.com/
+      This will be used if none of the pathRules or routeRules defined by this
+      PathMatcher are matched. For example, the following are all valid URLs
+      to a BackendService resource:   - https://www.googleapis.com/compute/v1/
+      projects/project/global/backendServices/backendService  -
       compute/v1/projects/project/global/backendServices/backendService  -
-      compute/v1/projects/project/global/backendServices/backendService  -
-      global/backendServices/backendService
+      global/backendServices/backendService   Use defaultService instead of
+      defaultRouteAction when simple routing to a backend service is desired
+      and other advanced capabilities like traffic splitting and URL rewrites
+      are not required. Only one of defaultService, defaultRouteAction or
+      defaultUrlRedirect must be set. Authorization requires one or more of
+      the following Google IAM permissions on the specified resource
+      default_service:   - compute.backendBuckets.use  -
+      compute.backendServices.use
     description: An optional description of this resource. Provide this
       property when you create the resource.
     name: The name to which this PathMatcher is referred by the HostRule.
-    pathRules: The list of path rules.
+    pathRules: The list of path rules. Use this list instead of routeRules
+      when routing based on simple path matching is all that's required. The
+      order by which path rules are specified does not matter. Matches are
+      always done on the longest-path-first basis. For example: a pathRule
+      with a path /a/b/c/* will match before /a/b/* irrespective of the order
+      in which those paths appear in this list. Only one of pathRules or
+      routeRules must be set.
   """
 
   defaultService = _messages.StringField(1)
@@ -24277,7 +24292,11 @@ class PathRule(_messages.Message):
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
       those chars are not allowed here.
-    service: The URL of the BackendService resource if this rule is matched.
+    service: The URL of the backend service resource if this rule is matched.
+      Use service instead of routeAction when simple routing to a backend
+      service is desired and other advanced capabilities like traffic
+      splitting and rewrites are not required. Only one of service,
+      routeAction or urlRedirect should must be set.
   """
 
   paths = _messages.StringField(1, repeated=True)
@@ -24487,6 +24506,8 @@ class Quota(_messages.Message):
       NVIDIA_P100_VWS_GPUS: <no description>
       NVIDIA_P4_GPUS: <no description>
       NVIDIA_P4_VWS_GPUS: <no description>
+      NVIDIA_T4_GPUS: <no description>
+      NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
@@ -24495,6 +24516,8 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P4_VWS_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_T4_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
@@ -24548,36 +24571,40 @@ class Quota(_messages.Message):
     NVIDIA_P100_VWS_GPUS = 27
     NVIDIA_P4_GPUS = 28
     NVIDIA_P4_VWS_GPUS = 29
-    NVIDIA_V100_GPUS = 30
-    PREEMPTIBLE_CPUS = 31
-    PREEMPTIBLE_LOCAL_SSD_GB = 32
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 33
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 34
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 35
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 36
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 37
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 38
-    REGIONAL_AUTOSCALERS = 39
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 40
-    RESOURCE_POLICIES = 41
-    ROUTERS = 42
-    ROUTES = 43
-    SECURITY_POLICIES = 44
-    SECURITY_POLICY_RULES = 45
-    SNAPSHOTS = 46
-    SSD_TOTAL_GB = 47
-    SSL_CERTIFICATES = 48
-    STATIC_ADDRESSES = 49
-    SUBNETWORKS = 50
-    TARGET_HTTPS_PROXIES = 51
-    TARGET_HTTP_PROXIES = 52
-    TARGET_INSTANCES = 53
-    TARGET_POOLS = 54
-    TARGET_SSL_PROXIES = 55
-    TARGET_TCP_PROXIES = 56
-    TARGET_VPN_GATEWAYS = 57
-    URL_MAPS = 58
-    VPN_TUNNELS = 59
+    NVIDIA_T4_GPUS = 30
+    NVIDIA_T4_VWS_GPUS = 31
+    NVIDIA_V100_GPUS = 32
+    PREEMPTIBLE_CPUS = 33
+    PREEMPTIBLE_LOCAL_SSD_GB = 34
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 35
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 36
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 37
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 38
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 39
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 40
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 41
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 42
+    REGIONAL_AUTOSCALERS = 43
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 44
+    RESOURCE_POLICIES = 45
+    ROUTERS = 46
+    ROUTES = 47
+    SECURITY_POLICIES = 48
+    SECURITY_POLICY_RULES = 49
+    SNAPSHOTS = 50
+    SSD_TOTAL_GB = 51
+    SSL_CERTIFICATES = 52
+    STATIC_ADDRESSES = 53
+    SUBNETWORKS = 54
+    TARGET_HTTPS_PROXIES = 55
+    TARGET_HTTP_PROXIES = 56
+    TARGET_INSTANCES = 57
+    TARGET_POOLS = 58
+    TARGET_SSL_PROXIES = 59
+    TARGET_TCP_PROXIES = 60
+    TARGET_VPN_GATEWAYS = 61
+    URL_MAPS = 62
+    VPN_TUNNELS = 63
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -30841,8 +30868,12 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    defaultService: The URL of the BackendService resource if none of the
-      hostRules match.
+    defaultService: The URL of the backendService resource if none of the
+      hostRules match. Use defaultService instead of defaultRouteAction when
+      simple routing to a backendService is desired and other advanced
+      capabilities like traffic splitting and rewrites are not required. Only
+      one of defaultService, defaultRouteAction or defaultUrlRedirect should
+      must be set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored

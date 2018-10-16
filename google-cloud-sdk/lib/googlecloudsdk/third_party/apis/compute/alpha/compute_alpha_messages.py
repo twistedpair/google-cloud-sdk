@@ -29212,6 +29212,8 @@ class ManagedInstance(_messages.Message):
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
       the instance has not yet been created.
+    instanceHealth: [Output Only] Health state of the instance per health-
+      check.
     instanceStatus: [Output Only] The status of the instance. This field is
       empty when the instance does not exist.
     instanceTemplate: [Output Only] The intended template of the instance.
@@ -29292,12 +29294,40 @@ class ManagedInstance(_messages.Message):
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 1)
   id = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(3)
-  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 4)
-  instanceTemplate = _messages.StringField(5)
-  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
-  override = _messages.MessageField('ManagedInstanceOverride', 7)
-  tag = _messages.StringField(8)
-  version = _messages.MessageField('ManagedInstanceVersion', 9)
+  instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 4, repeated=True)
+  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 5)
+  instanceTemplate = _messages.StringField(6)
+  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 7)
+  override = _messages.MessageField('ManagedInstanceOverride', 8)
+  tag = _messages.StringField(9)
+  version = _messages.MessageField('ManagedInstanceVersion', 10)
+
+
+class ManagedInstanceInstanceHealth(_messages.Message):
+  r"""A ManagedInstanceInstanceHealth object.
+
+  Enums:
+    HealthStateValueValuesEnum: [Output Only] The current instance health
+      state.
+
+  Fields:
+    healthCheck: [Output Only] The URL for the health check that verifies
+      whether the instance is healthy.
+    healthState: [Output Only] The current instance health state.
+  """
+
+  class HealthStateValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The current instance health state.
+
+    Values:
+      HEALTHY: <no description>
+      UNHEALTHY: <no description>
+    """
+    HEALTHY = 0
+    UNHEALTHY = 1
+
+  healthCheck = _messages.StringField(1)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 2)
 
 
 class ManagedInstanceLastAttempt(_messages.Message):
@@ -30948,11 +30978,13 @@ class NodeGroupNode(_messages.Message):
       DELETING: <no description>
       INVALID: <no description>
       READY: <no description>
+      REPAIRING: <no description>
     """
     CREATING = 0
     DELETING = 1
     INVALID = 2
     READY = 3
+    REPAIRING = 4
 
   instances = _messages.StringField(1, repeated=True)
   name = _messages.StringField(2)
@@ -32802,16 +32834,29 @@ class PathMatcher(_messages.Message):
 
   Fields:
     defaultService: The full or partial URL to the BackendService resource.
-      This will be used if none of the pathRules defined by this PathMatcher
-      is matched by the URL's path portion. For example, the following are all
-      valid URLs to a BackendService resource:   - https://www.googleapis.com/
+      This will be used if none of the pathRules or routeRules defined by this
+      PathMatcher are matched. For example, the following are all valid URLs
+      to a BackendService resource:   - https://www.googleapis.com/compute/v1/
+      projects/project/global/backendServices/backendService  -
       compute/v1/projects/project/global/backendServices/backendService  -
-      compute/v1/projects/project/global/backendServices/backendService  -
-      global/backendServices/backendService
+      global/backendServices/backendService   Use defaultService instead of
+      defaultRouteAction when simple routing to a backend service is desired
+      and other advanced capabilities like traffic splitting and URL rewrites
+      are not required. Only one of defaultService, defaultRouteAction or
+      defaultUrlRedirect must be set. Authorization requires one or more of
+      the following Google IAM permissions on the specified resource
+      default_service:   - compute.backendBuckets.use  -
+      compute.backendServices.use
     description: An optional description of this resource. Provide this
       property when you create the resource.
     name: The name to which this PathMatcher is referred by the HostRule.
-    pathRules: The list of path rules.
+    pathRules: The list of path rules. Use this list instead of routeRules
+      when routing based on simple path matching is all that's required. The
+      order by which path rules are specified does not matter. Matches are
+      always done on the longest-path-first basis. For example: a pathRule
+      with a path /a/b/c/* will match before /a/b/* irrespective of the order
+      in which those paths appear in this list. Only one of pathRules or
+      routeRules must be set.
   """
 
   defaultService = _messages.StringField(1)
@@ -32829,7 +32874,11 @@ class PathRule(_messages.Message):
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
       those chars are not allowed here.
-    service: The URL of the BackendService resource if this rule is matched.
+    service: The URL of the backend service resource if this rule is matched.
+      Use service instead of routeAction when simple routing to a backend
+      service is desired and other advanced capabilities like traffic
+      splitting and rewrites are not required. Only one of service,
+      routeAction or urlRedirect should must be set.
   """
 
   paths = _messages.StringField(1, repeated=True)
@@ -33137,6 +33186,8 @@ class Quota(_messages.Message):
       NVIDIA_P100_VWS_GPUS: <no description>
       NVIDIA_P4_GPUS: <no description>
       NVIDIA_P4_VWS_GPUS: <no description>
+      NVIDIA_T4_GPUS: <no description>
+      NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
@@ -33145,6 +33196,8 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P4_VWS_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_T4_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
@@ -33203,37 +33256,41 @@ class Quota(_messages.Message):
     NVIDIA_P100_VWS_GPUS = 31
     NVIDIA_P4_GPUS = 32
     NVIDIA_P4_VWS_GPUS = 33
-    NVIDIA_V100_GPUS = 34
-    PREEMPTIBLE_CPUS = 35
-    PREEMPTIBLE_LOCAL_SSD_GB = 36
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 37
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 38
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 39
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 40
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 41
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 42
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 43
-    REGIONAL_AUTOSCALERS = 44
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 45
-    RESOURCE_POLICIES = 46
-    ROUTERS = 47
-    ROUTES = 48
-    SECURITY_POLICIES = 49
-    SECURITY_POLICY_RULES = 50
-    SNAPSHOTS = 51
-    SSD_TOTAL_GB = 52
-    SSL_CERTIFICATES = 53
-    STATIC_ADDRESSES = 54
-    SUBNETWORKS = 55
-    TARGET_HTTPS_PROXIES = 56
-    TARGET_HTTP_PROXIES = 57
-    TARGET_INSTANCES = 58
-    TARGET_POOLS = 59
-    TARGET_SSL_PROXIES = 60
-    TARGET_TCP_PROXIES = 61
-    TARGET_VPN_GATEWAYS = 62
-    URL_MAPS = 63
-    VPN_TUNNELS = 64
+    NVIDIA_T4_GPUS = 34
+    NVIDIA_T4_VWS_GPUS = 35
+    NVIDIA_V100_GPUS = 36
+    PREEMPTIBLE_CPUS = 37
+    PREEMPTIBLE_LOCAL_SSD_GB = 38
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 39
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 40
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 41
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 42
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 43
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 44
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 45
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 46
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 47
+    REGIONAL_AUTOSCALERS = 48
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 49
+    RESOURCE_POLICIES = 50
+    ROUTERS = 51
+    ROUTES = 52
+    SECURITY_POLICIES = 53
+    SECURITY_POLICY_RULES = 54
+    SNAPSHOTS = 55
+    SSD_TOTAL_GB = 56
+    SSL_CERTIFICATES = 57
+    STATIC_ADDRESSES = 58
+    SUBNETWORKS = 59
+    TARGET_HTTPS_PROXIES = 60
+    TARGET_HTTP_PROXIES = 61
+    TARGET_INSTANCES = 62
+    TARGET_POOLS = 63
+    TARGET_SSL_PROXIES = 64
+    TARGET_TCP_PROXIES = 65
+    TARGET_VPN_GATEWAYS = 66
+    URL_MAPS = 67
+    VPN_TUNNELS = 68
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -34858,13 +34915,7 @@ class ResourcePolicyBackupSchedulePolicy(_messages.Message):
   to be created for the target disk. Also specifies how many and how long
   these scheduled snapshots should be retained.
 
-  Enums:
-    OnSourceDiskDeleteValueValuesEnum: Specifies the behavior to apply to
-      scheduled snapshots when the source disk is deleted.
-
   Fields:
-    onSourceDiskDelete: Specifies the behavior to apply to scheduled snapshots
-      when the source disk is deleted.
     retentionPolicy: Retention policy applied to snapshots created by this
       resource policy.
     schedule: A Vm Maintenance Policy specifies what kind of infrastructure
@@ -34874,23 +34925,9 @@ class ResourcePolicyBackupSchedulePolicy(_messages.Message):
       labels, encryption keys.
   """
 
-  class OnSourceDiskDeleteValueValuesEnum(_messages.Enum):
-    r"""Specifies the behavior to apply to scheduled snapshots when the source
-    disk is deleted.
-
-    Values:
-      APPLY_RETENTION_POLICY: <no description>
-      KEEP_AUTO_SNAPSHOTS: <no description>
-      UNSPECIFIED: <no description>
-    """
-    APPLY_RETENTION_POLICY = 0
-    KEEP_AUTO_SNAPSHOTS = 1
-    UNSPECIFIED = 2
-
-  onSourceDiskDelete = _messages.EnumField('OnSourceDiskDeleteValueValuesEnum', 1)
-  retentionPolicy = _messages.MessageField('ResourcePolicyBackupSchedulePolicyRetentionPolicy', 2)
-  schedule = _messages.MessageField('ResourcePolicyBackupSchedulePolicySchedule', 3)
-  snapshotProperties = _messages.MessageField('ResourcePolicyBackupSchedulePolicySnapshotProperties', 4)
+  retentionPolicy = _messages.MessageField('ResourcePolicyBackupSchedulePolicyRetentionPolicy', 1)
+  schedule = _messages.MessageField('ResourcePolicyBackupSchedulePolicySchedule', 2)
+  snapshotProperties = _messages.MessageField('ResourcePolicyBackupSchedulePolicySnapshotProperties', 3)
 
 
 class ResourcePolicyBackupSchedulePolicyRetentionPolicy(_messages.Message):
@@ -34899,11 +34936,15 @@ class ResourcePolicyBackupSchedulePolicyRetentionPolicy(_messages.Message):
   Enums:
     OnPolicySwitchValueValuesEnum: Specifies the behavior to apply to
       existing, scheduled snapshots snapshots if the policy is changed.
+    OnSourceDiskDeleteValueValuesEnum: Specifies the behavior to apply to
+      scheduled snapshots when the source disk is deleted.
 
   Fields:
     maxRetentionDays: Maximum age of the snapshot that is allowed to be kept.
     onPolicySwitch: Specifies the behavior to apply to existing, scheduled
       snapshots snapshots if the policy is changed.
+    onSourceDiskDelete: Specifies the behavior to apply to scheduled snapshots
+      when the source disk is deleted.
   """
 
   class OnPolicySwitchValueValuesEnum(_messages.Enum):
@@ -34913,14 +34954,28 @@ class ResourcePolicyBackupSchedulePolicyRetentionPolicy(_messages.Message):
     Values:
       DO_NOT_RETROACTIVELY_APPLY: <no description>
       RETROACTIVELY_APPLY: <no description>
-      UNSPECIFIED: <no description>
+      UNSPECIFIED_ON_POLICY_SWITCH: <no description>
     """
     DO_NOT_RETROACTIVELY_APPLY = 0
     RETROACTIVELY_APPLY = 1
-    UNSPECIFIED = 2
+    UNSPECIFIED_ON_POLICY_SWITCH = 2
+
+  class OnSourceDiskDeleteValueValuesEnum(_messages.Enum):
+    r"""Specifies the behavior to apply to scheduled snapshots when the source
+    disk is deleted.
+
+    Values:
+      APPLY_RETENTION_POLICY: <no description>
+      KEEP_AUTO_SNAPSHOTS: <no description>
+      UNSPECIFIED_ON_SOURCE_DISK_DELETE: <no description>
+    """
+    APPLY_RETENTION_POLICY = 0
+    KEEP_AUTO_SNAPSHOTS = 1
+    UNSPECIFIED_ON_SOURCE_DISK_DELETE = 2
 
   maxRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   onPolicySwitch = _messages.EnumField('OnPolicySwitchValueValuesEnum', 2)
+  onSourceDiskDelete = _messages.EnumField('OnSourceDiskDeleteValueValuesEnum', 3)
 
 
 class ResourcePolicyBackupSchedulePolicySchedule(_messages.Message):
@@ -34992,7 +35047,7 @@ class ResourcePolicyDailyCycle(_messages.Message):
     duration: [Output only] Duration of the time window, automatically chosen
       to be smallest possible in the given scenario.
     startTime: Time within the window to start the operations. It must be in
-      format "HH:MM?, where HH : [00-23] and MM : [00-59] GMT.
+      format "HH:MM?, where HH : [00-23] and MM : [00-00] GMT.
   """
 
   daysInCycle = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -35008,7 +35063,7 @@ class ResourcePolicyHourlyCycle(_messages.Message):
       to be smallest possible in the given scenario.
     hoursInCycle: Allows to define schedule that runs every nth hour.
     startTime: Time within the window to start the operations. It must be in
-      format "HH:MM?, where HH : [00-23] and MM : [00-59] GMT.
+      format "HH:MM?, where HH : [00-23] and MM : [00-00] GMT.
   """
 
   duration = _messages.StringField(1)
@@ -35187,7 +35242,7 @@ class ResourcePolicyWeeklyCycleDayOfWeek(_messages.Message):
     duration: [Output only] Duration of the time window, automatically chosen
       to be smallest possible in the given scenario.
     startTime: Time within the window to start the operations. It must be in
-      format "HH:MM?, where HH : [00-23] and MM : [00-59] GMT.
+      format "HH:MM?, where HH : [00-23] and MM : [00-00] GMT.
   """
 
   class DayValueValuesEnum(_messages.Enum):
@@ -42376,8 +42431,12 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    defaultService: The URL of the BackendService resource if none of the
-      hostRules match.
+    defaultService: The URL of the backendService resource if none of the
+      hostRules match. Use defaultService instead of defaultRouteAction when
+      simple routing to a backendService is desired and other advanced
+      capabilities like traffic splitting and rewrites are not required. Only
+      one of defaultService, defaultRouteAction or defaultUrlRedirect should
+      must be set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored

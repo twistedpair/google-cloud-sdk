@@ -258,8 +258,10 @@ class CommandBuilder(object):
             return self._HandleResponse(response, args)
 
         response = self._HandleResponse(response, args)
-        log.CreatedResource(self._GetDisplayName(ref, args),
-                            kind=self.resource_type)
+        if not (self.spec.arguments.resource
+                and self.spec.arguments.resource.is_parent_resource):
+          log.CreatedResource(self._GetDisplayName(ref, args),
+                              kind=self.resource_type)
         return response
 
     return Command
@@ -297,6 +299,10 @@ class CommandBuilder(object):
         return response
 
     return Command
+
+  @property
+  def _add_condition(self):
+    return self.spec.iam and self.spec.iam.enable_condition
 
   def _GenerateGetIamPolicyCommand(self):
     """Generates a get-iam-policy command.
@@ -384,9 +390,10 @@ class CommandBuilder(object):
   def _GenerateAddIamPolicyBindingCommand(self):
     """Generates an add-iam-policy-binding command.
 
-    An add-iam-policy-binding command takes a resource argument, a member to add
-    the binding for, a role to define the role of the member, and two API
-    methods to get and set the policy on the resource.
+    An add-iam-policy-binding command adds a binding to a IAM policy. A
+    binding consists of a member, a role to define the role of the member, and
+    an optional condition to define in what condition the binding is valid.
+    Two API methods are called to get and set the policy on the resource.
 
     Returns:
       calliope.base.Command, The command that implements the spec.
@@ -401,8 +408,9 @@ class CommandBuilder(object):
 
       @staticmethod
       def Args(parser):
+        iam_util.AddArgsForAddIamPolicyBinding(
+            parser, add_condition=self._add_condition)
         self._CommonArgs(parser)
-        iam_util.AddArgsForAddIamPolicyBinding(parser)
         base.URI_FLAG.RemoveFromParser(parser)
 
       def Run(self_, args):
@@ -415,7 +423,8 @@ class CommandBuilder(object):
               self.spec.iam.set_iam_policy_request_path or policy_request_path)
         policy_field_path = policy_request_path + '.policy'
 
-        policy = self._GetModifiedIamPolicy(args, 'add')
+        policy = self._GetModifiedIamPolicyAddIamBinding(
+            args, add_condition=self._add_condition)
         self.spec.request.static_fields[policy_field_path] = policy
 
         ref, response = self._CommonRun(args)
@@ -427,9 +436,10 @@ class CommandBuilder(object):
   def _GenerateRemoveIamPolicyBindingCommand(self):
     """Generates a remove-iam-policy-binding command.
 
-    A remove-iam-policy-binding command takes a resource argument, a member,
-    a role to remove the member from, and two API methods to get and set the
-    policy on the resource.
+    A remove-iam-policy-binding command removes a binding from a IAM policy. A
+    binding consists of a member, a role to define the role of the member, and
+    an optional condition to define in what condition the binding is valid.
+    Two API methods are called to get and set the policy on the resource.
 
     Returns:
       calliope.base.Command, The command that implements the spec.
@@ -444,8 +454,9 @@ class CommandBuilder(object):
 
       @staticmethod
       def Args(parser):
+        iam_util.AddArgsForRemoveIamPolicyBinding(
+            parser, add_condition=self._add_condition)
         self._CommonArgs(parser)
-        iam_util.AddArgsForRemoveIamPolicyBinding(parser)
         base.URI_FLAG.RemoveFromParser(parser)
 
       def Run(self_, args):
@@ -458,7 +469,8 @@ class CommandBuilder(object):
               self.spec.iam.set_iam_policy_request_path or policy_request_path)
         policy_field_path = policy_request_path + '.policy'
 
-        policy = self._GetModifiedIamPolicy(args, 'remove')
+        policy = self._GetModifiedIamPolicyRemoveIamBinding(
+            args, add_condition=self._add_condition)
         self.spec.request.static_fields[policy_field_path] = policy
 
         ref, response = self._CommonRun(args)
@@ -653,20 +665,7 @@ class CommandBuilder(object):
     if hasattr(update_request, 'updateMask'):
       self.spec.request.static_fields[mask_field_path] = update_mask
 
-  def _GetModifiedIamPolicy(self, args, policy_binding_type):
-    """Get the current IAM policy and then add/remove bindings as specified.
-
-    An IAM binding is a pair of role and member. If policy_binding_type is add,
-    the member and role specified in args would be added; if policy_binding_type
-    is remove, the member and role specified in args would be removed.
-
-    Args:
-      args: The argparse parser.
-      policy_binding_type: string, add or remove.
-
-    Returns:
-      IAM policy.
-    """
+  def _GetIamPolicy(self, args):
     get_iam_method = registry.GetMethod(self.spec.request.collection,
                                         'getIamPolicy',
                                         self.spec.request.api_version)
@@ -675,15 +674,50 @@ class CommandBuilder(object):
         use_relative_name=self.spec.request.use_relative_name,
         override_method=get_iam_method)
     policy = get_iam_method.Call(get_iam_request)
+    return policy
 
-    if policy_binding_type == 'add':
-      binding = self.method.GetMessageByName('Binding')
-      iam_util.AddBindingToIamPolicy(binding, policy, args.member, args.role)
-    elif policy_binding_type == 'remove':
-      iam_util.RemoveBindingFromIamPolicy(policy, args.member, args.role)
+  def _GetModifiedIamPolicyAddIamBinding(self, args, add_condition=False):
+    """Get the IAM policy and add the specified binding to it.
+
+    Args:
+      args: an argparse namespace.
+      add_condition: True if support condition.
+
+    Returns:
+      IAM policy.
+    """
+    binding_message_type = self.method.GetMessageByName('Binding')
+    if add_condition:
+      condition = iam_util.ValidateAndExtractConditionMutexRole(args)
+      policy = self._GetIamPolicy(args)
+      condition_message_type = self.method.GetMessageByName('Expr')
+      iam_util.AddBindingToIamPolicyWithCondition(
+          binding_message_type, condition_message_type, policy, args.member,
+          args.role, condition)
     else:
-      pass
+      policy = self._GetIamPolicy(args)
+      iam_util.AddBindingToIamPolicy(binding_message_type, policy, args.member,
+                                     args.role)
+    return policy
 
+  def _GetModifiedIamPolicyRemoveIamBinding(self, args, add_condition=False):
+    """Get the IAM policy and remove the specified binding to it.
+
+    Args:
+      args: an argparse namespace.
+      add_condition: True if support condition.
+
+    Returns:
+      IAM policy.
+    """
+    if add_condition:
+      condition = iam_util.ValidateAndExtractCondition(args)
+      policy = self._GetIamPolicy(args)
+      iam_util.RemoveBindingFromIamPolicyWithCondition(
+          policy, args.member, args.role, condition, all_conditions=args.all)
+    else:
+      policy = self._GetIamPolicy(args)
+      iam_util.RemoveBindingFromIamPolicy(policy, args.member, args.role)
     return policy
 
   def _GetExistingResource(self, args):

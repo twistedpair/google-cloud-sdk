@@ -502,8 +502,7 @@ class Job(_messages.Message):
       STATE_UNSPECIFIED: Unspecified state.
       ENABLED: The job is executing normally.
       DISABLED: The job is disabled by the system due to error. The user
-        cannot directly set a job to be disabled. The error can be viewed in
-        status.
+        cannot directly set a job to be disabled.
     """
     STATE_UNSPECIFIED = 0
     ENABLED = 1
@@ -636,7 +635,8 @@ class Location(_messages.Message):
 class PubsubMessage(_messages.Message):
   r"""A message that is published by publishers and consumed by subscribers.
   The message must contain either a non-empty data field or at least one
-  attribute.
+  attribute. See <a href="/pubsub/quotas">Quotas and limits</a> for more
+  information about message limits.
 
   Messages:
     AttributesValue: Optional attributes for this message.

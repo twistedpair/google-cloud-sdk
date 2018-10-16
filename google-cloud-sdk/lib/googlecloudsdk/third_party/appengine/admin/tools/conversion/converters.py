@@ -366,26 +366,9 @@ def ConvertDispatchHandler(handler):
 
   Returns:
     Handler which has 'domain', 'path' and 'service' fields.
-
-  Raises:
-    ValueError: if both module and service presented in dispatch entry
-    or no module or service presented in dispatch entry.
   """
   dispatch_url = dispatchinfo.ParsedURL(handler['url'])
-
-  dispatch_service = None
-  if 'module' in handler:
-    dispatch_service = handler['module']
-  if 'service' in handler:
-    if dispatch_service:
-      raise ValueError(
-          "Both 'module' and 'service' in dispatch rule, "
-          "please use only one: %s" % handler)
-    else:
-      dispatch_service = handler['service']
-  if not dispatch_service:
-    raise ValueError(
-        "Missing required value 'service' in dispatch rule: %s" % handler)
+  dispatch_service = handler['service']
 
   dispatch_domain = dispatch_url.host
   if not dispatch_url.host_exact:

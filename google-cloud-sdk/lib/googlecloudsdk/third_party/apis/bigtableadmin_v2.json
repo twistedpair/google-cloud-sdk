@@ -1334,7 +1334,7 @@
                 "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Updates an instance within a project."
+              "description": "Updates an instance within a project. This method updates only the display\nname and type for an Instance. To update other Instance properties, such as\nlabels, use PartialUpdateInstance."
             },
             "partialUpdateInstance": {
               "id": "bigtableadmin.projects.instances.partialUpdateInstance",
@@ -1373,7 +1373,7 @@
                 "https://www.googleapis.com/auth/cloud-bigtable.admin.cluster",
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Partially updates an instance within a project."
+              "description": "Partially updates an instance within a project. This method can modify all\nfields of an Instance and is the preferred way to update an Instance."
             },
             "delete": {
               "id": "bigtableadmin.projects.instances.delete",

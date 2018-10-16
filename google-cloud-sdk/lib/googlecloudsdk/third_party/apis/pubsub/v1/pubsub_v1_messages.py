@@ -343,7 +343,8 @@ class PublishResponse(_messages.Message):
 class PubsubMessage(_messages.Message):
   r"""A message that is published by publishers and consumed by subscribers.
   The message must contain either a non-empty data field or at least one
-  attribute.
+  attribute. See <a href="/pubsub/quotas">Quotas and limits</a> for more
+  information about message limits.
 
   Messages:
     AttributesValue: Optional attributes for this message.

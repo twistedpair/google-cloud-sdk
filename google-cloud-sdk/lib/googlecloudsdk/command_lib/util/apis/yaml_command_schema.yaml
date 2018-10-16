@@ -641,6 +641,9 @@ properties:
         type: object
         patternProperties:
           .*: {type: string}
+      # The indicator for IAM condition. If True, the command can accept condition
+      # as part of a IAM policy binding. Default is False.
+      enable_condition: {type: boolean}
 
   # Additional information for handling the update commands.
   update:

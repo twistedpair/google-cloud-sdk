@@ -165,6 +165,7 @@ class IamData(object):
   def __init__(self, data):
     self.message_type_overrides = data.get('message_type_overrides', {})
     self.set_iam_policy_request_path = data.get('set_iam_policy_request_path')
+    self.enable_condition = data.get('enable_condition', False)
 
 
 class AsyncStateField(object):

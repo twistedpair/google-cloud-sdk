@@ -226,7 +226,36 @@ class ConfigYamlInfo(_YamlInfo):
         file_path=file_path,
         msg=HINT_PROJECT)
 
+    if base == 'dispatch':
+      return DispatchConfigYamlInfo(file_path, config=base, parsed=parsed)
     return ConfigYamlInfo(file_path, config=base, parsed=parsed)
+
+
+class DispatchConfigYamlInfo(ConfigYamlInfo):
+  """Provides methods for getting 1p-ready representation."""
+
+  def _HandlerToDict(self, handler):
+    parsed_url = dispatchinfo.ParsedURL(handler.url)
+    dispatch_domain = parsed_url.host
+    if not parsed_url.host_exact:
+      dispatch_domain = '*' + dispatch_domain
+
+    dispatch_path = parsed_url.path
+    if not parsed_url.path_exact:
+      dispatch_path = dispatch_path.rstrip('/') + '/*'
+    return {
+        'domain': dispatch_domain,
+        'path': dispatch_path,
+        'service': handler.service,
+    }
+
+  def GetRules(self):
+    """Get dispatch rules on a format suitable for Admin API.
+
+    Returns:
+      [{'service': str, 'domain': str, 'path': str}], rules.
+    """
+    return [self._HandlerToDict(h) for h in self.parsed.dispatch or []]
 
 
 class ServiceYamlInfo(_YamlInfo):

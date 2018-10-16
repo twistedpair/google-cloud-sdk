@@ -74,6 +74,53 @@ def ExecuteSql(session_ref, sql, query_mode):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
 
+  _RegisterCustomMessageCodec(msgs)
+
+  execute_sql_request = _GetQueryRequest(sql, query_mode)
+  req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
+      session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
+  resp = client.projects_instances_databases_sessions.ExecuteSql(req)
+  if QueryHasDml(sql):
+    result_set = msgs.ResultSet(metadata=resp.metadata)
+    Commit(session_ref, [], result_set.metadata.transaction.id)
+  return resp
+
+
+def ExecuteSqlBeta(session_ref, sql, query_mode, enable_partitioned_dml=False):
+  """Execute an SQL command.
+
+  Args:
+    session_ref: Session, Indicates that the repo should be created if it does
+      not exist.
+    sql: String, The SQL to execute.
+    query_mode: String, The mode in which to run the query. Must be one of
+      'NORMAL', 'PLAN', or 'PROFILE'
+    enable_partitioned_dml: Boolean, whether partitioned dml is enabled.
+
+  Returns:
+    (Repo) The capture repository.
+  """
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  _RegisterCustomMessageCodec(msgs)
+
+  execute_sql_request = _GetQueryRequestBeta(sql, query_mode, session_ref,
+                                             enable_partitioned_dml)
+  req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
+      session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
+  resp = client.projects_instances_databases_sessions.ExecuteSql(req)
+  if QueryHasDml(sql) and enable_partitioned_dml is False:
+    result_set = msgs.ResultSet(metadata=resp.metadata)
+    Commit(session_ref, [], result_set.metadata.transaction.id)
+  return resp
+
+
+def _RegisterCustomMessageCodec(msgs):
+  """Register custom message code.
+
+  Args:
+    msgs: Spanner v1 messages.
+  """
   # TODO(b/33482229): remove this workaround
   def _ToJson(msg):
     return extra_types.JsonProtoEncoder(
@@ -85,14 +132,38 @@ def ExecuteSql(session_ref, sql, query_mode):
       encoder=_ToJson, decoder=_FromJson)(
           msgs.ResultSet.RowsValueListEntry)
 
-  execute_sql_request = _GetQueryRequest(sql, query_mode)
-  req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
-      session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
-  resp = client.projects_instances_databases_sessions.ExecuteSql(req)
-  if QueryHasDml(sql):
-    result_set = msgs.ResultSet(metadata=resp.metadata)
-    Commit(session_ref, [], result_set.metadata.transaction.id)
-  return resp
+
+def _GetQueryRequestBeta(sql,
+                         query_mode,
+                         session_ref=None,
+                         enable_partitioned_dml=False):
+  """Formats the request based on whether the statement contains DML.
+
+  Args:
+    sql: String, The SQL to execute.
+    query_mode: String, The mode in which to run the query. Must be one of
+      'NORMAL', 'PLAN', or 'PROFILE'
+    session_ref: Reference to the session.
+    enable_partitioned_dml: Boolean, whether partitioned dml is enabled.
+
+  Returns:
+    ExecuteSqlRequest parameters
+  """
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+
+  if enable_partitioned_dml is True:
+    transaction = _GetPartitionedDmlTransaction(session_ref)
+  elif QueryHasDml(sql):
+    transaction_options = msgs.TransactionOptions(readWrite=msgs.ReadWrite())
+    transaction = msgs.TransactionSelector(begin=transaction_options)
+  else:
+    transaction_options = msgs.TransactionOptions(
+        readOnly=msgs.ReadOnly(strong=True))
+    transaction = msgs.TransactionSelector(singleUse=transaction_options)
+  return msgs.ExecuteSqlRequest(
+      sql=sql,
+      queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(query_mode),
+      transaction=transaction)
 
 
 def _GetQueryRequest(sql, query_mode):
@@ -119,6 +190,29 @@ def _GetQueryRequest(sql, query_mode):
       sql=sql,
       queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(query_mode),
       transaction=transaction)
+
+
+def _GetPartitionedDmlTransaction(session_ref):
+  """Creates a transaction for Partitioned DML.
+
+  Args:
+    session_ref: Reference to the session.
+
+  Returns:
+    TransactionSelector with the id property.
+  """
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+
+  transaction_options = msgs.TransactionOptions(
+      partitionedDml=msgs.PartitionedDml())
+  begin_transaction_req = msgs.BeginTransactionRequest(
+      options=transaction_options)
+  req = msgs.SpannerProjectsInstancesDatabasesSessionsBeginTransactionRequest(
+      beginTransactionRequest=begin_transaction_req,
+      session=session_ref.RelativeName())
+  resp = client.projects_instances_databases_sessions.BeginTransaction(req)
+  return msgs.TransactionSelector(id=resp.id)
 
 
 def Commit(session_ref, mutations, transaction_id=None):

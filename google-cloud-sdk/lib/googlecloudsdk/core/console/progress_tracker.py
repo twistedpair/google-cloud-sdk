@@ -534,8 +534,13 @@ def StagedProgressTracker(
         message, stages, interruptable, aborted_message)
   else:
     is_tty = console_io.IsInteractive(error=True)
-    tracker_cls = (_NormalStagedProgressTracker if is_tty
-                   else _NonInteractiveStagedProgressTracker)
+    if is_tty:
+      if console_attr.ConsoleAttr().SupportsAnsi():
+        tracker_cls = _MultilineStagedProgressTracker
+      else:
+        tracker_cls = _NormalStagedProgressTracker
+    else:
+      tracker_cls = _NonInteractiveStagedProgressTracker
     return tracker_cls(
         message, stages, success_message, failure_message, autotick,
         tick_delay, interruptable, aborted_message, tracker_id,
@@ -565,7 +570,7 @@ class Stage(object):
 
     # Task attributes
     self._is_done = False
-    self.status = None
+    self.status = StageCompletionStatus.NOT_STARTED
 
   @property
   def header(self):
@@ -578,6 +583,8 @@ class Stage(object):
 
 class StageCompletionStatus(enum.Enum):
   """Indicates the completion status of a stage."""
+  NOT_STARTED = 'not started'
+  RUNNING = 'still running'
   SUCCESS = 'done'
   FAILED = 'failed'
   INTERRUPTED = 'interrupted'
@@ -611,6 +618,10 @@ class _StagedProgressTrackerInterface(six.with_metaclass(abc.ABCMeta, object)):
   @abc.abstractmethod
   def _Print(self, message=''):
     """Prints an update containing message to the output stream."""
+    pass
+
+  def UpdateHeaderMessage(self, message):
+    """Updates the header messsage if supported."""
     pass
 
   @abc.abstractmethod
@@ -671,10 +682,10 @@ class _BaseStagedProgressTracker(
 
     self._symbols = console_attr.GetConsoleAttr().GetProgressTrackerSymbols()
     self._done = False
+    self._exception_is_uncaught = True
     self._ticks = 0
     self._ticker = None
-    self._stage_being_displayed = None
-    self._running_stages_queue = []
+    self._running_stages = set()
     self._completed_stages = []
     self._lock = threading.Lock()
 
@@ -688,8 +699,7 @@ class _BaseStagedProgressTracker(
       if self._interruptable:
         raise console_io.OperationCancelledError(self._aborted_message)
       else:
-        with self._lock:
-          sys.stderr.write('\n\nThis operation cannot be cancelled.\n\n')
+        self._NotifyUninterruptableError()
     try:
       self._old_signal_handler = signal.signal(signal.SIGINT, _CtrlCHandler)
       self._restore_old_handler = True
@@ -697,6 +707,10 @@ class _BaseStagedProgressTracker(
       # Only works in the main thread. Gcloud does not run in the main thread
       # in gcloud interactive.
       self._restore_old_handler = False
+
+  def _NotifyUninterruptableError(self):
+    with self._lock:
+      sys.stderr.write('\n\nThis operation cannot be cancelled.\n\n')
 
   def _TearDownSignalHandler(self):
     if self._restore_old_handler:
@@ -729,56 +743,28 @@ class _BaseStagedProgressTracker(
       # If an exception was raised during progress tracking, exit silently here
       # and let the appropriate exception handler tell the user what happened.
       if exc_value:
-        # The first print is to signal exiting the stage. The second print
-        # handles the output for exiting the progress tracker.
-        if isinstance(exc_value, console_io.OperationCancelledError):
-          self._Print('aborted by ctrl-c')
-          self._PrintExitOutput(aborted=True)
-        elif self._stage_being_displayed is not None:
-          # This means this was an uncaught exception. This ideally
-          # should be handled by the implementer
-          self._Print(
-              self._GetStagedCompletedSuffix(StageCompletionStatus.FAILED))
-          self._PrintExitOutput(failed=True)
+        if self._exception_is_uncaught:
+          self._HandleUncaughtException(exc_value)
       else:
         self._PrintExitOutput()
     if self._ticker:
       self._ticker.join()
     self._TearDownSignalHandler()
 
-  def _PrintExitOutput(self, aborted=False, failed=False):
-    """Handles the final output for the progress tracker."""
-    self._SetupExitOutput()
-    if aborted:
-      msg = self._aborted_message or 'Aborted.'
-    elif failed:
-      msg = self._failure_message or 'Failed.'
+  def _HandleUncaughtException(self, exc_value):
+    # The first print is to signal exiting the stage. The second print
+    # handles the output for exiting the progress tracker.
+    if isinstance(exc_value, console_io.OperationCancelledError):
+      self._PrintExitOutput(aborted=True)
     else:
-      msg = self._success_message or 'Done.'
-    if self._done_message_callback:
-      msg += ' ' + self._done_message_callback()
-    self._Print(msg + '\n')
+      # This means this was an uncaught exception. This ideally
+      # should be handled by the implementer
+      self._PrintExitOutput(failed=True)
 
   @abc.abstractmethod
   def _SetupOutput(self):
     """Sets up the output for the tracker. Gets called during __enter__."""
     pass
-
-  @abc.abstractmethod
-  def _SetUpOutputForStage(self, stage):
-    """Sets up the output for the current stage."""
-    pass
-
-  def _SetupExitOutput(self):
-    """Sets up output to print out the closing line."""
-    # Not necessary for non-interactive implementation
-    return
-
-  def _LoadNextStageForDisplay(self):
-    if self._running_stages_queue:
-      self._stage_being_displayed = self._running_stages_queue[0]
-      self._SetUpOutputForStage(self._stage_being_displayed)
-      return True
 
   def _GetTickMark(self, ticks):
     """Returns the next tick mark."""
@@ -786,6 +772,100 @@ class _BaseStagedProgressTracker(
 
   def _GetStagedCompletedSuffix(self, status):
     return status.value
+
+  def _ValidateStage(self, stage):
+    """Validates the stage belongs to the tracker and has not been completed."""
+    if stage not in self._stages:
+      raise ValueError('This stage does not belong to this progress tracker.')
+    if stage in self._completed_stages:
+      raise ValueError('This stage has already completed.')
+
+  def StartStage(self, stage):
+    """Informs the progress tracker that this stage has started."""
+    self._ValidateStage(stage)
+    with self._lock:
+      self._running_stages.add(stage)
+      stage.status = StageCompletionStatus.RUNNING
+      self._StartStage(stage)
+
+  def _StartStage(self, stage):
+    return
+
+  def UpdateStage(self, stage, message):
+    """Updates a stage in the progress tracker."""
+    # TODO(b/109928970): Add support for progress bars.
+    self._ValidateStage(stage)
+    with self._lock:
+      stage.message = message
+
+  def CompleteStage(self, stage, message=None):
+    """Informs the progress tracker that this stage has completed."""
+    self._ValidateStage(stage)
+    with self._lock:
+      stage.status = StageCompletionStatus.SUCCESS
+      stage._is_done = True  # pylint: disable=protected-access
+      self._running_stages.remove(stage)
+      if message is not None:
+        stage.message = message
+      self._CompleteStage(stage)
+    self.Tick()  # This ensures output is properly flushed out.
+
+  def _CompleteStage(self, stage):
+    return
+
+  def FailStage(self, stage, failure_exception=None, message=None):
+    """Informs the progress tracker that this stage has failed."""
+    self._ValidateStage(stage)
+    with self._lock:
+      stage.status = StageCompletionStatus.FAILED
+      stage._is_done = True  # pylint: disable=protected-access
+      self._running_stages.remove(stage)
+      if message is not None:
+        stage.message = message
+      self._FailStage(stage, failure_exception, message)
+    self.Tick()  # This ensures output is properly flushed out.
+    if failure_exception:
+      self._PrintExitOutput(failed=True)
+      self._exception_is_uncaught = False
+      raise failure_exception  # pylint: disable=raising-bad-type
+
+
+class _NormalStagedProgressTracker(_BaseStagedProgressTracker):
+  """A context manager for telling the user about long-running progress.
+
+  This class uses the core.console.multiline.ConsoleOutput interface for
+  outputting. The header and each stage is defined as a message object
+  contained by the ConsoleOutput message.
+  """
+
+  def __init__(self, *args, **kwargs):
+    self._running_stages_queue = []
+    self._stage_being_displayed = None
+    super(_NormalStagedProgressTracker, self).__init__(*args, **kwargs)
+
+  def _SetupOutput(self):
+    # Console outputting objects
+    self._console_output = multiline.SimpleSuffixConsoleOutput(self._stream)
+    self._header_message = self._console_output.AddMessage(self._message)
+    self._current_stage_message = self._header_message
+
+  def _FailStage(self, stage, failure_exception=None, message=None):
+    for running_stage in self._running_stages_queue:
+      if stage != running_stage:
+        running_stage.status = StageCompletionStatus.INTERRUPTED
+      running_stage._is_done = True  # pylint: disable=protected-access
+
+  def _StartStage(self, stage):
+    """Informs the progress tracker that this stage has started."""
+    self._running_stages_queue.append(stage)
+    if self._stage_being_displayed is None:
+      self._LoadNextStageForDisplay()
+
+  def _LoadNextStageForDisplay(self):
+    if self._running_stages_queue:
+      self._stage_being_displayed = self._running_stages_queue[0]
+      self._SetUpOutputForStage(self._stage_being_displayed)
+      return True
 
   def Tick(self):
     """Give a visual indication to the user that some progress has been made.
@@ -819,71 +899,35 @@ class _BaseStagedProgressTracker(
           self._Print(self._GetTickMark(self._ticks))
     return self._done
 
-  def _ValidateStage(self, stage):
-    """Validates the stage belongs to the tracker and has not been completed."""
-    if stage not in self._stages:
-      raise ValueError('This stage does not belong to this progress tracker.')
-    if stage in self._completed_stages:
-      raise ValueError('This stage has already completed.')
-
-  def StartStage(self, stage):
-    """Informs the progress tracker that this stage has started."""
-    self._ValidateStage(stage)
-    with self._lock:
-      self._running_stages_queue.append(stage)
-      if self._stage_being_displayed is None:
-        self._LoadNextStageForDisplay()
-
-  def UpdateStage(self, stage, message):
-    """Updates a stage in the progress tracker."""
-    # TODO(b/109928970): Add support for progress bars.
-    self._ValidateStage(stage)
-    with self._lock:
-      stage.message = message
-
-  def CompleteStage(self, stage, message=None):
-    """Informs the progress tracker that this stage has completed."""
-    self._ValidateStage(stage)
-    with self._lock:
-      stage.status = StageCompletionStatus.SUCCESS
-      if message is not None:
-        stage.message = message
-      stage._is_done = True  # pylint: disable=protected-access
-    self.Tick()  # This ensures output is properly flushed out.
-
-  def FailStage(self, stage, exception, message=None):
-    """Informs the progress tracker that this stage has failed."""
-    self._ValidateStage(stage)
-    with self._lock:
-      stage.status = StageCompletionStatus.FAILED
-      if message is not None:
-        stage.message = message
-      for running_stage in self._running_stages_queue:
-        if stage != running_stage:
-          running_stage.status = StageCompletionStatus.INTERRUPTED
-        running_stage._is_done = True  # pylint: disable=protected-access
-    self.Tick()  # This ensures output is properly flushed out.
-    self._PrintExitOutput(failed=True)
-    raise exception
-
-
-class _NormalStagedProgressTracker(_BaseStagedProgressTracker):
-  """A context manager for telling the user about long-running progress.
-
-  This class uses the core.console.multiline.ConsoleOutput interface for
-  outputting. The header and each stage is defined as a message object
-  contained by the ConsoleOutput message.
-  """
+  def _PrintExitOutput(self, aborted=False, failed=False):
+    """Handles the final output for the progress tracker."""
+    self._SetupExitOutput()
+    if aborted:
+      msg = self._aborted_message or 'Aborted.'
+    elif failed:
+      msg = self._failure_message or 'Failed.'
+    else:
+      msg = self._success_message or 'Done.'
+    if self._done_message_callback:
+      msg += ' ' + self._done_message_callback()
+    self._Print(msg + '\n')
 
   def _SetupExitOutput(self):
     """Sets up output to print out the closing line."""
     self._current_stage_message = self._console_output.AddMessage('')
 
-  def _SetupOutput(self):
-    # Console outputting objects
-    self._console_output = multiline.SimpleSuffixConsoleOutput(self._stream)
-    self._header_message = self._console_output.AddMessage(self._message)
-    self._current_stage_message = self._header_message
+  def _HandleUncaughtException(self, exc_value):
+    # The first print is to signal exiting the stage. The second print
+    # handles the output for exiting the progress tracker.
+    if isinstance(exc_value, console_io.OperationCancelledError):
+      self._Print('aborted by ctrl-c')
+      self._PrintExitOutput(aborted=True)
+    else:
+      # This means this was an uncaught exception. This ideally
+      # should be handled by the implementer
+      self._Print(
+          self._GetStagedCompletedSuffix(StageCompletionStatus.FAILED))
+      self._PrintExitOutput(failed=True)
 
   def _SetUpOutputForStage(self, stage):
     def _FormattedCallback():
@@ -908,8 +952,13 @@ class _NormalStagedProgressTracker(_BaseStagedProgressTracker):
       self._console_output.UpdateConsole()
 
 
-class _NonInteractiveStagedProgressTracker(_BaseStagedProgressTracker):
+class _NonInteractiveStagedProgressTracker(_NormalStagedProgressTracker):
   """A context manager for telling the user about long-running progress."""
+
+  def _SetupExitOutput(self):
+    """Sets up output to print out the closing line."""
+    # Not necessary for non-interactive implementation
+    return
 
   def _SetupOutput(self):
     self._Print(self._message + '\n')
@@ -936,6 +985,113 @@ class _NonInteractiveStagedProgressTracker(_BaseStagedProgressTracker):
     if not self._output_enabled:
       return
     self._stream.write(message)
+
+
+class _MultilineStagedProgressTracker(_BaseStagedProgressTracker):
+  """A context manager for telling the user about long-running progress.
+
+  This class uses the core.console.multiline.ConsoleOutput interface for
+  outputting. The header and each stage is defined as a message object
+  contained by the ConsoleOutput message.
+  """
+
+  def UpdateHeaderMessage(self, message):
+    self._console_output.UpdateMessage(
+        self._header_message, self._message + ' ' + message)
+
+  def _NotifyUninterruptableError(self):
+    with self._lock:
+      self.UpdateHeaderMessage('This operation cannot be cancelled.')
+
+  def _SetupExitOutput(self):
+    """Sets up output to print out the closing line."""
+    return self._console_output.AddMessage('')
+
+  def _PrintExitOutput(self, aborted=False, failed=False):
+    """Handles the final output for the progress tracker."""
+    output_message = self._SetupExitOutput()
+    if aborted:
+      msg = self._aborted_message or 'Aborted.'
+    elif failed:
+      msg = self._failure_message or 'Failed.'
+    else:
+      msg = self._success_message or 'Done.'
+    if self._done_message_callback:
+      msg += ' ' + self._done_message_callback()
+    self._console_output.UpdateMessage(output_message, msg)
+    self._Print(self._symbols.interrupted)
+
+  def _SetupOutput(self):
+    # Console outputting objects
+    self._maintain_queue = False
+    self._console_output = multiline.MultilineConsoleOutput(self._stream)
+    self._header_message = self._console_output.AddMessage(self._message)
+    self._stage_messages = dict()
+    for stage in self._stages:
+      self._stage_messages[stage] = self._console_output.AddMessage(
+          stage.header, indentation_level=1)
+      self._UpdateStageTickMark(stage)
+    self._console_output.UpdateConsole()
+
+  def _GenerateStagePrefix(self, stage, tick_mark):
+    if stage.status == StageCompletionStatus.NOT_STARTED:
+      tick_mark = self._symbols.not_started
+    elif stage.status == StageCompletionStatus.SUCCESS:
+      tick_mark = self._symbols.success
+    elif stage.status == StageCompletionStatus.FAILED:
+      tick_mark = self._symbols.failed
+    elif stage.status == StageCompletionStatus.INTERRUPTED:
+      tick_mark = self._symbols.interrupted
+    return tick_mark + ' ' * (self._symbols.prefix_length - len(tick_mark))
+
+  def _UpdateStageTickMark(self, stage, tick_mark=''):
+    prefix = self._GenerateStagePrefix(stage, tick_mark)
+    message = stage.header
+    if stage.message:
+      message += ' ' + stage.message
+    self._console_output.UpdateMessage(
+        self._stage_messages[stage], prefix + message)
+
+  def _FailStage(self, stage, exception=None, message=None):
+    """Informs the progress tracker that this stage has failed."""
+    self._UpdateStageTickMark(stage)
+    if exception:
+      for other_stage in self._stages:
+        if (other_stage != stage and
+            other_stage.status == StageCompletionStatus.RUNNING):
+          other_stage.status = StageCompletionStatus.INTERRUPTED
+        other_stage._is_done = True  # pylint: disable=protected-access
+
+  def _CompleteStage(self, stage):
+    self._UpdateStageTickMark(stage)
+
+  def Tick(self):
+    """Give a visual indication to the user that some progress has been made.
+
+    Output is sent to sys.stderr. Nothing is shown if output is not a TTY.
+    This method also handles loading new stages and flushing out completed
+    stages.
+
+    Returns:
+      Whether progress has completed.
+    """
+    with self._lock:
+      if not self._done:
+        self._ticks += 1
+        self._Print(self._GetTickMark(self._ticks))
+    return self._done
+
+  def _Print(self, tick_mark=''):
+    """Prints an update containing message to the output stream.
+
+    Args:
+      tick_mark: str, suffix of message
+    """
+    if not self._output_enabled:
+      return
+    for stage in self._running_stages:
+      self._UpdateStageTickMark(stage, tick_mark)
+    self._console_output.UpdateConsole()
 
 
 class _NoOpStagedProgressTracker(_StagedProgressTrackerInterface):

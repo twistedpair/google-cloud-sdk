@@ -298,7 +298,7 @@ class StorageClient(object):
     data.seek(0)
     return data
 
-  def CreateBucketIfNotExists(self, bucket, project=None):
+  def CreateBucketIfNotExists(self, bucket, project=None, location=None):
     """Create a bucket if it does not already exist.
 
     If it already exists and is owned by the creator, no problem.
@@ -307,6 +307,7 @@ class StorageClient(object):
       bucket: str, The storage bucket to be created.
       project: str, The project to use for the API request. If None, current
           Cloud SDK project is used.
+      location: str, The bucket location/region.
 
     Raises:
       api_exceptions.HttpError: If the bucket is owned by someone else
@@ -319,6 +320,7 @@ class StorageClient(object):
               project=project,
               bucket=self.messages.Bucket(
                   name=bucket,
+                  location=location,
               )))
     except api_exceptions.HttpConflictError:
       # It's ok if the error was 409, which means the resource already exists.
@@ -328,6 +330,32 @@ class StorageClient(object):
       self.client.buckets.Get(self.messages.StorageBucketsGetRequest(
           bucket=bucket,
       ))
+
+  def GetBucketLocationForFile(self, object_path):
+    """Returns the location of the bucket for a file.
+
+    Args:
+      object_path: str, the path of the file in GCS.
+
+    Returns:
+      str, bucket location (region) for given object in GCS.
+
+    Raises:
+      BucketNotFoundError if bucket from the object path is not found.
+    """
+
+    object_reference = storage_util.ObjectReference.FromUrl(object_path)
+    bucket_name = object_reference.bucket
+    get_bucket_req = self.messages.StorageBucketsGetRequest(
+        bucket=bucket_name)
+
+    try:
+      source_bucket = self.client.buckets.Get(get_bucket_req)
+      return source_bucket.location
+    except api_exceptions.HttpNotFoundError:
+      raise BucketNotFoundError(
+          'Could not get location for file: [{bucket}] bucket does not exist.'
+          .format(bucket=bucket_name))
 
   def ListBucket(self, bucket_ref, prefix=None):
     """Lists the contents of a cloud storage bucket.

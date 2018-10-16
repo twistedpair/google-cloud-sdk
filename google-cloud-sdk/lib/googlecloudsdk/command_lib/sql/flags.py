@@ -128,9 +128,9 @@ def AddHost(parser):
       help=help_text,
       action=actions.DeprecationAction(
           'deprecated_host',
-          removed=False,
-          warn='Positional argument {flag_name} is deprecated. Use '
-               '--host instead.'),
+          removed=True,
+          error='Positional argument {flag_name} has been removed. Use '
+                '--host instead.'),
       hidden=True).is_required = False
   host.add_argument(
       '--host',

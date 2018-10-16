@@ -154,7 +154,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
       concepts.ResourceSpec, The generated specification that can be added to
       a parser.
     """
-    if self.is_parent_resource:
+    if self.is_parent_resource and resource_collection:
       parent_collection, _, _ = resource_collection.full_name.rpartition('.')
       resource_collection = registry.GetAPICollection(
           parent_collection, api_version=self._api_version)

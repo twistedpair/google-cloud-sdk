@@ -764,15 +764,6 @@ class _SectionApp(_Section):
         default='gs://runtime-builders/',
         hidden=True)
 
-    # TODO(b/27101941): This property is a temporary fallback in case issues
-    # are caused by changing the GA command to enable the Flexible Environment
-    # API with Service Management before deploying Flexible apps. Remove if
-    # change is successful.
-    self.use_deprecated_preparation = self._AddBool(
-        'use_deprecated_preparation',
-        default=False,
-        hidden=True)
-
 
 class _SectionBuilds(_Section):
   """Contains the properties for the 'builds' section."""

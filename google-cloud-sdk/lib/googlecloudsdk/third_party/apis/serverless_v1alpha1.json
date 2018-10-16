@@ -1693,7 +1693,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location in which the service should be created, specified\nin the format `projects\/*\/locations\/*`.",
+                      "description": "The project name (and optionally the region) in which this service should\nbe created.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2203,7 +2203,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The project and location in which the service should be created, specified\nin the format `projects\/*\/locations\/*`.",
+                  "description": "The project name (and optionally the region) in which this service should\nbe created.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+$",

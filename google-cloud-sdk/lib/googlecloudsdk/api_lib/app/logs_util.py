@@ -57,8 +57,11 @@ def GetFilters(project, log_sources, service=None, version=None, level='any'):
   if level != 'any':
     filters.append('severity>={0}'.format(level.upper()))
 
-  log_ids = ['appengine.googleapis.com/{0}'.format(log_type)
-             for log_type in sorted(log_sources)]
+  log_ids = []
+  for log_type in sorted(log_sources):
+    log_ids.append('appengine.googleapis.com/{0}'.format(log_type))
+    if log_type in ('stderr', 'stdout'):
+      log_ids.append(log_type)
   res = resources.REGISTRY.Parse(
       project, collection='appengine.projects').RelativeName()
 

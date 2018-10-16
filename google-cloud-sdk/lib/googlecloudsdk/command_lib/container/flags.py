@@ -411,7 +411,7 @@ to which the cluster can be scaled.
 """)
 
 
-def AddEnableBinAuthzFlag(parser, hidden=True):
+def AddEnableBinAuthzFlag(parser, hidden=False):
   """Adds a --enable-binauthz flag to parser."""
   help_text = """Enable Binary Authorization for this cluster."""
   parser.add_argument(
@@ -742,9 +742,7 @@ master through HTTPS.
       action='store_true')
   master_flag_group.add_argument(
       '--master-authorized-networks',
-      type=arg_parsers.ArgList(
-          min_length=1,
-          max_length=api_adapter.MAX_AUTHORIZED_NETWORKS_CIDRS),
+      type=arg_parsers.ArgList(min_length=1),
       metavar='NETWORK',
       help='The list of CIDR blocks (up to {max}) that are allowed to connect '
       'to Kubernetes master through HTTPS. Specified in CIDR notation (e.g. '

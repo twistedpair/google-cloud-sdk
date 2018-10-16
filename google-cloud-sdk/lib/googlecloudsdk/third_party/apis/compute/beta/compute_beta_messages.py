@@ -17884,6 +17884,12 @@ class ForwardingRule(_messages.Message):
       TCP, UDP, ESP, AH, SCTP or ICMP.  When the load balancing scheme is
       INTERNAL, only TCP and UDP are valid. When the load balancing scheme is
       INTERNAL_SELF_MANAGED, only TCPis valid.
+    allPorts: This field is used along with the backend_service field for
+      internal load balancing or with the target field for internal
+      TargetInstance. This field cannot be used with port or portRange fields.
+      When the load balancing scheme is INTERNAL and protocol is TCP/UDP,
+      specify this field to allow packets addressed to any ports will be
+      forwarded to the backends configured with this forwarding rule.
     backendService: This field is only used for INTERNAL load balancing.  For
       internal load balancing, this field identifies the BackendService
       resource to receive the matched traffic.
@@ -18076,26 +18082,27 @@ class ForwardingRule(_messages.Message):
 
   IPAddress = _messages.StringField(1)
   IPProtocol = _messages.EnumField('IPProtocolValueValuesEnum', 2)
-  backendService = _messages.StringField(3)
-  creationTimestamp = _messages.StringField(4)
-  description = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 7)
-  kind = _messages.StringField(8, default=u'compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 14)
-  portRange = _messages.StringField(15)
-  ports = _messages.StringField(16, repeated=True)
-  region = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  serviceLabel = _messages.StringField(19)
-  serviceName = _messages.StringField(20)
-  subnetwork = _messages.StringField(21)
-  target = _messages.StringField(22)
+  allPorts = _messages.BooleanField(3)
+  backendService = _messages.StringField(4)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
+  kind = _messages.StringField(9, default=u'compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 12)
+  name = _messages.StringField(13)
+  network = _messages.StringField(14)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 15)
+  portRange = _messages.StringField(16)
+  ports = _messages.StringField(17, repeated=True)
+  region = _messages.StringField(18)
+  selfLink = _messages.StringField(19)
+  serviceLabel = _messages.StringField(20)
+  serviceName = _messages.StringField(21)
+  subnetwork = _messages.StringField(22)
+  target = _messages.StringField(23)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -26402,11 +26409,13 @@ class NodeGroupNode(_messages.Message):
       DELETING: <no description>
       INVALID: <no description>
       READY: <no description>
+      REPAIRING: <no description>
     """
     CREATING = 0
     DELETING = 1
     INVALID = 2
     READY = 3
+    REPAIRING = 4
 
   instances = _messages.StringField(1, repeated=True)
   name = _messages.StringField(2)
@@ -28253,16 +28262,29 @@ class PathMatcher(_messages.Message):
 
   Fields:
     defaultService: The full or partial URL to the BackendService resource.
-      This will be used if none of the pathRules defined by this PathMatcher
-      is matched by the URL's path portion. For example, the following are all
-      valid URLs to a BackendService resource:   - https://www.googleapis.com/
+      This will be used if none of the pathRules or routeRules defined by this
+      PathMatcher are matched. For example, the following are all valid URLs
+      to a BackendService resource:   - https://www.googleapis.com/compute/v1/
+      projects/project/global/backendServices/backendService  -
       compute/v1/projects/project/global/backendServices/backendService  -
-      compute/v1/projects/project/global/backendServices/backendService  -
-      global/backendServices/backendService
+      global/backendServices/backendService   Use defaultService instead of
+      defaultRouteAction when simple routing to a backend service is desired
+      and other advanced capabilities like traffic splitting and URL rewrites
+      are not required. Only one of defaultService, defaultRouteAction or
+      defaultUrlRedirect must be set. Authorization requires one or more of
+      the following Google IAM permissions on the specified resource
+      default_service:   - compute.backendBuckets.use  -
+      compute.backendServices.use
     description: An optional description of this resource. Provide this
       property when you create the resource.
     name: The name to which this PathMatcher is referred by the HostRule.
-    pathRules: The list of path rules.
+    pathRules: The list of path rules. Use this list instead of routeRules
+      when routing based on simple path matching is all that's required. The
+      order by which path rules are specified does not matter. Matches are
+      always done on the longest-path-first basis. For example: a pathRule
+      with a path /a/b/c/* will match before /a/b/* irrespective of the order
+      in which those paths appear in this list. Only one of pathRules or
+      routeRules must be set.
   """
 
   defaultService = _messages.StringField(1)
@@ -28280,7 +28302,11 @@ class PathRule(_messages.Message):
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
       those chars are not allowed here.
-    service: The URL of the BackendService resource if this rule is matched.
+    service: The URL of the backend service resource if this rule is matched.
+      Use service instead of routeAction when simple routing to a backend
+      service is desired and other advanced capabilities like traffic
+      splitting and rewrites are not required. Only one of service,
+      routeAction or urlRedirect should must be set.
   """
 
   paths = _messages.StringField(1, repeated=True)
@@ -28551,6 +28577,8 @@ class Quota(_messages.Message):
       NVIDIA_P100_VWS_GPUS: <no description>
       NVIDIA_P4_GPUS: <no description>
       NVIDIA_P4_VWS_GPUS: <no description>
+      NVIDIA_T4_GPUS: <no description>
+      NVIDIA_T4_VWS_GPUS: <no description>
       NVIDIA_V100_GPUS: <no description>
       PREEMPTIBLE_CPUS: <no description>
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
@@ -28559,6 +28587,8 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_P100_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P4_VWS_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_T4_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
       REGIONAL_AUTOSCALERS: <no description>
       REGIONAL_INSTANCE_GROUP_MANAGERS: <no description>
@@ -28613,36 +28643,40 @@ class Quota(_messages.Message):
     NVIDIA_P100_VWS_GPUS = 28
     NVIDIA_P4_GPUS = 29
     NVIDIA_P4_VWS_GPUS = 30
-    NVIDIA_V100_GPUS = 31
-    PREEMPTIBLE_CPUS = 32
-    PREEMPTIBLE_LOCAL_SSD_GB = 33
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 34
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 35
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 36
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 37
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 38
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 39
-    REGIONAL_AUTOSCALERS = 40
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 41
-    RESOURCE_POLICIES = 42
-    ROUTERS = 43
-    ROUTES = 44
-    SECURITY_POLICIES = 45
-    SECURITY_POLICY_RULES = 46
-    SNAPSHOTS = 47
-    SSD_TOTAL_GB = 48
-    SSL_CERTIFICATES = 49
-    STATIC_ADDRESSES = 50
-    SUBNETWORKS = 51
-    TARGET_HTTPS_PROXIES = 52
-    TARGET_HTTP_PROXIES = 53
-    TARGET_INSTANCES = 54
-    TARGET_POOLS = 55
-    TARGET_SSL_PROXIES = 56
-    TARGET_TCP_PROXIES = 57
-    TARGET_VPN_GATEWAYS = 58
-    URL_MAPS = 59
-    VPN_TUNNELS = 60
+    NVIDIA_T4_GPUS = 31
+    NVIDIA_T4_VWS_GPUS = 32
+    NVIDIA_V100_GPUS = 33
+    PREEMPTIBLE_CPUS = 34
+    PREEMPTIBLE_LOCAL_SSD_GB = 35
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 36
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 37
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 38
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 39
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 40
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 41
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 42
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 43
+    REGIONAL_AUTOSCALERS = 44
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 45
+    RESOURCE_POLICIES = 46
+    ROUTERS = 47
+    ROUTES = 48
+    SECURITY_POLICIES = 49
+    SECURITY_POLICY_RULES = 50
+    SNAPSHOTS = 51
+    SSD_TOTAL_GB = 52
+    SSL_CERTIFICATES = 53
+    STATIC_ADDRESSES = 54
+    SUBNETWORKS = 55
+    TARGET_HTTPS_PROXIES = 56
+    TARGET_HTTP_PROXIES = 57
+    TARGET_INSTANCES = 58
+    TARGET_POOLS = 59
+    TARGET_SSL_PROXIES = 60
+    TARGET_TCP_PROXIES = 61
+    TARGET_VPN_GATEWAYS = 62
+    URL_MAPS = 63
+    VPN_TUNNELS = 64
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -30061,11 +30095,31 @@ class ResourcePolicyBackupSchedulePolicy(_messages.Message):
 class ResourcePolicyBackupSchedulePolicyRetentionPolicy(_messages.Message):
   r"""Policy for retention of scheduled snapshots.
 
+  Enums:
+    OnSourceDiskDeleteValueValuesEnum: Specifies the behavior to apply to
+      scheduled snapshots when the source disk is deleted.
+
   Fields:
     maxRetentionDays: Maximum age of the snapshot that is allowed to be kept.
+    onSourceDiskDelete: Specifies the behavior to apply to scheduled snapshots
+      when the source disk is deleted.
   """
 
+  class OnSourceDiskDeleteValueValuesEnum(_messages.Enum):
+    r"""Specifies the behavior to apply to scheduled snapshots when the source
+    disk is deleted.
+
+    Values:
+      APPLY_RETENTION_POLICY: <no description>
+      KEEP_AUTO_SNAPSHOTS: <no description>
+      UNSPECIFIED_ON_SOURCE_DISK_DELETE: <no description>
+    """
+    APPLY_RETENTION_POLICY = 0
+    KEEP_AUTO_SNAPSHOTS = 1
+    UNSPECIFIED_ON_SOURCE_DISK_DELETE = 2
+
   maxRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  onSourceDiskDelete = _messages.EnumField('OnSourceDiskDeleteValueValuesEnum', 2)
 
 
 class ResourcePolicyBackupSchedulePolicySchedule(_messages.Message):
@@ -30137,7 +30191,7 @@ class ResourcePolicyDailyCycle(_messages.Message):
     duration: [Output only] Duration of the time window, automatically chosen
       to be smallest possible in the given scenario.
     startTime: Time within the window to start the operations. It must be in
-      format "HH:MM?, where HH : [00-23] and MM : [00-59] GMT.
+      format "HH:MM?, where HH : [00-23] and MM : [00-00] GMT.
   """
 
   daysInCycle = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -30153,7 +30207,7 @@ class ResourcePolicyHourlyCycle(_messages.Message):
       to be smallest possible in the given scenario.
     hoursInCycle: Allows to define schedule that runs every nth hour.
     startTime: Time within the window to start the operations. It must be in
-      format "HH:MM?, where HH : [00-23] and MM : [00-59] GMT.
+      format "HH:MM?, where HH : [00-23] and MM : [00-00] GMT.
   """
 
   duration = _messages.StringField(1)
@@ -30310,7 +30364,7 @@ class ResourcePolicyWeeklyCycleDayOfWeek(_messages.Message):
     duration: [Output only] Duration of the time window, automatically chosen
       to be smallest possible in the given scenario.
     startTime: Time within the window to start the operations. It must be in
-      format "HH:MM?, where HH : [00-23] and MM : [00-59] GMT.
+      format "HH:MM?, where HH : [00-23] and MM : [00-00] GMT.
   """
 
   class DayValueValuesEnum(_messages.Enum):
@@ -36165,8 +36219,12 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    defaultService: The URL of the BackendService resource if none of the
-      hostRules match.
+    defaultService: The URL of the backendService resource if none of the
+      hostRules match. Use defaultService instead of defaultRouteAction when
+      simple routing to a backendService is desired and other advanced
+      capabilities like traffic splitting and rewrites are not required. Only
+      one of defaultService, defaultRouteAction or defaultUrlRedirect should
+      must be set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored

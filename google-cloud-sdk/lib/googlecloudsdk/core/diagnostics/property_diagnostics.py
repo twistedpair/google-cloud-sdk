@@ -67,6 +67,8 @@ class HiddenPropertiesChecker(check_base.Checker):
     """
     failures = []
     for prop in _AllProperties():
+      if prop.is_internal:
+        continue
       if prop.is_hidden:
         fail = self._CheckHiddenProperty(prop)
         if fail:

@@ -67,9 +67,12 @@ class NoopAnonymizer(object):
   def ProcessPassword(self, password):
     return password
 
+  def ProcessURL(self, url):
+    return url
+
 
 class Anonymizer(object):
-  """Removed personal identifiable infor from paths, account and project."""
+  """Remove personally identifiable info from paths, account and project."""
 
   def __init__(self):
     cfg_paths = config.Paths()
@@ -97,6 +100,14 @@ class Anonymizer(object):
       if num_matches:
         return norm_path
     return path
+
+  def ProcessURL(self, url):
+    """If url is a file URI, anonymize any pii in path."""
+
+    prefix = 'file://'
+    if not url or not url.startswith(prefix):
+      return url
+    return prefix + self.ProcessPath(url[len(prefix):])
 
   def ProcessAccount(self, account):
     """Anonymize account by leaving first and last letters."""
@@ -186,10 +197,12 @@ class InstallationInfo(object):
     anonymizer = anonymizer or NoopAnonymizer()
     self.sdk_root = anonymizer.ProcessPath(config.Paths().sdk_root)
     self.release_channel = config.INSTALLATION_CONFIG.release_channel
-    self.repo_url = config.INSTALLATION_CONFIG.snapshot_url
+    self.repo_url = anonymizer.ProcessURL(
+        config.INSTALLATION_CONFIG.snapshot_url)
     repos = properties.VALUES.component_manager.additional_repositories.Get(
         validate=False)
-    self.additional_repos = repos.split(',') if repos else []
+    self.additional_repos = (
+        map(anonymizer.ProcessURL, repos.split(',')) if repos else [])
     # Keep it as array for structured output.
     path = encoding.GetEncodedValue(os.environ, 'PATH', '').split(os.pathsep)
     self.python_path = [anonymizer.ProcessPath(encoding.Decode(path_elem))
@@ -554,6 +567,7 @@ class ToolsInfo(object):
     return self._GetVersion(['ssh', '-V'])
 
   def _GetVersion(self, cmd):
+    """Return tools version."""
     try:
       proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT)
