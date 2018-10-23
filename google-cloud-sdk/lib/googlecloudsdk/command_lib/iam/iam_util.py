@@ -775,19 +775,23 @@ def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
   return (policy, update_mask)
 
 
-def ParseYamlOrJsonCondition(condition_file_content):
+def ParseYamlOrJsonCondition(
+    condition_file_content,
+    file_format_exception=CONDITION_FILE_FORMAT_EXCEPTION):
   """Create a condition of IAM policy binding from content of YAML or JSON file.
 
   Args:
     condition_file_content: string, the content of a YAML or JSON file
       containing a condition.
+    file_format_exception: InvalidArgumentException, the exception to throw when
+      condition file is incorrectly formatted.
 
   Returns:
     a dictionary representation of the condition.
   """
 
   condition = yaml.load(condition_file_content)
-  ValidateConditionArgument(condition, CONDITION_FILE_FORMAT_EXCEPTION)
+  ValidateConditionArgument(condition, file_format_exception)
   return condition
 
 
@@ -1283,6 +1287,20 @@ def GetIamAccountFormatValidator():
       'numeric string representing the unique_id or an email of the form: '
       'my-iam-account@somedomain.com or '
       'my-iam-account@PROJECT_ID.iam.gserviceaccount.com')
+
+
+def GetIamOutputFileValidator():
+  """Checks if the output file is writable."""
+
+  def IsWritable(value):
+    try:
+      with files.FileWriter(value, private=True) as f:
+        f.close()
+        return value
+    except files.Error as e:
+      raise gcloud_exceptions.BadFileException(e)
+
+  return IsWritable
 
 
 def SetRoleStageIfAlpha(role):

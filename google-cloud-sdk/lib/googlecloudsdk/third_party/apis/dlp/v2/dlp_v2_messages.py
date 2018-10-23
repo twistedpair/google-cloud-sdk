@@ -849,6 +849,9 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
     SampleMethodValueValuesEnum:
 
   Fields:
+    excludedFields: References to fields excluded from scanning. This allows
+      you to skip inspection of entire columns which you know have no
+      findings.
     identifyingFields: References to fields uniquely identifying rows within
       the table. Nested fields in the format, like `person.birthdate.year`,
       are allowed.
@@ -879,11 +882,12 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
     TOP = 1
     RANDOM_START = 2
 
-  identifyingFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
-  rowsLimit = _messages.IntegerField(2)
-  rowsLimitPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 4)
-  tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 5)
+  excludedFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
+  identifyingFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 2, repeated=True)
+  rowsLimit = _messages.IntegerField(3)
+  rowsLimitPercent = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  sampleMethod = _messages.EnumField('SampleMethodValueValuesEnum', 5)
+  tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 6)
 
 
 class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
@@ -1140,7 +1144,9 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       can be specified.
     fileSet: The set of one or more files to scan.
     fileTypes: List of file type groups to include in the scan. If empty, all
-      files are scanned and available data format processors are applied.
+      files are scanned and available data format processors are applied. In
+      addition, the binary content of the selected files is always scanned as
+      well.
     filesLimitPercent: Limits the number of files to scan to this percentage
       of the input FileSet. Number of files scanned is rounded down. Must be
       between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults

@@ -3068,7 +3068,7 @@ class SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest(_messa
   """
 
   filter = _messages.StringField(1)
-  instanceId = _messages.StringField(2)
+  instanceId = _messages.StringField(2, required=True)
   orderBy = _messages.StringField(3)
   pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(5)

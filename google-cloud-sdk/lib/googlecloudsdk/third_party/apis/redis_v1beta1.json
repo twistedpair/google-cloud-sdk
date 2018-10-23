@@ -263,6 +263,13 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more\nresults in the list.",
           "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

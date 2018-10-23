@@ -346,6 +346,11 @@
         "jobMetadata": {
           "description": "This field is populated by the Dataflow service to support filtering jobs\nby the metadata values provided here. Populated for ListJobs and all GetJob\nviews SUMMARY and higher.",
           "$ref": "JobMetadata"
+        },
+        "startTime": {
+          "description": "The timestamp when the job was started (transitioned to JOB_STATE_PENDING).\nFlexible resource scheduling jobs are started with some delay after job\ncreation, so start_time is unset before start and is updated when the\njob is started by the Cloud Dataflow service. For other jobs, start_time\nalways equals to create_time and is immutable and set by the Cloud Dataflow\nservice.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -3250,6 +3255,10 @@
         "drain": {
           "description": "The user has requested drain.",
           "type": "boolean"
+        },
+        "snapshotConfig": {
+          "description": "Configures streaming appliance snapshot.",
+          "$ref": "StreamingApplianceSnapshotConfig"
         }
       }
     },
@@ -3486,6 +3495,21 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "StreamingApplianceSnapshotConfig": {
+      "id": "StreamingApplianceSnapshotConfig",
+      "description": "Streaming appliance snapshot configuration.",
+      "type": "object",
+      "properties": {
+        "snapshotId": {
+          "description": "If set, indicates the snapshot id for the snapshot being performed.",
+          "type": "string"
+        },
+        "importStateEndpoint": {
+          "description": "Indicates which endpoint is used to import appliance state.",
+          "type": "string"
         }
       }
     },

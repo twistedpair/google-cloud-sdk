@@ -2072,6 +2072,12 @@ class Job(_messages.Message):
       reached a terminal state.
     stageStates: This field may be mutated by the Cloud Dataflow service;
       callers cannot mutate it.
+    startTime: The timestamp when the job was started (transitioned to
+      JOB_STATE_PENDING). Flexible resource scheduling jobs are started with
+      some delay after job creation, so start_time is unset before start and
+      is updated when the job is started by the Cloud Dataflow service. For
+      other jobs, start_time always equals to create_time and is immutable and
+      set by the Cloud Dataflow service.
     steps: The top-level steps that constitute the entire job.
     tempFiles: A set of files the system should be aware of that are used for
       temporary storage. These temporary files will be removed on job
@@ -2306,10 +2312,11 @@ class Job(_messages.Message):
   replacedByJobId = _messages.StringField(15)
   requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 16)
   stageStates = _messages.MessageField('ExecutionStageState', 17, repeated=True)
-  steps = _messages.MessageField('Step', 18, repeated=True)
-  tempFiles = _messages.StringField(19, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  startTime = _messages.StringField(18)
+  steps = _messages.MessageField('Step', 19, repeated=True)
+  tempFiles = _messages.StringField(20, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
 
 
 class JobExecutionInfo(_messages.Message):
@@ -4104,6 +4111,20 @@ class StreamLocation(_messages.Message):
   streamingStageLocation = _messages.MessageField('StreamingStageLocation', 4)
 
 
+class StreamingApplianceSnapshotConfig(_messages.Message):
+  r"""Streaming appliance snapshot configuration.
+
+  Fields:
+    importStateEndpoint: Indicates which endpoint is used to import appliance
+      state.
+    snapshotId: If set, indicates the snapshot id for the snapshot being
+      performed.
+  """
+
+  importStateEndpoint = _messages.StringField(1)
+  snapshotId = _messages.StringField(2)
+
+
 class StreamingComputationConfig(_messages.Message):
   r"""Configuration information for a single streaming computation.
 
@@ -4226,6 +4247,7 @@ class StreamingSetupTask(_messages.Message):
     drain: The user has requested drain.
     receiveWorkPort: The TCP port on which the worker should listen for
       messages from other streaming computation workers.
+    snapshotConfig: Configures streaming appliance snapshot.
     streamingComputationTopology: The global topology of the streaming
       Dataflow job.
     workerHarnessPort: The TCP port used by the worker to communicate with the
@@ -4234,8 +4256,9 @@ class StreamingSetupTask(_messages.Message):
 
   drain = _messages.BooleanField(1)
   receiveWorkPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  streamingComputationTopology = _messages.MessageField('TopologyConfig', 3)
-  workerHarnessPort = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  snapshotConfig = _messages.MessageField('StreamingApplianceSnapshotConfig', 3)
+  streamingComputationTopology = _messages.MessageField('TopologyConfig', 4)
+  workerHarnessPort = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class StreamingSideInputLocation(_messages.Message):

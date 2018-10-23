@@ -12,7 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 """Helper functions for the `compute diagnose sosreport` command."""
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import unicode_literals
 
 import os
 import sys
@@ -21,8 +26,9 @@ import tempfile
 from googlecloudsdk.command_lib.compute.diagnose import external_helper
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import files
 
-SOSREPORT_GITHUB_PATH = "https://github.com/sosreport/sos.git"
+SOSREPORT_GITHUB_PATH = 'https://github.com/sosreport/sos.git'
 
 
 class InstallSosreportError(core_exceptions.Error):
@@ -46,15 +52,15 @@ def ObtainSosreport(context, sosreport_path):
     InstallSosreportError: When installing the tool was not possible.
                            Reason contained in Error message.
   """
-  dry_run = context.get("args").dry_run
+  dry_run = context.get('args').dry_run
   if dry_run:
     return ObtainSosreportDryrun(context, sosreport_path)
 
-  log.status.Print("Checking if sosreport is already installed.")
-  if PathExists(context, sosreport_path, "sosreport"):
+  log.status.Print('Checking if sosreport is already installed.')
+  if PathExists(context, sosreport_path, 'sosreport'):
     return
 
-  log.status.Print("Create the install path if needed.")
+  log.status.Print('Create the install path if needed.')
   if not CreatePath(context, sosreport_path):
     error_msg = 'Could not create sosreport path "{path}"'
     raise InstallSosreportError(error_msg.format(path=sosreport_path))
@@ -80,10 +86,10 @@ def ObtainSosreportDryrun(context, sosreport_path):
   Returns:
      True
   """
-  log.status.Print("Checking if sosreport is already installed.")
-  PathExists(context, sosreport_path, "sosreport")
+  log.status.Print('Checking if sosreport is already installed.')
+  PathExists(context, sosreport_path, 'sosreport')
 
-  log.status.Print("Create the install path if needed.")
+  log.status.Print('Create the install path if needed.')
   CreatePath(context, sosreport_path)
 
   DownloadSosreport(context, sosreport_path)
@@ -103,14 +109,14 @@ def DownloadSosreport(context, sosreport_path):
   Raises:
     ssh.CommandError: there was an error running a SSH command
   """
-  log.status.Print("Cloning sosreport")
+  log.status.Print('Cloning sosreport')
   RunSSHCommand(
       context,
-      "git",
-      "clone",
+      'git',
+      'clone',
       SOSREPORT_GITHUB_PATH,
       sosreport_path,
-      dry_run=context.get("args").dry_run)
+      dry_run=context.get('args').dry_run)
 
 
 def RunSosreport(context, sosreport_path, reports_path):
@@ -132,21 +138,21 @@ def RunSosreport(context, sosreport_path, reports_path):
   """
   # We run the command as sudo (we need it to scrap system values)
 
-  cmd_list = ["sudo"]
+  cmd_list = ['sudo']
   # We use the provided python if available
-  python_path = context.get("python_path")
+  python_path = context.get('python_path')
   if python_path:
     cmd_list.append(python_path)
   cmd_list += [
-      os.path.join(sosreport_path, "sosreport"),
-      "--batch",
-      "--compression-type", "gzip",
-      "--config-file", os.path.join(sosreport_path, "sos.conf"),
-      "--tmp-dir", reports_path
+      os.path.join(sosreport_path, 'sosreport'),
+      '--batch',
+      '--compression-type', 'gzip',
+      '--config-file', os.path.join(sosreport_path, 'sos.conf'),
+      '--tmp-dir', reports_path
   ]
   return_code = RunSSHCommand(
       context, *cmd_list,
-      dry_run=context.get("args").dry_run,
+      dry_run=context.get('args').dry_run,
       # The SSH infrastructure now pipes the output of the command to a logfile.
       # Due to the interactive nature of the command, piping the command output
       # to stdout for the user to read is nice to have.
@@ -156,20 +162,20 @@ def RunSosreport(context, sosreport_path, reports_path):
   # The Sosreport is completely piped to our output, so any error raised by the
   # actual command would be already outputted by the tool.
   if return_code != 0:
-    raise InstallSosreportError("Error running Sosreport. See output above.")
+    raise InstallSosreportError('Error running Sosreport. See output above.')
 
   # Because we ran the command as sudo, the user doesn't own the file,
   # We need to run chown to change that
   return_code = RunSSHCommand(
       context,
-      "sudo",
-      "chown",
-      context["user"],
-      os.path.join(reports_path, "*"),
-      dry_run=context.get("args").dry_run)
+      'sudo',
+      'chown',
+      context['user'],
+      os.path.join(reports_path, '*'),
+      dry_run=context.get('args').dry_run)
   if return_code != 0:
-    raise InstallSosreportError(("Could not chown the report file. "
-                                 "Please chown and copy the file manually."))
+    raise InstallSosreportError(('Could not chown the report file. '
+                                 'Please chown and copy the file manually.'))
 
 
 def ObtainReportFilename(context, reports_path):
@@ -184,22 +190,22 @@ def ObtainReportFilename(context, reports_path):
   Raises:
     ssh.CommandError: there was an error running a SSH command
   """
-  dry_run = context.get("args").dry_run
+  dry_run = context.get('args').dry_run
   if dry_run:
     return reports_path
 
   # The SSH command run will output to stdout the name of the latest report
   # generated. We capture that output into a temporary file.
-  temp = tempfile.TemporaryFile("w+")
+  temp = tempfile.TemporaryFile('w+')
   RunSSHCommand(
       context,
-      "ls",
-      "-t",
-      os.path.join(reports_path, "*.tar.gz"),
-      "|",
-      "head",
-      "-n",
-      "1",
+      'ls',
+      '-t',
+      os.path.join(reports_path, '*.tar.gz'),
+      '|',
+      'head',
+      '-n',
+      '1',
       explicit_output_file=temp,
       dry_run=dry_run)
   temp.seek(0)
@@ -220,17 +226,17 @@ def CopyReportFile(context, download_dir, report_filepath):
   Returns:
     The path of the local file.
   """
-  instance = context["instance"]
-  local_path = os.path.expanduser(
+  instance = context['instance']
+  local_path = files.ExpandHomeDir(
       os.path.join(download_dir, os.path.basename(report_filepath)))
 
   log.status.Print('Copying file by running "gcloud compute scp"')
   cmd = [
-      "gcloud", "compute", "scp", "--zone", instance.zone,
-      instance.name + ":" + report_filepath, local_path
+      'gcloud', 'compute', 'scp', '--zone', instance.zone,
+      instance.name + ':' + report_filepath, local_path
   ]
   external_helper.CallSubprocess(
-      "gcloud_copy", cmd, dry_run=context.get("args").dry_run)
+      'gcloud_copy', cmd, dry_run=context.get('args').dry_run)
   return local_path
 
 
@@ -254,15 +260,15 @@ def PathExists(context, *path_args):
   path = os.path.join(*path_args)
 
   # gcloud checks doesn't like python open
-  temp_stdout = tempfile.TemporaryFile("w+")
-  temp_stderr = tempfile.TemporaryFile("w+")
+  temp_stdout = tempfile.TemporaryFile('w+')
+  temp_stderr = tempfile.TemporaryFile('w+')
   return_code = RunSSHCommand(
       context,
-      "ls",
+      'ls',
       path,
       explicit_output_file=temp_stdout,
       explicit_error_file=temp_stderr,
-      dry_run=context.get("args").dry_run)
+      dry_run=context.get('args').dry_run)
   # The return code messages whether `ls` was successful, which is true when
   # the path being searched actually exists.
   return return_code == 0
@@ -283,7 +289,7 @@ def CreatePath(context, path):
     ssh.CommandError: there was an error running a SSH command
   """
   return_code = RunSSHCommand(
-      context, "mkdir", "-p", path, dry_run=context.get("args").dry_run)
+      context, 'mkdir', '-p', path, dry_run=context.get('args').dry_run)
   return return_code == 0
 
 
@@ -304,15 +310,15 @@ def RunSSHCommand(context, *cmd_list, **kwargs):
   Raises:
     ssh.CommandError: there was an error running a SSH command
   """
-  command = " ".join(str(i) for i in cmd_list)
+  command = ' '.join(str(i) for i in cmd_list)
   log.out.Print('Running: "{command}"'.format(command=command))
   return_code = external_helper.RunSSHCommandToInstance(
       command_list=cmd_list,
-      instance=context["instance"],
-      user=context["user"],
-      args=context["args"],
-      ssh_helper=context["ssh_helper"],
-      explicit_output_file=kwargs.get("explicit_output_file"),
-      explicit_error_file=kwargs.get("explicit_error_file"),
-      dry_run=kwargs.get("dry_run"))
+      instance=context['instance'],
+      user=context['user'],
+      args=context['args'],
+      ssh_helper=context['ssh_helper'],
+      explicit_output_file=kwargs.get('explicit_output_file'),
+      explicit_error_file=kwargs.get('explicit_error_file'),
+      dry_run=kwargs.get('dry_run'))
   return return_code

@@ -482,7 +482,8 @@ def _UploadFilesByPath(paths, staging_location):
                              staging_location.name)
 
 
-def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
+def UploadPythonPackages(packages=(), package_path=None, staging_location=None,
+                         supports_container_training=False):
   """Uploads Python packages (if necessary), building them as-specified.
 
   A Cloud ML Engine job needs one or more Python packages to run. These Python
@@ -522,6 +523,9 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
     staging_location: storage_util.ObjectReference. Cloud Storage prefix to
       which archives are uploaded. Not necessary if only remote packages are
       given.
+    supports_container_training: bool, if this release track supports container
+      training. If containiner training is requested then uploads are not
+      required.
 
   Returns:
     list of str. Fully qualified Cloud Storage URLs (`gs://..`) from uploaded
@@ -555,7 +559,8 @@ def UploadPythonPackages(packages=(), package_path=None, staging_location=None):
     # directory to still be around
     remote_paths.extend(_UploadFilesByPath(local_paths, staging_location))
 
-  if not remote_paths:
+  # For custom container training, uploads are not required.
+  if not remote_paths and not supports_container_training:
     raise flags.ArgumentError(_NO_PACKAGES_ERROR_MSG)
   return remote_paths
 

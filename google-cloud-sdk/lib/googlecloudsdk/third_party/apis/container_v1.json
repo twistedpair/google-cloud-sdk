@@ -307,7 +307,7 @@
           }
         },
         "currentNodeCount": {
-          "description": "[Output only] The number of nodes currently in the cluster.",
+          "description": "[Output only]  The number of nodes currently in the cluster. Deprecated.\nCall Kubernetes API directly to retrieve node information.",
           "type": "integer",
           "format": "int32"
         },

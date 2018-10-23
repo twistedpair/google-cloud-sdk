@@ -7998,7 +7998,7 @@ class ComputeLicenseCodesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -8117,7 +8117,7 @@ class ComputeLicensesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -10077,7 +10077,7 @@ class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """

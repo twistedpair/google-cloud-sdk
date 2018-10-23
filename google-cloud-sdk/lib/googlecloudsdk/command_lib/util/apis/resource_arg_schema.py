@@ -23,10 +23,8 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.calliope.concepts import util as resource_util
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
-from googlecloudsdk.core import properties
 import six
 
 
@@ -47,7 +45,6 @@ class InvalidResourceArgumentLists(Error):
         .format(', '.join(expected), ', '.join(actual)))
 
 
-_DEFAULT_CONFIGS = {'project': project_resource_args.PROJECT_ATTRIBUTE_CONFIG}
 IGNORED_FIELDS = {
     'project': 'project',
     'projectId': 'project',
@@ -218,7 +215,7 @@ def _GenerateAttributes(expected_param_names, attribute_data):
     parameter and corresponding attribute.
   """
   final_attributes = []
-  registered_params = [_CreateAttribute(a) for a in attribute_data]
+  registered_params = [_CreateAttributeTuple(a) for a in attribute_data]
   registered_param_names = [a[0] for a in registered_params]
 
   for expected_name in expected_param_names:
@@ -230,7 +227,8 @@ def _GenerateAttributes(expected_param_names, attribute_data):
       # attribute as a substitute.
       attribute_name = IGNORED_FIELDS[expected_name]
       final_attributes.append(
-          (expected_name, _DEFAULT_CONFIGS.get(attribute_name)))
+          (expected_name, concepts.DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS.get(
+              attribute_name)))
     else:
       # It doesn't match (or there are no more registered params) and the
       # field is not being ignored, error.
@@ -265,47 +263,27 @@ def _GenerateFallthroughsMap(command_level_fallthroughs_data):
   return command_level_fallthroughs
 
 
-def _CreateAttribute(data):
+def _CreateAttributeTuple(data):
   """Creates a single resource attribute from YAML data.
 
   Args:
     data: {}, The dict of data from the YAML file for this single attribute.
 
   Returns:
-    ResourceParameterAttributeConfig, the generated attribute.
+    (str, ResourceParameterAttributeConfig), a tuple of the API parameter and
+    corresponding attribute.
   """
-  attribute_name = data['attribute_name']
-  help_text = data['help']
+  attribute_config = concepts.ResourceParameterAttributeConfig.FromData(data)
 
+  # TODO(b/78851830): move the below logic to ResourceParameterAttributeConfig.
   fallthrough_data = data.get('fallthroughs', [])
-  fallthroughs = [
-      deps.Fallthrough(util.Hook.FromPath(f['hook']), hint=f['hint'])
-      for f in fallthrough_data]
+  fallthroughs_from_hook = [
+      deps.Fallthrough(
+          util.Hook.FromPath(f['hook']),
+          hint=f['hint']) for f in fallthrough_data]
+  attribute_config.fallthroughs += fallthroughs_from_hook
 
-  prop_string = data.get('property')
-  prop = properties.FromString(prop_string) if prop_string else None
-  if prop:
-    fallthroughs.insert(0, deps.PropertyFallthrough(prop))
-  default_config = _DEFAULT_CONFIGS.get(attribute_name)
-  if default_config:
-    fallthroughs += [
-        fallthrough for fallthrough in default_config.fallthroughs
-        if fallthrough not in fallthroughs]
-
-  completion_id_field = data.get('completion_id_field')
-  completion_request_params = data.get('completion_request_params', [])
-  final_params = {
-      param.get('fieldName'): param.get('value')
-      for param in completion_request_params}
-
-  completer = data.get('completer')
-  attribute = concepts.ResourceParameterAttributeConfig(
-      name=attribute_name, help_text=help_text, completer=completer,
-      fallthroughs=fallthroughs,
-      completion_id_field=completion_id_field,
-      completion_request_params=final_params)
-
-  return (data['parameter_name'], attribute)
+  return (attribute_config.parameter_name, attribute_config)
 
 
 class YAMLMultitypeResourceArgument(YAMLConceptArgument):

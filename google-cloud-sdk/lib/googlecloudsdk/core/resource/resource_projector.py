@@ -15,6 +15,33 @@
 
 """A class for projecting and transforming JSON-serializable objects.
 
+From the Cloud SDK doc "DD: gcloud resource projection algorithm":
+
+  Algorithm
+
+  The algorithm represents a resource R and projection P as trees. P is used
+  to color the nodes of R (with the colors {0, 1, 2, 3}) as follows:
+
+  1. Initialize the nodes in R to (id, 0, identity).
+  2. Do a DFS on P. Let p be the projection subtree and r be the resource
+     subtree at each level. Let f be a flag value at each level, and initialize
+     f to the flag value of the root node of P.
+     2.1. For each id i in p that is also in r, set r[i].flag |= p[i].flag | f,
+          and r[i].transform = p[i].transform if  r[i].transform != identity and
+          p[i].transform != identity.
+     2.2. If p contains a slice then repeat step 2.1 with i = slice.
+     2.3. If r[i].flag is 0 then prune the search at this node, otherwise
+     2.4. descend to the next level with r = r[i], p = p[i], and f = r[i].flag.
+  3. At the end of the search the nodes of R will be colored with the values
+     {0, 1, 2, 3}. The projected keys are the set of the longest paths from the
+     root of R ending with a flag value >= 2.
+
+  Remarks
+
+  If the initial value of f is PROJECT or PROJECT* (2 or 3) then all keys in R
+  are projected. Non-leaf keys may be projected in this model, resulting in dict
+  or list values instead of scalars.
+
 Example usage:
 
   projector = resource_projector.Compile(expression)
@@ -348,7 +375,7 @@ class Projector(object):
   def _Project(self, obj, projection, flag, leaf=False):
     """Evaluate() helper function.
 
-    tl;dr This function takes a resource obj and a preprocessed projection. obj
+    This function takes a resource obj and a preprocessed projection. obj
     is a dense subtree of the resource schema (some keys values may be missing)
     and projection is a sparse, possibly improper, subtree of the resource
     schema. Improper in that it may contain paths that do not exist in the

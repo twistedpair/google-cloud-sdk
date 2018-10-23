@@ -295,6 +295,9 @@ class BuildOptions(_messages.Message):
       build step.  Using a global volume in a build with only one step is not
       valid as it is indicative of a build request with an incorrect
       configuration.
+    workerPool: Option to specify a `WorkerPool` for the build. User specifies
+      the pool with the format "[WORKERPOOL_PROJECT_ID]/[WORKERPOOL_NAME]".
+      This is an experimental field.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
@@ -382,6 +385,7 @@ class BuildOptions(_messages.Message):
   sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 8, repeated=True)
   substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 9)
   volumes = _messages.MessageField('Volume', 10, repeated=True)
+  workerPool = _messages.StringField(11)
 
 
 class BuildStep(_messages.Message):

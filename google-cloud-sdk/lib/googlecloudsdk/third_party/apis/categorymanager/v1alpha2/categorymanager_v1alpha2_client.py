@@ -368,7 +368,7 @@ annotation is a group annotation.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an annotation. Currently only support updating descriptions.
+      r"""Updates an annotation. Supports updating display_name and description.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesAnnotationsPatchRequest) input message
@@ -569,7 +569,7 @@ all annotations in this taxonomy.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a taxonomy. Currently only support updating descriptions.
+      r"""Updates a taxonomy. Supports updating display_name and description.
 
       Args:
         request: (CategorymanagerProjectsTaxonomiesPatchRequest) input message
@@ -845,7 +845,7 @@ annotation is a group annotation.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an annotation. Currently only support updating descriptions.
+      r"""Updates an annotation. Supports updating display_name and description.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesAnnotationsPatchRequest) input message
@@ -1046,7 +1046,7 @@ all annotations in this taxonomy.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a taxonomy. Currently only support updating descriptions.
+      r"""Updates a taxonomy. Supports updating display_name and description.
 
       Args:
         request: (CategorymanagerTaxonomyStoresTaxonomiesPatchRequest) input message

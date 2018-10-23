@@ -372,3 +372,11 @@ def AddServiceAccountFlag(parser):
       account.
       """
   )
+
+
+def AddIAMPolicyFileArg(parser):
+  parser.add_argument(
+      'policy_file',
+      metavar='POLICY_FILE',
+      help='Path to a local JSON or YAML formatted file '
+      'containing a valid policy.')

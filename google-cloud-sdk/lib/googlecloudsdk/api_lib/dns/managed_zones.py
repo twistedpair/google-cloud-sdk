@@ -42,12 +42,15 @@ class Client(object):
             project=zone_ref.project,
             managedZone=zone_ref.managedZone))
 
-  def Patch(self, zone_ref, dnssec_config=None, description=None, labels=None):
+  def Patch(self, zone_ref, dnssec_config=None, description=None, labels=None,
+            private_visibility_config=None):
     zone = self.messages.ManagedZone(
         name=zone_ref.Name(),
         dnssecConfig=dnssec_config,
         description=description,
         labels=labels)
+    if private_visibility_config:
+      zone.privateVisibilityConfig = private_visibility_config
     return self._service.Patch(
         self.messages.DnsManagedZonesPatchRequest(
             managedZoneResource=zone,

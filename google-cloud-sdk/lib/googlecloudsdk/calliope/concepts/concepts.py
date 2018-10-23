@@ -43,6 +43,7 @@ import re
 
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 import six
 
@@ -104,7 +105,7 @@ class ConceptSpec(object):
     Args:
       attribute_to_args_map: {str: str}, A map of attribute names to the names
         of their associated flags.
-      base_fallthroughs_map: {str: [deps_lib.Fallthrough]} A map of attribute
+      base_fallthroughs_map: {str: [deps.Fallthrough]} A map of attribute
         names to non-argument fallthroughs, including command-level
         fallthroughs.
       parsed_args: the parsed Namespace.
@@ -136,11 +137,11 @@ class _Attribute(object):
     help_text: String describing the attribute's relationship to the concept,
       used to generate help for an attribute flag.
     required: True if the attribute is required.
-    fallthroughs: [googlecloudsdk.calliope.concepts.deps.Fallthrough], the list
-      of sources of data, in priority order, that can provide a value for the
-      attribute if not given on the command line. These should only be sources
-      inherent to the attribute, such as associated properties, not command-
-      specific sources.
+    fallthroughs: [googlecloudsdk.calliope.concepts.deps_lib.Fallthrough], the
+      list of sources of data, in priority order, that can provide a value for
+      the attribute if not given on the command line. These should only be
+      sources inherent to the attribute, such as associated properties, not
+      command-specific sources.
     completer: core.cache.completion_cache.Completer, the completer associated
       with the attribute.
     value_type: the type to be accepted by the attribute arg. Defaults to str.
@@ -468,8 +469,9 @@ class ResourceSpec(ConceptSpec):
       for value in values:
         def F(return_value=value):
           return return_value
-        new_fallthrough = deps_lib.Fallthrough(F, fallthrough.hint,
-                                               active=fallthrough.active)
+
+        new_fallthrough = deps_lib.Fallthrough(
+            F, fallthrough.hint, active=fallthrough.active)
         fallthroughs_map[attribute_name] = [new_fallthrough]
         # Add the anchor fallthroughs for this particular value, so that the
         # error messages will contain the appropriate hints.
@@ -485,11 +487,11 @@ class ResourceSpec(ConceptSpec):
     """Builds map of all fallthroughs including arg names.
 
     Fallthroughs are a list of objects that, when called, try different ways of
-    getting values for attributes (see googlecloudsdk.calliope.concepts.deps.
-    _Fallthrough). This method builds a map from the name of each attribute to
-    its fallthroughs, including the "primary" fallthrough representing its
-    corresponding argument value in parsed_args if any, and any fallthroughs
-    that were configured for the attribute beyond that.
+    getting values for attributes (see googlecloudsdk.calliope.concepts.
+    deps_lib._Fallthrough). This method builds a map from the name of each
+    attribute to its fallthroughs, including the "primary" fallthrough
+    representing its corresponding argument value in parsed_args if any, and any
+    fallthroughs that were configured for the attribute beyond that.
 
     Args:
       attribute_to_args_map: {str: str}, A map of attribute names to the names
@@ -552,9 +554,9 @@ class ResourceSpec(ConceptSpec):
     parameter_name = self.ParamName(attribute.name)
     anchor_based_fallthroughs = [
         deps_lib.FullySpecifiedAnchorFallthrough(
-            anchor_fallthrough, self.collection_info,
-            parameter_name)
-        for anchor_fallthrough in anchor_fallthroughs]
+            anchor_fallthrough, self.collection_info, parameter_name)
+        for anchor_fallthrough in anchor_fallthroughs
+    ]
     return anchor_based_fallthroughs
 
   def _AddAnchorFallthroughs(self, anchor, fallthroughs_map):
@@ -581,9 +583,56 @@ class ResourceSpec(ConceptSpec):
 class ResourceParameterAttributeConfig(object):
   """Configuration used to create attributes from resource parameters."""
 
-  def __init__(self, name=None, help_text=None, fallthroughs=None,
-               completer=None, completion_request_params=None,
-               completion_id_field=None, value_type=None):
+  @classmethod
+  def FromData(cls, data):
+    """Constructs an attribute config from data defined in the yaml file.
+
+    Args:
+      data: {}, the dict of data from the YAML file for this single attribute.
+
+    Returns:
+      ResourceParameterAttributeConfig
+    """
+    if not data:
+      return None
+
+    attribute_name = data['attribute_name']
+    parameter_name = data['parameter_name']
+    help_text = data['help']
+    completion_id_field = data.get('completion_id_field', None)
+    completion_request_params_list = data.get('completion_request_params', [])
+    completion_request_params = {
+        param.get('fieldName'): param.get('value')
+        for param in completion_request_params_list
+    }
+
+    # TODO(b/78851830): handle fallthroughs from python hooks.
+    fallthroughs = []
+    prop = properties.FromString(data.get('property', ''))
+    if prop:
+      fallthroughs.append(deps_lib.PropertyFallthrough(prop))
+    default_config = DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS.get(attribute_name)
+    if default_config:
+      fallthroughs += [
+          f for f in default_config.fallthroughs if f not in fallthroughs]
+
+    return cls(
+        name=attribute_name,
+        help_text=help_text,
+        fallthroughs=fallthroughs,
+        completion_id_field=completion_id_field,
+        completion_request_params=completion_request_params,
+        parameter_name=parameter_name)
+
+  def __init__(self,
+               name=None,
+               help_text=None,
+               fallthroughs=None,
+               completer=None,
+               completion_request_params=None,
+               completion_id_field=None,
+               value_type=None,
+               parameter_name=None):
     """Create a resource attribute.
 
     Args:
@@ -592,8 +641,8 @@ class ResourceParameterAttributeConfig(object):
       help_text: str, generic help text for any flag based on the attribute. One
         special expansion is available to convert "{resource}" to the name of
         the resource.
-      fallthroughs: [deps.Fallthrough], A list of fallthroughs to use to resolve
-        the attribute if it is not provided on the command line.
+      fallthroughs: [deps_lib.Fallthrough], A list of fallthroughs to use to
+        resolve the attribute if it is not provided on the command line.
       completer: core.cache.completion_cache.Completer, the completer
         associated with the attribute.
       completion_request_params: {str: value}, a dict of field names to static
@@ -601,11 +650,29 @@ class ResourceParameterAttributeConfig(object):
       completion_id_field: str, the ID field of the return value in the
         response for completion commands.
       value_type: the type to be accepted by the attribute arg. Defaults to str.
+      parameter_name: the API parameter name that this attribute maps to.
     """
     self.attribute_name = name
     self.help_text = help_text
     self.fallthroughs = fallthroughs or []
+    # The completer is alwasy None because neither the surface nor the yaml
+    # schema allow for specifying completers currently.
     self.completer = completer
     self.completion_request_params = completion_request_params
     self.completion_id_field = completion_id_field
     self.value_type = value_type or six.text_type
+    self.parameter_name = parameter_name
+
+
+DEFAULT_PROJECT_ATTRIBUTE_CONFIG = ResourceParameterAttributeConfig(
+    name='project',
+    help_text='The Cloud project for the {resource}.',
+    fallthroughs=[
+        # Typically argument fallthroughs should be configured at the command
+        # level, but the --project flag is currently available in every command.
+        deps_lib.ArgFallthrough('--project'),
+        deps_lib.PropertyFallthrough(properties.VALUES.core.project)
+    ])
+
+DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS = {
+    'project': DEFAULT_PROJECT_ATTRIBUTE_CONFIG}

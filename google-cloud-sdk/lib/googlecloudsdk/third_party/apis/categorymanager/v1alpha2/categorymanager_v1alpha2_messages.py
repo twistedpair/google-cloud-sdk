@@ -405,11 +405,12 @@ class CategorymanagerProjectsTaxonomiesAnnotationsPatchRequest(_messages.Message
   Fields:
     annotation: A Annotation resource to be passed as the request body.
     name: [Required] Resource name of the annotation to be updated.
-    updateMask: The update mask applies to the resource. Only description and
-      parent_annotation_id can be updated and thus can be listed in the mask.
-      If update_mask is not provided, all allowed fields (i.e., description
-      and parent_id) will be updated. For more information including the
-      `FieldMask` definition, see https://developers.google.com/protocol-
+    updateMask: The update mask applies to the resource. Only display_name,
+      description and parent_annotation_id can be updated and thus can be
+      listed in the mask. If update_mask is not provided, all allowed fields
+      (i.e., display_name, description and parent_id) will be updated. For
+      more information including the `FieldMask` definition, see
+      https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
 
@@ -503,8 +504,8 @@ class CategorymanagerProjectsTaxonomiesPatchRequest(_messages.Message):
     taxonomy: A Taxonomy resource to be passed as the request body.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask Will only update
-      description if update_mask is not provided.
+      buffers/docs/reference/google.protobuf#fieldmask Will update both
+      display_name and description if update_mask is not provided.
   """
 
   name = _messages.StringField(1, required=True)
@@ -664,11 +665,12 @@ class CategorymanagerTaxonomyStoresTaxonomiesAnnotationsPatchRequest(_messages.M
   Fields:
     annotation: A Annotation resource to be passed as the request body.
     name: [Required] Resource name of the annotation to be updated.
-    updateMask: The update mask applies to the resource. Only description and
-      parent_annotation_id can be updated and thus can be listed in the mask.
-      If update_mask is not provided, all allowed fields (i.e., description
-      and parent_id) will be updated. For more information including the
-      `FieldMask` definition, see https://developers.google.com/protocol-
+    updateMask: The update mask applies to the resource. Only display_name,
+      description and parent_annotation_id can be updated and thus can be
+      listed in the mask. If update_mask is not provided, all allowed fields
+      (i.e., display_name, description and parent_id) will be updated. For
+      more information including the `FieldMask` definition, see
+      https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
 
@@ -762,8 +764,8 @@ class CategorymanagerTaxonomyStoresTaxonomiesPatchRequest(_messages.Message):
     taxonomy: A Taxonomy resource to be passed as the request body.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#fieldmask Will only update
-      description if update_mask is not provided.
+      buffers/docs/reference/google.protobuf#fieldmask Will update both
+      display_name and description if update_mask is not provided.
   """
 
   name = _messages.StringField(1, required=True)

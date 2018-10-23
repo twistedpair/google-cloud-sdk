@@ -47,14 +47,6 @@ class InvalidEnumValue(Error):
         .format(given, enum_type, ', '.join(options)))
 
 
-def GetHomePath():
-  return ExpandHomePath('~')
-
-
-def ExpandHomePath(path):
-  return os.path.expanduser(path)
-
-
 class OperatingSystem(object):
   """An enum representing the operating system you are running on."""
 

@@ -241,7 +241,10 @@ def _ExportStorageApi(gcs_bucket, source, destination):
     for obj in to_export:
       dest_path = _GetDestPath(source_dirname, obj.name, destination, True)
       files.MakeDir(os.path.dirname(dest_path))
-      client.CopyFileFromGCS(obj.bucket_ref, obj.name, dest_path)
+      # Command description for export commands says overwriting is default
+      # behavior.
+      client.CopyFileFromGCS(
+          obj.bucket_ref, obj.name, dest_path, overwrite=True)
   else:
     for obj in to_export:
       dest_object = storage_util.ObjectReference.FromUrl(
@@ -361,17 +364,21 @@ def _GetObjectOrSubdirObjects(object_ref, object_is_subdir=False, client=None):
   # Check if object_ref referes to an actual object. If it does not exist, we
   # assume the user is specfying a subdirectory.
   target_is_subdir = False
-  try:
-    if not object_is_subdir:
+  if not object_is_subdir:
+    try:
       client.GetObject(object_ref)
       objects.append(object_ref)
-  except apitools_exceptions.HttpNotFoundError:
-    target_is_subdir = True
+    except apitools_exceptions.HttpNotFoundError:
+      target_is_subdir = True
 
   if target_is_subdir or object_is_subdir:
     target_path = posixpath.join(object_ref.name, '')
     subdir_objects = client.ListBucket(object_ref.bucket_ref, target_path)
     for obj in subdir_objects:
+      if object_is_subdir and obj.name == object_ref.name:
+        # In this case, object_ref is to be treated as a subdir, so if
+        # object_ref happens to also be an object, ignore it.
+        continue
       objects.append(
           storage_util.ObjectReference(object_ref.bucket_ref, obj.name))
   return objects

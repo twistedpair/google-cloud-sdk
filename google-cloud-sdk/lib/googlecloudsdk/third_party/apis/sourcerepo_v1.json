@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Cloud Source Repositories API",
-  "description": "Access source code repositories hosted by Google.",
+  "description": "Accesses source code repositories hosted by Google.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

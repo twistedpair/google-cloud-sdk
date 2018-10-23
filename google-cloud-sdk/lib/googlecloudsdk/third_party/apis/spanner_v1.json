@@ -2115,20 +2115,21 @@
           "methods": {
             "listCreateDatabaseFromBackupMetadata": {
               "id": "spanner.projects.instances.listCreateDatabaseFromBackupMetadata",
-              "path": "v1/{+parent}:ListCreateDatabaseFromBackupMetadata",
-              "flatPath": "v1/projects/{projectsId}/instances/{instancesId}:ListCreateDatabaseFromBackupMetadata",
+              "path": "v1/{+parent}/instances/{instanceId}:ListCreateDatabaseFromBackupMetadata",
+              "flatPath": "v1/projects/{projectsId}/instances/{instanceId}:ListCreateDatabaseFromBackupMetadata",
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
                   "description": "Required. The project of the instance that contains the backups\nfrom which the restore operations were initiated. Values are of\nthe form `projects\/<project>`.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
+                  "pattern": "^projects\/[^\/]+$",
                   "type": "string"
                 },
                 "instanceId": {
                   "description": "The ID of the instance that contains the backups from which the\nrestore operations were initiated. The `instance_id` appended to\n`parent\/instances\/` forms the full instance name of the form\n`projects\/<project>\/instances\/<instance_id>`.",
-                  "location": "query",
+                  "location": "path",
+                  "required": true,
                   "type": "string"
                 },
                 "filter": {
@@ -2154,7 +2155,8 @@
                 }
               },
               "parameterOrder": [
-                "parent"
+                "parent",
+                "instanceId"
               ],
               "response": {
                 "$ref": "ListCreateDatabaseFromBackupMetadataResponse"

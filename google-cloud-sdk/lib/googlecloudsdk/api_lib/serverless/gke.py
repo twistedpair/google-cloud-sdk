@@ -16,17 +16,21 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import base64
 import contextlib
 import os
 import socket
+import ssl
 import tempfile
 import threading
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files
+
+import six
 
 
 class NoCaCertError(exceptions.Error):
@@ -49,64 +53,101 @@ class _AddressPatches(object):
     return cls._instance
 
   def __init__(self):
-    self._custom_address_map = None
+    self._host_to_ip = None
+    self._ip_to_host = None
     self._old_getaddrinfo = None
+    self._old_match_hostname = None
     self._lock = threading.Lock()
 
   @contextlib.contextmanager
-  def MonkeypatchGetaddrinfo(self, hostname, ip):
-    """Change getaddrinfo for a "fake /etc/hosts" effect, implementation."""
+  def MonkeypatchAddressChecking(self, hostname, ip):
+    """Change ssl address checking so the given ip answers to the hostname."""
     with self._lock:
-      if self._custom_address_map is None:
-        self._custom_address_map = {}
+      if self._host_to_ip is None:
+        self._host_to_ip = {}
+        self._ip_to_host = {}
+        self._old_match_hostname = ssl.match_hostname
         self._old_getaddrinfo = socket.getaddrinfo
-        socket.getaddrinfo = self._GetAddrInfo
-      if hostname in self._custom_address_map:
+        if six.PY3:
+          ssl.match_hostname = self._MatchHostname
+        else:
+          socket.getaddrinfo = self._GetAddrInfo
+      if hostname in self._host_to_ip:
         raise ValueError(
             'Cannot re-patch the same address: {}'.format(hostname))
-      self._custom_address_map[hostname] = ip
+      if ip in self._ip_to_host:
+        raise ValueError(
+            'Cannot re-patch the same address: {}'.format(ip))
+      self._host_to_ip[hostname] = ip
+      self._ip_to_host[ip] = hostname
     try:
-      yield
+      if six.PY3:
+        yield ip
+      else:
+        yield hostname
     finally:
       with self._lock:
-        del self._custom_address_map[hostname]
-        if not self._custom_address_map:
-          self._custom_address_map = None
-          socket.getaddrinfo = self._old_getaddrinfo
+        del self._host_to_ip[hostname]
+        del self._ip_to_host[ip]
+        if not self._host_to_ip:
+          self._host_to_ip = None
+          self._ip_to_host = None
+          if six.PY3:
+            ssl.match_hostname = self._old_match_hostname
+          else:
+            socket.getaddrinfo = self._old_getaddrinfo
 
   def _GetAddrInfo(self, host, *args, **kwargs):
     """Like socket.getaddrinfo, only with translation."""
     with self._lock:
-      assert self._custom_address_map is not None
-      if host in self._custom_address_map:
-        host = self._custom_address_map[host]
+      assert self._host_to_ip is not None
+      if host in self._host_to_ip:
+        host = self._host_to_ip[host]
     return self._old_getaddrinfo(host, *args, **kwargs)
+
+  def _MatchHostname(self, cert, hostname):
+    # A replacement for ssl.match_hostname(cert, hostname)
+    # Since we'll be connecting with hostname as bare IP address, the goal is
+    # to treat that as if it were the hostname `kubernetes.default`, which
+    # is what the GKE master asserts it is.
+    with self._lock:
+      assert self._ip_to_host is not None
+      if hostname in self._ip_to_host:
+        hostname = self._ip_to_host[hostname]
+    return self._old_match_hostname(cert, hostname)
 
 _AddressPatches.Initialize()
 
 
-def MonkeypatchGetaddrinfo(hostname, ip):
-  """Change getaddrinfo to allow a "fake /etc/hosts" effect.
+def MonkeypatchAddressChecking(hostname, ip):
+  """Manipulate SSL address checking so we can talk to GKE.
 
   GKE provides an IP address for talking to the k8s master, and a
   ca_certs that signs the tls certificate the master provides. Unfortunately,
   that tls certificate is for `kubernetes`, `kubernetes.default`,
   `kubernetes.default.svc`, or `kubernetes.default.svc.cluster.local`.
 
-  This allows us to use one of those hostnames while still connecting to the ip
-  address we know is the kubernetes server. This is ok, because we got the
-  ca_cert that it'll use directly from the gke api.  Calls to `getaddrinfo` that
-  specifically ask for a given hostname can be redirected to the ip address we
-  provide for the hostname, as if we had edited /etc/hosts, without editing
-  /etc/hosts.
+  In Python 3, we do this by patching ssl.match_hostname to allow the
+  `kubernetes.default` when we connect to the given IP address.
+
+  In Python 2, httplib2 does its own hosname checking so this isn't available.
+  Instead, we change getaddrinfo to allow a "fake /etc/hosts" effect.
+  This allows us to use `kubernetes.default` as the hostname while still
+  connecting to the ip address we know is the kubernetes server.
+
+  This is all ok, because we got the ca_cert that it'll use directly from the
+  gke api.  Calls to `getaddrinfo` that specifically ask for a given hostname
+  can be redirected to the ip address we provide for the hostname, as if we had
+  edited /etc/hosts, without editing /etc/hosts.
 
   Arguments:
     hostname: hostname to replace
     ip: ip address to replace the hostname with
   Returns:
-    A context manager that patches socket.getaddrinfo for its duration
+    A context manager that patches an internal function for its duration, and
+    yields the endpoint to actually connect to.
   """
-  return _AddressPatches.Get().MonkeypatchGetaddrinfo(hostname, ip)
+  return _AddressPatches.Get().MonkeypatchAddressChecking(hostname, ip)
 
 
 @contextlib.contextmanager

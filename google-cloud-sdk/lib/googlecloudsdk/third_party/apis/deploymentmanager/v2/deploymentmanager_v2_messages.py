@@ -278,7 +278,7 @@ class DeploymentmanagerDeploymentsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -443,7 +443,7 @@ class DeploymentmanagerDeploymentsSetIamPolicyRequest(_messages.Message):
     globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
@@ -471,7 +471,7 @@ class DeploymentmanagerDeploymentsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """

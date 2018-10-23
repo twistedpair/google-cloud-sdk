@@ -149,8 +149,9 @@ class Cluster(_messages.Message):
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     currentMasterVersion: [Output only] The current software version of the
       master endpoint.
-    currentNodeCount: [Output only] The number of nodes currently in the
-      cluster.
+    currentNodeCount: [Output only]  The number of nodes currently in the
+      cluster. Deprecated. Call Kubernetes API directly to retrieve node
+      information.
     currentNodeVersion: [Output only] Deprecated, use [NodePool.version
       ](/kubernetes-
       engine/docs/reference/rest/v1beta1/projects.zones.clusters.nodePool)

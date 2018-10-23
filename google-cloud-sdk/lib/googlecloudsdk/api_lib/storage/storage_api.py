@@ -220,7 +220,8 @@ class StorageClient(object):
           'file: {0}. Please retry.'.format(local_path))
     return response
 
-  def CopyFileFromGCS(self, bucket_ref, object_path, local_path):
+  def CopyFileFromGCS(self, bucket_ref, object_path, local_path,
+                      overwrite=False):
     """Download a file from the given Cloud Storage bucket.
 
     Args:
@@ -229,12 +230,15 @@ class StorageClient(object):
       object_path: str, the path of the file on GCS.
       local_path: str, the path of the file to download. Path must be on the
         local filesystem.
+      overwrite: bool, whether or not to overwrite local_path if it already
+        exists.
 
     Raises:
       BadFileException if the file download is not successful.
     """
     chunksize = self._GetChunkSize()
-    download = transfer.Download.FromFile(local_path, chunksize=chunksize)
+    download = transfer.Download.FromFile(
+        local_path, chunksize=chunksize, overwrite=overwrite)
     download.bytes_http = http.Http(response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=bucket_ref.bucket,

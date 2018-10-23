@@ -304,7 +304,7 @@ class Keys(object):
           expansion.
       env: Environment, Current environment or None to infer from current.
     """
-    private_key_file = os.path.realpath(os.path.expanduser(key_file))
+    private_key_file = os.path.realpath(files.ExpandHomeDir(key_file))
     self.dir = os.path.dirname(private_key_file)
     self.env = env or Environment.Current()
     # TODO(b/71388306): Enums aren't handled well by pytype.
@@ -530,7 +530,7 @@ class KnownHosts(object):
   """
 
   # TODO(b/33467618): Rename the file itself
-  DEFAULT_PATH = os.path.realpath(os.path.expanduser(
+  DEFAULT_PATH = os.path.realpath(files.ExpandHomeDir(
       os.path.join('~', '.ssh', 'google_compute_known_hosts')))
 
   def __init__(self, known_hosts, file_path):

@@ -51,11 +51,11 @@ class InvalidDockerConfigError(DockerError):
 
 def _GetUserHomeDir():
   if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
-    # %HOME% has precedence over %USERPROFILE% for os.path.expanduser('~')
+    # %HOME% has precedence over %USERPROFILE% for files.GetHomeDir().
     # The Docker config resides under %USERPROFILE% on Windows
-    return os.path.expandvars('%USERPROFILE%')
+    return encoding.Decode(os.path.expandvars('%USERPROFILE%'))
   else:
-    return platforms.GetHomePath()
+    return files.GetHomeDir()
 
 
 def _GetNewConfigDirectory():

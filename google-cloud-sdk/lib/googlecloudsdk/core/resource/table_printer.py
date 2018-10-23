@@ -380,6 +380,11 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       # Check the heading widths too.
       for i, col in enumerate(heading[0]):
         col_widths[i] = max(col_widths[i], self._console_attr.DisplayWidth(col))
+    if self.column_attributes:
+      # Finally check the fixed column widths.
+      for i, col in enumerate(self.column_attributes.Columns()):
+        if col.attribute.width and col_widths[i] < col.attribute.width:
+          col_widths[i] = col.attribute.width
 
     # If table is wider than the console and columns can be wrapped,
     # change wrapped column widths to fit within the available space.
@@ -522,14 +527,12 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
           else:
             cell = s
             row[i] = ' '
-          if not box and i == len(row) - 1:
-            width = 0
           if is_colorizer:
             if pad:
               self._out.write(' ' * pad)
               pad = 0
-            # pylint: disable=cell-var-from-loop
-            cell.Render(self._out, justify=lambda s: justify(s, width))
+            # NOTICE: This may result in trailing space after the last column.
+            cell.Render(self._out, justify=lambda s: justify(s, width))  # pylint: disable=cell-var-from-loop
             if box:
               self._out.write(' ' * table_column_pad)
             else:

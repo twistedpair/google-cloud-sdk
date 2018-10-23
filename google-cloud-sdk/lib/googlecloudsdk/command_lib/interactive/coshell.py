@@ -351,6 +351,20 @@ class _CoshellBase(six.with_metaclass(abc.ABCMeta, object)):
       status = 256 - status
     return status
 
+  def _Decode(self, data):
+    """Decodes external data if needed and returns internal string."""
+    try:
+      return data.decode(self._encoding)
+    except (AttributeError, UnicodeError):
+      return data
+
+  def _Encode(self, string):
+    """Encodes internal string if needed and returns external data."""
+    try:
+      return string.encode(self._encoding)
+    except UnicodeError:
+      return string
+
   def Close(self):
     """Closes the coshell connection and release any resources."""
     pass
@@ -434,7 +448,7 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
   def _Exited(self):
     """Raises the coshell exit exception."""
     try:
-      self._shell.communicate(b':')
+      self._WriteLine(':')
     except (IOError, OSError, ValueError):
       # Yeah, ValueError for IO on a closed file.
       pass
@@ -443,10 +457,22 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
         'The coshell exited [status={}].'.format(status),
         status=status)
 
+  def _ReadLine(self):
+    """Reads and returns a decoded stripped line from the coshell."""
+    return self._Decode(self._shell.stdout.readline()).strip()
+
+  def _ReadStatusChar(self):
+    """Reads and returns one decoded character from the coshell status fd."""
+    return self._Decode(os.read(self._status_fd, 1))
+
+  def _WriteLine(self, line):
+    """Writes an encoded line to the coshell."""
+    self._shell.communicate(self._Encode(line + '\n'))
+
   def _SendCommand(self, command):
     """Sends command to the coshell for execution."""
     try:
-      self._shell.stdin.write((command + '\n').encode(self._encoding))
+      self._shell.stdin.write(self._Encode(command + '\n'))
       self._shell.stdin.flush()
     except (IOError, OSError, ValueError):
       # Yeah, ValueError for IO on a closed file.
@@ -456,11 +482,11 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
     """Gets the status of the last command sent to the coshell."""
     line = []
     while True:
-      c = os.read(self._status_fd, 1)
-      if c in (None, b'\n', self.SHELL_STATUS_EXIT.encode('ascii')):
+      c = self._ReadStatusChar()
+      if c in (None, '\n', self.SHELL_STATUS_EXIT):
         break
       line.append(c)
-    status_string = b''.join(line).decode(self._encoding)
+    status_string = ''.join(line)
     if not status_string.isdigit() or c == self.SHELL_STATUS_EXIT:
       self._Exited()
     return int(status_string)
@@ -638,7 +664,7 @@ class _UnixCoshell(_UnixCoshellBase):
       os.close(self._status_fd)
       self._status_fd = -1
     try:
-      self._shell.communicate(b'exit')  # This closes internal fds.
+      self._WriteLine('exit')  # This closes internal fds.
     except (IOError, ValueError):
       # Yeah, ValueError for IO on a closed file.
       pass
@@ -683,14 +709,14 @@ class _UnixCoshell(_UnixCoshellBase):
     line = []
     while True:
       try:
-        c = os.read(self._status_fd, 1)
+        c = self._ReadStatusChar()
       except (IOError, OSError, ValueError):
         # Yeah, ValueError for IO on a closed file.
         self._Exited()
-      if c in (None, b'\n'):
+      if c in (None, '\n'):
         if not line:
           break
-        lines.append(b''.join(line).decode(self._encoding).rstrip())
+        lines.append(''.join(line).rstrip())
         line = []
       else:
         line.append(c)
@@ -732,7 +758,7 @@ class _MinGWCoshell(_UnixCoshellBase):
   def Close(self):
     """Closes the coshell connection and release any resources."""
     try:
-      self._shell.communicate(b'exit')  # This closes internal fds.
+      self._WriteLine('exit')  # This closes internal fds.
     except (IOError, ValueError):
       # Yeah, ValueError for IO on a closed file.
       pass
@@ -740,7 +766,7 @@ class _MinGWCoshell(_UnixCoshellBase):
 
   def _GetStatus(self):
     """Gets the status of the last command sent to the coshell."""
-    status_string = self._shell.stdout.readline().strip()
+    status_string = self._ReadLine()
     if status_string.endswith(self.SHELL_STATUS_EXIT):
       c = self.SHELL_STATUS_EXIT
       status_string = status_string[:-1]
@@ -788,13 +814,13 @@ class _MinGWCoshell(_UnixCoshellBase):
     lines = []
     while True:
       try:
-        line = self._shell.stdout.readline().rstrip('\n')
+        line = self._ReadLine()
       except (IOError, OSError, ValueError):
         # Yeah, ValueError for IO on a closed file.
         self._Exited()
       if not line:
         break
-      lines.append(line.decode(self._encoding))
+      lines.append(line)
     return lines
 
   def Interrupt(self):

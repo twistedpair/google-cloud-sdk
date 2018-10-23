@@ -331,7 +331,7 @@ class UpdateManager(object):
 
     cwd = None
     try:
-      cwd = encoding.Decode(os.path.realpath(os.getcwd()))
+      cwd = os.path.realpath(file_utils.GetCWD())
     except OSError:
       log.debug('Could not determine CWD, assuming detached directory not '
                 'under SDK root.')

@@ -19,10 +19,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import os
-
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.updater import update_manager
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 
@@ -48,9 +47,9 @@ def GetUpdateManager(group_args):
 
   platform = platforms.Platform.Current(os_override, arch_override)
 
-  root = (os.path.expanduser(group_args.sdk_root_override)
+  root = (files.ExpandHomeDir(group_args.sdk_root_override)
           if group_args.sdk_root_override else None)
-  url = (os.path.expanduser(group_args.snapshot_url_override)
+  url = (files.ExpandHomeDir(group_args.snapshot_url_override)
          if group_args.snapshot_url_override else None)
 
   return update_manager.UpdateManager(

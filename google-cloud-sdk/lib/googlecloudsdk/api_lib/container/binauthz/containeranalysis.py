@@ -60,7 +60,12 @@ class Client(object):
         self.messages.ContaineranalysisProjectsNotesOccurrencesListRequest)
     occurrence_iter = list_pager.YieldFromList(
         self.client.projects_notes_occurrences,
-        request=ListNoteOccurrencesRequest(name=note_ref.RelativeName()),
+        request=ListNoteOccurrencesRequest(
+            name=note_ref.RelativeName(),
+            filter=(
+                'resourceUrl="{}"'.format(artifact_url)
+                if artifact_url is not None else ''),
+        ),
         field='occurrences',
         batch_size=100,
         batch_size_attribute='pageSize',
@@ -72,8 +77,6 @@ class Client(object):
     def MatchesFilter(occurrence):
       if (occurrence.kind !=
           self.messages.Occurrence.KindValueValuesEnum.ATTESTATION):
-        return False
-      if artifact_url and occurrence.resource.uri != artifact_url:
         return False
       return True
 

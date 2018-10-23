@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
-import os
 import posixpath
 import random
 import re
@@ -32,6 +31,7 @@ from googlecloudsdk.api_lib.firebase.test import util as util
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core.util import files
 import six
 
 
@@ -433,7 +433,7 @@ def NormalizeAndValidateObbFileNames(obb_files):
     obb_files[:] = [
         obb_file if not obb_file or
         obb_file.startswith(storage_util.GSUTIL_BUCKET_PREFIX) else
-        os.path.expanduser(obb_file) for obb_file in obb_files
+        files.ExpandHomeDir(obb_file) for obb_file in obb_files
     ]
   for obb_file in (obb_files or []):
     if not _OBB_FILE_REGEX.match(obb_file):

@@ -1889,8 +1889,17 @@ class V1Beta1Adapter(V1Adapter):
     Returns:
       Cluster's autoscaling configuration.
     """
-    # Only supported option in beta is setting limits by flags.
-    return self.CreateClusterAutoscalingFromFlags(options)
+    if options.autoprovisioning_config_file is None:
+      # Create using limits from flags.
+      return self.CreateClusterAutoscalingFromFlags(options)
+    # Create using limits from config file only.
+    return self.CreateClusterAutoscalingFromFile(options)
+
+  def CreateClusterAutoscalingFromFile(self, options):
+    resource_limits = yaml.load(options.autoprovisioning_config_file)
+    return self.messages.ClusterAutoscaling(
+        enableNodeAutoprovisioning=options.enable_autoprovisioning,
+        resourceLimits=resource_limits)
 
   def CreateClusterAutoscalingFromFlags(self, options):
     """Create cluster's autoscaling configuration from command line flags.
@@ -2051,19 +2060,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         cluster=cluster)
     operation = self.client.projects_locations_clusters.Create(req)
     return self.ParseOperation(operation.name, cluster_ref.zone)
-
-  def CreateClusterAutoscalingCommon(self, options):
-    if options.autoprovisioning_config_file is None:
-      # Create using limits from flags.
-      return self.CreateClusterAutoscalingFromFlags(options)
-    # Create using limits from config file only.
-    return self.CreateClusterAutoscalingFromFile(options)
-
-  def CreateClusterAutoscalingFromFile(self, options):
-    resource_limits = yaml.load(options.autoprovisioning_config_file)
-    return self.messages.ClusterAutoscaling(
-        enableNodeAutoprovisioning=options.enable_autoprovisioning,
-        resourceLimits=resource_limits)
 
   def UpdateCluster(self, cluster_ref, options):
     update = self.UpdateClusterCommon(options)

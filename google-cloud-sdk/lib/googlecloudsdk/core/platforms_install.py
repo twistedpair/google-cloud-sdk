@@ -334,7 +334,7 @@ def _GetAndUpdateRcPath(completion_update, path_update, rc_path, host_os):
   preferred_shell = _GetPreferredShell(
       encoding.GetEncodedValue(os.environ, 'SHELL', '/bin/sh'))
   default_rc_path = os.path.join(
-      platforms.GetHomePath(), _GetShellRcFileName(preferred_shell, host_os))
+      files.GetHomeDir(), _GetShellRcFileName(preferred_shell, host_os))
   # If in quiet mode, we'll use default path.
   if not console_io.CanPrompt():
     _TraceAction('You specified that you wanted to update your rc file. The '
@@ -346,7 +346,7 @@ def _GetAndUpdateRcPath(completion_update, path_update, rc_path, host_os):
       'file to bring the Google Cloud CLIs into your environment.\n\n'
       'Enter a path to an rc file to update, or leave blank to use '
       '[{rc_path}]:  ').format(rc_path=default_rc_path))
-  return (os.path.expanduser(rc_path_update) if rc_path_update
+  return (files.ExpandHomeDir(rc_path_update) if rc_path_update
           else default_rc_path)
 
 

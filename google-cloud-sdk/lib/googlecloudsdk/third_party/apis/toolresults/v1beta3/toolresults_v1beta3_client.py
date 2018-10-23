@@ -612,7 +612,7 @@ May return any of the following canonical error codes:
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Histories for a given Project.
+      r"""Lists Executions for a given History.
 
 The executions are sorted by creation_time in descending order. The execution_id key will be used to order the executions with the same creation_time.
 

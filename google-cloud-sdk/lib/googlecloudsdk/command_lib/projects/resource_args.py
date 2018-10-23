@@ -23,6 +23,8 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.core import properties
 
 
+# TODO(b/78851830): clean up the usage and use
+# concept.DEFAULT_PROJECT_ATTRIBUTE_CONFIG instead.
 PROJECT_ATTRIBUTE_CONFIG = concepts.ResourceParameterAttributeConfig(
     name='project',
     help_text='The Cloud project for the {resource}.',

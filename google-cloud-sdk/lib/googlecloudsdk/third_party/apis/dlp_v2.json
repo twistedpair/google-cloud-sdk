@@ -2337,7 +2337,7 @@
           "format": "int32"
         },
         "fileTypes": {
-          "description": "List of file type groups to include in the scan.\nIf empty, all files are scanned and available data format processors\nare applied.",
+          "description": "List of file type groups to include in the scan.\nIf empty, all files are scanned and available data format processors\nare applied. In addition, the binary content of the selected files\nis always scanned as well.",
           "enumDescriptions": [
             "Includes all files.",
             "Includes all file extensions not covered by text file types.",
@@ -2451,6 +2451,13 @@
             "TOP",
             "RANDOM_START"
           ]
+        },
+        "excludedFields": {
+          "description": "References to fields excluded from scanning. This allows you to skip\ninspection of entire columns which you know have no findings.",
+          "type": "array",
+          "items": {
+            "$ref": "GooglePrivacyDlpV2FieldId"
+          }
         }
       }
     },

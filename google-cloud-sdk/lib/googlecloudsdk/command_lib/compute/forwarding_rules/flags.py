@@ -436,6 +436,20 @@ def AddLoadBalancingScheme(parser, include_alpha=False):
       help='This signifies what the forwarding rule will be used for.')
 
 
+def AddAllowGlobalAccess(parser):
+  """Adds allow global access flag to the argparse."""
+  parser.add_argument(
+      '--allow-global-access',
+      action='store_true',
+      default=None,
+      help="""\
+      If True, then clients from all regions can access this internal
+      forwarding rule. This can only be specified for forwarding rules with
+      the LOAD_BALANCING_SCHEME set to INTERNAL and the target must be either
+      a backend service or a target instance.
+      """)
+
+
 def AddIPProtocols(parser):
   """Adds IP protocols flag, with values available in the given version."""
 

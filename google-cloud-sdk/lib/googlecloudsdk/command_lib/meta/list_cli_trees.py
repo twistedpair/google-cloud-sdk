@@ -30,7 +30,7 @@ import six
 
 def _ParameterizePath(path):
   """Return path with $HOME prefix replaced by ~."""
-  home = os.path.expanduser('~') + os.path.sep
+  home = files.GetHomeDir() + os.path.sep
   if path.startswith(home):
     return '~' + os.path.sep + path[len(home):]
   return path

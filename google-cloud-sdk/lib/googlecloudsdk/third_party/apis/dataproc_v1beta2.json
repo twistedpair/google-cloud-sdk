@@ -332,6 +332,43 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "allocationAffinity": {
+          "description": "Allocation Affinity for consuming Zonal allocation.",
+          "$ref": "AllocationAffinity"
+        }
+      }
+    },
+    "AllocationAffinity": {
+      "id": "AllocationAffinity",
+      "description": "Allocation Affinity for consuming Zonal allocation.",
+      "type": "object",
+      "properties": {
+        "consumeAllocationType": {
+          "enumDescriptions": [
+            "",
+            "Do not consume from any allocated capacity.",
+            "Consume any allocation available.",
+            "Must consume from a specific allocation. Must specify key value fields for specifying the allocations."
+          ],
+          "type": "string",
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "NO_ALLOCATION",
+            "ANY_ALLOCATION",
+            "SPECIFIC_ALLOCATION"
+          ]
+        },
+        "key": {
+          "description": "Corresponds to the label key of Allocation resource.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Corresponds to the label values of allocation resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

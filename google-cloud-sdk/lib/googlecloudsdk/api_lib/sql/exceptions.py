@@ -52,3 +52,7 @@ class ConnectionError(Error):
 
 class UpdateError(Error):
   """An error raised when a connection could not be made to a sql instance."""
+
+
+class CloudSqlProxyError(Error):
+  """An error raised when the Cloud SQL Proxy fails to start."""

@@ -696,7 +696,7 @@ class LogMetric(_messages.Message):
       based metric is using a DISTRIBUTION value type and it describes the
       bucket boundaries used to create a histogram of the extracted values.
     description: Optional. A description of this metric, which is used in
-      documentation.
+      documentation. The maximum length of the description is 8000 characters.
     filter: Required. An advanced logs filter which is used to match log
       entries. Example: "resource.type=gae_app AND severity>=ERROR" The
       maximum length of the filter is 20000 characters.

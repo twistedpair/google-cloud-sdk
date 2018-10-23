@@ -15,10 +15,17 @@
 """Wait messages for the compute instance groups managed commands."""
 
 
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import unicode_literals
+
+
 _CURRENT_ACTION_TYPES = ['abandoning', 'creating', 'creatingWithoutRetries',
                          'deleting', 'recreating', 'refreshing', 'restarting',
                          'verifying']
+
+
+_PENDING_ACTION_TYPES = ['creating', 'deleting', 'restarting', 'recreating']
 
 
 def IsGroupStable(igm_ref):
@@ -35,8 +42,22 @@ def IsGroupStable(igm_ref):
   if status is not None:
     return status.isStable
 
-  return not any(getattr(igm_ref.currentActions, action, 0)
-                 for action in _CURRENT_ACTION_TYPES)
+  has_current_actions = any(
+      getattr(igm_ref.currentActions, action, 0)
+      for action in _CURRENT_ACTION_TYPES)
+  if has_current_actions:
+    return False
+
+  # Pending actions are populated in alpha and beta only, so we need to check
+  # for their existence.
+  pending_actions = getattr(igm_ref, 'pendingActions', None)
+  if pending_actions is not None:
+    has_pending_actions = any(
+        getattr(pending_actions, action, 0) for action in _PENDING_ACTION_TYPES)
+    if has_pending_actions:
+      return False
+
+  return True
 
 
 def CreateWaitText(igm_ref):
@@ -52,7 +73,15 @@ def CreateWaitText(igm_ref):
       ', current operations: ',
       igm_ref.currentActions,
       _CURRENT_ACTION_TYPES)
-  return text + current_actions_text
+
+  # Pending actions are populated in alpha and beta only, so we need to check
+  # for their existence.
+  pending_actions_text = ''
+  pending_actions = getattr(igm_ref, 'pendingActions', None)
+  if pending_actions is not None:
+    pending_actions_text = _CreateActionsText(
+        ', pending operations: ', pending_actions, _PENDING_ACTION_TYPES)
+  return text + current_actions_text + pending_actions_text
 
 
 def _CreateActionsText(text, igm_field, action_types):

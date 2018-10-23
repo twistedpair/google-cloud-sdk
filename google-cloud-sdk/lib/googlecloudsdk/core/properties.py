@@ -1427,6 +1427,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudkms = self._Add('cloudkms')
     self.cloudresourcemanager = self._Add('cloudresourcemanager')
     self.cloudresourcesearch = self._Add('cloudresourcesearch')
+    self.cloudscheduler = self._Add('cloudscheduler')
+    self.cloudtasks = self._Add('cloudtasks')
     self.composer = self._Add('composer')
     self.compute = self._Add('compute')
     self.container = self._Add('container')

@@ -221,13 +221,15 @@ def _CreateCloudBuild(build_config, client, messages):
   return build, build_ref
 
 
-def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None):
+def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None,
+                            bucket_location=None):
   """Determine the name of the GCS bucket to use and create if necessary.
 
   Args:
-    bucket_name: A string containing a bucket name to use, otherwise the
-      bucket will be named based on the project id.
+    bucket_name: str, bucket name to use, otherwise the bucket will be named
+      based on the project id.
     storage_client: The storage_api client object.
+    bucket_location: str, bucket location
 
   Returns:
     A string containing the name of the GCS bucket to use.
@@ -235,13 +237,20 @@ def GetAndCreateDaisyBucket(bucket_name=None, storage_client=None):
   project = properties.VALUES.core.project.GetOrFail()
   safe_project = project.replace(':', '-')
   safe_project = safe_project.replace('.', '-')
-  bucket_name = bucket_name or '{0}-daisy-bkt'.format(safe_project)
+  if not bucket_name:
+    bucket_name = '{0}-daisy-bkt'.format(safe_project)
+    if bucket_location:
+      bucket_name = '{0}-{1}'.format(bucket_name, bucket_location).lower()
+
   safe_bucket_name = bucket_name.replace('google', 'elgoog')
 
   if not storage_client:
     storage_client = storage_api.StorageClient()
 
-  storage_client.CreateBucketIfNotExists(safe_bucket_name)
+  # TODO (b/117668144): Make Daisy scratch bucket ACLs same as
+  # source/destination bucket
+  storage_client.CreateBucketIfNotExists(
+      safe_bucket_name, location=bucket_location)
 
   return safe_bucket_name
 

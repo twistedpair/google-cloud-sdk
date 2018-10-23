@@ -219,7 +219,7 @@ def _GetGlobalConfigDir():
   if global_config_dir:
     return global_config_dir
   if platforms.OperatingSystem.Current() != platforms.OperatingSystem.WINDOWS:
-    return os.path.join(os.path.expanduser('~'), '.config',
+    return os.path.join(file_utils.GetHomeDir(), '.config',
                         _CLOUDSDK_GLOBAL_CONFIG_DIR_NAME)
   appdata = encoding.GetEncodedValue(os.environ, 'APPDATA')
   if appdata:

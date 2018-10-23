@@ -34,6 +34,38 @@ class AcceleratorConfig(_messages.Message):
   acceleratorTypeUri = _messages.StringField(2)
 
 
+class AllocationAffinity(_messages.Message):
+  r"""Allocation Affinity for consuming Zonal allocation.
+
+  Enums:
+    ConsumeAllocationTypeValueValuesEnum:
+
+  Fields:
+    consumeAllocationType: A ConsumeAllocationTypeValueValuesEnum attribute.
+    key: Corresponds to the label key of Allocation resource.
+    values: Corresponds to the label values of allocation resource.
+  """
+
+  class ConsumeAllocationTypeValueValuesEnum(_messages.Enum):
+    r"""ConsumeAllocationTypeValueValuesEnum enum type.
+
+    Values:
+      TYPE_UNSPECIFIED: <no description>
+      NO_ALLOCATION: Do not consume from any allocated capacity.
+      ANY_ALLOCATION: Consume any allocation available.
+      SPECIFIC_ALLOCATION: Must consume from a specific allocation. Must
+        specify key value fields for specifying the allocations.
+    """
+    TYPE_UNSPECIFIED = 0
+    NO_ALLOCATION = 1
+    ANY_ALLOCATION = 2
+    SPECIFIC_ALLOCATION = 3
+
+  consumeAllocationType = _messages.EnumField('ConsumeAllocationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates members with a role.
 
@@ -1347,6 +1379,7 @@ class GceClusterConfig(_messages.Message):
       metadata#project_and_instance_metadata)).
 
   Fields:
+    allocationAffinity: Allocation Affinity for consuming Zonal allocation.
     internalIpOnly: Optional. If true, all instances in the cluster will only
       have internal IP addresses. By default, clusters are not restricted to
       internal IP addresses, and will have ephemeral external IP addresses
@@ -1426,14 +1459,15 @@ class GceClusterConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  internalIpOnly = _messages.BooleanField(1)
-  metadata = _messages.MessageField('MetadataValue', 2)
-  networkUri = _messages.StringField(3)
-  serviceAccount = _messages.StringField(4)
-  serviceAccountScopes = _messages.StringField(5, repeated=True)
-  subnetworkUri = _messages.StringField(6)
-  tags = _messages.StringField(7, repeated=True)
-  zoneUri = _messages.StringField(8)
+  allocationAffinity = _messages.MessageField('AllocationAffinity', 1)
+  internalIpOnly = _messages.BooleanField(2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  networkUri = _messages.StringField(4)
+  serviceAccount = _messages.StringField(5)
+  serviceAccountScopes = _messages.StringField(6, repeated=True)
+  subnetworkUri = _messages.StringField(7)
+  tags = _messages.StringField(8, repeated=True)
+  zoneUri = _messages.StringField(9)
 
 
 class GetIamPolicyRequest(_messages.Message):

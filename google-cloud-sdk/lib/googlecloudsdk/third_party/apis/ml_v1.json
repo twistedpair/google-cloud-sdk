@@ -220,13 +220,25 @@
           "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <i>complex_model_s<\/i>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <i>complex_model_m<\/i>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla K80 GPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-gpus\">using GPUs to\n  train your model<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that also includes\n  four NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>complex_model_l_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_l<\/i> that also includes\n  eight NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>standard_p100<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla P100 GPU.\n  <\/dd>\n  <dt>complex_model_m_p100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that also includes\n  four NVIDIA Tesla P100 GPUs.\n  <\/dd>\n  <dt>standard_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla V100 GPU. The availability of these\n  GPUs is in the <i>Beta<\/i> launch stage.\n  <\/dd>\n  <dt>large_model_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>large_model<\/i> that\n  also includes a single NVIDIA Tesla V100 GPU. The availability of these\n  GPUs is in the <i>Beta<\/i> launch stage.\n  <\/dd>\n  <dt>complex_model_m_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that\n  also includes four NVIDIA Tesla V100 GPUs. The availability of these\n  GPUs is in the <i>Beta<\/i> launch stage.\n  <\/dd>\n  <dt>complex_model_l_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_l<\/i> that\n  also includes eight NVIDIA Tesla V100 GPUs. The availability of these\n  GPUs is in the <i>Beta<\/i> launch stage.\n  <\/dd>\n  <dt>cloud_tpu<\/dt>\n  <dd>\n  A TPU VM including one Cloud TPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-tpus\">using TPUs to train\n  your model<\/a>.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
           "type": "string"
         },
+        "masterConfig": {
+          "description": "Optional. The configuration for master.\n\nOnly one of `masterConfig.imageUri` and `runtimeVersion` should be\nset.",
+          "$ref": "GoogleCloudMlV1__ReplicaConfig"
+        },
         "workerType": {
           "description": "Optional. Specifies the type of virtual machine to use for your training\njob's worker nodes.\n\nThe supported values are the same as those described in the entry for\n`masterType`.\n\nThis value must be present when `scaleTier` is set to `CUSTOM` and\n`workerCount` is greater than zero.",
           "type": "string"
         },
+        "workerConfig": {
+          "description": "Optional. The configrations for workers.\n\nIf `workerConfig.imageUri` has not been set, the value of\n`masterConfig.imageUri` will be used.",
+          "$ref": "GoogleCloudMlV1__ReplicaConfig"
+        },
         "parameterServerType": {
           "description": "Optional. Specifies the type of virtual machine to use for your training\njob's parameter server.\n\nThe supported values are the same as those described in the entry for\n`master_type`.\n\nThis value must be present when `scaleTier` is set to `CUSTOM` and\n`parameter_server_count` is greater than zero.",
           "type": "string"
+        },
+        "parameterServerConfig": {
+          "description": "Optional. The config of parameter servers.\n\nIf `parameterServerConfig.imageUri` has not been set, the value of\n`masterConfig.imageUri` will be used.",
+          "$ref": "GoogleCloudMlV1__ReplicaConfig"
         },
         "workerCount": {
           "description": "Optional. The number of worker replicas to use for the training job. Each\nreplica in the cluster will be of the type specified in `worker_type`.\n\nThis value can only be used when `scale_tier` is set to `CUSTOM`. If you\nset this value, you must also set `worker_type`.",
@@ -275,6 +287,50 @@
         "pythonVersion": {
           "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported runtime versions.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudMlV1__ReplicaConfig": {
+      "id": "GoogleCloudMlV1__ReplicaConfig",
+      "description": "Represents the configration for a replica in a cluster.",
+      "type": "object",
+      "properties": {
+        "acceleratorConfig": {
+          "$ref": "GoogleCloudMlV1__AcceleratorConfig"
+        },
+        "imageUri": {
+          "description": "The docker image to run on worker.\nThis image must be in Google Container Registry.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudMlV1__AcceleratorConfig": {
+      "id": "GoogleCloudMlV1__AcceleratorConfig",
+      "description": "Represents a hardware accelerator request config.",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "The number of accelerators to attach to each machine running the job.",
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "description": "The available types of accelerators.",
+          "enumDescriptions": [
+            "Unspecified accelerator type. Default to no GPU.",
+            "Nvidia Tesla K80 GPU.",
+            "Nvidia Tesla P100 GPU.",
+            "Nvidia Tesla V100 GPU.",
+            "Nvidia Tesla P4 GPU."
+          ],
+          "type": "string",
+          "enum": [
+            "ACCELERATOR_TYPE_UNSPECIFIED",
+            "NVIDIA_TESLA_K80",
+            "NVIDIA_TESLA_P100",
+            "NVIDIA_TESLA_V100",
+            "NVIDIA_TESLA_P4"
+          ]
         }
       }
     },
@@ -509,36 +565,6 @@
         "accelerator": {
           "description": "Optional. The type and number of accelerators to be attached to each\nmachine running the job.",
           "$ref": "GoogleCloudMlV1__AcceleratorConfig"
-        }
-      }
-    },
-    "GoogleCloudMlV1__AcceleratorConfig": {
-      "id": "GoogleCloudMlV1__AcceleratorConfig",
-      "description": "Represents a hardware accelerator request config.",
-      "type": "object",
-      "properties": {
-        "count": {
-          "description": "The number of accelerators to attach to each machine running the job.",
-          "type": "string",
-          "format": "int64"
-        },
-        "type": {
-          "description": "The available types of accelerators.",
-          "enumDescriptions": [
-            "Unspecified accelerator type. Default to no GPU.",
-            "Nvidia Tesla K80 GPU.",
-            "Nvidia Tesla P100 GPU.",
-            "Nvidia Tesla V100 GPU.",
-            "Nvidia Tesla P4 GPU."
-          ],
-          "type": "string",
-          "enum": [
-            "ACCELERATOR_TYPE_UNSPECIFIED",
-            "NVIDIA_TESLA_K80",
-            "NVIDIA_TESLA_P100",
-            "NVIDIA_TESLA_V100",
-            "NVIDIA_TESLA_P4"
-          ]
         }
       }
     },

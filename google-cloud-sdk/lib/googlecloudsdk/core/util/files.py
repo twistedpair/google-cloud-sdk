@@ -435,7 +435,8 @@ def _PlatformExecutableExtensions(platform):
     return ('', '.sh')
 
 
-def FindExecutableOnPath(executable, path=None, pathext=None):
+def FindExecutableOnPath(executable, path=None, pathext=None,
+                         allow_extensions=False):
   """Searches for `executable` in the directories listed in `path` or $PATH.
 
   Executable must not contain a directory or an extension.
@@ -446,16 +447,19 @@ def FindExecutableOnPath(executable, path=None, pathext=None):
       then the system PATH is used.
     pathext: An iterable of file name extensions to use.  If None then
       platform specific extensions are used.
+    allow_extensions: A boolean flag indicating whether extensions in the
+      executable are allowed.
 
   Returns:
     The path of 'executable' (possibly with a platform-specific extension) if
     found and executable, None if not found.
 
   Raises:
-    ValueError: if executable has an extension or a path, or there's an
-    internal error.
+    ValueError: if executable has a path or an extension, and extensions are
+      not allowed, or if there's an internal error.
   """
-  if os.path.splitext(executable)[1]:
+
+  if not allow_extensions and os.path.splitext(executable)[1]:
     raise ValueError('FindExecutableOnPath({0},...) failed because first '
                      'argument must not have an extension.'.format(executable))
 
@@ -539,6 +543,11 @@ def HasWriteAccessInDir(directory):
   return False
 
 
+def GetCWD():
+  """Returns os.getcwd() properly decoded."""
+  return encoding_util.Decode(os.getcwd())
+
+
 class TemporaryDirectory(object):
   """A class to easily create and dispose of temporary directories.
 
@@ -551,7 +560,7 @@ class TemporaryDirectory(object):
     self.__temp_dir = tempfile.mkdtemp()
     self._curdir = None
     if change_to:
-      self._curdir = os.getcwd()
+      self._curdir = GetCWD()
       os.chdir(self.__temp_dir)
 
   @property
@@ -718,7 +727,7 @@ class ChDir(object):
     self.__dir = directory
 
   def __enter__(self):
-    self.__original_dir = os.getcwd()
+    self.__original_dir = GetCWD()
     os.chdir(self.__dir)
     return self.__dir
 
@@ -1165,6 +1174,16 @@ def _FileOpener(path, mode, verb, encoding=None, private=False):
     raise exc_type('Unable to {0} file [{1}]: {2}'.format(verb, path, e))
 
 
+def GetHomeDir():
+  """Returns the current user HOME directory path."""
+  return ExpandHomeDir('~')
+
+
+def ExpandHomeDir(path):
+  """Returns path with leading ~<SEP> or ~<USER><SEP> expanded."""
+  return encoding_util.Decode(os.path.expanduser(path))
+
+
 def PrivatizeFile(path):
   """Makes an existing file private or creates a new, empty private file.
 
@@ -1181,8 +1200,7 @@ def PrivatizeFile(path):
       os.chmod(path, 0o600)
     else:
       parent_dir_path, _ = os.path.split(path)
-      full_parent_dir_path = encoding_util.Decode(
-          os.path.realpath(os.path.expanduser(parent_dir_path)))
+      full_parent_dir_path = os.path.realpath(ExpandHomeDir(parent_dir_path))
       MakeDir(full_parent_dir_path, mode=0o700)
 
       flags = os.O_RDWR | os.O_CREAT | os.O_TRUNC

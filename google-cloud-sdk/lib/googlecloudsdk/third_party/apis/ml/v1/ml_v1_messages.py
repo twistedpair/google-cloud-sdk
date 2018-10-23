@@ -918,6 +918,19 @@ class GoogleCloudMlV1PredictionOutput(_messages.Message):
   predictionCount = _messages.IntegerField(4)
 
 
+class GoogleCloudMlV1ReplicaConfig(_messages.Message):
+  r"""Represents the configration for a replica in a cluster.
+
+  Fields:
+    acceleratorConfig: A GoogleCloudMlV1AcceleratorConfig attribute.
+    imageUri: The docker image to run on worker. This image must be in Google
+      Container Registry.
+  """
+
+  acceleratorConfig = _messages.MessageField('GoogleCloudMlV1AcceleratorConfig', 1)
+  imageUri = _messages.StringField(2)
+
+
 class GoogleCloudMlV1SetDefaultVersionRequest(_messages.Message):
   r"""Request message for the SetDefaultVersion request."""
 
@@ -941,6 +954,8 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       TensorFlow program as the '--job-dir' command-line argument. The benefit
       of specifying this field is that Cloud ML validates the path for use in
       training.
+    masterConfig: Optional. The configuration for master.  Only one of
+      `masterConfig.imageUri` and `runtimeVersion` should be set.
     masterType: Optional. Specifies the type of virtual machine to use for
       your training job's master worker.  The following types are supported:
       <dl>   <dt>standard</dt>   <dd>   A basic machine configuration suitable
@@ -986,6 +1001,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     packageUris: Required. The Google Cloud Storage location of the packages
       with the training program and any additional dependencies. The maximum
       number of package URIs is 100.
+    parameterServerConfig: Optional. The config of parameter servers.  If
+      `parameterServerConfig.imageUri` has not been set, the value of
+      `masterConfig.imageUri` will be used.
     parameterServerCount: Optional. The number of parameter server replicas to
       use for the training job. Each replica in the cluster will be of the
       type specified in `parameter_server_type`.  This value can only be used
@@ -1010,6 +1028,9 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       which is defined in the documentation of runtime version list.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
+    workerConfig: Optional. The configrations for workers.  If
+      `workerConfig.imageUri` has not been set, the value of
+      `masterConfig.imageUri` will be used.
     workerCount: Optional. The number of worker replicas to use for the
       training job. Each replica in the cluster will be of the type specified
       in `worker_type`.  This value can only be used when `scale_tier` is set
@@ -1063,17 +1084,20 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
   args = _messages.StringField(1, repeated=True)
   hyperparameters = _messages.MessageField('GoogleCloudMlV1HyperparameterSpec', 2)
   jobDir = _messages.StringField(3)
-  masterType = _messages.StringField(4)
-  packageUris = _messages.StringField(5, repeated=True)
-  parameterServerCount = _messages.IntegerField(6)
-  parameterServerType = _messages.StringField(7)
-  pythonModule = _messages.StringField(8)
-  pythonVersion = _messages.StringField(9)
-  region = _messages.StringField(10)
-  runtimeVersion = _messages.StringField(11)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 12)
-  workerCount = _messages.IntegerField(13)
-  workerType = _messages.StringField(14)
+  masterConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 4)
+  masterType = _messages.StringField(5)
+  packageUris = _messages.StringField(6, repeated=True)
+  parameterServerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 7)
+  parameterServerCount = _messages.IntegerField(8)
+  parameterServerType = _messages.StringField(9)
+  pythonModule = _messages.StringField(10)
+  pythonVersion = _messages.StringField(11)
+  region = _messages.StringField(12)
+  runtimeVersion = _messages.StringField(13)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 14)
+  workerConfig = _messages.MessageField('GoogleCloudMlV1ReplicaConfig', 15)
+  workerCount = _messages.IntegerField(16)
+  workerType = _messages.StringField(17)
 
 
 class GoogleCloudMlV1TrainingOutput(_messages.Message):

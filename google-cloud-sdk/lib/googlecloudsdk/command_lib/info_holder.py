@@ -81,7 +81,7 @@ class Anonymizer(object):
     self._replacements = [
         (re.escape(os.path.normpath(cfg_paths.global_config_dir)),
          '${CLOUDSDK_CONFIG}'),
-        (re.escape(platforms.GetHomePath()), '${HOME}'),
+        (re.escape(file_utils.GetHomeDir()), '${HOME}'),
         (re.escape(getpass.getuser()), '${USER}')
     ]
     if cfg_paths.sdk_root:

@@ -229,7 +229,7 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
                    packages=None, package_path=None, scale_tier=None,
                    config=None, module_name=None, runtime_version=None,
                    python_version=None, stream_logs=None, user_args=None,
-                   labels=None):
+                   labels=None, supports_container_training=False):
   """Submit a training job."""
   region = properties.VALUES.compute.region.Get(required=True)
   staging_location = jobs_prep.GetStagingLocation(
@@ -237,8 +237,10 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
       job_dir=job_dir)
   try:
     uris = jobs_prep.UploadPythonPackages(
-        packages=packages, package_path=package_path,
-        staging_location=staging_location)
+        packages=packages,
+        package_path=package_path,
+        staging_location=staging_location,
+        supports_container_training=supports_container_training)
   except jobs_prep.NoStagingLocationError:
     raise flags.ArgumentError(
         'If local packages are provided, the `--staging-bucket` or '

@@ -726,7 +726,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Optional. A description of this metric, which is used in documentation.",
+          "description": "Optional. A description of this metric, which is used in documentation. The maximum length of the description is 8000 characters.",
           "type": "string"
         },
         "filter": {

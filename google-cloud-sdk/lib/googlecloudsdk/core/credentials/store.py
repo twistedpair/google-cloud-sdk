@@ -739,5 +739,5 @@ class _LegacyGenerator(object):
       contents: str, The contents to write to the file.
     """
 
-    full_path = os.path.realpath(os.path.expanduser(filepath))
+    full_path = os.path.realpath(files.ExpandHomeDir(filepath))
     files.WriteFileContents(full_path, contents, private=True)

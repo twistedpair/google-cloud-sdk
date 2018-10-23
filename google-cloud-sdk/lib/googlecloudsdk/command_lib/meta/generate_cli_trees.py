@@ -1137,7 +1137,7 @@ GENERATORS = {
 
 def LoadOrGenerate(command, directories=None, tarball=None, force=False,
                    generate=True, ignore_out_of_date=False, verbose=False,
-                   warn_on_exceptions=False):
+                   warn_on_exceptions=False, allow_extensions=False):
   """Returns the CLI tree for command, generating it if it does not exist.
 
   Args:
@@ -1154,6 +1154,7 @@ def LoadOrGenerate(command, directories=None, tarball=None, force=False,
     verbose: Display a status line for up to date CLI trees if True.
     warn_on_exceptions: Emits warning messages in lieu of generator exceptions.
       Used during installation.
+    allow_extensions: Whether or not to allow extensions in executable names.
 
   Returns:
     The CLI tree for command or None if command not found or there is no
@@ -1176,7 +1177,9 @@ def LoadOrGenerate(command, directories=None, tarball=None, force=False,
 
     # The command must exist.
     if (command_dir and not os.path.exists(command) or
-        not command_dir and not files.FindExecutableOnPath(command_name)):
+        not command_dir
+        and not files.FindExecutableOnPath(command_name,
+                                           allow_extensions=allow_extensions)):
       if verbose:
         log.status.Print('Command [{}] not found.'.format(command))
       return None

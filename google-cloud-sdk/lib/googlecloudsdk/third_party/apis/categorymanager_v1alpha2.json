@@ -909,7 +909,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nWill only update description if update_mask is not provided.",
+                  "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nWill update both display_name and description if update_mask is not\nprovided.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -928,7 +928,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
               ],
-              "description": "Updates a taxonomy. Currently only support updating descriptions."
+              "description": "Updates a taxonomy. Supports updating display_name and description."
             },
             "list": {
               "id": "categorymanager.taxonomyStores.taxonomies.list",
@@ -1131,7 +1131,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The update mask applies to the resource. Only description and\nparent_annotation_id can be updated and thus can be listed in the mask. If\nupdate_mask is not provided, all allowed fields (i.e., description and\nparent_id) will be updated. For more information including the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "The update mask applies to the resource. Only display_name, description and\nparent_annotation_id can be updated and thus can be listed in the mask. If\nupdate_mask is not provided, all allowed fields (i.e., display_name,\ndescription and parent_id) will be updated. For more information including\nthe `FieldMask` definition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1150,7 +1150,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/xapi.zoo"
                   ],
-                  "description": "Updates an annotation. Currently only support updating descriptions."
+                  "description": "Updates an annotation. Supports updating display_name and description."
                 },
                 "delete": {
                   "id": "categorymanager.taxonomyStores.taxonomies.annotations.delete",
@@ -1378,7 +1378,7 @@
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nWill only update description if update_mask is not provided.",
+                  "description": "The update mask applies to the resource. For the `FieldMask` definition,\nsee\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nWill update both display_name and description if update_mask is not\nprovided.",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -1397,7 +1397,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/xapi.zoo"
               ],
-              "description": "Updates a taxonomy. Currently only support updating descriptions."
+              "description": "Updates a taxonomy. Supports updating display_name and description."
             },
             "list": {
               "id": "categorymanager.projects.taxonomies.list",
@@ -1600,7 +1600,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "The update mask applies to the resource. Only description and\nparent_annotation_id can be updated and thus can be listed in the mask. If\nupdate_mask is not provided, all allowed fields (i.e., description and\nparent_id) will be updated. For more information including the `FieldMask`\ndefinition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                      "description": "The update mask applies to the resource. Only display_name, description and\nparent_annotation_id can be updated and thus can be listed in the mask. If\nupdate_mask is not provided, all allowed fields (i.e., display_name,\ndescription and parent_id) will be updated. For more information including\nthe `FieldMask` definition, see\nhttps:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1619,7 +1619,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/xapi.zoo"
                   ],
-                  "description": "Updates an annotation. Currently only support updating descriptions."
+                  "description": "Updates an annotation. Supports updating display_name and description."
                 },
                 "delete": {
                   "id": "categorymanager.projects.taxonomies.annotations.delete",

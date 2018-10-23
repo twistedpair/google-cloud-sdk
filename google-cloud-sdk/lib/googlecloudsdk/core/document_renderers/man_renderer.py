@@ -32,7 +32,6 @@ class ManRenderer(renderer.Renderer):
     _example: True if currently rendering an example.
     _fill: The number of characters in the current output line.
     _level: The section or list level counting from 0.
-    _table: True if currently rendering a table.
     _th_emitted: True if .TH already emitted.
   """
   _BULLET = (r'\(bu', r'\(em')
@@ -44,7 +43,6 @@ class ManRenderer(renderer.Renderer):
     self._example = False
     self._fill = 0
     self._level = 0
-    self._table = False
     self._th_emitted = False
 
   def _Flush(self):
@@ -212,22 +210,40 @@ class ManRenderer(renderer.Renderer):
       self._out.write(c)
     self._out.write('\n')
 
-  def Table(self, line):
-    """Renders a table line.
+  def Table(self, table, rows):
+    """Renders a table.
 
-    Nested tables are not supported. The first call on a new table is:
-      Table(attributes)
-    the intermediate calls add the heading and data lines and the last call is:
-      Table(None)
+    Nested tables are not supported.
 
     Args:
-      line: A CSV table data line.
+      table: renderer.TableAttributes object.
+      rows: A list of rows, each row is a list of column strings.
     """
-    if line is None:
-      self._table = False
-      self._out.write('.TE\n')
-    elif not self._table:
-      self._table = True
-      self._out.write('\n.TS\ntab(,);\nlB lB\nl l.\n')
-    else:
-      self._out.write(line + '\n')
+    # Output the preamble.
+
+    self._out.write('\n.TS\ntab(\t);\n')
+
+    # Output the heading.
+
+    head_attr = ''
+    data_attr = ''
+    for column in table.columns:
+      head_attr += ' ' + column.align[0]
+      data_attr += ' ' + column.align[0]
+      if column.width:
+        head_attr += '({})'.format(column.width)
+        data_attr += '({})'.format(column.width)
+      head_attr += 'B'
+    if table.heading:
+      self._out.write(head_attr[1:] + '\n')
+    self._out.write(data_attr[1:] + '.\n')
+    self._out.write('\t'.join([c.label for c in table.columns]) + '\n')
+
+    # Output the row data.
+
+    for row in rows:
+      self._out.write('\t'.join(row) + '\n')
+
+    # Output the postamble.
+
+    self._out.write('.TE\n')

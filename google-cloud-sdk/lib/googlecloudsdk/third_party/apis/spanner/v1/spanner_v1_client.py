@@ -1621,13 +1621,13 @@ resource.
           config, request, global_params=global_params)
 
     ListCreateDatabaseFromBackupMetadata.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}:ListCreateDatabaseFromBackupMetadata',
+        flat_path=u'v1/projects/{projectsId}/instances/{instanceId}:ListCreateDatabaseFromBackupMetadata',
         http_method=u'GET',
         method_id=u'spanner.projects.instances.listCreateDatabaseFromBackupMetadata',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[u'filter', u'instanceId', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}:ListCreateDatabaseFromBackupMetadata',
+        ordered_params=[u'parent', u'instanceId'],
+        path_params=[u'instanceId', u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/instances/{instanceId}:ListCreateDatabaseFromBackupMetadata',
         request_field='',
         request_type_name=u'SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest',
         response_type_name=u'ListCreateDatabaseFromBackupMetadataResponse',

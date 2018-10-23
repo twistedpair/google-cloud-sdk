@@ -88,10 +88,9 @@ def Connect(cluster_ref):
               sys.version_info.major,
               sys.version_info.minor,
               sys.version_info.micro))
-    with gke.ClusterConnectionInfo(cluster_ref) as (endpoint, ca_certs):
-
-      k8s_apiserver = 'https://kubernetes.default/'
-      with gke.MonkeypatchGetaddrinfo('kubernetes.default', endpoint):
+    with gke.ClusterConnectionInfo(cluster_ref) as (ip, ca_certs):
+      with gke.MonkeypatchAddressChecking('kubernetes.default', ip) as endpoint:
+        k8s_apiserver = 'https://{}/'.format(endpoint)
         prev_endpoint = (
             properties.VALUES.api_endpoint_overrides.serverless.Get())
         properties.VALUES.api_endpoint_overrides.serverless.Set(k8s_apiserver)

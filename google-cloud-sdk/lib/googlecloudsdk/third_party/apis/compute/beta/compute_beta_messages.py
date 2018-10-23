@@ -3883,7 +3883,7 @@ class ComputeAddressesTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -4085,7 +4085,7 @@ class ComputeAutoscalersTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
     zone: The name of the zone for this request.
@@ -4610,7 +4610,7 @@ class ComputeBackendServicesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -4887,7 +4887,7 @@ class ComputeDisksGetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
@@ -5046,7 +5046,7 @@ class ComputeDisksSetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
     zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
       request body.
@@ -5091,7 +5091,7 @@ class ComputeDisksTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
     zone: The name of the zone for this request.
@@ -5237,7 +5237,7 @@ class ComputeFirewallsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -5494,7 +5494,7 @@ class ComputeForwardingRulesTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -5629,7 +5629,7 @@ class ComputeGlobalAddressesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -5791,7 +5791,7 @@ class ComputeGlobalForwardingRulesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -6056,7 +6056,7 @@ class ComputeHealthChecksTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -6228,7 +6228,7 @@ class ComputeHttpHealthChecksTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -6400,7 +6400,7 @@ class ComputeHttpsHealthChecksTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -6502,7 +6502,7 @@ class ComputeImagesGetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -6599,7 +6599,7 @@ class ComputeImagesSetIamPolicyRequest(_messages.Message):
     globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
@@ -6627,7 +6627,7 @@ class ComputeImagesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -7114,7 +7114,7 @@ class ComputeInstanceGroupManagersTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
     zone: The name of the zone for this request.
@@ -7460,7 +7460,7 @@ class ComputeInstanceGroupsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
     zone: The name of the zone for this request.
@@ -7500,7 +7500,7 @@ class ComputeInstanceTemplatesGetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -7596,7 +7596,7 @@ class ComputeInstanceTemplatesSetIamPolicyRequest(_messages.Message):
     globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
@@ -7609,7 +7609,7 @@ class ComputeInstanceTemplatesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -7829,7 +7829,7 @@ class ComputeInstancesGetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
@@ -8135,7 +8135,7 @@ class ComputeInstancesSetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
     zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
       request body.
@@ -8522,7 +8522,7 @@ class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
     zone: The name of the zone for this request.
@@ -8843,7 +8843,7 @@ class ComputeInterconnectAttachmentsTestIamPermissionsRequest(_messages.Message)
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -9074,7 +9074,7 @@ class ComputeInterconnectsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -9597,7 +9597,7 @@ class ComputeNetworkEndpointGroupsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
     zone: The name of the zone for this request.
@@ -9818,7 +9818,7 @@ class ComputeNetworksTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -9960,7 +9960,7 @@ class ComputeNodeGroupsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
@@ -10113,7 +10113,7 @@ class ComputeNodeGroupsSetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
     zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
       request body.
@@ -10158,7 +10158,7 @@ class ComputeNodeGroupsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
     zone: The name of the zone for this request.
@@ -10247,7 +10247,7 @@ class ComputeNodeTemplatesGetIamPolicyRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -10350,7 +10350,7 @@ class ComputeNodeTemplatesSetIamPolicyRequest(_messages.Message):
     region: The name of the region for this request.
     regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
       the request body.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -10365,7 +10365,7 @@ class ComputeNodeTemplatesTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -10955,7 +10955,7 @@ class ComputeRegionAutoscalersTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -11159,7 +11159,7 @@ class ComputeRegionBackendServicesTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -11654,7 +11654,7 @@ class ComputeRegionDisksTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -12065,7 +12065,7 @@ class ComputeRegionInstanceGroupManagersTestIamPermissionsRequest(_messages.Mess
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -12257,7 +12257,7 @@ class ComputeRegionInstanceGroupsTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -12571,7 +12571,7 @@ class ComputeResourcePoliciesTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -12854,7 +12854,7 @@ class ComputeRoutersTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -13001,7 +13001,7 @@ class ComputeRoutesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -13275,7 +13275,7 @@ class ComputeSecurityPoliciesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -13313,7 +13313,7 @@ class ComputeSnapshotsGetIamPolicyRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -13385,7 +13385,7 @@ class ComputeSnapshotsSetIamPolicyRequest(_messages.Message):
     globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
@@ -13413,7 +13413,7 @@ class ComputeSnapshotsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -13533,7 +13533,7 @@ class ComputeSslCertificatesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -13726,7 +13726,7 @@ class ComputeSslPoliciesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -13841,7 +13841,7 @@ class ComputeSubnetworksGetIamPolicyRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -14018,7 +14018,7 @@ class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
     region: The name of the region for this request.
     regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
       the request body.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -14062,7 +14062,7 @@ class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -14209,7 +14209,7 @@ class ComputeTargetHttpProxiesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -14440,7 +14440,7 @@ class ComputeTargetHttpsProxiesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -14614,7 +14614,7 @@ class ComputeTargetInstancesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
     zone: The name of the zone for this request.
@@ -14950,7 +14950,7 @@ class ComputeTargetPoolsTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -15182,7 +15182,7 @@ class ComputeTargetSslProxiesTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -15546,7 +15546,7 @@ class ComputeTargetVpnGatewaysTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -15717,7 +15717,7 @@ class ComputeUrlMapsTestIamPermissionsRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """
@@ -15959,7 +15959,7 @@ class ComputeVpnTunnelsTestIamPermissionsRequest(_messages.Message):
   Fields:
     project: Project ID for this request.
     region: The name of the region for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     testPermissionsRequest: A TestPermissionsRequest resource to be passed as
       the request body.
   """

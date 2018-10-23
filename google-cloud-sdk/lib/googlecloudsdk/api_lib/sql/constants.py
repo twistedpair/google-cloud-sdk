@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 # Defaults for instance creation.
 DEFAULT_MACHINE_TYPE = 'db-n1-standard-1'
 
+
 # Determining what executables, flags, and defaults to use for sql connect.
 DB_EXE = {'MYSQL': 'mysql', 'POSTGRES': 'psql'}
 
@@ -28,17 +29,30 @@ EXE_FLAGS = {
     'mysql': {
         'user': '-u',
         'password': '-p',
-        'hostname': '-h'
+        'hostname': '-h',
+        'port': '-P'
     },
     'psql': {
         'user': '-U',
         'password': '-W',
         'hostname': '-h',
+        'port': '-p',
         'database': '-d'
     }
 }
 
 DEFAULT_SQL_USER = {'mysql': 'root', 'psql': 'postgres'}
 
+
 # Size conversions.
 BYTES_TO_GB = 1 << 30
+
+
+# Cloud SQL Proxy constants.
+
+# Generally unassigned port number for the proxy to bind to.
+DEFAULT_PROXY_PORT_NUMBER = 9470
+
+PROXY_ADDRESS_IN_USE_ERROR = 'bind: address already in use'
+
+PROXY_READY_FOR_CONNECTIONS_MSG = 'Ready for new connections'

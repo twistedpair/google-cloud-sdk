@@ -141,7 +141,8 @@ class VersionsClient(object):
                    framework=None,
                    python_version=None,
                    model_class=None,
-                   package_uris=None):
+                   package_uris=None,
+                   accelerator_config=None):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -167,7 +168,7 @@ class VersionsClient(object):
         interface for custom prediction.
       package_uris: list of str, Cloud Storage URIs containing user-supplied
         Python code to use.
-
+      accelerator_config: an accelerator config message object.
 
 
     Returns:
@@ -211,7 +212,8 @@ class VersionsClient(object):
         'framework': framework,
         'pythonVersion': python_version,
         'modelClass': model_class,
-        'packageUris': package_uris
+        'packageUris': package_uris,
+        'acceleratorConfig': accelerator_config
     }
     for field_name, value in additional_fields.items():
       if value is not None:

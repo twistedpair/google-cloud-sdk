@@ -74,6 +74,12 @@ MAP = {
             messages_modulepath='accesscontextmanager_v1alpha_messages',
             default_version=True
         ),
+        'v1beta': APIDef(
+            class_path='googlecloudsdk.third_party.apis.accesscontextmanager.v1beta',
+            client_classpath='accesscontextmanager_v1beta_client.AccesscontextmanagerV1beta',
+            messages_modulepath='accesscontextmanager_v1beta_messages',
+            default_version=False
+        ),
     },
     'alpha_vision': {
         'v1': APIDef(
@@ -302,6 +308,12 @@ MAP = {
             messages_modulepath='composer_v1_messages',
             default_version=True
         ),
+        'v1alpha2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.composer.v1alpha2',
+            client_classpath='composer_v1alpha2_client.ComposerV1alpha2',
+            messages_modulepath='composer_v1alpha2_messages',
+            default_version=False
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.composer.v1beta1',
             client_classpath='composer_v1beta1_client.ComposerV1beta1',
@@ -510,6 +522,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.iam.v1',
             client_classpath='iam_v1_client.IamV1',
             messages_modulepath='iam_v1_messages',
+            default_version=True
+        ),
+    },
+    'iap': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.iap.v1beta1',
+            client_classpath='iap_v1beta1_client.IapV1beta1',
+            messages_modulepath='iap_v1beta1_messages',
             default_version=True
         ),
     },

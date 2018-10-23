@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
@@ -183,6 +184,25 @@ def AddCommonManagedZonesDnssecArgs(parser, messages):
       '--zsk-key-length',
       type=int,
       help='Length of the zone-signing key in bits. Requires DNSSEC enabled.')
+
+
+def GetManagedZoneVisibilityArg():
+  return base.Argument(
+      '--visibility',
+      choices=['public', 'private'],
+      default='public',
+      help='Visibility of the zone. Public zones are visible to the public '
+      'internet. Private zones are only visible in your internal '
+      'networks denoted by the `--networks` flag.')
+
+
+def GetManagedZoneNetworksArg():
+  return base.Argument(
+      '--networks',
+      metavar='NETWORK',
+      type=arg_parsers.ArgList(),
+      help='List of networks that the zone should be visible in if the zone '
+      'visibility is [private].')
 
 
 CHANGES_FORMAT = 'table(id, startTime, status)'

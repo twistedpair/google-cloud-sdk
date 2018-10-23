@@ -65,10 +65,12 @@ class ListNodesResponse(_messages.Message):
   Fields:
     nextPageToken: The next page token or empty if none.
     nodes: The listed nodes.
+    unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
   nodes = _messages.MessageField('Node', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListOperationsResponse(_messages.Message):

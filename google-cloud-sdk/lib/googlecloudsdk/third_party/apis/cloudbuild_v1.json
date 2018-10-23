@@ -771,6 +771,10 @@
             "STREAM_OFF"
           ]
         },
+        "workerPool": {
+          "description": "Option to specify a `WorkerPool` for the build. User specifies the pool\nwith the format \"[WORKERPOOL_PROJECT_ID]\/[WORKERPOOL_NAME]\".\nThis is an experimental field.",
+          "type": "string"
+        },
         "logging": {
           "description": "Option to specify the logging mode, which determines where the logs are\nstored.",
           "enumDescriptions": [

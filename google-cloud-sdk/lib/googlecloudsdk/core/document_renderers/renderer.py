@@ -20,8 +20,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import io
 
 from googlecloudsdk.core import log
+from googlecloudsdk.core.resource import resource_printer
 
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -29,6 +31,64 @@ from six.moves import range  # pylint: disable=redefined-builtin
 
 # Font Attributes.
 BOLD, ITALIC, CODE = list(range(3))
+
+
+class TableColumnAttributes(object):
+  """Markdown table column attributes.
+
+  Attributes:
+    align: Column alignment, one of {'left', 'center', 'right'}.
+    label: Column heading label string.
+    width: Minimum column width.
+  """
+
+  def __init__(self, align='left', label=None, width=0):
+    self.align = align
+    self.label = label
+    self.width = width
+
+
+class TableAttributes(object):
+  """Markdown table attributes.
+
+  Attributes:
+    box: True if table and rows framed by box.
+    columns: The list of column attributes.
+    heading: The number of non-empty headings.
+  """
+
+  def __init__(self, box=False):
+    self.box = box
+    self.heading = 0
+    self.columns = []
+
+  def AddColumn(self, align='left', label='', width=0):
+    """Adds the next column attributes to the table."""
+    if label:
+      self.heading += 1
+    self.columns.append(
+        TableColumnAttributes(align=align, label=label, width=width))
+
+  def GetPrintFormat(self):
+    """Constructs and returns a resource_printer print format."""
+    fmt = ['table']
+    attr = []
+    if self.box:
+      attr += 'box'
+    if not self.heading:
+      attr += 'no-heading'
+    if attr:
+      fmt += '[' + ','.join(attr) + ']'
+    fmt += '('
+    for index, column in enumerate(self.columns):
+      if index:
+        fmt += ','
+      fmt += '[{}]:label={}:align={}'.format(
+          index, repr(column.label or '').lstrip('u'), column.align)
+      if column.width:
+        fmt += ':width={}'.format(column.width)
+    fmt += ')'
+    return ''.join(fmt)
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -39,6 +99,8 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
   entities to output document renderings.
 
   Attributes:
+    _blank: True if the output already contains a blank line. Used to avoid
+      sequences of 2 or more blank lines in the output.
     _font: The font attribute bitmask.
     _lang: ```lang\n...\n``` code block language. None if not in code block,
       '' if in code block with no explicit lang specified.
@@ -48,11 +110,24 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
   """
 
   def __init__(self, out=None, title=None, width=80):
+    self._blank = True
     self._font = 0
     self._lang = None
     self._out = out or log.out
     self._title = title
     self._width = width
+
+  def Blank(self):
+    """The last output line is blank."""
+    self._blank = True
+
+  def Content(self):
+    """Some non-blank line content was added to the output."""
+    self._blank = False
+
+  def HaveBlank(self):
+    """Returns True if the last output line is blank."""
+    return self._blank
 
   def Entities(self, buf):
     """Converts special characters to their entity tags.
@@ -124,3 +199,30 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
     if target:
       return target
     return '[]()'
+
+  def TableLine(self, line, indent=0):
+    """Adds an indented table line to the output.
+
+    Args:
+      line: The line to add. A newline will be added.
+      indent: The number of characters to indent the table.
+    """
+    self._out.write(indent * ' ' + line + '\n')
+
+  def Table(self, table, rows):
+    """Renders a table.
+
+    Nested tables are not supported.
+
+    Args:
+      table: A TableAttributes object.
+      rows: A list of rows where each row is a list of column strings.
+    """
+    self.Line()
+    indent = self._indent[self._level].indent + 2
+    buf = io.StringIO()
+    resource_printer.Print(rows, table.GetPrintFormat(), out=buf)
+    for line in buf.getvalue().split('\n')[:-1]:
+      self.TableLine(line, indent=indent)
+    self.Content()
+    self.Line()
