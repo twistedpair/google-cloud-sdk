@@ -10780,6 +10780,57 @@ class ComputeRoutersDeleteRequest(_messages.Message):
   router = _messages.StringField(4, required=True)
 
 
+class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
+  r"""A ComputeRoutersGetNatMappingInfoRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    router: Name of the Router resource to query for Nat Mapping information
+      of VM endpoints.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  router = _messages.StringField(7, required=True)
+
+
 class ComputeRoutersGetRequest(_messages.Message):
   r"""A ComputeRoutersGetRequest object.
 
@@ -25973,6 +26024,7 @@ class Router(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    nats: A list of Nat services created in this router.
     network: URI of the network to which this router belongs.
     region: [Output Only] URI of the region where the router resides. You must
       specify this field as part of the HTTP request URL. It is not settable
@@ -25988,9 +26040,10 @@ class Router(_messages.Message):
   interfaces = _messages.MessageField('RouterInterface', 6, repeated=True)
   kind = _messages.StringField(7, default=u'compute#router')
   name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
+  nats = _messages.MessageField('RouterNat', 9, repeated=True)
+  network = _messages.StringField(10)
+  region = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
 
 
 class RouterAdvertisedIpRange(_messages.Message):
@@ -26478,6 +26531,124 @@ class RouterList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RouterNat(_messages.Message):
+  r"""Represents a Nat resource. It enables the VMs within the specified
+  subnetworks to access Internet without external IP addresses. It specifies a
+  list of subnetworks (and the ranges within) that want to use NAT. Customers
+  can also provide the external IPs that would be used for NAT. GCP would
+  auto-allocate ephemeral IPs if no external IPs are provided.
+
+  Enums:
+    NatIpAllocateOptionValueValuesEnum: Specify the NatIpAllocateOption. If it
+      is AUTO_ONLY, then nat_ip should be empty.
+    SourceSubnetworkIpRangesToNatValueValuesEnum: Specify the Nat option. If
+      this field contains ALL_SUBNETWORKS_ALL_IP_RANGES or
+      ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
+      other Router.Nat section in any Router for this network in this region.
+
+  Fields:
+    icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
+      30s if not set.
+    minPortsPerVm: Minimum number of ports allocated to a VM from this NAT
+      config. If not set, a default number of ports is allocated to a VM. This
+      gets rounded up to the nearest power of 2. Eg. if the value of this
+      field is 50, at least 64 ports will be allocated to a VM.
+    name: Unique name of this Nat service. The name must be 1-63 characters
+      long and comply with RFC1035.
+    natIpAllocateOption: Specify the NatIpAllocateOption. If it is AUTO_ONLY,
+      then nat_ip should be empty.
+    natIps: A list of URLs of the IP resources used for this Nat service.
+      These IPs must be valid static external IP addresses assigned to the
+      project. max_length is subject to change post alpha.
+    sourceSubnetworkIpRangesToNat: Specify the Nat option. If this field
+      contains ALL_SUBNETWORKS_ALL_IP_RANGES or
+      ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
+      other Router.Nat section in any Router for this network in this region.
+    subnetworks: A list of Subnetwork resources whose traffic should be
+      translated by NAT Gateway. It is used only when LIST_OF_SUBNETWORKS is
+      selected for the SubnetworkIpRangeToNatOption above.
+    tcpEstablishedIdleTimeoutSec: Timeout (in seconds) for TCP established
+      connections. Defaults to 1200s if not set.
+    tcpTransitoryIdleTimeoutSec: Timeout (in seconds) for TCP transitory
+      connections. Defaults to 30s if not set.
+    udpIdleTimeoutSec: Timeout (in seconds) for UDP connections. Defaults to
+      30s if not set.
+  """
+
+  class NatIpAllocateOptionValueValuesEnum(_messages.Enum):
+    r"""Specify the NatIpAllocateOption. If it is AUTO_ONLY, then nat_ip
+    should be empty.
+
+    Values:
+      AUTO_ONLY: <no description>
+      MANUAL_ONLY: <no description>
+    """
+    AUTO_ONLY = 0
+    MANUAL_ONLY = 1
+
+  class SourceSubnetworkIpRangesToNatValueValuesEnum(_messages.Enum):
+    r"""Specify the Nat option. If this field contains
+    ALL_SUBNETWORKS_ALL_IP_RANGES or ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES,
+    then there should not be any other Router.Nat section in any Router for
+    this network in this region.
+
+    Values:
+      ALL_SUBNETWORKS_ALL_IP_RANGES: <no description>
+      ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES: <no description>
+      LIST_OF_SUBNETWORKS: <no description>
+    """
+    ALL_SUBNETWORKS_ALL_IP_RANGES = 0
+    ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES = 1
+    LIST_OF_SUBNETWORKS = 2
+
+  icmpIdleTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minPortsPerVm = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 4)
+  natIps = _messages.StringField(5, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 6)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 7, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+
+
+class RouterNatSubnetworkToNat(_messages.Message):
+  r"""Defines the IP ranges that want to use NAT for a subnetwork.
+
+  Enums:
+    SourceIpRangesToNatValueListEntryValuesEnum:
+
+  Fields:
+    name: URL for the subnetwork resource to use NAT.
+    secondaryIpRangeNames: A list of the secondary ranges of the Subnetwork
+      that are allowed to use NAT. This can be populated only if
+      "LIST_OF_SECONDARY_IP_RANGES" is one of the values in
+      source_ip_ranges_to_nat.
+    sourceIpRangesToNat: Specify the options for NAT ranges in the Subnetwork.
+      All usages of single value are valid except
+      NAT_IP_RANGE_OPTION_UNSPECIFIED. The only valid option with multiple
+      values is: ["PRIMARY_IP_RANGE", "LIST_OF_SECONDARY_IP_RANGES"] Default:
+      [ALL_IP_RANGES]
+  """
+
+  class SourceIpRangesToNatValueListEntryValuesEnum(_messages.Enum):
+    r"""SourceIpRangesToNatValueListEntryValuesEnum enum type.
+
+    Values:
+      ALL_IP_RANGES: <no description>
+      LIST_OF_SECONDARY_IP_RANGES: <no description>
+      PRIMARY_IP_RANGE: <no description>
+    """
+    ALL_IP_RANGES = 0
+    LIST_OF_SECONDARY_IP_RANGES = 1
+    PRIMARY_IP_RANGE = 2
+
+  name = _messages.StringField(1)
+  secondaryIpRangeNames = _messages.StringField(2, repeated=True)
+  sourceIpRangesToNat = _messages.EnumField('SourceIpRangesToNatValueListEntryValuesEnum', 3, repeated=True)
+
+
 class RouterStatus(_messages.Message):
   r"""A RouterStatus object.
 
@@ -26485,13 +26656,15 @@ class RouterStatus(_messages.Message):
     bestRoutes: Best routes for this router's network.
     bestRoutesForRouter: Best routes learned by this router.
     bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
+    natStatus: A RouterStatusNatStatus attribute.
     network: URI of the network to which this router belongs.
   """
 
   bestRoutes = _messages.MessageField('Route', 1, repeated=True)
   bestRoutesForRouter = _messages.MessageField('Route', 2, repeated=True)
   bgpPeerStatus = _messages.MessageField('RouterStatusBgpPeerStatus', 3, repeated=True)
-  network = _messages.StringField(4)
+  natStatus = _messages.MessageField('RouterStatusNatStatus', 4, repeated=True)
+  network = _messages.StringField(5)
 
 
 class RouterStatusBgpPeerStatus(_messages.Message):
@@ -26536,6 +26709,33 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 8)
   uptime = _messages.StringField(9)
   uptimeSeconds = _messages.StringField(10)
+
+
+class RouterStatusNatStatus(_messages.Message):
+  r"""Status of a NAT contained in this router.
+
+  Fields:
+    autoAllocatedNatIps: A list of IPs auto-allocated for NAT. Example:
+      ["1.1.1.1", "129.2.16.89"]
+    minExtraNatIpsNeeded: The number of extra IPs to allocate. This will be
+      greater than 0 only if user-specified IPs are NOT enough to allow all
+      configured VMs to use NAT. This value is meaningful only when auto-
+      allocation of NAT IPs is *not* used.
+    name: Unique name of this NAT.
+    numVmEndpointsWithNatMappings: Number of VM endpoints (i.e., Nics) that
+      can use NAT.
+    userAllocatedNatIpResources: A list of fully qualified URLs of reserved IP
+      address resources.
+    userAllocatedNatIps: A list of IPs user-allocated for NAT. They will be
+      raw IP strings like "179.12.26.133".
+  """
+
+  autoAllocatedNatIps = _messages.StringField(1, repeated=True)
+  minExtraNatIpsNeeded = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  name = _messages.StringField(3)
+  numVmEndpointsWithNatMappings = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  userAllocatedNatIpResources = _messages.StringField(5, repeated=True)
+  userAllocatedNatIps = _messages.StringField(6, repeated=True)
 
 
 class RouterStatusResponse(_messages.Message):
@@ -29354,7 +29554,7 @@ class TargetPool(_messages.Message):
   resource_for beta.targetPools ==) (== resource_for v1.targetPools ==)
 
   Enums:
-    SessionAffinityValueValuesEnum: Sesssion affinity option, must be one of
+    SessionAffinityValueValuesEnum: Session affinity option, must be one of
       the following values: NONE: Connections from the same client IP may go
       to any instance in the pool. CLIENT_IP: Connections from the same client
       IP will go to the same instance in the pool while that instance remains
@@ -29411,7 +29611,7 @@ class TargetPool(_messages.Message):
       cannot be a dash.
     region: [Output Only] URL of the region where the target pool resides.
     selfLink: [Output Only] Server-defined URL for the resource.
-    sessionAffinity: Sesssion affinity option, must be one of the following
+    sessionAffinity: Session affinity option, must be one of the following
       values: NONE: Connections from the same client IP may go to any instance
       in the pool. CLIENT_IP: Connections from the same client IP will go to
       the same instance in the pool while that instance remains healthy.
@@ -29421,7 +29621,7 @@ class TargetPool(_messages.Message):
   """
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
-    r"""Sesssion affinity option, must be one of the following values: NONE:
+    r"""Session affinity option, must be one of the following values: NONE:
     Connections from the same client IP may go to any instance in the pool.
     CLIENT_IP: Connections from the same client IP will go to the same
     instance in the pool while that instance remains healthy. CLIENT_IP_PROTO:
@@ -31283,6 +31483,168 @@ class UsageExportLocation(_messages.Message):
 
   bucketName = _messages.StringField(1)
   reportNamePrefix = _messages.StringField(2)
+
+
+class VmEndpointNatMappings(_messages.Message):
+  r"""Contain information of Nat mapping for a VM endpoint (i.e., NIC).
+
+  Fields:
+    instanceName: Name of the VM instance which the endpoint belongs to
+    interfaceNatMappings: A VmEndpointNatMappingsInterfaceNatMappings
+      attribute.
+  """
+
+  instanceName = _messages.StringField(1)
+  interfaceNatMappings = _messages.MessageField('VmEndpointNatMappingsInterfaceNatMappings', 2, repeated=True)
+
+
+class VmEndpointNatMappingsInterfaceNatMappings(_messages.Message):
+  r"""Contain information of Nat mapping for an interface of this endpoint.
+
+  Fields:
+    natIpPortRanges: A list of all IP:port-range mappings assigned to this
+      interface. These ranges are inclusive, that is, both the first and the
+      last ports can be used for NAT. Example: ["2.2.2.2:12345-12355",
+      "1.1.1.1:2234-2234"].
+    numTotalNatPorts: Total number of ports across all NAT IPs allocated to
+      this interface. It equals to the aggregated port number in the field
+      nat_ip_port_ranges.
+    sourceAliasIpRange: Alias IP range for this interface endpoint. It will be
+      a private (RFC 1918) IP range. Examples: "10.33.4.55/32", or
+      "192.168.5.0/24".
+    sourceVirtualIp: Primary IP of the VM for this NIC.
+  """
+
+  natIpPortRanges = _messages.StringField(1, repeated=True)
+  numTotalNatPorts = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sourceAliasIpRange = _messages.StringField(3)
+  sourceVirtualIp = _messages.StringField(4)
+
+
+class VmEndpointNatMappingsList(_messages.Message):
+  r"""Contains a list of VmEndpointNatMappings.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] The unique identifier for the resource. This identifier
+      is defined by the server.
+    kind: [Output Only] Type of resource. Always
+      compute#vmEndpointNatMappingsList for lists of Nat mappings of VM
+      endpoints.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    result: [Output Only] A list of Nat mapping information of VM endpoints.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  kind = _messages.StringField(2, default=u'compute#vmEndpointNatMappingsList')
+  nextPageToken = _messages.StringField(3)
+  result = _messages.MessageField('VmEndpointNatMappings', 4, repeated=True)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
 
 
 class VpnTunnel(_messages.Message):

@@ -7308,6 +7308,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetNatMappingInfo(self, request, global_params=None):
+      r"""Retrieves runtime Nat mapping information of VM endpoints.
+
+      Args:
+        request: (ComputeRoutersGetNatMappingInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VmEndpointNatMappingsList) The response message.
+      """
+      config = self.GetMethodConfig('GetNatMappingInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNatMappingInfo.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.routers.getNatMappingInfo',
+        ordered_params=[u'project', u'region', u'router'],
+        path_params=[u'project', u'region', u'router'],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken'],
+        relative_path=u'projects/{project}/regions/{region}/routers/{router}/getNatMappingInfo',
+        request_field='',
+        request_type_name=u'ComputeRoutersGetNatMappingInfoRequest',
+        response_type_name=u'VmEndpointNatMappingsList',
+        supports_download=False,
+    )
+
     def GetRouterStatus(self, request, global_params=None):
       r"""Retrieves runtime information of the specified router.
 

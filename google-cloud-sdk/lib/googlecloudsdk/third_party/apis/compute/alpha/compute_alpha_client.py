@@ -48,6 +48,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.globalAddresses = self.GlobalAddressesService(self)
     self.globalForwardingRules = self.GlobalForwardingRulesService(self)
     self.globalOperations = self.GlobalOperationsService(self)
+    self.globalOrganizationOperations = self.GlobalOrganizationOperationsService(self)
     self.healthChecks = self.HealthChecksService(self)
     self.httpHealthChecks = self.HttpHealthChecksService(self)
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
@@ -2830,6 +2831,120 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path=u'projects/{project}/global/operations/{operation}/wait',
         request_field='',
         request_type_name=u'ComputeGlobalOperationsWaitRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class GlobalOrganizationOperationsService(base_api.BaseApiService):
+    """Service class for the globalOrganizationOperations resource."""
+
+    _NAME = u'globalOrganizationOperations'
+
+    def __init__(self, client):
+      super(ComputeAlpha.GlobalOrganizationOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified Operations resource.
+
+      Args:
+        request: (ComputeGlobalOrganizationOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ComputeGlobalOrganizationOperationsDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.globalOrganizationOperations.delete',
+        ordered_params=[u'operation'],
+        path_params=[u'operation'],
+        query_params=[u'parentId'],
+        relative_path=u'projects/locations/global/operations/{operation}',
+        request_field='',
+        request_type_name=u'ComputeGlobalOrganizationOperationsDeleteRequest',
+        response_type_name=u'ComputeGlobalOrganizationOperationsDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves the specified Operations resource. Gets a list of operations by making a list() request.
+
+      Args:
+        request: (ComputeGlobalOrganizationOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.globalOrganizationOperations.get',
+        ordered_params=[u'operation'],
+        path_params=[u'operation'],
+        query_params=[u'parentId'],
+        relative_path=u'projects/locations/global/operations/{operation}',
+        request_field='',
+        request_type_name=u'ComputeGlobalOrganizationOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of Operation resources contained within the specified organization.
+
+      Args:
+        request: (ComputeGlobalOrganizationOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OperationList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.globalOrganizationOperations.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'parentId'],
+        relative_path=u'projects/locations/global/operations',
+        request_field='',
+        request_type_name=u'ComputeGlobalOrganizationOperationsListRequest',
+        response_type_name=u'OperationList',
+        supports_download=False,
+    )
+
+    def Wait(self, request, global_params=None):
+      r"""Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.
+
+      Args:
+        request: (ComputeGlobalOrganizationOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.globalOrganizationOperations.wait',
+        ordered_params=[u'operation'],
+        path_params=[u'operation'],
+        query_params=[u'parentId'],
+        relative_path=u'projects/locations/global/operations/{operation}/wait',
+        request_field='',
+        request_type_name=u'ComputeGlobalOrganizationOperationsWaitRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

@@ -81,9 +81,13 @@ class OsloginUsersGetLoginProfileRequest(_messages.Message):
 
   Fields:
     name: The unique ID for the user in format `users/{user}`.
+    projectId: The project ID of the Google Cloud Platform project.
+    systemId: A system ID for filtering the results of the request.
   """
 
   name = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2)
+  systemId = _messages.StringField(3)
 
 
 class OsloginUsersImportSshPublicKeyRequest(_messages.Message):

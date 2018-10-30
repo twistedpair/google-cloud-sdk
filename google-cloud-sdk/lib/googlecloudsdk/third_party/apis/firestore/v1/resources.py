@@ -38,6 +38,36 @@ class Collections(enum.Enum):
       [u'projectsId', u'databasesId'],
       True
   )
+  PROJECTS_DATABASES_COLLECTIONGROUPS = (
+      'projects.databases.collectionGroups',
+      'projects/{projectsId}/databases/{databasesId}/collectionGroups/'
+      '{collectionGroupsId}',
+      {},
+      [u'projectsId', u'databasesId', u'collectionGroupsId'],
+      True
+  )
+  PROJECTS_DATABASES_COLLECTIONGROUPS_FIELDS = (
+      'projects.databases.collectionGroups.fields',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/databases/{databasesId}/'
+              'collectionGroups/{collectionGroupsId}/fields/{fieldsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_DATABASES_COLLECTIONGROUPS_INDEXES = (
+      'projects.databases.collectionGroups.indexes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/databases/{databasesId}/'
+              'collectionGroups/{collectionGroupsId}/indexes/{indexesId}',
+      },
+      [u'name'],
+      True
+  )
   PROJECTS_DATABASES_OPERATIONS = (
       'projects.databases.operations',
       '{+name}',

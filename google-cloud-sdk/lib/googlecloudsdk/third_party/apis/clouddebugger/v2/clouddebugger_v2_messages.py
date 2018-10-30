@@ -409,10 +409,10 @@ class Debuggee(_messages.Message):
     status: Human readable message to be displayed to the user about this
       debuggee. Absence of this field indicates no status. The message can be
       either informational or an error status.
-    uniquifier: Uniquifier to further distiguish the application. It is
+    uniquifier: Uniquifier to further distinguish the application. It is
       possible that different applications might have identical values in the
       debuggee message, thus, incorrectly identified as a single application
-      by the Controller service. This field adds salt to further distiguish
+      by the Controller service. This field adds salt to further distinguish
       the application. Agents should consider seeding this field with value
       that identifies the code, binary, configuration and environment.
   """
@@ -642,7 +642,7 @@ class RegisterDebuggeeResponse(_messages.Message):
   r"""Response for registering a debuggee.
 
   Fields:
-    debuggee: Debuggee resource. The field `id` is guranteed to be set (in
+    debuggee: Debuggee resource. The field `id` is guaranteed to be set (in
       addition to the echoed fields). If the field `is_disabled` is set to
       `true`, the agent should disable itself by removing all breakpoints and
       detaching from the application. It should however continue to poll

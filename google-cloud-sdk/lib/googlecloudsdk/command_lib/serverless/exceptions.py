@@ -87,8 +87,9 @@ class DeploymentFailedError(exceptions.Error):
 
 
 class NoTLSError(exceptions.Error):
-  """TLS 1.2 support is requried to connect to GKE.
+  """TLS 1.2 support is required to connect to GKE.
 
-  Your Python installation does not support TLS 1.2. Please upgrade Python to
-  version 2.7.9 or greater.
+  Your Python installation does not support TLS 1.2. For Python2, please upgrade
+  to version 2.7.9 or greater; for Python3, please upgrade to version 3.4 or
+  greater.
   """

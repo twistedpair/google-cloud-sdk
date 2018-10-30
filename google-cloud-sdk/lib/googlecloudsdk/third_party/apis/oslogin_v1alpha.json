@@ -256,6 +256,26 @@
               "required": true,
               "pattern": "^users\/[^\/]+$",
               "type": "string"
+            },
+            "projectId": {
+              "description": "The project ID of the Google Cloud Platform project.",
+              "location": "query",
+              "type": "string"
+            },
+            "systemId": {
+              "description": "A system ID for filtering the results of the request.",
+              "location": "query",
+              "type": "string"
+            },
+            "operatingSystemType": {
+              "description": "The type of operating system associated with the account.",
+              "location": "query",
+              "type": "string",
+              "enum": [
+                "OPERATING_SYSTEM_TYPE_UNSPECIFIED",
+                "LINUX",
+                "WINDOWS"
+              ]
             }
           },
           "parameterOrder": [

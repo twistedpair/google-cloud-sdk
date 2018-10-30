@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20181012",
+ "revision": "20181019",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -15224,13 +15224,6 @@
      "additionalProperties": {
       "type": "string"
      }
-    },
-    "storageLocations": {
-     "type": "array",
-     "description": "GCS bucket storage location of the auto snapshot (regional or multi-regional).",
-     "items": {
-      "type": "string"
-     }
     }
    }
   },
@@ -19250,7 +19243,7 @@
     },
     "sessionAffinity": {
      "type": "string",
-     "description": "Sesssion affinity option, must be one of the following values:\nNONE: Connections from the same client IP may go to any instance in the pool.\nCLIENT_IP: Connections from the same client IP will go to the same instance in the pool while that instance remains healthy.\nCLIENT_IP_PROTO: Connections from the same client IP with the same IP protocol will go to the same instance in the pool while that instance remains healthy.",
+     "description": "Session affinity option, must be one of the following values:\nNONE: Connections from the same client IP may go to any instance in the pool.\nCLIENT_IP: Connections from the same client IP will go to the same instance in the pool while that instance remains healthy.\nCLIENT_IP_PROTO: Connections from the same client IP with the same IP protocol will go to the same instance in the pool while that instance remains healthy.",
      "enum": [
       "CLIENT_IP",
       "CLIENT_IP_PORT_PROTO",

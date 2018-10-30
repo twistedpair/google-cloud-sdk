@@ -149,13 +149,13 @@ class Cardinality(_messages.Message):
   r"""A Cardinality condition for the Waiter resource. A cardinality condition
   is met when the number of variables under a specified path prefix reaches a
   predefined number. For example, if you set a Cardinality condition where the
-  `path` is set to `/foo` and the number of paths is set to 2, the following
+  `path` is set to `/foo` and the number of paths is set to `2`, the following
   variables would meet the condition in a RuntimeConfig resource:  +
   `/foo/variable1 = "value1"` + `/foo/variable2 = "value2"` + `/bar/variable3
-  = "value3"`  It would not would not satisify the same condition with the
-  `number` set to 3, however, because there is only 2 paths that start with
-  `/foo`. Cardinality conditions are recursive; all subtrees under the
-  specific path prefix are counted.
+  = "value3"`  It would not satisfy the same condition with the `number` set
+  to `3`, however, because there is only 2 paths that start with `/foo`.
+  Cardinality conditions are recursive; all subtrees under the specific path
+  prefix are counted.
 
   Fields:
     number: The number variables under the `path` that must exist to meet this
@@ -1260,7 +1260,8 @@ class Variable(_messages.Message):
     text: The string value of the variable. The length of the value must be
       less than 4096 bytes. Empty values are also accepted. For example,
       `text: "my text value"`. The string must be valid UTF-8.
-    updateTime: Output only. The time of the last variable update.
+    updateTime: Output only. The time of the last variable update. Timestamp
+      will be UTC timestamp.
     value: The binary value of the variable. The length of the value must be
       less than 4096 bytes. Empty values are also accepted. The value must be
       base64 encoded. Only one of `value` or `text` can be set.

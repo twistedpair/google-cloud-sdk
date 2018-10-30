@@ -2018,6 +2018,29 @@
         }
       }
     },
+    "CreateBackupMetadata": {
+      "id": "CreateBackupMetadata",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the backup being created with the format specified in\n`Backup.name` in Backup.",
+          "type": "string"
+        },
+        "database": {
+          "description": "The name of the database the backup is taken from.",
+          "type": "string"
+        },
+        "progress": {
+          "description": "The progress of the\nCreateBackup operation.",
+          "$ref": "OperationProgress"
+        },
+        "cancelTime": {
+          "description": "The time at which this operation was cancelled. If set, this operation is\nin the process of undoing itself (which is guaranteed to succeed) and\ncannot be cancelled again.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "CreateDatabaseMetadata": {
       "id": "CreateDatabaseMetadata",
       "description": "Metadata type for the operation returned by\nCreateDatabase.",

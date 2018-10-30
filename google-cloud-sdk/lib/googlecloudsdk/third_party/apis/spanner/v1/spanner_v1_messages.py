@@ -511,6 +511,25 @@ class CounterOptions(_messages.Message):
   metric = _messages.StringField(2)
 
 
+class CreateBackupMetadata(_messages.Message):
+  r"""A CreateBackupMetadata object.
+
+  Fields:
+    cancelTime: The time at which this operation was cancelled. If set, this
+      operation is in the process of undoing itself (which is guaranteed to
+      succeed) and cannot be cancelled again.
+    database: The name of the database the backup is taken from.
+    name: The name of the backup being created with the format specified in
+      `Backup.name` in Backup.
+    progress: The progress of the CreateBackup operation.
+  """
+
+  cancelTime = _messages.StringField(1)
+  database = _messages.StringField(2)
+  name = _messages.StringField(3)
+  progress = _messages.MessageField('OperationProgress', 4)
+
+
 class CreateBackupRequest(_messages.Message):
   r"""A CreateBackupRequest object.
 

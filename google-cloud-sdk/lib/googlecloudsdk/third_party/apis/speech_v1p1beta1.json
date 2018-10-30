@@ -610,7 +610,7 @@
           "type": "boolean"
         },
         "uri": {
-          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row\nto be considered valid are :-\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then both <gs_path_to_audio>\nand <gs_path_to_transcript> needs to be specified.\n3. There has to be minimum 500 number of rows labelled HUMAN_TRANSCRIBED if\nevaluation stats are required.\n4. If use_logged_data is set to true, then we ignore the rows labelled as\nMACHINE_TRANSCRIBED.\n5. There has to be minimum 100,000 words in the transcripts in order to\nprovide sufficient textual training data for the language model.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](\/storage\/docs\/reference-uris).",
+          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. To be valid, rows\nmust do the following:\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then you must specify both\n<gs_path_to_audio> and <gs_path_to_transcript>. Only WAV file formats\nwhich encode linear 16-bit pulse-code modulation (PCM) audio format are\nsupported. The maximum audio file size is 50 MB. Also note that the audio\nhas to be single channel audio.\n3. There has to be at least 500 rows labelled HUMAN_TRANSCRIBED covering\nat least ~10K words in order to get reliable word error rate results.\n4. To create a language model, you should provide at least 100,000 words\nin your transcriptions as training data if you have conversational and\ncaptions type of data. You should provide at least 10,000 words if you\nhave short utterances like voice commands and search type of use cases.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](\/storage\/docs\/reference-uris).",
           "type": "string"
         },
         "languageCode": {
@@ -656,6 +656,10 @@
           "description": "Output only. The timestamp this dataset is last updated.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "bucketName": {
+          "description": "If set, the log data to be used in this dataset is restricted to the\nbucket specified. This field is only applicable if use_logged_data is true.\nIf use_logged_data is true, but this field is not set, then all logs will\nbe used for training the models. See: RecognitionMetadata for information\non setting up data logs.",
+          "type": "string"
         }
       }
     },
@@ -783,6 +787,11 @@
         "isEnhancedModel": {
           "description": "If true then it means we are referring to the results of an enhanced\nversion of the model_type. Currently only PHONE_CALL model_type has an\nenhanced version.",
           "type": "boolean"
+        },
+        "wordCount": {
+          "description": "Number of words used in the word_error_rate computation.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

@@ -3169,8 +3169,9 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
       object. If appending to an existing table, any columns from the
       predefined schema that are missing will be added. No columns in the
       existing table will be deleted.  If unspecified, then all available
-      columns will be used for a new table, and no changes will be made to an
-      existing table.
+      columns will be used for a new table or an (existing) table with no
+      schema, and no changes will be made to an existing table that has a
+      schema.
 
   Fields:
     outputSchema: Schema used for writing the findings for Inspect jobs. This
@@ -3178,8 +3179,9 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
       Columns are derived from the `Finding` object. If appending to an
       existing table, any columns from the predefined schema that are missing
       will be added. No columns in the existing table will be deleted.  If
-      unspecified, then all available columns will be used for a new table,
-      and no changes will be made to an existing table.
+      unspecified, then all available columns will be used for a new table or
+      an (existing) table with no schema, and no changes will be made to an
+      existing table that has a schema.
     table: Store findings in an existing table or a new table in an existing
       dataset. If table_id is not set a new one will be generated for you with
       the following format: dlp_googleapis_yyyy_mm_dd_[dlp_job_id]. Pacific
@@ -3199,8 +3201,9 @@ class GooglePrivacyDlpV2OutputStorageConfig(_messages.Message):
     derived from the `Finding` object. If appending to an existing table, any
     columns from the predefined schema that are missing will be added. No
     columns in the existing table will be deleted.  If unspecified, then all
-    available columns will be used for a new table, and no changes will be
-    made to an existing table.
+    available columns will be used for a new table or an (existing) table with
+    no schema, and no changes will be made to an existing table that has a
+    schema.
 
     Values:
       OUTPUT_SCHEMA_UNSPECIFIED: <no description>

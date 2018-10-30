@@ -114,12 +114,6 @@ def AddConcurrencyFlag(parser):
                       'provide the special value `default`.')
 
 
-def AddCleanFlag(parser):
-  parser.add_argument('--clean', default=False, action='store_true',
-                      help='Clean up the existing containers for an image path'
-                           ' or source directory.')
-
-
 def _HasEnvChanges(args):
   """True iff any of the env var flags are set."""
   env_flags = ['update_env_vars', 'set_env_vars',

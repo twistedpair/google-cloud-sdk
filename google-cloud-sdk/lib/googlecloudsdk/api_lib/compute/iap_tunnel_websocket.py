@@ -53,6 +53,10 @@ class UnexpectedConnectionCloseError(exceptions.Error):
   pass
 
 
+class UnexpectedWebSocketDataError(exceptions.Error):
+  pass
+
+
 class WebSocketError(exceptions.Error):
   pass
 
@@ -67,11 +71,14 @@ class IapTunnelWebSocket(object):
     self._data_handler_callback = data_handler_callback
     self._ignore_certs = ignore_certs
     self._ca_certs = None
+
+    self._connect_msg_received = False
     self._connection_sid = None
     self._websocket = None
     self._websocket_errors = []
-    self._websocket_open = False
     self._websocket_thread = None
+
+    self._total_bytes_received = 0
 
   def __del__(self):
     self.Close()
@@ -89,7 +96,6 @@ class IapTunnelWebSocket(object):
     if self._access_token:
       headers += ['Authorization: Bearer ' + self._access_token]
     log.info('Connecting to with URL %r', self._connect_url)
-    self._websocket_open = False
     self._websocket_errors = []
     self._connection_sid = None
 
@@ -100,12 +106,17 @@ class IapTunnelWebSocket(object):
       websocket_logger.setLevel(logging.CRITICAL)
 
     self._websocket = websocket.WebSocketApp(
-        self._connect_url, header=headers, on_open=self._OnOpen,
-        on_error=self._OnError, on_close=self._OnClose, on_data=self._OnData)
+        self._connect_url, header=headers, on_error=self._OnError,
+        on_close=self._OnClose, on_data=self._OnData)
     log.info('Starting WebSocket receive thread.')
     self._websocket_thread = threading.Thread(target=self._ReceiveFromWebSocket)
     self._websocket_thread.daemon = True
     self._websocket_thread.start()
+
+  def _IsConnected(self):
+    """Returns true if the websocket is open and we received a connect msg."""
+    return (self._websocket and self._websocket.sock and
+            self._websocket.sock.connected and self._connect_msg_received)
 
   def _ReraiseLastErrorIfExists(self):
     if self._websocket_errors:
@@ -116,7 +127,7 @@ class IapTunnelWebSocket(object):
     """Wait for WebSocket open confirmation or any error condition."""
     log.info('Waiting for WebSocket connection.')
     while (self._websocket and
-           not (self._websocket_open or self._websocket_errors)):
+           not (self._IsConnected() or self._websocket_errors)):
       time.sleep(0.1)
     self._ReraiseLastErrorIfExists()
     if not self._websocket:
@@ -124,17 +135,30 @@ class IapTunnelWebSocket(object):
 
   def Send(self, bytes_to_send):
     """Send bytes over WebSocket connection."""
-    if not self._websocket_open:
+    if not self._IsConnected():
       self.WaitForOpenOrRaiseError()
-      if not self._websocket:
-        raise UnexpectedConnectionCloseError('WebSocket unexpectedly closed')
     while bytes_to_send:
-      first_to_send = bytes_to_send[:utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE]
-      bytes_to_send = bytes_to_send[utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE:]
+      bytes_to_send = self._SendData(bytes_to_send)
+    self._SendAck()
+
+  def _SendData(self, bytes_to_send):
+    first_to_send = bytes_to_send[:utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE]
+    bytes_to_send = bytes_to_send[utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE:]
+    if first_to_send:
       send_data = utils.CreateSubprotocolDataFrame(first_to_send)
-      self._websocket.send(send_data, opcode=websocket.ABNF.OPCODE_BINARY)
+      self._SendBytes(send_data)
+    return bytes_to_send
+
+  def _SendAck(self):
+    if self._total_bytes_received:
+      ack_data = utils.CreateSubprotocolAckFrame(self._total_bytes_received)
+      self._SendBytes(ack_data)
+
+  def _SendBytes(self, send_data):
+    self._websocket.send(send_data, opcode=websocket.ABNF.OPCODE_BINARY)
 
   def Close(self):
+    self._connect_msg_received = False
     ws, self._websocket = self._websocket, None
     if ws:
       try:
@@ -172,9 +196,6 @@ class IapTunnelWebSocket(object):
            exc_info[2]))
       self.Close()
 
-  def _OnOpen(self, unused_websocket_app):
-    self._websocket_open = True
-
   def _OnError(self, unused_websocket_app, exception_obj):
     self._websocket_errors.append(
         (WebSocketError('%s: %s' %
@@ -198,23 +219,45 @@ class IapTunnelWebSocket(object):
       opcode: int signal value for whether data is binary or string
       unused_finished: bool whether this is the final message in a multi-part
                        sequence
+    Raises:
+      UnexpectedWebSocketDataError: when receive unexpected opcodes or
+                                    subprotocol tags
     """
-    if (opcode not in
-        (websocket.ABNF.OPCODE_CONT, websocket.ABNF.OPCODE_BINARY)):
-      log.warning('Unexpected WebSocket opcode [%r].', opcode)
-      return
+    # Even though we will only be processing BINARY messages, a bug in the
+    # underlying websocket library will report the last opcode in a multi-frame
+    # message instead of the first opcode - so CONT instead of BINARY.
+    if opcode not in (websocket.ABNF.OPCODE_CONT, websocket.ABNF.OPCODE_BINARY):
+      raise UnexpectedWebSocketDataError('Unexpected WebSocket opcode [%r].' %
+                                         opcode)
 
-    subprotocol_tag, data = utils.ExtractSubprotocolData(binary_data)
-    if data is not None:
-      if subprotocol_tag == utils.SUBPROTOCOL_TAG_DATA:
-        try:
-          self._data_handler_callback(data)
-        except (EnvironmentError, socket.error):
-          log.exception('Error from WebSocket data handler callback')
-          self.Close()
-          raise
-      elif subprotocol_tag == utils.SUBPROTOCOL_TAG_CONNECT_SUCCESS_SID:
-        self._connection_sid = data
-      else:
-        log.warning('Unexpected subprotocol type [%r] with data length [%d].',
-                    subprotocol_tag, len(data))
+    tag, bytes_left = utils.ExtractSubprotocolTag(binary_data)
+    # In order of decreasing usage during connection:
+    if tag == utils.SUBPROTOCOL_TAG_DATA:
+      self._HandleSubprotocolData(bytes_left)
+    elif tag == utils.SUBPROTOCOL_TAG_CONNECT_SUCCESS_SID:
+      self._HandleSubprotocolConnectSuccessSid(bytes_left)
+    else:
+      log.warning('Unsupported subprotocol tag [%r], discarding the message',
+                  tag)
+
+  def _HandleSubprotocolConnectSuccessSid(self, binary_data):
+    """Handle Subprotocol CONNECT_SUCCESS_SID Frame."""
+    data, bytes_left = utils.ExtractSubprotocolConnectSuccessSid(binary_data)
+    self._connection_sid = data
+    self._connect_msg_received = True
+    if bytes_left:
+      log.warning(
+          'Discarding %d extra bytes after processing CONNECT_SUCCESS_SID',
+          len(bytes_left))
+
+  def _HandleSubprotocolData(self, binary_data):
+    """Handle Subprotocol DATA Frame."""
+    if not self._IsConnected():
+      raise UnexpectedWebSocketDataError('Received DATA before connected.')
+
+    data, bytes_left = utils.ExtractSubprotocolData(binary_data)
+    self._total_bytes_received += len(data)
+    self._data_handler_callback(data)
+    if bytes_left:
+      log.warning('Discarding %d extra bytes after processing DATA',
+                  len(bytes_left))

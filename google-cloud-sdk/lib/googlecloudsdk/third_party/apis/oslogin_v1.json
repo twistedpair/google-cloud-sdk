@@ -250,6 +250,16 @@
               "required": true,
               "pattern": "^users\/[^\/]+$",
               "type": "string"
+            },
+            "projectId": {
+              "description": "The project ID of the Google Cloud Platform project.",
+              "location": "query",
+              "type": "string"
+            },
+            "systemId": {
+              "description": "A system ID for filtering the results of the request.",
+              "location": "query",
+              "type": "string"
             }
           },
           "parameterOrder": [

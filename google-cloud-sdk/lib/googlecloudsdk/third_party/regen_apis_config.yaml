@@ -38,10 +38,10 @@ apis:
   accesscontextmanager:
     v1alpha:
       discovery_doc: accesscontextmanager_v1alpha.json
-      default: true
+      default: false
     v1beta:
       discovery_doc: accesscontextmanager_v1beta.json
-      default: false
+      default: true
   apikeys:
     v1:
       discovery_doc: apikeys_v1.json
@@ -111,6 +111,9 @@ apis:
           path: assets/{assetId}/annotationTag
         organizations:
           path: organizations/{organizationId}
+  cloudasset:
+    v1beta1:
+      discovery_doc: cloudasset_v1beta1.json
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json

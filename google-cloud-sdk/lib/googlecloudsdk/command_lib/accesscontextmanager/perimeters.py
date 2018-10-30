@@ -33,6 +33,7 @@ REGISTRY = resources.REGISTRY
 
 
 def AddAccessLevels(ref, args, req):
+  """Hook to add access levels to request."""
   if args.IsSpecified('access_levels'):
     access_levels = []
     for access_level in args.access_levels:
@@ -40,7 +41,12 @@ def AddAccessLevels(ref, args, req):
           'accesscontextmanager.accessPolicies.accessLevels',
           accessLevelsId=access_level, **ref.Parent().AsDict())
       access_levels.append(level_ref.RelativeName())
-    req.accessZone.accessLevels = access_levels
+    service_perimeter_config = req.servicePerimeter.status
+    if not service_perimeter_config:
+      service_perimeter_config = (
+          util.GetMessages(version='v1beta').ServicePerimeterConfig)
+    service_perimeter_config.accessLevels = access_levels
+    req.servicePerimeter.status = service_perimeter_config
   return req
 
 
@@ -61,10 +67,15 @@ def AddImplicitServiceWildcard(ref, args, req):
     The modified request.
   """
   del ref  # Unused in AddImplicitServiceWildcard
+  service_perimeter_config = req.servicePerimeter.status
+  if not service_perimeter_config:
+    service_perimeter_config = util.GetMessages(
+        version='v1beta').ServicePerimeterConfig
   if args.IsSpecified('restricted_services'):
-    req.accessZone.unrestrictedServices = ['*']
+    service_perimeter_config.unrestrictedServices = ['*']
   elif args.IsSpecified('unrestricted_services'):
-    req.accessZone.restrictedServices = ['*']
+    service_perimeter_config.restrictedServices = ['*']
+  req.servicePerimeter.status = service_perimeter_config
   return req
 
 
@@ -75,10 +86,10 @@ def _GetAttributeConfig():
 
 def _GetResourceSpec():
   return concepts.ResourceSpec(
-      'accesscontextmanager.accessPolicies.accessZones',
-      resource_name='level',
+      'accesscontextmanager.accessPolicies.servicePerimeters',
+      resource_name='perimeter',
       accessPoliciesId=policies.GetAttributeConfig(),
-      accessZonesId=_GetAttributeConfig())
+      servicePerimetersId=_GetAttributeConfig())
 
 
 def AddResourceArg(parser, verb):
@@ -100,10 +111,10 @@ def AddResourceArg(parser, verb):
 def GetTypeEnumMapper():
   return arg_utils.ChoiceEnumMapper(
       '--type',
-      util.GetMessages().AccessZone.ZoneTypeValueValuesEnum,
+      util.GetMessages().ServicePerimeter.PerimeterTypeValueValuesEnum,
       custom_mappings={
-          'ZONE_TYPE_REGULAR': 'regular',
-          'ZONE_TYPE_BRIDGE': 'bridge'
+          'PERIMETER_TYPE_REGULAR': 'regular',
+          'PERIMETER_TYPE_BRIDGE': 'bridge'
       },
       required=False,
       help_str="""\
@@ -148,8 +159,8 @@ def _AddResources(parser):
 
 
 def ParseResources(args, perimeter_result):
-  return repeated.ParsePrimitiveArgs(args, 'resources',
-                                     perimeter_result.GetAttrThunk('resources'))
+  return repeated.ParsePrimitiveArgs(
+      args, 'resources', lambda: perimeter_result.Get().status.resources)
 
 
 def _AddUnrestrictedServices(parser):
@@ -170,7 +181,7 @@ def _AddUnrestrictedServices(parser):
 def ParseUnrestrictedServices(args, perimeter_result):
   return repeated.ParsePrimitiveArgs(
       args, 'unrestricted_services',
-      perimeter_result.GetAttrThunk('unrestrictedServices'))
+      lambda: perimeter_result.Get().status.restrictedServices)
 
 
 def _AddRestrictedServices(parser):
@@ -191,7 +202,7 @@ def _AddRestrictedServices(parser):
 def ParseRestrictedServices(args, perimeter_result):
   return repeated.ParsePrimitiveArgs(
       args, 'restricted_services',
-      perimeter_result.GetAttrThunk('restrictedServices'))
+      lambda: perimeter_result.Get().status.restrictedServices)
 
 
 def _AddLevelsUpdate(parser):
@@ -208,14 +219,21 @@ def _AddLevelsUpdate(parser):
 
 
 def _GetLevelIdFromLevelName(level_name):
-  return REGISTRY.Parse(level_name, collection=levels.COLLECTION).accessLevelsId
+  return REGISTRY.Parse(
+      level_name, collection=levels.COLLECTION).accessLevelsId
 
 
 def ParseLevels(args, perimeter_result, policy_id):
-  level_ids = repeated.ParsePrimitiveArgs(
-      args, 'access_levels',
-      perimeter_result.GetAttrThunk(
-          'accessLevels', transform=_GetLevelIdFromLevelName))
+  """Process repeated level changes."""
+
+  def GetLevelIds():
+    return [
+        _GetLevelIdFromLevelName(l)
+        for l in perimeter_result.Get().status.accessLevels
+    ]
+
+  level_ids = repeated.ParsePrimitiveArgs(args, 'access_levels', GetLevelIds)
+
   if level_ids is None:
     return None
   return [REGISTRY.Create(levels.COLLECTION,

@@ -68,6 +68,21 @@ class UnknownAPIError(exceptions.Error):
   pass
 
 
+def _CheckTLSSupport():
+  # PROTOCOL_TLSv1_2 applies to [2.7.9, 2.7.13) or [3.4, 3.6).
+  # PROTOCOL_TLS applies to 2.7.13 and above, or 3.6 and above.
+  if not (hasattr(ssl, 'PROTOCOL_TLS') or hasattr(ssl, 'PROTOCOL_TLSv1_2')):
+    min_required_version = ('2.7.9' if sys.version_info.major == 2 else '3.4')
+    raise serverless_exceptions.NoTLSError(
+        'Your Python {}.{}.{} installation does not support TLS 1.2, which is'
+        ' required to connect to the GKE Serverless add-on. Please upgrade to'
+        ' Python {} or greater.'.format(
+            sys.version_info.major,
+            sys.version_info.minor,
+            sys.version_info.micro,
+            min_required_version))
+
+
 @contextlib.contextmanager
 def Connect(cluster_ref):
   """Provide a ServerlessOperations instance to use.
@@ -80,14 +95,7 @@ def Connect(cluster_ref):
     A ServerlessOperations instance.
   """
   if cluster_ref:
-    if not hasattr(ssl, 'PROTOCOL_TLSv1_2'):
-      raise serverless_exceptions.NoTLSError(
-          'Your Python {}.{}.{} installation does not support TLS 1.2, which is'
-          ' required to connect to the GKE Serverless add-on. Please upgrade to'
-          ' Python 2.7.9 or greater.'.format(
-              sys.version_info.major,
-              sys.version_info.minor,
-              sys.version_info.micro))
+    _CheckTLSSupport()
     with gke.ClusterConnectionInfo(cluster_ref) as (ip, ca_certs):
       with gke.MonkeypatchAddressChecking('kubernetes.default', ip) as endpoint:
         k8s_apiserver = 'https://{}/'.format(endpoint)

@@ -324,12 +324,13 @@ Path of the JSON/YAML file which contains information about the
 cluster's autoscaling configuration. Currently it only contains
 a list of resource limits of the cluster.
 
-Each resource limits contains three fields: resourceType, maximum and minimum.
-resourceType is the resource type to configure, e.g. "cpu", "memory" or
-a gpu-specific string (please run
-`gcloud compute accelerator-types list` to see the available ones).
-Maximum is the maximum amount with the unit of the resource.
-Minimum is the minimum amount with the unit of the resource.
+Each resource limits definition contains three fields:
+resourceType, maximum and minimum.
+Resource type can be "cpu", "memory" or an accelerator (e.g.
+"nvidia-tesla-k80" for nVidia Tesla K80). Use gcloud compute accelerator-types
+list to learn about available accelerator types.
+Maximum is the maximum allowed amount with the unit of the resource.
+Minimum is the minimum allowed amount with the unit of the resource.
 """)
 
   from_flags_group = limits_group.add_argument_group('Flags to configure '
@@ -380,8 +381,7 @@ Minimum number of gigabytes of memory to which the cluster can scale.""",
       metavar='type=TYPE,count=COUNT',
       hidden=hidden,
       help="""\
-Sets maximum limit for a single type of accelerators (e.g. GPUs) in cluster. Defaults
-to 0 for all accelerator types if it isn't set.
+Sets maximum limit for a single type of accelerators (e.g. GPUs) in cluster.
 
 *type*::: (Required) The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
 of accelerator for which the limit is set. Use ```gcloud compute
@@ -1741,7 +1741,7 @@ Kubernetes Service Accounts to GCP Service Accounts.
 Must be set with `--enable-managed-pod-identity`.
 """
   parser.add_argument(
-      '--managed-pod-identity-federating-sa',
+      '--federating-service-account',
       default=None,
       # TODO(b/109942548): unhide this flag for Beta
       hidden=True,
@@ -1944,6 +1944,25 @@ information on sole tenancy and node groups.
       '--node-group',
       hidden=True,
       help=help_text)
+
+
+def AddInitialNodePoolNameArg(parser, hidden=True):
+  """Adds --node-pool-name argument to the parser."""
+  help_text = """\
+Name of the initial node pool that will be created for the cluster.
+
+Specifies the name to use for the initial node pool that will be created
+with the cluster.  If the settings specified require multiple node pools
+to be created, the name for each pool will be prefixed by this name.  For
+example running the following will result in three node pools being
+created, example-node-pool-0, example-node-pool-1 and
+example-node-pool-2:
+
+  $ {command} example-cluster --num-nodes 9 --max-nodes-per-pool 3 \
+    --node-pool-name example-node-pool
+"""
+
+  parser.add_argument('--node-pool-name', hidden=hidden, help=help_text)
 
 
 def AddMetadataFlags(parser):

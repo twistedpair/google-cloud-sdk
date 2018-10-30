@@ -30,6 +30,10 @@ class JavaError(exceptions.Error):
   pass
 
 
+class JavaVersionError(JavaError):
+  pass
+
+
 def RequireJavaInstalled(for_text, min_version=7):
   """Require that a certain version of Java is installed.
 
@@ -59,7 +63,7 @@ def RequireJavaInstalled(for_text, min_version=7):
                     ' The {for_text} requires a Java {v}+ JRE installed and on '
                     'your system PATH'.format(for_text=for_text, v=min_version))
 
-  java_exec_version_error = JavaError(
+  java_exec_version_error = JavaVersionError(
       'The java executable on your PATH is not a Java {v}+ JRE.'
       ' The {for_text} requires a Java {v}+ JRE installed and on '
       'your system PATH'.format(v=min_version, for_text=for_text))

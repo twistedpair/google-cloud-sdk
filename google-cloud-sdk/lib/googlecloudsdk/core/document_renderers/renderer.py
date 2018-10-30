@@ -102,8 +102,10 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
     _blank: True if the output already contains a blank line. Used to avoid
       sequences of 2 or more blank lines in the output.
     _font: The font attribute bitmask.
+    _indent: List of left indentations in characters indexed by _level.
     _lang: ```lang\n...\n``` code block language. None if not in code block,
       '' if in code block with no explicit lang specified.
+    _level: The section or list level counting from 0.
     _out: The output stream.
     _title: The document tile.
     _width: The output width in characters.
@@ -112,7 +114,9 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
   def __init__(self, out=None, title=None, width=80):
     self._blank = True
     self._font = 0
+    self._indent = []
     self._lang = None
+    self._level = 0
     self._out = out or log.out
     self._title = title
     self._width = width
@@ -180,6 +184,10 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
         language specified.
     """
     self._lang = lang
+
+  def Line(self):
+    """Renders a paragraph separating line."""
+    pass
 
   def Link(self, target, text):
     """Renders an anchor.

@@ -130,7 +130,7 @@ Cannot specify both --[no-]enable-private-nodes and --[no-]private-cluster at th
 """
 
 ENABLE_MPI_EMPTY_ERROR_MSG = """\
-Cannot use --managed-pod-identity-federating-sa without --enable-managed-pod-identity
+Cannot use --federating-service-account without --enable-managed-pod-identity
 """
 
 MAX_NODES_PER_POOL = 1000
@@ -329,6 +329,7 @@ class CreateClusterOptions(object):
                istio_config=None,
                local_ssd_count=None,
                local_ssd_volume_configs=None,
+               node_pool_name=None,
                tags=None,
                node_labels=None,
                node_taints=None,
@@ -372,7 +373,7 @@ class CreateClusterOptions(object):
                enable_tpu=None,
                default_max_pods_per_node=None,
                enable_managed_pod_identity=None,
-               managed_pod_identity_federating_sa=None,
+               federating_service_account=None,
                resource_usage_bigquery_dataset=None,
                security_group=None,
                enable_vertical_pod_autoscaling=None,
@@ -402,6 +403,7 @@ class CreateClusterOptions(object):
     self.istio_config = istio_config
     self.local_ssd_count = local_ssd_count
     self.local_ssd_volume_configs = local_ssd_volume_configs
+    self.node_pool_name = node_pool_name
     self.tags = tags
     self.node_labels = node_labels
     self.node_taints = node_taints
@@ -445,7 +447,7 @@ class CreateClusterOptions(object):
     self.issue_client_certificate = issue_client_certificate
     self.default_max_pods_per_node = default_max_pods_per_node
     self.enable_managed_pod_identity = enable_managed_pod_identity
-    self.managed_pod_identity_federating_sa = managed_pod_identity_federating_sa
+    self.federating_service_account = federating_service_account
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
     self.security_group = security_group
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
@@ -2035,8 +2037,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.enable_managed_pod_identity:
       cluster.managedPodIdentityConfig = self.messages.ManagedPodIdentityConfig(
           enabled=options.enable_managed_pod_identity,
-          federatingServiceAccount=options.managed_pod_identity_federating_sa)
-    elif options.managed_pod_identity_federating_sa is not None:
+          federatingServiceAccount=options.federating_service_account)
+    elif options.federating_service_account is not None:
       raise util.Error(ENABLE_MPI_EMPTY_ERROR_MSG)
     if options.resource_usage_bigquery_dataset:
       bigquery_destination = self.messages.BigQueryDestination(
@@ -2104,6 +2106,53 @@ class V1Alpha1Adapter(V1Beta1Adapter):
                                       node_pool_ref.clusterId))
     operation = self.client.projects_locations_clusters_nodePools.Create(req)
     return self.ParseOperation(operation.name, node_pool_ref.zone)
+
+  def ParseNodePools(self, options, node_config):
+    """Creates a list of node pools for the cluster by parsing options.
+
+    Args:
+      options: cluster creation options
+      node_config: node configuration for nodes in the node pools
+
+    Returns:
+      List of node pools.
+    """
+    max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
+    num_pools = (
+        options.num_nodes + max_nodes_per_pool - 1) // max_nodes_per_pool
+    # pool consistency with server default
+    node_pool_name = options.node_pool_name or 'default-pool'
+
+    if num_pools == 1:
+      pool_names = [node_pool_name]
+    else:
+      # default-pool-0, -1, ... or some-pool-0, -1 where some-pool is user
+      # supplied
+      pool_names = [
+          '{0}-{1}'.format(node_pool_name, i) for i in range(0, num_pools)
+      ]
+
+    pools = []
+    nodes_per_pool = (options.num_nodes + num_pools - 1) // len(pool_names)
+    to_add = options.num_nodes
+    for name in pool_names:
+      nodes = nodes_per_pool if (to_add > nodes_per_pool) else to_add
+      autoscaling = None
+      if options.enable_autoscaling:
+        autoscaling = self.messages.NodePoolAutoscaling(
+            enabled=options.enable_autoscaling,
+            minNodeCount=options.min_nodes,
+            maxNodeCount=options.max_nodes)
+      pools.append(
+          self.messages.NodePool(
+              name=name,
+              initialNodeCount=nodes,
+              config=node_config,
+              autoscaling=autoscaling,
+              version=options.node_version,
+              management=self._GetNodeManagement(options)))
+      to_add -= nodes
+    return pools
 
   def GetIamPolicy(self, cluster_ref):
     return self.client.projects.GetIamPolicy(

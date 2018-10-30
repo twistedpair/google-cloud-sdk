@@ -326,9 +326,10 @@ class _StubProgressTracker(_NoOpProgressTracker):
     else:
       status = 'FAILURE'
 
-    self._stream.write(console_io.JsonUXStub(
-        console_io.UXElementType.PROGRESS_TRACKER,
-        message=self._message, status=status) + '\n')
+    if log.IsUserOutputEnabled():
+      self._stream.write(console_io.JsonUXStub(
+          console_io.UXElementType.PROGRESS_TRACKER,
+          message=self._message, status=status) + '\n')
     return super(_StubProgressTracker, self).__exit__(exc_type, exc_val, exc_tb)
 
 
@@ -1164,10 +1165,11 @@ class _StubStagedProgressTracker(_NoOpStagedProgressTracker):
     else:
       status = 'FAILURE'
 
-    self._stream.write(console_io.JsonUXStub(
-        console_io.UXElementType.STAGED_PROGRESS_TRACKER,
-        message=self._message, status=status,
-        succeeded_stages=self._succeeded_stages,
-        failed_stage=self._failed_stage) + '\n')
+    if log.IsUserOutputEnabled():
+      self._stream.write(console_io.JsonUXStub(
+          console_io.UXElementType.STAGED_PROGRESS_TRACKER,
+          message=self._message, status=status,
+          succeeded_stages=self._succeeded_stages,
+          failed_stage=self._failed_stage) + '\n')
     return super(
         _StubStagedProgressTracker, self).__exit__(exc_type, exc_val, exc_tb)

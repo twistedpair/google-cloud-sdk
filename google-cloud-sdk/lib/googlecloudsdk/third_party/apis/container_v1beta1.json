@@ -7,7 +7,7 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Kubernetes Engine API",
-  "description": "The Google Kubernetes Engine API is used for building and managing container based applications, powered by the open source Kubernetes technology.",
+  "description": "Builds and manages container-based applications, powered by the open source Kubernetes technology.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -153,7 +153,7 @@
           "$ref": "NodeConfig"
         },
         "masterAuth": {
-          "description": "The authentication information for accessing the master endpoint.",
+          "description": "The authentication information for accessing the master endpoint.\nIf unspecified, the defaults are used:\nFor clusters before v1.12, if master_auth is unspecified, `username` will\nbe set to \"admin\", a random password will be generated, and a client\ncertificate will be issued.",
           "$ref": "MasterAuth"
         },
         "loggingService": {
@@ -549,7 +549,7 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The username to use for HTTP basic authentication to the master endpoint.\nFor clusters v1.6.0 and later, you can disable basic authentication by\nproviding an empty username.",
+          "description": "The username to use for HTTP basic authentication to the master endpoint.\nFor clusters v1.6.0 and later, basic authentication can be disabled by\nleaving username unspecified (or setting it to the empty string).",
           "type": "string"
         },
         "password": {
@@ -609,6 +609,10 @@
         "istioConfig": {
           "description": "Configuration for Istio, an open platform to connect, manage, and secure\nmicroservices.",
           "$ref": "IstioConfig"
+        },
+        "serverlessConfig": {
+          "description": "Configuration for the serverless addon. The `IstioConfig` addon must be\nenabled in order to enable serverless. This option can only be enabled at\ncluster creation time.",
+          "$ref": "ServerlessConfig"
         }
       }
     },
@@ -676,6 +680,17 @@
             "AUTH_NONE",
             "AUTH_MUTUAL_TLS"
           ]
+        }
+      }
+    },
+    "ServerlessConfig": {
+      "id": "ServerlessConfig",
+      "description": "Configuration options for the serverless feature.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Whether serverless is enabled for this cluster.",
+          "type": "boolean"
         }
       }
     },
@@ -841,14 +856,16 @@
             "UNKNOWN indicates a generic condition.",
             "GCE_STOCKOUT indicates a Google Compute Engine stockout.",
             "GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot\nservice account.",
-            "Google Compute Engine quota was exceeded.\nMore codes TBA"
+            "Google Compute Engine quota was exceeded.",
+            "Cluster state was manually changed by an SRE due to a system logic error.\nMore codes TBA"
           ],
           "type": "string",
           "enum": [
             "UNKNOWN",
             "GCE_STOCKOUT",
             "GKE_SERVICE_ACCOUNT_DELETED",
-            "GCE_QUOTA_EXCEEDED"
+            "GCE_QUOTA_EXCEEDED",
+            "SET_BY_OPERATOR"
           ]
         },
         "message": {

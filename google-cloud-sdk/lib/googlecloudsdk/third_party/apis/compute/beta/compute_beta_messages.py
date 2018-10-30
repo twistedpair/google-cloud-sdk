@@ -30148,8 +30148,6 @@ class ResourcePolicyBackupSchedulePolicySnapshotProperties(_messages.Message):
     guestFlush: Indication to perform a ?guest aware? snapshot.
     labels: Labels to apply to scheduled snapshots. These can be later
       modified by the setLabels method. Label values may be empty.
-    storageLocations: GCS bucket storage location of the auto snapshot
-      (regional or multi-regional).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -30179,7 +30177,6 @@ class ResourcePolicyBackupSchedulePolicySnapshotProperties(_messages.Message):
 
   guestFlush = _messages.BooleanField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  storageLocations = _messages.StringField(3, repeated=True)
 
 
 class ResourcePolicyDailyCycle(_messages.Message):
@@ -34662,7 +34659,7 @@ class TargetPool(_messages.Message):
   resource_for beta.targetPools ==) (== resource_for v1.targetPools ==)
 
   Enums:
-    SessionAffinityValueValuesEnum: Sesssion affinity option, must be one of
+    SessionAffinityValueValuesEnum: Session affinity option, must be one of
       the following values: NONE: Connections from the same client IP may go
       to any instance in the pool. CLIENT_IP: Connections from the same client
       IP will go to the same instance in the pool while that instance remains
@@ -34719,7 +34716,7 @@ class TargetPool(_messages.Message):
       cannot be a dash.
     region: [Output Only] URL of the region where the target pool resides.
     selfLink: [Output Only] Server-defined URL for the resource.
-    sessionAffinity: Sesssion affinity option, must be one of the following
+    sessionAffinity: Session affinity option, must be one of the following
       values: NONE: Connections from the same client IP may go to any instance
       in the pool. CLIENT_IP: Connections from the same client IP will go to
       the same instance in the pool while that instance remains healthy.
@@ -34729,7 +34726,7 @@ class TargetPool(_messages.Message):
   """
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
-    r"""Sesssion affinity option, must be one of the following values: NONE:
+    r"""Session affinity option, must be one of the following values: NONE:
     Connections from the same client IP may go to any instance in the pool.
     CLIENT_IP: Connections from the same client IP will go to the same
     instance in the pool while that instance remains healthy. CLIENT_IP_PROTO:

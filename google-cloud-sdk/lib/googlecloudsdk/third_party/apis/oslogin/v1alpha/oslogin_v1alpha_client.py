@@ -198,7 +198,7 @@ on Google Compute Engine.
         method_id=u'oslogin.users.getLoginProfile',
         ordered_params=[u'name'],
         path_params=[u'name'],
-        query_params=[],
+        query_params=[u'operatingSystemType', u'projectId', u'systemId'],
         relative_path=u'v1alpha/{+name}/loginProfile',
         request_field='',
         request_type_name=u'OsloginUsersGetLoginProfileRequest',

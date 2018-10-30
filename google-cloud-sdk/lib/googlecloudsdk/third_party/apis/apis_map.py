@@ -72,13 +72,13 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.accesscontextmanager.v1alpha',
             client_classpath='accesscontextmanager_v1alpha_client.AccesscontextmanagerV1alpha',
             messages_modulepath='accesscontextmanager_v1alpha_messages',
-            default_version=True
+            default_version=False
         ),
         'v1beta': APIDef(
             class_path='googlecloudsdk.third_party.apis.accesscontextmanager.v1beta',
             client_classpath='accesscontextmanager_v1beta_client.AccesscontextmanagerV1beta',
             messages_modulepath='accesscontextmanager_v1beta_messages',
-            default_version=False
+            default_version=True
         ),
     },
     'alpha_vision': {
@@ -166,6 +166,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.categorymanager.v1alpha2',
             client_classpath='categorymanager_v1alpha2_client.CategorymanagerV1alpha2',
             messages_modulepath='categorymanager_v1alpha2_messages',
+            default_version=True
+        ),
+    },
+    'cloudasset': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudasset.v1beta1',
+            client_classpath='cloudasset_v1beta1_client.CloudassetV1beta1',
+            messages_modulepath='cloudasset_v1beta1_messages',
             default_version=True
         ),
     },

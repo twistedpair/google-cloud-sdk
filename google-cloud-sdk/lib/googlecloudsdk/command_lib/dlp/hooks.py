@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Argument processors for DLP surface arguments."""
 
 from __future__ import absolute_import
@@ -103,7 +102,7 @@ def _ValidateAndParseColors(value):
                            '{}'.format(value, _COLOR_SPEC_ERROR_SUFFIX))
 
 
-def _ValidateAndParseTableName(table_name):
+def _ValidateAndParseInputTableName(table_name):
   """Validate BigQuery table name format and returned parsed components."""
   name_parts = table_name.split('.')
   if len(name_parts) != 3:
@@ -111,6 +110,20 @@ def _ValidateAndParseTableName(table_name):
         'Invalid BigQuery table name [{}]. BigQuery tables are uniquely '
         'identified by their project_id, dataset_id, and table_id in the '
         'format `<project_id>.<dataset_id>.<table_id>`.'.format(table_name))
+
+  return name_parts
+
+
+def _ValidateAndParseOutputTableName(table_name):
+  """Validate BigQuery table name format and returned parsed components."""
+  # Table id is optional for output tables.
+  name_parts = table_name.split('.')
+  if len(name_parts) != 3 and len(name_parts) != 2:
+    raise BigQueryTableNameError(
+        'Invalid BigQuery output table name [{}]. BigQuery tables are uniquely '
+        'identified by their project_id, dataset_id, and or table_id in the '
+        'format `<project_id>.<dataset_id>.<table_id>` or '
+        '`<project_id>.<dataset_id>.'.format(table_name))
 
   return name_parts
 
@@ -143,11 +156,12 @@ def BigQueryInputOptions(table_name):
   Raises:
     BigQueryTableNameError if table_name is improperly formatted.
   """
-  project_id, data_set_id, table_id = _ValidateAndParseTableName(table_name)
+  project_id, data_set_id, table_id = _ValidateAndParseInputTableName(
+      table_name)
   big_query_options = _GetMessageClass('GooglePrivacyDlpV2BigQueryOptions')
   big_query_table = _GetMessageClass('GooglePrivacyDlpV2BigQueryTable')
-  table = big_query_table(datasetId=data_set_id,
-                          projectId=project_id, tableId=table_id)
+  table = big_query_table(
+      datasetId=data_set_id, projectId=project_id, tableId=table_id)
   options = big_query_options(tableReference=table)
   return options
 
@@ -201,7 +215,7 @@ def BigQueryTableAction(table_name):
 
   Args:
     table_name: str, BigQuery table name to create action from in the form
-    `<project_id>.<dataset_id>.<table_id>`.
+      `<project_id>.<dataset_id>.<table_id>` or `<project_id>.<dataset_id>`.
 
   Returns:
     GooglePrivacyDlpV2Action, output action for job trigger.
@@ -209,14 +223,19 @@ def BigQueryTableAction(table_name):
   Raises:
     BigQueryTableNameError if table_name is improperly formatted.
   """
-  project_id, data_set_id, table_id = _ValidateAndParseTableName(table_name)
+  name_parts = _ValidateAndParseOutputTableName(table_name)
 
+  project_id = name_parts[0]
+  data_set_id = name_parts[1]
+  table_id = ''
+  if len(name_parts) == 3:
+    table_id = name_parts[2]
   action_msg = _GetMessageClass('GooglePrivacyDlpV2Action')
   save_findings_config = _GetMessageClass('GooglePrivacyDlpV2SaveFindings')
   output_config = _GetMessageClass('GooglePrivacyDlpV2OutputStorageConfig')
   big_query_table = _GetMessageClass('GooglePrivacyDlpV2BigQueryTable')
-  table = big_query_table(datasetId=data_set_id,
-                          projectId=project_id, tableId=table_id)
+  table = big_query_table(
+      datasetId=data_set_id, projectId=project_id, tableId=table_id)
 
   return action_msg(
       saveFindings=save_findings_config(
@@ -224,8 +243,7 @@ def BigQueryTableAction(table_name):
 
 
 def DlpTimeStamp(value):
-  return times.FormatDateTime(
-      value, tzinfo=times.UTC)
+  return times.FormatDateTime(value, tzinfo=times.UTC)
 
 
 # Request Hooks
@@ -250,8 +268,9 @@ def SetCancelRequestHook(ref, args, request):
 def UpdateDataStoreOptions(ref, args, request):
   """Update partitionId.projectId on DatastoreOptions."""
   del ref
-  data_store_options = (request.googlePrivacyDlpV2CreateJobTriggerRequest.
-                        jobTrigger.inspectJob.storageConfig.datastoreOptions)
+  data_store_options = (
+      request.googlePrivacyDlpV2CreateJobTriggerRequest.jobTrigger.inspectJob
+      .storageConfig.datastoreOptions)
   if args.project and data_store_options:
     data_store_options.partitionId.projectId = args.project
 
@@ -263,8 +282,9 @@ def UpdateDataStoreOptions(ref, args, request):
 def UpdateIdentifyingFields(ref, args, request):
   """Update bigQueryOptions.identifyingFields with parsed fields."""
   del ref
-  big_query_options = (request.googlePrivacyDlpV2CreateDlpJobRequest.inspectJob.
-                       storageConfig.bigQueryOptions)
+  big_query_options = (
+      request.googlePrivacyDlpV2CreateDlpJobRequest.inspectJob.storageConfig
+      .bigQueryOptions)
   if big_query_options and args.identifying_fields:
     field_id = _GetMessageClass('GooglePrivacyDlpV2FieldId')
     big_query_options.identifyingFields = [
@@ -353,8 +373,8 @@ def GetRedactColorFromString(color_string):
 
   Args:
     color_string: str, string representing red, green and blue color saturation
-      percentages as float values between 0.0 and 1.0. For example,
-      `black = 0,0,0`, `red = 1.0,0,0`, `white = 1.0,1.0,1.0` etc.
+      percentages as float values between 0.0 and 1.0. For example, `black =
+      0,0,0`, `red = 1.0,0,0`, `white = 1.0,1.0,1.0` etc.
 
   Returns:
     GooglePrivacyDlpV2Color, color message.
@@ -379,10 +399,11 @@ def GetIdentifyingFieldsArg():
                'identifying rows within the BigQuery table. Nested fields in '
                'the format `person.birthdate.year` are allowed.')
   return [
-      base.Argument('--identifying-fields',
-                    metavar='IDENTIFYING_FIELDS',
-                    type=arg_parsers.ArgList(),
-                    help=help_text)
+      base.Argument(
+          '--identifying-fields',
+          metavar='IDENTIFYING_FIELDS',
+          type=arg_parsers.ArgList(),
+          help=help_text)
   ]
 
 
@@ -411,6 +432,8 @@ def PossiblyWriteRedactedImageResponseToOutputFile(response, parsed_args):
 
 def AddOutputFileFlag():
   """Add --output-file to a redact command."""
-  return [base.Argument(
-      '--output-file',
-      help='Path to the file to write redacted contents to.')]
+  return [
+      base.Argument(
+          '--output-file',
+          help='Path to the file to write redacted contents to.')
+  ]

@@ -6,7 +6,7 @@
   "version": "v1alpha2",
   "revision": "0",
   "title": "Genomics API",
-  "description": "Upload, process, query, and search Genomics data in the cloud.",
+  "description": "Uploads, processes, queries, and searches Genomics data in the cloud.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

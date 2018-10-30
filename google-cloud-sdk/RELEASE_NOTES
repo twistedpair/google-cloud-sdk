@@ -5,6 +5,39 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 223.0.0 (2018-10-30)
+
+### App Engine
+
+* Updated the Python SDK to version 1.9.78.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+* Updated the Java SDK to version 1.9.68.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+* Updated the Go SDK to version 1.9.69.
+  Fix a bug in windows support for go.mod deployments for the Go 1.11 runtime
+
+### Cloud Access Context Manager
+
+*   Promoted the gcloud access-context-manager command group to BETA
+
+### Cloud Build
+
+* Added default behavior for `gcloud builds submit` to assume `--config=cloudbuild.yaml` unless either `--tag` or `--config` is specified.
+
+### Kubernetes Engine
+
+* Promoted Node Auto-Provisioning to beta. Use `--enable-autoprovisioning` with
+`gcloud beta container clusters create` or `gcloud beta container clusters
+update` to enable this feature.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 222.0.0 (2018-10-23)
 
 ### App Engine

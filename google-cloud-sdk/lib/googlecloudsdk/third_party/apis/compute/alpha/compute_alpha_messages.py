@@ -3179,13 +3179,15 @@ class BackendService(_messages.Message):
     Values:
       EXTERNAL: <no description>
       INTERNAL: <no description>
+      INTERNAL_MANAGED: <no description>
       INTERNAL_SELF_MANAGED: <no description>
       INVALID_LOAD_BALANCING_SCHEME: <no description>
     """
     EXTERNAL = 0
     INTERNAL = 1
-    INTERNAL_SELF_MANAGED = 2
-    INVALID_LOAD_BALANCING_SCHEME = 3
+    INTERNAL_MANAGED = 2
+    INTERNAL_SELF_MANAGED = 3
+    INVALID_LOAD_BALANCING_SCHEME = 4
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
@@ -7058,6 +7060,92 @@ class ComputeGlobalOperationsWaitRequest(_messages.Message):
 
   operation = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
+
+
+class ComputeGlobalOrganizationOperationsDeleteRequest(_messages.Message):
+  r"""A ComputeGlobalOrganizationOperationsDeleteRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to delete.
+    parentId: Parent ID for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  parentId = _messages.StringField(2)
+
+
+class ComputeGlobalOrganizationOperationsDeleteResponse(_messages.Message):
+  r"""An empty ComputeGlobalOrganizationOperationsDelete response."""
+
+
+class ComputeGlobalOrganizationOperationsGetRequest(_messages.Message):
+  r"""A ComputeGlobalOrganizationOperationsGetRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    parentId: Parent ID for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  parentId = _messages.StringField(2)
+
+
+class ComputeGlobalOrganizationOperationsListRequest(_messages.Message):
+  r"""A ComputeGlobalOrganizationOperationsListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    parentId: Parent ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  parentId = _messages.StringField(5)
+
+
+class ComputeGlobalOrganizationOperationsWaitRequest(_messages.Message):
+  r"""A ComputeGlobalOrganizationOperationsWaitRequest object.
+
+  Fields:
+    operation: Name of the Operations resource to return.
+    parentId: Parent ID for this request.
+  """
+
+  operation = _messages.StringField(1, required=True)
+  parentId = _messages.StringField(2)
 
 
 class ComputeHealthChecksAggregatedListRequest(_messages.Message):
@@ -21362,13 +21450,15 @@ class ForwardingRule(_messages.Message):
     Values:
       EXTERNAL: <no description>
       INTERNAL: <no description>
+      INTERNAL_MANAGED: <no description>
       INTERNAL_SELF_MANAGED: <no description>
       INVALID: <no description>
     """
     EXTERNAL = 0
     INTERNAL = 1
-    INTERNAL_SELF_MANAGED = 2
-    INVALID = 3
+    INTERNAL_MANAGED = 2
+    INTERNAL_SELF_MANAGED = 3
+    INVALID = 4
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this load
@@ -36954,6 +37044,8 @@ class Scheduling(_messages.Message):
       instances. Preemptible instances cannot be automatically restarted.  By
       default, this is set to true so an instance is automatically restarted
       if it is terminated by Compute Engine.
+    minNodeCpus: The minimum number of virtual CPUs this instance will consume
+      when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity.
     onHostMaintenance: Defines the maintenance behavior for this instance. For
       standard instances, the default behavior is MIGRATE. For preemptible
@@ -36978,9 +37070,10 @@ class Scheduling(_messages.Message):
     TERMINATE = 1
 
   automaticRestart = _messages.BooleanField(1)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 2, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 3)
-  preemptible = _messages.BooleanField(4)
+  minNodeCpus = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 3, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 4)
+  preemptible = _messages.BooleanField(5)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -37038,12 +37131,18 @@ class SecurityPolicy(_messages.Message):
   associated with one or more 'targets'. (== resource_for v1.securityPolicies
   ==) (== resource_for beta.securityPolicies ==)
 
+  Enums:
+    TypeValueValuesEnum: The type indicates the intended use of the security
+      policy. CLOUD_ARMOR policies apply to backend services. FIREWALL
+      policies apply to organizations.
+
   Messages:
     LabelsValue: Labels to apply to this security policy resource. These can
       be later modified by the setLabels method. Each label key/value must
       comply with RFC1035. Label values may be empty.
 
   Fields:
+    associations: A list of assocations that belong to this policy.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -37081,7 +37180,22 @@ class SecurityPolicy(_messages.Message):
       are provided when creating a security policy, a default rule with action
       "allow" will be added.
     selfLink: [Output Only] Server-defined URL for the resource.
+    type: The type indicates the intended use of the security policy.
+      CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply
+      to organizations.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type indicates the intended use of the security policy.
+    CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply to
+    organizations.
+
+    Values:
+      CLOUD_ARMOR: <no description>
+      FIREWALL: <no description>
+    """
+    CLOUD_ARMOR = 0
+    FIREWALL = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -37109,16 +37223,30 @@ class SecurityPolicy(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  fingerprint = _messages.BytesField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#securityPolicy')
-  labelFingerprint = _messages.BytesField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  rules = _messages.MessageField('SecurityPolicyRule', 9, repeated=True)
-  selfLink = _messages.StringField(10)
+  associations = _messages.MessageField('SecurityPolicyAssociation', 1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  fingerprint = _messages.BytesField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default=u'compute#securityPolicy')
+  labelFingerprint = _messages.BytesField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  rules = _messages.MessageField('SecurityPolicyRule', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
+
+
+class SecurityPolicyAssociation(_messages.Message):
+  r"""A SecurityPolicyAssociation object.
+
+  Fields:
+    attachmentId: The resource that the security policy is attached to.
+    name: The name for an association.
+  """
+
+  attachmentId = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class SecurityPolicyList(_messages.Message):
@@ -37258,12 +37386,23 @@ class SecurityPolicyRule(_messages.Message):
   r"""Represents a rule that describes one or more match conditions along with
   the action to be taken when traffic matches this condition (allow or deny).
 
+  Enums:
+    DirectionValueValuesEnum: The direction in which this rule applies. This
+      field may only be specified when versioned_expr is set to FIREWALL.
+
   Fields:
     action: The Action to preform when the client connection triggers the
       rule. Can currently be either "allow" or "deny()" where valid values for
       status are 403, 404, and 502.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    direction: The direction in which this rule applies. This field may only
+      be specified when versioned_expr is set to FIREWALL.
+    enableLogging: Denotes whether to enable logging for a particular rule. If
+      logging is enabled, logs will be exported to the configured export
+      destination in Stackdriver. Logs may be exported to BigQuery or Pub/Sub.
+      Note: you cannot enable logging on "goto_next" rules.  This field may
+      only be specified when the versioned_expr is set to FIREWALL.
     kind: [Output only] Type of the resource. Always
       compute#securityPolicyRule for security policy rules
     match: A match condition that incoming traffic is evaluated against. If it
@@ -37272,14 +37411,33 @@ class SecurityPolicyRule(_messages.Message):
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
       evaluated in the increasing order of priority.
+    targetResources: A list of network resource URLs to which this rule
+      applies. This field allows you to control which network?s VMs get this
+      rule. If this field is left blank, all VMs within the organization will
+      receive the rule.  This field may only be specified when versioned_expr
+      is set to FIREWALL.
   """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""The direction in which this rule applies. This field may only be
+    specified when versioned_expr is set to FIREWALL.
+
+    Values:
+      EGRESS: <no description>
+      INGRESS: <no description>
+    """
+    EGRESS = 0
+    INGRESS = 1
 
   action = _messages.StringField(1)
   description = _messages.StringField(2)
-  kind = _messages.StringField(3, default=u'compute#securityPolicyRule')
-  match = _messages.MessageField('SecurityPolicyRuleMatcher', 4)
-  preview = _messages.BooleanField(5)
-  priority = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  direction = _messages.EnumField('DirectionValueValuesEnum', 3)
+  enableLogging = _messages.BooleanField(4)
+  kind = _messages.StringField(5, default=u'compute#securityPolicyRule')
+  match = _messages.MessageField('SecurityPolicyRuleMatcher', 6)
+  preview = _messages.BooleanField(7)
+  priority = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  targetResources = _messages.StringField(9, repeated=True)
 
 
 class SecurityPolicyRuleMatcher(_messages.Message):
@@ -37312,9 +37470,11 @@ class SecurityPolicyRuleMatcher(_messages.Message):
     src_ip_range field in config.
 
     Values:
+      FIREWALL: <no description>
       SRC_IPS_V1: <no description>
     """
-    SRC_IPS_V1 = 0
+    FIREWALL = 0
+    SRC_IPS_V1 = 1
 
   config = _messages.MessageField('SecurityPolicyRuleMatcherConfig', 1)
   expr = _messages.MessageField('Expr', 2)
@@ -37325,10 +37485,36 @@ class SecurityPolicyRuleMatcherConfig(_messages.Message):
   r"""A SecurityPolicyRuleMatcherConfig object.
 
   Fields:
+    destIpRanges: CIDR IP address range.  This field may only be specified
+      when versioned_expr is set to FIREWALL.
+    destPorts: Pairs of IP protocols and ports that the rule should match.
+      This field may only be specified when versioned_expr is set to FIREWALL.
     srcIpRanges: CIDR IP address range.
   """
 
-  srcIpRanges = _messages.StringField(1, repeated=True)
+  destIpRanges = _messages.StringField(1, repeated=True)
+  destPorts = _messages.MessageField('SecurityPolicyRuleMatcherConfigDestinationPort', 2, repeated=True)
+  srcIpRanges = _messages.StringField(3, repeated=True)
+
+
+class SecurityPolicyRuleMatcherConfigDestinationPort(_messages.Message):
+  r"""A SecurityPolicyRuleMatcherConfigDestinationPort object.
+
+  Fields:
+    ipProtocol: The IP protocol to which this rule applies. The protocol type
+      is required when creating a firewall rule. This value can either be one
+      of the following well known protocol strings (tcp, udp, icmp, esp, ah,
+      ipip, sctp), or the IP protocol number.
+    ports: An optional list of ports to which this rule applies. This field is
+      only applicable for UDP or TCP protocol. Each entry must be either an
+      integer or a range. If not specified, this rule applies to connections
+      through any port.  Example inputs include: ["22"], ["80","443"], and
+      ["12345-12349"].  This field may only be specified when versioned_expr
+      is set to FIREWALL.
+  """
+
+  ipProtocol = _messages.StringField(1)
+  ports = _messages.StringField(2, repeated=True)
 
 
 class SerialPortOutput(_messages.Message):
@@ -39002,10 +39188,12 @@ class Subnetwork(_messages.Message):
 
     Values:
       INTERNAL_HTTPS_LOAD_BALANCER: <no description>
+      PRIVATE: <no description>
       PRIVATE_RFC_1918: <no description>
     """
     INTERNAL_HTTPS_LOAD_BALANCER = 0
-    PRIVATE_RFC_1918 = 1
+    PRIVATE = 1
+    PRIVATE_RFC_1918 = 2
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currenly, this field is only used when purpose
@@ -40988,7 +41176,7 @@ class TargetPool(_messages.Message):
   resource_for beta.targetPools ==) (== resource_for v1.targetPools ==)
 
   Enums:
-    SessionAffinityValueValuesEnum: Sesssion affinity option, must be one of
+    SessionAffinityValueValuesEnum: Session affinity option, must be one of
       the following values: NONE: Connections from the same client IP may go
       to any instance in the pool. CLIENT_IP: Connections from the same client
       IP will go to the same instance in the pool while that instance remains
@@ -41045,7 +41233,7 @@ class TargetPool(_messages.Message):
       cannot be a dash.
     region: [Output Only] URL of the region where the target pool resides.
     selfLink: [Output Only] Server-defined URL for the resource.
-    sessionAffinity: Sesssion affinity option, must be one of the following
+    sessionAffinity: Session affinity option, must be one of the following
       values: NONE: Connections from the same client IP may go to any instance
       in the pool. CLIENT_IP: Connections from the same client IP will go to
       the same instance in the pool while that instance remains healthy.
@@ -41055,7 +41243,7 @@ class TargetPool(_messages.Message):
   """
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
-    r"""Sesssion affinity option, must be one of the following values: NONE:
+    r"""Session affinity option, must be one of the following values: NONE:
     Connections from the same client IP may go to any instance in the pool.
     CLIENT_IP: Connections from the same client IP will go to the same
     instance in the pool while that instance remains healthy. CLIENT_IP_PROTO:

@@ -29,6 +29,7 @@ import six
 COMPOSER_API_NAME = 'composer'
 COMPOSER_GA_API_VERSION = 'v1'
 COMPOSER_BETA_API_VERSION = 'v1beta1'
+COMPOSER_ALPHA_API_VERSION = 'v1alpha2'
 
 DEFAULT_PAGE_SIZE = 30
 
@@ -36,6 +37,8 @@ DEFAULT_PAGE_SIZE = 30
 def GetApiVersion(release_track=base.ReleaseTrack.GA):
   if release_track == base.ReleaseTrack.BETA:
     return COMPOSER_BETA_API_VERSION
+  elif release_track == base.ReleaseTrack.ALPHA:
+    return COMPOSER_ALPHA_API_VERSION
   return COMPOSER_GA_API_VERSION
 
 

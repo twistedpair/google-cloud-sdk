@@ -23,7 +23,7 @@ from googlecloudsdk.api_lib.serverless import k8s_object
 
 
 # Label names as to be stored in k8s object metadata
-AUTHOR_LABEL = 'serverless.cloud.google.com/author'
+AUTHOR_LABEL = 'serving.knative.dev/lastModifierEmail'
 SERVICE_LABEL = 'serving.knative.dev/service'
 
 

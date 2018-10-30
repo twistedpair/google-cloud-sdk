@@ -16,7 +16,6 @@ info_type:
   metavar: 'infotype'
   arg_name: info-types
   type: googlecloudsdk.command_lib.dlp.hooks:InfoType
-  required: true
   help_text: |
     Which infoTypes to scan input for. The values must correspond to
     infoType values found in documentation. For more information about
@@ -63,11 +62,10 @@ max_findings:
   api_field: googlePrivacyDlpV2InspectContentRequest.inspectConfig.limits.maxFindingsPerRequest
   arg_name: max-findings
   type: int
-  default: 1000
   help_text: |
     Maximum number of findings that will be returned per execution.
 
-    If not specified, will return up to the system maximum of 1000 findings.
+    If not specified, no limits are applied.
 
 datastore_kind:
   arg_name: datastore-kind
@@ -153,7 +151,7 @@ max_item_findings:
 jobs_output_group:
   group:
     mutex: true
-    required: true
+    required: false
     params:
     - arg_name: output-topics
       api_field: googlePrivacyDlpV2CreateDlpJobRequest.inspectJob.actions
@@ -164,11 +162,13 @@ jobs_output_group:
 
         Note: The topic must have given publishing access rights to the DLP
         API service account executing the Cloud DLP job.
-    - arg_name: output-tables
+    - arg_name: output-table
+      repeated: false
       api_field: googlePrivacyDlpV2CreateDlpJobRequest.inspectJob.actions
       type: googlecloudsdk.command_lib.dlp.hooks:BigQueryTableAction
       help_text: |
-        Publishes results of a Cloud DLP job to one or more BigQuery tables.
+        Publishes results of a Cloud DLP job a BigQuery table.
         BigQuery tables are uniquely identified by their project_id,
         dataset_id, and table_id in the format
-        `<project_id>.<dataset_id>.<table_id>`.
+        `<project_id>.<dataset_id>.<table_id>` or `<project_id>.<dataset_id>.<table_id>`. If
+        no table_id is specified, DLP will create a table for you.

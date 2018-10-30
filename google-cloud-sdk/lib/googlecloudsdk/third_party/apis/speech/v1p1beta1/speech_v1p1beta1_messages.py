@@ -69,6 +69,11 @@ class Dataset(_messages.Message):
   Fields:
     blockingOperationIds: Output only. All the blocking operations associated
       with this dataset. Like (pre-processing, training-model, testing-model)
+    bucketName: If set, the log data to be used in this dataset is restricted
+      to the bucket specified. This field is only applicable if
+      use_logged_data is true. If use_logged_data is true, but this field is
+      not set, then all logs will be used for training the models. See:
+      RecognitionMetadata for information on setting up data logs.
     createTime: Output only. The timestamp this dataset is created.
     dataProcessingRegion: Location where the data should be processed. If not
       specified then we will pick a location on behalf of the user for storing
@@ -89,36 +94,41 @@ class Dataset(_messages.Message):
     updateTime: Output only. The timestamp this dataset is last updated.
     uri: URI that points to a file in csv file where each row has following
       format. <gs_path_to_audio>,<gs_path_to_transcript>,<label> label can be
-      HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row to be
-      considered valid are :- 1. Each row must have at least a label and
+      HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. To be valid, rows must do the
+      following: 1. Each row must have at least a label and
       <gs_path_to_transcript> 2. If a row is marked HUMAN_TRANSCRIBED, then
-      both <gs_path_to_audio> and <gs_path_to_transcript> needs to be
-      specified. 3. There has to be minimum 500 number of rows labelled
-      HUMAN_TRANSCRIBED if evaluation stats are required. 4. If
-      use_logged_data is set to true, then we ignore the rows labelled as
-      MACHINE_TRANSCRIBED. 5. There has to be minimum 100,000 words in the
-      transcripts in order to provide sufficient textual training data for the
-      language model. Currently, only Google Cloud Storage URIs are supported,
-      which must be specified in the following format:
-      `gs://bucket_name/object_name` (other URI formats will be ignored). For
-      more information, see [Request URIs](/storage/docs/reference-uris).
+      you must specify both <gs_path_to_audio> and <gs_path_to_transcript>.
+      Only WAV file formats which encode linear 16-bit pulse-code modulation
+      (PCM) audio format are supported. The maximum audio file size is 50 MB.
+      Also note that the audio has to be single channel audio. 3. There has to
+      be at least 500 rows labelled HUMAN_TRANSCRIBED covering at least ~10K
+      words in order to get reliable word error rate results. 4. To create a
+      language model, you should provide at least 100,000 words in your
+      transcriptions as training data if you have conversational and captions
+      type of data. You should provide at least 10,000 words if you have short
+      utterances like voice commands and search type of use cases. Currently,
+      only Google Cloud Storage URIs are supported, which must be specified in
+      the following format: `gs://bucket_name/object_name` (other URI formats
+      will be ignored). For more information, see [Request URIs](/storage/docs
+      /reference-uris).
     useLoggedData: If this is true, then use the previously logged data (for
       the project) The logs data for this project will be preprocessed and
       prepared for downstream pipelines (like training)
   """
 
   blockingOperationIds = _messages.StringField(1, repeated=True)
-  createTime = _messages.StringField(2)
-  dataProcessingRegion = _messages.StringField(3)
-  dataStats = _messages.MessageField('DataStats', 4)
-  displayName = _messages.StringField(5)
-  hasSufficientData = _messages.BooleanField(6)
-  languageCode = _messages.StringField(7)
-  models = _messages.MessageField('Model', 8, repeated=True)
-  name = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  uri = _messages.StringField(11)
-  useLoggedData = _messages.BooleanField(12)
+  bucketName = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  dataProcessingRegion = _messages.StringField(4)
+  dataStats = _messages.MessageField('DataStats', 5)
+  displayName = _messages.StringField(6)
+  hasSufficientData = _messages.BooleanField(7)
+  languageCode = _messages.StringField(8)
+  models = _messages.MessageField('Model', 9, repeated=True)
+  name = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  uri = _messages.StringField(12)
+  useLoggedData = _messages.BooleanField(13)
 
 
 class DeployModelRequest(_messages.Message):
@@ -145,6 +155,7 @@ class EvaluateModelResponse(_messages.Message):
       an enhanced version of the model_type. Currently only PHONE_CALL
       model_type has an enhanced version.
     modelType: Required. The type of model used in this evaluation.
+    wordCount: Number of words used in the word_error_rate computation.
     wordErrorRate: Word error rate metric computed on the test set using the
       AutoML model.
   """
@@ -171,7 +182,8 @@ class EvaluateModelResponse(_messages.Message):
 
   isEnhancedModel = _messages.BooleanField(1)
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 2)
-  wordErrorRate = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  wordCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  wordErrorRate = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class ListDatasetsResponse(_messages.Message):

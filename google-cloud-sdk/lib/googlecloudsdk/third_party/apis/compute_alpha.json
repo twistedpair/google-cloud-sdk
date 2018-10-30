@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20181012",
+ "revision": "20181019",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2692,10 +2692,12 @@
      "enum": [
       "EXTERNAL",
       "INTERNAL",
+      "INTERNAL_MANAGED",
       "INTERNAL_SELF_MANAGED",
       "INVALID_LOAD_BALANCING_SCHEME"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -5306,10 +5308,12 @@
      "enum": [
       "EXTERNAL",
       "INTERNAL",
+      "INTERNAL_MANAGED",
       "INTERNAL_SELF_MANAGED",
       "INVALID"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -19071,6 +19075,11 @@
      "type": "boolean",
      "description": "Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine (not terminated by a user). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted.\n\nBy default, this is set to true so an instance is automatically restarted if it is terminated by Compute Engine."
     },
+    "minNodeCpus": {
+     "type": "number",
+     "description": "The minimum number of virtual CPUs this instance will consume when running on a sole-tenant node.",
+     "format": "float"
+    },
     "nodeAffinities": {
      "type": "array",
      "description": "A set of node affinity and anti-affinity.",
@@ -19151,6 +19160,13 @@
    "type": "object",
    "description": "A security policy is comprised of one or more rules. It can also be associated with one or more 'targets'. (== resource_for v1.securityPolicies ==) (== resource_for beta.securityPolicies ==)",
    "properties": {
+    "associations": {
+     "type": "array",
+     "description": "A list of assocations that belong to this policy.",
+     "items": {
+      "$ref": "SecurityPolicyAssociation"
+     }
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -19201,6 +19217,32 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "type": {
+     "type": "string",
+     "description": "The type indicates the intended use of the security policy. CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply to organizations.",
+     "enum": [
+      "CLOUD_ARMOR",
+      "FIREWALL"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "SecurityPolicyAssociation": {
+   "id": "SecurityPolicyAssociation",
+   "type": "object",
+   "properties": {
+    "attachmentId": {
+     "type": "string",
+     "description": "The resource that the security policy is attached to."
+    },
+    "name": {
+     "type": "string",
+     "description": "The name for an association."
     }
    }
   },
@@ -19333,6 +19375,22 @@
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
     },
+    "direction": {
+     "type": "string",
+     "description": "The direction in which this rule applies. This field may only be specified when versioned_expr is set to FIREWALL.",
+     "enum": [
+      "EGRESS",
+      "INGRESS"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "enableLogging": {
+     "type": "boolean",
+     "description": "Denotes whether to enable logging for a particular rule. If logging is enabled, logs will be exported to the configured export destination in Stackdriver. Logs may be exported to BigQuery or Pub/Sub. Note: you cannot enable logging on \"goto_next\" rules.\n\nThis field may only be specified when the versioned_expr is set to FIREWALL."
+    },
     "kind": {
      "type": "string",
      "description": "[Output only] Type of the resource. Always compute#securityPolicyRule for security policy rules",
@@ -19350,6 +19408,13 @@
      "type": "integer",
      "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated in the increasing order of priority.",
      "format": "int32"
+    },
+    "targetResources": {
+     "type": "array",
+     "description": "A list of network resource URLs to which this rule applies. This field allows you to control which network?s VMs get this rule. If this field is left blank, all VMs within the organization will receive the rule.\n\nThis field may only be specified when versioned_expr is set to FIREWALL.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -19370,9 +19435,11 @@
      "type": "string",
      "description": "Preconfigured versioned expression. If this field is specified, config must also be specified. Available preconfigured expressions along with their requirements are: SRC_IPS_V1 - must specify the corresponding src_ip_range field in config.",
      "enum": [
+      "FIREWALL",
       "SRC_IPS_V1"
      ],
      "enumDescriptions": [
+      "",
       ""
      ]
     }
@@ -19382,9 +19449,40 @@
    "id": "SecurityPolicyRuleMatcherConfig",
    "type": "object",
    "properties": {
+    "destIpRanges": {
+     "type": "array",
+     "description": "CIDR IP address range.\n\nThis field may only be specified when versioned_expr is set to FIREWALL.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "destPorts": {
+     "type": "array",
+     "description": "Pairs of IP protocols and ports that the rule should match.\n\nThis field may only be specified when versioned_expr is set to FIREWALL.",
+     "items": {
+      "$ref": "SecurityPolicyRuleMatcherConfigDestinationPort"
+     }
+    },
     "srcIpRanges": {
      "type": "array",
      "description": "CIDR IP address range.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "SecurityPolicyRuleMatcherConfigDestinationPort": {
+   "id": "SecurityPolicyRuleMatcherConfigDestinationPort",
+   "type": "object",
+   "properties": {
+    "ipProtocol": {
+     "type": "string",
+     "description": "The IP protocol to which this rule applies. The protocol type is required when creating a firewall rule. This value can either be one of the following well known protocol strings (tcp, udp, icmp, esp, ah, ipip, sctp), or the IP protocol number."
+    },
+    "ports": {
+     "type": "array",
+     "description": "An optional list of ports to which this rule applies. This field is only applicable for UDP or TCP protocol. Each entry must be either an integer or a range. If not specified, this rule applies to connections through any port.\n\nExample inputs include: [\"22\"], [\"80\",\"443\"], and [\"12345-12349\"].\n\nThis field may only be specified when versioned_expr is set to FIREWALL.",
      "items": {
       "type": "string"
      }
@@ -20786,9 +20884,11 @@
      "description": "The purpose of the resource. This field can be either PRIVATE_RFC_1918 or INTERNAL_HTTPS_LOAD_BALANCER. A subnetwork with purpose set to INTERNAL_HTTPS_LOAD_BALANCER is a user-created subnetwork that is reserved for Internal HTTP(S) Load Balancing. If unspecified, the purpose defaults to PRIVATE_RFC_1918.",
      "enum": [
       "INTERNAL_HTTPS_LOAD_BALANCER",
+      "PRIVATE",
       "PRIVATE_RFC_1918"
      ],
      "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -22463,7 +22563,7 @@
     },
     "sessionAffinity": {
      "type": "string",
-     "description": "Sesssion affinity option, must be one of the following values:\nNONE: Connections from the same client IP may go to any instance in the pool.\nCLIENT_IP: Connections from the same client IP will go to the same instance in the pool while that instance remains healthy.\nCLIENT_IP_PROTO: Connections from the same client IP with the same IP protocol will go to the same instance in the pool while that instance remains healthy.",
+     "description": "Session affinity option, must be one of the following values:\nNONE: Connections from the same client IP may go to any instance in the pool.\nCLIENT_IP: Connections from the same client IP will go to the same instance in the pool while that instance remains healthy.\nCLIENT_IP_PROTO: Connections from the same client IP with the same IP protocol will go to the same instance in the pool while that instance remains healthy.",
      "enum": [
       "CLIENT_IP",
       "CLIENT_IP_PORT_PROTO",
@@ -30158,6 +30258,143 @@
      },
      "parameterOrder": [
       "project",
+      "operation"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
+  "globalOrganizationOperations": {
+   "methods": {
+    "delete": {
+     "id": "compute.globalOrganizationOperations.delete",
+     "path": "locations/global/operations/{operation}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified Operations resource.",
+     "parameters": {
+      "operation": {
+       "type": "string",
+       "description": "Name of the Operations resource to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "operation"
+     ],
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.globalOrganizationOperations.get",
+     "path": "locations/global/operations/{operation}",
+     "httpMethod": "GET",
+     "description": "Retrieves the specified Operations resource. Gets a list of operations by making a list() request.",
+     "parameters": {
+      "operation": {
+       "type": "string",
+       "description": "Name of the Operations resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "operation"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "list": {
+     "id": "compute.globalOrganizationOperations.list",
+     "path": "locations/global/operations",
+     "httpMethod": "GET",
+     "description": "Retrieves a list of Operation resources contained within the specified organization.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "response": {
+      "$ref": "OperationList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "wait": {
+     "id": "compute.globalOrganizationOperations.wait",
+     "path": "locations/global/operations/{operation}/wait",
+     "httpMethod": "POST",
+     "description": "Waits for the specified Operations resource until it is done or timeout, and retrieves the specified Operations resource. 1. Immediately returns when the operation is already done. 2. Waits for no more than the default deadline (2 minutes, subject to change) and then returns the current state of the operation, which may be DONE or still in progress. 3. Is best-effort: a. The server can wait less than the default deadline or zero seconds, in overload situations. b. There is no guarantee that the operation is actually done when returns. 4. User should be prepared to retry if the operation is not DONE.",
+     "parameters": {
+      "operation": {
+       "type": "string",
+       "description": "Name of the Operations resource to return.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
       "operation"
      ],
      "response": {

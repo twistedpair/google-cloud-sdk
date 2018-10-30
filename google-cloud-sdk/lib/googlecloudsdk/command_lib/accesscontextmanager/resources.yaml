@@ -24,11 +24,11 @@ level:
       The ID of the access level.
 perimeter:
   name: perimeter
-  request_id_field: accessZone.name
-  collection: accesscontextmanager.accessPolicies.accessZones
+  request_id_field: servicePerimeter.name
+  collection: accesscontextmanager.accessPolicies.servicePerimeters
   attributes:
   - *policy
-  - parameter_name: accessZonesId
+  - parameter_name: servicePerimetersId
     attribute_name: perimeter
     help: |
       The ID of the service perimeter.

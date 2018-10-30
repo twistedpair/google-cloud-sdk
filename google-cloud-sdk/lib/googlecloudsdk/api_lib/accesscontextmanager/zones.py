@@ -32,23 +32,30 @@ class Client(object):
     self.messages = messages or self.client.MESSAGES_MODULE
 
   def Get(self, zone_ref):
-    return self.client.accessPolicies_accessZones.Get(
-        self.messages.AccesscontextmanagerAccessPoliciesAccessZonesGetRequest(
+    return self.client.accessPolicies_servicePerimeters.Get(
+        self.messages
+        .AccesscontextmanagerAccessPoliciesServicePerimetersGetRequest(
             name=zone_ref.RelativeName()))
 
-  def Patch(self, zone_ref, description=None, title=None, zone_type=None,
-            resources=None, restricted_services=None,
-            unrestricted_services=None, levels=None):
-    """Patch an access zone.
+  def Patch(self,
+            perimeter_ref,
+            description=None,
+            title=None,
+            perimeter_type=None,
+            resources=None,
+            restricted_services=None,
+            unrestricted_services=None,
+            levels=None):
+    """Patch a service perimeter.
 
     Any non-None fields will be included in the update mask.
 
     Args:
-      zone_ref: resources.Resource, reference to the zone to patch
+      perimeter_ref: resources.Resource, reference to the perimeter to patch
       description: str, description of the zone or None if not updating
       title: str, title of the zone or None if not updating
-      zone_type: ZoneTypeValueValuesEnum, zone type enum value for
-        the level or None if not updating
+      perimeter_type: PerimeterTypeValueValuesEnum type enum value for the level
+        or None if not updating
       resources: list of str, the names of resources (for now, just
         'projects/...') in the zone or None if not updating.
       restricted_services: list of str, the names of services
@@ -63,42 +70,54 @@ class Client(object):
     Returns:
       AccessZone, the updated access zone
     """
-    zone = self.messages.AccessZone()
+    m = self.messages
+    perimeter = m.ServicePerimeter()
+
     update_mask = []
+
     if description is not None:
       update_mask.append('description')
-      zone.description = description
+      perimeter.description = description
     if title is not None:
       update_mask.append('title')
-      zone.title = title
-    if zone_type is not None:
-      update_mask.append('zoneType')
-      zone.zoneType = zone_type
+      perimeter.title = title
+    if perimeter_type is not None:
+      update_mask.append('perimeterType')
+      perimeter.perimeterType = perimeter_type
+    status = m.ServicePerimeterConfig()
+    status_mutated = False
     if resources is not None:
-      update_mask.append('resources')
-      zone.resources = resources
+      update_mask.append('status.resources')
+      status.resources = resources
+      status_mutated = True
     if unrestricted_services is not None:
-      update_mask.append('unrestrictedServices')
-      zone.unrestrictedServices = unrestricted_services
+      update_mask.append('status.unrestrictedServices')
+      status.unrestrictedServices = unrestricted_services
+      status_mutated = True
     if restricted_services is not None:
-      update_mask.append('restrictedServices')
-      zone.restrictedServices = restricted_services
+      update_mask.append('status.restrictedServices')
+      status.restrictedServices = restricted_services
+      status_mutated = True
     if levels is not None:
-      update_mask.append('accessLevels')
-      zone.accessLevels = [l.RelativeName() for l in levels]
+      update_mask.append('status.accessLevels')
+      status.accessLevels = [l.RelativeName() for l in levels]
+      status_mutated = True
+    if status_mutated:
+      perimeter.status = status
+
     update_mask.sort()  # For ease-of-testing
 
-    m = self.messages
-    request_type = m.AccesscontextmanagerAccessPoliciesAccessZonesPatchRequest
+    request_type = (
+        m.AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest)
     request = request_type(
-        accessZone=zone,
-        name=zone_ref.RelativeName(),
+        servicePerimeter=perimeter,
+        name=perimeter_ref.RelativeName(),
         updateMask=','.join(update_mask),
     )
-    operation = self.client.accessPolicies_accessZones.Patch(request)
 
-    poller = util.OperationPoller(self.client.accessPolicies_accessZones,
-                                  self.client.operations, zone_ref)
+    operation = self.client.accessPolicies_servicePerimeters.Patch(request)
+    poller = util.OperationPoller(self.client.accessPolicies_servicePerimeters,
+                                  self.client.operations, perimeter_ref)
     operation_ref = core_resources.REGISTRY.Parse(
         operation.name, collection='accesscontextmanager.operations')
     return waiter.WaitFor(

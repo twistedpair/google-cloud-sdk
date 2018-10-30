@@ -39,12 +39,11 @@ URL_PATH_ROOT = '/v4'
 
 SUBPROTOCOL_NAME = 'relay.tunnel.cloudproxy.app'
 SUBPROTOCOL_TAG_LEN = 2
-SUBPROTOCOL_HEADER_LEN = 6
-SUBPROTOCOL_MAX_DATA_FRAME_SIZE = 16 * 1024
-SUBPROTOCOL_TAG_CONNECT_SUCCESS_SID = 0x01
-SUBPROTOCOL_TAG_DATA = 0x04
-SUPPORTED_SUBPROTOCOLS = (SUBPROTOCOL_TAG_CONNECT_SUCCESS_SID,
-                          SUBPROTOCOL_TAG_DATA)
+SUBPROTOCOL_HEADER_LEN = SUBPROTOCOL_TAG_LEN + 4
+SUBPROTOCOL_MAX_DATA_FRAME_SIZE = 16384
+SUBPROTOCOL_TAG_CONNECT_SUCCESS_SID = 0x0001
+SUBPROTOCOL_TAG_DATA = 0x0004
+SUBPROTOCOL_TAG_ACK = 0x0007
 
 # The proxy_info field should be either None or type httplib2.ProxyInfo
 IapTunnelTargetInfo = collections.namedtuple(
@@ -54,6 +53,10 @@ IapTunnelTargetInfo = collections.namedtuple(
 
 
 class CACertsFileUnavailable(exceptions.Error):
+  pass
+
+
+class IncompleteData(exceptions.Error):
   pass
 
 
@@ -135,42 +138,59 @@ def CreateWebSocketUrl(endpoint, tunnel_target):
   return parse.urlunparse((scheme, hostname, path, '', qs, ''))
 
 
+def CreateSubprotocolAckFrame(ack_bytes):
+  try:
+    return struct.pack(str('>HQ'), SUBPROTOCOL_TAG_ACK, ack_bytes)
+  except struct.error:
+    raise InvalidWebSocketSubprotocolData('Invalid Ack [%r]' % ack_bytes)
+
+
 def CreateSubprotocolDataFrame(bytes_to_send):
   return struct.pack(str('>HI%ds' % len(bytes_to_send)),
                      SUBPROTOCOL_TAG_DATA, len(bytes_to_send), bytes_to_send)
 
 
+def ExtractSubprotocolAck(binary_data):
+  return _ExtractUnsignedInt64(binary_data)
+
+
+def ExtractSubprotocolConnectSuccessSid(binary_data):
+  data_len, binary_data = _ExtractUnsignedInt32(binary_data)
+  return _ExtractBinaryArray(binary_data, data_len)
+
+
 def ExtractSubprotocolData(binary_data):
-  """Extract tag and data from subprotocol data frame."""
-  try:
-    subprotocol_tag = struct.unpack(
-        str('>H'), binary_data[:SUBPROTOCOL_TAG_LEN])[0]
-  except struct.error:
-    log.exception('Invalid WebSocket subprotocol tag.')
-    raise InvalidWebSocketSubprotocolData(
-        'Invalid WebSocket subprotocol tag')
+  data_len, binary_data = _ExtractUnsignedInt32(binary_data)
+  return _ExtractBinaryArray(binary_data, data_len)
 
-  if subprotocol_tag not in SUPPORTED_SUBPROTOCOLS:
-    return subprotocol_tag, None
 
-  try:
-    data_len = struct.unpack(
-        str('>I'), binary_data[SUBPROTOCOL_TAG_LEN:SUBPROTOCOL_HEADER_LEN])[0]
-  except struct.error:
-    log.exception('Invalid WebSocket subprotocol data length.')
-    raise InvalidWebSocketSubprotocolData(
-        'Invalid WebSocket subprotocol data length')
+def ExtractSubprotocolTag(binary_data):
+  return _ExtractUnsignedInt16(binary_data)
 
-  if not data_len:
-    return subprotocol_tag, None
 
-  data = None
-  if data_len:
-    if data_len > SUBPROTOCOL_MAX_DATA_FRAME_SIZE:
-      log.warning('Discarding unexpectedly large data frame [%r]', data_len)
-    else:
-      data_end = SUBPROTOCOL_HEADER_LEN + data_len
-      data = struct.unpack(
-          str('%ds' % data_len),
-          binary_data[SUBPROTOCOL_HEADER_LEN:data_end])[0]
-  return subprotocol_tag, data
+def _ExtractUnsignedInt16(binary_data):
+  if len(binary_data) < 2:
+    raise IncompleteData()
+  return (struct.unpack(str('>H'), binary_data[:2])[0],
+          binary_data[2:])
+
+
+def _ExtractUnsignedInt32(binary_data):
+  if len(binary_data) < 4:
+    raise IncompleteData()
+  return (struct.unpack(str('>I'), binary_data[:4])[0],
+          binary_data[4:])
+
+
+def _ExtractUnsignedInt64(binary_data):
+  if len(binary_data) < 8:
+    raise IncompleteData()
+  return (struct.unpack(str('>Q'), binary_data[:8])[0],
+          binary_data[8:])
+
+
+def _ExtractBinaryArray(binary_data, data_len):
+  if len(binary_data) < data_len:
+    raise IncompleteData()
+  return (struct.unpack(str('%ds' % data_len), binary_data[:data_len])[0],
+          binary_data[data_len:])

@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Cloud Natural Language API",
-  "description": "Provides natural language understanding technologies to developers. Examples include sentiment analysis, entity recognition, entity sentiment analysis, and text annotations.",
+  "description": "Provides natural language understanding technologies, such as sentiment analysis, entity recognition, entity sentiment analysis, and other text annotations, to developers.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

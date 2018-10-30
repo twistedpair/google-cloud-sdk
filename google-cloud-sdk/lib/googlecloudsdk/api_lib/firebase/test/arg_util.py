@@ -297,7 +297,7 @@ def AddAndroidTestArgs(parser):
       '\n\n'
       'to instruct Robo to click on the sign in button. To learn more about '
       'Robo test and robo_directives, see '
-      'https://firebase.google.com/docs/test-lab/command-line'
+      'https://firebase.google.com/docs/test-lab/android/command-line'
       '#custom_login_and_text_input_with_robo_test.'
       '\n\n'
       'Caution: You should only use credentials for test accounts that are not '

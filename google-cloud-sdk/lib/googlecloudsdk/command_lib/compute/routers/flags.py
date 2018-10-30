@@ -109,7 +109,8 @@ def AddCreateRouterArgs(parser):
       required=True,
       type=int,
       help='The BGP autonomous system number (ASN) for this router. '
-      'For more information see: https://tools.ietf.org/html/rfc6996.')
+      'Must be a 16-bit or 32-bit private ASN as defined in '
+      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
 
 
 def AddCreateRouterArgsForAlpha(parser):
@@ -123,7 +124,8 @@ def AddCreateRouterArgsForAlpha(parser):
       required=False,
       type=int,
       help='The optional BGP autonomous system number (ASN) for this router. '
-      'For more information see: https://tools.ietf.org/html/rfc6996.')
+      'Must be a 16-bit or 32-bit private ASN as defined in '
+      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
 
 
 def AddInterfaceArgs(parser, for_update=False):
@@ -146,8 +148,9 @@ def AddInterfaceArgs(parser, for_update=False):
   parser.add_argument(
       '--mask-length',
       type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=31),
-      # TODO(b/36051080): better help
-      help='The mask for network used for the server IP address.')
+      help='The subnet mask for the link-local IP range of the interface. '
+      'The interface IP address and BGP peer IP address must be selected from '
+      'the subnet defined by this link-local range.')
 
 
 def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
@@ -172,7 +175,8 @@ def AddBgpPeerArgs(parser, for_add_bgp_peer=False):
       required=for_add_bgp_peer,
       type=int,
       help='The BGP autonomous system number (ASN) for this BGP peer. '
-      'For more information see: https://tools.ietf.org/html/rfc6996.')
+      'Must be a 16-bit or 32-bit private ASN as defined in '
+      'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
 
   # For add_bgp_peer, we only require the interface and infer the IP instead.
   if not for_add_bgp_peer:
@@ -275,8 +279,8 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
               `--advertisement-ranges=192.168.10.0/24`.  To store a description
               with the range, use
               `--advertisement-ranges=192.168.10.0/24=my-networks`. This list
-              can only be specified in custom advertisement mode."""
-      .format(resource_str))
+              can only be specified in custom advertisement mode.""".format(
+                  resource_str))
 
   incremental_args.add_argument(
       '--remove-advertisement-ranges',
@@ -285,5 +289,5 @@ def AddIncrementalCustomAdvertisementArgs(parser, resource_str):
       help="""A list of individual IP ranges, in CIDR format, to remove from
               dynamic advertisement on this {0}. Each IP range in the list must
               exist in the current set of custom advertisements. This field can
-              only be specified in custom advertisement mode."""
-      .format(resource_str))
+              only be specified in custom advertisement mode.""".format(
+                  resource_str))
