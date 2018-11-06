@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20181019",
+ "revision": "20181030",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -613,6 +613,17 @@
      "type": "object",
      "description": "Options for exporting data as SQL statements.",
      "properties": {
+      "mysqlExportOptions": {
+       "type": "object",
+       "description": "Options for exporting from MySQL.",
+       "properties": {
+        "masterData": {
+         "type": "integer",
+         "description": "Option to include SQL statement required to set up replication. If set to 1, the dump file includes a CHANGE MASTER TO statement with the binary log coordinates. If set to 2, the CHANGE MASTER TO statement is written as a SQL comment, and has no effect. All other values are ignored.",
+         "format": "int32"
+        }
+       }
+      },
       "schemaOnly": {
        "type": "boolean",
        "description": "Export only schemas."
@@ -970,7 +981,7 @@
   "MaintenanceWindow": {
    "id": "MaintenanceWindow",
    "type": "object",
-   "description": "Maintenance window. This specifies when a v2 Cloud SQL instance should preferably be restarted for system maintenance puruposes.",
+   "description": "Maintenance window. This specifies when a v2 Cloud SQL instance should preferably be restarted for system maintenance purposes.",
    "properties": {
     "day": {
      "type": "integer",

@@ -385,7 +385,7 @@ def AddDiskArgs(parser, enable_regional_disks=False, enable_kms=False,
   parser.add_argument(
       '--boot-disk-device-name',
       help="""\
-      The name the guest operating system will see for the boot disk as.  This
+      The name the guest operating system will see for the boot disk.  This
       option can only be specified if a new boot disk is being created (as
       opposed to mounting an existing persistent disk).
       """)
@@ -1105,73 +1105,13 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists,
       else 'Create instance without scopes')
   scopes_exists = 'keep the scopes it currently has'
   scopes_not_exists = 'be assigned the default scopes, described below'
-  scopes_default_list = '- ' + '\n      - '.join(constants.DEFAULT_SCOPES)
   scopes_help = """\
-  If not provided, the instance will {0}. {1}
+If not provided, the instance will {exists}. {extra}
 
-  SCOPE can be either the full URI of the scope or an alias. Available
-  aliases are:
-
-    default
-      Scopes assigned to instances by default:
-      {scopes_default_list}
-
-    bigquery
-      - https://www.googleapis.com/auth/bigquery
-
-    cloud-platform
-      - https://www.googleapis.com/auth/cloud-platform
-
-    compute-ro
-      - https://www.googleapis.com/auth/compute.readonly
-
-    compute-rw
-      - https://www.googleapis.com/auth/compute
-
-    datastore
-      - https://www.googleapis.com/auth/datastore
-
-    logging-write
-      - https://www.googleapis.com/auth/logging.write
-
-    monitoring
-      - https://www.googleapis.com/auth/monitoring
-
-    monitoring-write
-      - https://www.googleapis.com/auth/monitoring.write
-
-    service-control
-      - https://www.googleapis.com/auth/servicecontrol
-
-    service-management
-      - https://www.googleapis.com/auth/service.management.readonly
-
-    sql (DEPRECATED)
-      - https://www.googleapis.com/auth/sqlservice:
-
-    sql-admin
-      - https://www.googleapis.com/auth/sqlservice.admin
-
-    storage-full
-      - https://www.googleapis.com/auth/devstorage.full_control
-
-    storage-ro
-      - https://www.googleapis.com/auth/devstorage.read_only
-
-    storage-rw
-      - https://www.googleapis.com/auth/devstorage.read_write
-
-    taskqueue
-      - https://www.googleapis.com/auth/taskqueue
-
-    userinfo-email
-      - https://www.googleapis.com/auth/userinfo.email
-
-    {scope_deprecation_msg}
-    """.format(scopes_exists if instance_exists else scopes_not_exists,
-               extra_scopes_help,
-               scopes_default_list=scopes_default_list,
-               scope_deprecation_msg=constants.DEPRECATED_SCOPES_MESSAGES)
+{scopes_help}
+""".format(exists=scopes_exists if instance_exists else scopes_not_exists,
+           extra=extra_scopes_help,
+           scopes_help=constants.ScopesHelp())
   scopes_group.add_argument(
       '--scopes',
       type=arg_parsers.ArgList(),

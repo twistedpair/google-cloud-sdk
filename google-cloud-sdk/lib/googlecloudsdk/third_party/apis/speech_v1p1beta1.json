@@ -657,6 +657,10 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "lastError": {
+          "description": "Output only. The error status, if any, of the last operation performed on\nthis dataset. Empty if there is still pending operation, or if the last\noperation completed with success.",
+          "$ref": "Status"
+        },
         "bucketName": {
           "description": "If set, the log data to be used in this dataset is restricted to the\nbucket specified. This field is only applicable if use_logged_data is true.\nIf use_logged_data is true, but this field is not set, then all logs will\nbe used for training the models. See: RecognitionMetadata for information\non setting up data logs.",
           "type": "string"
@@ -684,6 +688,11 @@
           "items": {
             "$ref": "DataErrors"
           }
+        },
+        "trainingWordCount": {
+          "description": "The number of words used for training.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -990,7 +999,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Performs asynchronous data upload for AutoML: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `Dataset` message."
+                  "description": "Performs asynchronous data upload for AutoML: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` with CreateDatasetMetadata showing a Dataset\nname or an `Operation.response` which contains a full `Dataset` message."
                 },
                 "refreshData": {
                   "id": "speech.projects.locations.datasets.refreshData",

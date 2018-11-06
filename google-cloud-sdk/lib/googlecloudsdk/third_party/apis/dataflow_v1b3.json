@@ -211,11 +211,15 @@
           "$ref": "Environment"
         },
         "steps": {
-          "description": "The top-level steps that constitute the entire job.",
+          "description": "Exactly one of step or steps_location should be specified.\n\nThe top-level steps that constitute the entire job.",
           "type": "array",
           "items": {
             "$ref": "Step"
           }
+        },
+        "stepsLocation": {
+          "description": "The GCS location where the steps are stored.",
+          "type": "string"
         },
         "currentState": {
           "description": "The current state of the job.\n\nJobs are created in the `JOB_STATE_STOPPED` state unless otherwise\nspecified.\n\nA job in the `JOB_STATE_RUNNING` state may asynchronously enter a\nterminal state. After a job has reached a terminal state, no\nfurther state updates may be made.\n\nThis field may be mutated by the Cloud Dataflow service;\ncallers cannot mutate it.",
@@ -351,6 +355,10 @@
           "description": "The timestamp when the job was started (transitioned to JOB_STATE_PENDING).\nFlexible resource scheduling jobs are started with some delay after job\ncreation, so start_time is unset before start and is updated when the\njob is started by the Cloud Dataflow service. For other jobs, start_time\nalways equals to create_time and is immutable and set by the Cloud Dataflow\nservice.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "createdFromSnapshotId": {
+          "description": "If this is specified, the job's initial state is populated from the given\nsnapshot.",
+          "type": "string"
         }
       }
     },
@@ -1342,6 +1350,51 @@
         "name": {
           "description": "The name of the failed location.",
           "type": "string"
+        }
+      }
+    },
+    "SnapshotJobRequest": {
+      "id": "SnapshotJobRequest",
+      "description": "Request to create a snapshot of a job.",
+      "type": "object",
+      "properties": {
+        "ttl": {
+          "description": "TTL for the snapshot.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "location": {
+          "description": "The location that contains this job.",
+          "type": "string"
+        }
+      }
+    },
+    "Snapshot": {
+      "id": "Snapshot",
+      "description": "Represents a snapshot of a job.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The unique ID of this snapshot.",
+          "type": "string"
+        },
+        "projectId": {
+          "description": "The project this snapshot belongs to.",
+          "type": "string"
+        },
+        "sourceJobId": {
+          "description": "The job this snapshot was created from.",
+          "type": "string"
+        },
+        "creationTime": {
+          "description": "The time this snapshot was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "ttl": {
+          "description": "The time after which this snapshot will be automatically deleted.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -4295,6 +4348,43 @@
               ],
               "description": "List the jobs of a project across all regions."
             },
+            "snapshot": {
+              "id": "dataflow.projects.jobs.snapshot",
+              "path": "v1b3/projects/{projectId}/jobs/{jobId}:snapshot",
+              "flatPath": "v1b3/projects/{projectId}/jobs/{jobId}:snapshot",
+              "httpMethod": "POST",
+              "parameters": {
+                "projectId": {
+                  "description": "The project which owns the job to be snapshotted.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "jobId": {
+                  "description": "The job to be snapshotted.",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "projectId",
+                "jobId"
+              ],
+              "request": {
+                "$ref": "SnapshotJobRequest"
+              },
+              "response": {
+                "$ref": "Snapshot"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/compute",
+                "https://www.googleapis.com/auth/compute.readonly",
+                "https://www.googleapis.com/auth/userinfo.email"
+              ],
+              "description": "Snapshot the state of a streaming job."
+            },
             "getMetrics": {
               "id": "dataflow.projects.jobs.getMetrics",
               "path": "v1b3/projects/{projectId}/jobs/{jobId}/metrics",
@@ -4630,7 +4720,17 @@
                   "type": "boolean"
                 },
                 "gcsPath": {
-                  "description": "Required. A Cloud Storage path to the template from which to create\nthe job.\nMust be valid Cloud Storage URL, beginning with 'gs:\/\/'.",
+                  "description": "A Cloud Storage path to the template from which to create\nthe job.\nMust be valid Cloud Storage URL, beginning with 'gs:\/\/'.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "dynamicTemplate.gcsPath": {
+                  "description": "Path to dynamic template spec file on GCS.\nThe file must be a Json serialized DynamicTemplateFieSpec object.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "dynamicTemplate.stagingLocation": {
+                  "description": "Cloud Storage path for staging dependencies.\nMust be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
                   "location": "query",
                   "type": "string"
                 },
@@ -4670,7 +4770,7 @@
                   "type": "string"
                 },
                 "gcsPath": {
-                  "description": "Required. A Cloud Storage path to the template from which to\ncreate the job.\nMust be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
+                  "description": "Required. A Cloud Storage path to the template from which to\ncreate the job.\nMust be valid Cloud Storage URL, beginning with 'gs:\/\/'.",
                   "location": "query",
                   "type": "string"
                 },
@@ -4963,6 +5063,50 @@
                     "https://www.googleapis.com/auth/userinfo.email"
                   ],
                   "description": "List the jobs of a project in a given region."
+                },
+                "snapshot": {
+                  "id": "dataflow.projects.locations.jobs.snapshot",
+                  "path": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}:snapshot",
+                  "flatPath": "v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}:snapshot",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "projectId": {
+                      "description": "The project which owns the job to be snapshotted.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "location": {
+                      "description": "The location that contains this job.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "jobId": {
+                      "description": "The job to be snapshotted.",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectId",
+                    "location",
+                    "jobId"
+                  ],
+                  "request": {
+                    "$ref": "SnapshotJobRequest"
+                  },
+                  "response": {
+                    "$ref": "Snapshot"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/compute",
+                    "https://www.googleapis.com/auth/compute.readonly",
+                    "https://www.googleapis.com/auth/userinfo.email"
+                  ],
+                  "description": "Snapshot the state of a streaming job."
                 },
                 "getMetrics": {
                   "id": "dataflow.projects.locations.jobs.getMetrics",
@@ -5344,7 +5488,17 @@
                       "type": "boolean"
                     },
                     "gcsPath": {
-                      "description": "Required. A Cloud Storage path to the template from which to create\nthe job.\nMust be valid Cloud Storage URL, beginning with 'gs:\/\/'.",
+                      "description": "A Cloud Storage path to the template from which to create\nthe job.\nMust be valid Cloud Storage URL, beginning with 'gs:\/\/'.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "dynamicTemplate.gcsPath": {
+                      "description": "Path to dynamic template spec file on GCS.\nThe file must be a Json serialized DynamicTemplateFieSpec object.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "dynamicTemplate.stagingLocation": {
+                      "description": "Cloud Storage path for staging dependencies.\nMust be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
                       "location": "query",
                       "type": "string"
                     }
@@ -5386,7 +5540,7 @@
                       "type": "string"
                     },
                     "gcsPath": {
-                      "description": "Required. A Cloud Storage path to the template from which to\ncreate the job.\nMust be a valid Cloud Storage URL, beginning with `gs:\/\/`.",
+                      "description": "Required. A Cloud Storage path to the template from which to\ncreate the job.\nMust be valid Cloud Storage URL, beginning with 'gs:\/\/'.",
                       "location": "query",
                       "type": "string"
                     },

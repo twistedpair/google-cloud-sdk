@@ -713,8 +713,12 @@
           "$ref": "IstioConfig"
         },
         "serverlessConfig": {
-          "description": "Configuration for the serverless addon. The `IstioConfig` addon must be\nenabled in order to enable serverless. This option can only be enabled at\ncluster creation time.",
+          "description": "Deprecated: use CloudRunConfig instead (same behavior).",
           "$ref": "ServerlessConfig"
+        },
+        "cloudRunConfig": {
+          "description": "Configuration for the Cloud Run addon. The `IstioConfig` addon must be\nenabled in order to enable Cloud Run. This option can only be enabled at\ncluster creation time.",
+          "$ref": "CloudRunConfig"
         }
       }
     },
@@ -792,6 +796,17 @@
       "properties": {
         "disabled": {
           "description": "Whether serverless is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "CloudRunConfig": {
+      "id": "CloudRunConfig",
+      "description": "Configuration options for the Cloud Run feature.",
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "description": "Whether Cloud Run is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -1239,6 +1254,10 @@
         "enableCloudNat": {
           "description": "Whether GKE Cloud NAT is enabled for this cluster. Requires that the\ncluster has already set IPAllocationPolicy.use_ip_aliases to true.",
           "type": "boolean"
+        },
+        "enablePrivateIpv6Access": {
+          "description": "Whether or not Private IPv6 access is enabled. This enables direct\nconnectivity from GKE pods to Google Cloud services over gRPC.",
+          "type": "boolean"
         }
       }
     },
@@ -1265,6 +1284,10 @@
         "bigqueryDestination": {
           "description": "Configuration to use BigQuery as usage export destination.",
           "$ref": "BigQueryDestination"
+        },
+        "enableNetworkEgressMetering": {
+          "description": "Whether to enable network egress metering for this cluster. If enabled, a\ndaemonset will be created in the cluster to meter network egress traffic.",
+          "type": "boolean"
         }
       }
     },
@@ -1698,6 +1721,10 @@
           "description": "The desired status of Cloud NAT for this cluster.",
           "$ref": "CloudNatStatus"
         },
+        "desiredPrivateIpv6Access": {
+          "description": "The desired status of Private IPv6 access for this cluster.",
+          "$ref": "PrivateIPv6Status"
+        },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
           "type": "string"
@@ -1723,6 +1750,17 @@
       "properties": {
         "enabled": {
           "description": "Enables Cloud Nat on this cluster.\n\nOn an update if update.desired_cloud_nat_status.enabled = true,\nThe API will check if any Routers in the cluster's network has Cloud NAT\nenabled on the pod range.\n  a. If so, then the cluster nodes will be updated to not perform SNAT.\n  b. If no NAT configuration exists, a new Router with Cloud NAT on\n     the secondary range will be created first, and then the nodes will be\n     updated to no longer do SNAT.",
+          "type": "boolean"
+        }
+      }
+    },
+    "PrivateIPv6Status": {
+      "id": "PrivateIPv6Status",
+      "description": "PrivateIPv6Status contains the desired state of the IPv6 fast path\non this cluster. Private IPv6 access allows direct high speed communication\nfrom GKE pods to gRPC Google cloud services over IPv6.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enables private IPv6 access to Google cloud services for this cluster.",
           "type": "boolean"
         }
       }

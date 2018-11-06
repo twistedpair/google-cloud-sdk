@@ -95,8 +95,8 @@ service.
     def Create(self, request, global_params=None):
       r"""Performs asynchronous data upload for AutoML: receive results via the.
 google.longrunning.Operations interface. Returns either an
-`Operation.error` or an `Operation.response` which contains
-a `Dataset` message.
+`Operation.error` with CreateDatasetMetadata showing a Dataset
+name or an `Operation.response` which contains a full `Dataset` message.
 
       Args:
         request: (SpeechProjectsLocationsDatasetsCreateRequest) input message

@@ -1,6 +1,5 @@
 project:
   name: project
-  api_version: v1
   collection: tpu.projects
   attributes:
   - parameter_name: projectsId
@@ -9,7 +8,6 @@ project:
 
 location:
   name: location
-  api_version: v1
   collection: tpu.projects.locations
   disable_auto_completers: false
   attributes:
@@ -24,7 +22,6 @@ location:
 
 tpu:
   name: tpu
-  api_version: v1
   collection: tpu.projects.locations.nodes
   attributes:
   - *location
@@ -34,7 +31,6 @@ tpu:
 
 tensorflowversion:
   name: tensorflow_version
-  api_version: v1
   collection: tpu.projects.locations.tensorflowVersions
   attributes:
   - *location
@@ -44,7 +40,6 @@ tensorflowversion:
 
 acceleratortype:
   name: accelerator_type
-  api_version: v1
   collection: tpu.projects.locations.acceleratorTypes
   attributes:
   - *location

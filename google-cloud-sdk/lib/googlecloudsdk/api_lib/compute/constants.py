@@ -167,14 +167,16 @@ GKE_DEFAULT_SCOPES = sorted([
     _STACKDRIVER_TRACE,
 ])
 
-DEPRECATED_SQL_SCOPE_MSG = ("""
-      DEPRECATION WARNING: 'https://www.googleapis.com/auth/sqlservice' account scope and
-      `sql` alias do not provide SQL instance management capabilities and have been deprecated.
-      Please, use 'https://www.googleapis.com/auth/sqlservice.admin' or `sql-admin` to manage
-      your Google SQL Service instances.
-    """)
+DEPRECATED_SQL_SCOPE_MSG = """\
+DEPRECATION WARNING: https://www.googleapis.com/auth/sqlservice account scope
+and `sql` alias do not provide SQL instance management capabilities and have
+been deprecated. Please, use https://www.googleapis.com/auth/sqlservice.admin
+or `sql-admin` to manage your Google SQL Service instances.
+"""
 
 DEPRECATED_SCOPES_MESSAGES = DEPRECATED_SQL_SCOPE_MSG
+
+DEPRECATED_SCOPE_ALIASES = {'sql'}
 
 SCOPES = {
     'bigquery': ['https://www.googleapis.com/auth/bigquery'],
@@ -205,17 +207,29 @@ SCOPES = {
 }
 
 
-def ScopesForHelp():
-  """Get describing aliases, for use in command help.
+def ScopesHelp():
+  """Returns the command help text markdown for scopes.
 
   Returns:
-  str, containing a line for each scope with name of the scope alias
-  followed by comma and full url of the scope, and (if the alias expands to more
-  than one scope) more lines containing comma and one scope url each.
+    The command help text markdown with scope intro text, aliases, and optional
+    notes and/or warnings.
   """
   aliases = []
   for alias, value in sorted(six.iteritems(SCOPES)):
-    aliases.append('{0},{1}'.format(alias, value[0]))
+    if alias in DEPRECATED_SCOPE_ALIASES:
+      alias = '{} (deprecated)'.format(alias)
+    aliases.append('{0} | {1}'.format(alias, value[0]))
     for item in value[1:]:
-      aliases.append(',' + item)
-  return '\n'.join(aliases)
+      aliases.append('| ' + item)
+  return """\
+SCOPE can be either the full URI of the scope or an alias. *default* scopes are
+assigned to all instances. Available aliases are:
+
+Alias | URI
+--- | ---
+{aliases}
+
+{scope_deprecation_msg}
+""".format(
+    aliases='\n'.join(aliases),
+    scope_deprecation_msg=DEPRECATED_SCOPES_MESSAGES)

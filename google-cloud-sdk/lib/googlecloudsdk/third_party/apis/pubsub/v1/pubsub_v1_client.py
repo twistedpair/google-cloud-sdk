@@ -54,7 +54,8 @@ class PubsubV1(base_api.BaseApiClient):
 
     def Create(self, request, global_params=None):
       r"""Creates a snapshot from the requested subscription. Snapshots are used in.
-<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot.
@@ -69,10 +70,10 @@ would expire in less than 1 hour -- then `FAILED_PRECONDITION` is returned.
 See also the `Snapshot.expire_time` field. If the name is not provided in
 the request, the server will assign a random
 name for this snapshot on the same project as the subscription, conforming
-to the [resource name format](https://cloud.google.com/pubsub/docs/overview#names).
-The generated
-name is populated in the returned Snapshot object. Note that for REST API
-requests, you must specify a name in the request.
+to the
+[resource name format](https://cloud.google.com/pubsub/docs/overview#names).
+The generated name is populated in the returned Snapshot object. Note that
+for REST API requests, you must specify a name in the request.
 
       Args:
         request: (PubsubProjectsSnapshotsCreateRequest) input message
@@ -100,7 +101,8 @@ requests, you must specify a name in the request.
 
     def Delete(self, request, global_params=None):
       r"""Removes an existing snapshot. Snapshots are used in.
-<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot.<br><br>
@@ -138,10 +140,10 @@ snapshot or its subscription, unless the same subscription is specified.
 
     def Get(self, request, global_params=None):
       r"""Gets the configuration details of a snapshot. Snapshots are used in.
-<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
-you to manage message acknowledgments in bulk. That is, you can set the
-acknowledgment state of messages in an existing subscription to the state
-captured by a snapshot.<br><br>
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow you to manage message acknowledgments in bulk. That
+is, you can set the acknowledgment state of messages in an existing
+subscription to the state captured by a snapshot.<br><br>
 <b>BETA:</b> This feature is part of a beta release. This API might be
 changed in backward-incompatible ways and is not recommended for production
 use. It is not subject to any SLA or deprecation policy.
@@ -201,7 +203,8 @@ set.
 
     def List(self, request, global_params=None):
       r"""Lists the existing snapshots. Snapshots are used in.
-<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot.<br><br>
@@ -235,7 +238,8 @@ use. It is not subject to any SLA or deprecation policy.
 
     def Patch(self, request, global_params=None):
       r"""Updates an existing snapshot. Snapshots are used in.
-<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot.<br><br>
@@ -374,7 +378,8 @@ than once will not result in an error.
 
     def Create(self, request, global_params=None):
       r"""Creates a subscription to a given topic. See the.
-<a href="/pubsub/docs/admin#resource_names"> resource name rules</a>.
+<a href="https://cloud.google.com/pubsub/docs/admin#resource_names">
+resource name rules</a>.
 If the subscription already exists, returns `ALREADY_EXISTS`.
 If the corresponding topic doesn't exist, returns `NOT_FOUND`.
 
@@ -646,7 +651,8 @@ subscription.
     def Seek(self, request, global_params=None):
       r"""Seeks an existing subscription to a point in time or to a given snapshot,.
 whichever is provided in the request. Snapshots are used in
-<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot. Note that both the subscription and the snapshot
@@ -752,7 +758,8 @@ may "fail open" without warning.
 
     def List(self, request, global_params=None):
       r"""Lists the names of the snapshots on this topic. Snapshots are used in.
-<a href="/pubsub/docs/replay-overview">Seek</a> operations, which allow
+<a href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+operations, which allow
 you to manage message acknowledgments in bulk. That is, you can set the
 acknowledgment state of messages in an existing subscription to the state
 captured by a snapshot.<br><br>
@@ -833,7 +840,8 @@ use. It is not subject to any SLA or deprecation policy.
 
     def Create(self, request, global_params=None):
       r"""Creates the given topic with the given name. See the.
-<a href="/pubsub/docs/admin#resource_names"> resource name rules</a>.
+<a href="https://cloud.google.com/pubsub/docs/admin#resource_names">
+resource name rules</a>.
 
       Args:
         request: (Topic) input message

@@ -30,6 +30,7 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_marshalling
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
@@ -48,6 +49,38 @@ class Translator(command_loading.YamlCommandTranslator):
     spec = yaml_command_schema.CommandData(path[-1], command_data)
     c = CommandBuilder(spec, path)
     return c.Generate()
+
+
+class DeclarativeIamRolesCompleter(completers.ListCommandCompleter):
+  """An IAM role completer for a resource argument.
+
+  The Complete() method override bypasses the completion cache.
+
+  Attributes:
+    _get_resource_ref: DeclarativeArgumentGenerator.GetRequestResourceRef method
+      to parse the resource ref.
+  """
+
+  def __init__(self, get_resource_ref, **kwargs):
+    super(DeclarativeIamRolesCompleter, self).__init__(**kwargs)
+    self._get_resource_ref = get_resource_ref
+
+  def GetListCommand(self, parameter_info):
+    resource_ref = self._get_resource_ref(parameter_info.parsed_args)
+    resource_uri = resource_ref.SelfLink()
+    return [
+        'iam', 'list-grantable-roles', '--quiet', '--flatten=name',
+        '--format=disable', resource_uri
+    ]
+
+  def Complete(self, prefix, parameter_info):
+    """Bypasses the cache and returns completions matching prefix."""
+    command = self.GetListCommand(parameter_info)
+    items = self.GetAllItems(command, parameter_info)
+    return [
+        item for item in items or []
+        if item is not None and item.startswith(prefix)
+    ]
 
 
 class CommandBuilder(object):
@@ -387,6 +420,19 @@ class CommandBuilder(object):
 
     return Command
 
+  def _GenerateDeclarativeIamRolesCompleter(self):
+    """Generate a IAM role completer."""
+
+    get_resource_ref = self.arg_generator.GetRequestResourceRef
+
+    class Completer(DeclarativeIamRolesCompleter):
+
+      def __init__(self, **kwargs):
+        super(Completer, self).__init__(
+            get_resource_ref=get_resource_ref, **kwargs)
+
+    return Completer
+
   def _GenerateAddIamPolicyBindingCommand(self):
     """Generates an add-iam-policy-binding command.
 
@@ -409,7 +455,9 @@ class CommandBuilder(object):
       @staticmethod
       def Args(parser):
         iam_util.AddArgsForAddIamPolicyBinding(
-            parser, add_condition=self._add_condition)
+            parser,
+            role_completer=self._GenerateDeclarativeIamRolesCompleter(),
+            add_condition=self._add_condition)
         self._CommonArgs(parser)
         base.URI_FLAG.RemoveFromParser(parser)
 
@@ -455,7 +503,9 @@ class CommandBuilder(object):
       @staticmethod
       def Args(parser):
         iam_util.AddArgsForRemoveIamPolicyBinding(
-            parser, add_condition=self._add_condition)
+            parser,
+            role_completer=self._GenerateDeclarativeIamRolesCompleter(),
+            add_condition=self._add_condition)
         self._CommonArgs(parser)
         base.URI_FLAG.RemoveFromParser(parser)
 

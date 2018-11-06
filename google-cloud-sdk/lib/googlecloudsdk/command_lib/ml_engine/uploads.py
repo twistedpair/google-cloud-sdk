@@ -22,6 +22,7 @@ import hashlib
 import os
 
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files as file_utils
 from six.moves import zip
@@ -73,10 +74,9 @@ def UploadFiles(upload_pairs, bucket_ref, gs_prefix=None):
   storage_client = storage_api.StorageClient()
   dests = []
   for local_path, uploaded_path in upload_pairs:
-    obj = storage_client.CopyFileToGCS(
-        bucket_ref,
-        local_path,
-        '/'.join([gs_prefix, uploaded_path]))
+    obj_ref = storage_util.ObjectReference.FromBucketRef(
+        bucket_ref, '/'.join([gs_prefix, uploaded_path]))
+    obj = storage_client.CopyFileToGCS(local_path, obj_ref)
     dests.append('/'.join(['gs:/', obj.bucket, obj.name]))
   return dests
 

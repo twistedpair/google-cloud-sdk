@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
-import re
 import time
 import uuid
 from apitools.base.py import encoding
@@ -29,13 +28,9 @@ from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.core.util import pkg_resources
-from jsonschema import exceptions as jsonschema_exceptions
-from jsonschema import validators
 import six
 
 SCHEMA_DIR = os.path.join(os.path.dirname(__file__), 'schemas')
@@ -477,6 +472,7 @@ def ParseOperation(operation, dataproc):
 
 
 def ParseOperationJsonMetadata(metadata_value, metadata_type):
+  """Returns an Operation message for a metadata value."""
   if not metadata_value:
     return metadata_type()
   return encoding.JsonToMessage(metadata_type,
@@ -486,6 +482,7 @@ def ParseOperationJsonMetadata(metadata_value, metadata_type):
 def ParseWorkflowTemplates(template,
                            dataproc,
                            region=properties.VALUES.dataproc.region.GetOrFail):
+  """Returns a workflow template reference given name, ID or URL."""
   # TODO(b/65845794): make caller to pass in region explicitly
   ref = dataproc.resources.Parse(
       template,
@@ -498,6 +495,7 @@ def ParseWorkflowTemplates(template,
 
 
 def ParseRegion(dataproc):
+  """Returns a region reference given name, ID or URL."""
   ref = dataproc.resources.Parse(
       None,
       params={
@@ -506,177 +504,3 @@ def ParseRegion(dataproc):
       },
       collection='dataproc.projects.regions')
   return ref
-
-
-def _GetValidator(schema, schema_dir):
-  """"Construct a validator that uses the given schema.
-
-  The validator is able to resolve references to all other schemas in the same
-  directory.
-
-  Args:
-    schema: The schema to validate against.
-    schema_dir: The full path to the directory containing the schema.
-
-  Returns:
-    A validator.
-  """
-  validator = validators.validator_for(schema)(schema)
-  validator_store = validator.resolver.store
-  for resource in pkg_resources.ListPackageResources(schema_dir):
-    schema = yaml.load(
-        pkg_resources.GetResourceFromFile(os.path.join(schema_dir, resource)))
-    validator_store[resource] = schema
-  return validator
-
-
-def _ParseProperties(error_message):
-  """Parses disallowed properties from an error message.
-
-  Args:
-    error_message: The error message to parse.
-
-  Returns:
-    A list of property names.
-
-  A sample error message might look like this:
-
-  Additional properties are not allowed ('id', 'createTime', 'updateTime',
-  'name' were unexpected)
-
-  """
-  return list(
-      property.strip('\'') for property in re.findall("'[^']*'", error_message))
-
-
-def _ClearFields(fields, path_deque, py_dict):
-  """Clear the given fields in a dict at a given path.
-
-  Args:
-    fields: A list of fields to clear
-    path_deque: A deque containing path segments
-    py_dict: A nested dict from which to clear the fields
-  """
-  tmp_dict = py_dict
-  for elem in path_deque:
-    tmp_dict = tmp_dict[elem]
-  for field in fields:
-    if field in tmp_dict:
-      del tmp_dict[field]
-
-
-def _IsDisallowedPropertiesError(error):
-  """Checks if an error is due to properties that were not in the schema.
-
-  Args:
-    error: A ValidationError
-
-  Returns:
-    Whether the error was due to disallowed properties
-  """
-  prop_validator = 'additionalProperties'
-  prop_message = 'Additional properties are not allowed'
-  return error.validator == prop_validator and prop_message in error.message
-
-
-def _FilterYaml(parsed_yaml, schema_path):
-  """Filter out fields from the yaml that are not in the schema.
-
-  Args:
-    parsed_yaml: yaml to filter
-    schema_path: Path to schema, relative to schemas directory.
-  """
-  full_schema_path = os.path.join(SCHEMA_DIR, schema_path)
-  schema = yaml.load(pkg_resources.GetResourceFromFile(full_schema_path))
-
-  schema_dir = os.path.join(SCHEMA_DIR, os.path.dirname(schema_path))
-  validator = _GetValidator(schema, schema_dir)
-
-  errors = list(validator.iter_errors(parsed_yaml))
-  has_warnings = False
-  for error in errors:
-    # There are other types of errors (for example, missing a required field),
-    # but these are the only ones we expect to see on export and the only ones
-    # we want to act on. There is no way to distinguish disallowed fields from
-    # unrecognized fields. If we attempt to export an unrecognized value for a
-    # recognized field (this will happen whenever we add a new enum value), or
-    # if we attempt to export a resource that is missing a required field, we
-    # will log the errors as warnings and the exported data will not be able to
-    # be imported via the import command until the import command is updated.
-    if _IsDisallowedPropertiesError(error):
-      fields_to_remove = _ParseProperties(error.message)
-      _ClearFields(fields_to_remove, error.path, parsed_yaml)
-    else:
-      log.warning(error.message)
-      has_warnings = True
-    if has_warnings:
-      log.warning(
-          'The import command may need to be updated to handle the export data.'
-      )
-
-
-def _ValidateYaml(parsed_yaml, schema_path):
-  """Validate yaml against schema.
-
-  Args:
-    parsed_yaml: yaml to validate
-    schema_path: Path to schema, relative to schemas directory.
-
-  Raises:
-    ValidationError: if the template doesn't obey the schema.
-    SchemaError: if the schema is invalid.
-  """
-
-  full_schema_path = os.path.join(SCHEMA_DIR, schema_path)
-  schema = yaml.load(pkg_resources.GetResourceFromFile(full_schema_path))
-
-  schema_dir = os.path.join(SCHEMA_DIR, os.path.dirname(schema_path))
-  validator = _GetValidator(schema, schema_dir)
-
-  validator.validate(parsed_yaml, schema)
-
-
-def ReadYaml(message_type, stream, schema_path=None):
-  """Read yaml from a stream as a message.
-
-  Args:
-    message_type: Type of message to interpret the yaml as.
-    stream: Stream from which yaml should be read.
-    schema_path: Path to schema used to validate yaml, relative to schemas dir.
-
-  Returns:
-    Message that was read.
-
-  Raises:
-    ParseError: if yaml could not be parsed as the given message type.
-  """
-  parsed_yaml = yaml.load(stream)
-  if schema_path:
-    # If a schema is provided, validate against it.
-    try:
-      _ValidateYaml(parsed_yaml, schema_path)
-    except jsonschema_exceptions.ValidationError as e:
-      raise exceptions.ParseError('Validation Error: [{0}]'.format(e.message))
-  try:
-    message = encoding.PyValueToMessage(message_type, parsed_yaml)
-  except Exception as e:
-    raise exceptions.ParseError('Cannot parse YAML: [{0}]'.format(e))
-  return message
-
-
-def WriteYaml(message, stream, schema_path=None):
-  """Write a message as yaml to a stream.
-
-  Args:
-    message: Message to write.
-    stream: Stream to which the yaml should be written.
-    schema_path: Path to schema used to filter unwanted fields.
-  """
-  py_value = encoding.MessageToPyValue(message)
-  if schema_path:
-    _FilterYaml(py_value, schema_path)
-  yaml.dump(py_value, stream=stream)
-
-
-def MessageToYaml(message):
-  return yaml.dump(encoding.MessageToPyValue(message))

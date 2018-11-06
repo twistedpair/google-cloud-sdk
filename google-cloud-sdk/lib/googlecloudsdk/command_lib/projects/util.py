@@ -22,9 +22,11 @@ from __future__ import unicode_literals
 import datetime
 import re
 
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_util
 from googlecloudsdk.core import resources
 
+import six
 
 PROJECTS_COLLECTION = 'cloudresourcemanager.projects'
 PROJECTS_API_VERSION = projects_util.DEFAULT_API_VERSION
@@ -36,6 +38,39 @@ LIST_FORMAT = """
       projectNumber
     )
 """
+
+
+_VALID_PROJECT_REGEX = re.compile(
+    r'^'
+    # An optional domain-like component, ending with a colon, e.g.,
+    # google.com:
+    r'(?:(?:[-a-z0-9]{1,63}\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?'
+    # Followed by a required identifier-like component, for example:
+    #   waffle-house    match
+    #   -foozle        no match
+    #   Foozle         no match
+    # We specifically disallow project number, even though some GCP backends
+    # could accept them.
+    # We also allow a leading digit as some legacy project ids can have
+    # a leading digit.
+    r'(?:(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))'
+    r'$'
+)
+
+
+def ValidateProjectIdentifier(project):
+  """Checks to see if the project string is valid project name or number."""
+  if not isinstance(project, six.string_types):
+    return False
+
+  if project.isdigit() or _VALID_PROJECT_REGEX.match(project):
+    return True
+
+  return False
+
+
+def GetProjectNumber(project_id):
+  return projects_api.Get(ParseProject(project_id)).projectNumber
 
 
 def ParseProject(project_id, api_version=PROJECTS_API_VERSION):

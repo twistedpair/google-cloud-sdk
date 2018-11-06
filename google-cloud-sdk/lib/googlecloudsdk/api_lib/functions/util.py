@@ -31,6 +31,7 @@ from googlecloudsdk.api_lib.functions import exceptions
 from googlecloudsdk.api_lib.functions import operations
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as base_exceptions
@@ -125,7 +126,7 @@ def GetHttpErrorMessage(error):
       error_info = data['error']
       if 'message' in error_info:
         message = error_info['message']
-      violations = _GetViolationsFromError(error_info)
+      violations = _GetViolationsFromError(error)
       if violations:
         message += '\nProblems:\n' + violations
       if status == 403:
@@ -190,7 +191,7 @@ def ValidateAndStandarizeBucketUriOrRaise(bucket):
     ArgumentTypeError: If the name provided by user is not valid.
   """
   if _BUCKET_RESOURCE_URI_RE.match(bucket):
-    bucket_ref = storage_util.BucketReference.FromBucketUrl(bucket)
+    bucket_ref = storage_util.BucketReference.FromUrl(bucket)
   else:
     try:
       bucket_ref = storage_util.BucketReference.FromArgument(
@@ -200,7 +201,7 @@ def ValidateAndStandarizeBucketUriOrRaise(bucket):
           "Invalid value '{}': {}".format(bucket, e))
 
   # strip any extrenuous '/' and append single '/'
-  bucket = bucket_ref.ToBucketUrl().rstrip('/') + '/'
+  bucket = bucket_ref.ToUrl().rstrip('/') + '/'
   return bucket
 
 
@@ -256,28 +257,19 @@ def ValidatePathOrRaise(path):
   return path
 
 
-def _GetViolationsFromError(error_info):
+def _GetViolationsFromError(error):
   """Looks for violations descriptions in error message.
 
   Args:
-    error_info: json containing error information.
+    error: HttpError containing error information.
   Returns:
-    List of violations descriptions.
+    String of newline-separated violations descriptions.
   """
-  result = ''
-  details = None
-  try:
-    if 'details' in error_info:
-      details = error_info['details']
-    for field in details:
-      if 'fieldViolations' in field:
-        violations = field['fieldViolations']
-        for violation in violations:
-          if 'description' in violation:
-            result += violation['description'] + '\n'
-  except (ValueError, TypeError):
-    pass
-  return result
+  error_payload = exceptions_util.HttpErrorPayload(error)
+  field_errors = error_payload.field_violations
+  if not field_errors:
+    return ''
+  return '\n'.join(field_errors.values()) + '\n'
 
 
 def _GetPermissionErrorDetails(error_info):

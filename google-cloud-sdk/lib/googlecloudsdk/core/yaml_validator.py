@@ -102,9 +102,9 @@ class Validator(object):
       raise InvalidSchemaError(e)
     self.ValidateSchemaVersion(schema, schema_path)
     resolver = RefResolver.from_schema(schema)
-    validator = jsonschema.validators.validator_for(schema)(
+    self._validator = jsonschema.validators.validator_for(schema)(
         schema, resolver=resolver)
-    self._validate = validator.validate
+    self._validate = self._validator.validate
 
   def ValidateSchemaVersion(self, schema, path):
     """Validates the parsed_yaml JSON schema version."""
@@ -134,3 +134,17 @@ class Validator(object):
       raise RefError(e)
     except jsonschema.ValidationError as e:
       raise ValidationError(e)
+
+  def Iterate(self, parsed_yaml):
+    """Validates parsed_yaml against JSON schema and returns all errors.
+
+    Args:
+      parsed_yaml: YAML to validate
+
+    Raises:
+      ValidationError: if the template doesn't obey the schema.
+
+    Returns:
+      A list of all errors, empty if no validation errors.
+    """
+    return self._validator.iter_errors(parsed_yaml)

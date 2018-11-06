@@ -31,6 +31,9 @@ class AddonsConfig(_messages.Message):
   cluster, enabling additional functionality.
 
   Fields:
+    cloudRunConfig: Configuration for the Cloud Run addon. The `IstioConfig`
+      addon must be enabled in order to enable Cloud Run. This option can only
+      be enabled at cluster creation time.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -44,17 +47,16 @@ class AddonsConfig(_messages.Message):
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
-    serverlessConfig: Configuration for the serverless addon. The
-      `IstioConfig` addon must be enabled in order to enable serverless. This
-      option can only be enabled at cluster creation time.
+    serverlessConfig: Deprecated: use CloudRunConfig instead (same behavior).
   """
 
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
-  istioConfig = _messages.MessageField('IstioConfig', 3)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 4)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 5)
-  serverlessConfig = _messages.MessageField('ServerlessConfig', 6)
+  cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 2)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 3)
+  istioConfig = _messages.MessageField('IstioConfig', 4)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 5)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 6)
+  serverlessConfig = _messages.MessageField('ServerlessConfig', 7)
 
 
 class AuditConfig(_messages.Message):
@@ -180,6 +182,16 @@ class CloudNatStatus(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class CloudRunConfig(_messages.Message):
+  r"""Configuration options for the Cloud Run feature.
+
+  Fields:
+    disabled: Whether Cloud Run is enabled for this cluster.
+  """
+
+  disabled = _messages.BooleanField(1)
 
 
 class Cluster(_messages.Message):
@@ -564,6 +576,8 @@ class ClusterUpdate(_messages.Message):
       picks the Kubernetes master version
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
+    desiredPrivateIpv6Access: The desired status of Private IPv6 access for
+      this cluster.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
@@ -590,9 +604,10 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(17)
   desiredNodeVersion = _messages.StringField(18)
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 19)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 20)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 21)
-  securityProfile = _messages.MessageField('SecurityProfile', 22)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 20)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 21)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 22)
+  securityProfile = _messages.MessageField('SecurityProfile', 23)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1732,6 +1747,9 @@ class NetworkConfig(_messages.Message):
     enableCloudNat: Whether GKE Cloud NAT is enabled for this cluster.
       Requires that the cluster has already set
       IPAllocationPolicy.use_ip_aliases to true.
+    enablePrivateIpv6Access: Whether or not Private IPv6 access is enabled.
+      This enables direct connectivity from GKE pods to Google Cloud services
+      over gRPC.
     enableSharedNetwork: Deprecated: This flag doesn't need to be flipped for
       using shared VPC and it has no effect.
     network: Output only. The relative name of the Google Compute Engine
@@ -1744,9 +1762,10 @@ class NetworkConfig(_messages.Message):
   """
 
   enableCloudNat = _messages.BooleanField(1)
-  enableSharedNetwork = _messages.BooleanField(2)
-  network = _messages.StringField(3)
-  subnetwork = _messages.StringField(4)
+  enablePrivateIpv6Access = _messages.BooleanField(2)
+  enableSharedNetwork = _messages.BooleanField(3)
+  network = _messages.StringField(4)
+  subnetwork = _messages.StringField(5)
 
 
 class NetworkPolicy(_messages.Message):
@@ -2314,6 +2333,19 @@ class PrivateClusterConfig(_messages.Message):
   publicEndpoint = _messages.StringField(5)
 
 
+class PrivateIPv6Status(_messages.Message):
+  r"""PrivateIPv6Status contains the desired state of the IPv6 fast path on
+  this cluster. Private IPv6 access allows direct high speed communication
+  from GKE pods to gRPC Google cloud services over IPv6.
+
+  Fields:
+    enabled: Enables private IPv6 access to Google cloud services for this
+      cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class ResourceLimit(_messages.Message):
   r"""Contains information about amount of some resource in the cluster. For
   memory, value should be in GB.
@@ -2335,9 +2367,13 @@ class ResourceUsageExportConfig(_messages.Message):
   Fields:
     bigqueryDestination: Configuration to use BigQuery as usage export
       destination.
+    enableNetworkEgressMetering: Whether to enable network egress metering for
+      this cluster. If enabled, a daemonset will be created in the cluster to
+      meter network egress traffic.
   """
 
   bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
+  enableNetworkEgressMetering = _messages.BooleanField(2)
 
 
 class RollbackNodePoolUpgradeRequest(_messages.Message):

@@ -142,12 +142,12 @@ MAX_AUTHORIZED_NETWORKS_CIDRS = 20
 INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
-SERVERLESS = 'Serverless'
+CLOUDRUN = 'CloudRun'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
-ALPHA_ADDONS_OPTIONS = ADDONS_OPTIONS + [SERVERLESS]
+ALPHA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
 
 UNSPECIFIED = 'UNSPECIFIED'
 SECURE = 'SECURE'
@@ -2012,14 +2012,16 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       else:
         raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
     if options.addons:
-      # Serverless is disabled by default.
-      if SERVERLESS in options.addons:
+      # CloudRun is disabled by default. CloudRun is the new name of Serverless.
+      if CLOUDRUN in options.addons:
         if ISTIO not in options.addons:
-          # Istio is a dependency of Serverless. We auto-enable Istio in no
+          # Istio is a dependency of CloudRun. We auto-enable Istio in no
           # auth mode if not specified by the user.
           log.warning('Auto-enabling the Istio addon, which is required to run '
-                      'the Serverless addon.')
+                      'the CloudRun addon.')
           options.addons.append(ISTIO)
+        # TODO(b/118504840): replace ServerlessConfig with CloudRunConfig when
+        # CloudRunConfig is ready in GKE Alpha API.
         cluster.addonsConfig.serverlessConfig = self.messages.ServerlessConfig(
             disabled=False)
       # Istio is disabled by default
@@ -2077,10 +2079,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
               istio_auth = mtls
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
-      if options.disable_addons.get(SERVERLESS) is not None:
+      if options.disable_addons.get(CLOUDRUN) is not None:
+        # TODO(b/118504840): replace ServerlessConfig with CloudRunConfig when
+        # CloudRunConfig is ready in GKE Alpha API
         update.desiredAddonsConfig.serverlessConfig = (
             self.messages.ServerlessConfig(
-                disabled=options.disable_addons.get(SERVERLESS)))
+                disabled=options.disable_addons.get(CLOUDRUN)))
     if options.update_nodes and options.concurrent_node_count:
       update.concurrentNodeCount = options.concurrent_node_count
     op = self.client.projects_locations_clusters.Update(

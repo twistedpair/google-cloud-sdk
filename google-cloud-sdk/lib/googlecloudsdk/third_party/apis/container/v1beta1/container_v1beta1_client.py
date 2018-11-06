@@ -970,7 +970,7 @@ Modify basic_auth.csv and reset the K8S API server.
     )
 
     def List(self, request, global_params=None):
-      r"""List method for the projects_locations service.
+      r"""Used to fetch locations that offer GKE.
 
       Args:
         request: (ContainerProjectsLocationsListRequest) input message

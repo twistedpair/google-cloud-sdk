@@ -44,6 +44,7 @@ def Create(environment_ref,
            disk_size_gb=None,
            python_version=None,
            image_version=None,
+           airflow_executor_type=None,
            release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.Create method.
 
@@ -74,6 +75,8 @@ def Create(environment_ref,
         environment.
     image_version: str or None, the desire image for created environment in the
         format of 'composer-(version)-airflow-(version)'
+    airflow_executor_type: str or None, the airflow executor type to run task
+        instances.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
         which Composer client library will be used.
 
@@ -86,8 +89,8 @@ def Create(environment_ref,
   if node_count:
     is_config_empty = False
     config.nodeCount = node_count
-  if (location or machine_type or network or subnetwork or service_account
-      or oauth_scopes or tags or disk_size_gb):
+  if (location or machine_type or network or subnetwork or service_account or
+      oauth_scopes or tags or disk_size_gb):
     is_config_empty = False
     config.nodeConfig = messages.NodeConfig(
         location=location,
@@ -102,8 +105,8 @@ def Create(environment_ref,
     if tags:
       config.nodeConfig.tags = list(
           OrderedDict((t.strip(), None) for t in tags).keys())
-  if (image_version or env_variables or airflow_config_overrides
-      or python_version):
+  if (image_version or env_variables or airflow_config_overrides or
+      python_version or airflow_executor_type):
     is_config_empty = False
     config.softwareConfig = messages.SoftwareConfig()
     if image_version:
@@ -117,6 +120,10 @@ def Create(environment_ref,
           messages.SoftwareConfig.AirflowConfigOverridesValue)
     if python_version:
       config.softwareConfig.pythonVersion = python_version
+    if airflow_executor_type:
+      config.softwareConfig.airflowExecutorType = ConvertToTypeEnum(
+          messages.SoftwareConfig.AirflowExecutorTypeValueValuesEnum,
+          airflow_executor_type)
   environment = messages.Environment(name=environment_ref.RelativeName())
   if not is_config_empty:
     environment.config = config
@@ -129,6 +136,19 @@ def Create(environment_ref,
       .ComposerProjectsLocationsEnvironmentsCreateRequest(
           environment=environment,
           parent=environment_ref.Parent().RelativeName()))
+
+
+def ConvertToTypeEnum(type_enum, airflow_executor_type):
+  """Converts airflow executor type string to enum.
+
+  Args:
+    type_enum: AirflowExecutorTypeValueValuesEnum, executor type enum value.
+    airflow_executor_type: string, executor type string value.
+
+  Returns:
+    AirflowExecutorTypeValueValuesEnum: the executor type enum value.
+  """
+  return type_enum(airflow_executor_type)
 
 
 def Delete(environment_ref, release_track=base.ReleaseTrack.GA):

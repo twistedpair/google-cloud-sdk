@@ -220,7 +220,7 @@ def GetCodeBucket(app, project):
   log.debug('No bucket specified, retrieving default bucket.')
   if not app.codeBucket:
     raise exceptions.DefaultBucketAccessError(project)
-  return storage_util.BucketReference.FromBucketUrl(app.codeBucket)
+  return storage_util.BucketReference.FromUrl(app.codeBucket)
 
 
 VERSION_TYPE = arg_parsers.RegexpValidator(

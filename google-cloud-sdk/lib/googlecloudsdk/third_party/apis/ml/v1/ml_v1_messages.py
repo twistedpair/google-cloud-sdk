@@ -819,8 +819,8 @@ class GoogleCloudMlV1PredictionInput(_messages.Message):
     region: Required. The Google Compute Engine region to run the prediction
       job in. See the <a href="/ml-engine/docs/tensorflow/regions">available
       regions</a> for ML Engine services.
-    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
-      this batch prediction. If not set, Google Cloud ML will pick the runtime
+    runtimeVersion: Optional. The Cloud ML Engine runtime version to use for
+      this batch prediction. If not set, Cloud ML Engine will pick the runtime
       version used during the CreateVersion request for this model version, or
       choose the latest stable version when model version information is not
       available such as when the model is specified by uri.
@@ -1019,13 +1019,16 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     pythonVersion: Optional. The version of Python used in training. If not
       set, the default version is '2.7'. Python '3.5' is available when
       `runtime_version` is set to '1.4' and above. Python '2.7' works with all
-      supported runtime versions.
+      supported <a href="/ml-engine/docs/runtime-version-list">runtime
+      versions</a>.
     region: Required. The Google Compute Engine region to run the training job
       in. See the <a href="/ml-engine/docs/tensorflow/regions">available
       regions</a> for ML Engine services.
-    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
-      training.  If not set, Google Cloud ML will choose a stable version,
-      which is defined in the documentation of runtime version list.
+    runtimeVersion: Optional. The Cloud ML Engine runtime version to use for
+      training. If not set, Cloud ML Engine uses the default stable version,
+      1.0. For more information, see the <a href="/ml-engine/docs/runtime-
+      version-list">runtime version list</a> and <a href="/ml-
+      engine/docs/versioning">how to manage runtime versions</a>.
     scaleTier: Required. Specifies the machine types, the number of replicas
       for workers and parameter servers.
     workerConfig: Optional. The configrations for workers.  If
@@ -1226,8 +1229,13 @@ class GoogleCloudMlV1Version(_messages.Message):
       set, the default version is '2.7'. Python '3.5' is available when
       `runtime_version` is set to '1.4' and above. Python '2.7' works with all
       supported runtime versions.
-    runtimeVersion: Optional. The Google Cloud ML runtime version to use for
-      this deployment. If not set, Google Cloud ML will choose a version.
+    runtimeVersion: Optional. The Cloud ML Engine runtime version to use for
+      this deployment. If not set, Cloud ML Engine uses the default stable
+      version, 1.0. For more information, see the [runtime version list](/ml-
+      engine/docs/runtime-version-list) and [how to manage runtime versions
+      ](/ml-engine/docs/versioning).
+    serviceAccount: Optional. Specifies the service account for resource
+      access control.
     state: Output only. The state of a version.
   """
 
@@ -1321,7 +1329,8 @@ class GoogleCloudMlV1Version(_messages.Message):
   packageUris = _messages.StringField(16, repeated=True)
   pythonVersion = _messages.StringField(17)
   runtimeVersion = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
+  serviceAccount = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

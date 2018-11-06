@@ -82,7 +82,7 @@ class CommandCommon(object):
     """Create a new CommandCommon.
 
     Args:
-      common_type: base._Command, The actual loaded user written command or
+      common_type: base._Common, The actual loaded user written command or
         group class.
       path: [str], A list of group names that got us down to this command group
         with respect to the CLI itself.  This path should be used for things
@@ -99,6 +99,7 @@ class CommandCommon(object):
       parent_group: CommandGroup, The parent of this command or group. None if
         at the root.
     """
+    self.category = common_type.category
     self._parent_group = parent_group
 
     self.name = path[-1]
@@ -705,6 +706,24 @@ class CommandGroup(CommandCommon):
     if self._parent_group:
       self._parent_group.RunGroupFilter(context, args)
     self._common_type().Filter(context, args)
+
+  def GetCategoricalUsage(self):
+    return usage_text.GetCategoricalUsage(
+        self, self._GroupSubElementsByCategory())
+
+  def _GroupSubElementsByCategory(self):
+    """Returns dictionary mapping each category to its set of subelements."""
+    self.LoadAllSubElements()
+    categories = {}
+    for elements in (self.groups, self.commands):
+      for element in elements.values():
+        category = element.category
+        if category is not None:
+          if category not in categories:
+            categories[category] = set([element])
+          else:
+            categories[category].add(element)
+    return categories
 
 
 class Command(CommandCommon):

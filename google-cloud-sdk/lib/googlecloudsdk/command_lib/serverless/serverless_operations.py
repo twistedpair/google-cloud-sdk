@@ -16,6 +16,7 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 from collections import OrderedDict
@@ -23,36 +24,47 @@ import contextlib
 import functools
 import glob
 import os
-import ssl
-import sys
+import random
+import string
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.serverless import build_template
 from googlecloudsdk.api_lib.serverless import configuration
-from googlecloudsdk.api_lib.serverless import gke
+from googlecloudsdk.api_lib.serverless import k8s_object
 from googlecloudsdk.api_lib.serverless import metrics
 from googlecloudsdk.api_lib.serverless import revision
 from googlecloudsdk.api_lib.serverless import route
 from googlecloudsdk.api_lib.serverless import service
-from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
+from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.serverless import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.serverless import deployable as deployable_pkg
 from googlecloudsdk.command_lib.serverless import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.serverless import pretty_print
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
 
+
 DEFAULT_ENDPOINT_VERSION = 'v1'
-_SERVERLESS_API_NAME = 'serverless'
-_SERVERLESS_API_VERSION = 'v1alpha1'
+
+
+_NONCE_LENGTH = 10
+# Used to force a new revision, and also to tie a particular request for changes
+# to a particular created revision.
+NONCE_LABEL = 'cloud.google.com/nonce'
+
+_NONCE_LENGTH = 10
+# Used to force a new revision, and also to tie a particular request for changes
+# to a particular created revision.
+NONCE_LABEL = 'cloud.google.com/nonce'
 
 # Wait 11 mins for each deployment. This is longer than the server timeout,
 # making it more likely to get a useful error message from the server.
 MAX_WAIT_MS = 660000
+
 
 # Because gcloud cannot update multiple lines of output simultaneously, the
 # order of conditions in this dictionary should match the order in which we
@@ -68,51 +80,26 @@ class UnknownAPIError(exceptions.Error):
   pass
 
 
-def _CheckTLSSupport():
-  # PROTOCOL_TLSv1_2 applies to [2.7.9, 2.7.13) or [3.4, 3.6).
-  # PROTOCOL_TLS applies to 2.7.13 and above, or 3.6 and above.
-  if not (hasattr(ssl, 'PROTOCOL_TLS') or hasattr(ssl, 'PROTOCOL_TLSv1_2')):
-    min_required_version = ('2.7.9' if sys.version_info.major == 2 else '3.4')
-    raise serverless_exceptions.NoTLSError(
-        'Your Python {}.{}.{} installation does not support TLS 1.2, which is'
-        ' required to connect to the GKE Serverless add-on. Please upgrade to'
-        ' Python {} or greater.'.format(
-            sys.version_info.major,
-            sys.version_info.minor,
-            sys.version_info.micro,
-            min_required_version))
-
-
 @contextlib.contextmanager
-def Connect(cluster_ref):
+def Connect(conn_context):
   """Provide a ServerlessOperations instance to use.
 
+  If we're using the GKE Serverless Add-on, connect to the relevant cluster.
+  Otherwise, connect to the right region of GSE.
+
   Arguments:
-    cluster_ref: Resource, the gke cluster to connect to if present. Otherwise,
-      connect to Hosted Serverless.
+    conn_context: a context manager that yields a ConnectionInfo and manages a
+      dynamic context that makes connecting to serverless possible.
 
   Yields:
     A ServerlessOperations instance.
   """
-  if cluster_ref:
-    _CheckTLSSupport()
-    with gke.ClusterConnectionInfo(cluster_ref) as (ip, ca_certs):
-      with gke.MonkeypatchAddressChecking('kubernetes.default', ip) as endpoint:
-        k8s_apiserver = 'https://{}/'.format(endpoint)
-        prev_endpoint = (
-            properties.VALUES.api_endpoint_overrides.serverless.Get())
-        properties.VALUES.api_endpoint_overrides.serverless.Set(k8s_apiserver)
-        # Since we weirdly have to provide ca_certs directly, allow this
-        # protected access internal method.
-        try:
-          yield ServerlessOperations(apis_internal._GetClientInstance(  # pylint: disable=protected-access
-              _SERVERLESS_API_NAME, _SERVERLESS_API_VERSION, ca_certs=ca_certs))
-        finally:
-          properties.VALUES.api_endpoint_overrides.serverless.Set(prev_endpoint)
-
-  else:
+  with conn_context as conn_info:
     yield ServerlessOperations(
-        apis.GetClientInstance(_SERVERLESS_API_NAME, _SERVERLESS_API_VERSION))
+        apis_internal._GetClientInstance(  # pylint: disable=protected-access
+            conn_info.api_name, conn_info.api_version,
+            ca_certs=conn_info.ca_certs),
+        conn_info.api_name, conn_info.api_version)
 
 
 class ConditionPoller(waiter.OperationPoller):
@@ -195,15 +182,74 @@ class ConditionPoller(waiter.OperationPoller):
     return resource.conditions
 
 
+def _Nonce():
+  """Return a random string with unlikely collision to use as a nonce."""
+  return ''.join(
+      random.choice(string.ascii_lowercase) for _ in range(_NONCE_LENGTH))
+
+
+class _NewRevisionForcingChange(config_changes_mod.ConfigChanger):
+  """Forces a new revision to get created by posting a random nonce label."""
+
+  def __init__(self, nonce):
+    self._nonce = nonce
+
+  def AdjustConfiguration(self, config, metadata):
+    del metadata
+    config.revision_labels[NONCE_LABEL] = self._nonce
+
+
+def _IsDigest(url):
+  """Return true if the given image url is by-digest."""
+  return '@sha256:' in url
+
+
+class NonceBasedRevisionPoller(waiter.OperationPoller):
+  """To poll for exactly one revision with the given nonce to appear."""
+
+  def __init__(self, operations, namespace_ref):
+    self._operations = operations
+    self._namespace = namespace_ref
+
+  def IsDone(self, revisions):
+    return bool(revisions)
+
+  def Poll(self, nonce):
+    return self._operations.GetRevisionsByNonce(self._namespace, nonce)
+
+  def GetResult(self, revisions):
+    if len(revisions) == 1:
+      return revisions[0]
+    return None
+
+
+class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
+  """Switches the configuration from by-tag to by-digest."""
+
+  def __init__(self, base_revision):
+    self._base_revision = base_revision
+
+  def AdjustConfiguration(self, config, metadata):
+    if _IsDigest(self._base_revision.image):
+      return
+    if not self._base_revision.image_digest:
+      return
+
+    annotations = k8s_object.AnnotationsFromMetadata(
+        config.MessagesModule(), metadata)
+    # Mutates through to metadata: Save the by-tag user intent.
+    annotations[configuration.USER_IMAGE_ANNOTATION] = self._base_revision.image
+    config.image = self._base_revision.image_digest
+
+
 class ServerlessOperations(object):
   """Client used by Serverless to communicate with the actual Serverless API.
   """
 
-  def __init__(self, client):
+  def __init__(self, client, api_name, api_version):
     self._client = client
     self._registry = resources.REGISTRY.Clone()
-    self._registry.RegisterApiByName(_SERVERLESS_API_NAME,
-                                     _SERVERLESS_API_VERSION)
+    self._registry.RegisterApiByName(api_name, api_version)
     self._temporary_build_template_registry = {}
 
   @property
@@ -434,6 +480,14 @@ class ServerlessOperations(object):
       response = self._client.namespaces_configurations.List(request)
     return [service.Service(item, messages) for item in response.items]
 
+  def ListRoutes(self, namespace_ref):
+    messages = self._messages_module
+    request = messages.ServerlessNamespacesRoutesListRequest(
+        parent=namespace_ref.RelativeName())
+    with metrics.record_duration(metrics.LIST_ROUTES):
+      response = self._client.namespaces_routes.List(request)
+    return [service.Service(item, messages) for item in response.items]
+
   def GetService(self, service_ref):
     """Return the relevant Service from the server, or None if 404."""
     messages = self._messages_module
@@ -469,6 +523,30 @@ class ServerlessOperations(object):
         configuration_get_response = self._client.namespaces_configurations.Get(
             configuration_get_request)
       return configuration.Configuration(configuration_get_response, messages)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
+  def GetRoute(self, service_or_route_ref):
+    """Return the relevant Route from the server, or None if 404."""
+    messages = self._messages_module
+    if hasattr(service_or_route_ref, 'servicesId'):
+      name = self._registry.Parse(
+          service_or_route_ref.servicesId,
+          params={
+              'namespacesId': service_or_route_ref.namespacesId,
+          },
+          collection='serverless.namespaces.routes').RelativeName()
+    else:
+      name = service_or_route_ref.RelativeName()
+    route_get_request = (
+        messages.ServerlessNamespacesRoutesGetRequest(
+            name=name))
+
+    try:
+      with metrics.record_duration(metrics.GET_ROUTE):
+        route_get_response = self._client.namespaces_routes.Get(
+            route_get_request)
+      return route.Route(route_get_response, messages)
     except api_exceptions.HttpNotFoundError:
       return None
 
@@ -514,55 +592,151 @@ class ServerlessOperations(object):
       raise serverless_exceptions.RevisionNotFoundError(
           'Revision [{}] could not be found.'.format(revision_ref.revisionsId))
 
-  def _UpdateOrCreateService(self, service_ref,
-                             config_changes):
-    """Apply config_changes to the service. Create it if necessary."""
+  def GetRevisionsByNonce(self, namespace_ref, nonce):
+    """Return all revisions with the given nonce."""
+    messages = self._messages_module
+    request = messages.ServerlessNamespacesRevisionsListRequest(
+        parent=namespace_ref.RelativeName(),
+        labelSelector='{} = {}'.format(NONCE_LABEL, nonce))
+    response = self._client.namespaces_revisions.List(request)
+    return [revision.Revision(item, messages) for item in response.items]
+
+  def _GetBaseRevision(self, config, metadata, status):
+    """Return a Revision for use as the "base revision" for a change.
+
+    When making a change that should not affect the code running, the
+    "base revision" is the revision that we should lock the code to - it's where
+    we get the digest for the image to run.
+
+    Getting this revision:
+      * If there's a nonce in the revisonTemplate metadata, use that
+      * If that query produces >1 or produces 0 after a short timeout, use
+        the latestCreatedRevision in status.
+
+    Arguments:
+      config: Configuration, the configuration to get the base revision of.
+        May have been derived from a Service.
+      metadata: ObjectMeta, the metadata from the top-level object
+      status: Union[ConfigurationStatus, ServiceStatus], the status of the top-
+        level object.
+
+    Returns:
+      The base revision of the configuration.
+    """
+    # Or returns None if not available by nonce & the control plane has not
+    # implemented latestCreatedRevisionName on the Service object yet.
+    base_revision_nonce = config.revision_labels[NONCE_LABEL]
+    base_revision = None
+    if base_revision_nonce:
+      try:
+        namespace_ref = self._registry.Parse(
+            metadata.namespace,
+            collection='serverless.namespaces')
+        poller = NonceBasedRevisionPoller(self, namespace_ref)
+        base_revision = poller.GetResult(waiter.PollUntilDone(
+            poller, base_revision_nonce,
+            sleep_ms=500, max_wait_ms=2000))
+      except retry.WaitException:
+        pass
+    # Nonce polling didn't work, because some client didn't post one or didn't
+    # change one. Fall back to the (slightly racy) `latestCreatedRevisionName`.
+    if not base_revision:
+      # TODO(b/117663680) Getattr -> normal access.
+      if getattr(status, 'latestCreatedRevisionName', None):
+        # Get by latestCreatedRevisionName
+        revision_ref = self._registry.Parse(
+            status.latestCreatedRevisionName,
+            params={'namespacesId': metadata.namespace},
+            collection='serverless.namespaces.revisions')
+        base_revision = self.GetRevision(revision_ref)
+    return base_revision
+
+  def _EnsureImageDigest(self, serv, config_changes):
+    """Make config_changes include switch by-digest image if not so already."""
+    if not _IsDigest(serv.configuration.image):
+      base_revision = self._GetBaseRevision(
+          serv.configuration, serv.metadata, serv.status)
+      if base_revision:
+        config_changes.append(_SwitchToDigestChange(base_revision))
+
+  def _UpdateOrCreateService(self, service_ref, config_changes, with_code):
+    """Apply config_changes to the service. Create it if necessary.
+
+    Arguments:
+      service_ref: Reference to the service to create or update
+      config_changes: list of ConfigChanger to modify the service with
+      with_code: boolean, True if the config_changes contains code to deploy.
+        We can't create the service if we're not deploying code.
+
+    Returns:
+      The Service object we created or modified.
+    """
+    nonce = _Nonce()
+    config_changes = [_NewRevisionForcingChange(nonce)] + config_changes
     messages = self._messages_module
     # GET the Service
     serv = self.GetService(service_ref)
-    if serv:
-      # PUT the changed Service
-      for config_change in config_changes:
-        config_change.AdjustConfiguration(serv.configuration, serv.metadata)
-      serv_name = service_ref.RelativeName()
-      serv_update_req = (
-          messages.ServerlessNamespacesServicesReplaceServiceRequest(
-              service=serv.Message(),
-              name=serv_name))
-      with metrics.record_duration(metrics.UPDATE_SERVICE):
-        updated = self._client.namespaces_services.ReplaceService(
-            serv_update_req)
-      return service.Service(updated, messages)
+    try:
+      if serv:
+        if not with_code:
+          # Avoid changing the running code by making the new revision by digest
+          self._EnsureImageDigest(serv, config_changes)
+        # PUT the changed Service
+        for config_change in config_changes:
+          config_change.AdjustConfiguration(serv.configuration, serv.metadata)
+        serv_name = service_ref.RelativeName()
+        serv_update_req = (
+            messages.ServerlessNamespacesServicesReplaceServiceRequest(
+                service=serv.Message(),
+                name=serv_name))
+        with metrics.record_duration(metrics.UPDATE_SERVICE):
+          updated = self._client.namespaces_services.ReplaceService(
+              serv_update_req)
+        return service.Service(updated, messages)
 
-    else:
-      # POST a new Service
-      new_serv = service.Service.New(self._client, service_ref.namespacesId)
-      new_serv.name = service_ref.servicesId
-      pretty_print.Info('Creating new service [{bold}{service}{reset}]',
-                        service=new_serv.name)
-      parent = service_ref.Parent().RelativeName()
-      for config_change in config_changes:
-        config_change.AdjustConfiguration(new_serv.configuration,
-                                          new_serv.metadata)
-      serv_create_req = (
-          messages.ServerlessNamespacesServicesCreateRequest(
-              service=new_serv.Message(),
-              parent=parent))
-      with metrics.record_duration(metrics.CREATE_SERVICE):
-        raw_service = self._client.namespaces_services.Create(
-            serv_create_req)
-      return service.Service(raw_service, messages)
+      else:
+        if not with_code:
+          raise serverless_exceptions.ServiceNotFoundError(
+              'Service [{}] could not be found.'.format(service_ref.servicesId))
+        # POST a new Service
+        new_serv = service.Service.New(self._client, service_ref.namespacesId)
+        new_serv.name = service_ref.servicesId
+        pretty_print.Info('Creating new service [{bold}{service}{reset}]',
+                          service=new_serv.name)
+        parent = service_ref.Parent().RelativeName()
+        for config_change in config_changes:
+          config_change.AdjustConfiguration(new_serv.configuration,
+                                            new_serv.metadata)
+        serv_create_req = (
+            messages.ServerlessNamespacesServicesCreateRequest(
+                service=new_serv.Message(),
+                parent=parent))
+        with metrics.record_duration(metrics.CREATE_SERVICE):
+          raw_service = self._client.namespaces_services.Create(
+              serv_create_req)
+        return service.Service(raw_service, messages)
+    except api_exceptions.HttpBadRequestError as e:
+      error_payload = exceptions_util.HttpErrorPayload(e)
+      if error_payload.field_violations:
+        if (serverless_exceptions.BadImageError.IMAGE_ERROR_FIELD
+            in error_payload.field_violations):
+          exceptions.reraise(serverless_exceptions.BadImageError(e))
+      exceptions.reraise(e)
 
   def ReleaseService(self, service_ref, config_changes, asyn=False):
     """Change the given service in prod using the given config_changes.
+
+    Ensures a new revision is always created, even if the spec of the revision
+    has not changed.
 
     Arguments:
       service_ref: Resource, the service to release
       config_changes: list, objects that implement AdjustConfiguration().
       asyn: bool, if True release asyncronously
     """
-
-    self._UpdateOrCreateService(service_ref, config_changes)
+    with_code = any(
+        isinstance(c, deployable_pkg.Deployable) for c in config_changes)
+    self._UpdateOrCreateService(service_ref, config_changes, with_code)
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
       self.WaitForCondition(getter)

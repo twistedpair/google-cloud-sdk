@@ -62,6 +62,7 @@ from __future__ import unicode_literals
 
 import abc
 import argparse
+import io
 import itertools
 import os
 import re
@@ -76,6 +77,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.document_renderers import render_document
 from googlecloudsdk.core.updater import update_manager
 import six
 
@@ -923,9 +925,27 @@ class ArgumentParser(argparse.ArgumentParser):
       message = console_attr.SafeText(message)
       log.error('({prog}) {message}'.format(prog=self.prog, message=message))
       # multi-line message means hints already added, no need for usage.
-      # pylint:disable=protected-access
+      # pylint: disable=protected-access
       if '\n' not in message:
-        argparse._sys.stderr.write(self._calliope_command.GetUsage())
+        # Determine if we want to display available commands and groups
+        # semantically categorized in case of a missing command name.
+        show_categories = 'Command name argument expected.' == message
+        usage_string = None
+        if show_categories:
+          usage_string = self._calliope_command.GetCategoricalUsage()
+        # The next if clause is executed if show_categories is False or there
+        # were no categories to display.
+        if not usage_string:
+          show_categories = False
+          usage_string = self._calliope_command.GetUsage()
+        # pytype: disable=module-attr
+        if show_categories:
+          argparse._sys.stderr.write('\n')
+          render_document.RenderDocument(
+              fin=io.StringIO(usage_string), out=argparse._sys.stderr)
+        else:
+          argparse._sys.stderr.write(usage_string)
+        # pytype: enable=module-attr
 
     self.exit(2, exception=error)
 

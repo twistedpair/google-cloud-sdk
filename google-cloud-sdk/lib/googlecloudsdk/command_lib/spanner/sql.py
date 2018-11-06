@@ -59,20 +59,27 @@ def _ConvertToTree(plan_nodes):
   Returns:
     A Node, root of a tree built from `plan_nodes`.
   """
-  # A dictionary from the index in plan_nodes to Node object.
-  node_dict = {}
-  # If we start at the end then by the time we get to a node's parent, that
-  # node must already exist in node_dict.
-  for node in reversed(plan_nodes):
-    n = Node(node)
-    if node.childLinks:
-      for link in node.childLinks:
-        n.children.append(node_dict[link.childIndex])
-    if node.index:
-      node_dict[node.index] = n
-    # The only node without an index is the root.
-    else:
-      return n
+  # plan_nodes is a topologically sorted list, with the root node first.
+  return _BuildSubTree(plan_nodes, plan_nodes[0])
+
+
+def _BuildSubTree(plan_nodes, node):
+  """Helper for building the subtree of a query plan node.
+
+  Args:
+    plan_nodes (spanner_v1_messages.PlanNode[]): The plan_nodes from the server
+      response. Plan nodes are topologically sorted.
+    node (spanner_v1_messages.PlanNode): The root node of the subtree to be
+      built.
+
+  Returns:
+    A Node object.
+  """
+  children = None
+  if node.childLinks:
+    children = [_BuildSubTree(plan_nodes, plan_nodes[link.childIndex])
+                for link in node.childLinks]
+  return Node(node, children)
 
 
 def _ConvertToStringValue(prop):

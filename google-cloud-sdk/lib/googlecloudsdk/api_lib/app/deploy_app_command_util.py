@@ -27,6 +27,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 
 from googlecloudsdk.api_lib.app import metric_names
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.storage import storage_parallel
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -242,8 +243,9 @@ def _UploadFilesThreads(files_to_upload, bucket_ref):
   # Have to sort files because the test framework requires a known order for
   # mocked API calls.
   for sha1_hash, path in sorted(files_to_upload.items()):
-    task = storage_parallel.FileUploadTask(path, bucket_ref.ToBucketUrl(),
-                                           sha1_hash)
+    dest_obj_ref = storage_util.ObjectReference.FromBucketRef(bucket_ref,
+                                                              sha1_hash)
+    task = storage_parallel.FileUploadTask(path, dest_obj_ref)
     tasks.append(task)
   storage_parallel.UploadFiles(tasks, num_threads=num_threads,
                                show_progress_bar=True)

@@ -1236,7 +1236,7 @@ class Variable(_messages.Message):
   variables).
 
   Enums:
-    StateValueValuesEnum: [Ouput only] The current state of the variable. The
+    StateValueValuesEnum: Output only. The current state of the variable. The
       variable state indicates the outcome of the `variables().watch` call and
       is visible through the `get` and `list` calls.
 
@@ -1244,7 +1244,7 @@ class Variable(_messages.Message):
     name: The name of the variable resource, in the format:
       projects/[PROJECT_ID]/configs/[CONFIG_NAME]/variables/[VARIABLE_NAME]
       The `[PROJECT_ID]` must be a valid project ID, `[CONFIG_NAME]` must be a
-      valid RuntimeConfig reource and `[VARIABLE_NAME]` follows Unix file
+      valid RuntimeConfig resource and `[VARIABLE_NAME]` follows Unix file
       system file path naming.  The `[VARIABLE_NAME]` can contain ASCII
       letters, numbers, slashes and dashes. Slashes are used as path element
       separators and are not part of the `[VARIABLE_NAME]` itself, so
@@ -1254,7 +1254,7 @@ class Variable(_messages.Message):
       regular expression. The length of a `[VARIABLE_NAME]` must be less than
       256 characters.  Once you create a variable, you cannot change the
       variable name.
-    state: [Ouput only] The current state of the variable. The variable state
+    state: Output only. The current state of the variable. The variable state
       indicates the outcome of the `variables().watch` call and is visible
       through the `get` and `list` calls.
     text: The string value of the variable. The length of the value must be
@@ -1268,7 +1268,7 @@ class Variable(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""[Ouput only] The current state of the variable. The variable state
+    r"""Output only. The current state of the variable. The variable state
     indicates the outcome of the `variables().watch` call and is visible
     through the `get` and `list` calls.
 

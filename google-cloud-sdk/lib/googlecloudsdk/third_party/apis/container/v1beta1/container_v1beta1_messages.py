@@ -31,6 +31,9 @@ class AddonsConfig(_messages.Message):
   cluster, enabling additional functionality.
 
   Fields:
+    cloudRunConfig: Configuration for the Cloud Run addon. The `IstioConfig`
+      addon must be enabled in order to enable Cloud Run addon. This option
+      can only be enabled at cluster creation time.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -44,17 +47,14 @@ class AddonsConfig(_messages.Message):
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
-    serverlessConfig: Configuration for the serverless addon. The
-      `IstioConfig` addon must be enabled in order to enable serverless. This
-      option can only be enabled at cluster creation time.
   """
 
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 1)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 2)
-  istioConfig = _messages.MessageField('IstioConfig', 3)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 4)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 5)
-  serverlessConfig = _messages.MessageField('ServerlessConfig', 6)
+  cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 2)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 3)
+  istioConfig = _messages.MessageField('IstioConfig', 4)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 5)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 6)
 
 
 class AutoUpgradeOptions(_messages.Message):
@@ -71,6 +71,17 @@ class AutoUpgradeOptions(_messages.Message):
 
   autoUpgradeStartTime = _messages.StringField(1)
   description = _messages.StringField(2)
+
+
+class BigQueryDestination(_messages.Message):
+  r"""Parameters for using BigQuery as the destination of resource usage
+  export.
+
+  Fields:
+    datasetId: The ID of a BigQuery Dataset.
+  """
+
+  datasetId = _messages.StringField(1)
 
 
 class BinaryAuthorization(_messages.Message):
@@ -127,6 +138,16 @@ class ClientCertificateConfig(_messages.Message):
   """
 
   issueClientCertificate = _messages.BooleanField(1)
+
+
+class CloudRunConfig(_messages.Message):
+  r"""Configuration options for the Cloud Run feature.
+
+  Fields:
+    disabled: Whether Cloud Run addon is enabled for this cluster.
+  """
+
+  disabled = _messages.BooleanField(1)
 
 
 class Cluster(_messages.Message):
@@ -263,6 +284,8 @@ class Cluster(_messages.Message):
     privateClusterConfig: Configuration for private cluster.
     resourceLabels: The resource labels for the cluster to use to annotate any
       related Google Compute Engine resources.
+    resourceUsageExportConfig: Configuration for exporting resource usages.
+      Resource usage export is disabled when this config unspecified.
     selfLink: [Output only] Server-defined URL for the resource.
     servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
       services in this cluster, in [CIDR](http://en.wikipedia.org/wiki
@@ -377,14 +400,15 @@ class Cluster(_messages.Message):
   privateCluster = _messages.BooleanField(38)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 39)
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 40)
-  selfLink = _messages.StringField(41)
-  servicesIpv4Cidr = _messages.StringField(42)
-  status = _messages.EnumField('StatusValueValuesEnum', 43)
-  statusMessage = _messages.StringField(44)
-  subnetwork = _messages.StringField(45)
-  tpuIpv4CidrBlock = _messages.StringField(46)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 47)
-  zone = _messages.StringField(48)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 41)
+  selfLink = _messages.StringField(42)
+  servicesIpv4Cidr = _messages.StringField(43)
+  status = _messages.EnumField('StatusValueValuesEnum', 44)
+  statusMessage = _messages.StringField(45)
+  subnetwork = _messages.StringField(46)
+  tpuIpv4CidrBlock = _messages.StringField(47)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
+  zone = _messages.StringField(49)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -466,6 +490,8 @@ class ClusterUpdate(_messages.Message):
       picks the Kubernetes master version
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
+    desiredResourceUsageExportConfig: The desired configuration for exporting
+      resource usage.
     desiredVerticalPodAutoscaling: Cluster-level Vertical Pod Autoscaling
       configuration.
   """
@@ -485,7 +511,8 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(13)
   desiredNodeVersion = _messages.StringField(14)
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 15)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 16)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 16)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 17)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1292,10 +1319,8 @@ class Location(_messages.Message):
   Fields:
     name: Contains the name of the resource requested. Specified in the format
       'projects/*/locations/*'.
-    recommended: Recommended is a bool combining the drain state of the
-      location (ie- has the region been drained manually?), and the stockout
-      status of any zone according to Zone Advisor. This will be internal only
-      for use by pantheon.
+    recommended: Whether the location is recomended for GKE cluster
+      scheduling.
     type: Contains the type of location this Location is for. Regional or
       Zonal.
   """
@@ -2000,6 +2025,21 @@ class ResourceLimit(_messages.Message):
   resourceType = _messages.StringField(3)
 
 
+class ResourceUsageExportConfig(_messages.Message):
+  r"""Configuration for exporting cluster resource usages.
+
+  Fields:
+    bigqueryDestination: Configuration to use BigQuery as usage export
+      destination.
+    enableNetworkEgressMetering: Whether to enable network egress metering for
+      this cluster. If enabled, a daemonset will be created in the cluster to
+      meter network egress traffic.
+  """
+
+  bigqueryDestination = _messages.MessageField('BigQueryDestination', 1)
+  enableNetworkEgressMetering = _messages.BooleanField(2)
+
+
 class RollbackNodePoolUpgradeRequest(_messages.Message):
   r"""RollbackNodePoolUpgradeRequest rollbacks the previously Aborted or
   Failed NodePool upgrade. This will be an no-op if the last upgrade
@@ -2045,16 +2085,6 @@ class ServerConfig(_messages.Message):
   validImageTypes = _messages.StringField(3, repeated=True)
   validMasterVersions = _messages.StringField(4, repeated=True)
   validNodeVersions = _messages.StringField(5, repeated=True)
-
-
-class ServerlessConfig(_messages.Message):
-  r"""Configuration options for the serverless feature.
-
-  Fields:
-    disabled: Whether serverless is enabled for this cluster.
-  """
-
-  disabled = _messages.BooleanField(1)
 
 
 class SetAddonsConfigRequest(_messages.Message):

@@ -834,6 +834,21 @@ class DataflowProjectsJobsMessagesListRequest(_messages.Message):
   startTime = _messages.StringField(8)
 
 
+class DataflowProjectsJobsSnapshotRequest(_messages.Message):
+  r"""A DataflowProjectsJobsSnapshotRequest object.
+
+  Fields:
+    jobId: The job to be snapshotted.
+    projectId: The project which owns the job to be snapshotted.
+    snapshotJobRequest: A SnapshotJobRequest resource to be passed as the
+      request body.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  snapshotJobRequest = _messages.MessageField('SnapshotJobRequest', 3)
+
+
 class DataflowProjectsJobsUpdateRequest(_messages.Message):
   r"""A DataflowProjectsJobsUpdateRequest object.
 
@@ -1110,6 +1125,23 @@ class DataflowProjectsLocationsJobsMessagesListRequest(_messages.Message):
   startTime = _messages.StringField(8)
 
 
+class DataflowProjectsLocationsJobsSnapshotRequest(_messages.Message):
+  r"""A DataflowProjectsLocationsJobsSnapshotRequest object.
+
+  Fields:
+    jobId: The job to be snapshotted.
+    location: The location that contains this job.
+    projectId: The project which owns the job to be snapshotted.
+    snapshotJobRequest: A SnapshotJobRequest resource to be passed as the
+      request body.
+  """
+
+  jobId = _messages.StringField(1, required=True)
+  location = _messages.StringField(2, required=True)
+  projectId = _messages.StringField(3, required=True)
+  snapshotJobRequest = _messages.MessageField('SnapshotJobRequest', 4)
+
+
 class DataflowProjectsLocationsJobsUpdateRequest(_messages.Message):
   r"""A DataflowProjectsLocationsJobsUpdateRequest object.
 
@@ -1184,8 +1216,7 @@ class DataflowProjectsLocationsTemplatesGetRequest(_messages.Message):
 
   Fields:
     gcsPath: Required. A Cloud Storage path to the template from which to
-      create the job. Must be a valid Cloud Storage URL, beginning with
-      `gs://`.
+      create the job. Must be valid Cloud Storage URL, beginning with 'gs://'.
     location: The location to which to direct the request.
     projectId: Required. The ID of the Cloud Platform project that the job
       belongs to.
@@ -1210,8 +1241,12 @@ class DataflowProjectsLocationsTemplatesLaunchRequest(_messages.Message):
   r"""A DataflowProjectsLocationsTemplatesLaunchRequest object.
 
   Fields:
-    gcsPath: Required. A Cloud Storage path to the template from which to
-      create the job. Must be valid Cloud Storage URL, beginning with 'gs://'.
+    dynamicTemplate_gcsPath: Path to dynamic template spec file on GCS. The
+      file must be a Json serialized DynamicTemplateFieSpec object.
+    dynamicTemplate_stagingLocation: Cloud Storage path for staging
+      dependencies. Must be a valid Cloud Storage URL, beginning with `gs://`.
+    gcsPath: A Cloud Storage path to the template from which to create the
+      job. Must be valid Cloud Storage URL, beginning with 'gs://'.
     launchTemplateParameters: A LaunchTemplateParameters resource to be passed
       as the request body.
     location: The location to which to direct the request.
@@ -1221,11 +1256,13 @@ class DataflowProjectsLocationsTemplatesLaunchRequest(_messages.Message):
       Defaults to false.
   """
 
-  gcsPath = _messages.StringField(1)
-  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 2)
-  location = _messages.StringField(3, required=True)
-  projectId = _messages.StringField(4, required=True)
-  validateOnly = _messages.BooleanField(5)
+  dynamicTemplate_gcsPath = _messages.StringField(1)
+  dynamicTemplate_stagingLocation = _messages.StringField(2)
+  gcsPath = _messages.StringField(3)
+  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 4)
+  location = _messages.StringField(5, required=True)
+  projectId = _messages.StringField(6, required=True)
+  validateOnly = _messages.BooleanField(7)
 
 
 class DataflowProjectsLocationsWorkerMessagesRequest(_messages.Message):
@@ -1265,8 +1302,7 @@ class DataflowProjectsTemplatesGetRequest(_messages.Message):
 
   Fields:
     gcsPath: Required. A Cloud Storage path to the template from which to
-      create the job. Must be a valid Cloud Storage URL, beginning with
-      `gs://`.
+      create the job. Must be valid Cloud Storage URL, beginning with 'gs://'.
     location: The location to which to direct the request.
     projectId: Required. The ID of the Cloud Platform project that the job
       belongs to.
@@ -1291,8 +1327,12 @@ class DataflowProjectsTemplatesLaunchRequest(_messages.Message):
   r"""A DataflowProjectsTemplatesLaunchRequest object.
 
   Fields:
-    gcsPath: Required. A Cloud Storage path to the template from which to
-      create the job. Must be valid Cloud Storage URL, beginning with 'gs://'.
+    dynamicTemplate_gcsPath: Path to dynamic template spec file on GCS. The
+      file must be a Json serialized DynamicTemplateFieSpec object.
+    dynamicTemplate_stagingLocation: Cloud Storage path for staging
+      dependencies. Must be a valid Cloud Storage URL, beginning with `gs://`.
+    gcsPath: A Cloud Storage path to the template from which to create the
+      job. Must be valid Cloud Storage URL, beginning with 'gs://'.
     launchTemplateParameters: A LaunchTemplateParameters resource to be passed
       as the request body.
     location: The location to which to direct the request.
@@ -1302,11 +1342,13 @@ class DataflowProjectsTemplatesLaunchRequest(_messages.Message):
       Defaults to false.
   """
 
-  gcsPath = _messages.StringField(1)
-  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 2)
-  location = _messages.StringField(3)
-  projectId = _messages.StringField(4, required=True)
-  validateOnly = _messages.BooleanField(5)
+  dynamicTemplate_gcsPath = _messages.StringField(1)
+  dynamicTemplate_stagingLocation = _messages.StringField(2)
+  gcsPath = _messages.StringField(3)
+  launchTemplateParameters = _messages.MessageField('LaunchTemplateParameters', 4)
+  location = _messages.StringField(5)
+  projectId = _messages.StringField(6, required=True)
+  validateOnly = _messages.BooleanField(7)
 
 
 class DataflowProjectsWorkerMessagesRequest(_messages.Message):
@@ -2026,6 +2068,8 @@ class Job(_messages.Message):
       is empty and, in that case, the service ignores it.
     createTime: The timestamp when the job was initially created. Immutable
       and set by the Cloud Dataflow service.
+    createdFromSnapshotId: If this is specified, the job's initial state is
+      populated from the given snapshot.
     currentState: The current state of the job.  Jobs are created in the
       `JOB_STATE_STOPPED` state unless otherwise specified.  A job in the
       `JOB_STATE_RUNNING` state may asynchronously enter a terminal state.
@@ -2078,7 +2122,9 @@ class Job(_messages.Message):
       is updated when the job is started by the Cloud Dataflow service. For
       other jobs, start_time always equals to create_time and is immutable and
       set by the Cloud Dataflow service.
-    steps: The top-level steps that constitute the entire job.
+    steps: Exactly one of step or steps_location should be specified.  The
+      top-level steps that constitute the entire job.
+    stepsLocation: The GCS location where the steps are stored.
     tempFiles: A set of files the system should be aware of that are used for
       temporary storage. These temporary files will be removed on job
       completion. No duplicates are allowed. No file patterns are supported.
@@ -2297,26 +2343,28 @@ class Job(_messages.Message):
 
   clientRequestId = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 3)
-  currentStateTime = _messages.StringField(4)
-  environment = _messages.MessageField('Environment', 5)
-  executionInfo = _messages.MessageField('JobExecutionInfo', 6)
-  id = _messages.StringField(7)
-  jobMetadata = _messages.MessageField('JobMetadata', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  location = _messages.StringField(10)
-  name = _messages.StringField(11)
-  pipelineDescription = _messages.MessageField('PipelineDescription', 12)
-  projectId = _messages.StringField(13)
-  replaceJobId = _messages.StringField(14)
-  replacedByJobId = _messages.StringField(15)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 16)
-  stageStates = _messages.MessageField('ExecutionStageState', 17, repeated=True)
-  startTime = _messages.StringField(18)
-  steps = _messages.MessageField('Step', 19, repeated=True)
-  tempFiles = _messages.StringField(20, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 21)
-  type = _messages.EnumField('TypeValueValuesEnum', 22)
+  createdFromSnapshotId = _messages.StringField(3)
+  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 4)
+  currentStateTime = _messages.StringField(5)
+  environment = _messages.MessageField('Environment', 6)
+  executionInfo = _messages.MessageField('JobExecutionInfo', 7)
+  id = _messages.StringField(8)
+  jobMetadata = _messages.MessageField('JobMetadata', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  location = _messages.StringField(11)
+  name = _messages.StringField(12)
+  pipelineDescription = _messages.MessageField('PipelineDescription', 13)
+  projectId = _messages.StringField(14)
+  replaceJobId = _messages.StringField(15)
+  replacedByJobId = _messages.StringField(16)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 17)
+  stageStates = _messages.MessageField('ExecutionStageState', 18, repeated=True)
+  startTime = _messages.StringField(19)
+  steps = _messages.MessageField('Step', 20, repeated=True)
+  stepsLocation = _messages.StringField(21)
+  tempFiles = _messages.StringField(22, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 23)
+  type = _messages.EnumField('TypeValueValuesEnum', 24)
 
 
 class JobExecutionInfo(_messages.Message):
@@ -3508,6 +3556,36 @@ class Sink(_messages.Message):
 
   codec = _messages.MessageField('CodecValue', 1)
   spec = _messages.MessageField('SpecValue', 2)
+
+
+class Snapshot(_messages.Message):
+  r"""Represents a snapshot of a job.
+
+  Fields:
+    creationTime: The time this snapshot was created.
+    id: The unique ID of this snapshot.
+    projectId: The project this snapshot belongs to.
+    sourceJobId: The job this snapshot was created from.
+    ttl: The time after which this snapshot will be automatically deleted.
+  """
+
+  creationTime = _messages.StringField(1)
+  id = _messages.StringField(2)
+  projectId = _messages.StringField(3)
+  sourceJobId = _messages.StringField(4)
+  ttl = _messages.StringField(5)
+
+
+class SnapshotJobRequest(_messages.Message):
+  r"""Request to create a snapshot of a job.
+
+  Fields:
+    location: The location that contains this job.
+    ttl: TTL for the snapshot.
+  """
+
+  location = _messages.StringField(1)
+  ttl = _messages.StringField(2)
 
 
 class Source(_messages.Message):

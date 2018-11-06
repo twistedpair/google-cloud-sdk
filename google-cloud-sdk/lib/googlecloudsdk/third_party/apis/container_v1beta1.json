@@ -257,6 +257,10 @@
           "description": "The default constraint on the maximum number of pods that can be run\nsimultaneously on a node in the node pool of this cluster. Only honored\nif cluster created with IP Alias support.",
           "$ref": "MaxPodsConstraint"
         },
+        "resourceUsageExportConfig": {
+          "description": "Configuration for exporting resource usages. Resource usage export is\ndisabled when this config unspecified.",
+          "$ref": "ResourceUsageExportConfig"
+        },
         "privateClusterConfig": {
           "description": "Configuration for private cluster.",
           "$ref": "PrivateClusterConfig"
@@ -610,9 +614,9 @@
           "description": "Configuration for Istio, an open platform to connect, manage, and secure\nmicroservices.",
           "$ref": "IstioConfig"
         },
-        "serverlessConfig": {
-          "description": "Configuration for the serverless addon. The `IstioConfig` addon must be\nenabled in order to enable serverless. This option can only be enabled at\ncluster creation time.",
-          "$ref": "ServerlessConfig"
+        "cloudRunConfig": {
+          "description": "Configuration for the Cloud Run addon. The `IstioConfig` addon must be\nenabled in order to enable Cloud Run addon. This option can only be enabled\nat cluster creation time.",
+          "$ref": "CloudRunConfig"
         }
       }
     },
@@ -683,13 +687,13 @@
         }
       }
     },
-    "ServerlessConfig": {
-      "id": "ServerlessConfig",
-      "description": "Configuration options for the serverless feature.",
+    "CloudRunConfig": {
+      "id": "CloudRunConfig",
+      "description": "Configuration options for the Cloud Run feature.",
       "type": "object",
       "properties": {
         "disabled": {
-          "description": "Whether serverless is enabled for this cluster.",
+          "description": "Whether Cloud Run addon is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -1113,6 +1117,32 @@
         }
       }
     },
+    "ResourceUsageExportConfig": {
+      "id": "ResourceUsageExportConfig",
+      "description": "Configuration for exporting cluster resource usages.",
+      "type": "object",
+      "properties": {
+        "bigqueryDestination": {
+          "description": "Configuration to use BigQuery as usage export destination.",
+          "$ref": "BigQueryDestination"
+        },
+        "enableNetworkEgressMetering": {
+          "description": "Whether to enable network egress metering for this cluster. If enabled, a\ndaemonset will be created in the cluster to meter network egress traffic.",
+          "type": "boolean"
+        }
+      }
+    },
+    "BigQueryDestination": {
+      "id": "BigQueryDestination",
+      "description": "Parameters for using BigQuery as the destination of resource usage export.",
+      "type": "object",
+      "properties": {
+        "datasetId": {
+          "description": "The ID of a BigQuery Dataset.",
+          "type": "string"
+        }
+      }
+    },
     "PrivateClusterConfig": {
       "id": "PrivateClusterConfig",
       "description": "Configuration options for private clusters.",
@@ -1445,6 +1475,10 @@
         "desiredLoggingService": {
           "description": "The logging service the cluster should use to write metrics.\nCurrently available options:\n\n* \"logging.googleapis.com\/kubernetes\" - the Google Cloud Logging\nservice with Kubernetes-native resource model in Stackdriver\n* \"logging.googleapis.com\" - the Google Cloud Logging service\n* \"none\" - no logs will be exported from the cluster",
           "type": "string"
+        },
+        "desiredResourceUsageExportConfig": {
+          "description": "The desired configuration for exporting resource usage.",
+          "$ref": "ResourceUsageExportConfig"
         },
         "desiredVerticalPodAutoscaling": {
           "description": "Cluster-level Vertical Pod Autoscaling configuration.",
@@ -2225,7 +2259,7 @@
           "type": "string"
         },
         "recommended": {
-          "description": "Recommended is a bool combining the drain state of the location (ie- has\nthe region been drained manually?), and the stockout status of any zone\naccording to Zone Advisor. This will be internal only for use by pantheon.",
+          "description": "Whether the location is recomended for GKE cluster scheduling.",
           "type": "boolean"
         }
       }
@@ -2294,7 +2328,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": ""
+              "description": "Used to fetch locations that offer GKE."
             }
           }
           ,

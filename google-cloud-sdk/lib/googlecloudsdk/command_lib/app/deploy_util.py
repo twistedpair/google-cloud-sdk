@@ -589,7 +589,7 @@ def RunDeploy(
       metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET_START)
       code_bucket_ref = args.bucket or flags.GetCodeBucket(app, project)
       metrics.CustomTimedEvent(metric_names.GET_CODE_BUCKET)
-      log.debug('Using bucket [{b}].'.format(b=code_bucket_ref.ToBucketUrl()))
+      log.debug('Using bucket [{b}].'.format(b=code_bucket_ref.ToUrl()))
 
       # Prepare Flex if any service is going to deploy an image.
       if any([s.RequiresImage() for s in service_infos]):

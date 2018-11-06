@@ -22,7 +22,6 @@ import os
 import enum
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.docker import constants
 
 import six
 
@@ -58,12 +57,7 @@ class SourceRef(object):
   @classmethod
   def MakeImageRef(cls, image_arg):
     """Create a SourceRef from provided image name."""
-    if any(image_arg.startswith(registry) for
-           registry in constants.ALL_SUPPORTED_REGISTRIES):
-      return cls(cls.SourceType.IMAGE, six.text_type(image_arg))
-
-    raise UnknownSourceError(
-        'Could not identify source [{}]'.format(image_arg))
+    return cls(cls.SourceType.IMAGE, six.text_type(image_arg))
 
   @classmethod
   def MakeDirRef(cls, source_arg):

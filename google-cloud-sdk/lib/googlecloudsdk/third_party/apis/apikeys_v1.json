@@ -19,6 +19,7 @@
   "servicePath": "",
   "baseUrl": "https://apikeys.googleapis.com/",
   "batchPath": "batch",
+  "version_module": true,
   "parameters": {
     "access_token": {
       "type": "string",

@@ -22,6 +22,10 @@ from googlecloudsdk.api_lib.serverless import k8s_object
 from six.moves import filter
 
 
+# Annotation for the user-specified image.
+USER_IMAGE_ANNOTATION = 'client.knative.dev/user-image'
+
+
 class Configuration(k8s_object.KubernetesObject):
   """Wraps a Serverless Configuration message, making fields more convenient.
 
@@ -115,6 +119,23 @@ class Configuration(k8s_object.KubernetesObject):
     self._AssertSupportsBuild()
     self._EnsureBuild()
     self._m.spec.build.template.name = value
+
+  @property
+  def revision_labels(self):
+    revision_meta = self.spec.revisionTemplate.metadata
+    if revision_meta.labels is None:
+      revision_meta.labels = self._messages.ObjectMeta.LabelsValue()
+    return k8s_object.ListAsDictionaryWrapper(
+        revision_meta.labels.additionalProperties,
+        self._messages.ObjectMeta.LabelsValue.AdditionalProperty,
+        key_field='key',
+        value_field='value',
+        )
+
+  @property
+  def revision_annotations(self):
+    revision_meta = self.spec.revisionTemplate.metadata
+    return k8s_object.AnnotationsFromMetadata(self._messages, revision_meta)
 
   @property
   def container(self):

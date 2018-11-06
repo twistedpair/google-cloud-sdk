@@ -53,11 +53,13 @@ class DataStats(_messages.Message):
       them.
     testExampleCount: The number of examples used for testing.
     trainingExampleCount: The number of examples used for training.
+    trainingWordCount: The number of words used for training.
   """
 
   dataErrors = _messages.MessageField('DataErrors', 1, repeated=True)
   testExampleCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   trainingExampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  trainingWordCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class Dataset(_messages.Message):
@@ -86,6 +88,9 @@ class Dataset(_messages.Message):
       [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
       Example: "en-US". See [Language Support](/speech-to-text/docs/languages)
       for a list of the currently supported language codes.
+    lastError: Output only. The error status, if any, of the last operation
+      performed on this dataset. Empty if there is still pending operation, or
+      if the last operation completed with success.
     models: All the models (including models pending training) built using the
       dataset.
     name: Output only. Resource name of the dataset. Form :-
@@ -124,11 +129,12 @@ class Dataset(_messages.Message):
   displayName = _messages.StringField(6)
   hasSufficientData = _messages.BooleanField(7)
   languageCode = _messages.StringField(8)
-  models = _messages.MessageField('Model', 9, repeated=True)
-  name = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  uri = _messages.StringField(12)
-  useLoggedData = _messages.BooleanField(13)
+  lastError = _messages.MessageField('Status', 9)
+  models = _messages.MessageField('Model', 10, repeated=True)
+  name = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  uri = _messages.StringField(13)
+  useLoggedData = _messages.BooleanField(14)
 
 
 class DeployModelRequest(_messages.Message):

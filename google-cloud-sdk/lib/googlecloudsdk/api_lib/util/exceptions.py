@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import io
 import json
 import logging
@@ -120,6 +121,7 @@ class HttpErrorPayload(string.Formatter):
     api_version: The url version.
     content: The dumped JSON content.
     details: A list of {'@type': TYPE, 'detail': STRING} typed details.
+    field_violations: map of field name to error message for that field.
     error_info: content['error'].
     instance_name: The url instance name.
     message: The human readable error message.
@@ -162,6 +164,7 @@ class HttpErrorPayload(string.Formatter):
     self.api_version = ''
     self.content = {}
     self.details = []
+    self.field_violations = {}
     self.error_info = None
     self.instance_name = ''
     self.resource_item = ''
@@ -204,7 +207,10 @@ class HttpErrorPayload(string.Formatter):
     name = subparts.pop(0)
     printer_format = subparts.pop(0) if subparts else None
     recursive_format = parts.pop(0) if parts else None
-    if '.' in name:
+    if name.startswith('field_violations.'):
+      _, field = name.split('.', 1)
+      value = self.field_violations.get(field)
+    elif '.' in name:
       if name.startswith('.'):
         # Only check self.content.
         check_payload_attributes = False
@@ -253,6 +259,7 @@ class HttpErrorPayload(string.Formatter):
         self.status_description = self.error_info.get('status', '')
       self.status_message = self.error_info.get('message', '')
       self.details = self.error_info.get('details', [])
+      self.field_violations = self._ExtractFieldViolations(self.details)
     except (KeyError, TypeError, ValueError):
       self.status_message = content
     except AttributeError:
@@ -326,6 +333,39 @@ class HttpErrorPayload(string.Formatter):
       return description
     # Example: 'HTTPError 403'
     return 'HTTPError {0}'.format(self.status_code)
+
+  def _ExtractFieldViolations(self, details):
+    """Extracts a map of field violations from the given error's details.
+
+    Args:
+      details: JSON-parsed details field from parsed json of error.
+
+    Returns:
+      Map[str, str] field (in dotted format) -> error description.
+      The iterator of it is ordered by the order the fields first
+      appear in the error.
+    """
+    results = collections.OrderedDict()
+    for deet in details:
+      if 'fieldViolations' not in deet:
+        continue
+      violations = deet['fieldViolations']
+      if not isinstance(violations, list):
+        continue
+      f = deet.get('field')
+      for viol in violations:
+        try:
+          local_f = viol.get('field')
+          field = f or local_f
+          if field:
+            if field in results:
+              results[field] += '\n' + viol['description']
+            else:
+              results[field] = viol['description']
+        except (KeyError, TypeError):
+          # If violation or description are the wrong type or don't exist.
+          pass
+    return results
 
 
 class HttpException(core_exceptions.Error):

@@ -437,15 +437,33 @@ class ExportContext(_messages.Message):
   class SqlExportOptionsValue(_messages.Message):
     r"""Options for exporting data as SQL statements.
 
+    Messages:
+      MysqlExportOptionsValue: Options for exporting from MySQL.
+
     Fields:
+      mysqlExportOptions: Options for exporting from MySQL.
       schemaOnly: Export only schemas.
       tables: Tables to export, or that were exported, from the specified
         database. If you specify tables, specify one and only one database.
         For PostgreSQL instances, you can specify only one table.
     """
 
-    schemaOnly = _messages.BooleanField(1)
-    tables = _messages.StringField(2, repeated=True)
+    class MysqlExportOptionsValue(_messages.Message):
+      r"""Options for exporting from MySQL.
+
+      Fields:
+        masterData: Option to include SQL statement required to set up
+          replication. If set to 1, the dump file includes a CHANGE MASTER TO
+          statement with the binary log coordinates. If set to 2, the CHANGE
+          MASTER TO statement is written as a SQL comment, and has no effect.
+          All other values are ignored.
+      """
+
+      masterData = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+    mysqlExportOptions = _messages.MessageField('MysqlExportOptionsValue', 1)
+    schemaOnly = _messages.BooleanField(2)
+    tables = _messages.StringField(3, repeated=True)
 
   csvExportOptions = _messages.MessageField('CsvExportOptionsValue', 1)
   databases = _messages.StringField(2, repeated=True)
@@ -735,7 +753,7 @@ class LocationPreference(_messages.Message):
 
 class MaintenanceWindow(_messages.Message):
   r"""Maintenance window. This specifies when a v2 Cloud SQL instance should
-  preferably be restarted for system maintenance puruposes.
+  preferably be restarted for system maintenance purposes.
 
   Fields:
     day: day of week (1-7), starting on Monday.

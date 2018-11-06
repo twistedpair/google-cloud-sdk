@@ -198,12 +198,7 @@ class KubernetesObject(object):
   @property
   def annotations(self):
     self.AssertFullObject()
-    return ListAsDictionaryWrapper(
-        self._m.metadata.annotations.additionalProperties,
-        self._messages.ObjectMeta.AnnotationsValue.AdditionalProperty,
-        key_field='key',
-        value_field='value',
-    )
+    return AnnotationsFromMetadata(self._messages, self._m.metadata)
 
   @property
   def labels(self):
@@ -229,6 +224,16 @@ class KubernetesObject(object):
 
   def MakeSerializable(self):
     return self.Message()
+
+
+def AnnotationsFromMetadata(messages_mod, metadata):
+  if not metadata.annotations:
+    metadata.annotations = messages_mod.ObjectMeta.AnnotationsValue()
+  return ListAsDictionaryWrapper(
+      metadata.annotations.additionalProperties,
+      messages_mod.ObjectMeta.AnnotationsValue.AdditionalProperty,
+      key_field='key',
+      value_field='value')
 
 
 class LazyListWrapper(collections.MutableSequence):

@@ -376,6 +376,7 @@ URI_FLAG = Argument(
 
 class _Common(six.with_metaclass(abc.ABCMeta, object)):
   """Base class for Command and Group."""
+  category = None
   _cli_generator = None
   _is_hidden = False
   _is_unicode_supported = False

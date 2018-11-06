@@ -54,60 +54,6 @@ def AddFileFlag(parser, input_type, action):
       required=True)
 
 
-def AddTemplateSourceFlag(parser, schema_path):
-  parser.add_argument(
-      '--source',
-      help="""Path to a YAML file containing a Dataproc WorkflowTemplate
-      resource. The provided YAML file must not contain id, version, or any
-      output-only fields.
-      Alternatively, you may omit this flag to read from standard input.
-      A schema describing the import format can be found in:
-      $CLOUDSDKROOT/lib/googlecloudsdk/api_lib/dataproc/schemas/{}.
-      """.format(schema_path),
-      # Allow reading from stdin.
-      required=False)
-
-
-def AddClusterSourceFlag(parser):
-  parser.add_argument(
-      '--source',
-      help="""Path to a YAML file containing the configuration of a cluster.
-      The provided configuration should be an instance of ClusterConfig.
-      Alternatively, you may omit this flag to read from standard input.
-      A schema describing the import format can be found in:
-      $CLOUDSDKROOT/lib/googlecloudsdk/api_lib/dataproc/schemas/v1beta2/Cluster.yaml
-      """,
-      # Allow reading from stdin.
-      required=False)
-
-
-def AddTemplateDestinationFlag(parser, schema_path):
-  parser.add_argument(
-      '--destination',
-      help="""Path to a YAML file to which the Dataproc WorkflowTemplate
-      resource will be exported. The exported template will not contain id,
-      version, or any output-only fields.
-      Alternatively, you may omit this flag to write to standard output.
-      A schema describing the export format can be found in:
-      $CLOUDSDKROOT/lib/googlecloudsdk/api_lib/dataproc/schemas/{}.
-      """.format(schema_path),
-      # Allow writing to stdout.
-      required=False)
-
-
-def AddClusterDestinationFlag(parser):
-  parser.add_argument(
-      '--destination',
-      help="""Path to a YAML file to which the cluster's configuration
-      will be exported.
-      Alternatively, you may omit this flag to write to standard output.
-      A schema describing the export format can be found in:
-      $CLOUDSDKROOT/lib/googlecloudsdk/api_lib/dataproc/schemas/v1beta2/Cluster.yaml
-      """,
-      # Allow writing to stdout.
-      required=False)
-
-
 def AddJobFlag(parser, action):
   parser.add_argument(
       'job', help='The ID of the job to {0}.'.format(action))

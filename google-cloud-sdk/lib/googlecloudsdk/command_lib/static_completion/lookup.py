@@ -36,7 +36,7 @@ FLAG_PREFIX = '--'
 
 FLAG_BOOLEAN = 'bool'
 FLAG_DYNAMIC = 'dynamic'
-FLAG_STRING = 'string'
+FLAG_VALUE = 'value'
 
 LOOKUP_COMMANDS = 'commands'
 LOOKUP_FLAGS = 'flags'
@@ -138,7 +138,7 @@ def _FindCompletions(root, cmd_line):
       if flag_mode == FLAG_DYNAMIC:
         raise CannotHandleCompletionError(
             'Dynamic completions are not handled by this module')
-      elif flag_mode == FLAG_STRING:
+      elif flag_mode == FLAG_VALUE:
         return []  # Cannot complete, so nothing to do
       elif flag_mode != FLAG_BOOLEAN:  # Must be list of choices
         for value in flag_mode:

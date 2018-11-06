@@ -27,7 +27,7 @@ from googlecloudsdk.core.diagnostics import diagnostic_base
 
 
 class PropertyDiagnostic(diagnostic_base.Diagnostic):
-  """Diagnose issues that may be caused by properties."""
+  """Diagnoses issues that may be caused by properties."""
 
   def __init__(self):
     intro = ('Property diagnostic detects issues that may be caused by '
@@ -44,8 +44,7 @@ def _AllProperties():
 
 
 class HiddenPropertiesChecker(check_base.Checker):
-  """Checks whether any hidden properties have been set
-  """
+  """Checks whether any hidden properties have been set."""
 
   def __init__(self):
     self._properties_file = named_configs.ActivePropertiesFile.Load()

@@ -147,16 +147,20 @@ def _ImportStorageApi(gcs_bucket, source, destination):
         if os.path.isdir(file_path):
           continue
         dest_path = _GetDestPath(source_dirname, file_path, destination, False)
-        client.CopyFileToGCS(gcs_bucket, file_path, dest_path)
+        obj_ref = storage_util.ObjectReference.FromBucketRef(gcs_bucket,
+                                                             dest_path)
+        client.CopyFileToGCS(file_path, obj_ref)
     else:  # Just upload the file.
       dest_path = _GetDestPath(source_dirname, source, destination, False)
-      client.CopyFileToGCS(gcs_bucket, source, dest_path)
+      obj_ref = storage_util.ObjectReference.FromBucketRef(gcs_bucket,
+                                                           dest_path)
+      client.CopyFileToGCS(source, obj_ref)
   else:
     source_ref = storage_util.ObjectReference.FromUrl(source)
     to_import = _GetObjectOrSubdirObjects(
         source_ref, object_is_subdir=object_is_subdir, client=client)
     for obj in to_import:
-      dest_object = storage_util.ObjectReference(
+      dest_object = storage_util.ObjectReference.FromBucketRef(
           gcs_bucket,
           # Use obj.ToUrl() to ensure that the dirname is properly stripped.
           _GetDestPath(source_dirname, obj.ToUrl(), destination, False))
@@ -165,7 +169,8 @@ def _ImportStorageApi(gcs_bucket, source, destination):
 
 def _ImportGsutil(gcs_bucket, source, destination):
   """Imports files and directories into a bucket."""
-  destination_ref = storage_util.ObjectReference(gcs_bucket, destination)
+  destination_ref = storage_util.ObjectReference.FromBucketRef(
+      gcs_bucket, destination)
   try:
     retval = storage_util.RunGsutilCommand(
         'cp',
@@ -225,7 +230,7 @@ def _ExportStorageApi(gcs_bucket, source, destination):
   object_is_subdir = old_source != source
 
   client = storage_api.StorageClient()
-  source_ref = storage_util.ObjectReference(gcs_bucket, source)
+  source_ref = storage_util.ObjectReference.FromBucketRef(gcs_bucket, source)
   dest_is_local = True
   if destination.startswith('gs://'):
     destination = _JoinPaths(
@@ -243,8 +248,7 @@ def _ExportStorageApi(gcs_bucket, source, destination):
       files.MakeDir(os.path.dirname(dest_path))
       # Command description for export commands says overwriting is default
       # behavior.
-      client.CopyFileFromGCS(
-          obj.bucket_ref, obj.name, dest_path, overwrite=True)
+      client.CopyFileFromGCS(obj, dest_path, overwrite=True)
   else:
     for obj in to_export:
       dest_object = storage_util.ObjectReference.FromUrl(
@@ -254,7 +258,7 @@ def _ExportStorageApi(gcs_bucket, source, destination):
 
 def _ExportGsutil(gcs_bucket, source, destination):
   """Exports files and directories from an environment's GCS bucket."""
-  source_ref = storage_util.ObjectReference(gcs_bucket, source)
+  source_ref = storage_util.ObjectReference.FromBucketRef(gcs_bucket, source)
   if destination.startswith('gs://'):
     destination = _JoinPaths(
         destination.strip(posixpath.sep), '', gsutil_path=True)
@@ -330,18 +334,18 @@ def _DeleteStorageApi(gcs_bucket, target, gcs_subdir):
   delete_all = target == '*'
   # Listing in a bucket uses a prefix match and doesn't support * notation.
   target = '' if delete_all else target
-  target_ref = storage_util.ObjectReference(
+  target_ref = storage_util.ObjectReference.FromBucketRef(
       gcs_bucket, _JoinPaths(gcs_subdir, target, gsutil_path=True))
 
   to_delete = _GetObjectOrSubdirObjects(
       target_ref, object_is_subdir=delete_all, client=client)
   for obj_ref in to_delete:
-    client.DeleteObject(gcs_bucket, obj_ref.name)
+    client.DeleteObject(obj_ref)
 
 
 def _DeleteGsutil(gcs_bucket, target, gcs_subdir):
   """Deletes objects in a folder of an environment's bucket with gsutil."""
-  target_ref = storage_util.ObjectReference(
+  target_ref = storage_util.ObjectReference.FromBucketRef(
       gcs_bucket, _JoinPaths(gcs_subdir, target, gsutil_path=True))
   try:
     retval = storage_util.RunGsutilCommand(
@@ -380,7 +384,7 @@ def _GetObjectOrSubdirObjects(object_ref, object_is_subdir=False, client=None):
         # object_ref happens to also be an object, ignore it.
         continue
       objects.append(
-          storage_util.ObjectReference(object_ref.bucket_ref, obj.name))
+          storage_util.ObjectReference.FromName(object_ref.bucket, obj.name))
   return objects
 
 
@@ -397,7 +401,8 @@ def _EnsureSubdirExists(bucket_ref, subdir):
         slashes.
   """
   subdir_name = '{}/'.format(subdir)
-  subdir_ref = storage_util.ObjectReference(bucket_ref, subdir_name)
+  subdir_ref = storage_util.ObjectReference.FromBucketRef(bucket_ref,
+                                                          subdir_name)
   storage_client = storage_api.StorageClient()
   try:
     storage_client.GetObject(subdir_ref)

@@ -44,7 +44,6 @@ from __future__ import unicode_literals
 import itertools
 
 from googlecloudsdk.api_lib.storage import storage_api
-from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import parallel
@@ -60,44 +59,32 @@ DEFAULT_NUM_THREADS = 16
 class FileUploadTask(object):
   """Self-contained representation of a file to upload and its destination.
 
-  The reason not to combine bucket_url and remote_path is that a common use case
-  is to upload many files to the same bucket; this saves callers the hassle of
-  concatenating themselves while still allowing parallelizing uploads to
-  multiple buckets.
-
   Attributes:
     local_path: str, the path to the file to upload on the local system
-    bucket_url: str, the URL of the destination Cloud Storage bucket (e.g.
-        'gs://my-bucket')
-    remote_path: str, the path to the file destination within its bucket
+    dest_obj_ref: storage_util.ObjectReference, The object the file will be
+      copied to.
   """
 
-  def __init__(self, local_path, bucket_url, remote_path):
+  def __init__(self, local_path, dest_obj_ref):
     self.local_path = local_path
-    self.bucket_url = bucket_url
-    self.remote_path = remote_path
+    self.dest_obj_ref = dest_obj_ref
 
   def __repr__(self):
-    return ('FileUploadTask('
-            'local_path={task.local_path!r}, '
-            'bucket_url={task.bucket_url!r}, '
-            'remote_path={task.remote_path!r})').format(task=self)
+    return (
+        'FileUploadTask(local_path={local_path}, dest_path={dest_path})'.format(
+            local_path=self.local_path, dest_path=self.dest_obj_ref.ToUrl()))
 
   def __hash__(self):
-    return hash((self.local_path, self.bucket_url, self.remote_path))
+    return hash((self.local_path, self.dest_obj_ref))
 
 
 def _UploadFile(value):
   """Complete one FileUploadTask (safe to run in parallel)."""
   file_upload_task, callback = value
   storage_client = storage_api.StorageClient()
-  bucket_ref = storage_util.BucketReference.FromBucketUrl(
-      file_upload_task.bucket_url)
-
-  local_path = file_upload_task.local_path
   retry.Retryer(max_retrials=3).RetryOnException(
       storage_client.CopyFileToGCS,
-      args=(bucket_ref, local_path, file_upload_task.remote_path))
+      args=(file_upload_task.local_path, file_upload_task.dest_obj_ref))
   if callback:
     callback()
 
@@ -155,40 +142,26 @@ def UploadFiles(files_to_upload, num_threads=DEFAULT_NUM_THREADS,
 class ObjectDeleteTask(object):
   """Self-contained representation of an object to delete.
 
-  The reason not to combine bucket_url and remote_path is that a common use case
-  is to delete many objects in the same bucket; this saves callers the hassle of
-  concatenating themselves while still allowing parallelizing deletions in
-  multiple buckets.
-
   Attributes:
-    bucket_url: str, the URL of the destination Cloud Storage bucket (e.g.
-        'gs://my-bucket')
-    remote_path: str, the path to the file destination within its bucket (
+    obj_ref: storage_util.ObjectReference, The object to delete.
   """
 
-  def __init__(self, bucket_url, remote_path):
-    self.bucket_url = bucket_url
-    self.remote_path = remote_path
+  def __init__(self, obj_ref):
+    self.obj_ref = obj_ref
 
   def __repr__(self):
-    return ('ObjectDeleteTask('
-            'bucket_url={task.bucket_url!r}, '
-            'remote_path={task.remote_path!r})').format(task=self)
+    return 'ObjectDeleteTask(object={obj}'.format(obj=self.obj_ref.ToUrl())
 
   def __hash__(self):
-    return hash((self.bucket_url, self.remote_path))
+    return hash(self.obj_ref)
 
 
 def _DeleteObject(value):
   """Complete one ObjectDeleteTask (safe to run in parallel)."""
   object_delete_task, callback = value
   storage_client = storage_api.StorageClient()
-  bucket_ref = storage_util.BucketReference.FromBucketUrl(
-      object_delete_task.bucket_url)
-
   retry.Retryer(max_retrials=3).RetryOnException(
-      storage_client.DeleteObject,
-      args=(bucket_ref, object_delete_task.remote_path))
+      storage_client.DeleteObject, args=(object_delete_task.obj_ref,))
   if callback:
     callback()
 

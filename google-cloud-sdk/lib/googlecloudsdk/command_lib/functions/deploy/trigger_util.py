@@ -148,7 +148,7 @@ def _GetEventTriggerEventParams(trigger_event, trigger_resource):
     trigger_resource = api_util.ValidatePubsubTopicNameOrRaise(
         trigger_resource)
   elif resource_type == triggers.Resources.BUCKET:
-    trigger_resource = storage_util.BucketReference.FromBucketUrl(
+    trigger_resource = storage_util.BucketReference.FromUrl(
         trigger_resource).bucket
   elif resource_type in [
       triggers.Resources.FIREBASE_DB,

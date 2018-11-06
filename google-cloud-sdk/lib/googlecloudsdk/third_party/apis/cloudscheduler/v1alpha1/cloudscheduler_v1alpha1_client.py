@@ -157,6 +157,106 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a job.
+
+If successful, the updated Job is returned. If the job does
+not exist, `NOT_FOUND` is returned.
+
+If UpdateJob does not successfully return, it is possible for the
+job to be in an Job.State.UPDATE_FAILED state. A job in this state may
+not be executed. If this happens, retry the UpdateJob request
+until a successful response is received.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsJobsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}',
+        http_method=u'PATCH',
+        method_id=u'cloudscheduler.projects.locations.jobs.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'job',
+        request_type_name=u'CloudschedulerProjectsLocationsJobsPatchRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      r"""Pauses a job.
+
+If a job is paused then the system will stop executing the job
+until it is re-enabled via CloudScheduler.ResumeJob. The
+state of the job is stored in Job.state; if paused it
+will be set to Job.State.PAUSED. A job must be in Job.State.ENABLED
+to be paused.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsJobsPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:pause',
+        http_method=u'POST',
+        method_id=u'cloudscheduler.projects.locations.jobs.pause',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:pause',
+        request_field=u'pauseJobRequest',
+        request_type_name=u'CloudschedulerProjectsLocationsJobsPauseRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resume a job.
+
+This method reenables a job after it has been Job.State.PAUSED. The
+state of a job is stored in Job.state; after calling this method it
+will be set to Job.State.ENABLED. A job must be in
+Job.State.PAUSED to be resumed.
+
+      Args:
+        request: (CloudschedulerProjectsLocationsJobsResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Job) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:resume',
+        http_method=u'POST',
+        method_id=u'cloudscheduler.projects.locations.jobs.resume',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}:resume',
+        request_field=u'resumeJobRequest',
+        request_type_name=u'CloudschedulerProjectsLocationsJobsResumeRequest',
+        response_type_name=u'Job',
+        supports_download=False,
+    )
+
     def Run(self, request, global_params=None):
       r"""Forces a job to run now.
 

@@ -661,6 +661,9 @@ class SoftwareConfig(_messages.Message):
       specifier such as "==1.12.0", "[devel,gcp_api]", or "[devel]>=1.8.2,
       <1.9.2". To specify a package without pinning it to a version specifier,
       use the empty string as the value.
+    pythonVersion: Optional. The major version of Python used to run the
+      Apache Airflow scheduler, worker, and webserver processes.  Can be set
+      to '2' or '3'. If not specified, the default is '2'. Cannot be updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -769,6 +772,7 @@ class SoftwareConfig(_messages.Message):
   envVariables = _messages.MessageField('EnvVariablesValue', 2)
   imageVersion = _messages.StringField(3)
   pypiPackages = _messages.MessageField('PypiPackagesValue', 4)
+  pythonVersion = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -715,6 +715,11 @@
           "description": "Minimum deadline in seconds needed for this method. Calls having deadline\nvalue lower than this will be rejected.",
           "type": "number",
           "format": "double"
+        },
+        "operationDeadline": {
+          "description": "The number of seconds to wait for the completion of a long running\noperation. The default is no deadline.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -1644,6 +1649,10 @@
         },
         "ipCidrRange": {
           "description": "Subnetwork CIDR range in \"10.x.x.x\/y\" format.",
+          "type": "string"
+        },
+        "network": {
+          "description": "Shared VPC host project network peered with consumer network.\nFor example: projects\/1234321\/global\/networks\/host-network",
           "type": "string"
         }
       }

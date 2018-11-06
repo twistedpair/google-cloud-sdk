@@ -298,6 +298,8 @@ class BackendRule(_messages.Message):
       requests is 5 seconds.
     minDeadline: Minimum deadline in seconds needed for this method. Calls
       having deadline value lower than this will be rejected.
+    operationDeadline: The number of seconds to wait for the completion of a
+      long running operation. The default is no deadline.
     selector: Selects the methods to which this rule applies.  Refer to
       selector for syntax details.
   """
@@ -305,7 +307,8 @@ class BackendRule(_messages.Message):
   address = _messages.StringField(1)
   deadline = _messages.FloatField(2)
   minDeadline = _messages.FloatField(3)
-  selector = _messages.StringField(4)
+  operationDeadline = _messages.FloatField(4)
+  selector = _messages.StringField(5)
 
 
 class Billing(_messages.Message):
@@ -400,7 +403,7 @@ class CompositeOperationMetadata(_messages.Message):
       operation will contribute. Each key of the map is the name of a child
       operation. Each value is a field mask that identifies what that child
       operation contributes to the response, for example, "quota_settings",
-      "visiblity_settings", etc.
+      "visibility_settings", etc.
 
   Fields:
     childOperations: The child operations. The details of the asynchronous
@@ -416,7 +419,7 @@ class CompositeOperationMetadata(_messages.Message):
       will contribute. Each key of the map is the name of a child operation.
       Each value is a field mask that identifies what that child operation
       contributes to the response, for example, "quota_settings",
-      "visiblity_settings", etc.
+      "visibility_settings", etc.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -450,7 +453,7 @@ class CompositeOperationMetadata(_messages.Message):
     r"""Defines which part of the response a child operation will contribute.
     Each key of the map is the name of a child operation. Each value is a
     field mask that identifies what that child operation contributes to the
-    response, for example, "quota_settings", "visiblity_settings", etc.
+    response, for example, "quota_settings", "visibility_settings", etc.
 
     Messages:
       AdditionalProperty: An additional property for a ResponseFieldMasksValue
@@ -3563,8 +3566,7 @@ class ServicemanagementServicesListRequest(_messages.Message):
       project:<project_id>
     consumerProjectId: Include services consumed by the specified project.  If
       project_settings is expanded, then this field controls which project
-      project_settings is populated for. This field is deprecated. See details
-      go/deprecate-listservices-expand.
+      project_settings is populated for.
     pageSize: Requested size of the next page of data.
     pageToken: Token identifying which result to start with; returned by a
       previous list call.

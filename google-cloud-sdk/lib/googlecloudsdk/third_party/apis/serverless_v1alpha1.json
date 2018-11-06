@@ -1014,6 +1014,14 @@
           "items": {
             "$ref": "TrafficTarget"
           }
+        },
+        "latestReadyRevisionName": {
+          "description": "From ConfigurationStatus.\nLatestReadyRevisionName holds the name of the latest Revision stamped out\nfrom this Service's Configuration that has had its \"Ready\" condition become\n\"True\". +optional",
+          "type": "string"
+        },
+        "latestCreatedRevisionName": {
+          "description": "From ConfigurationStatus.\nLatestCreatedRevisionName is the last revision that was created from this\nService's Configuration. It might not be ready yet, for that use\nLatestReadyRevisionName. +optional",
+          "type": "string"
         }
       }
     },
@@ -1422,6 +1430,10 @@
           "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.",
           "type": "integer",
           "format": "int32"
+        },
+        "imageDigest": {
+          "description": "ImageDigest holds the resolved digest for the image specified\nwithin .Spec.Container.Image. The digest is resolved during the creation\nof Revision. This field holds the digest value regardless of whether\na tag or digest was originally specified in the Container object. It\nmay be empty if the image comes from a registry listed to skip resolution.",
+          "type": "string"
         }
       }
     },

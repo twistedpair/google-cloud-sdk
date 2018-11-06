@@ -349,7 +349,7 @@ class MarkdownRenderer(object):
     Returns:
       The next markdown input line.
     """
-    if self._peek:
+    if self._peek is not None:
       line = self._peek
       self._peek = None
       return line
@@ -606,12 +606,13 @@ class MarkdownRenderer(object):
       width = len(s) if len(s) >= fixed_width_length else 0
       table.AddColumn(align=align, label=label, width=width)
 
-    # Collect the column data by rows. Blank line terminates the data.
+    # Collect the column data by rows. Blank or + line terminates the data.
 
     rows = []
     while True:
       line = self._ReadLine()
-      if not line or len(line) == 1:
+      if line in (None, '', '\n', '+\n'):
+        self._PushBackLine(line)
         break
       row = re.split(r' *\| *', line.rstrip())
       rows.append(row)

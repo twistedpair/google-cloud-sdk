@@ -210,7 +210,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the information type. Either a name of your choosing when\ncreating a CustomInfoType, or one of the names listed\nat https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference when specifying\na built-in type.",
+          "description": "Name of the information type. Either a name of your choosing when\ncreating a CustomInfoType, or one of the names listed\nat https:\/\/cloud.google.com\/dlp\/docs\/infotypes-reference when specifying\na built-in type. InfoType names should conform to the pattern\n[a-zA-Z0-9_]{1,64}.",
           "type": "string"
         }
       }
@@ -1106,13 +1106,14 @@
       "type": "object",
       "properties": {
         "dateTime": {
+          "description": "The date time indicated by the quote.",
           "$ref": "GooglePrivacyDlpV2DateTime"
         }
       }
     },
     "GooglePrivacyDlpV2DateTime": {
       "id": "GooglePrivacyDlpV2DateTime",
-      "description": "Message for a date time object.",
+      "description": "Message for a date time object.\ne.g. 2018-01-01, 5th August.",
       "type": "object",
       "properties": {
         "date": {
@@ -2205,7 +2206,7 @@
           }
         },
         "errors": {
-          "description": "A stream of errors encountered when the trigger was activated. Repeated\nerrors may result in the JobTrigger automaticaly being paused.\nWill return the last 100 errors. Whenever the JobTrigger is modified\nthis list will be cleared. Output only field.",
+          "description": "A stream of errors encountered when the trigger was activated. Repeated\nerrors may result in the JobTrigger automatically being paused.\nWill return the last 100 errors. Whenever the JobTrigger is modified\nthis list will be cleared. Output only field.",
           "type": "array",
           "items": {
             "$ref": "GooglePrivacyDlpV2Error"
@@ -2765,7 +2766,7 @@
           }
         },
         "entityId": {
-          "description": "Optional message indicating that multiple rows might be associated to a\nsingle individual. If the same entity_id is associated to multiple\nquasi-identifier tuples over distict rows, we consider the entire\ncollection of tuples as the composite quasi-identifier. This collection\nis a multiset: the order in which the different tuples appear in the\ndataset is ignored, but their frequency is taken into account.\n\nImportant note: a maximum of 1000 rows can be associated to a single\nentity ID. If more rows are associated with the same entity ID, some\nmight be ignored.",
+          "description": "Optional message indicating that multiple rows might be associated to a\nsingle individual. If the same entity_id is associated to multiple\nquasi-identifier tuples over distinct rows, we consider the entire\ncollection of tuples as the composite quasi-identifier. This collection\nis a multiset: the order in which the different tuples appear in the\ndataset is ignored, but their frequency is taken into account.\n\nImportant note: a maximum of 1000 rows can be associated to a single\nentity ID. If more rows are associated with the same entity ID, some\nmight be ignored.",
           "$ref": "GooglePrivacyDlpV2EntityId"
         }
       }

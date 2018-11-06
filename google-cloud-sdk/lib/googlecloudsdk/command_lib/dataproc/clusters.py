@@ -23,7 +23,6 @@ import collections
 
 from apitools.base.py import encoding
 
-from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.compute import utils as api_utils
 from googlecloudsdk.api_lib.dataproc import compute_helpers
 from googlecloudsdk.api_lib.dataproc import constants
@@ -164,12 +163,10 @@ def ArgsForClusterRef(parser, beta=False, include_deprecated=True): \
       help="""\
       The number of master nodes in the cluster.
 
-      [format="csv",options="header"]
-      |========
-      Number of Masters,Cluster Mode
-      1,Standard
-      3,High Availability
-      |========
+      Number of Masters | Cluster Mode
+      --- | ---
+      1 | Standard
+      3 | High Availability
       """)
   parser.add_argument(
       '--properties',
@@ -184,23 +181,21 @@ Properties are mapped to configuration files by specifying a prefix, such as
 "core:io.serializations". The following are supported prefixes and their
 mappings:
 
-[format="csv",options="header"]
-|========
-Prefix,File,Purpose of file
-capacity-scheduler,capacity-scheduler.xml,Hadoop YARN Capacity Scheduler configuration
-core,core-site.xml,Hadoop general configuration
-distcp,distcp-default.xml,Hadoop Distributed Copy configuration
-hadoop-env,hadoop-env.sh,Hadoop specific environment variables
-hdfs,hdfs-site.xml,Hadoop HDFS configuration
-hive,hive-site.xml,Hive configuration
-mapred,mapred-site.xml,Hadoop MapReduce configuration
-mapred-env,mapred-env.sh,Hadoop MapReduce specific environment variables
-pig,pig.properties,Pig configuration
-spark,spark-defaults.conf,Spark configuration
-spark-env,spark-env.sh,Spark specific environment variables
-yarn,yarn-site.xml,Hadoop YARN configuration
-yarn-env,yarn-env.sh,Hadoop YARN specific environment variables
-|========
+Prefix | File | Purpose of file
+--- | --- | ---
+capacity-scheduler | capacity-scheduler.xml | Hadoop YARN Capacity Scheduler configuration
+core | core-site.xml | Hadoop general configuration
+distcp | distcp-default.xml | Hadoop Distributed Copy configuration
+hadoop-env | hadoop-env.sh | Hadoop specific environment variables
+hdfs | hdfs-site.xml | Hadoop HDFS configuration
+hive | hive-site.xml | Hive configuration
+mapred | mapred-site.xml | Hadoop MapReduce configuration
+mapred-env | mapred-env.sh | Hadoop MapReduce specific environment variables
+pig | pig.properties | Pig configuration
+spark | spark-defaults.conf | Spark configuration
+spark-env | spark-env.sh | Spark specific environment variables
+yarn | yarn-site.xml | Hadoop YARN configuration
+yarn-env | yarn-env.sh | Hadoop YARN specific environment variables
 
 See https://cloud.google.com/dataproc/docs/concepts/configuring-clusters/cluster-properties
 for more information.
@@ -225,36 +220,20 @@ Examples:
 The following *minimum scopes* are necessary for the cluster to function
 properly and are always added, even if not explicitly specified:
 
-[format="csv"]
-|========
-{minimum_scopes}
-|========
+  {minimum_scopes}
 
 If the `--scopes` flag is not specified, the following *default scopes*
 are also included:
 
-[format="csv"]
-|========
-{additional_scopes}
-|========
+  {additional_scopes}
 
 If you want to enable all scopes use the 'cloud-platform' scope.
 
-SCOPE can be either the full URI of the scope or an alias.
-Available aliases are:
-
-[format="csv",options="header"]
-|========
-Alias,URI
-{aliases}
-|========
-
-{scope_deprecation_msg}
+{scopes_help}
 """.format(
-    minimum_scopes='\n'.join(constants.MINIMUM_SCOPE_URIS),
-    additional_scopes='\n'.join(constants.ADDITIONAL_DEFAULT_SCOPE_URIS),
-    aliases=compute_helpers.SCOPE_ALIASES_FOR_HELP,
-    scope_deprecation_msg=compute_constants.DEPRECATED_SCOPES_MESSAGES))
+    minimum_scopes='\n  '.join(constants.MINIMUM_SCOPE_URIS),
+    additional_scopes='\n  '.join(constants.ADDITIONAL_DEFAULT_SCOPE_URIS),
+    scopes_help=compute_helpers.SCOPES_HELP))
 
   if include_deprecated:
     _AddDiskArgsDeprecated(parser)

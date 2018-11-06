@@ -858,6 +858,11 @@
           "description": "Minimum deadline in seconds needed for this method. Calls having deadline\nvalue lower than this will be rejected.",
           "type": "number",
           "format": "double"
+        },
+        "operationDeadline": {
+          "description": "The number of seconds to wait for the completion of a long running\noperation. The default is no deadline.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -2750,7 +2755,7 @@
           }
         },
         "responseFieldMasks": {
-          "description": "Defines which part of the response a child operation will contribute.\nEach key of the map is the name of a child operation. Each value is a\nfield mask that identifies what that child operation contributes to the\nresponse, for example, \"quota_settings\", \"visiblity_settings\", etc.",
+          "description": "Defines which part of the response a child operation will contribute.\nEach key of the map is the name of a child operation. Each value is a\nfield mask that identifies what that child operation contributes to the\nresponse, for example, \"quota_settings\", \"visibility_settings\", etc.",
           "type": "object",
           "additionalProperties": {
             "type": "string",
@@ -2954,7 +2959,7 @@
               "type": "string"
             },
             "consumerProjectId": {
-              "description": "Include services consumed by the specified project.\n\nIf project_settings is expanded, then this field controls which project\nproject_settings is populated for.\nThis field is deprecated.\nSee details go\/deprecate-listservices-expand.",
+              "description": "Include services consumed by the specified project.\n\nIf project_settings is expanded, then this field controls which project\nproject_settings is populated for.",
               "location": "query",
               "type": "string"
             },

@@ -420,7 +420,8 @@ def BuildAndPushDockerImage(
       tag=config.DOCKER_IMAGE_TAG)
 
   metrics.CustomTimedEvent(metric_names.CLOUDBUILD_UPLOAD_START)
-  object_ref = storage_util.ObjectReference(code_bucket_ref, image.tagged_repo)
+  object_ref = storage_util.ObjectReference.FromBucketRef(
+      code_bucket_ref, image.tagged_repo)
   relative_yaml_path = _GetYamlPath(upload_dir, service.file,
                                     service.parsed.skip_files, gen_files)
 

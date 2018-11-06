@@ -115,7 +115,13 @@ def _ValidateRegionalArgs(args, include_alpha=False):
           'You cannot specify [--port-range] for a forwarding rule '
           'whose [--load-balancing-scheme] is internal, '
           'please use [--ports] flag instead.')
-  elif getattr(args, 'subnet', None) or getattr(args, 'network', None):
+
+  schemes_allowing_network_fields = ['INTERNAL', 'INTERNAL_MANAGED']
+
+  if (getattr(args, 'subnet', None) or
+      getattr(args, 'network', None)) and getattr(
+          args, 'load_balancing_scheme',
+          None) not in schemes_allowing_network_fields:
     raise calliope_exceptions.ToolException(
         'You cannot specify [--subnet] or [--network] for non-internal '
         '[--load-balancing-scheme] forwarding rule.')

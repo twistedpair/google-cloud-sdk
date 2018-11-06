@@ -569,10 +569,10 @@ def GetStagingLocation(job_id=None, staging_bucket=None, job_dir=None):
   """Get the appropriate staging location for the job given the arguments."""
   staging_location = None
   if staging_bucket:
-    staging_location = storage_util.ObjectReference(staging_bucket,
-                                                    job_id)
+    staging_location = storage_util.ObjectReference.FromBucketRef(
+        staging_bucket, job_id)
   elif job_dir:
-    staging_location = storage_util.ObjectReference(
-        job_dir.bucket_ref, '/'.join([f for f in [job_dir.name.rstrip('/'),
-                                                  'packages'] if f]))
+    staging_location = storage_util.ObjectReference.FromName(
+        job_dir.bucket, '/'.join([f for f in [job_dir.name.rstrip('/'),
+                                              'packages'] if f]))
   return staging_location

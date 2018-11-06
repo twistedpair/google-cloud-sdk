@@ -281,11 +281,11 @@
           "type": "string"
         },
         "runtimeVersion": {
-          "description": "Optional. The Google Cloud ML runtime version to use for training.  If not\nset, Google Cloud ML will choose a stable version, which is defined in the\ndocumentation of runtime version list.",
+          "description": "Optional. The Cloud ML Engine runtime version to use for training. If not\nset, Cloud ML Engine uses the default stable version, 1.0. For more\ninformation, see the\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime version list<\/a>\nand\n<a href=\"\/ml-engine\/docs\/versioning\">how to manage runtime versions<\/a>.",
           "type": "string"
         },
         "pythonVersion": {
-          "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported runtime versions.",
+          "description": "Optional. The version of Python used in training. If not set, the default\nversion is '2.7'. Python '3.5' is available when `runtime_version` is set\nto '1.4' and above. Python '2.7' works with all supported\n<a href=\"\/ml-engine\/docs\/runtime-version-list\">runtime versions<\/a>.",
           "type": "string"
         }
       }
@@ -550,7 +550,7 @@
           "type": "string"
         },
         "runtimeVersion": {
-          "description": "Optional. The Google Cloud ML runtime version to use for this batch\nprediction. If not set, Google Cloud ML will pick the runtime version used\nduring the CreateVersion request for this model version, or choose the\nlatest stable version when model version information is not available\nsuch as when the model is specified by uri.",
+          "description": "Optional. The Cloud ML Engine runtime version to use for this batch\nprediction. If not set, Cloud ML Engine will pick the runtime version used\nduring the CreateVersion request for this model version, or choose the\nlatest stable version when model version information is not available\nsuch as when the model is specified by uri.",
           "type": "string"
         },
         "batchSize": {
@@ -933,7 +933,7 @@
           "format": "google-datetime"
         },
         "runtimeVersion": {
-          "description": "Optional. The Google Cloud ML runtime version to use for this deployment.\nIf not set, Google Cloud ML will choose a version.",
+          "description": "Optional. The Cloud ML Engine runtime version to use for this deployment.\nIf not set, Cloud ML Engine uses the default stable version, 1.0. For more\ninformation, see the\n[runtime version list](\/ml-engine\/docs\/runtime-version-list) and\n[how to manage runtime versions](\/ml-engine\/docs\/versioning).",
           "type": "string"
         },
         "machineType": {
@@ -1018,6 +1018,10 @@
         "acceleratorConfig": {
           "description": "Accelerator config for GPU serving.",
           "$ref": "GoogleCloudMlV1__AcceleratorConfig"
+        },
+        "serviceAccount": {
+          "description": "Optional. Specifies the service account for resource access control.",
+          "type": "string"
         }
       }
     },

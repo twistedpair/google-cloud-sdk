@@ -35,15 +35,6 @@ from googlecloudsdk.core.util import platforms
 
 
 GSUTIL_BUCKET_PREFIX = 'gs://'
-GSUTIL_OBJECT_REGEX = r'^(?P<bucket>gs://[^/]+)/(?P<object>.+)'
-GSUTIL_BUCKET_REGEX = r'^(?P<bucket>gs://[^/]+)/?'
-
-
-LOG_OUTPUT_BEGIN = ' REMOTE BUILD OUTPUT '
-LOG_OUTPUT_INCOMPLETE = ' (possibly incomplete) '
-OUTPUT_LINE_CHAR = '-'
-GCS_URL_PATTERN = (
-    'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
 
 
 class Error(exceptions.Error):
@@ -154,25 +145,24 @@ def _ValidateBucketUrl(url):
 class BucketReference(object):
   """A wrapper class to make working with GCS bucket names easier."""
 
-  def __init__(self, bucket_url, ref):
-    """Constructor for BucketReference.
+  def __init__(self, bucket):
+    """Creates a BucketReference.
 
     Args:
-      bucket_url: str, The bucket to reference. Format: gs://<bucket_name>
-      ref: Resource, resource corresponding to Bucket
+      bucket: str, The bucket name
     """
-    self._bucket_url = bucket_url
-    self.ref = ref
+    self.bucket = bucket
 
-  @property
-  def bucket(self):
-    return self.ref.bucket
+  @classmethod
+  def FromMessage(cls, bucket):
+    """Create a bucket reference from a bucket message from the API."""
+    return cls(bucket.name)
 
-  def GetPublicUrl(self):
-    return 'https://storage.googleapis.com/{0}'.format(self.ref.bucket)
-
-  def ToBucketUrl(self):
-    return 'gs://{}'.format(self.bucket)
+  @classmethod
+  def FromUrl(cls, url):
+    """Parse a bucket URL ('gs://' optional) into a BucketReference."""
+    return cls(resources.REGISTRY.Parse(url, collection='storage.buckets')
+               .bucket)
 
   @classmethod
   def FromArgument(cls, value, require_prefix=True):
@@ -187,59 +177,76 @@ class BucketReference(object):
     except InvalidBucketNameError as err:
       raise argparse.ArgumentTypeError(str(err))
 
-    return cls.FromBucketUrl(value)
+    return cls.FromUrl(value)
 
-  @classmethod
-  def FromBucketUrl(cls, url):
-    """Parse a bucket URL ('gs://' optional) into a BucketReference."""
-    return cls(url, resources.REGISTRY.Parse(url, collection='storage.buckets'))
+  def ToUrl(self):
+    return 'gs://{}'.format(self.bucket)
+
+  def GetPublicUrl(self):
+    return 'https://storage.googleapis.com/{0}'.format(self.bucket)
 
   def __eq__(self, other):
-    return self.ToBucketUrl() == other.ToBucketUrl()
+    return self.bucket == other.bucket
 
   def __ne__(self, other):
     return not self.__eq__(other)
 
   def __hash__(self):
-    return hash(self.ToBucketUrl())
+    return hash(self.bucket)
 
 
 class ObjectReference(object):
   """Wrapper class to make working with Cloud Storage bucket/objects easier."""
 
-  def __init__(self, bucket_ref, name):
-    self.bucket_ref = bucket_ref
+  GSUTIL_OBJECT_REGEX = r'^gs://(?P<bucket>[^/]+)/(?P<object>.+)'
+  GSUTIL_BUCKET_REGEX = r'^gs://(?P<bucket>[^/]+)/?'
+
+  def __init__(self, bucket, name):
+    self.bucket = bucket
     self.name = name
-    self._ValidateObjectName()
-
-  def _ValidateObjectName(self):
-    """Validate the given object name according to the naming requirements.
-
-    See https://cloud.google.com/storage/docs/naming#objectnames
-
-    Raises:
-      InvalidObjectNameError: if the given bucket name is invalid
-    """
-    if not 0 <= len(self.name.encode('utf8')) <= 1024:
-      raise InvalidObjectNameError(self.name, VALID_OBJECT_LENGTH_MESSAGE)
-    if '\r' in self.name or '\n' in self.name:
-      raise InvalidObjectNameError(self.name, VALID_OBJECT_CHARS_MESSAGE)
 
   @property
-  def bucket(self):
-    return self.bucket_ref.bucket
+  def object(self):
+    """Emulates the object field on the object core/resource ref."""
+    return self.name
+
+  @property
+  def bucket_ref(self):
+    """Gets a bucket reference for the bucket this object is in."""
+    return BucketReference(self.bucket)
+
+  @classmethod
+  def FromMessage(cls, obj):
+    """Create an object reference from an object message from the API."""
+    return cls(obj.bucket, obj.name)
+
+  @classmethod
+  def FromName(cls, bucket, name):
+    """Create an object reference after ensuring the name is valid."""
+    _ValidateBucketName(bucket)
+    # TODO(b/118379726): Fully implement the object naming requirement checks.
+    # See https://cloud.google.com/storage/docs/naming#objectnames
+    if not 0 <= len(name.encode('utf8')) <= 1024:
+      raise InvalidObjectNameError(name, VALID_OBJECT_LENGTH_MESSAGE)
+    if '\r' in name or '\n' in name:
+      raise InvalidObjectNameError(name, VALID_OBJECT_CHARS_MESSAGE)
+    return cls(bucket, name)
+
+  @classmethod
+  def FromBucketRef(cls, bucket_ref, name):
+    """Create an object reference from a bucket reference and a name."""
+    return cls.FromName(bucket_ref.bucket, name)
 
   @classmethod
   def FromUrl(cls, url, allow_empty_object=False):
     """Parse an object URL ('gs://' required) into an ObjectReference."""
-    match = re.match(GSUTIL_OBJECT_REGEX, url, re.DOTALL)
+    match = re.match(cls.GSUTIL_OBJECT_REGEX, url, re.DOTALL)
     if match:
-      return cls(BucketReference.FromBucketUrl(match.group('bucket')),
-                 match.group('object'))
-    match = re.match(GSUTIL_BUCKET_REGEX, url, re.DOTALL)
+      return cls.FromName(match.group('bucket'), match.group('object'))
+    match = re.match(cls.GSUTIL_BUCKET_REGEX, url, re.DOTALL)
     if match:
       if allow_empty_object:
-        return cls(BucketReference.FromBucketUrl(match.group('bucket')), '')
+        return cls(match.group('bucket'), '')
       else:
         raise InvalidObjectNameError('', 'Empty object name is not allowed')
     raise ValueError('Must be of form gs://bucket/object')
@@ -260,10 +267,10 @@ class ObjectReference(object):
     return True
 
   def ToUrl(self):
-    return '{}/{}'.format(self.bucket_ref.ToBucketUrl(), self.name)
+    return 'gs://{}/{}'.format(self.bucket, self.name)
 
   def GetPublicUrl(self):
-    return '{}/{}'.format(self.bucket_ref.GetPublicUrl(), self.name)
+    return 'https://storage.googleapis.com/{}/{}'.format(self.bucket, self.name)
 
   def __eq__(self, other):
     return self.ToUrl() == other.ToUrl()

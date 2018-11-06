@@ -24,7 +24,6 @@ import os
 import os.path
 import tarfile
 
-from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.core import log
@@ -163,7 +162,4 @@ class Snapshot(object):
                 object=gcs_object.object,
             ),
         )
-        return storage_client.CopyFileToGCS(
-            storage_util.BucketReference.FromBucketUrl(gcs_object.bucket),
-            archive_path,
-            gcs_object.object)
+        return storage_client.CopyFileToGCS(archive_path, gcs_object)

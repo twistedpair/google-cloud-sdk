@@ -78,7 +78,7 @@ FORWARDING_RULES_OVERVIEW_ALPHA = """\
 
         Forwarding rules can be either external, internal or internal self
         managed, specified with the
-        ``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_SELF_MANAGED]''
+        ``--load-balancing-scheme=[EXTERNAL|INTERNAL|INTERNAL_MANAGED|INTERNAL_SELF_MANAGED]''
         flag. External forwarding rules are accessible from the internet, while
         internal forwarding rules are only accessible from within their VPC
         networks. You can specify a reserved static external or internal IP
@@ -181,7 +181,8 @@ NETWORK_ARG_ALPHA = compute_flags.ResourceArgument(
     global_collection='compute.networks',
     short_help='Network that this forwarding rule applies to.',
     detailed_help="""\
-        (Only for --load-balancing-scheme=INTERNAL or
+        (Only for --load-balancing-scheme=INTERNAL,
+        --load-balancing-scheme=INTERNAL_MANAGED, or
         --load-balancing-scheme=INTERNAL_SELF_MANAGED) Network that this
         forwarding rule applies to. If this field is not specified, the default
         network will be used. In the absence of the default network, this field
@@ -336,11 +337,11 @@ def AddressArgHelp(include_alpha):
     (target instance). If this flag is omitted, an ephemeral external IP
     address is automatically assigned.
 
-    When the --load-balancing-scheme is INTERNAL, this can only be an RFC 1918
-    IP address belonging to the network/subnet configured for the forwarding
-    rule. If this flag is omitted, an ephemeral internal IP address will be
-    automatically allocated from the IP range of the subnet or network
-    configured for this forwarding rule.
+    When the --load-balancing-scheme is INTERNAL or INTERNAL_MANAGED, this can
+    only be an RFC 1918 IP address belonging to the network/subnet configured
+    for the forwarding rule. If this flag is omitted, an ephemeral internal IP
+    address will be automatically allocated from the IP range of the subnet or
+    network configured for this forwarding rule.
     %s
     Note: An IP address must be specified if the traffic is being forwarded to
     a VPN.
@@ -353,9 +354,8 @@ def AddressArgHelp(include_alpha):
     - regions/us-central1/addresses/address-1
     - global/addresses/address-1
     - address-1
-  """ % ('EXTERNAL, INTERNAL or INTERNAL_SELF_MANAGED' if include_alpha else
-         'EXTERNAL or INTERNAL',
-         """
+  """ % ('EXTERNAL, INTERNAL, INTERNAL_MANAGED or INTERNAL_SELF_MANAGED'
+         if include_alpha else 'EXTERNAL or INTERNAL', """
     When the --load-balancing-scheme is INTERNAL_SELF_MANAGED, this must
     be a URL reference to an existing Address resource.
          """ if include_alpha else '')
@@ -426,8 +426,11 @@ def AddLoadBalancingScheme(parser, include_alpha=False):
     load_balancing_choices.update({
         'INTERNAL_SELF_MANAGED':
             'Traffic director load balancing or forwarding, used with '
-            '--target-http-proxy, --target-https-proxy.'
+            '--target-http-proxy, --target-https-proxy.',
+        'INTERNAL_MANAGED': 'Internal HTTP(S) Load Balancing, used with '
+                            '--target-http-proxy, --target-https-proxy.'
     })
+
   parser.add_argument(
       '--load-balancing-scheme',
       choices=load_balancing_choices,

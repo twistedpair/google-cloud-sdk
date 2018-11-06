@@ -27,7 +27,6 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.serverless import flags
-from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -113,39 +112,15 @@ class DefaultFallthrough(deps.Fallthrough):
     return None
 
 
-class NamespaceFallthrough(deps.Fallthrough):
-  """Read the namespace from region and project.
-
-  For Hosted only.
-  """
-
-  def __init__(self):
-    super(NamespaceFallthrough, self).__init__(
-        function=None,
-        hint='set the properties [project] and [serverless/region]')
-
-  def _Call(self, parsed_args):
-    if (getattr(parsed_args, 'cluster', None) or
-        properties.VALUES.serverless.cluster.Get()):
-      return 'default'
-    region = flags.GetRegion(parsed_args, prompt=True)
-    if not region:
-      return None
-    project = (getattr(parsed_args, 'project', None) or
-               properties.VALUES.core.project.GetOrFail())
-    if not project:
-      return None
-    return '{}.{}'.format(region, project)
-
-
 def NamespaceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='namespace',
       help_text='The Kubernetes-style namespace for the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.serverless.namespace),
-          NamespaceFallthrough(),
           DefaultFallthrough(),
+          deps.ArgFallthrough('project'),
+          deps.PropertyFallthrough(properties.VALUES.core.project),
       ])
 
 
@@ -167,6 +142,12 @@ def ConfigurationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='configuration',
       help_text='The Configuration for the {resource}.')
+
+
+def RouteAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='route',
+      help_text='The Route for the {resource}.')
 
 
 def RevisionAttributeConfig():
@@ -217,6 +198,14 @@ def GetConfigurationResourceSpec():
       resource_name='configuration')
 
 
+def GetRouteResourceSpec():
+  return concepts.ResourceSpec(
+      'serverless.namespaces.routes',
+      namespacesId=NamespaceAttributeConfig(),
+      routesId=RouteAttributeConfig(),
+      resource_name='route')
+
+
 def GetRevisionResourceSpec():
   return concepts.ResourceSpec(
       'serverless.namespaces.revisions',
@@ -239,5 +228,3 @@ CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
     required=False,
     prefixes=True)
 
-
-CLUSTER_PARSER = concept_parsers.ConceptParser([CLUSTER_PRESENTATION])

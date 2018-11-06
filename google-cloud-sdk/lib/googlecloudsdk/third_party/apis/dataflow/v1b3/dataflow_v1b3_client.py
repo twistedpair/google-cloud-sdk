@@ -348,6 +348,32 @@ class DataflowV1b3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Snapshot(self, request, global_params=None):
+      r"""Snapshot the state of a streaming job.
+
+      Args:
+        request: (DataflowProjectsJobsSnapshotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snapshot) The response message.
+      """
+      config = self.GetMethodConfig('Snapshot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Snapshot.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataflow.projects.jobs.snapshot',
+        ordered_params=[u'projectId', u'jobId'],
+        path_params=[u'jobId', u'projectId'],
+        query_params=[],
+        relative_path=u'v1b3/projects/{projectId}/jobs/{jobId}:snapshot',
+        request_field=u'snapshotJobRequest',
+        request_type_name=u'DataflowProjectsJobsSnapshotRequest',
+        response_type_name=u'Snapshot',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates the state of an existing Cloud Dataflow job.
 
@@ -648,6 +674,32 @@ class DataflowV1b3(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Snapshot(self, request, global_params=None):
+      r"""Snapshot the state of a streaming job.
+
+      Args:
+        request: (DataflowProjectsLocationsJobsSnapshotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Snapshot) The response message.
+      """
+      config = self.GetMethodConfig('Snapshot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Snapshot.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'dataflow.projects.locations.jobs.snapshot',
+        ordered_params=[u'projectId', u'location', u'jobId'],
+        path_params=[u'jobId', u'location', u'projectId'],
+        query_params=[],
+        relative_path=u'v1b3/projects/{projectId}/locations/{location}/jobs/{jobId}:snapshot',
+        request_field=u'snapshotJobRequest',
+        request_type_name=u'DataflowProjectsLocationsJobsSnapshotRequest',
+        response_type_name=u'Snapshot',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates the state of an existing Cloud Dataflow job.
 
@@ -754,7 +806,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id=u'dataflow.projects.locations.templates.launch',
         ordered_params=[u'projectId', u'location'],
         path_params=[u'location', u'projectId'],
-        query_params=[u'gcsPath', u'validateOnly'],
+        query_params=[u'dynamicTemplate_gcsPath', u'dynamicTemplate_stagingLocation', u'gcsPath', u'validateOnly'],
         relative_path=u'v1b3/projects/{projectId}/locations/{location}/templates:launch',
         request_field=u'launchTemplateParameters',
         request_type_name=u'DataflowProjectsLocationsTemplatesLaunchRequest',
@@ -878,7 +930,7 @@ class DataflowV1b3(base_api.BaseApiClient):
         method_id=u'dataflow.projects.templates.launch',
         ordered_params=[u'projectId'],
         path_params=[u'projectId'],
-        query_params=[u'gcsPath', u'location', u'validateOnly'],
+        query_params=[u'dynamicTemplate_gcsPath', u'dynamicTemplate_stagingLocation', u'gcsPath', u'location', u'validateOnly'],
         relative_path=u'v1b3/projects/{projectId}/templates:launch',
         request_field=u'launchTemplateParameters',
         request_type_name=u'DataflowProjectsTemplatesLaunchRequest',

@@ -1685,7 +1685,7 @@ class GooglePrivacyDlpV2DateShiftConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2DateTime(_messages.Message):
-  r"""Message for a date time object.
+  r"""Message for a date time object. e.g. 2018-01-01, 5th August.
 
   Enums:
     DayOfWeekValueValuesEnum:
@@ -2343,7 +2343,8 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
     name: Name of the information type. Either a name of your choosing when
       creating a CustomInfoType, or one of the names listed at
       https://cloud.google.com/dlp/docs/infotypes-reference when specifying a
-      built-in type.
+      built-in type. InfoType names should conform to the pattern
+      [a-zA-Z0-9_]{1,64}.
   """
 
   name = _messages.StringField(1)
@@ -2659,7 +2660,7 @@ class GooglePrivacyDlpV2JobTrigger(_messages.Message):
     description: User provided description (max 256 chars)
     displayName: Display name (max 100 chars)
     errors: A stream of errors encountered when the trigger was activated.
-      Repeated errors may result in the JobTrigger automaticaly being paused.
+      Repeated errors may result in the JobTrigger automatically being paused.
       Will return the last 100 errors. Whenever the JobTrigger is modified
       this list will be cleared. Output only field.
     inspectJob: A GooglePrivacyDlpV2InspectJobConfig attribute.
@@ -2708,7 +2709,7 @@ class GooglePrivacyDlpV2KAnonymityConfig(_messages.Message):
   Fields:
     entityId: Optional message indicating that multiple rows might be
       associated to a single individual. If the same entity_id is associated
-      to multiple quasi-identifier tuples over distict rows, we consider the
+      to multiple quasi-identifier tuples over distinct rows, we consider the
       entire collection of tuples as the composite quasi-identifier. This
       collection is a multiset: the order in which the different tuples appear
       in the dataset is ignored, but their frequency is taken into account.
@@ -3411,7 +3412,7 @@ class GooglePrivacyDlpV2QuoteInfo(_messages.Message):
   r"""Message for infoType-dependent details parsed from quote.
 
   Fields:
-    dateTime: A GooglePrivacyDlpV2DateTime attribute.
+    dateTime: The date time indicated by the quote.
   """
 
   dateTime = _messages.MessageField('GooglePrivacyDlpV2DateTime', 1)

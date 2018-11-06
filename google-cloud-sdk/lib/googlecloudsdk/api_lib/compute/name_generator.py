@@ -35,8 +35,8 @@ def GenerateRandomName():
 
   Returns:
     The returned string will be 12 characters long and will begin with
-    a lowercase letter followed by 10 characters drawn from the set
-    [-a-z0-9] and finally a character drawn from the set [a-z0-9].
+    a lowercase letter followed by 11 characters drawn from the set
+    [a-z0-9].
   """
   buf = io.StringIO()
   buf.write(six.text_type(random.choice(_BEGIN_ALPHABET)))

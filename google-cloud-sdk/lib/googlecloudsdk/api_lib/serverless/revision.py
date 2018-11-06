@@ -80,3 +80,8 @@ class Revision(k8s_object.KubernetesObject):
   @property
   def image(self):
     return self._m.spec.container.image
+
+  @property
+  def image_digest(self):
+    """The URL of the image, by digest. Stable when tags are not."""
+    return self.status.imageDigest

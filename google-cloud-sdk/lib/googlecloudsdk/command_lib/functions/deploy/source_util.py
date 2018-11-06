@@ -110,7 +110,7 @@ def _UploadFileToGcs(source, function_ref, stage_bucket):
   zip_file = _GenerateRemoteZipFileName(function_ref.RelativeName())
   bucket_ref = storage_util.BucketReference.FromArgument(
       stage_bucket)
-  dest_object = storage_util.ObjectReference(bucket_ref, zip_file)
+  dest_object = storage_util.ObjectReference.FromBucketRef(bucket_ref, zip_file)
 
   # TODO(b/109938541): Remove gsutil implementation after the new implementation
   # seems stable.
@@ -118,7 +118,7 @@ def _UploadFileToGcs(source, function_ref, stage_bucket):
   if use_gsutil:
     upload_success = _UploadFileToGcsGsutil(source, dest_object)
   else:
-    upload_success = _UploadFileToGcsStorageApi(bucket_ref, source, dest_object)
+    upload_success = _UploadFileToGcsStorageApi(source, dest_object)
 
   if not upload_success:
     raise exceptions.FunctionsError(
@@ -134,11 +134,11 @@ def _UploadFileToGcsGsutil(source, dest_object):
   return ret_code == 0
 
 
-def _UploadFileToGcsStorageApi(bucket_ref, source, dest_object):
+def _UploadFileToGcsStorageApi(source, dest_object):
   """Upload local source files to GCS staging bucket. Returns upload success."""
   client = storage_api.StorageClient()
   try:
-    client.CopyFileToGCS(bucket_ref, source, dest_object.name)
+    client.CopyFileToGCS(source, dest_object)
     return True
   except calliope_exceptions.BadFileException:
     return False

@@ -24,6 +24,7 @@ import re
 
 from googlecloudsdk.command_lib.functions.deploy import env_vars_util
 from googlecloudsdk.command_lib.serverless import config_changes
+from googlecloudsdk.command_lib.serverless import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.serverless import local_config
 from googlecloudsdk.command_lib.serverless import source_ref as source_ref_util
 from googlecloudsdk.core import exceptions
@@ -233,3 +234,21 @@ def GetRegion(args, prompt=False):
         '`gcloud config set serverless/region {}`.'.format(region))
     return region
 
+
+def ValidateClusterArgs(args):
+  """Raise an error if a cluster is provided with no region.
+
+  Args:
+    args: Namespace, The args namespace.
+
+  Raises:
+    ConfigurationError if a cluster is specified without a location.
+  """
+  cluster_name = properties.VALUES.serverless.cluster.Get() or args.cluster
+  cluster_location = (properties.VALUES.serverless.cluster_location.Get() or
+                      args.cluster_location)
+  if cluster_name and not cluster_location:
+    raise serverless_exceptions.ConfigurationError(
+        'Connecting to a cluster requires a cluster location to be specified.'
+        'Either set the serverless/cluster_location property '
+        'or use the --cluster-location flag.')

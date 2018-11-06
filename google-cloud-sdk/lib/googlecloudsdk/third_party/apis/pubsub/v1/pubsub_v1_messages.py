@@ -60,12 +60,12 @@ class CreateSnapshotRequest(_messages.Message):
   subject to any SLA or deprecation policy.
 
   Messages:
-    LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
-      labels</a>.
+    LabelsValue: See <a href="https://cloud.google.com/pubsub/docs/labels">
+      Creating and managing labels</a>.
 
   Fields:
-    labels: See <a href="/pubsub/docs/labels"> Creating and managing
-      labels</a>.
+    labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
+      Creating and managing labels</a>.
     subscription: The subscription whose backlog the snapshot retains.
       Specifically, the created snapshot is guaranteed to retain:  (a) The
       existing backlog on the subscription. More precisely, this is
@@ -79,7 +79,8 @@ class CreateSnapshotRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See <a href="/pubsub/docs/labels"> Creating and managing labels</a>.
+    r"""See <a href="https://cloud.google.com/pubsub/docs/labels"> Creating
+    and managing labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -235,12 +236,13 @@ class MessageStoragePolicy(_messages.Message):
   r"""A MessageStoragePolicy object.
 
   Fields:
-    allowedPersistenceRegions: The list of GCP regions where messages that are
-      published to the topic may be persisted in storage. Messages published
-      by publishers running in non-allowed GCP regions (or running outside of
-      GCP altogether) will be routed for storage in one of the allowed
-      regions. An empty list indicates a misconfiguration at the project or
-      organization level, which will result in all Publish operations failing.
+    allowedPersistenceRegions: The list of GCP region IDs where messages that
+      are published to the topic may be persisted in storage. Messages
+      published by publishers running in non-allowed GCP regions (or running
+      outside of GCP altogether) will be routed for storage in one of the
+      allowed regions. An empty list indicates a misconfiguration at the
+      project or organization level, which will result in all Publish
+      operations failing.
   """
 
   allowedPersistenceRegions = _messages.StringField(1, repeated=True)
@@ -343,8 +345,8 @@ class PublishResponse(_messages.Message):
 class PubsubMessage(_messages.Message):
   r"""A message that is published by publishers and consumed by subscribers.
   The message must contain either a non-empty data field or at least one
-  attribute. See <a href="/pubsub/quotas">Quotas and limits</a> for more
-  information about message limits.
+  attribute. See <a href="https://cloud.google.com/pubsub/quotas">Quotas and
+  limits</a> for more information about message limits.
 
   Messages:
     AttributesValue: Optional attributes for this message.
@@ -403,8 +405,9 @@ class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
       provided in the request, the server will assign a random name for this
       snapshot on the same project as the subscription. Note that for REST API
       requests, you must specify a name.  See the <a
-      href="/pubsub/docs/admin#resource_names">resource name rules</a>. Format
-      is `projects/{project}/snapshots/{snap}`.
+      href="https://cloud.google.com/pubsub/docs/admin#resource_names">
+      resource name rules</a>. Format is
+      `projects/{project}/snapshots/{snap}`.
   """
 
   createSnapshotRequest = _messages.MessageField('CreateSnapshotRequest', 1)
@@ -989,17 +992,18 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class Snapshot(_messages.Message):
-  r"""A snapshot resource. Snapshots are used in <a href="/pubsub/docs/replay-
-  overview">Seek</a> operations, which allow you to manage message
-  acknowledgments in bulk. That is, you can set the acknowledgment state of
-  messages in an existing subscription to the state captured by a
-  snapshot.<br><br> <b>BETA:</b> This feature is part of a beta release. This
-  API might be changed in backward-incompatible ways and is not recommended
-  for production use. It is not subject to any SLA or deprecation policy.
+  r"""A snapshot resource. Snapshots are used in <a
+  href="https://cloud.google.com/pubsub/docs/replay-overview">Seek</a>
+  operations, which allow you to manage message acknowledgments in bulk. That
+  is, you can set the acknowledgment state of messages in an existing
+  subscription to the state captured by a snapshot.<br><br> <b>BETA:</b> This
+  feature is part of a beta release. This API might be changed in backward-
+  incompatible ways and is not recommended for production use. It is not
+  subject to any SLA or deprecation policy.
 
   Messages:
-    LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
-      labels</a>.
+    LabelsValue: See <a href="https://cloud.google.com/pubsub/docs/labels">
+      Creating and managing labels</a>.
 
   Fields:
     expireTime: The snapshot is guaranteed to exist up until this time. A
@@ -1013,8 +1017,8 @@ class Snapshot(_messages.Message):
       backlog as long as the snapshot exists -- will expire in 4 days. The
       service will refuse to create a snapshot that would expire in less than
       1 hour after creation.
-    labels: See <a href="/pubsub/docs/labels"> Creating and managing
-      labels</a>.
+    labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
+      Creating and managing labels</a>.
     name: The name of the snapshot.
     topic: The name of the topic from which this snapshot is retaining
       messages.
@@ -1022,7 +1026,8 @@ class Snapshot(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See <a href="/pubsub/docs/labels"> Creating and managing labels</a>.
+    r"""See <a href="https://cloud.google.com/pubsub/docs/labels"> Creating
+    and managing labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1117,8 +1122,8 @@ class Subscription(_messages.Message):
   r"""A subscription resource.
 
   Messages:
-    LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
-      labels</a>.
+    LabelsValue: See <a href="https://cloud.google.com/pubsub/docs/labels">
+      Creating and managing labels</a>.
 
   Fields:
     ackDeadlineSeconds: This value is the maximum time after a subscriber
@@ -1146,8 +1151,8 @@ class Subscription(_messages.Message):
       day. <b>BETA:</b> This feature is part of a beta release. This API might
       be changed in backward-incompatible ways and is not recommended for
       production use. It is not subject to any SLA or deprecation policy.
-    labels: See <a href="/pubsub/docs/labels"> Creating and managing
-      labels</a>.
+    labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
+      Creating and managing labels</a>.
     messageRetentionDuration: How long to retain unacknowledged messages in
       the subscription's backlog, from the moment a message is published. If
       `retain_acked_messages` is true, then this also configures the retention
@@ -1170,11 +1175,11 @@ class Subscription(_messages.Message):
       true, then messages are not expunged from the subscription's backlog,
       even if they are acknowledged, until they fall out of the
       `message_retention_duration` window. This must be true if you would like
-      to <a href="/pubsub/docs/replay-overview#seek_to_a_time">Seek to a
-      timestamp</a>. <br><br> <b>BETA:</b> This feature is part of a beta
-      release. This API might be changed in backward-incompatible ways and is
-      not recommended for production use. It is not subject to any SLA or
-      deprecation policy.
+      to <a href="https://cloud.google.com/pubsub/docs/replay-
+      overview#seek_to_a_time"> Seek to a timestamp</a>. <br><br> <b>BETA:</b>
+      This feature is part of a beta release. This API might be changed in
+      backward-incompatible ways and is not recommended for production use. It
+      is not subject to any SLA or deprecation policy.
     topic: The name of the topic from which this subscription is receiving
       messages. Format is `projects/{project}/topics/{topic}`. The value of
       this field will be `_deleted-topic_` if the topic has been deleted.
@@ -1182,7 +1187,8 @@ class Subscription(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See <a href="/pubsub/docs/labels"> Creating and managing labels</a>.
+    r"""See <a href="https://cloud.google.com/pubsub/docs/labels"> Creating
+    and managing labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1242,12 +1248,12 @@ class Topic(_messages.Message):
   r"""A topic resource.
 
   Messages:
-    LabelsValue: See <a href="/pubsub/docs/labels"> Creating and managing
-      labels</a>.
+    LabelsValue: See <a href="https://cloud.google.com/pubsub/docs/labels">
+      Creating and managing labels</a>.
 
   Fields:
-    labels: See <a href="/pubsub/docs/labels"> Creating and managing
-      labels</a>.
+    labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
+      Creating and managing labels</a>.
     messageStoragePolicy: Policy constraining how messages published to the
       topic may be stored. It is determined when the topic is created based on
       the policy configured at the project level. It must not be set by the
@@ -1265,7 +1271,8 @@ class Topic(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""See <a href="/pubsub/docs/labels"> Creating and managing labels</a>.
+    r"""See <a href="https://cloud.google.com/pubsub/docs/labels"> Creating
+    and managing labels</a>.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

@@ -945,7 +945,7 @@
       "type": "object",
       "properties": {
         "operation": {
-          "description": "Output only. An operation that indicates the status of the current scan.",
+          "description": "Output only. An operation that indicates the status of the current scan.\nThis field is deprecated, do not use.",
           "$ref": "Operation"
         },
         "continuousAnalysis": {

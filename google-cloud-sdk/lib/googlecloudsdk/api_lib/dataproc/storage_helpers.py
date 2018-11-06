@@ -76,10 +76,7 @@ def _UploadStorageClient(files, destination, storage_client=None):
     dest_url = os.path.join(destination, file_name)
     dest_object = storage_util.ObjectReference.FromUrl(dest_url)
     try:
-      client.CopyFileToGCS(
-          dest_object.bucket_ref,
-          file_to_upload,
-          dest_object.name)
+      client.CopyFileToGCS(file_to_upload, dest_object)
     except exceptions.BadFileException:
       raise dp_exceptions.FileUploadError(
           "Failed to upload files ['{0}'] to '{1}'.".format(

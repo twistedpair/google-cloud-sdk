@@ -829,6 +829,36 @@ For detailed information on this command and its flags, run:
   return buf.getvalue()
 
 
+def GetCategoricalUsage(command, categories):
+  """Constructs an alternative Usage markdown string organized into categories.
+
+  The string is formatted as a series of tables, one for each category. Each
+  subcommand and subgroup of the parent command is printed in its corresponding
+  table together with a short summary describing its functionality. If there are
+  no categories to display, then an emptry string is returned.
+
+  Args:
+    command: calliope._CommandCommon, The command object that we're helping.
+    categories: A dictionary mapping category name to the set of elements
+      belonging to that category.
+
+  Returns:
+    str, The command usage markdown string organized into categories.
+  """
+  if not categories:
+    return ''
+  buf = io.StringIO()
+  buf.write('# Available commands for {group}:\n'.format(
+      group=' '.join(command.GetPath())))
+  for category, elements in sorted(six.iteritems(categories)):
+    buf.write('\n### {category}\n\n'.format(category=category))
+    buf.write('---------------------- | ---\n')
+    for element in sorted(elements, key=lambda e: e.name):
+      buf.write('{name} | {description}\n'.format(
+          name=element.name, description=element.short_help))
+  return buf.getvalue()
+
+
 def ExtractHelpStrings(docstring):
   """Extracts short help and long help from a docstring.
 

@@ -190,6 +190,9 @@ class AndroidModel(_messages.Message):
       @OutputOnly
     id: The unique opaque id for this model. Use this for invoking the
       TestExecutionService. @OutputOnly
+    lowFpsVideoRecording: True if and only if tests with this model are
+      recorded by stitching together screenshots. See
+      use_low_spec_video_recording in device config. @OutputOnly
     manufacturer: The manufacturer of this device. @OutputOnly
     name: The human-readable marketing name for this device model. Examples:
       "Nexus 5", "Galaxy S5" @OutputOnly
@@ -246,15 +249,16 @@ class AndroidModel(_messages.Message):
   form = _messages.EnumField('FormValueValuesEnum', 3)
   formFactor = _messages.EnumField('FormFactorValueValuesEnum', 4)
   id = _messages.StringField(5)
-  manufacturer = _messages.StringField(6)
-  name = _messages.StringField(7)
-  screenDensity = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  screenX = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  screenY = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  supportedAbis = _messages.StringField(11, repeated=True)
-  supportedVersionIds = _messages.StringField(12, repeated=True)
-  tags = _messages.StringField(13, repeated=True)
-  videoRecordingNotSupported = _messages.BooleanField(14)
+  lowFpsVideoRecording = _messages.BooleanField(6)
+  manufacturer = _messages.StringField(7)
+  name = _messages.StringField(8)
+  screenDensity = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  screenX = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  screenY = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  supportedAbis = _messages.StringField(12, repeated=True)
+  supportedVersionIds = _messages.StringField(13, repeated=True)
+  tags = _messages.StringField(14, repeated=True)
+  videoRecordingNotSupported = _messages.BooleanField(15)
 
 
 class AndroidRoboTest(_messages.Message):

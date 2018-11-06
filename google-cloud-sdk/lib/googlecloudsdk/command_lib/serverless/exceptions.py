@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.util import exceptions as exceptions_util
 from googlecloudsdk.core import exceptions
 
 
@@ -84,6 +85,18 @@ class AppNotReadyError(exceptions.InternalError):
 class DeploymentFailedError(exceptions.Error):
   """An error was encountered during deployment."""
   pass
+
+
+class BadImageError(exceptions_util.HttpException):
+  """Invalid image provided in the revision template."""
+
+  # The relevant field that'll have a violation.
+  IMAGE_ERROR_FIELD = 'spec.revisionTemplate.spec.container.image'
+
+  def __init__(self, http_exception):
+    super(BadImageError, self).__init__(
+        http_exception,
+        '{{field_violations.{}}}'.format(self.IMAGE_ERROR_FIELD))
 
 
 class NoTLSError(exceptions.Error):

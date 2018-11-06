@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+from googlecloudsdk.api_lib.serverless import configuration
+from googlecloudsdk.api_lib.serverless import k8s_object
 from googlecloudsdk.command_lib.serverless import config_changes
 
 
@@ -59,6 +61,10 @@ class ServerlessContainer(Deployable):
     return None  # Irrelevant for containers
 
   def AdjustConfiguration(self, conf, metadata):
+    annotations = k8s_object.AnnotationsFromMetadata(
+        conf.MessagesModule(), metadata)
+    annotations[configuration.USER_IMAGE_ANNOTATION] = (
+        self.source_ref.source_path)
     conf.image = self.source_ref.source_path
     # Unset the build if we're deploying an image.
     # TODO(b/112662240): Remove conditional once this field is public

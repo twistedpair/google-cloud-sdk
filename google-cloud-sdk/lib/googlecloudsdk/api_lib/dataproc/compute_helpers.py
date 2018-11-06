@@ -30,7 +30,7 @@ from googlecloudsdk.core import properties
 
 # Copy into dataproc for cleaner separation
 SCOPE_ALIASES = compute_constants.SCOPES
-SCOPE_ALIASES_FOR_HELP = compute_constants.ScopesForHelp()
+SCOPES_HELP = compute_constants.ScopesHelp()
 
 
 def ExpandScopeAliases(scopes):

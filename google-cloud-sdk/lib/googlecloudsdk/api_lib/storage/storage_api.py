@@ -41,15 +41,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import http
 
 
-GSUTIL_BUCKET_REGEX = r'^gs://.*$'
-
-LOG_OUTPUT_BEGIN = ' REMOTE BUILD OUTPUT '
-LOG_OUTPUT_INCOMPLETE = ' (possibly incomplete) '
-OUTPUT_LINE_CHAR = '-'
-GCS_URL_PATTERN = (
-    'https://www.googleapis.com/storage/v1/b/{bucket}/o/{obj}?alt=media')
-
-
 class Error(core_exc.Error):
   """Base exception for storage API module."""
 
@@ -113,9 +104,9 @@ class StorageClient(object):
     return self.client.objects.Copy(
         self.messages.StorageObjectsCopyRequest(
             sourceBucket=src.bucket,
-            sourceObject=src.name,
+            sourceObject=src.object,
             destinationBucket=dst.bucket,
-            destinationObject=dst.name,
+            destinationObject=dst.object,
         ))
 
   def Rewrite(self, src, dst):
@@ -157,17 +148,15 @@ class StorageClient(object):
     """
     return self.client.objects.Get(self.messages.StorageObjectsGetRequest(
         bucket=object_ref.bucket,
-        object=object_ref.name))
+        object=object_ref.object))
 
-  def CopyFileToGCS(self, bucket_ref, local_path, target_path):
+  def CopyFileToGCS(self, local_path, target_obj_ref):
     """Upload a file to the GCS results bucket using the storage API.
 
     Args:
-      bucket_ref: storage_util.BucketReference, The user-specified bucket to
-        download from.
       local_path: str, the path of the file to upload. File must be on the local
         filesystem.
-      target_path: str, the path of the file on GCS.
+      target_obj_ref: storage_util.ObjectReference, the path of the file on GCS.
 
     Returns:
       Object, the storage object that was copied to.
@@ -186,12 +175,12 @@ class StorageClient(object):
     upload = transfer.Upload.FromFile(
         local_path, mime_type=mime_type, chunksize=chunksize)
     insert_req = self.messages.StorageObjectsInsertRequest(
-        bucket=bucket_ref.bucket,
-        name=target_path,
+        bucket=target_obj_ref.bucket,
+        name=target_obj_ref.object,
         object=src_obj)
 
     gsc_path = '{bucket}/{target_path}'.format(
-        bucket=bucket_ref.bucket, target_path=target_path,
+        bucket=target_obj_ref.bucket, target_path=target_obj_ref.object,
     )
 
     log.info('Uploading [{local_file}] to [{gcs}]'.format(local_file=local_path,
@@ -201,7 +190,7 @@ class StorageClient(object):
     except api_exceptions.HttpNotFoundError:
       raise BucketNotFoundError(
           'Could not upload file: [{bucket}] bucket does not exist.'
-          .format(bucket=bucket_ref.bucket))
+          .format(bucket=target_obj_ref.bucket))
     except api_exceptions.HttpError as err:
       log.debug('Could not upload file [{local_file}] to [{gcs}]: {e}'.format(
           local_file=local_path, gcs=gsc_path,
@@ -220,15 +209,13 @@ class StorageClient(object):
           'file: {0}. Please retry.'.format(local_path))
     return response
 
-  def CopyFileFromGCS(self, bucket_ref, object_path, local_path,
-                      overwrite=False):
+  def CopyFileFromGCS(self, source_obj_ref, local_path, overwrite=False):
     """Download a file from the given Cloud Storage bucket.
 
     Args:
-      bucket_ref: storage_util.BucketReference, The user-specified bucket to
-        download from.
-      object_path: str, the path of the file on GCS.
-      local_path: str, the path of the file to download. Path must be on the
+      source_obj_ref: storage_util.ObjectReference, the path of the file on GCS
+        to download.
+      local_path: str, the path of the file to download to. Path must be on the
         local filesystem.
       overwrite: bool, whether or not to overwrite local_path if it already
         exists.
@@ -241,11 +228,11 @@ class StorageClient(object):
         local_path, chunksize=chunksize, overwrite=overwrite)
     download.bytes_http = http.Http(response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
-        bucket=bucket_ref.bucket,
-        object=object_path)
+        bucket=source_obj_ref.bucket,
+        object=source_obj_ref.object)
 
     gsc_path = '{bucket}/{object_path}'.format(
-        bucket=bucket_ref.bucket, object_path=object_path,
+        bucket=source_obj_ref.bucket, object_path=source_obj_ref.object,
     )
 
     log.info('Downloading [{gcs}] to [{local_file}]'.format(
@@ -289,7 +276,7 @@ class StorageClient(object):
     download.bytes_http = http.Http(response_encoding=None)
     get_req = self.messages.StorageObjectsGetRequest(
         bucket=object_ref.bucket,
-        object=object_ref.name)
+        object=object_ref.object)
 
     log.info('Reading [%s]', object_ref)
     try:
@@ -396,16 +383,15 @@ class StorageClient(object):
                   message=http_exc.HttpException(
                       e, error_format='{status_message}')))
 
-  def DeleteObject(self, bucket_ref, object_path):
+  def DeleteObject(self, object_ref):
     """Delete the specified object.
 
     Args:
-      bucket_ref: storage_util.BucketReference to the bucket of the object
-      object_path: path to the object within the bucket.
+      object_ref: storage_util.ObjectReference, The object to delete.
     """
     self.client.objects.Delete(self.messages.StorageObjectsDeleteRequest(
-        bucket=bucket_ref.bucket,
-        object=object_path))
+        bucket=object_ref.bucket,
+        object=object_ref.object))
 
   def DeleteBucket(self, bucket_ref):
     """Delete the specified bucket.

@@ -152,7 +152,7 @@ def UploadSource(upload_dir, source_files, object_ref, gen_files=None):
       _CreateTar(upload_dir, gen_files, included_paths, gz)
     f.close()
     storage_client = storage_api.StorageClient()
-    storage_client.CopyFileToGCS(object_ref.bucket_ref, f.name, object_ref.name)
+    storage_client.CopyFileToGCS(f.name, object_ref)
 
 
 def GetServiceTimeoutSeconds(timeout_property_str):

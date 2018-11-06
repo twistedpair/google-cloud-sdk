@@ -670,14 +670,12 @@ class Address(_messages.Message):
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
       NAT_AUTO: <no description>
-      UNSPECIFIED_PURPOSE: <no description>
       VPC_PEERING: <no description>
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
     NAT_AUTO = 2
-    UNSPECIFIED_PURPOSE = 3
-    VPC_PEERING = 4
+    VPC_PEERING = 3
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -3136,6 +3134,9 @@ class BackendService(_messages.Message):
       with internal or external load balancing. A backend service created for
       one type of load balancing cannot be used with the other. Possible
       values are INTERNAL and EXTERNAL.
+    logConfig: This field denotes the logging options for the load balancer
+      traffic served by this backend service. If logging is enabled, logs will
+      be exported to Stackdriver.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -3247,15 +3248,16 @@ class BackendService(_messages.Message):
   id = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(16, default=u'compute#backendService')
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 17)
-  name = _messages.StringField(18)
-  port = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(20)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 21)
-  region = _messages.StringField(22)
-  securityPolicy = _messages.StringField(23)
-  selfLink = _messages.StringField(24)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 25)
-  timeoutSec = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 18)
+  name = _messages.StringField(19)
+  port = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(21)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 22)
+  region = _messages.StringField(23)
+  securityPolicy = _messages.StringField(24)
+  selfLink = _messages.StringField(25)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 26)
+  timeoutSec = _messages.IntegerField(27, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -3697,6 +3699,24 @@ class BackendServiceList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class BackendServiceLogConfig(_messages.Message):
+  r"""The available logging options for the load balancer traffic served by
+  this backend service.
+
+  Fields:
+    enable: This field denotes whether to enable logging for the load balancer
+      traffic served by this backend service.
+    sampleRate: This field can only be specified if logging is enabled for
+      this backend service. The value of the field must be in [0, 1]. This
+      configures the sampling rate of requests to the load balancer where 1.0
+      means all logged requests are reported and 0.0 means no logged requests
+      are reported. The default value is 1.0.
+  """
+
+  enable = _messages.BooleanField(1)
+  sampleRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class BackendServiceReference(_messages.Message):
@@ -4761,6 +4781,31 @@ class ComputeAllocationsAggregatedListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeAllocationsDeleteRequest(_messages.Message):
+  r"""A ComputeAllocationsDeleteRequest object.
+
+  Fields:
+    allocation: Name of the allocation to delete.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: Name of the zone for this request.
+  """
+
+  allocation = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeAllocationsGetIamPolicyRequest(_messages.Message):
@@ -11575,6 +11620,75 @@ class ComputeNetworksListIpOwnersRequest(_messages.Message):
   subnetRegion = _messages.StringField(11)
 
 
+class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
+  r"""A ComputeNetworksListPeeringRoutesRequest object.
+
+  Enums:
+    DirectionValueValuesEnum: The direction of the exchanged routes.
+
+  Fields:
+    direction: The direction of the exchanged routes.
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    network: Name of the network for this request.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    peeringName: The response will show routes exchanged over the given
+      peering connection.
+    project: Project ID for this request.
+    region: The region of the request. The response will include all subnet
+      routes, static routes and dynamic routes in the region.
+  """
+
+  class DirectionValueValuesEnum(_messages.Enum):
+    r"""The direction of the exchanged routes.
+
+    Values:
+      INCOMING: <no description>
+      OUTGOING: <no description>
+    """
+    INCOMING = 0
+    OUTGOING = 1
+
+  direction = _messages.EnumField('DirectionValueValuesEnum', 1)
+  filter = _messages.StringField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  network = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(5)
+  pageToken = _messages.StringField(6)
+  peeringName = _messages.StringField(7)
+  project = _messages.StringField(8, required=True)
+  region = _messages.StringField(9)
+
+
 class ComputeNetworksListRequest(_messages.Message):
   r"""A ComputeNetworksListRequest object.
 
@@ -11741,7 +11855,7 @@ class ComputeNodeGroupsAddNodesRequest(_messages.Message):
   r"""A ComputeNodeGroupsAddNodesRequest object.
 
   Fields:
-    nodeGroup: Name of the NodeGroup resource to delete.
+    nodeGroup: Name of the NodeGroup resource.
     nodeGroupsAddNodesRequest: A NodeGroupsAddNodesRequest resource to be
       passed as the request body.
     project: Project ID for this request.
@@ -20876,6 +20990,165 @@ class DistributionPolicyZoneConfiguration(_messages.Message):
   zone = _messages.StringField(1)
 
 
+class ExchangedPeeringRoute(_messages.Message):
+  r"""A ExchangedPeeringRoute object.
+
+  Enums:
+    TypeValueValuesEnum: The type of the peering route.
+
+  Fields:
+    destRange: The destination range of the route.
+    imported: If the peering route is imported if there is no confliction.
+    nextHopRegion: The region of peering route next hop, only applies to
+      dynamic routes.
+    priority: The priority of the peering route.
+    type: The type of the peering route.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the peering route.
+
+    Values:
+      DYNAMIC_PEERING_ROUTE: <no description>
+      STATIC_PEERING_ROUTE: <no description>
+      SUBNET_PEERING_ROUTE: <no description>
+    """
+    DYNAMIC_PEERING_ROUTE = 0
+    STATIC_PEERING_ROUTE = 1
+    SUBNET_PEERING_ROUTE = 2
+
+  destRange = _messages.StringField(1)
+  imported = _messages.BooleanField(2)
+  nextHopRegion = _messages.StringField(3)
+  priority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+
+
+class ExchangedPeeringRoutesList(_messages.Message):
+  r"""A ExchangedPeeringRoutesList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of ExchangedPeeringRoute resources.
+    kind: [Output Only] Type of resource. Always
+      compute#exchangedPeeringRoutesList for exchanged peering routes lists.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: <no description>
+        DEPRECATED_RESOURCE_USED: <no description>
+        DEPRECATED_TYPE_USED: <no description>
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: <no description>
+        EXPERIMENTAL_TYPE_USED: <no description>
+        EXTERNAL_API_WARNING: <no description>
+        FIELD_VALUE_OVERRIDEN: <no description>
+        INJECTED_KERNELS_DEPRECATED: <no description>
+        MISSING_TYPE_DEPENDENCY: <no description>
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: <no description>
+        NEXT_HOP_CANNOT_IP_FORWARD: <no description>
+        NEXT_HOP_INSTANCE_NOT_FOUND: <no description>
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: <no description>
+        NEXT_HOP_NOT_RUNNING: <no description>
+        NOT_CRITICAL_ERROR: <no description>
+        NO_RESULTS_ON_PAGE: <no description>
+        REQUIRED_TOS_AGREEMENT: <no description>
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: <no description>
+        RESOURCE_NOT_DELETED: <no description>
+        SCHEMA_VALIDATION_IGNORED: <no description>
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: <no description>
+        UNDECLARED_PROPERTIES: <no description>
+        UNREACHABLE: <no description>
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      MISSING_TYPE_DEPENDENCY = 8
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 9
+      NEXT_HOP_CANNOT_IP_FORWARD = 10
+      NEXT_HOP_INSTANCE_NOT_FOUND = 11
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 12
+      NEXT_HOP_NOT_RUNNING = 13
+      NOT_CRITICAL_ERROR = 14
+      NO_RESULTS_ON_PAGE = 15
+      REQUIRED_TOS_AGREEMENT = 16
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 17
+      RESOURCE_NOT_DELETED = 18
+      SCHEMA_VALIDATION_IGNORED = 19
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 20
+      UNDECLARED_PROPERTIES = 21
+      UNREACHABLE = 22
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ExchangedPeeringRoute', 2, repeated=True)
+  kind = _messages.StringField(3, default=u'compute#exchangedPeeringRoutesList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class Expr(_messages.Message):
   r"""Represents an expression text. Example:  title: "User account presence"
   description: "Determines whether the request has a user account" expression:
@@ -20935,13 +21208,16 @@ class Firewall(_messages.Message):
       to the network it is associated with. When set to true, the firewall
       rule is not enforced and the network behaves as if it did not exist. If
       this is unspecified, the firewall rule will be enabled.
-    enableLogging: This field denotes whether to enable logging for a
-      particular firewall rule. If logging is enabled, logs will be exported
-      to Stackdriver.
+    enableLogging: Deprecated in favor of enable in LogConfig. This field
+      denotes whether to enable logging for a particular firewall rule. If
+      logging is enabled, logs will be exported to Stackdriver.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#firewall for
       firewall rules.
+    logConfig: This field denotes the logging options for a particular
+      firewall rule. If logging is enabled, logs will be exported to
+      Stackdriver.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -21067,15 +21343,16 @@ class Firewall(_messages.Message):
   enableLogging = _messages.BooleanField(8)
   id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(10, default=u'compute#firewall')
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  priority = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(14)
-  sourceRanges = _messages.StringField(15, repeated=True)
-  sourceServiceAccounts = _messages.StringField(16, repeated=True)
-  sourceTags = _messages.StringField(17, repeated=True)
-  targetServiceAccounts = _messages.StringField(18, repeated=True)
-  targetTags = _messages.StringField(19, repeated=True)
+  logConfig = _messages.MessageField('FirewallLogConfig', 11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  priority = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(15)
+  sourceRanges = _messages.StringField(16, repeated=True)
+  sourceServiceAccounts = _messages.StringField(17, repeated=True)
+  sourceTags = _messages.StringField(18, repeated=True)
+  targetServiceAccounts = _messages.StringField(19, repeated=True)
+  targetTags = _messages.StringField(20, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -21201,6 +21478,17 @@ class FirewallList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class FirewallLogConfig(_messages.Message):
+  r"""The available logging options for a firewall rule.
+
+  Fields:
+    enable: This field denotes whether to enable logging for a particular
+      firewall rule.
+  """
+
+  enable = _messages.BooleanField(1)
 
 
 class FixedOrPercent(_messages.Message):
@@ -21368,10 +21656,10 @@ class ForwardingRule(_messages.Message):
       1688, 1883, 5222  - TargetVpnGateway: 500, 4500
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
-      single port or a comma separated list of ports can be configured. Only
-      packets addressed to these ports will be forwarded to the backends
-      configured with this forwarding rule.  You may specify a maximum of up
-      to 5 ports.
+      list of ports can be configured, for example, ['80'], ['8000','9000']
+      etc. Only packets addressed to these ports will be forwarded to the
+      backends configured with this forwarding rule.  You may specify a
+      maximum of up to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
       must specify this field as part of the HTTP request URL. It is not
@@ -25208,7 +25496,7 @@ class InstanceGroupManagersResizeAdvancedRequest(_messages.Message):
       attempts to create all instances initiated by this resize request only
       once. If there is an error during creation, the managed instance group
       does not retry create this instance, and we will decrease the targetSize
-      of the request instead. If the flag is false, the group attemps to
+      of the request instead. If the flag is false, the group attempts to
       recreate each instance continuously until it succeeds.  This flag
       matters only in the first attempt of creation of an instance. After an
       instance is successfully created while this flag is enabled, the
@@ -26837,17 +27125,15 @@ class InterconnectAttachment(_messages.Message):
     region: [Output Only] URL of the region where the regional interconnect
       attachment resides. You must specify this field as part of the HTTP
       request URL. It is not settable as a field in the request body.
-    router: URL of the cloud router to be used for dynamic routing. This
+    router: URL of the Cloud Router to be used for dynamic routing. This
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
       the network & region within which the Cloud Router is configured.
     selfLink: [Output Only] Server-defined URL for the resource.
     state: [Output Only] The current state of this attachment's functionality.
     type: A TypeValueValuesEnum attribute.
-    vlanTag8021q: Available only for DEDICATED and PARTNER_PROVIDER. Desired
-      VLAN tag for this attachment, in the range 2-4094. This field refers to
-      802.1q VLAN tag, also known as IEEE 802.1Q Only specified at creation
-      time.
+    vlanTag8021q: The IEEE 802.1Q VLAN tag for this attachment, in the range
+      2-4094. Only specified at creation time.
   """
 
   class BandwidthValueValuesEnum(_messages.Enum):
@@ -27509,7 +27795,10 @@ class InterconnectDiagnosticsLinkOpticalPower(_messages.Message):
 
   Fields:
     state: A StateValueValuesEnum attribute.
-    value: Value of the current optical power, read in dBm.
+    value: Value of the current optical power, read in dBm. Take a known good
+      optical value, give it a 10% margin and trigger warnings relative to
+      that value. In general, a -7dBm warning and a -11dBm alarm are good
+      optical value estimates for most links.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -33444,6 +33733,7 @@ class Quota(_messages.Message):
       TARGET_TCP_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
       URL_MAPS: <no description>
+      VPN_GATEWAYS: <no description>
       VPN_TUNNELS: <no description>
     """
     AMD_S9300_GPUS = 0
@@ -33514,7 +33804,8 @@ class Quota(_messages.Message):
     TARGET_TCP_PROXIES = 65
     TARGET_VPN_GATEWAYS = 66
     URL_MAPS = 67
-    VPN_TUNNELS = 68
+    VPN_GATEWAYS = 68
+    VPN_TUNNELS = 69
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -36076,12 +36367,13 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
-    ManagementTypeValueValuesEnum: [Output Only] Type of how the
-      resource/configuration of the BGP peer is managed. MANAGED_BY_USER is
-      the default value; MANAGED_BY_ATTACHMENT represents an BGP peer that is
-      automatically created for PARTNER interconnectAttachment, Google will
-      automatically create/delete this type of BGP peer when the PARTNER
-      interconnectAttachment is created/deleted.
+    ManagementTypeValueValuesEnum: [Output Only] The resource that configures
+      and manages this BGP peer. MANAGED_BY_USER is the default value and can
+      be managed by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer
+      that is configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google will automatically
+      create, update, and delete this type of BGP peer when the PARTNER
+      InterconnectAttachment is created, updated, or deleted.
 
   Fields:
     advertiseMode: User-specified flag to indicate which mode to use for
@@ -36103,12 +36395,13 @@ class RouterBgpPeer(_messages.Message):
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
-    managementType: [Output Only] Type of how the resource/configuration of
-      the BGP peer is managed. MANAGED_BY_USER is the default value;
-      MANAGED_BY_ATTACHMENT represents an BGP peer that is automatically
-      created for PARTNER interconnectAttachment, Google will automatically
-      create/delete this type of BGP peer when the PARTNER
-      interconnectAttachment is created/deleted.
+    managementType: [Output Only] The resource that configures and manages
+      this BGP peer. MANAGED_BY_USER is the default value and can be managed
+      by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer that is
+      configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google will automatically
+      create, update, and delete this type of BGP peer when the PARTNER
+      InterconnectAttachment is created, updated, or deleted.
     name: Name of this BGP peer. The name must be 1-63 characters long and
       comply with RFC1035.
     peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
@@ -36136,11 +36429,13 @@ class RouterBgpPeer(_messages.Message):
     ALL_SUBNETS = 0
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
-    r"""[Output Only] Type of how the resource/configuration of the BGP peer
-    is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
-    represents an BGP peer that is automatically created for PARTNER
-    interconnectAttachment, Google will automatically create/delete this type
-    of BGP peer when the PARTNER interconnectAttachment is created/deleted.
+    r"""[Output Only] The resource that configures and manages this BGP peer.
+    MANAGED_BY_USER is the default value and can be managed by you or other
+    users; MANAGED_BY_ATTACHMENT is a BGP peer that is configured and managed
+    by Cloud Interconnect, specifically by an InterconnectAttachment of type
+    PARTNER. Google will automatically create, update, and delete this type of
+    BGP peer when the PARTNER InterconnectAttachment is created, updated, or
+    deleted.
 
     Values:
       MANAGED_BY_ATTACHMENT: <no description>
@@ -36165,12 +36460,13 @@ class RouterInterface(_messages.Message):
   r"""A RouterInterface object.
 
   Enums:
-    ManagementTypeValueValuesEnum: [Output Only] Type of how the
-      resource/configuration of the interface is managed. MANAGED_BY_USER is
-      the default value; MANAGED_BY_ATTACHMENT represents an interface that is
-      automatically created for PARTNER type interconnectAttachment, Google
-      will automatically create/update/delete this type of interface when the
-      PARTNER interconnectAttachment is created/provisioned/deleted.
+    ManagementTypeValueValuesEnum: [Output Only] The resource that configures
+      and manages this interface. MANAGED_BY_USER is the default value and can
+      be managed by you or other users; MANAGED_BY_ATTACHMENT is an interface
+      that is configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google will automatically
+      create, update, and delete this type of interface when the PARTNER
+      InterconnectAttachment is created, updated, or deleted.
 
   Fields:
     ipRange: IP address and range of the interface. The IP range must be in
@@ -36185,23 +36481,25 @@ class RouterInterface(_messages.Message):
       region as the router. Each interface can have at most one linked
       resource and it could either be a VPN Tunnel or an interconnect
       attachment.
-    managementType: [Output Only] Type of how the resource/configuration of
-      the interface is managed. MANAGED_BY_USER is the default value;
-      MANAGED_BY_ATTACHMENT represents an interface that is automatically
-      created for PARTNER type interconnectAttachment, Google will
-      automatically create/update/delete this type of interface when the
-      PARTNER interconnectAttachment is created/provisioned/deleted.
+    managementType: [Output Only] The resource that configures and manages
+      this interface. MANAGED_BY_USER is the default value and can be managed
+      by you or other users; MANAGED_BY_ATTACHMENT is an interface that is
+      configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google will automatically
+      create, update, and delete this type of interface when the PARTNER
+      InterconnectAttachment is created, updated, or deleted.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
   """
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
-    r"""[Output Only] Type of how the resource/configuration of the interface
-    is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
-    represents an interface that is automatically created for PARTNER type
-    interconnectAttachment, Google will automatically create/update/delete
-    this type of interface when the PARTNER interconnectAttachment is
-    created/provisioned/deleted.
+    r"""[Output Only] The resource that configures and manages this interface.
+    MANAGED_BY_USER is the default value and can be managed by you or other
+    users; MANAGED_BY_ATTACHMENT is an interface that is configured and
+    managed by Cloud Interconnect, specifically by an InterconnectAttachment
+    of type PARTNER. Google will automatically create, update, and delete this
+    type of interface when the PARTNER InterconnectAttachment is created,
+    updated, or deleted.
 
     Values:
       MANAGED_BY_ATTACHMENT: <no description>
@@ -37668,7 +37966,7 @@ class Snapshot(_messages.Message):
       by the setLabels method. Label values may be empty.
 
   Fields:
-    autoCreated: [Output Only] Set to true if snapshots are autoamtically by
+    autoCreated: [Output Only] Set to true if snapshots are automatically by
       applying resource policy on the target disk.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -39102,6 +39400,9 @@ class Subnetwork(_messages.Message):
       owned by this subnetwork.
     kind: [Output Only] Type of the resource. Always compute#subnetwork for
       Subnetwork resources.
+    logConfig: This field denotes the logging options for the load balancer
+      traffic served by this backend service. If logging is enabled, logs will
+      be exported to Stackdriver.
     metadata: Can only be specified if VPC flow logging for this subnetwork is
       enabled. Configures whether metadata fields should be added to the
       reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
@@ -39237,16 +39538,17 @@ class Subnetwork(_messages.Message):
   ipCidrRange = _messages.StringField(11)
   ipv6CidrRange = _messages.StringField(12)
   kind = _messages.StringField(13, default=u'compute#subnetwork')
-  metadata = _messages.EnumField('MetadataValueValuesEnum', 14)
-  name = _messages.StringField(15)
-  network = _messages.StringField(16)
-  privateIpGoogleAccess = _messages.BooleanField(17)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 18)
-  region = _messages.StringField(19)
-  role = _messages.EnumField('RoleValueValuesEnum', 20)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 21, repeated=True)
-  selfLink = _messages.StringField(22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
+  logConfig = _messages.MessageField('SubnetworkLogConfig', 14)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 15)
+  name = _messages.StringField(16)
+  network = _messages.StringField(17)
+  privateIpGoogleAccess = _messages.BooleanField(18)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 19)
+  region = _messages.StringField(20)
+  role = _messages.EnumField('RoleValueValuesEnum', 21)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 22, repeated=True)
+  selfLink = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
 
 
 class SubnetworkAggregatedList(_messages.Message):
@@ -39523,6 +39825,78 @@ class SubnetworkList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class SubnetworkLogConfig(_messages.Message):
+  r"""The available logging options for this subnetwork.
+
+  Enums:
+    AggregationIntervalValueValuesEnum: Can only be specified if VPC flow
+      logging for this subnetwork is enabled. Toggles the aggregation interval
+      for collecting flow logs. Increasing the interval time will reduce the
+      amount of generated flow logs for long lasting connections. Default is
+      an interval of 5 seconds per connection.
+    MetadataValueValuesEnum: Can only be specified if VPC flow logging for
+      this subnetwork is enabled. Configures whether metadata fields should be
+      added to the reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+
+  Fields:
+    aggregationInterval: Can only be specified if VPC flow logging for this
+      subnetwork is enabled. Toggles the aggregation interval for collecting
+      flow logs. Increasing the interval time will reduce the amount of
+      generated flow logs for long lasting connections. Default is an interval
+      of 5 seconds per connection.
+    enable: Whether to enable flow logging for this subnetwork. If this field
+      is not explicitly set, it will not appear in get listings. If not set
+      the default behavior is to disable flow logging.
+    flowSampling: Can only be specified if VPC flow logging for this
+      subnetwork is enabled. The value of the field must be in [0, 1]. Set the
+      sampling rate of VPC flow logs within the subnetwork where 1.0 means all
+      collected logs are reported and 0.0 means no logs are reported. Default
+      is 0.5 which means half of all collected logs are reported.
+    metadata: Can only be specified if VPC flow logging for this subnetwork is
+      enabled. Configures whether metadata fields should be added to the
+      reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+  """
+
+  class AggregationIntervalValueValuesEnum(_messages.Enum):
+    r"""Can only be specified if VPC flow logging for this subnetwork is
+    enabled. Toggles the aggregation interval for collecting flow logs.
+    Increasing the interval time will reduce the amount of generated flow logs
+    for long lasting connections. Default is an interval of 5 seconds per
+    connection.
+
+    Values:
+      INTERVAL_10_MIN: <no description>
+      INTERVAL_15_MIN: <no description>
+      INTERVAL_1_MIN: <no description>
+      INTERVAL_30_SEC: <no description>
+      INTERVAL_5_MIN: <no description>
+      INTERVAL_5_SEC: <no description>
+    """
+    INTERVAL_10_MIN = 0
+    INTERVAL_15_MIN = 1
+    INTERVAL_1_MIN = 2
+    INTERVAL_30_SEC = 3
+    INTERVAL_5_MIN = 4
+    INTERVAL_5_SEC = 5
+
+  class MetadataValueValuesEnum(_messages.Enum):
+    r"""Can only be specified if VPC flow logging for this subnetwork is
+    enabled. Configures whether metadata fields should be added to the
+    reported VPC flow logs. Default is INCLUDE_ALL_METADATA.
+
+    Values:
+      EXCLUDE_ALL_METADATA: <no description>
+      INCLUDE_ALL_METADATA: <no description>
+    """
+    EXCLUDE_ALL_METADATA = 0
+    INCLUDE_ALL_METADATA = 1
+
+  aggregationInterval = _messages.EnumField('AggregationIntervalValueValuesEnum', 1)
+  enable = _messages.BooleanField(2)
+  flowSampling = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 4)
 
 
 class SubnetworkSecondaryRange(_messages.Message):

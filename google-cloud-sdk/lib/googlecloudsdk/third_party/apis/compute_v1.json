@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20181019",
+ "revision": "20181030",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -587,6 +587,10 @@
       ]
      }
     },
+    "network": {
+     "type": "string",
+     "description": "The URL of the network in which to reserve the address. This field can only be used with INTERNAL type with VPC_PEERING purpose."
+    },
     "networkTier": {
      "type": "string",
      "description": "This signifies the networking tier used for configuring this Address and can only take the following values: PREMIUM , STANDARD.\n\nIf this field is not specified, it is assumed to be PREMIUM.",
@@ -595,6 +599,25 @@
       "STANDARD"
      ],
      "enumDescriptions": [
+      "",
+      ""
+     ]
+    },
+    "prefixLength": {
+     "type": "integer",
+     "description": "The prefix length if the resource reprensents an IP range.",
+     "format": "int32"
+    },
+    "purpose": {
+     "type": "string",
+     "description": "The purpose of resource, only used with INTERNAL type.",
+     "enum": [
+      "DNS_RESOLVER",
+      "GCE_ENDPOINT",
+      "VPC_PEERING"
+     ],
+     "enumDescriptions": [
+      "",
       "",
       ""
      ]
@@ -3956,6 +3979,10 @@
      "description": "[Output Only] Type of the resource. Always compute#firewall for firewall rules.",
      "default": "compute#firewall"
     },
+    "logConfig": {
+     "$ref": "FirewallLogConfig",
+     "description": "This field denotes the logging options for a particular firewall rule. If logging is enabled, logs will be exported to Stackdriver."
+    },
     "name": {
      "type": "string",
      "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
@@ -4129,6 +4156,17 @@
     }
    }
   },
+  "FirewallLogConfig": {
+   "id": "FirewallLogConfig",
+   "type": "object",
+   "description": "The available logging options for a firewall rule.",
+   "properties": {
+    "enable": {
+     "type": "boolean",
+     "description": "This field denotes whether to enable logging for a particular firewall rule."
+    }
+   }
+  },
   "ForwardingRule": {
    "id": "ForwardingRule",
    "type": "object",
@@ -4235,7 +4273,7 @@
     },
     "ports": {
      "type": "array",
-     "description": "This field is used along with the backend_service field for internal load balancing.\n\nWhen the load balancing scheme is INTERNAL, a single port or a comma separated list of ports can be configured. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule.\n\nYou may specify a maximum of up to 5 ports.",
+     "description": "This field is used along with the backend_service field for internal load balancing.\n\nWhen the load balancing scheme is INTERNAL, a list of ports can be configured, for example, ['80'], ['8000','9000'] etc. Only packets addressed to these ports will be forwarded to the backends configured with this forwarding rule.\n\nYou may specify a maximum of up to 5 ports.",
      "items": {
       "type": "string"
      }
@@ -7973,7 +8011,7 @@
     },
     "router": {
      "type": "string",
-     "description": "URL of the cloud router to be used for dynamic routing. This router must be in the same region as this InterconnectAttachment. The InterconnectAttachment will automatically connect the Interconnect to the network & region within which the Cloud Router is configured."
+     "description": "URL of the Cloud Router to be used for dynamic routing. This router must be in the same region as this InterconnectAttachment. The InterconnectAttachment will automatically connect the Interconnect to the network & region within which the Cloud Router is configured."
     },
     "selfLink": {
      "type": "string",
@@ -8016,7 +8054,7 @@
     },
     "vlanTag8021q": {
      "type": "integer",
-     "description": "Available only for DEDICATED and PARTNER_PROVIDER. Desired VLAN tag for this attachment, in the range 2-4094. This field refers to 802.1q VLAN tag, also known as IEEE 802.1Q Only specified at creation time.",
+     "description": "The IEEE 802.1Q VLAN tag for this attachment, in the range 2-4094. Only specified at creation time.",
      "format": "int32"
     }
    }
@@ -8477,7 +8515,7 @@
     },
     "value": {
      "type": "number",
-     "description": "Value of the current optical power, read in dBm.",
+     "description": "Value of the current optical power, read in dBm. Take a known good optical value, give it a 10% margin and trigger warnings relative to that value. In general, a -7dBm warning and a -11dBm alarm are good optical value estimates for most links.",
      "format": "float"
     }
    }
@@ -12244,9 +12282,11 @@
       "TARGET_TCP_PROXIES",
       "TARGET_VPN_GATEWAYS",
       "URL_MAPS",
+      "VPN_GATEWAYS",
       "VPN_TUNNELS"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",
@@ -13861,7 +13901,7 @@
     },
     "managementType": {
      "type": "string",
-     "description": "[Output Only] Type of how the resource/configuration of the BGP peer is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT represents an BGP peer that is automatically created for PARTNER interconnectAttachment, Google will automatically create/delete this type of BGP peer when the PARTNER interconnectAttachment is created/deleted.",
+     "description": "[Output Only] The resource that configures and manages this BGP peer. MANAGED_BY_USER is the default value and can be managed by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer that is configured and managed by Cloud Interconnect, specifically by an InterconnectAttachment of type PARTNER. Google will automatically create, update, and delete this type of BGP peer when the PARTNER InterconnectAttachment is created, updated, or deleted.",
      "enum": [
       "MANAGED_BY_ATTACHMENT",
       "MANAGED_BY_USER"
@@ -13905,7 +13945,7 @@
     },
     "managementType": {
      "type": "string",
-     "description": "[Output Only] Type of how the resource/configuration of the interface is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT represents an interface that is automatically created for PARTNER type interconnectAttachment, Google will automatically create/update/delete this type of interface when the PARTNER interconnectAttachment is created/provisioned/deleted.",
+     "description": "[Output Only] The resource that configures and manages this interface. MANAGED_BY_USER is the default value and can be managed by you or other users; MANAGED_BY_ATTACHMENT is an interface that is configured and managed by Cloud Interconnect, specifically by an InterconnectAttachment of type PARTNER. Google will automatically create, update, and delete this type of interface when the PARTNER InterconnectAttachment is created, updated, or deleted.",
      "enum": [
       "MANAGED_BY_ATTACHMENT",
       "MANAGED_BY_USER"
@@ -25157,7 +25197,7 @@
      "id": "compute.instances.listReferrers",
      "path": "{project}/zones/{zone}/instances/{instance}/referrers",
      "httpMethod": "GET",
-     "description": "Retrieves the list of referrers to instances contained within the specified zone.",
+     "description": "Retrieves the list of referrers to instances contained within the specified zone. For more information, read Viewing Referrers to VM Instances.",
      "parameters": {
       "filter": {
        "type": "string",
@@ -27427,7 +27467,7 @@
      "parameters": {
       "nodeGroup": {
        "type": "string",
-       "description": "Name of the NodeGroup resource to delete.",
+       "description": "Name of the NodeGroup resource.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"

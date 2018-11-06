@@ -205,7 +205,7 @@
           "$ref": "HttpTarget"
         },
         "schedule": {
-          "description": "Required.\n\nDescribes the schedule on which the job will be executed.\n\nAs a general rule, execution `n + 1` of a job will not begin\nuntil execution `n` has finished. Cloud Scheduler will never\nallow two simultaneously outstanding executions. For example,\nthis implies that if the `n+1`th execution is scheduled to run at\n16:00 but the `n`th execution takes until 16:15, the `n+1`th\nexecution will not start until `16:15`.\nA scheduled start time will be delayed if the previous\nexecution has not ended when its scheduled time occurs.\n\nIf retry_count > 0 and a job attempt fails,\nthe job will be tried a total of retry_count\ntimes, with exponential backoff, until the next scheduled start\ntime.\n\nThe schedule can be either of the following types:\n* [Crontab](http:\/\/en.wikipedia.org\/wiki\/Cron#Overview)\n* English-like [schedule](https:\/\/cloud.google.com\/scheduler\/docs\/running-cron-jobs-with-cloud-scheduler#defining_the_job_schedule)",
+          "description": "Required.\n\nDescribes the schedule on which the job will be executed.\n\nAs a general rule, execution `n + 1` of a job will not begin\nuntil execution `n` has finished. Cloud Scheduler will never\nallow two simultaneously outstanding executions. For example,\nthis implies that if the `n+1`th execution is scheduled to run at\n16:00 but the `n`th execution takes until 16:15, the `n+1`th\nexecution will not start until `16:15`.\nA scheduled start time will be delayed if the previous\nexecution has not ended when its scheduled time occurs.\n\nIf retry_count > 0 and a job attempt fails,\nthe job will be tried a total of retry_count\ntimes, with exponential backoff, until the next scheduled start\ntime.\n\nThe schedule can be either of the following types:\n\n* [Crontab](http:\/\/en.wikipedia.org\/wiki\/Cron#Overview)\n* English-like [schedule](https:\/\/cloud.google.com\/scheduler\/docs\/configuring\/cron-job-schedules)",
           "type": "string"
         },
         "timeZone": {
@@ -222,13 +222,17 @@
           "enumDescriptions": [
             "Unspecified state.",
             "The job is executing normally.",
-            "The job is disabled by the system due to error. The user\ncannot directly set a job to be disabled."
+            "The job is paused by the user. It will not execute. A user can\nintentionally pause the job using\nPauseJobRequest.",
+            "The job is disabled by the system due to error. The user\ncannot directly set a job to be disabled.",
+            "The job state resulting from a failed CloudScheduler.UpdateJob\noperation. To recover a job from this state, retry\nCloudScheduler.UpdateJob until a successful response is received."
           ],
           "type": "string",
           "enum": [
             "STATE_UNSPECIFIED",
             "ENABLED",
-            "DISABLED"
+            "PAUSED",
+            "DISABLED",
+            "UPDATE_FAILED"
           ]
         },
         "status": {
@@ -461,6 +465,20 @@
       "properties": {
       }
     },
+    "PauseJobRequest": {
+      "id": "PauseJobRequest",
+      "description": "Request message for PauseJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ResumeJobRequest": {
+      "id": "ResumeJobRequest",
+      "description": "Request message for ResumeJob.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "RunJobRequest": {
       "id": "RunJobRequest",
       "description": "Request message for forcing a job to run now using\nRunJob.",
@@ -470,7 +488,7 @@
     },
     "PubsubMessage": {
       "id": "PubsubMessage",
-      "description": "A message that is published by publishers and consumed by subscribers. The\nmessage must contain either a non-empty data field or at least one attribute.\nSee <a href=\"\/pubsub\/quotas\">Quotas and limits<\/a> for more information about\nmessage limits.",
+      "description": "A message that is published by publishers and consumed by subscribers. The\nmessage must contain either a non-empty data field or at least one attribute.\nSee <a href=\"https:\/\/cloud.google.com\/pubsub\/quotas\">Quotas and limits<\/a>\nfor more information about message limits.",
       "type": "object",
       "properties": {
         "data": {
@@ -662,6 +680,40 @@
                   ],
                   "description": "Creates a job."
                 },
+                "patch": {
+                  "id": "cloudscheduler.projects.locations.jobs.patch",
+                  "path": "v1beta1/{+name}",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.\n\n* `PROJECT_ID` can contain letters ([A-Za-z]), numbers ([0-9]),\n   hyphens (-), colons (:), or periods (.).\n   For more information, see\n   [Identifying projects](https:\/\/cloud.google.com\/resource-manager\/docs\/creating-managing-projects#identifying_projects)\n* `LOCATION_ID` is the canonical ID for the job's location.\n   The list of available locations can be obtained by calling\n   ListLocations.\n   For more information, see https:\/\/cloud.google.com\/about\/locations\/.\n* `JOB_ID` can contain only letters ([A-Za-z]), numbers ([0-9]),\n   hyphens (-), or underscores (_). The maximum length is 500 characters.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "A  mask used to specify which fields of the job are being updated.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Job"
+                  },
+                  "response": {
+                    "$ref": "Job"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates a job.\n\nIf successful, the updated Job is returned. If the job does\nnot exist, `NOT_FOUND` is returned.\n\nIf UpdateJob does not successfully return, it is possible for the\njob to be in an Job.State.UPDATE_FAILED state. A job in this state may\nnot be executed. If this happens, retry the UpdateJob request\nuntil a successful response is received."
+                },
                 "delete": {
                   "id": "cloudscheduler.projects.locations.jobs.delete",
                   "path": "v1beta1/{+name}",
@@ -686,6 +738,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a job."
+                },
+                "pause": {
+                  "id": "cloudscheduler.projects.locations.jobs.pause",
+                  "path": "v1beta1/{+name}:pause",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:pause",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "PauseJobRequest"
+                  },
+                  "response": {
+                    "$ref": "Job"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Pauses a job.\n\nIf a job is paused then the system will stop executing the job\nuntil it is re-enabled via ResumeJob. The\nstate of the job is stored in state; if paused it\nwill be set to Job.State.PAUSED. A job must be in Job.State.ENABLED\nto be paused."
+                },
+                "resume": {
+                  "id": "cloudscheduler.projects.locations.jobs.resume",
+                  "path": "v1beta1/{+name}:resume",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:resume",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required.\n\nThe job name. For example:\n`projects\/PROJECT_ID\/locations\/LOCATION_ID\/jobs\/JOB_ID`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/jobs\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ResumeJobRequest"
+                  },
+                  "response": {
+                    "$ref": "Job"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Resume a job.\n\nThis method reenables a job after it has been Job.State.PAUSED. The\nstate of a job is stored in Job.state; after calling this method it\nwill be set to Job.State.ENABLED. A job must be in\nJob.State.PAUSED to be resumed."
                 },
                 "run": {
                   "id": "cloudscheduler.projects.locations.jobs.run",

@@ -545,6 +545,8 @@ class Address(_messages.Message):
       configuring this Address and can only take the following values: PREMIUM
       , STANDARD.  If this field is not specified, it is assumed to be
       PREMIUM.
+    PurposeValueValuesEnum: The purpose of resource, only used with INTERNAL
+      type.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -572,9 +574,13 @@ class Address(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    network: The URL of the network in which to reserve the address. This
+      field can only be used with INTERNAL type with VPC_PEERING purpose.
     networkTier: This signifies the networking tier used for configuring this
       Address and can only take the following values: PREMIUM , STANDARD.  If
       this field is not specified, it is assumed to be PREMIUM.
+    prefixLength: The prefix length if the resource reprensents an IP range.
+    purpose: The purpose of resource, only used with INTERNAL type.
     region: [Output Only] URL of the region where the regional address
       resides. This field is not applicable to global addresses. You must
       specify this field as part of the HTTP request URL. You cannot set this
@@ -631,6 +637,18 @@ class Address(_messages.Message):
     PREMIUM = 0
     STANDARD = 1
 
+  class PurposeValueValuesEnum(_messages.Enum):
+    r"""The purpose of resource, only used with INTERNAL type.
+
+    Values:
+      DNS_RESOLVER: <no description>
+      GCE_ENDPOINT: <no description>
+      VPC_PEERING: <no description>
+    """
+    DNS_RESOLVER = 0
+    GCE_ENDPOINT = 1
+    VPC_PEERING = 2
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
     RESERVING, RESERVED, or IN_USE. An address that is RESERVING is currently
@@ -655,12 +673,15 @@ class Address(_messages.Message):
   ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 6)
   kind = _messages.StringField(7, default=u'compute#address')
   name = _messages.StringField(8)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 9)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  subnetwork = _messages.StringField(13)
-  users = _messages.StringField(14, repeated=True)
+  network = _messages.StringField(9)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 10)
+  prefixLength = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 12)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  subnetwork = _messages.StringField(16)
+  users = _messages.StringField(17, repeated=True)
 
 
 class AddressAggregatedList(_messages.Message):
@@ -8443,7 +8464,7 @@ class ComputeNodeGroupsAddNodesRequest(_messages.Message):
   r"""A ComputeNodeGroupsAddNodesRequest object.
 
   Fields:
-    nodeGroup: Name of the NodeGroup resource to delete.
+    nodeGroup: Name of the NodeGroup resource.
     nodeGroupsAddNodesRequest: A NodeGroupsAddNodesRequest resource to be
       passed as the request body.
     project: Project ID for this request.
@@ -15089,6 +15110,9 @@ class Firewall(_messages.Message):
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#firewall for
       firewall rules.
+    logConfig: This field denotes the logging options for a particular
+      firewall rule. If logging is enabled, logs will be exported to
+      Stackdriver.
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -15213,15 +15237,16 @@ class Firewall(_messages.Message):
   disabled = _messages.BooleanField(7)
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(9, default=u'compute#firewall')
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  priority = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(13)
-  sourceRanges = _messages.StringField(14, repeated=True)
-  sourceServiceAccounts = _messages.StringField(15, repeated=True)
-  sourceTags = _messages.StringField(16, repeated=True)
-  targetServiceAccounts = _messages.StringField(17, repeated=True)
-  targetTags = _messages.StringField(18, repeated=True)
+  logConfig = _messages.MessageField('FirewallLogConfig', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  priority = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(14)
+  sourceRanges = _messages.StringField(15, repeated=True)
+  sourceServiceAccounts = _messages.StringField(16, repeated=True)
+  sourceTags = _messages.StringField(17, repeated=True)
+  targetServiceAccounts = _messages.StringField(18, repeated=True)
+  targetTags = _messages.StringField(19, repeated=True)
 
 
 class FirewallList(_messages.Message):
@@ -15349,6 +15374,17 @@ class FirewallList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class FirewallLogConfig(_messages.Message):
+  r"""The available logging options for a firewall rule.
+
+  Fields:
+    enable: This field denotes whether to enable logging for a particular
+      firewall rule.
+  """
+
+  enable = _messages.BooleanField(1)
+
+
 class ForwardingRule(_messages.Message):
   r"""A ForwardingRule resource. A ForwardingRule resource specifies which
   pool of target virtual machines to forward a packet to if it matches the
@@ -15460,10 +15496,10 @@ class ForwardingRule(_messages.Message):
       1688, 1883, 5222  - TargetVpnGateway: 500, 4500
     ports: This field is used along with the backend_service field for
       internal load balancing.  When the load balancing scheme is INTERNAL, a
-      single port or a comma separated list of ports can be configured. Only
-      packets addressed to these ports will be forwarded to the backends
-      configured with this forwarding rule.  You may specify a maximum of up
-      to 5 ports.
+      list of ports can be configured, for example, ['80'], ['8000','9000']
+      etc. Only packets addressed to these ports will be forwarded to the
+      backends configured with this forwarding rule.  You may specify a
+      maximum of up to 5 ports.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
       must specify this field as part of the HTTP request URL. It is not
@@ -19683,17 +19719,15 @@ class InterconnectAttachment(_messages.Message):
     region: [Output Only] URL of the region where the regional interconnect
       attachment resides. You must specify this field as part of the HTTP
       request URL. It is not settable as a field in the request body.
-    router: URL of the cloud router to be used for dynamic routing. This
+    router: URL of the Cloud Router to be used for dynamic routing. This
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
       the network & region within which the Cloud Router is configured.
     selfLink: [Output Only] Server-defined URL for the resource.
     state: [Output Only] The current state of this attachment's functionality.
     type: A TypeValueValuesEnum attribute.
-    vlanTag8021q: Available only for DEDICATED and PARTNER_PROVIDER. Desired
-      VLAN tag for this attachment, in the range 2-4094. This field refers to
-      802.1q VLAN tag, also known as IEEE 802.1Q Only specified at creation
-      time.
+    vlanTag8021q: The IEEE 802.1Q VLAN tag for this attachment, in the range
+      2-4094. Only specified at creation time.
   """
 
   class BandwidthValueValuesEnum(_messages.Enum):
@@ -20327,7 +20361,10 @@ class InterconnectDiagnosticsLinkOpticalPower(_messages.Message):
 
   Fields:
     state: A StateValueValuesEnum attribute.
-    value: Value of the current optical power, read in dBm.
+    value: Value of the current optical power, read in dBm. Take a known good
+      optical value, give it a 10% margin and trigger warnings relative to
+      that value. In general, a -7dBm warning and a -11dBm alarm are good
+      optical value estimates for most links.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -24590,6 +24627,7 @@ class Quota(_messages.Message):
       TARGET_TCP_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
       URL_MAPS: <no description>
+      VPN_GATEWAYS: <no description>
       VPN_TUNNELS: <no description>
     """
     AUTOSCALERS = 0
@@ -24655,7 +24693,8 @@ class Quota(_messages.Message):
     TARGET_TCP_PROXIES = 60
     TARGET_VPN_GATEWAYS = 61
     URL_MAPS = 62
-    VPN_TUNNELS = 63
+    VPN_GATEWAYS = 63
+    VPN_TUNNELS = 64
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -26266,12 +26305,13 @@ class RouterBgpPeer(_messages.Message):
     AdvertiseModeValueValuesEnum: User-specified flag to indicate which mode
       to use for advertisement.
     AdvertisedGroupsValueListEntryValuesEnum:
-    ManagementTypeValueValuesEnum: [Output Only] Type of how the
-      resource/configuration of the BGP peer is managed. MANAGED_BY_USER is
-      the default value; MANAGED_BY_ATTACHMENT represents an BGP peer that is
-      automatically created for PARTNER interconnectAttachment, Google will
-      automatically create/delete this type of BGP peer when the PARTNER
-      interconnectAttachment is created/deleted.
+    ManagementTypeValueValuesEnum: [Output Only] The resource that configures
+      and manages this BGP peer. MANAGED_BY_USER is the default value and can
+      be managed by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer
+      that is configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google will automatically
+      create, update, and delete this type of BGP peer when the PARTNER
+      InterconnectAttachment is created, updated, or deleted.
 
   Fields:
     advertiseMode: User-specified flag to indicate which mode to use for
@@ -26293,12 +26333,13 @@ class RouterBgpPeer(_messages.Message):
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
-    managementType: [Output Only] Type of how the resource/configuration of
-      the BGP peer is managed. MANAGED_BY_USER is the default value;
-      MANAGED_BY_ATTACHMENT represents an BGP peer that is automatically
-      created for PARTNER interconnectAttachment, Google will automatically
-      create/delete this type of BGP peer when the PARTNER
-      interconnectAttachment is created/deleted.
+    managementType: [Output Only] The resource that configures and manages
+      this BGP peer. MANAGED_BY_USER is the default value and can be managed
+      by you or other users; MANAGED_BY_ATTACHMENT is a BGP peer that is
+      configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google will automatically
+      create, update, and delete this type of BGP peer when the PARTNER
+      InterconnectAttachment is created, updated, or deleted.
     name: Name of this BGP peer. The name must be 1-63 characters long and
       comply with RFC1035.
     peerAsn: Peer BGP Autonomous System Number (ASN). For VPN use case, this
@@ -26326,11 +26367,13 @@ class RouterBgpPeer(_messages.Message):
     ALL_SUBNETS = 0
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
-    r"""[Output Only] Type of how the resource/configuration of the BGP peer
-    is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
-    represents an BGP peer that is automatically created for PARTNER
-    interconnectAttachment, Google will automatically create/delete this type
-    of BGP peer when the PARTNER interconnectAttachment is created/deleted.
+    r"""[Output Only] The resource that configures and manages this BGP peer.
+    MANAGED_BY_USER is the default value and can be managed by you or other
+    users; MANAGED_BY_ATTACHMENT is a BGP peer that is configured and managed
+    by Cloud Interconnect, specifically by an InterconnectAttachment of type
+    PARTNER. Google will automatically create, update, and delete this type of
+    BGP peer when the PARTNER InterconnectAttachment is created, updated, or
+    deleted.
 
     Values:
       MANAGED_BY_ATTACHMENT: <no description>
@@ -26355,12 +26398,13 @@ class RouterInterface(_messages.Message):
   r"""A RouterInterface object.
 
   Enums:
-    ManagementTypeValueValuesEnum: [Output Only] Type of how the
-      resource/configuration of the interface is managed. MANAGED_BY_USER is
-      the default value; MANAGED_BY_ATTACHMENT represents an interface that is
-      automatically created for PARTNER type interconnectAttachment, Google
-      will automatically create/update/delete this type of interface when the
-      PARTNER interconnectAttachment is created/provisioned/deleted.
+    ManagementTypeValueValuesEnum: [Output Only] The resource that configures
+      and manages this interface. MANAGED_BY_USER is the default value and can
+      be managed by you or other users; MANAGED_BY_ATTACHMENT is an interface
+      that is configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google will automatically
+      create, update, and delete this type of interface when the PARTNER
+      InterconnectAttachment is created, updated, or deleted.
 
   Fields:
     ipRange: IP address and range of the interface. The IP range must be in
@@ -26375,23 +26419,25 @@ class RouterInterface(_messages.Message):
       region as the router. Each interface can have at most one linked
       resource and it could either be a VPN Tunnel or an interconnect
       attachment.
-    managementType: [Output Only] Type of how the resource/configuration of
-      the interface is managed. MANAGED_BY_USER is the default value;
-      MANAGED_BY_ATTACHMENT represents an interface that is automatically
-      created for PARTNER type interconnectAttachment, Google will
-      automatically create/update/delete this type of interface when the
-      PARTNER interconnectAttachment is created/provisioned/deleted.
+    managementType: [Output Only] The resource that configures and manages
+      this interface. MANAGED_BY_USER is the default value and can be managed
+      by you or other users; MANAGED_BY_ATTACHMENT is an interface that is
+      configured and managed by Cloud Interconnect, specifically by an
+      InterconnectAttachment of type PARTNER. Google will automatically
+      create, update, and delete this type of interface when the PARTNER
+      InterconnectAttachment is created, updated, or deleted.
     name: Name of this interface entry. The name must be 1-63 characters long
       and comply with RFC1035.
   """
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
-    r"""[Output Only] Type of how the resource/configuration of the interface
-    is managed. MANAGED_BY_USER is the default value; MANAGED_BY_ATTACHMENT
-    represents an interface that is automatically created for PARTNER type
-    interconnectAttachment, Google will automatically create/update/delete
-    this type of interface when the PARTNER interconnectAttachment is
-    created/provisioned/deleted.
+    r"""[Output Only] The resource that configures and manages this interface.
+    MANAGED_BY_USER is the default value and can be managed by you or other
+    users; MANAGED_BY_ATTACHMENT is an interface that is configured and
+    managed by Cloud Interconnect, specifically by an InterconnectAttachment
+    of type PARTNER. Google will automatically create, update, and delete this
+    type of interface when the PARTNER InterconnectAttachment is created,
+    updated, or deleted.
 
     Values:
       MANAGED_BY_ATTACHMENT: <no description>

@@ -21,12 +21,20 @@ from __future__ import unicode_literals
 from collections import OrderedDict
 import copy
 
+
+from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.services import exceptions
+from googlecloudsdk.api_lib.services import peering
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.projects import util as projects_command_util
 from googlecloudsdk.command_lib.util.apis import resource_arg_schema
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs as presentation_specs_lib
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import pkg_resources
 
@@ -72,6 +80,16 @@ TPU_YAML_SPEC_TEMPLATE = OrderedDict({
         'flag_name': 'zone'
     }
 })
+
+
+_PROJECT_LOOKUP_ERROR = ('Error determining VPC peering status '
+                         'for network [{}]: [{}]')
+_PEERING_VALIDATION_ERROR = ('Network [{}] is invalid for use '
+                             'with Service Networking')
+
+
+class ServiceNetworkingException(core_exceptions.Error):
+  """Exception for creation failures involving Service Networking/Peering."""
 
 
 def GetMessagesModule(version='v1'):
@@ -149,3 +167,60 @@ def AddReimageResourcesToParser(parser):
       required=True,
       help='The Tensorflow version to Reimage Cloud TPU with.').AddToParser(
           parser)
+
+
+def _ParseProjectNumberFromNetwork(network, user_project):
+  """Retrieves the project field from the provided network value."""
+  try:
+    registry = resources.REGISTRY.Clone()
+    network_ref = registry.Parse(network,
+                                 collection='compute.networks')
+    project_identifier = network_ref.project
+  except resources.Error:
+    # If not a parseable resource string, then use user_project
+    project_identifier = user_project
+
+  return projects_command_util.GetProjectNumber(project_identifier)
+
+
+def CreateValidateVPCHook(ref, args, request):
+  """Validates that supplied network has been peered to a GoogleOrganization.
+
+     Uses the Service Networking API to check if the network specified via
+     --network flag has been peered to Google Organization. If it has, proceeds
+     with TPU create operation otherwise will raise ServiceNetworking exception.
+     Check is only valid if --use-service-networking has been specified
+     otherwise check will return immediately.
+
+  Args:
+    ref: Reference to the TPU Node resource to be created.
+    args: Argument namespace.
+    request: TPU Create requests message.
+
+  Returns:
+    request: Passes requests through if args pass validation
+
+  Raises:
+    ServiceNetworkingException: if network is not properly peered
+  """
+  del ref
+  service_networking_enabled = args.use_service_networking
+  if service_networking_enabled:
+    project = args.project or properties.VALUES.core.project.Get(required=True)
+    try:
+      network_project_number = _ParseProjectNumberFromNetwork(args.network,
+                                                              project)
+
+      lookup_result = peering.ListConnections(
+          network_project_number, 'servicenetworking.googleapis.com',
+          args.network)
+    except (exceptions.ListConnectionsPermissionDeniedException,
+            apitools_exceptions.HttpError) as e:
+      raise ServiceNetworkingException(
+          _PROJECT_LOOKUP_ERROR.format(args.network, project, e))
+
+    if not lookup_result:
+      raise ServiceNetworkingException(
+          _PEERING_VALIDATION_ERROR.format(args.network))
+
+  return request

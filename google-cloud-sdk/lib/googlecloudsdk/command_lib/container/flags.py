@@ -1224,6 +1224,7 @@ def AddTagOrDigestPositional(parser,
                              tags_only=False,
                              arg_name=None,
                              metavar=None):
+  """Adds a tag or digest positional arg."""
   digest_str = '*.gcr.io/PROJECT_ID/IMAGE_PATH@sha256:DIGEST or'
   if tags_only:
     digest_str = ''
@@ -1364,30 +1365,20 @@ behavior.
       help="""\
 Specifies scopes for the node instances. Examples:
 
-$ {{command}} {example_target} --scopes=https://www.googleapis.com/auth/devstorage.read_only
+  $ {{command}} {example_target} --scopes=https://www.googleapis.com/auth/devstorage.read_only
 
-$ {{command}} {example_target} --scopes=bigquery,storage-rw,compute-ro
+  $ {{command}} {example_target} --scopes=bigquery,storage-rw,compute-ro
 
 Multiple SCOPEs can be specified, separated by commas. `logging-write`
 and/or `monitoring` are added unless Cloud Logging and/or Cloud Monitoring
 are disabled (see `--enable-cloud-logging` and `--enable-cloud-monitoring`
 for more information).
 {track_help}
-SCOPE can be either the full URI of the scope or an alias. Available
-aliases are:
-
-[format="csv",options="header"]
-|========
-Alias,URI
-{aliases}
-|========
-
-{scope_deprecation_msg}
+{scopes_help}
 """.format(
-    aliases=compute_constants.ScopesForHelp(),
-    scope_deprecation_msg=compute_constants.DEPRECATED_SCOPES_MESSAGES,
     example_target=example_target,
-    track_help=track_help))
+    track_help=track_help,
+    scopes_help=compute_constants.ScopesHelp()))
 
   cloud_endpoints_help_text = """\
 Automatically enable Google Cloud Endpoints to take advantage of API management
@@ -1751,8 +1742,16 @@ Must be set with `--enable-managed-pod-identity`.
 def AddResourceUsageBigqueryDatasetFlag(parser, add_clear_flag=False):
   """Adds flags about exporting cluster resource usage to BigQuery."""
 
-  group = parser.add_mutually_exclusive_group(
+  group = parser.add_group(
       "Exports cluster's usage of cloud resources")
+  if add_clear_flag:
+    group.is_mutex = True
+    group.add_argument(
+        '--clear-resource-usage-bigquery-dataset',
+        action='store_true',
+        default=None,
+        help='Disables exporting cluster resource usage to BigQuery.')
+    group = group.add_group()
 
   dataset_help_text = """\
 The name of the BigQuery dataset to which the cluster's usage of cloud
@@ -1769,13 +1768,6 @@ Example:
       '--resource-usage-bigquery-dataset',
       default=None,
       help=dataset_help_text)
-
-  if add_clear_flag:
-    group.add_argument(
-        '--clear-resource-usage-bigquery-dataset',
-        action='store_true',
-        default=None,
-        help='Disables exporting cluster resource usage to BigQuery.')
 
 
 def AddVerticalPodAutoscalingFlag(parser, hidden=False):

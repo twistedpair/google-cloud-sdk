@@ -832,8 +832,6 @@ class LogSink(_messages.Message):
       sink's writer_identity, set when the sink is created, must have
       permission to write to the destination or else the log entries are not
       exported. For more information, see Exporting Logs With Sinks.
-    endTime: Deprecated. This field is ignored when creating or updating
-      sinks.
     filter: Optional. An advanced logs filter. The only exported log entries
       are those that are in the resource owning the sink and that match the
       filter. For example: logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND
@@ -858,8 +856,6 @@ class LogSink(_messages.Message):
     outputVersionFormat: Deprecated. The log entry format to use for this
       sink's exported log entries. The v2 format is used by default and cannot
       be changed.
-    startTime: Deprecated. This field is ignored when creating or updating
-      sinks.
     writerIdentity: Output only. An IAM identity&mdash;a service account or
       group&mdash;under which Logging writes the exported log entries to the
       sink's destination. This field is set by sinks.create and sinks.update,
@@ -885,13 +881,11 @@ class LogSink(_messages.Message):
     V1 = 2
 
   destination = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  filter = _messages.StringField(3)
-  includeChildren = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 6)
-  startTime = _messages.StringField(7)
-  writerIdentity = _messages.StringField(8)
+  filter = _messages.StringField(2)
+  includeChildren = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 5)
+  writerIdentity = _messages.StringField(6)
 
 
 class LoggingBillingAccountsExclusionsCreateRequest(_messages.Message):

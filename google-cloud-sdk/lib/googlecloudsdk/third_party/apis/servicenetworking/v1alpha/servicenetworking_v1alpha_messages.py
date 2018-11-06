@@ -217,6 +217,8 @@ class BackendRule(_messages.Message):
       requests is 5 seconds.
     minDeadline: Minimum deadline in seconds needed for this method. Calls
       having deadline value lower than this will be rejected.
+    operationDeadline: The number of seconds to wait for the completion of a
+      long running operation. The default is no deadline.
     selector: Selects the methods to which this rule applies.  Refer to
       selector for syntax details.
   """
@@ -224,7 +226,8 @@ class BackendRule(_messages.Message):
   address = _messages.StringField(1)
   deadline = _messages.FloatField(2)
   minDeadline = _messages.FloatField(3)
-  selector = _messages.StringField(4)
+  operationDeadline = _messages.FloatField(4)
+  selector = _messages.StringField(5)
 
 
 class Billing(_messages.Message):
@@ -2006,10 +2009,13 @@ class Subnetwork(_messages.Message):
   Fields:
     ipCidrRange: Subnetwork CIDR range in "10.x.x.x/y" format.
     name: Subnetwork name. See https://cloud.google.com/compute/docs/vpc/
+    network: Shared VPC host project network peered with consumer network. For
+      example: projects/1234321/global/networks/host-network
   """
 
   ipCidrRange = _messages.StringField(1)
   name = _messages.StringField(2)
+  network = _messages.StringField(3)
 
 
 class SystemParameter(_messages.Message):

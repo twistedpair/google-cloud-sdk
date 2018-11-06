@@ -1031,7 +1031,7 @@ class Discovered(_messages.Message):
       output only and populated by the API.
     continuousAnalysis: Whether the resource is continuously analyzed.
     operation: Output only. An operation that indicates the status of the
-      current scan.
+      current scan. This field is deprecated, do not use.
   """
 
   class AnalysisStatusValueValuesEnum(_messages.Enum):

@@ -299,6 +299,52 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class CloudschedulerProjectsLocationsJobsPatchRequest(_messages.Message):
+  r"""A CloudschedulerProjectsLocationsJobsPatchRequest object.
+
+  Fields:
+    job: A Job resource to be passed as the request body.
+    name: The job name. For example:
+      `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.  The maximum
+      allowed length for `JOB_ID` is 500 characters. Caller-specified in
+      CreateJobRequest, after which it becomes output only.
+    updateMask: A  mask used to specify which fields of the job are being
+      updated.
+  """
+
+  job = _messages.MessageField('Job', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class CloudschedulerProjectsLocationsJobsPauseRequest(_messages.Message):
+  r"""A CloudschedulerProjectsLocationsJobsPauseRequest object.
+
+  Fields:
+    name: Required.  The job name. For example:
+      `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
+    pauseJobRequest: A PauseJobRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pauseJobRequest = _messages.MessageField('PauseJobRequest', 2)
+
+
+class CloudschedulerProjectsLocationsJobsResumeRequest(_messages.Message):
+  r"""A CloudschedulerProjectsLocationsJobsResumeRequest object.
+
+  Fields:
+    name: Required.  The job name. For example:
+      `projects/PROJECT_ID/locations/LOCATION_ID/jobs/JOB_ID`.
+    resumeJobRequest: A ResumeJobRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumeJobRequest = _messages.MessageField('ResumeJobRequest', 2)
+
+
 class CloudschedulerProjectsLocationsJobsRunRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsRunRequest object.
 
@@ -493,12 +539,20 @@ class Job(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Unspecified state.
       ENABLED: The job is executing normally.
+      PAUSED: The job is paused by the user. It will not execute. A user can
+        intentionally pause the job using PauseJobRequest.
       DISABLED: The job is disabled by the system due to error. The user
         cannot directly set a job to be disabled.
+      UPDATE_FAILED: The job state resulting from a failed
+        CloudScheduler.UpdateJob operation. To recover a job from this state,
+        retry CloudScheduler.UpdateJob until a successful response is
+        received.
     """
     STATE_UNSPECIFIED = 0
     ENABLED = 1
-    DISABLED = 2
+    PAUSED = 2
+    DISABLED = 3
+    UPDATE_FAILED = 4
 
   appEngineHttpTarget = _messages.MessageField('AppEngineHttpTarget', 1)
   description = _messages.StringField(2)
@@ -623,11 +677,15 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class PauseJobRequest(_messages.Message):
+  r"""Request message for CloudScheduler.PauseJob."""
+
+
 class PubsubMessage(_messages.Message):
   r"""A message that is published by publishers and consumed by subscribers.
   The message must contain either a non-empty data field or at least one
-  attribute. See <a href="/pubsub/quotas">Quotas and limits</a> for more
-  information about message limits.
+  attribute. See <a href="https://cloud.google.com/pubsub/quotas">Quotas and
+  limits</a> for more information about message limits.
 
   Messages:
     AttributesValue: Optional attributes for this message.
@@ -724,6 +782,10 @@ class PubsubTarget(_messages.Message):
 
   pubsubMessage = _messages.MessageField('PubsubMessageValue', 1)
   topicName = _messages.StringField(2)
+
+
+class ResumeJobRequest(_messages.Message):
+  r"""Request message for CloudScheduler.ResumeJob."""
 
 
 class RetryConfig(_messages.Message):
