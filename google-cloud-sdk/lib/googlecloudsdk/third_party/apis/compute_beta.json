@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20181030",
+ "revision": "20181106",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1730,7 +1730,7 @@
     },
     "utilizationTargetType": {
      "type": "string",
-     "description": "Defines how target utilization value is expressed for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is GAUGE.",
+     "description": "Defines how target utilization value is expressed for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.",
      "enum": [
       "DELTA_PER_MINUTE",
       "DELTA_PER_SECOND",
@@ -4181,6 +4181,154 @@
     }
    }
   },
+  "ExchangedPeeringRoute": {
+   "id": "ExchangedPeeringRoute",
+   "type": "object",
+   "properties": {
+    "destRange": {
+     "type": "string",
+     "description": "The destination range of the route."
+    },
+    "imported": {
+     "type": "boolean",
+     "description": "If the peering route is imported if there is no confliction."
+    },
+    "nextHopRegion": {
+     "type": "string",
+     "description": "The region of peering route next hop, only applies to dynamic routes."
+    },
+    "priority": {
+     "type": "integer",
+     "description": "The priority of the peering route.",
+     "format": "uint32"
+    },
+    "type": {
+     "type": "string",
+     "description": "The type of the peering route.",
+     "enum": [
+      "DYNAMIC_PEERING_ROUTE",
+      "STATIC_PEERING_ROUTE",
+      "SUBNET_PEERING_ROUTE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "ExchangedPeeringRoutesList": {
+   "id": "ExchangedPeeringRoutesList",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "A list of ExchangedPeeringRoute resources.",
+     "items": {
+      "$ref": "ExchangedPeeringRoute"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource. Always compute#exchangedPeeringRoutesList for exchanged peering routes lists.",
+     "default": "compute#exchangedPeeringRoutesList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
   "Expr": {
    "id": "Expr",
    "type": "object",
@@ -5009,7 +5157,7 @@
    "properties": {
     "bindings": {
      "type": "array",
-     "description": "Flatten Policy to create a backwacd compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
      "items": {
       "$ref": "Binding"
      }
@@ -11538,7 +11686,19 @@
    "properties": {
     "autoCreateRoutes": {
      "type": "boolean",
-     "description": "Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
+     "description": "Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
+    },
+    "exchangeSubnetRoutes": {
+     "type": "boolean",
+     "description": "Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the peering state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
+    },
+    "exportCustomRoutes": {
+     "type": "boolean",
+     "description": "Whether to export the custom routes to peer network."
+    },
+    "importCustomRoutes": {
+     "type": "boolean",
+     "description": "Whether to import the custom routes from peer network."
     },
     "name": {
      "type": "string",
@@ -11602,6 +11762,10 @@
       ]
      }
     },
+    "networkPeering": {
+     "$ref": "NetworkPeering",
+     "description": "Network peering parameters. In order to specify route policies for peering using import/export custom routes, you will have to fill all peering related parameters (name, peer network, exchange_subnet_routes) in network_peeringfield. Corresponding fields in NetworksAddPeeringRequest will be deprecated soon."
+    },
     "peerNetwork": {
      "type": "string",
      "description": "URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network."
@@ -11615,6 +11779,15 @@
     "name": {
      "type": "string",
      "description": "Name of the peering, which should conform to RFC1035."
+    }
+   }
+  },
+  "NetworksUpdatePeeringRequest": {
+   "id": "NetworksUpdatePeeringRequest",
+   "type": "object",
+   "properties": {
+    "networkPeering": {
+     "$ref": "NetworkPeering"
     }
    }
   },
@@ -17113,7 +17286,8 @@
    "description": "A shielded VM identity entry.",
    "properties": {
     "encryptionKey": {
-     "$ref": "ShieldedVmIdentityEntry"
+     "$ref": "ShieldedVmIdentityEntry",
+     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
     },
     "kind": {
      "type": "string",
@@ -17121,7 +17295,8 @@
      "default": "compute#shieldedVmIdentity"
     },
     "signingKey": {
-     "$ref": "ShieldedVmIdentityEntry"
+     "$ref": "ShieldedVmIdentityEntry",
+     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
     }
    }
   },
@@ -17131,10 +17306,12 @@
    "description": "A Shielded VM Identity Entry.",
    "properties": {
     "ekCert": {
-     "type": "string"
+     "type": "string",
+     "description": "A PEM-encoded X.509 certificate. This field can be empty."
     },
     "ekPub": {
-     "type": "string"
+     "type": "string",
+     "description": "A PEM-encoded public key."
     }
    }
   },
@@ -23308,7 +23485,7 @@
      "id": "compute.backendServices.get",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "GET",
-     "description": "Returns the specified BackendService resource. Gets a list of available backend services by making a list() request.",
+     "description": "Returns the specified BackendService resource. Gets a list of available backend services.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -28511,9 +28688,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -28621,9 +28798,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -28670,7 +28847,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to delete.",
+       "description": "Name or id of the instance resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -28722,9 +28899,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -28782,9 +28959,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Instance name.",
+       "description": "Instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -28829,7 +29006,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to return.",
+       "description": "Name or id of the instance resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -28871,9 +29048,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -28965,9 +29142,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "port": {
@@ -29022,9 +29199,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29172,9 +29349,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
+       "description": "Name or id of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
        "required": true,
-       "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "maxResults": {
@@ -29232,9 +29409,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29278,9 +29455,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to resume.",
+       "description": "Name or id of the instance resource to resume.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29345,9 +29522,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "zone": {
@@ -29392,9 +29569,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29484,9 +29661,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29533,9 +29710,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29582,9 +29759,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29631,9 +29808,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29680,9 +29857,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29729,9 +29906,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Instance name.",
+       "description": "Instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29778,9 +29955,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29827,9 +30004,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29876,9 +30053,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29925,9 +30102,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29966,9 +30143,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -30012,9 +30189,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -30061,9 +30238,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to stop.",
+       "description": "Name or id of the instance resource to stop.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -30112,9 +30289,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to suspend.",
+       "description": "Name or id of the instance resource to suspend.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -30203,9 +30380,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -30259,9 +30436,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -30315,9 +30492,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -32119,6 +32296,86 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "listPeeringRoutes": {
+     "id": "compute.networks.listPeeringRoutes",
+     "path": "{project}/global/networks/{network}/listPeeringRoutes",
+     "httpMethod": "GET",
+     "description": "Lists the peering routes exchanged over peering connection.",
+     "parameters": {
+      "direction": {
+       "type": "string",
+       "description": "The direction of the exchanged routes.",
+       "enum": [
+        "INCOMING",
+        "OUTGOING"
+       ],
+       "enumDescriptions": [
+        "",
+        ""
+       ],
+       "location": "query"
+      },
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "network": {
+       "type": "string",
+       "description": "Name of the network for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "peeringName": {
+       "type": "string",
+       "description": "The response will show routes exchanged over the given peering connection.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The region of the request. The response will include all subnet routes, static routes and dynamic routes in the region.",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "response": {
+      "$ref": "ExchangedPeeringRoutesList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "patch": {
      "id": "compute.networks.patch",
      "path": "{project}/global/networks/{network}",
@@ -32274,6 +32531,47 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "updatePeering": {
+     "id": "compute.networks.updatePeering",
+     "path": "{project}/global/networks/{network}/updatePeering",
+     "httpMethod": "PATCH",
+     "description": "Updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes",
+     "parameters": {
+      "network": {
+       "type": "string",
+       "description": "Name of the network resource which the updated peering is belonging to.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "network"
+     ],
+     "request": {
+      "$ref": "NetworksUpdatePeeringRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     }
    }
@@ -38042,7 +38340,7 @@
      "id": "compute.snapshots.delete",
      "path": "{project}/global/snapshots/{snapshot}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.\n\nFor more information, see Deleting snaphots.",
+     "description": "Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.\n\nFor more information, see Deleting snapshots.",
      "parameters": {
       "project": {
        "type": "string",
@@ -39162,7 +39460,7 @@
      "id": "compute.subnetworks.patch",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.",
      "parameters": {
       "project": {
        "type": "string",

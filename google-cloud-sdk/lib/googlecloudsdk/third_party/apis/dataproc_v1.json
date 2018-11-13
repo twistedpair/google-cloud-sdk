@@ -659,6 +659,10 @@
         "scheduling": {
           "description": "Optional. Job scheduling configuration.",
           "$ref": "JobScheduling"
+        },
+        "jobUuid": {
+          "description": "Output only. A UUID that uniquely identifies a job within the project over time. This is in contrast to a user-settable reference.job_id that may be reused over time.",
+          "type": "string"
         }
       }
     },

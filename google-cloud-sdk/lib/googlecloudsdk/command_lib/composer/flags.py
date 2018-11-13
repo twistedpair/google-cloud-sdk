@@ -133,7 +133,8 @@ UPDATE_PYPI_FROM_FILE_FLAG = base.Argument(
     The path to a file containing a list of PyPI packages to install in
     the environment. Each line in the file should contain a package
     specification in the format of the update-pypi-package argument
-    defined above.
+    defined above. The path can be a local file path or a Google Cloud Storage
+    file path (Cloud Storage file path starts with 'gs://').
     """)
 
 CLEAR_PYPI_PACKAGES_FLAG = base.Argument(

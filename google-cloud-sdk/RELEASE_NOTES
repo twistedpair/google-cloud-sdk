@@ -5,6 +5,57 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 225.0.0 (2018-11-13)
+
+### Cloud SDK
+
+* Added the `--flags-file`=_YAML-FILE_ flag, available to all gcloud commands,
+  for specifying complex flag values in any command interpreter. See
+  `gcloud topic flags-file` for more information.
+
+### App Engine
+
+
+* Updated the Python SDK to version 1.9.80.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+
+### BigQuery
+
+* Added support for Avro Logical Types in Avro load jobs via the load configuration option `useAvroLogicalTypes`.
+
+### Cloud Dataproc
+
+* Added `--num-preemptible-worker-local-ssds` flag to
+  `gcloud dataproc clusters create` command, which adds local SSDs to
+  preemptible worker VMs.
+
+### Cloud Scheduler
+
+* Added the following flags to `gcloud beta scheduler jobs create pubsub`:
+  * `--max-retry-attempts`
+  * `--max-retry-duration`
+  * `--min-backoff`
+  * `--max-backoff`
+  * `--max-doublings`
+
+### Cloud Spanner
+
+* Promoted `--enable-partitioned-dml` flag of `gcloud spanner execute-sql` to GA.
+
+### Compute Engine
+
+* Promoted `--boot` flag of `gcloud compute instances attach-disk` to beta.
+* Promoted the `gcloud compute routers nats` group to GA.
+* Promoted the `next-hop-ilb` flag of `gcloud compute routes` to beta.
+* Added `all` as a valid option of `--ports` for `gcloud beta compute
+forwarding-rules`.
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 224.0.0 (2018-11-06)
 
 ### Breaking Changes

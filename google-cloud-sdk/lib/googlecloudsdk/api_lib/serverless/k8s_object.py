@@ -16,14 +16,19 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
 import collections
 from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.serverless import condition
+from googlecloudsdk.core.console import console_attr
 
 import six
+
+
+REGION_ANNOTATION = 'serving.knative.dev/region'
 
 
 def InitializedInstance(msg_cls):
@@ -103,6 +108,8 @@ class KubernetesObject(object):
     return cls(ret, messages_mod)
 
   def __init__(self, to_wrap, messages_mod, spec_only=False):
+    if not isinstance(to_wrap, getattr(messages_mod, self.KIND)):
+      raise ValueError('Oops, trying to wrap wrong kind of message')
     self._m = to_wrap
     self._messages = messages_mod
     self._spec_only = spec_only
@@ -172,6 +179,11 @@ class KubernetesObject(object):
     return self._m.metadata.resourceVersion
 
   @property
+  def region(self):
+    self.AssertFullObject()
+    return self.annotations[REGION_ANNOTATION]
+
+  @property
   def generation(self):
     self.AssertFullObject()
     # For the hack where generation is in spec, it's worse than unpopulated in
@@ -217,6 +229,28 @@ class KubernetesObject(object):
     if self.READY_CONDITION in cond:
       return cond[self.READY_CONDITION]['status']
     return None
+
+  def _PickSymbol(self, best, alt, encoding):
+    """Choose the best symbol (if it's in this encoding) or an alternate."""
+    try:
+      best.encode(encoding)
+      return best
+    except UnicodeError:
+      return alt
+
+  @property
+  def ready_symbol(self):
+    """Return a symbol summarizing the status of this object."""
+    # NB: This can be overridden by subclasses to allow symbols for more
+    # complex reasons the object isn't ready. Ex: Service overrides it to
+    # provide '!' for "I'm serving, but not the revision you wanted."
+    encoding = console_attr.GetConsoleAttr().GetEncoding()
+    if self.ready is None:
+      return self._PickSymbol('\N{HORIZONTAL ELLIPSIS}', '.', encoding)
+    elif self.ready:
+      return self._PickSymbol('\N{HEAVY CHECK MARK}', '+', encoding)
+    else:
+      return 'X'
 
   def Message(self):
     """Return the actual message we've wrapped."""

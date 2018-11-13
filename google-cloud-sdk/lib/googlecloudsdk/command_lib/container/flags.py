@@ -1492,6 +1492,11 @@ def AddAlphaAddonsFlags(parser):
   AddAddonsFlagsWithOptions(parser, api_adapter.ALPHA_ADDONS_OPTIONS)
 
 
+def AddBetaAddonsFlags(parser):
+  """Adds the --addons flag to the parser for the beta track."""
+  AddAddonsFlagsWithOptions(parser, api_adapter.BETA_ADDONS_OPTIONS)
+
+
 def AddPodSecurityPolicyFlag(parser, hidden=False):
   """Adds a --enable-pod-security-policy flag to parser."""
   help_text = """\
@@ -1526,12 +1531,14 @@ When enabled, `--cluster-ipv4-cidr` must be fully specified (e.g. `10.96.0.0/14`
       help=help_text)
 
 
-def AddTpuFlags(parser, hidden=False):
+def AddTpuFlags(parser, hidden=False, enable_tpu_service_networking=False):
   """Adds flags related to TPUs to the parser.
 
   Args:
     parser: A given parser.
     hidden: Whether or not to hide the help text.
+    enable_tpu_service_networking: Whether to add the
+    enable_tpu_service_networking flag.
   """
 
   tpu_group = parser.add_group(help='Flags relating to Cloud TPUs:')
@@ -1547,7 +1554,23 @@ Can not be specified unless `--enable-kubernetes-alpha` and `--enable-ip-alias`
 are also specified.
 """)
 
-  tpu_group.add_argument(
+  group = tpu_group
+
+  if enable_tpu_service_networking:
+    group = tpu_group.add_mutually_exclusive_group()
+    group.add_argument(
+        '--enable-tpu-service-networking',
+        action='store_true',
+        hidden=hidden,
+        help="""\
+Enable Cloud TPU's Service Networking mode. In this mode, the CIDR blocks used
+by the Cloud TPUs will be allocated and managed by Service Networking, instead
+of Kubernetes Engine.
+
+This cannot be specified if `tpu-ipv4-cidr` is specified.
+""")
+
+  group.add_argument(
       '--tpu-ipv4-cidr',
       metavar='CIDR',
       hidden=hidden,
@@ -1739,16 +1762,18 @@ Must be set with `--enable-managed-pod-identity`.
       help=sa_help_text)
 
 
-def AddResourceUsageBigqueryDatasetFlag(parser, add_clear_flag=False):
+def AddResourceUsageExportFlags(parser, add_clear_flag=False, hidden=False):
   """Adds flags about exporting cluster resource usage to BigQuery."""
 
   group = parser.add_group(
-      "Exports cluster's usage of cloud resources")
+      "Exports cluster's usage of cloud resources",
+      hidden=hidden)
   if add_clear_flag:
     group.is_mutex = True
     group.add_argument(
         '--clear-resource-usage-bigquery-dataset',
         action='store_true',
+        hidden=hidden,
         default=None,
         help='Disables exporting cluster resource usage to BigQuery.')
     group = group.add_group()
@@ -1767,7 +1792,26 @@ Example:
   group.add_argument(
       '--resource-usage-bigquery-dataset',
       default=None,
+      hidden=hidden,
       help=dataset_help_text)
+
+  network_egress_help_text = """`
+Enable network egress metering on this cluster.
+
+When enabled, a DaemonSet is deployed into the cluster. Each DaemonSet pod
+meters network egress traffic by collecting data from the conntrack table, and
+exports the metered metrics to the specified destination.
+
+Network egress metering is disabled if this flag is omitted, or when
+`--no-enable-network-egress-metering` is set.
+"""
+  group.add_argument(
+      '--enable-network-egress-metering',
+      action='store_true',
+      default=None,
+      # TODO(b/118979273) unhide this flag once the GKE backend is ready.
+      hidden=True,
+      help=network_egress_help_text)
 
 
 def AddVerticalPodAutoscalingFlag(parser, hidden=False):
@@ -1967,23 +2011,24 @@ def AddMetadataFlags(parser):
       Metadata keys must be unique and less than 128 bytes in length. Values
       must be less than or equal to 32,768 bytes in length. The total size of
       all keys and values must be less than 512 KB. Multiple arguments can be
-      passed to this flag, e.g.,
-      ``--metadata key-1=value-1,key-2=value-2,key-3=value-3''.
+      passed to this flag. For example:
+
+      ``--metadata key-1=value-1,key-2=value-2,key-3=value-3''
 
       Additionally, the following keys are reserved for use by Kubernetes
       Engine:
 
-      "cluster-location"
-      "cluster-name"
-      "cluster-uid"
-      "configure-sh"
-      "enable-os-login"
-      "gci-update-strategy"
-      "gci-ensure-gke-docker"
-      "instance-template"
-      "kube-env"
-      "startup-script"
-      "user-data"
+      * ``cluster-location''
+      * ``cluster-name''
+      * ``cluster-uid''
+      * ``configure-sh''
+      * ``enable-os-login''
+      * ``gci-update-strategy''
+      * ``gci-ensure-gke-docker''
+      * ``instance-template''
+      * ``kube-env''
+      * ``startup-script''
+      * ``user-data''
 
       See also Compute Engine's
       link:https://cloud.google.com/compute/docs/storing-retrieving-metadata[documentation]

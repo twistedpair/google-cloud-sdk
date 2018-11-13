@@ -133,6 +133,10 @@ ENABLE_MPI_EMPTY_ERROR_MSG = """\
 Cannot use --federating-service-account without --enable-managed-pod-identity
 """
 
+ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG = """\
+Cannot use --[no-]enable-network-egress-metering without --resource-usage-bigquery-dataset.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_CONCURRENT_NODE_COUNT = 20
@@ -147,7 +151,8 @@ ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 DEFAULT_ADDONS = [INGRESS, HPA]
 ADDONS_OPTIONS = DEFAULT_ADDONS + [DASHBOARD, ISTIO, NETWORK_POLICY]
-ALPHA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
+BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [CLOUDRUN]
+ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS
 
 UNSPECIFIED = 'UNSPECIFIED'
 SECURE = 'SECURE'
@@ -371,6 +376,7 @@ class CreateClusterOptions(object):
                master_ipv4_cidr=None,
                tpu_ipv4_cidr=None,
                enable_tpu=None,
+               enable_tpu_service_networking=None,
                default_max_pods_per_node=None,
                enable_managed_pod_identity=None,
                federating_service_account=None,
@@ -380,7 +386,8 @@ class CreateClusterOptions(object):
                security_profile=None,
                security_profile_runtime_rules=None,
                database_encryption=None,
-               metadata=None):
+               metadata=None,
+               enable_network_egress_metering=None):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
     self.node_disk_size_gb = node_disk_size_gb
@@ -443,6 +450,7 @@ class CreateClusterOptions(object):
     self.enable_private_endpoint = enable_private_endpoint
     self.master_ipv4_cidr = master_ipv4_cidr
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
+    self.enable_tpu_service_networking = enable_tpu_service_networking
     self.enable_tpu = enable_tpu
     self.issue_client_certificate = issue_client_certificate
     self.default_max_pods_per_node = default_max_pods_per_node
@@ -455,6 +463,7 @@ class CreateClusterOptions(object):
     self.security_profile_runtime_rules = security_profile_runtime_rules
     self.database_encryption = database_encryption
     self.metadata = metadata
+    self.enable_network_egress_metering = enable_network_egress_metering
 
 
 class UpdateClusterOptions(object):
@@ -878,6 +887,17 @@ class APIAdapter(object):
       cluster.verticalPodAutoscaling = self.messages.VerticalPodAutoscaling(
           enabled=options.enable_vertical_pod_autoscaling)
 
+    if options.resource_usage_bigquery_dataset:
+      bigquery_destination = self.messages.BigQueryDestination(
+          datasetId=options.resource_usage_bigquery_dataset)
+      cluster.resourceUsageExportConfig = \
+          self.messages.ResourceUsageExportConfig(
+              bigqueryDestination=bigquery_destination)
+      if options.enable_network_egress_metering:
+        cluster.resourceUsageExportConfig.enableNetworkEgressMetering = True
+    elif options.enable_network_egress_metering is not None:
+      raise util.Error(ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG)
+
     # Only instantiate the masterAuth struct if one or both of `user` or
     # `issue_client_certificate` is configured. Server-side Basic auth default
     # behavior is dependent on the absence of the MasterAuth struct. For this
@@ -1048,6 +1068,8 @@ class APIAdapter(object):
           servicesSecondaryRangeName=options.services_secondary_range_name)
       if options.tpu_ipv4_cidr:
         policy.tpuIpv4CidrBlock = options.tpu_ipv4_cidr
+      if options.enable_tpu_service_networking:
+        policy.tpuUseServiceNetworking = options.enable_tpu_service_networking
       cluster.clusterIpv4Cidr = None
       cluster.ipAllocationPolicy = policy
     return cluster
@@ -1116,6 +1138,13 @@ class APIAdapter(object):
       raise util.Error(
           PREREQUISITE_OPTION_ERROR_MSG.format(
               prerequisite='enable-tpu', opt='tpu-ipv4-cidr'))
+
+    if not options.enable_tpu and options.enable_tpu_service_networking:
+      # Raises error if use --enable-tpu-service-networking without
+      # --enable-tpu.
+      raise util.Error(
+          PREREQUISITE_OPTION_ERROR_MSG.format(
+              prerequisite='enable-tpu', opt='enable-tpu-service-networking'))
 
     if options.enable_tpu:
       cluster.enableTpu = options.enable_tpu
@@ -1224,12 +1253,15 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredVerticalPodAutoscaling=vertical_pod_autoscaling)
     elif options.resource_usage_bigquery_dataset is not None:
-      bigquery_destination = self.messages.BigQueryDestination(
-          datasetId=options.resource_usage_bigquery_dataset)
       export_config = self.messages.ResourceUsageExportConfig(
-          bigqueryDestination=bigquery_destination)
+          bigqueryDestination=self.messages.BigQueryDestination(
+              datasetId=options.resource_usage_bigquery_dataset))
+      if options.enable_network_egress_metering:
+        export_config.enableNetworkEgressMetering = True
       update = self.messages.ClusterUpdate(
           desiredResourceUsageExportConfig=export_config)
+    elif options.enable_network_egress_metering is not None:
+      raise util.Error(ENABLE_NETWORK_EGRESS_METERING_ERROR_MSG)
     elif options.clear_resource_usage_bigquery_dataset is not None:
       export_config = self.messages.ResourceUsageExportConfig()
       update = self.messages.ClusterUpdate(
@@ -1835,6 +1867,16 @@ class V1Beta1Adapter(V1Adapter):
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
     if options.addons:
+      # CloudRun is disabled by default.
+      if CLOUDRUN in options.addons:
+        if ISTIO not in options.addons:
+          # Istio is a dependency of CloudRun. We auto-enable Istio in no
+          # auth mode if not specified by the user.
+          log.warning('Auto-enabling the Istio addon, which is required to run '
+                      'the CloudRun addon.')
+          options.addons.append(ISTIO)
+        cluster.addonsConfig.cloudRunConfig = self.messages.CloudRunConfig(
+            disabled=False)
       # Istio is disabled by default
       if ISTIO in options.addons:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
@@ -1875,6 +1917,10 @@ class V1Beta1Adapter(V1Adapter):
               istio_auth = mtls
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
+      if options.disable_addons.get(CLOUDRUN) is not None:
+        update.desiredAddonsConfig.cloudRunConfig = (
+            self.messages.CloudRunConfig(
+                disabled=options.disable_addons.get(CLOUDRUN)))
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(cluster_ref.projectId,
@@ -2042,12 +2088,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           federatingServiceAccount=options.federating_service_account)
     elif options.federating_service_account is not None:
       raise util.Error(ENABLE_MPI_EMPTY_ERROR_MSG)
-    if options.resource_usage_bigquery_dataset:
-      bigquery_destination = self.messages.BigQueryDestination(
-          datasetId=options.resource_usage_bigquery_dataset)
-      cluster.resourceUsageExportConfig = \
-          self.messages.ResourceUsageExportConfig(
-              bigqueryDestination=bigquery_destination)
     if options.security_profile is not None:
       cluster.securityProfile = self.messages.SecurityProfile(
           name=options.security_profile)

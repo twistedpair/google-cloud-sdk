@@ -142,8 +142,8 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
-  r"""A CloudassetOrganizationsBatchGetAssetsHistoryRequest object.
+class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
+  r"""A CloudassetBatchGetAssetsHistoryRequest object.
 
   Enums:
     ContentTypeValueValuesEnum: Required. The content type.
@@ -160,9 +160,9 @@ class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
       organization number (such as "organizations/123"), a project ID (such as
       "projects/my-project-id")", or a project number (such as
       "projects/12345").
-    readTimeWindow_endTime: End time of the time window (exclusive). Current
+    readTimeWindow_endTime: End time of the time window (inclusive). Current
       timestamp if not specified.
-    readTimeWindow_startTime: Start time of the time window (inclusive).
+    readTimeWindow_startTime: Start time of the time window (exclusive).
   """
 
   class ContentTypeValueValuesEnum(_messages.Enum):
@@ -184,8 +184,8 @@ class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
   readTimeWindow_startTime = _messages.StringField(5)
 
 
-class CloudassetOrganizationsExportAssetsRequest(_messages.Message):
-  r"""A CloudassetOrganizationsExportAssetsRequest object.
+class CloudassetExportAssetsRequest(_messages.Message):
+  r"""A CloudassetExportAssetsRequest object.
 
   Fields:
     exportAssetsRequest: A ExportAssetsRequest resource to be passed as the
@@ -200,76 +200,8 @@ class CloudassetOrganizationsExportAssetsRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class CloudassetOrganizationsOperationsGetRequest(_messages.Message):
-  r"""A CloudassetOrganizationsOperationsGetRequest object.
-
-  Fields:
-    name: The name of the operation resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class CloudassetProjectsBatchGetAssetsHistoryRequest(_messages.Message):
-  r"""A CloudassetProjectsBatchGetAssetsHistoryRequest object.
-
-  Enums:
-    ContentTypeValueValuesEnum: Required. The content type.
-
-  Fields:
-    assetNames: A list of the full names of the assets. For example: `//comput
-      e.googleapis.com/projects/my_project_123/zones/zone1/instances/instance1
-      `. See [Resource Names](https://cloud.google.com/apis/design/resource_na
-      mes#full_resource_name) for more info.  The request becomes a no-op if
-      the asset name list is empty, and the max size of the asset name list is
-      100 in one request.
-    contentType: Required. The content type.
-    parent: Required. The relative name of the root asset. It can only be an
-      organization number (such as "organizations/123"), a project ID (such as
-      "projects/my-project-id")", or a project number (such as
-      "projects/12345").
-    readTimeWindow_endTime: End time of the time window (exclusive). Current
-      timestamp if not specified.
-    readTimeWindow_startTime: Start time of the time window (inclusive).
-  """
-
-  class ContentTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The content type.
-
-    Values:
-      CONTENT_TYPE_UNSPECIFIED: <no description>
-      RESOURCE: <no description>
-      IAM_POLICY: <no description>
-    """
-    CONTENT_TYPE_UNSPECIFIED = 0
-    RESOURCE = 1
-    IAM_POLICY = 2
-
-  assetNames = _messages.StringField(1, repeated=True)
-  contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
-  parent = _messages.StringField(3, required=True)
-  readTimeWindow_endTime = _messages.StringField(4)
-  readTimeWindow_startTime = _messages.StringField(5)
-
-
-class CloudassetProjectsExportAssetsRequest(_messages.Message):
-  r"""A CloudassetProjectsExportAssetsRequest object.
-
-  Fields:
-    exportAssetsRequest: A ExportAssetsRequest resource to be passed as the
-      request body.
-    parent: Required. The relative name of the root asset. This can only be an
-      organization number (such as "organizations/123"), a project ID (such as
-      "projects/my-project-id"), or a project number (such as
-      "projects/12345").
-  """
-
-  exportAssetsRequest = _messages.MessageField('ExportAssetsRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class CloudassetProjectsOperationsGetRequest(_messages.Message):
-  r"""A CloudassetProjectsOperationsGetRequest object.
+class CloudassetOperationsGetRequest(_messages.Message):
+  r"""A CloudassetOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.
@@ -288,7 +220,9 @@ class ExportAssetsRequest(_messages.Message):
   Fields:
     assetTypes: A list of asset types of which to take a snapshot for. For
       example: "google.compute.disk". If specified, only matching assets will
-      be returned.
+      be returned. See [Introduction to Cloud Asset
+      Inventory](https://cloud.google.com/resource-manager/docs/cloud-asset-
+      inventory/overview) for all supported asset types.
     contentType: Asset content type. If not specified, no content but the
       asset name will be returned.
     outputConfig: Required. Output configuration indicating where the results
@@ -347,11 +281,10 @@ class GcsDestination(_messages.Message):
   r"""A Cloud Storage location.
 
   Fields:
-    uri: The path of the Cloud Storage objects. It's the same path that is
-      used by  gsutil. For example: "gs://bucket_name/object_path". See
-      [Viewing and Editing Object
-      Metadata](https://cloud.google.com/storage/docs/viewing-editing-
-      metadata) for more information.
+    uri: The uri of the Cloud Storage object. It's the same uri that is used
+      by gsutil. For example: "gs://bucket_name/object_name". See [Viewing and
+      Editing Object Metadata](https://cloud.google.com/storage/docs/viewing-
+      editing-metadata) for more information.
   """
 
   uri = _messages.StringField(1)
@@ -740,12 +673,12 @@ class TemporalAsset(_messages.Message):
 
 
 class TimeWindow(_messages.Message):
-  r"""A time window of [start_time, end_time).
+  r"""A time window of (start_time, end_time].
 
   Fields:
-    endTime: End time of the time window (exclusive). Current timestamp if not
+    endTime: End time of the time window (inclusive). Current timestamp if not
       specified.
-    startTime: Start time of the time window (inclusive).
+    startTime: Start time of the time window (exclusive).
   """
 
   endTime = _messages.StringField(1)

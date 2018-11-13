@@ -96,7 +96,7 @@ service.
       r"""Performs asynchronous data upload for AutoML: receive results via the.
 google.longrunning.Operations interface. Returns either an
 `Operation.error` with CreateDatasetMetadata showing a Dataset
-name or an `Operation.response` which contains a full `Dataset` message.
+name or an `Operation.response` which contains an Empty response.
 
       Args:
         request: (SpeechProjectsLocationsDatasetsCreateRequest) input message
@@ -177,7 +177,7 @@ name or an `Operation.response` which contains a full `Dataset` message.
     )
 
     def RefreshData(self, request, global_params=None):
-      r"""Refresh data for a dataset.
+      r"""Refresh data for a dataset. Returns an Empty response.
 
       Args:
         request: (SpeechProjectsLocationsDatasetsRefreshDataRequest) input message
@@ -214,7 +214,7 @@ name or an `Operation.response` which contains a full `Dataset` message.
           }
 
     def List(self, request, global_params=None):
-      r"""List all log data stats associated with this project.
+      r"""List all log data stats associated with this consumer project.
 
       Args:
         request: (SpeechProjectsLocationsLogDataStatsListRequest) input message

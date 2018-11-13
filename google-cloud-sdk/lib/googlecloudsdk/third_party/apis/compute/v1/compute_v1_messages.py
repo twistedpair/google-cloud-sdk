@@ -1887,8 +1887,7 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
   Enums:
     UtilizationTargetTypeValueValuesEnum: Defines how target utilization value
       is expressed for a Stackdriver Monitoring metric. Either GAUGE,
-      DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is
-      GAUGE.
+      DELTA_PER_SECOND, or DELTA_PER_MINUTE.
 
   Fields:
     metric: The identifier (type) of the Stackdriver Monitoring metric. The
@@ -1904,13 +1903,12 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
       instances.
     utilizationTargetType: Defines how target utilization value is expressed
       for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
-      DELTA_PER_MINUTE. If not specified, the default is GAUGE.
+      DELTA_PER_MINUTE.
   """
 
   class UtilizationTargetTypeValueValuesEnum(_messages.Enum):
     r"""Defines how target utilization value is expressed for a Stackdriver
-    Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If
-    not specified, the default is GAUGE.
+    Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.
 
     Values:
       DELTA_PER_MINUTE: <no description>
@@ -6809,7 +6807,7 @@ class ComputeInstancesAddAccessConfigRequest(_messages.Message):
 
   Fields:
     accessConfig: A AccessConfig resource to be passed as the request body.
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     networkInterface: The name of the network interface to add to this
       instance.
     project: Project ID for this request.
@@ -6887,7 +6885,7 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
     attachedDisk: A AttachedDisk resource to be passed as the request body.
     forceAttach: Whether to force attach the disk even if it's currently
       attached to another instance. This is only available for regional disks.
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -6915,7 +6913,7 @@ class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
 
   Fields:
     accessConfig: The name of the access config to delete.
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     networkInterface: The name of the network interface.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -6943,7 +6941,7 @@ class ComputeInstancesDeleteRequest(_messages.Message):
   r"""A ComputeInstancesDeleteRequest object.
 
   Fields:
-    instance: Name of the instance resource to delete.
+    instance: Name or id of the instance resource to delete.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -6969,7 +6967,7 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
 
   Fields:
     deviceName: Disk device name to detach.
-    instance: Instance name.
+    instance: Instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -6995,7 +6993,7 @@ class ComputeInstancesGetRequest(_messages.Message):
   r"""A ComputeInstancesGetRequest object.
 
   Fields:
-    instance: Name of the instance resource to return.
+    instance: Name or id of the instance resource to return.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -7009,7 +7007,7 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   r"""A ComputeInstancesGetSerialPortOutputRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     port: Specifies which COM or serial port to retrieve data from.
     project: Project ID for this request.
     start: Returns output starting from a specific byte position. Use this to
@@ -7080,8 +7078,8 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-    instance: Name of the target instance scoping this request, or '-' if the
-      request should span over all instances in the container.
+    instance: Name or id of the target instance scoping this request, or '-'
+      if the request should span over all instances in the container.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -7163,7 +7161,7 @@ class ComputeInstancesResetRequest(_messages.Message):
   r"""A ComputeInstancesResetRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7201,7 +7199,7 @@ class ComputeInstancesSetDeletionProtectionRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
@@ -7218,7 +7216,7 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
   Fields:
     autoDelete: Whether to auto-delete the disk when the instance is deleted.
     deviceName: The device name of the disk to modify.
-    instance: The instance name.
+    instance: The instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7245,7 +7243,7 @@ class ComputeInstancesSetLabelsRequest(_messages.Message):
   r"""A ComputeInstancesSetLabelsRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     instancesSetLabelsRequest: A InstancesSetLabelsRequest resource to be
       passed as the request body.
     project: Project ID for this request.
@@ -7273,7 +7271,7 @@ class ComputeInstancesSetMachineResourcesRequest(_messages.Message):
   r"""A ComputeInstancesSetMachineResourcesRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     instancesSetMachineResourcesRequest: A InstancesSetMachineResourcesRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -7301,7 +7299,7 @@ class ComputeInstancesSetMachineTypeRequest(_messages.Message):
   r"""A ComputeInstancesSetMachineTypeRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     instancesSetMachineTypeRequest: A InstancesSetMachineTypeRequest resource
       to be passed as the request body.
     project: Project ID for this request.
@@ -7329,7 +7327,7 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
   r"""A ComputeInstancesSetMetadataRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     metadata: A Metadata resource to be passed as the request body.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -7356,7 +7354,7 @@ class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
   r"""A ComputeInstancesSetMinCpuPlatformRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     instancesSetMinCpuPlatformRequest: A InstancesSetMinCpuPlatformRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -7384,7 +7382,7 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
   r"""A ComputeInstancesSetSchedulingRequest object.
 
   Fields:
-    instance: Instance name.
+    instance: Instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7411,7 +7409,7 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
   r"""A ComputeInstancesSetServiceAccountRequest object.
 
   Fields:
-    instance: Name of the instance resource to start.
+    instance: Name or id of the instance resource to start.
     instancesSetServiceAccountRequest: A InstancesSetServiceAccountRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -7439,7 +7437,7 @@ class ComputeInstancesSetTagsRequest(_messages.Message):
   r"""A ComputeInstancesSetTagsRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7466,7 +7464,7 @@ class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
   r"""A ComputeInstancesSimulateMaintenanceEventRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -7480,7 +7478,7 @@ class ComputeInstancesStartRequest(_messages.Message):
   r"""A ComputeInstancesStartRequest object.
 
   Fields:
-    instance: Name of the instance resource to start.
+    instance: Name or id of the instance resource to start.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7505,7 +7503,7 @@ class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
   r"""A ComputeInstancesStartWithEncryptionKeyRequest object.
 
   Fields:
-    instance: Name of the instance resource to start.
+    instance: Name or id of the instance resource to start.
     instancesStartWithEncryptionKeyRequest: A
       InstancesStartWithEncryptionKeyRequest resource to be passed as the
       request body.
@@ -7534,7 +7532,7 @@ class ComputeInstancesStopRequest(_messages.Message):
   r"""A ComputeInstancesStopRequest object.
 
   Fields:
-    instance: Name of the instance resource to stop.
+    instance: Name or id of the instance resource to stop.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7560,7 +7558,7 @@ class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
 
   Fields:
     accessConfig: A AccessConfig resource to be passed as the request body.
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     networkInterface: The name of the network interface where the access
       config is attached.
     project: Project ID for this request.
@@ -7589,7 +7587,7 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
   r"""A ComputeInstancesUpdateNetworkInterfaceRequest object.
 
   Fields:
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     networkInterface: The name of the network interface to update.
     networkInterfaceResource: A NetworkInterface resource to be passed as the
       request body.
@@ -22030,11 +22028,11 @@ class NetworkPeering(_messages.Message):
     StateValueValuesEnum: [Output Only] State for the peering.
 
   Fields:
-    autoCreateRoutes: Whether full mesh connectivity is created and managed
-      automatically. When it is set to true, Google Compute Engine will
-      automatically create and manage the routes between two networks when the
-      state is ACTIVE. Otherwise, user needs to create routes manually to
-      route packets to peer network.
+    autoCreateRoutes: Indicates whether full mesh connectivity is created and
+      managed automatically. When it is set to true, Google Compute Engine
+      will automatically create and manage the routes between two networks
+      when the state is ACTIVE. Otherwise, user needs to create routes
+      manually to route packets to peer network.
     name: Name of this peering. Provided by the client when the peering is
       created. The name must comply with RFC1035. Specifically, the name must
       be 1-63 characters long and match regular expression

@@ -58,6 +58,53 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_PRODUCTSETS = (
+      'projects.locations.productSets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/productSets/'
+              '{productSetsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PRODUCTS = (
+      'projects.locations.products',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/products/'
+              '{productsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PRODUCTS_REFERENCEIMAGES = (
+      'projects.locations.products.referenceImages',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/products/'
+              '{productsId}/referenceImages/{referenceImagesId}',
+      },
+      [u'name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

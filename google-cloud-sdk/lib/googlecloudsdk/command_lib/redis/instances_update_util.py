@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.command_lib.redis import util
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.console import console_io
 from six.moves import filter  # pylint: disable=redefined-builtin
 
 
@@ -66,8 +67,37 @@ def AddDisplayName(unused_instance_ref, args, patch_request):
   return patch_request
 
 
-def AddSize(unused_instance_ref, args, patch_request):
+def _WarnForDestructiveSizeUpdate(instance_ref, instance):
+  """Adds prompt that warns about a destructive size update."""
+  messages = util.GetMessagesForResource(instance_ref)
+  message = 'Change to instance size requested. '
+  if instance.tier == messages.Instance.TierValueValuesEnum.BASIC:
+    message += ('Scaling a Basic Tier instance will result in a full cache '
+                'flush, and the instance will be unavailable during the '
+                'operation. ')
+  elif instance.tier == messages.Instance.TierValueValuesEnum.STANDARD_HA:
+    message += ('Scaling a Standard Tier instance may result in the loss of '
+                'unreplicated data, and the instance will be briefly '
+                'unavailable during failover. ')
+  else:
+    # To future proof this against new instance types, add a default message.
+    message += ('Scaling a redis instance may result in data loss, and the '
+                'instance will be briefly unavailable during scaling. ')
+  message += (
+      'For more information please take a look at '
+      'https://cloud.google.com/memorystore/docs/redis/scaling-instances')
+
+  console_io.PromptContinue(
+      message=message,
+      prompt_string='Do you want to proceed with update?',
+      cancel_on_no=True)
+
+
+def AddSize(instance_ref, args, patch_request):
+  """Python hook to add size update to the redis instance update request."""
   if args.IsSpecified('size'):
+    # Changing size is destructive and users should be warned before proceeding.
+    _WarnForDestructiveSizeUpdate(instance_ref, patch_request.instance)
     patch_request.instance.memorySizeGb = args.size
     patch_request = AddFieldToUpdateMask('memory_size_gb', patch_request)
   return patch_request

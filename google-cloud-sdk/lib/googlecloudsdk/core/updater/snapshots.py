@@ -475,7 +475,11 @@ class ComponentSnapshot(object):
               if d.platform.Matches(platform_filter) and  # pytype: disable=attribute-error
               d.is_hidden and d.data]  # pytype: disable=attribute-error
       for d in deps:
-        size += d.data.size  # pytype: disable=attribute-error
+        # If we get here, the component has a data section. The size should
+        # always be populated, but sometimes in the local state the size is
+        # deleted from the cached snapshot. The size data is not critical, so
+        # just substitute in 0 if we can't find the size so things don't crash.
+        size += d.data.size or 0  # pytype: disable=attribute-error
     return size
 
   def CreateDiff(self, latest_snapshot, platform_filter=None):

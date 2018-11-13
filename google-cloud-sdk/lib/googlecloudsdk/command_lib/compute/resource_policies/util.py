@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute.resource_policies import flags
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import times
@@ -74,16 +75,18 @@ def MakeDiskBackupSchedulePolicy(policy_ref, args, messages):
       messages.ResourcePolicyBackupSchedulePolicySnapshotProperties.LabelsValue,
       labels_dest='snapshot_labels')
   storage_location = [args.storage_location] if args.storage_location else []
-  if (args.IsSpecified('guest_flush') or snapshot_labels or storage_location):
+  if args.IsSpecified('guest_flush') or snapshot_labels or storage_location:
     snapshot_properties = (
         messages.ResourcePolicyBackupSchedulePolicySnapshotProperties(
             guestFlush=args.guest_flush,
             labels=snapshot_labels,
             storageLocations=storage_location))
   backup_policy = messages.ResourcePolicyBackupSchedulePolicy(
-      retentionPolicy=
-      messages.ResourcePolicyBackupSchedulePolicyRetentionPolicy(
-          maxRetentionDays=args.max_retention_days),
+      retentionPolicy=messages
+      .ResourcePolicyBackupSchedulePolicyRetentionPolicy(
+          maxRetentionDays=args.max_retention_days,
+          onSourceDiskDelete=flags.GetOnSourceDiskDeleteFlagMapper(messages)
+          .GetEnumForChoice(args.on_source_disk_delete)),
       schedule=messages.ResourcePolicyBackupSchedulePolicySchedule(
           hourlySchedule=hourly_cycle,
           dailySchedule=daily_cycle,

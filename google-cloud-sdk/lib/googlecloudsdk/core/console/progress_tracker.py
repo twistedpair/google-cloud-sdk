@@ -997,12 +997,21 @@ class _MultilineStagedProgressTracker(_BaseStagedProgressTracker):
   """
 
   def UpdateHeaderMessage(self, message):
-    self._console_output.UpdateMessage(
-        self._header_message, self._message + ' ' + message)
+    # Next tick will handle actually updating the message. Using tick here to
+    # update the message will cause a deadlock when _NotifyUninterruptableError
+    # is called.
+    self._header_stage.message = message
+
+  def _UpdateHeaderMessage(self, prefix):
+    message = prefix + self._message
+    if self._header_stage.message:
+      message += ' ' + self._header_stage.message
+    self._console_output.UpdateMessage(self._header_message, message)
 
   def _NotifyUninterruptableError(self):
     with self._lock:
       self.UpdateHeaderMessage('This operation cannot be cancelled.')
+    self.Tick()
 
   def _SetupExitOutput(self):
     """Sets up output to print out the closing line."""
@@ -1013,13 +1022,18 @@ class _MultilineStagedProgressTracker(_BaseStagedProgressTracker):
     output_message = self._SetupExitOutput()
     if aborted:
       msg = self._aborted_message or 'Aborted.'
+      # Aborted is the same as overall failed progress.
+      self._header_stage.status = StageCompletionStatus.FAILED
     elif failed:
       msg = self._failure_message or 'Failed.'
+      self._header_stage.status = StageCompletionStatus.FAILED
     else:
       msg = self._success_message or 'Done.'
+      self._header_stage.status = StageCompletionStatus.SUCCESS
     if self._done_message_callback:
       msg += ' ' + self._done_message_callback()
     self._console_output.UpdateMessage(output_message, msg)
+    # If for some reason some stage did not complete, mark it as interrupted.
     self._Print(self._symbols.interrupted)
 
   def _SetupOutput(self):
@@ -1027,6 +1041,8 @@ class _MultilineStagedProgressTracker(_BaseStagedProgressTracker):
     self._maintain_queue = False
     self._console_output = multiline.MultilineConsoleOutput(self._stream)
     self._header_message = self._console_output.AddMessage(self._message)
+    self._header_stage = Stage('')  # Use a Stage object to hold header state.
+    self._header_stage.status = StageCompletionStatus.RUNNING
     self._stage_messages = dict()
     for stage in self._stages:
       self._stage_messages[stage] = self._console_output.AddMessage(
@@ -1034,19 +1050,19 @@ class _MultilineStagedProgressTracker(_BaseStagedProgressTracker):
       self._UpdateStageTickMark(stage)
     self._console_output.UpdateConsole()
 
-  def _GenerateStagePrefix(self, stage, tick_mark):
-    if stage.status == StageCompletionStatus.NOT_STARTED:
+  def _GenerateStagePrefix(self, stage_status, tick_mark):
+    if stage_status == StageCompletionStatus.NOT_STARTED:
       tick_mark = self._symbols.not_started
-    elif stage.status == StageCompletionStatus.SUCCESS:
+    elif stage_status == StageCompletionStatus.SUCCESS:
       tick_mark = self._symbols.success
-    elif stage.status == StageCompletionStatus.FAILED:
+    elif stage_status == StageCompletionStatus.FAILED:
       tick_mark = self._symbols.failed
-    elif stage.status == StageCompletionStatus.INTERRUPTED:
+    elif stage_status == StageCompletionStatus.INTERRUPTED:
       tick_mark = self._symbols.interrupted
     return tick_mark + ' ' * (self._symbols.prefix_length - len(tick_mark))
 
   def _UpdateStageTickMark(self, stage, tick_mark=''):
-    prefix = self._GenerateStagePrefix(stage, tick_mark)
+    prefix = self._GenerateStagePrefix(stage.status, tick_mark)
     message = stage.header
     if stage.message:
       message += ' ' + stage.message
@@ -1090,6 +1106,9 @@ class _MultilineStagedProgressTracker(_BaseStagedProgressTracker):
     """
     if not self._output_enabled:
       return
+    header_prefix = self._GenerateStagePrefix(
+        self._header_stage.status, tick_mark)
+    self._UpdateHeaderMessage(header_prefix)
     for stage in self._running_stages:
       self._UpdateStageTickMark(stage, tick_mark)
     self._console_output.UpdateConsole()

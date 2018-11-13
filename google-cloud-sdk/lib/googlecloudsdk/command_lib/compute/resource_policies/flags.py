@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 
 
@@ -97,13 +98,35 @@ def AddCommonArgs(parser):
       help='An optional, textual description for the backend.')
 
 
-def AddBackupScheduleArgs(parser):
+def GetOnSourceDiskDeleteFlagMapper(messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--on-source-disk-delete',
+      messages.ResourcePolicyBackupSchedulePolicyRetentionPolicy
+      .OnSourceDiskDeleteValueValuesEnum,
+      custom_mappings={
+          'KEEP_AUTO_SNAPSHOTS': (
+              'keep-auto-snapshots',
+              'Keep automatically-created snapshots when the source disk is '
+              'deleted. This is the default behavior.'),
+          'APPLY_RETENTION_POLICY': (
+              'apply-retention-policy',
+              'Continue to apply the retention window to automatically-created '
+              'snapshots when the source disk is deleted.')
+      },
+      default=None,
+      help_str=
+      'Retention behavior of automatic snapshots in the event of source disk '
+      'deletion.')
+
+
+def AddBackupScheduleArgs(parser, messages):
   """Adds flags specific to backup schedule resource policies."""
   parser.add_argument(
       '--max-retention-days',
       required=True,
       type=arg_parsers.BoundedInt(lower_bound=1),
       help='Maximum number of days snapshot can be retained.')
+  GetOnSourceDiskDeleteFlagMapper(messages).choice_arg.AddToParser(parser)
   snapshot_properties_group = parser.add_group('Snapshot properties')
   labels_util.GetCreateLabelsFlag(
       extra_message='These will be added to the disk snapshots on creation.',

@@ -843,7 +843,7 @@ class GlobalSetPolicyRequest(_messages.Message):
   r"""A GlobalSetPolicyRequest object.
 
   Fields:
-    bindings: Flatten Policy to create a backwacd compatible wire-format.
+    bindings: Flatten Policy to create a backward compatible wire-format.
       Deprecated. Use 'policy' to specify bindings.
     etag: Flatten Policy to create a backward compatible wire-format.
       Deprecated. Use 'policy' to specify the etag.

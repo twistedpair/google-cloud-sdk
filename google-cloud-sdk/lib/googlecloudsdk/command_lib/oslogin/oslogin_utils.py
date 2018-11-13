@@ -21,9 +21,10 @@ from __future__ import unicode_literals
 import time
 
 
-def GetKeyDictionaryFromProfile(user, oslogin_client):
+def GetKeyDictionaryFromProfile(user, oslogin_client, profile=None):
   """Return a dictionary of fingerprints/keys from the OS Login Profile."""
-  profile = oslogin_client.GetLoginProfile(user)
+  if not profile:
+    profile = oslogin_client.GetLoginProfile(user)
   key_dir = {}
 
   if not profile.sshPublicKeys:

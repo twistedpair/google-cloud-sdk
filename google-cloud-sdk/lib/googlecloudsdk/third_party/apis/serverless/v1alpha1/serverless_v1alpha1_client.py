@@ -39,9 +39,7 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
     self.extensions_k8s_api_versions = self.ExtensionsK8sApiVersionsService(self)
     self.extensions_k8s_api = self.ExtensionsK8sApiService(self)
     self.extensions_k8s_apis = self.ExtensionsK8sApisService(self)
-    self.extensions_k8s_groups_serving_knative_dev = self.ExtensionsK8sGroupsServingKnativeDevService(self)
-    self.extensions_k8s_groups_serving_knative = self.ExtensionsK8sGroupsServingKnativeService(self)
-    self.extensions_k8s_groups_serving = self.ExtensionsK8sGroupsServingService(self)
+    self.extensions_k8s_groups_servingknativedev = self.ExtensionsK8sGroupsServingknativedevService(self)
     self.extensions_k8s_groups = self.ExtensionsK8sGroupsService(self)
     self.extensions_k8s = self.ExtensionsK8sService(self)
     self.extensions = self.ExtensionsService(self)
@@ -178,13 +176,13 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ExtensionsK8sGroupsServingKnativeDevService(base_api.BaseApiService):
-    """Service class for the extensions_k8s_groups_serving_knative_dev resource."""
+  class ExtensionsK8sGroupsServingknativedevService(base_api.BaseApiService):
+    """Service class for the extensions_k8s_groups_servingknativedev resource."""
 
-    _NAME = u'extensions_k8s_groups_serving_knative_dev'
+    _NAME = u'extensions_k8s_groups_servingknativedev'
 
     def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sGroupsServingKnativeDevService, self).__init__(client)
+      super(ServerlessV1alpha1.ExtensionsK8sGroupsServingknativedevService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -192,7 +190,7 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
       r"""Lists serverless v1alpha1 resources.
 
       Args:
-        request: (ServerlessExtensionsK8sGroupsServingKnativeDevListRequest) input message
+        request: (ServerlessExtensionsK8sGroupsServingknativedevListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ApiResourceList) The response message.
@@ -203,36 +201,16 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
 
     List.method_config = lambda: base_api.ApiMethodInfo(
         http_method=u'GET',
-        method_id=u'serverless.extensions.k8s.groups.serving.knative.dev.list',
+        method_id=u'serverless.extensions.k8s.groups.servingknativedev.list',
         ordered_params=[],
         path_params=[],
         query_params=[u'labelSelector', u'timeout'],
         relative_path=u'v1alpha1/extensions/k8s/groups/serving.knative.dev',
         request_field='',
-        request_type_name=u'ServerlessExtensionsK8sGroupsServingKnativeDevListRequest',
+        request_type_name=u'ServerlessExtensionsK8sGroupsServingknativedevListRequest',
         response_type_name=u'ApiResourceList',
         supports_download=False,
     )
-
-  class ExtensionsK8sGroupsServingKnativeService(base_api.BaseApiService):
-    """Service class for the extensions_k8s_groups_serving_knative resource."""
-
-    _NAME = u'extensions_k8s_groups_serving_knative'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sGroupsServingKnativeService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ExtensionsK8sGroupsServingService(base_api.BaseApiService):
-    """Service class for the extensions_k8s_groups_serving resource."""
-
-    _NAME = u'extensions_k8s_groups_serving'
-
-    def __init__(self, client):
-      super(ServerlessV1alpha1.ExtensionsK8sGroupsServingService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ExtensionsK8sGroupsService(base_api.BaseApiService):
     """Service class for the extensions_k8s_groups resource."""
@@ -477,7 +455,6 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
 
     def Get(self, request, global_params=None):
       r"""Rpc to get information about a route.
-This will cause the route to stop serving traffic.
 
       Args:
         request: (ServerlessNamespacesRoutesGetRequest) input message
@@ -653,7 +630,7 @@ child entities like Routes, Configurations and Revisions.
     def Patch(self, request, global_params=None):
       r"""Rpc to update a service.
 Only the metadata and spec are modifiable but after the Update request,
-Google Serverless Engine will work to make the ServiceStatus match the
+Cloud Run will work to make the ServiceStatus match the
 requested ServiceSpec.
 May use metadata.resourceVersion to enforce update from last read for
 concurrency control.
@@ -685,7 +662,7 @@ concurrency control.
     def ReplaceService(self, request, global_params=None):
       r"""Rpc to replace a service.
 Only the metadata and spec are modifiable but after the Replace request,
-Google Serverless Engine will work to make the ServiceStatus match the
+Cloud Run will work to make the ServiceStatus match the
 requested ServiceSpec.
 May use metadata.resourceVersion to enforce update from last read for
 concurrency control.
@@ -891,7 +868,6 @@ concurrency control.
 
     def Get(self, request, global_params=None):
       r"""Rpc to get information about a route.
-This will cause the route to stop serving traffic.
 
       Args:
         request: (ServerlessProjectsLocationsRoutesGetRequest) input message
@@ -1067,7 +1043,7 @@ child entities like Routes, Configurations and Revisions.
     def Patch(self, request, global_params=None):
       r"""Rpc to update a service.
 Only the metadata and spec are modifiable but after the Update request,
-Google Serverless Engine will work to make the ServiceStatus match the
+Cloud Run will work to make the ServiceStatus match the
 requested ServiceSpec.
 May use metadata.resourceVersion to enforce update from last read for
 concurrency control.
@@ -1099,7 +1075,7 @@ concurrency control.
     def ReplaceService(self, request, global_params=None):
       r"""Rpc to replace a service.
 Only the metadata and spec are modifiable but after the Replace request,
-Google Serverless Engine will work to make the ServiceStatus match the
+Cloud Run will work to make the ServiceStatus match the
 requested ServiceSpec.
 May use metadata.resourceVersion to enforce update from last read for
 concurrency control.

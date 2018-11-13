@@ -21,9 +21,9 @@ from __future__ import unicode_literals
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.util.apis import arg_utils
-from googlecloudsdk.command_lib.util.apis import resource_arg_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -204,9 +204,11 @@ class DeclarativeArgumentGenerator(object):
     # attributes or for list commands (where everything should be a flag since
     # the parent resource collection is being used).
     anchor_arg_name = self._GetAnchorArgName()
-    no_gen = {n: '' for _, n
-              in six.iteritems(resource_arg_schema.IGNORED_FIELDS)
-              if n in self.resource_arg.attribute_names}
+    no_gen = {
+        n: ''
+        for _, n in six.iteritems(concepts.IGNORED_FIELDS)
+        if n in self.resource_arg.attribute_names
+    }
     no_gen.update({n: '' for n in self.resource_arg.removed_flags})
     command_level_fallthroughs = {}
     concept_parsers.UpdateFallthroughsMap(

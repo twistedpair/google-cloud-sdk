@@ -533,6 +533,14 @@ MAP = {
             default_version=True
         ),
     },
+    'iamcredentials': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.iamcredentials.v1',
+            client_classpath='iamcredentials_v1_client.IamcredentialsV1',
+            messages_modulepath='iamcredentials_v1_messages',
+            default_version=True
+        ),
+    },
     'iap': {
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.iap.v1beta1',
@@ -633,6 +641,14 @@ MAP = {
             client_classpath='redis_v1beta1_client.RedisV1beta1',
             messages_modulepath='redis_v1beta1_messages',
             default_version=False
+        ),
+    },
+    'remotebuildexecution': {
+        'v1alpha': APIDef(
+            class_path='googlecloudsdk.third_party.apis.remotebuildexecution.v1alpha',
+            client_classpath='remotebuildexecution_v1alpha_client.RemotebuildexecutionV1alpha',
+            messages_modulepath='remotebuildexecution_v1alpha_messages',
+            default_version=True
         ),
     },
     'replicapoolupdater': {

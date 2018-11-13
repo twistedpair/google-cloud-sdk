@@ -1764,6 +1764,9 @@ class Job(_messages.Message):
       the stdout of the job's driver program.
     hadoopJob: Job is a Hadoop job.
     hiveJob: Job is a Hive job.
+    jobUuid: Output only. A UUID that uniquely identifies a job within the
+      project over time. This is in contrast to a user-settable
+      reference.job_id that may be reused over time.
     labels: Optional. The labels to associate with this job. Label keys must
       contain 1 to 63 characters, and must conform to RFC 1035
       (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
@@ -1824,18 +1827,19 @@ class Job(_messages.Message):
   driverOutputResourceUri = _messages.StringField(2)
   hadoopJob = _messages.MessageField('HadoopJob', 3)
   hiveJob = _messages.MessageField('HiveJob', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  pigJob = _messages.MessageField('PigJob', 6)
-  placement = _messages.MessageField('JobPlacement', 7)
-  pysparkJob = _messages.MessageField('PySparkJob', 8)
-  reference = _messages.MessageField('JobReference', 9)
-  scheduling = _messages.MessageField('JobScheduling', 10)
-  sparkJob = _messages.MessageField('SparkJob', 11)
-  sparkRJob = _messages.MessageField('SparkRJob', 12)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 13)
-  status = _messages.MessageField('JobStatus', 14)
-  statusHistory = _messages.MessageField('JobStatus', 15, repeated=True)
-  yarnApplications = _messages.MessageField('YarnApplication', 16, repeated=True)
+  jobUuid = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  pigJob = _messages.MessageField('PigJob', 7)
+  placement = _messages.MessageField('JobPlacement', 8)
+  pysparkJob = _messages.MessageField('PySparkJob', 9)
+  reference = _messages.MessageField('JobReference', 10)
+  scheduling = _messages.MessageField('JobScheduling', 11)
+  sparkJob = _messages.MessageField('SparkJob', 12)
+  sparkRJob = _messages.MessageField('SparkRJob', 13)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 14)
+  status = _messages.MessageField('JobStatus', 15)
+  statusHistory = _messages.MessageField('JobStatus', 16, repeated=True)
+  yarnApplications = _messages.MessageField('YarnApplication', 17, repeated=True)
 
 
 class JobPlacement(_messages.Message):
@@ -2678,6 +2682,7 @@ class SoftwareConfig(_messages.Message):
       ZEPPELIN: <no description>
       ANACONDA: <no description>
       PRESTO: <no description>
+      KERBEROS: <no description>
     """
     COMPONENT_UNSPECIFIED = 0
     JUPYTER = 1
@@ -2685,6 +2690,7 @@ class SoftwareConfig(_messages.Message):
     ZEPPELIN = 3
     ANACONDA = 4
     PRESTO = 5
+    KERBEROS = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):

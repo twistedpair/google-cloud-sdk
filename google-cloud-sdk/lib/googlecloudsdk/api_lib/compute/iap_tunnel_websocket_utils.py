@@ -36,12 +36,15 @@ import socks
 URL_SCHEME = 'wss'
 URL_HOST = 'tunnel.cloudproxy.app'
 URL_PATH_ROOT = '/v4'
+CONNECT_ENDPOINT = 'connect'
+RECONNECT_ENDPOINT = 'reconnect'
 
 SUBPROTOCOL_NAME = 'relay.tunnel.cloudproxy.app'
 SUBPROTOCOL_TAG_LEN = 2
 SUBPROTOCOL_HEADER_LEN = SUBPROTOCOL_TAG_LEN + 4
 SUBPROTOCOL_MAX_DATA_FRAME_SIZE = 16384
 SUBPROTOCOL_TAG_CONNECT_SUCCESS_SID = 0x0001
+SUBPROTOCOL_TAG_RECONNECT_SUCCESS_ACK = 0x0002
 SUBPROTOCOL_TAG_DATA = 0x0004
 SUBPROTOCOL_TAG_ACK = 0x0007
 
@@ -117,21 +120,33 @@ def CheckPythonVersion(ignore_certs):
          sys.version_info.micro))
 
 
-def CreateWebSocketUrl(endpoint, tunnel_target):
+def CreateWebSocketConnectUrl(tunnel_target):
+  """Create Connect URL for WebSocket connection."""
+  return _CreateWebSocketUrl(CONNECT_ENDPOINT,
+                             {'project': tunnel_target.project,
+                              'zone': tunnel_target.zone,
+                              'instance': tunnel_target.instance,
+                              'interface': tunnel_target.interface,
+                              'port': tunnel_target.port},
+                             tunnel_target.url_override)
+
+
+def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
+  """Create Reconnect URL for WebSocket connection."""
+  return _CreateWebSocketUrl(RECONNECT_ENDPOINT,
+                             {'sid': sid, 'ack': ack_bytes},
+                             tunnel_target.url_override)
+
+
+def _CreateWebSocketUrl(endpoint, url_query_pieces, url_override):
   """Create URL for WebSocket connection."""
   scheme, hostname, path_root = (URL_SCHEME, URL_HOST, URL_PATH_ROOT)
-  if tunnel_target.url_override:
-    url_override_parts = parse.urlparse(tunnel_target.url_override)
-    scheme, hostname = url_override_parts[:2]
-    path_override = url_override_parts[2]
+  if url_override:
+    url_override_parts = parse.urlparse(url_override)
+    scheme, hostname, path_override = url_override_parts[:3]
     if path_override and path_override != '/':
       path_root = path_override
 
-  url_query_pieces = {'project': tunnel_target.project,
-                      'zone': tunnel_target.zone,
-                      'instance': tunnel_target.instance,
-                      'interface': tunnel_target.interface,
-                      'port': tunnel_target.port}
   qs = parse.urlencode(url_query_pieces)
   path = ('%s%s' % (path_root, endpoint) if path_root.endswith('/')
           else '%s/%s' % (path_root, endpoint))
@@ -162,6 +177,10 @@ def ExtractSubprotocolConnectSuccessSid(binary_data):
 def ExtractSubprotocolData(binary_data):
   data_len, binary_data = _ExtractUnsignedInt32(binary_data)
   return _ExtractBinaryArray(binary_data, data_len)
+
+
+def ExtractSubprotocolReconnectSuccessAck(binary_data):
+  return _ExtractUnsignedInt64(binary_data)
 
 
 def ExtractSubprotocolTag(binary_data):

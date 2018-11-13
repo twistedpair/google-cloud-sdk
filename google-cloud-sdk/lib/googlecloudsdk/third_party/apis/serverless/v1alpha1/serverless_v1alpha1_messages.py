@@ -172,7 +172,7 @@ class ConfigurationSpec(_messages.Message):
 
   Fields:
     generation: For open Knative: metadata.generation does not work yet, this
-      is a stopgap way of specifying generation IGNORED BY GSE. +optional
+      is a stopgap way of specifying generation +optional
     revisionTemplate: RevisionTemplate holds the latest specification for the
       Revision to be stamped out. If a Build specification is provided, then
       the RevisionTemplate's BuildName field will be populated with the name
@@ -1100,8 +1100,8 @@ class RevisionCondition(_messages.Message):
     type: RevisionConditionType is used to communicate the status of the
       reconciliation process. See also:
       https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types include: "Ready", "Failed",
-      "BuildComplete", "BuildFailed"
+      #error-conditions-and-reporting Types include: "Ready",
+      "ResourcesAvailable", and "ContainerHealthy".
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -1121,8 +1121,6 @@ class RevisionSpec(_messages.Message):
       that the system will manipulate this based on routability and load.
 
   Fields:
-    buildName: BuildName optionally holds the name of the Build responsible
-      for producing the container image for its Revision.
     concurrencyModel: ConcurrencyModel specifies the desired concurrency model
       (Single or Multi) for the Revision. Defaults to Multi. Deprecated in
       favor of ContainerConcurrency. +optional
@@ -1135,7 +1133,7 @@ class RevisionSpec(_messages.Message):
       This is    the default value. - `1` not-thread-safe. Single concurrency
       - `2-N` thread-safe, max concurrency of N
     generation: For open Knative: metadata.generation does not work yet, this
-      is a stopgap way of specifying generation IGNORED BY GSE. +optional
+      is a stopgap way of specifying generation +optional
     serviceAccountName: ServiceAccountName holds the name of the Kubernetes
       service account as which the underlying K8s resources should be run. If
       unspecified this will default to the "default" service account for the
@@ -1174,13 +1172,12 @@ class RevisionSpec(_messages.Message):
     RESERVE = 2
     RETIRED = 3
 
-  buildName = _messages.StringField(1)
-  concurrencyModel = _messages.StringField(2)
-  container = _messages.MessageField('Container', 3)
-  containerConcurrency = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  generation = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  serviceAccountName = _messages.StringField(6)
-  servingState = _messages.EnumField('ServingStateValueValuesEnum', 7)
+  concurrencyModel = _messages.StringField(1)
+  container = _messages.MessageField('Container', 2)
+  containerConcurrency = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  generation = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  serviceAccountName = _messages.StringField(5)
+  servingState = _messages.EnumField('ServingStateValueValuesEnum', 6)
 
 
 class RevisionStatus(_messages.Message):
@@ -1287,7 +1284,7 @@ class RouteSpec(_messages.Message):
 
   Fields:
     generation: For open Knative: metadata.generation does not work yet, this
-      is a stopgap way of specifying generation IGNORED BY GSE. +optional
+      is a stopgap way of specifying generation +optional
     traffic: Traffic specifies how to distribute traffic over a collection of
       Knative Revisions and Configurations.
   """
@@ -1305,8 +1302,8 @@ class RouteStatus(_messages.Message):
       reconciliation processes that bring the "spec" inline with the observed
       state of the world.
     domain: Domain holds the top-level domain that will distribute traffic
-      over the provided targets. It generally has the form {route-name
-      }.{route-namespace}.{cluster-level-suffix}
+      over the provided targets. It generally has the form https://{route-hash
+      }-{project-hash}-{cluster-level-suffix}.a.run.app
     domainInternal: DomainInternal holds the top-level domain that will
       distribute traffic over the provided targets from inside the cluster. It
       generally has the form {route-name}.{route-namespace}.svc.cluster.local
@@ -1444,8 +1441,8 @@ class ServerlessExtensionsK8sApisListRequest(_messages.Message):
   timeout = _messages.StringField(1)
 
 
-class ServerlessExtensionsK8sGroupsServingKnativeDevListRequest(_messages.Message):
-  r"""A ServerlessExtensionsK8sGroupsServingKnativeDevListRequest object.
+class ServerlessExtensionsK8sGroupsServingknativedevListRequest(_messages.Message):
+  r"""A ServerlessExtensionsK8sGroupsServingknativedevListRequest object.
 
   Fields:
     labelSelector: A string attribute.
@@ -1486,7 +1483,8 @@ class ServerlessNamespacesConfigurationsListRequest(_messages.Message):
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. k8s will send this in a query string format. i.e.
       'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by GSE.
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
@@ -1526,9 +1524,9 @@ class ServerlessNamespacesRevisionsDeleteRequest(_messages.Message):
   Fields:
     name: The name of the revision being deleted.
     orphanDependents: Kubernetes-compatible attribute that specifies the
-      cascade behavior on delete. GSE only supports cascading behavior, so
-      this must be false. This attribute is deprecated, and might be replaced
-      with PropagationPolicy See
+      cascade behavior on delete. Cloud Run only supports cascading behavior,
+      so this must be false. This attribute is deprecated, and might be
+      replaced with PropagationPolicy See
       https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
@@ -1554,7 +1552,8 @@ class ServerlessNamespacesRevisionsListRequest(_messages.Message):
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. k8s will send this in a query string format. i.e.
       'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by GSE.
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
@@ -1594,7 +1593,8 @@ class ServerlessNamespacesRoutesListRequest(_messages.Message):
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. k8s will send this in a query string format. i.e.
       'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by GSE.
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
@@ -1634,9 +1634,9 @@ class ServerlessNamespacesServicesDeleteRequest(_messages.Message):
   Fields:
     name: The name of the service being deleted.
     orphanDependents: Deprecated. Kubernetes-compatible attribute that
-      specifies the cascade behavior on delete. GSE only supports cascading
-      behavior, so this must be false. This attribute is deprecated, and might
-      be replaced with PropagationPolicy See
+      specifies the cascade behavior on delete. Cloud Run only supports
+      cascading behavior, so this must be false. This attribute is deprecated,
+      and might be replaced with PropagationPolicy See
       https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
@@ -1662,7 +1662,8 @@ class ServerlessNamespacesServicesListRequest(_messages.Message):
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. k8s will send this in a query string format. i.e.
       'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by GSE.
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
@@ -1725,7 +1726,8 @@ class ServerlessProjectsLocationsConfigurationsListRequest(_messages.Message):
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. k8s will send this in a query string format. i.e.
       'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by GSE.
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
@@ -1753,9 +1755,9 @@ class ServerlessProjectsLocationsRevisionsDeleteRequest(_messages.Message):
   Fields:
     name: The name of the revision being deleted.
     orphanDependents: Kubernetes-compatible attribute that specifies the
-      cascade behavior on delete. GSE only supports cascading behavior, so
-      this must be false. This attribute is deprecated, and might be replaced
-      with PropagationPolicy See
+      cascade behavior on delete. Cloud Run only supports cascading behavior,
+      so this must be false. This attribute is deprecated, and might be
+      replaced with PropagationPolicy See
       https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
@@ -1781,7 +1783,8 @@ class ServerlessProjectsLocationsRevisionsListRequest(_messages.Message):
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. k8s will send this in a query string format. i.e.
       'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by GSE.
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
@@ -1821,7 +1824,8 @@ class ServerlessProjectsLocationsRoutesListRequest(_messages.Message):
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. k8s will send this in a query string format. i.e.
       'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by GSE.
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
@@ -1861,9 +1865,9 @@ class ServerlessProjectsLocationsServicesDeleteRequest(_messages.Message):
   Fields:
     name: The name of the service being deleted.
     orphanDependents: Deprecated. Kubernetes-compatible attribute that
-      specifies the cascade behavior on delete. GSE only supports cascading
-      behavior, so this must be false. This attribute is deprecated, and might
-      be replaced with PropagationPolicy See
+      specifies the cascade behavior on delete. Cloud Run only supports
+      cascading behavior, so this must be false. This attribute is deprecated,
+      and might be replaced with PropagationPolicy See
       https://github.com/kubernetes/kubernetes/issues/46659 for more info.
   """
 
@@ -1889,7 +1893,8 @@ class ServerlessProjectsLocationsServicesListRequest(_messages.Message):
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. k8s will send this in a query string format. i.e.
       'metadata.name%3Dlorem'
-    includeUninitialized: Kubernetes-compatible parameter. Not used by GSE.
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.

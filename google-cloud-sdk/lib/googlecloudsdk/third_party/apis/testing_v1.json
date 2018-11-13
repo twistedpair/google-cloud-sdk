@@ -955,10 +955,6 @@
         "errorMessage": {
           "description": "If the TestState is ERROR, then this string will contain human-readable\ndetails about the error.\n@OutputOnly",
           "type": "string"
-        },
-        "videoRecordingDisabled": {
-          "description": "Indicates that video will not be recorded for this execution either because\nthe user chose to disable it or the device does not support it.\nSee AndroidModel.video_recording_not_supported\n@OutputOnly",
-          "type": "boolean"
         }
       }
     },
@@ -1257,10 +1253,6 @@
           "description": "Screen density in DPI.\nThis corresponds to ro.sf.lcd_density\n@OutputOnly",
           "type": "integer",
           "format": "int32"
-        },
-        "videoRecordingNotSupported": {
-          "description": "True if and only if tests with this model DO NOT have video output.\nSee also TestSpecification.disable_video_recording\n@OutputOnly",
-          "type": "boolean"
         },
         "lowFpsVideoRecording": {
           "description": "True if and only if tests with this model are recorded by stitching\ntogether screenshots. See use_low_spec_video_recording in device config.\n@OutputOnly",

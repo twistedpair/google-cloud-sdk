@@ -14,6 +14,17 @@ from apitools.base.py import extra_types
 package = 'vision'
 
 
+class AddProductToProductSetRequest(_messages.Message):
+  r"""Request message for the `AddProductToProductSet` method.
+
+  Fields:
+    product: The resource name for the Product to be added to this ProductSet.
+      Format is: `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
+  """
+
+  product = _messages.StringField(1)
+
+
 class AnnotateFileResponse(_messages.Message):
   r"""Response to a single file annotation request. A file may contain one or
   more images, which individually have their own responses.
@@ -66,6 +77,8 @@ class AnnotateImageResponse(_messages.Message):
       completed successfully. This will be sorted descending by confidence
       score.
     logoAnnotations: If present, logo detection has completed successfully.
+    productSearchResults: If present, product search has completed
+      successfully.
     safeSearchAnnotation: If present, safe-search annotation has completed
       successfully.
     textAnnotations: If present, text (OCR) detection has completed
@@ -83,9 +96,10 @@ class AnnotateImageResponse(_messages.Message):
   landmarkAnnotations = _messages.MessageField('EntityAnnotation', 8, repeated=True)
   localizedObjectAnnotations = _messages.MessageField('LocalizedObjectAnnotation', 9, repeated=True)
   logoAnnotations = _messages.MessageField('EntityAnnotation', 10, repeated=True)
-  safeSearchAnnotation = _messages.MessageField('SafeSearchAnnotation', 11)
-  textAnnotations = _messages.MessageField('EntityAnnotation', 12, repeated=True)
-  webDetection = _messages.MessageField('WebDetection', 13)
+  productSearchResults = _messages.MessageField('ProductSearchResults', 11)
+  safeSearchAnnotation = _messages.MessageField('SafeSearchAnnotation', 12)
+  textAnnotations = _messages.MessageField('EntityAnnotation', 13, repeated=True)
+  webDetection = _messages.MessageField('WebDetection', 14)
 
 
 class AsyncAnnotateFileRequest(_messages.Message):
@@ -161,6 +175,46 @@ class BatchAnnotateImagesResponse(_messages.Message):
   responses = _messages.MessageField('AnnotateImageResponse', 1, repeated=True)
 
 
+class BatchOperationMetadata(_messages.Message):
+  r"""Metadata for the batch operations such as the current state.  This is
+  included in the `metadata` field of the `Operation` returned by the
+  `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Enums:
+    StateValueValuesEnum: The current state of the batch operation.
+
+  Fields:
+    endTime: The time when the batch request is finished and
+      google.longrunning.Operation.done is set to true.
+    state: The current state of the batch operation.
+    submitTime: The time when the batch request was submitted to the server.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of the batch operation.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid.
+      PROCESSING: Request is actively being processed.
+      SUCCESSFUL: The request is done and at least one item has been
+        successfully processed.
+      FAILED: The request is done and no item has been successfully processed.
+      CANCELLED: The request is done after the
+        longrunning.Operations.CancelOperation has been called by the user.
+        Any records that were processed before the cancel command are output
+        as specified in the request.
+    """
+    STATE_UNSPECIFIED = 0
+    PROCESSING = 1
+    SUCCESSFUL = 2
+    FAILED = 3
+    CANCELLED = 4
+
+  endTime = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  submitTime = _messages.StringField(3)
+
+
 class Block(_messages.Message):
   r"""Logical element on the page.
 
@@ -177,7 +231,7 @@ class Block(_messages.Message):
       orientation. For example:  * when the text is horizontal it might look
       like:          0----1         |    |         3----2  * when it's rotated
       180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
@@ -724,6 +778,7 @@ class Feature(_messages.Message):
         dominant colors.
       CROP_HINTS: Run crop hints.
       WEB_DETECTION: Run web detection.
+      PRODUCT_SEARCH: Run Product Search.
       OBJECT_LOCALIZATION: Run localizer for object detection.
     """
     TYPE_UNSPECIFIED = 0
@@ -737,7 +792,8 @@ class Feature(_messages.Message):
     IMAGE_PROPERTIES = 8
     CROP_HINTS = 9
     WEB_DETECTION = 10
-    OBJECT_LOCALIZATION = 11
+    PRODUCT_SEARCH = 11
+    OBJECT_LOCALIZATION = 12
 
   maxResults = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   model = _messages.StringField(2)
@@ -811,6 +867,8 @@ class GoogleCloudVisionV1p1beta1AnnotateImageResponse(_messages.Message):
       completed successfully. This will be sorted descending by confidence
       score.
     logoAnnotations: If present, logo detection has completed successfully.
+    productSearchResults: If present, product search has completed
+      successfully.
     safeSearchAnnotation: If present, safe-search annotation has completed
       successfully.
     textAnnotations: If present, text (OCR) detection has completed
@@ -828,9 +886,10 @@ class GoogleCloudVisionV1p1beta1AnnotateImageResponse(_messages.Message):
   landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 8, repeated=True)
   localizedObjectAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1LocalizedObjectAnnotation', 9, repeated=True)
   logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 10, repeated=True)
-  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p1beta1SafeSearchAnnotation', 11)
-  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 12, repeated=True)
-  webDetection = _messages.MessageField('GoogleCloudVisionV1p1beta1WebDetection', 13)
+  productSearchResults = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResults', 11)
+  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p1beta1SafeSearchAnnotation', 12)
+  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 13, repeated=True)
+  webDetection = _messages.MessageField('GoogleCloudVisionV1p1beta1WebDetection', 14)
 
 
 class GoogleCloudVisionV1p1beta1AsyncAnnotateFileResponse(_messages.Message):
@@ -871,7 +930,7 @@ class GoogleCloudVisionV1p1beta1Block(_messages.Message):
       orientation. For example:  * when the text is horizontal it might look
       like:          0----1         |    |         3----2  * when it's rotated
       180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
@@ -1502,7 +1561,7 @@ class GoogleCloudVisionV1p1beta1Paragraph(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
@@ -1528,6 +1587,98 @@ class GoogleCloudVisionV1p1beta1Position(_messages.Message):
   x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   z = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p1beta1Product(_messages.Message):
+  r"""A Product contains ReferenceImages.
+
+  Fields:
+    description: User-provided metadata to be stored with this product. Must
+      be at most 4096 characters long.
+    displayName: The user-provided name for this Product. Must not be empty.
+      Must be at most 4096 characters long.
+    name: The resource name of the product.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+      is ignored when creating a product.
+    productCategory: The category for the product identified by the reference
+      image. This should be either "homegoods", "apparel", or "toys".  This
+      field is immutable.
+    productLabels: Key-value pairs that can be attached to a product. At query
+      time, constraints can be specified based on the product_labels.  Note
+      that integer values can be provided as strings, e.g. "1199". Only
+      strings with integer values can match a range-based restriction which is
+      to be supported soon.  Multiple values can be assigned to the same key.
+      One product may have up to 100 product_labels.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  productCategory = _messages.StringField(4)
+  productLabels = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductKeyValue', 5, repeated=True)
+
+
+class GoogleCloudVisionV1p1beta1ProductKeyValue(_messages.Message):
+  r"""A product label represented as a key-value pair.
+
+  Fields:
+    key: The key of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+    value: The value of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p1beta1ProductSearchResults(_messages.Message):
+  r"""Results for a product search request.
+
+  Fields:
+    indexTime: Timestamp of the index which provided these results. Changes
+      made after this time are not reflected in the current results.
+    productGroupedResults: List of results grouped by products detected in the
+      query image. Each entry corresponds to one bounding polygon in the query
+      image, and contains the matching products specific to that region. There
+      may be duplicate product matches in the union of all the per-product
+      results.
+    results: List of results, one for each product match.
+  """
+
+  indexTime = _messages.StringField(1)
+  productGroupedResults = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsGroupedResult', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p1beta1ProductSearchResultsGroupedResult(_messages.Message):
+  r"""Information about the products similar to a single product in a query
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon around the product detected in the
+      query image.
+    results: List of results, one for each product match.
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p1beta1BoundingPoly', 1)
+  results = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsResult', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p1beta1ProductSearchResultsResult(_messages.Message):
+  r"""Information about a product.
+
+  Fields:
+    image: The resource name of the image from the product that is the closest
+      match to the query.
+    product: The Product.
+    score: A confidence level on the match, ranging from 0 (no confidence) to
+      1 (full confidence).
+  """
+
+  image = _messages.StringField(1)
+  product = _messages.MessageField('GoogleCloudVisionV1p1beta1Product', 2)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p1beta1Property(_messages.Message):
@@ -1913,7 +2064,7 @@ class GoogleCloudVisionV1p1beta1Word(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -1963,6 +2114,8 @@ class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
       completed successfully. This will be sorted descending by confidence
       score.
     logoAnnotations: If present, logo detection has completed successfully.
+    productSearchResults: If present, product search has completed
+      successfully.
     safeSearchAnnotation: If present, safe-search annotation has completed
       successfully.
     textAnnotations: If present, text (OCR) detection has completed
@@ -1980,9 +2133,10 @@ class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
   landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 8, repeated=True)
   localizedObjectAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1LocalizedObjectAnnotation', 9, repeated=True)
   logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 10, repeated=True)
-  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1SafeSearchAnnotation', 11)
-  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 12, repeated=True)
-  webDetection = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetection', 13)
+  productSearchResults = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResults', 11)
+  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1SafeSearchAnnotation', 12)
+  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 13, repeated=True)
+  webDetection = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetection', 14)
 
 
 class GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse(_messages.Message):
@@ -2023,7 +2177,7 @@ class GoogleCloudVisionV1p2beta1Block(_messages.Message):
       orientation. For example:  * when the text is horizontal it might look
       like:          0----1         |    |         3----2  * when it's rotated
       180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
@@ -2669,7 +2823,7 @@ class GoogleCloudVisionV1p2beta1Paragraph(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
@@ -2695,6 +2849,98 @@ class GoogleCloudVisionV1p2beta1Position(_messages.Message):
   x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   z = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p2beta1Product(_messages.Message):
+  r"""A Product contains ReferenceImages.
+
+  Fields:
+    description: User-provided metadata to be stored with this product. Must
+      be at most 4096 characters long.
+    displayName: The user-provided name for this Product. Must not be empty.
+      Must be at most 4096 characters long.
+    name: The resource name of the product.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+      is ignored when creating a product.
+    productCategory: The category for the product identified by the reference
+      image. This should be either "homegoods", "apparel", or "toys".  This
+      field is immutable.
+    productLabels: Key-value pairs that can be attached to a product. At query
+      time, constraints can be specified based on the product_labels.  Note
+      that integer values can be provided as strings, e.g. "1199". Only
+      strings with integer values can match a range-based restriction which is
+      to be supported soon.  Multiple values can be assigned to the same key.
+      One product may have up to 100 product_labels.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  productCategory = _messages.StringField(4)
+  productLabels = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductKeyValue', 5, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1ProductKeyValue(_messages.Message):
+  r"""A product label represented as a key-value pair.
+
+  Fields:
+    key: The key of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+    value: The value of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1ProductSearchResults(_messages.Message):
+  r"""Results for a product search request.
+
+  Fields:
+    indexTime: Timestamp of the index which provided these results. Changes
+      made after this time are not reflected in the current results.
+    productGroupedResults: List of results grouped by products detected in the
+      query image. Each entry corresponds to one bounding polygon in the query
+      image, and contains the matching products specific to that region. There
+      may be duplicate product matches in the union of all the per-product
+      results.
+    results: List of results, one for each product match.
+  """
+
+  indexTime = _messages.StringField(1)
+  productGroupedResults = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsGroupedResult', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1ProductSearchResultsGroupedResult(_messages.Message):
+  r"""Information about the products similar to a single product in a query
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon around the product detected in the
+      query image.
+    results: List of results, one for each product match.
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
+  results = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsResult', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1ProductSearchResultsResult(_messages.Message):
+  r"""Information about a product.
+
+  Fields:
+    image: The resource name of the image from the product that is the closest
+      match to the query.
+    product: The Product.
+    score: A confidence level on the match, ranging from 0 (no confidence) to
+      1 (full confidence).
+  """
+
+  image = _messages.StringField(1)
+  product = _messages.MessageField('GoogleCloudVisionV1p2beta1Product', 2)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p2beta1Property(_messages.Message):
@@ -3080,7 +3326,7 @@ class GoogleCloudVisionV1p2beta1Word(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -3233,7 +3479,7 @@ class GoogleCloudVisionV1p3beta1Block(_messages.Message):
       orientation. For example:  * when the text is horizontal it might look
       like:          0----1         |    |         3----2  * when it's rotated
       180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
@@ -3897,7 +4143,7 @@ class GoogleCloudVisionV1p3beta1Paragraph(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
@@ -3974,10 +4220,30 @@ class GoogleCloudVisionV1p3beta1ProductSearchResults(_messages.Message):
   Fields:
     indexTime: Timestamp of the index which provided these results. Changes
       made after this time are not reflected in the current results.
+    productGroupedResults: List of results grouped by products detected in the
+      query image. Each entry corresponds to one bounding polygon in the query
+      image, and contains the matching products specific to that region. There
+      may be duplicate product matches in the union of all the per-product
+      results.
     results: List of results, one for each product match.
   """
 
   indexTime = _messages.StringField(1)
+  productGroupedResults = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsGroupedResult', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p3beta1ProductSearchResultsGroupedResult(_messages.Message):
+  r"""Information about the products similar to a single product in a query
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon around the product detected in the
+      query image.
+    results: List of results, one for each product match.
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p3beta1BoundingPoly', 1)
   results = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsResult', 2, repeated=True)
 
 
@@ -4404,7 +4670,7 @@ class GoogleCloudVisionV1p3beta1Word(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -4415,6 +4681,20 @@ class GoogleCloudVisionV1p3beta1Word(_messages.Message):
   confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   property = _messages.MessageField('GoogleCloudVisionV1p3beta1TextAnnotationTextProperty', 3)
   symbols = _messages.MessageField('GoogleCloudVisionV1p3beta1Symbol', 4, repeated=True)
+
+
+class GroupedResult(_messages.Message):
+  r"""Information about the products similar to a single product in a query
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon around the product detected in the
+      query image.
+    results: List of results, one for each product match.
+  """
+
+  boundingPoly = _messages.MessageField('BoundingPoly', 1)
+  results = _messages.MessageField('Result', 2, repeated=True)
 
 
 class Image(_messages.Message):
@@ -4461,13 +4741,15 @@ class ImageContext(_messages.Message):
       detection returns an error if one or more of the specified languages is
       not one of the [supported languages](/vision/docs/languages).
     latLongRect: Not used.
+    productSearchParams: Parameters for product search.
     webDetectionParams: Parameters for web detection.
   """
 
   cropHintsParams = _messages.MessageField('CropHintsParams', 1)
   languageHints = _messages.StringField(2, repeated=True)
   latLongRect = _messages.MessageField('LatLongRect', 3)
-  webDetectionParams = _messages.MessageField('WebDetectionParams', 4)
+  productSearchParams = _messages.MessageField('ProductSearchParams', 4)
+  webDetectionParams = _messages.MessageField('WebDetectionParams', 5)
 
 
 class ImageProperties(_messages.Message):
@@ -4507,6 +4789,89 @@ class ImageSource(_messages.Message):
   imageUri = _messages.StringField(2)
 
 
+class ImportProductSetsGcsSource(_messages.Message):
+  r"""The Google Cloud Storage location for a csv file which preserves a list
+  of ImportProductSetRequests in each line.
+
+  Fields:
+    csvFileUri: The Google Cloud Storage URI of the input csv file.  The URI
+      must start with `gs://`.  The format of the input csv file should be one
+      image per line. In each line, there are 8 columns.  1.  image-uri 2.
+      image-id 3.  product-set-id 4.  product-id 5.  product-category 6.
+      product-display-name 7.  labels 8.  bounding-poly  The `image-uri`,
+      `product-set-id`, `product-id`, and `product-category` columns are
+      required. All other columns are optional.  If the `ProductSet` or
+      `Product` specified by the `product-set-id` and `product-id` values does
+      not exist, then the system will create a new `ProductSet` or `Product`
+      for the image. In this case, the `product-display-name` column refers to
+      display_name, the `product-category` column refers to product_category,
+      and the `labels` column refers to product_labels.  The `image-id` column
+      is optional but must be unique if provided. If it is empty, the system
+      will automatically assign a unique id to the image.  The `product-
+      display-name` column is optional. If it is empty, the system sets the
+      display_name field for the product to a space (" "). You can update the
+      `display_name` later by using the API.  If a `Product` with the
+      specified `product-id` already exists, then the system ignores the
+      `product-display-name`, `product-category`, and `labels` columns.  The
+      `labels` column (optional) is a line containing a list of comma-
+      separated key-value pairs, in the following format:
+      "key_1=value_1,key_2=value_2,...,key_n=value_n"  The `bounding-poly`
+      column (optional) identifies one region of interest from the image in
+      the same manner as `CreateReferenceImage`. If you do not specify the
+      `bounding-poly` column, then the system will try to detect regions of
+      interest automatically.  At most one `bounding-poly` column is allowed
+      per line. If the image contains multiple regions of interest, add a line
+      to the CSV file that includes the same product information, and the
+      `bounding-poly` values for each region of interest.  The `bounding-poly`
+      column must contain an even number of comma-separated numbers, in the
+      format "p1_x,p1_y,p2_x,p2_y,...,pn_x,pn_y". Use non-negative integers
+      for absolute bounding polygons, and float values in [0, 1] for
+      normalized bounding polygons.  The system will resize the image if the
+      image resolution is too large to process (larger than 20MP).
+  """
+
+  csvFileUri = _messages.StringField(1)
+
+
+class ImportProductSetsInputConfig(_messages.Message):
+  r"""The input content for the `ImportProductSets` method.
+
+  Fields:
+    gcsSource: The Google Cloud Storage location for a csv file which
+      preserves a list of ImportProductSetRequests in each line.
+  """
+
+  gcsSource = _messages.MessageField('ImportProductSetsGcsSource', 1)
+
+
+class ImportProductSetsRequest(_messages.Message):
+  r"""Request message for the `ImportProductSets` method.
+
+  Fields:
+    inputConfig: The input content for the list of requests.
+  """
+
+  inputConfig = _messages.MessageField('ImportProductSetsInputConfig', 1)
+
+
+class ImportProductSetsResponse(_messages.Message):
+  r"""Response message for the `ImportProductSets` method.  This message is
+  returned by the google.longrunning.Operations.GetOperation method in the
+  returned google.longrunning.Operation.response field.
+
+  Fields:
+    referenceImages: The list of reference_images that are imported
+      successfully.
+    statuses: The rpc status for each ImportProductSet request, including both
+      successes and errors.  The number of statuses here matches the number of
+      lines in the csv file, and statuses[i] stores the success or failure
+      status of processing the i-th line of the csv, starting from line 0.
+  """
+
+  referenceImages = _messages.MessageField('ReferenceImage', 1, repeated=True)
+  statuses = _messages.MessageField('Status', 2, repeated=True)
+
+
 class InputConfig(_messages.Message):
   r"""The desired input location and metadata.
 
@@ -4518,6 +4883,20 @@ class InputConfig(_messages.Message):
 
   gcsSource = _messages.MessageField('GcsSource', 1)
   mimeType = _messages.StringField(2)
+
+
+class KeyValue(_messages.Message):
+  r"""A product label represented as a key-value pair.
+
+  Fields:
+    key: The key of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+    value: The value of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class Landmark(_messages.Message):
@@ -4651,6 +5030,60 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListProductSetsResponse(_messages.Message):
+  r"""Response message for the `ListProductSets` method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    productSets: List of ProductSets.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  productSets = _messages.MessageField('ProductSet', 2, repeated=True)
+
+
+class ListProductsInProductSetResponse(_messages.Message):
+  r"""Response message for the `ListProductsInProductSet` method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    products: The list of Products.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  products = _messages.MessageField('Product', 2, repeated=True)
+
+
+class ListProductsResponse(_messages.Message):
+  r"""Response message for the `ListProducts` method.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    products: List of products.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  products = _messages.MessageField('Product', 2, repeated=True)
+
+
+class ListReferenceImagesResponse(_messages.Message):
+  r"""Response message for the `ListReferenceImages` method.
+
+  Fields:
+    nextPageToken: The next_page_token returned from a previous List request,
+      if any.
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    referenceImages: The list of reference images.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  referenceImages = _messages.MessageField('ReferenceImage', 3, repeated=True)
 
 
 class LocalizedObjectAnnotation(_messages.Message):
@@ -4888,7 +5321,7 @@ class Paragraph(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
@@ -4916,6 +5349,107 @@ class Position(_messages.Message):
   z = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
+class Product(_messages.Message):
+  r"""A Product contains ReferenceImages.
+
+  Fields:
+    description: User-provided metadata to be stored with this product. Must
+      be at most 4096 characters long.
+    displayName: The user-provided name for this Product. Must not be empty.
+      Must be at most 4096 characters long.
+    name: The resource name of the product.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+      is ignored when creating a product.
+    productCategory: The category for the product identified by the reference
+      image. This should be either "homegoods", "apparel", or "toys".  This
+      field is immutable.
+    productLabels: Key-value pairs that can be attached to a product. At query
+      time, constraints can be specified based on the product_labels.  Note
+      that integer values can be provided as strings, e.g. "1199". Only
+      strings with integer values can match a range-based restriction which is
+      to be supported soon.  Multiple values can be assigned to the same key.
+      One product may have up to 100 product_labels.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  productCategory = _messages.StringField(4)
+  productLabels = _messages.MessageField('KeyValue', 5, repeated=True)
+
+
+class ProductSearchParams(_messages.Message):
+  r"""Parameters for a product search request.
+
+  Fields:
+    boundingPoly: The bounding polygon around the area of interest in the
+      image. Optional. If it is not specified, system discretion will be
+      applied.
+    filter: The filtering expression. This can be used to restrict search
+      results based on Product labels. We currently support an AND of OR of
+      key-value expressions, where each expression within an OR must have the
+      same key.  For example, "(color = red OR color = blue) AND brand =
+      Google" is acceptable, but not "(color = red OR brand = Google)" or
+      "color: red".
+    productCategories: The list of product categories to search in. Currently,
+      we only consider the first category, and either "homegoods", "apparel",
+      or "toys" should be specified.
+    productSet: The resource name of a ProductSet to be searched for similar
+      images.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.
+  """
+
+  boundingPoly = _messages.MessageField('BoundingPoly', 1)
+  filter = _messages.StringField(2)
+  productCategories = _messages.StringField(3, repeated=True)
+  productSet = _messages.StringField(4)
+
+
+class ProductSearchResults(_messages.Message):
+  r"""Results for a product search request.
+
+  Fields:
+    indexTime: Timestamp of the index which provided these results. Changes
+      made after this time are not reflected in the current results.
+    productGroupedResults: List of results grouped by products detected in the
+      query image. Each entry corresponds to one bounding polygon in the query
+      image, and contains the matching products specific to that region. There
+      may be duplicate product matches in the union of all the per-product
+      results.
+    results: List of results, one for each product match.
+  """
+
+  indexTime = _messages.StringField(1)
+  productGroupedResults = _messages.MessageField('GroupedResult', 2, repeated=True)
+  results = _messages.MessageField('Result', 3, repeated=True)
+
+
+class ProductSet(_messages.Message):
+  r"""A ProductSet contains Products. A ProductSet can contain a maximum of 1
+  million reference images. If the limit is exceeded, periodic indexing will
+  fail.
+
+  Fields:
+    displayName: The user-provided name for this ProductSet. Must not be
+      empty. Must be at most 4096 characters long.
+    indexError: Output only. If there was an error with indexing the product
+      set, the field is populated.  This field is ignored when creating a
+      ProductSet.
+    indexTime: Output only. The time at which this ProductSet was last
+      indexed. Query results will reflect all updates before this time. If
+      this ProductSet has never been indexed, this field is 0.  This field is
+      ignored when creating a ProductSet.
+    name: The resource name of the ProductSet.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.  This
+      field is ignored when creating a ProductSet.
+  """
+
+  displayName = _messages.StringField(1)
+  indexError = _messages.MessageField('Status', 2)
+  indexTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+
+
 class Property(_messages.Message):
   r"""A `Property` consists of a user-supplied name/value pair.
 
@@ -4928,6 +5462,58 @@ class Property(_messages.Message):
   name = _messages.StringField(1)
   uint64Value = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   value = _messages.StringField(3)
+
+
+class ReferenceImage(_messages.Message):
+  r"""A `ReferenceImage` represents a product image and its associated
+  metadata, such as bounding boxes.
+
+  Fields:
+    boundingPolys: Bounding polygons around the areas of interest in the
+      reference image. Optional. If this field is empty, the system will try
+      to detect regions of interest. At most 10 bounding polygons will be
+      used.  The provided shape is converted into a non-rotated rectangle.
+      Once converted, the small edge of the rectangle must be greater than or
+      equal to 300 pixels. The aspect ratio must be 1:4 or less (i.e. 1:3 is
+      ok; 1:5 is not).
+    name: The resource name of the reference image.  Format is:  `projects/PRO
+      JECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE_ID`.
+      This field is ignored when creating a reference image.
+    uri: The Google Cloud Storage URI of the reference image.  The URI must
+      start with `gs://`.  Required.
+  """
+
+  boundingPolys = _messages.MessageField('BoundingPoly', 1, repeated=True)
+  name = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class RemoveProductFromProductSetRequest(_messages.Message):
+  r"""Request message for the `RemoveProductFromProductSet` method.
+
+  Fields:
+    product: The resource name for the Product to be removed from this
+      ProductSet.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
+  """
+
+  product = _messages.StringField(1)
+
+
+class Result(_messages.Message):
+  r"""Information about a product.
+
+  Fields:
+    image: The resource name of the image from the product that is the closest
+      match to the query.
+    product: The Product.
+    score: A confidence level on the match, ranging from 0 (no confidence) to
+      1 (full confidence).
+  """
+
+  image = _messages.StringField(1)
+  product = _messages.MessageField('Product', 2)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class SafeSearchAnnotation(_messages.Message):
@@ -5353,6 +5939,274 @@ class VisionOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class VisionProjectsLocationsProductSetsAddProductRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsAddProductRequest object.
+
+  Fields:
+    addProductToProductSetRequest: A AddProductToProductSetRequest resource to
+      be passed as the request body.
+    name: The resource name for the ProductSet to modify.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+  """
+
+  addProductToProductSetRequest = _messages.MessageField('AddProductToProductSetRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class VisionProjectsLocationsProductSetsCreateRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsCreateRequest object.
+
+  Fields:
+    parent: The project in which the ProductSet should be created.  Format is
+      `projects/PROJECT_ID/locations/LOC_ID`.
+    productSet: A ProductSet resource to be passed as the request body.
+    productSetId: A user-supplied resource id for this ProductSet. If set, the
+      server will attempt to use this value as the resource id. If it is
+      already in use, an error is returned with code ALREADY_EXISTS. Must be
+      at most 128 characters long. It cannot contain the character `/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  productSet = _messages.MessageField('ProductSet', 2)
+  productSetId = _messages.StringField(3)
+
+
+class VisionProjectsLocationsProductSetsDeleteRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsDeleteRequest object.
+
+  Fields:
+    name: Resource name of the ProductSet to delete.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionProjectsLocationsProductSetsGetRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsGetRequest object.
+
+  Fields:
+    name: Resource name of the ProductSet to get.  Format is:
+      `projects/PROJECT_ID/locations/LOG_ID/productSets/PRODUCT_SET_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionProjectsLocationsProductSetsImportRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsImportRequest object.
+
+  Fields:
+    importProductSetsRequest: A ImportProductSetsRequest resource to be passed
+      as the request body.
+    parent: The project in which the ProductSets should be imported.  Format
+      is `projects/PROJECT_ID/locations/LOC_ID`.
+  """
+
+  importProductSetsRequest = _messages.MessageField('ImportProductSetsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class VisionProjectsLocationsProductSetsListRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    pageToken: The next_page_token returned from a previous List request, if
+      any.
+    parent: The project from which ProductSets should be listed.  Format is
+      `projects/PROJECT_ID/locations/LOC_ID`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class VisionProjectsLocationsProductSetsPatchRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsPatchRequest object.
+
+  Fields:
+    name: The resource name of the ProductSet.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.  This
+      field is ignored when creating a ProductSet.
+    productSet: A ProductSet resource to be passed as the request body.
+    updateMask: The FieldMask that specifies which fields to update. If
+      update_mask isn't specified, all mutable fields are to be updated. Valid
+      mask path is `display_name`.
+  """
+
+  name = _messages.StringField(1, required=True)
+  productSet = _messages.MessageField('ProductSet', 2)
+  updateMask = _messages.StringField(3)
+
+
+class VisionProjectsLocationsProductSetsProductsListRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsProductsListRequest object.
+
+  Fields:
+    name: The ProductSet resource for which to retrieve Products.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    pageToken: The next_page_token returned from a previous List request, if
+      any.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class VisionProjectsLocationsProductSetsRemoveProductRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductSetsRemoveProductRequest object.
+
+  Fields:
+    name: The resource name for the ProductSet to modify.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`
+    removeProductFromProductSetRequest: A RemoveProductFromProductSetRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  removeProductFromProductSetRequest = _messages.MessageField('RemoveProductFromProductSetRequest', 2)
+
+
+class VisionProjectsLocationsProductsCreateRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsCreateRequest object.
+
+  Fields:
+    parent: The project in which the Product should be created.  Format is
+      `projects/PROJECT_ID/locations/LOC_ID`.
+    product: A Product resource to be passed as the request body.
+    productId: A user-supplied resource id for this Product. If set, the
+      server will attempt to use this value as the resource id. If it is
+      already in use, an error is returned with code ALREADY_EXISTS. Must be
+      at most 128 characters long. It cannot contain the character `/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  product = _messages.MessageField('Product', 2)
+  productId = _messages.StringField(3)
+
+
+class VisionProjectsLocationsProductsDeleteRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsDeleteRequest object.
+
+  Fields:
+    name: Resource name of product to delete.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionProjectsLocationsProductsGetRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsGetRequest object.
+
+  Fields:
+    name: Resource name of the Product to get.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionProjectsLocationsProductsListRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    pageToken: The next_page_token returned from a previous List request, if
+      any.
+    parent: The project OR ProductSet from which Products should be listed.
+      Format: `projects/PROJECT_ID/locations/LOC_ID`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class VisionProjectsLocationsProductsPatchRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsPatchRequest object.
+
+  Fields:
+    name: The resource name of the product.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+      is ignored when creating a product.
+    product: A Product resource to be passed as the request body.
+    updateMask: The FieldMask that specifies which fields to update. If
+      update_mask isn't specified, all mutable fields are to be updated. Valid
+      mask paths include `product_labels`, `display_name`, and `description`.
+  """
+
+  name = _messages.StringField(1, required=True)
+  product = _messages.MessageField('Product', 2)
+  updateMask = _messages.StringField(3)
+
+
+class VisionProjectsLocationsProductsReferenceImagesCreateRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsReferenceImagesCreateRequest object.
+
+  Fields:
+    parent: Resource name of the product in which to create the reference
+      image.  Format is
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
+    referenceImage: A ReferenceImage resource to be passed as the request
+      body.
+    referenceImageId: A user-supplied resource id for the ReferenceImage to be
+      added. If set, the server will attempt to use this value as the resource
+      id. If it is already in use, an error is returned with code
+      ALREADY_EXISTS. Must be at most 128 characters long. It cannot contain
+      the character `/`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  referenceImage = _messages.MessageField('ReferenceImage', 2)
+  referenceImageId = _messages.StringField(3)
+
+
+class VisionProjectsLocationsProductsReferenceImagesDeleteRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsReferenceImagesDeleteRequest object.
+
+  Fields:
+    name: The resource name of the reference image to delete.  Format is:  `pr
+      ojects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/I
+      MAGE_ID`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionProjectsLocationsProductsReferenceImagesGetRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsReferenceImagesGetRequest object.
+
+  Fields:
+    name: The resource name of the ReferenceImage to get.  Format is:  `projec
+      ts/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID/referenceImages/IMAGE
+      _ID`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VisionProjectsLocationsProductsReferenceImagesListRequest(_messages.Message):
+  r"""A VisionProjectsLocationsProductsReferenceImagesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. Default 10, maximum 100.
+    pageToken: A token identifying a page of results to be returned. This is
+      the value of `nextPageToken` returned in a previous reference image list
+      request.  Defaults to the first page if not specified.
+    parent: Resource name of the product containing the reference images.
+      Format is `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class WebDetection(_messages.Message):
   r"""Relevant information for the image from the Internet.
 
@@ -5462,7 +6316,7 @@ class Word(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the

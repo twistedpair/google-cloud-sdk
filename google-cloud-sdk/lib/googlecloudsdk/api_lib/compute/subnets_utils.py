@@ -108,19 +108,21 @@ def MakeSubnetworkUpdateRequest(client,
       return client.MakeRequests(
           [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif enable_flow_logs is not None:
-    subnetwork = client.MakeRequests(
-        [(client.apitools_client.subnetworks,
-          'Get', client.messages.ComputeSubnetworksGetRequest(
-              **subnet_ref.AsDict()))])[0]
+    subnetwork = client.messages.Subnetwork()
+    subnetwork.fingerprint = client.MakeRequests([
+        (client.apitools_client.subnetworks, 'Get',
+         client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
+    ])[0].fingerprint
 
     subnetwork.enableFlowLogs = enable_flow_logs
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif aggregation_interval is not None:
-    subnetwork = client.MakeRequests([
+    subnetwork = client.messages.Subnetwork()
+    subnetwork.fingerprint = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
          client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
-    ])[0]
+    ])[0].fingerprint
 
     subnetwork.aggregationInterval = (
         client.messages.Subnetwork.AggregationIntervalValueValuesEnum(
@@ -128,19 +130,21 @@ def MakeSubnetworkUpdateRequest(client,
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif flow_sampling is not None:
-    subnetwork = client.MakeRequests([
+    subnetwork = client.messages.Subnetwork()
+    subnetwork.fingerprint = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
          client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
-    ])[0]
+    ])[0].fingerprint
 
     subnetwork.flowSampling = flow_sampling
     return client.MakeRequests(
         [CreateSubnetworkPatchRequest(client, subnet_ref, subnetwork)])
   elif metadata is not None:
-    subnetwork = client.MakeRequests([
+    subnetwork = client.messages.Subnetwork()
+    subnetwork.fingerprint = client.MakeRequests([
         (client.apitools_client.subnetworks, 'Get',
          client.messages.ComputeSubnetworksGetRequest(**subnet_ref.AsDict()))
-    ])[0]
+    ])[0].fingerprint
 
     subnetwork.metadata = client.messages.Subnetwork.MetadataValueValuesEnum(
         convert_to_enum(metadata))

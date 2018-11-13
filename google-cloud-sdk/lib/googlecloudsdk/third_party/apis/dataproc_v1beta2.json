@@ -498,7 +498,8 @@
             "The Hive Web HCatalog (the REST service for accessing HCatalog).",
             "The Zeppelin notebook.",
             "The Anaconda python distribution.",
-            "The Presto query engine."
+            "The Presto query engine.",
+            "The Kerberos security feature."
           ],
           "type": "array",
           "items": {
@@ -509,7 +510,8 @@
               "HIVE_WEBHCAT",
               "ZEPPELIN",
               "ANACONDA",
-              "PRESTO"
+              "PRESTO",
+              "KERBEROS"
             ]
           }
         }
@@ -759,6 +761,10 @@
         "scheduling": {
           "description": "Optional. Job scheduling configuration.",
           "$ref": "JobScheduling"
+        },
+        "jobUuid": {
+          "description": "Output only. A UUID that uniquely identifies a job within the project over time. This is in contrast to a user-settable reference.job_id that may be reused over time.",
+          "type": "string"
         }
       }
     },

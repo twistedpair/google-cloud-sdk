@@ -927,7 +927,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified BackendService resource. Gets a list of available backend services by making a list() request.
+      r"""Returns the specified BackendService resource. Gets a list of available backend services.
 
       Args:
         request: (ComputeBackendServicesGetRequest) input message
@@ -6334,6 +6334,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def ListPeeringRoutes(self, request, global_params=None):
+      r"""Lists the peering routes exchanged over peering connection.
+
+      Args:
+        request: (ComputeNetworksListPeeringRoutesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExchangedPeeringRoutesList) The response message.
+      """
+      config = self.GetMethodConfig('ListPeeringRoutes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPeeringRoutes.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.networks.listPeeringRoutes',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[u'direction', u'filter', u'maxResults', u'orderBy', u'pageToken', u'peeringName', u'region'],
+        relative_path=u'projects/{project}/global/networks/{network}/listPeeringRoutes',
+        request_field='',
+        request_type_name=u'ComputeNetworksListPeeringRoutesRequest',
+        response_type_name=u'ExchangedPeeringRoutesList',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
 
@@ -6435,6 +6461,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'testPermissionsRequest',
         request_type_name=u'ComputeNetworksTestIamPermissionsRequest',
         response_type_name=u'TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def UpdatePeering(self, request, global_params=None):
+      r"""Updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes.
+
+      Args:
+        request: (ComputeNetworksUpdatePeeringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdatePeering')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdatePeering.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.networks.updatePeering',
+        ordered_params=[u'project', u'network'],
+        path_params=[u'network', u'project'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/global/networks/{network}/updatePeering',
+        request_field=u'networksUpdatePeeringRequest',
+        request_type_name=u'ComputeNetworksUpdatePeeringRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -9915,7 +9967,7 @@ If the group is part of a backend service that has enabled connection draining, 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.
 
-For more information, see Deleting snaphots.
+For more information, see Deleting snapshots.
 
       Args:
         request: (ComputeSnapshotsDeleteRequest) input message
@@ -10647,7 +10699,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.
+      r"""Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message

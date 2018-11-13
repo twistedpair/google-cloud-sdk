@@ -347,6 +347,12 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
+  iamcredentials:
+    v1:
+      discovery_doc: iamcredentials_v1.json
+      resources:
+        serviceAccounts:
+          path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
   iap:
     v1beta1:
       discovery_doc: iap_v1beta1.json
@@ -509,3 +515,6 @@ apis:
   vpcaccess:
     v1alpha1:
       discovery_doc: vpcaccess_v1alpha1.json
+  remotebuildexecution:
+    v1alpha:
+      discovery_doc: remotebuildexecution_v1alpha.json

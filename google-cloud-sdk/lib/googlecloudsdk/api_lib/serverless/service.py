@@ -56,5 +56,27 @@ class Service(k8s_object.KubernetesObject):
     return configuration.Configuration.SpecOnly(ret, self._messages)
 
   @property
+  def latest_created_revision(self):
+    return self.status.latestCreatedRevisionName
+
+  @property
+  def latest_ready_revision(self):
+    return self.status.latestReadyRevisionName
+
+  @property
+  def serving_revisions(self):
+    return [t.revisionName for t in self.status.traffic if t.percent]
+
+  @property
   def domain(self):
     return self._m.status.domain
+
+  @property
+  def ready_symbol(self):
+    if (self.ready is False and
+        self.latest_ready_revision and
+        self.latest_created_revision != self.latest_ready_revision):
+      return '!'
+    return super(Service, self).ready_symbol
+
+

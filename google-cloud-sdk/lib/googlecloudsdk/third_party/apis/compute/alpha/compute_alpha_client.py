@@ -69,6 +69,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.nodeGroups = self.NodeGroupsService(self)
     self.nodeTemplates = self.NodeTemplatesService(self)
     self.nodeTypes = self.NodeTypesService(self)
+    self.organizationSecurityPolicies = self.OrganizationSecurityPoliciesService(self)
     self.projects = self.ProjectsService(self)
     self.regionAutoscalers = self.RegionAutoscalersService(self)
     self.regionBackendServices = self.RegionBackendServicesService(self)
@@ -1258,7 +1259,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified BackendService resource. Gets a list of available backend services by making a list() request.
+      r"""Returns the specified BackendService resource. Gets a list of available backend services.
 
       Args:
         request: (ComputeBackendServicesGetRequest) input message
@@ -8353,6 +8354,302 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+  class OrganizationSecurityPoliciesService(base_api.BaseApiService):
+    """Service class for the organizationSecurityPolicies resource."""
+
+    _NAME = u'organizationSecurityPolicies'
+
+    def __init__(self, client):
+      super(ComputeAlpha.OrganizationSecurityPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddAssociation(self, request, global_params=None):
+      r"""Inserts an association for the specified security policy.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesAddAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.organizationSecurityPolicies.addAssociation',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addAssociation',
+        request_field=u'securityPolicyAssociation',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesAddAssociationRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def AddRule(self, request, global_params=None):
+      r"""Inserts a rule into a security policy.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesAddRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.organizationSecurityPolicies.addRule',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/addRule',
+        request_field=u'securityPolicyRule',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesAddRuleRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified policy.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'DELETE',
+        method_id=u'compute.organizationSecurityPolicies.delete',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        request_field='',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""List all of the ordered rules present in a single specified policy.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.organizationSecurityPolicies.get',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}',
+        request_field='',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesGetRequest',
+        response_type_name=u'SecurityPolicy',
+        supports_download=False,
+    )
+
+    def GetAssociation(self, request, global_params=None):
+      r"""Gets an association with the specified name.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesGetAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyAssociation) The response message.
+      """
+      config = self.GetMethodConfig('GetAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.organizationSecurityPolicies.getAssociation',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'name'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/getAssociation',
+        request_field='',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesGetAssociationRequest',
+        response_type_name=u'SecurityPolicyAssociation',
+        supports_download=False,
+    )
+
+    def GetRule(self, request, global_params=None):
+      r"""Gets a rule at the specified priority.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesGetRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyRule) The response message.
+      """
+      config = self.GetMethodConfig('GetRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.organizationSecurityPolicies.getRule',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'priority'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/getRule',
+        request_field='',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesGetRuleRequest',
+        response_type_name=u'SecurityPolicyRule',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new policy in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.organizationSecurityPolicies.insert',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'parentId', u'requestId'],
+        relative_path=u'projects/locations/global/securityPolicies',
+        request_field=u'securityPolicy',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesInsertRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all the policies that have been configured for the specified project.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityPolicyList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.organizationSecurityPolicies.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=[u'filter', u'maxResults', u'orderBy', u'pageToken', u'parentId'],
+        relative_path=u'projects/locations/global/securityPolicies',
+        request_field='',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesListRequest',
+        response_type_name=u'SecurityPolicyList',
+        supports_download=False,
+    )
+
+    def PatchRule(self, request, global_params=None):
+      r"""Patches a rule at the specified priority.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesPatchRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.organizationSecurityPolicies.patchRule',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'priority', u'requestId'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/patchRule',
+        request_field=u'securityPolicyRule',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesPatchRuleRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def RemoveAssociation(self, request, global_params=None):
+      r"""Removes an association for the specified security policy.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesRemoveAssociationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAssociation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAssociation.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.organizationSecurityPolicies.removeAssociation',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'name', u'requestId'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/removeAssociation',
+        request_field='',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesRemoveAssociationRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def RemoveRule(self, request, global_params=None):
+      r"""Deletes a rule at the specified priority.
+
+      Args:
+        request: (ComputeOrganizationSecurityPoliciesRemoveRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveRule.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.organizationSecurityPolicies.removeRule',
+        ordered_params=[u'securityPolicy'],
+        path_params=[u'securityPolicy'],
+        query_params=[u'priority', u'requestId'],
+        relative_path=u'projects/locations/global/securityPolicies/{securityPolicy}/removeRule',
+        request_field='',
+        request_type_name=u'ComputeOrganizationSecurityPoliciesRemoveRuleRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -12370,7 +12667,7 @@ If the group is part of a backend service that has enabled connection draining, 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.
 
-For more information, see Deleting snaphots.
+For more information, see Deleting snapshots.
 
       Args:
         request: (ComputeSnapshotsDeleteRequest) input message
@@ -13128,7 +13425,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.
+      r"""Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message

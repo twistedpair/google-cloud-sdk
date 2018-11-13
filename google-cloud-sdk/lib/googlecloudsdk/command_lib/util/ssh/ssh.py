@@ -26,6 +26,7 @@ import re
 import enum
 
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
+from googlecloudsdk.command_lib.oslogin import oslogin_utils
 from googlecloudsdk.command_lib.util import gaia
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -698,14 +699,22 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
         'in the {0} version of gcloud.'.format(release_track.id))
     return requested_user, use_oslogin
   user_email = properties.VALUES.core.account.Get()
-  login_profile = oslogin.ImportSshPublicKey(user_email, public_key)
+
+  # Check to see if public key is already in profile, and import if not.
+  login_profile = oslogin.GetLoginProfile(user_email, project.name)
+  keys = oslogin_utils.GetKeyDictionaryFromProfile(
+      user_email, oslogin, profile=login_profile)
+  fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
+  if not fingerprint:
+    import_response = oslogin.ImportSshPublicKey(user_email, public_key)
+    login_profile = import_response.loginProfile
   use_oslogin = True
 
   # Get the username for the oslogin user. If the username is the same as the
   # default user, return that one. Otherwise, return the 'primary' username.
   # If no 'primary' exists, return the first username.
   oslogin_user = None
-  for pa in login_profile.loginProfile.posixAccounts:
+  for pa in login_profile.posixAccounts:
     oslogin_user = oslogin_user or pa.username
     if pa.username == requested_user:
       return requested_user, use_oslogin

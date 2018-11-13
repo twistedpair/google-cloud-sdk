@@ -42,10 +42,19 @@ import copy
 import re
 
 from googlecloudsdk.calliope.concepts import deps as deps_lib
+from googlecloudsdk.command_lib.util.apis import registry
+from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 import six
+
+
+IGNORED_FIELDS = {
+    'project': 'project',
+    'projectId': 'project',
+    'projectsId': 'project',
+}
 
 
 class Error(exceptions.Error):
@@ -58,6 +67,16 @@ class InitializationError(Error):
 
 class ResourceConfigurationError(Error):
   """Raised if a resource is improperly declared."""
+
+
+class InvalidResourceArgumentLists(Error):
+  """Exception for missing, extra, or out of order arguments."""
+
+  def __init__(self, expected, actual):
+    expected = ['[' + e + ']' if e in IGNORED_FIELDS else e for e in expected]
+    super(InvalidResourceArgumentLists, self).__init__(
+        'Invalid resource arguments: Expected [{}], Found [{}].'.format(
+            ', '.join(expected), ', '.join(actual)))
 
 
 class ConceptSpec(object):
@@ -215,6 +234,33 @@ class Attribute(_Attribute):
 class ResourceSpec(ConceptSpec):
   """Defines a Cloud resource as a set of attributes for argument creation.
   """
+
+  @classmethod
+  def FromYaml(cls, yaml_data, api_version=None):
+    """Constructs an instance of ResourceSpec from yaml data.
+
+    Args:
+      yaml_data: dict, the parsed data from a resources.yaml file under
+        command_lib/.
+      api_version: string, overrides the default version in the resource
+        registry if provided.
+
+    Returns:
+      A ResourceSpec object.
+    """
+    if not yaml_data:
+      return None
+    collection = registry.GetAPICollection(
+        yaml_data['collection'], api_version=api_version)
+    attributes = ParseAttributesFromData(
+        yaml_data.get('attributes'), collection.detailed_params)
+    return cls(
+        resource_collection=collection.full_name,
+        resource_name=yaml_data['name'],
+        api_version=collection.api_version,
+        disable_auto_completers=yaml_data['disable_auto_completers'],
+        plural_name=yaml_data.get('plural_name'),
+        **{attribute.parameter_name: attribute for attribute in attributes})
 
   # TODO(b/67707644): Enable completers by default when confident enough.
   def __init__(self, resource_collection, resource_name='resource',
@@ -606,7 +652,7 @@ class ResourceParameterAttributeConfig(object):
         for param in completion_request_params_list
     }
 
-    # TODO(b/78851830): handle fallthroughs from python hooks.
+    # Add property fallthroughs.
     fallthroughs = []
     prop = properties.FromString(data.get('property', ''))
     if prop:
@@ -615,7 +661,13 @@ class ResourceParameterAttributeConfig(object):
     if default_config:
       fallthroughs += [
           f for f in default_config.fallthroughs if f not in fallthroughs]
-
+    # Add fallthroughs from python hooks.
+    fallthrough_data = data.get('fallthroughs', [])
+    fallthroughs_from_hook = [
+        deps_lib.Fallthrough(util.Hook.FromPath(f['hook']), hint=f['hint'])
+        for f in fallthrough_data
+    ]
+    fallthroughs += fallthroughs_from_hook
     return cls(
         name=attribute_name,
         help_text=help_text,
@@ -655,13 +707,64 @@ class ResourceParameterAttributeConfig(object):
     self.attribute_name = name
     self.help_text = help_text
     self.fallthroughs = fallthroughs or []
-    # The completer is alwasy None because neither the surface nor the yaml
+    # The completer is always None because neither the surface nor the yaml
     # schema allow for specifying completers currently.
     self.completer = completer
     self.completion_request_params = completion_request_params
     self.completion_id_field = completion_id_field
     self.value_type = value_type or six.text_type
     self.parameter_name = parameter_name
+
+
+def ParseAttributesFromData(attributes_data, expected_param_names):
+  """Parses a list of ResourceParameterAttributeConfig from yaml data.
+
+  Args:
+    attributes_data: dict, the attributes data defined in
+      command_lib/resources.yaml file.
+    expected_param_names: [str], the names of the API parameters that the API
+      method accepts. Example, ['projectsId', 'instancesId'].
+
+  Returns:
+    [ResourceParameterAttributeConfig].
+
+  Raises:
+    InvalidResourceArgumentLists: if the attributes defined in the yaml file
+      don't match the expected fields in the API method.
+  """
+  raw_attributes = [
+      ResourceParameterAttributeConfig.FromData(a) for a in attributes_data
+  ]
+  registered_param_names = [a.parameter_name for a in raw_attributes]
+  final_attributes = []
+
+  # TODO(b/78851830): improve the time complexity here.
+  for expected_name in expected_param_names:
+    if raw_attributes and expected_name == raw_attributes[0].parameter_name:
+      # Attribute matches expected, add it and continue checking.
+      final_attributes.append(raw_attributes.pop(0))
+    elif expected_name in IGNORED_FIELDS:
+      # Attribute doesn't match but is being ignored. Add an auto-generated
+      # attribute as a substitute.
+      # Currently, it would only be the project config.
+      attribute_name = IGNORED_FIELDS[expected_name]
+      ignored_attribute = DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS.get(attribute_name)
+      # Manually add the parameter name, e.g. project, projectId or projectsId.
+      ignored_attribute.parameter_name = expected_name
+      final_attributes.append(ignored_attribute)
+    else:
+      # It doesn't match (or there are no more registered params) and the
+      # field is not being ignored, error.
+      raise InvalidResourceArgumentLists(expected_param_names,
+                                         registered_param_names)
+
+  if raw_attributes:
+    # All expected fields were processed but there are still registered
+    # attribute params remaining, they must be extra.
+    raise InvalidResourceArgumentLists(expected_param_names,
+                                       registered_param_names)
+
+  return final_attributes
 
 
 DEFAULT_PROJECT_ATTRIBUTE_CONFIG = ResourceParameterAttributeConfig(
@@ -673,6 +776,6 @@ DEFAULT_PROJECT_ATTRIBUTE_CONFIG = ResourceParameterAttributeConfig(
         deps_lib.ArgFallthrough('--project'),
         deps_lib.PropertyFallthrough(properties.VALUES.core.project)
     ])
-
 DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS = {
     'project': DEFAULT_PROJECT_ATTRIBUTE_CONFIG}
+_DEFAULT_CONFIGS = {'project': DEFAULT_PROJECT_ATTRIBUTE_CONFIG}

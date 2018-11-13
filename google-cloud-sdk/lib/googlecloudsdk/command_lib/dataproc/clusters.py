@@ -344,6 +344,14 @@ def BetaArgsForClusterRef(parser):
   flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
 
   parser.add_argument(
+      '--num-preemptible-worker-local-ssds',
+      type=int,
+      help="""\
+      The number of local SSDs to attach to each preemptible worker in
+      a cluster.
+      """)
+
+  parser.add_argument(
       '--max-idle',
       type=arg_parsers.Duration(),
       help="""\
@@ -399,6 +407,8 @@ def BetaArgsForClusterRef(parser):
         }),
         metavar='type=TYPE,[count=COUNT]',
         help=help_msg)
+
+  AddAllocationAffinityGroup(parser)
 
 
 def GetClusterConfig(args,
@@ -505,6 +515,10 @@ def GetClusterConfig(args,
       serviceAccountScopes=expanded_scopes,
       zoneUri=properties.VALUES.compute.zone.GetOrFail())
 
+  if beta:
+    allocation_affinity = GetAllocationAffinity(args, dataproc)
+    gce_cluster_config.allocationAffinity = allocation_affinity
+
   if args.tags:
     gce_cluster_config.tags = args.tags
 
@@ -592,11 +606,15 @@ def GetClusterConfig(args,
           raise exceptions.ArgumentError(
               '--gce-pd-kms-key was not fully specified.')
 
+  num_preemptible_worker_local_ssds = (
+      args.num_preemptible_worker_local_ssds if beta else None)
+
   # Secondary worker group is optional. However, users may specify
   # future pVMs configuration at creation time.
   if (args.num_preemptible_workers is not None or
       preemptible_worker_boot_disk_size_gb is not None or
       args.preemptible_worker_boot_disk_type is not None or
+      num_preemptible_worker_local_ssds is not None or
       (beta and args.worker_min_cpu_platform is not None)):
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
@@ -605,7 +623,7 @@ def GetClusterConfig(args,
                 dataproc,
                 args.preemptible_worker_boot_disk_type,
                 preemptible_worker_boot_disk_size_gb,
-                None,
+                num_preemptible_worker_local_ssds,
             )))
     if beta and args.worker_min_cpu_platform:
       cluster_config.secondaryWorkerConfig.minCpuPlatform = (
@@ -714,3 +732,67 @@ def DeleteGeneratedLabels(cluster, dataproc):
     else:
       cluster.labels = encoding.DictToAdditionalPropertyMessage(
           labels, dataproc.messages.Cluster.LabelsValue)
+
+
+def AddAllocationAffinityGroup(parser):
+  """Adds the argument group to handle allocation affinity configurations."""
+  group = parser.add_group(help='Manage the configuration of desired'
+                                'allocation which this instance could'
+                                'take capacity from.'
+                          )
+  group.add_argument(
+      '--allocation-affinity',
+      choices=['any', 'none', 'specific'],
+      default='any',
+      hidden=True,
+      help="""
+Specifies the configuration of desired allocation which this instance could
+take capacity from. Choices are 'any', 'none' and 'specific', default is 'any'.
+""")
+  group.add_argument(
+      '--allocation-label',
+      type=arg_parsers.ArgDict(spec={
+          'key': str,
+          'value': str,
+      }),
+      hidden=True,
+      help="""
+The key and values of the label of the allocation resource. Required if the
+value of `--allocation-affinity` is `specific`.
+
+*key*::: The label key of allocation resource.
+
+*value*::: The label value of allocation resource.
+""")
+
+
+def GetAllocationAffinity(args, client):
+  """Returns the message of allocation affinity for the instance."""
+  if not args.IsSpecified('allocation_affinity'):
+    return None
+
+  type_msgs = (client.messages.
+               AllocationAffinity.ConsumeAllocationTypeValueValuesEnum)
+
+  if args.allocation_affinity == 'none':
+    allocation_type = type_msgs.NO_ALLOCATION
+    allocation_key = None
+    allocation_values = []
+  elif args.allocation_affinity == 'specific':
+    allocation_type = type_msgs.SPECIFIC_ALLOCATION
+    # Currently, the key is fixed and the value is the name of the allocation.
+    # The value being a repeated field is reserved for future use when user
+    # can specify more than one allocation names from which the Vm can take
+    # capacity from.
+    allocation_key = args.allocation_label.get('key', None)
+    allocation_values = [args.allocation_label.get('value', None)]
+  else:
+    allocation_type = type_msgs.ANY_ALLOCATION
+    allocation_key = None
+    allocation_values = []
+
+  return client.messages.AllocationAffinity(
+      consumeAllocationType=allocation_type,
+      key=allocation_key,
+      values=allocation_values)
+

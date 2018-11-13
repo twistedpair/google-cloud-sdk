@@ -2658,8 +2658,7 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
   Enums:
     UtilizationTargetTypeValueValuesEnum: Defines how target utilization value
       is expressed for a Stackdriver Monitoring metric. Either GAUGE,
-      DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is
-      GAUGE.
+      DELTA_PER_SECOND, or DELTA_PER_MINUTE.
 
   Fields:
     filter: A filter string, compatible with a Stackdriver Monitoring filter
@@ -2710,13 +2709,12 @@ class AutoscalingPolicyCustomMetricUtilization(_messages.Message):
       instances.
     utilizationTargetType: Defines how target utilization value is expressed
       for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or
-      DELTA_PER_MINUTE. If not specified, the default is GAUGE.
+      DELTA_PER_MINUTE.
   """
 
   class UtilizationTargetTypeValueValuesEnum(_messages.Enum):
     r"""Defines how target utilization value is expressed for a Stackdriver
-    Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If
-    not specified, the default is GAUGE.
+    Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.
 
     Values:
       DELTA_PER_MINUTE: <no description>
@@ -9065,7 +9063,7 @@ class ComputeInstancesAddAccessConfigRequest(_messages.Message):
 
   Fields:
     accessConfig: A AccessConfig resource to be passed as the request body.
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     networkInterface: The name of the network interface to add to this
       instance.
     project: Project ID for this request.
@@ -9094,7 +9092,7 @@ class ComputeInstancesAddResourcePoliciesRequest(_messages.Message):
   r"""A ComputeInstancesAddResourcePoliciesRequest object.
 
   Fields:
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     instancesAddResourcePoliciesRequest: A InstancesAddResourcePoliciesRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -9171,7 +9169,7 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
     attachedDisk: A AttachedDisk resource to be passed as the request body.
     forceAttach: Whether to force attach the disk even if it's currently
       attached to another instance. This is only available for regional disks.
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9199,7 +9197,7 @@ class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
 
   Fields:
     accessConfig: The name of the access config to delete.
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     networkInterface: The name of the network interface.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -9227,7 +9225,7 @@ class ComputeInstancesDeleteRequest(_messages.Message):
   r"""A ComputeInstancesDeleteRequest object.
 
   Fields:
-    instance: Name of the instance resource to delete.
+    instance: Name or id of the instance resource to delete.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9253,7 +9251,7 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
 
   Fields:
     deviceName: Disk device name to detach.
-    instance: Instance name.
+    instance: Instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9279,7 +9277,7 @@ class ComputeInstancesGetGuestAttributesRequest(_messages.Message):
   r"""A ComputeInstancesGetGuestAttributesRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     queryPath: Specifies the guest attributes path to be queried.
     variableKey: Specifies the key for the guest attributes entry.
@@ -9311,7 +9309,7 @@ class ComputeInstancesGetRequest(_messages.Message):
   r"""A ComputeInstancesGetRequest object.
 
   Fields:
-    instance: Name of the instance resource to return.
+    instance: Name or id of the instance resource to return.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -9325,7 +9323,7 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   r"""A ComputeInstancesGetSerialPortOutputRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     port: Specifies which COM or serial port to retrieve data from.
     project: Project ID for this request.
     start: Returns output starting from a specific byte position. Use this to
@@ -9347,7 +9345,7 @@ class ComputeInstancesGetShieldedVmIdentityRequest(_messages.Message):
   r"""A ComputeInstancesGetShieldedVmIdentityRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -9418,8 +9416,8 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-    instance: Name of the target instance scoping this request, or '-' if the
-      request should span over all instances in the container.
+    instance: Name or id of the target instance scoping this request, or '-'
+      if the request should span over all instances in the container.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -9501,7 +9499,7 @@ class ComputeInstancesRemoveResourcePoliciesRequest(_messages.Message):
   r"""A ComputeInstancesRemoveResourcePoliciesRequest object.
 
   Fields:
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     instancesRemoveResourcePoliciesRequest: A
       InstancesRemoveResourcePoliciesRequest resource to be passed as the
       request body.
@@ -9530,7 +9528,7 @@ class ComputeInstancesResetRequest(_messages.Message):
   r"""A ComputeInstancesResetRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9555,7 +9553,7 @@ class ComputeInstancesResumeRequest(_messages.Message):
   r"""A ComputeInstancesResumeRequest object.
 
   Fields:
-    instance: Name of the instance resource to resume.
+    instance: Name or id of the instance resource to resume.
     instancesResumeRequest: A InstancesResumeRequest resource to be passed as
       the request body.
     project: Project ID for this request.
@@ -9596,7 +9594,7 @@ class ComputeInstancesSetDeletionProtectionRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
   """
 
@@ -9613,7 +9611,7 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
   Fields:
     autoDelete: Whether to auto-delete the disk when the instance is deleted.
     deviceName: The device name of the disk to modify.
-    instance: The instance name.
+    instance: The instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9657,7 +9655,7 @@ class ComputeInstancesSetLabelsRequest(_messages.Message):
   r"""A ComputeInstancesSetLabelsRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     instancesSetLabelsRequest: A InstancesSetLabelsRequest resource to be
       passed as the request body.
     project: Project ID for this request.
@@ -9685,7 +9683,7 @@ class ComputeInstancesSetMachineResourcesRequest(_messages.Message):
   r"""A ComputeInstancesSetMachineResourcesRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     instancesSetMachineResourcesRequest: A InstancesSetMachineResourcesRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -9713,7 +9711,7 @@ class ComputeInstancesSetMachineTypeRequest(_messages.Message):
   r"""A ComputeInstancesSetMachineTypeRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     instancesSetMachineTypeRequest: A InstancesSetMachineTypeRequest resource
       to be passed as the request body.
     project: Project ID for this request.
@@ -9741,7 +9739,7 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
   r"""A ComputeInstancesSetMetadataRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     metadata: A Metadata resource to be passed as the request body.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -9768,7 +9766,7 @@ class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
   r"""A ComputeInstancesSetMinCpuPlatformRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     instancesSetMinCpuPlatformRequest: A InstancesSetMinCpuPlatformRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -9796,7 +9794,7 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
   r"""A ComputeInstancesSetSchedulingRequest object.
 
   Fields:
-    instance: Instance name.
+    instance: Instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9823,7 +9821,7 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
   r"""A ComputeInstancesSetServiceAccountRequest object.
 
   Fields:
-    instance: Name of the instance resource to start.
+    instance: Name or id of the instance resource to start.
     instancesSetServiceAccountRequest: A InstancesSetServiceAccountRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -9851,7 +9849,7 @@ class ComputeInstancesSetShieldedVmIntegrityPolicyRequest(_messages.Message):
   r"""A ComputeInstancesSetShieldedVmIntegrityPolicyRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9879,7 +9877,7 @@ class ComputeInstancesSetTagsRequest(_messages.Message):
   r"""A ComputeInstancesSetTagsRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9906,7 +9904,7 @@ class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
   r"""A ComputeInstancesSimulateMaintenanceEventRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -9920,7 +9918,7 @@ class ComputeInstancesStartRequest(_messages.Message):
   r"""A ComputeInstancesStartRequest object.
 
   Fields:
-    instance: Name of the instance resource to start.
+    instance: Name or id of the instance resource to start.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -9945,7 +9943,7 @@ class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
   r"""A ComputeInstancesStartWithEncryptionKeyRequest object.
 
   Fields:
-    instance: Name of the instance resource to start.
+    instance: Name or id of the instance resource to start.
     instancesStartWithEncryptionKeyRequest: A
       InstancesStartWithEncryptionKeyRequest resource to be passed as the
       request body.
@@ -9976,7 +9974,7 @@ class ComputeInstancesStopRequest(_messages.Message):
   Fields:
     discardLocalSsd: If true, discard the contents of any attached localSSD
       partitions. Default value is false (== preserve localSSD data).
-    instance: Name of the instance resource to stop.
+    instance: Name or id of the instance resource to stop.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -10004,7 +10002,7 @@ class ComputeInstancesSuspendRequest(_messages.Message):
   Fields:
     discardLocalSsd: If true, discard the contents of any attached localSSD
       partitions. Default value is false (== preserve localSSD data).
-    instance: Name of the instance resource to suspend.
+    instance: Name or id of the instance resource to suspend.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -10048,7 +10046,7 @@ class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
 
   Fields:
     accessConfig: A AccessConfig resource to be passed as the request body.
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     networkInterface: The name of the network interface where the access
       config is attached.
     project: Project ID for this request.
@@ -10077,7 +10075,7 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
   r"""A ComputeInstancesUpdateNetworkInterfaceRequest object.
 
   Fields:
-    instance: The instance name for this request.
+    instance: The instance name or id for this request.
     networkInterface: The name of the network interface to update.
     networkInterfaceResource: A NetworkInterface resource to be passed as the
       request body.
@@ -10107,7 +10105,7 @@ class ComputeInstancesUpdateShieldedVmConfigRequest(_messages.Message):
   r"""A ComputeInstancesUpdateShieldedVmConfigRequest object.
 
   Fields:
-    instance: Name of the instance scoping this request.
+    instance: Name or id of the instance scoping this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -12505,6 +12503,253 @@ class ComputeNodeTypesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesAddAssociationRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesAddAssociationRequest object.
+
+  Fields:
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyAssociation: A SecurityPolicyAssociation resource to be
+      passed as the request body.
+  """
+
+  requestId = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+  securityPolicyAssociation = _messages.MessageField('SecurityPolicyAssociation', 3)
+
+
+class ComputeOrganizationSecurityPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesAddRuleRequest object.
+
+  Fields:
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  requestId = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 3)
+
+
+class ComputeOrganizationSecurityPoliciesDeleteRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesDeleteRequest object.
+
+  Fields:
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to delete.
+  """
+
+  requestId = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesGetAssociationRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesGetAssociationRequest object.
+
+  Fields:
+    name: The name of the association to get from the security policy.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  name = _messages.StringField(1)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesGetRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesGetRequest object.
+
+  Fields:
+    securityPolicy: Name of the security policy to get.
+  """
+
+  securityPolicy = _messages.StringField(1, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesGetRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to get from the security policy.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  securityPolicy = _messages.StringField(2, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesInsertRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesInsertRequest object.
+
+  Fields:
+    parentId: Parent ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: A SecurityPolicy resource to be passed as the request
+      body.
+  """
+
+  parentId = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.MessageField('SecurityPolicy', 3)
+
+
+class ComputeOrganizationSecurityPoliciesListRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      =, !=, >, or <.  For example, if you are filtering Compute Engine
+      instances, you can exclude instances named example-instance by
+      specifying name != example-instance.  You can also filter nested fields.
+      For example, you could specify scheduling.automaticRestart = false to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels.  To filter on multiple expressions, provide each separate
+      expression within parentheses. For example, (scheduling.automaticRestart
+      = true) (cpuPlatform = "Intel Skylake"). By default, each expression is
+      an AND expression. However, you can include AND and OR expressions
+      explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
+      = "Intel Broadwell") AND (scheduling.automaticRestart = true).
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than maxResults,
+      Compute Engine returns a nextPageToken that can be used to get the next
+      page of results in subsequent list requests. Acceptable values are 0 to
+      500, inclusive. (Default: 500)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name.  You can
+      also sort results in descending order based on the creation timestamp
+      using orderBy="creationTimestamp desc". This sorts results based on the
+      creationTimestamp field in reverse chronological order (newest result
+      first). Use this to sort resources like operations so that the newest
+      operation is returned first.  Currently, only sorting by name or
+      creationTimestamp desc is supported.
+    pageToken: Specifies a page token to use. Set pageToken to the
+      nextPageToken returned by a previous list request to get the next page
+      of results.
+    parentId: Parent ID for this request.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  parentId = _messages.StringField(5)
+
+
+class ComputeOrganizationSecurityPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesPatchRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to patch.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+
+
+class ComputeOrganizationSecurityPoliciesRemoveAssociationRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesRemoveAssociationRequest object.
+
+  Fields:
+    name: Name for the attachment that will be removed.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+  """
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeOrganizationSecurityPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeOrganizationSecurityPoliciesRemoveRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to remove from the security policy.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    securityPolicy: Name of the security policy to update.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  requestId = _messages.StringField(2)
+  securityPolicy = _messages.StringField(3, required=True)
 
 
 class ComputeProjectsDisableXpnHostRequest(_messages.Message):
@@ -22285,7 +22530,7 @@ class GlobalSetPolicyRequest(_messages.Message):
   r"""A GlobalSetPolicyRequest object.
 
   Fields:
-    bindings: Flatten Policy to create a backwacd compatible wire-format.
+    bindings: Flatten Policy to create a backward compatible wire-format.
       Deprecated. Use 'policy' to specify bindings.
     etag: Flatten Policy to create a backward compatible wire-format.
       Deprecated. Use 'policy' to specify the etag.
@@ -31007,11 +31252,11 @@ class NetworkPeering(_messages.Message):
     StateValueValuesEnum: [Output Only] State for the peering.
 
   Fields:
-    autoCreateRoutes: Whether full mesh connectivity is created and managed
-      automatically. When it is set to true, Google Compute Engine will
-      automatically create and manage the routes between two networks when the
-      state is ACTIVE. Otherwise, user needs to create routes manually to
-      route packets to peer network.
+    autoCreateRoutes: Indicates whether full mesh connectivity is created and
+      managed automatically. When it is set to true, Google Compute Engine
+      will automatically create and manage the routes between two networks
+      when the state is ACTIVE. Otherwise, user needs to create routes
+      manually to route packets to peer network.
     exchangeSubnetRoutes: Whether full mesh connectivity is created and
       managed automatically. When it is set to true, Google Compute Engine
       will automatically create and manage the routes between two networks
@@ -31098,10 +31343,18 @@ class NetworksAddPeeringRequest(_messages.Message):
   Fields:
     autoCreateRoutes: Whether Google Compute Engine manages the routes
       automatically.
-    exportCustomRoutes: Whether to export the custom routes to peer network.
-    importCustomRoutes: Whether to import the custom routes from peer network.
+    exportCustomRoutes: This field will be deprecated soon. Prefer using
+      export_custom_routes in network_peering instead. Whether to export the
+      custom routes to peer network.
+    importCustomRoutes: This field will be deprecated soon. Prefer using
+      import_custom_routes in network_peering instead. Whether to import the
+      custom routes from peer network.
     name: Name of the peering, which should conform to RFC1035.
-    networkPeering: Network peering parameters.
+    networkPeering: Network peering parameters. In order to specify route
+      policies for peering using import/export custom routes, you will have to
+      fill all peering related parameters (name, peer network,
+      exchange_subnet_routes) in network_peeringfield. Corresponding fields in
+      NetworksAddPeeringRequest will be deprecated soon.
     peerNetwork: URL of the peer network. It can be either full URL or partial
       URL. The peer network may belong to a different project. If the partial
       URL does not contain project, it is assumed that the peer network is in
@@ -37895,10 +38148,10 @@ class ShieldedVmIdentity(_messages.Message):
   r"""A shielded VM identity entry.
 
   Fields:
-    encryptionKey: A ShieldedVmIdentityEntry attribute.
+    encryptionKey: An Endorsement Key (EK) issued to the Shielded VM's vTPM.
     kind: [Output Only] Type of the resource. Always
       compute#shieldedVmIdentity for shielded VM identity entry.
-    signingKey: A ShieldedVmIdentityEntry attribute.
+    signingKey: An Attestation Key (AK) issued to the Shielded VM's vTPM.
   """
 
   encryptionKey = _messages.MessageField('ShieldedVmIdentityEntry', 1)
@@ -37910,8 +38163,8 @@ class ShieldedVmIdentityEntry(_messages.Message):
   r"""A Shielded VM Identity Entry.
 
   Fields:
-    ekCert: A string attribute.
-    ekPub: A string attribute.
+    ekCert: A PEM-encoded X.509 certificate. This field can be empty.
+    ekPub: A PEM-encoded public key.
   """
 
   ekCert = _messages.StringField(1)

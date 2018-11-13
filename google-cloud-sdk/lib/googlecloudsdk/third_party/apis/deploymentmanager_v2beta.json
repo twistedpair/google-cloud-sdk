@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20181030",
+ "revision": "20181106",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -558,7 +558,7 @@
    "properties": {
     "bindings": {
      "type": "array",
-     "description": "Flatten Policy to create a backwacd compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
      "items": {
       "$ref": "Binding"
      }

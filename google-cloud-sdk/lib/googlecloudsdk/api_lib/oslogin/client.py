@@ -60,7 +60,7 @@ class OsloginClient(object):
   def __bool__(self):
     return bool(self.client)
 
-  def GetLoginProfile(self, user):
+  def GetLoginProfile(self, user, project=None, system_id=None):
     """Return the OS Login profile for a user.
 
     The login profile includes some information about the user, a list of
@@ -69,12 +69,18 @@ class OsloginClient(object):
 
     Args:
       user: str, The email address of the OS Login user.
+      project: str, The project ID associated with the desired profile.
+      system_id: str, If supplied, only return profiles associated with the
+        given system ID.
+
     Returns:
       The login profile for the user.
     """
     # TODO(b/70287338): Update these calls to use Resource references.
     message = self.messages.OsloginUsersGetLoginProfileRequest(
-        name='users/{0}'.format(user))
+        name='users/{0}'.format(user),
+        projectId=project,
+        systemId=system_id)
     res = self.client.users.GetLoginProfile(message)
     return res
 

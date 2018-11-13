@@ -365,7 +365,7 @@
           "$ref": "RevisionTemplate"
         },
         "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIGNORED BY GSE.\n+optional",
+          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
           "type": "integer",
           "format": "int32"
         }
@@ -391,10 +391,6 @@
       "description": "RevisionSpec holds the desired state of the Revision (from the client).",
       "type": "object",
       "properties": {
-        "buildName": {
-          "description": "BuildName optionally holds the name of the Build responsible for\nproducing the container image for its Revision.",
-          "type": "string"
-        },
         "container": {
           "description": "Container defines the unit of execution for this Revision.\nIn the context of a Revision, we disallow a number of the fields of\nthis Container, including: name, resources, ports, and volumeMounts.",
           "$ref": "Container"
@@ -429,7 +425,7 @@
           ]
         },
         "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIGNORED BY GSE.\n+optional",
+          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
           "type": "integer",
           "format": "int32"
         }
@@ -1177,7 +1173,7 @@
           }
         },
         "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIGNORED BY GSE.\n+optional",
+          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
           "type": "integer",
           "format": "int32"
         }
@@ -1189,7 +1185,7 @@
       "type": "object",
       "properties": {
         "domain": {
-          "description": "Domain holds the top-level domain that will distribute traffic over the\nprovided targets. It generally has the form\n{route-name}.{route-namespace}.{cluster-level-suffix}",
+          "description": "Domain holds the top-level domain that will distribute traffic over the\nprovided targets. It generally has the form\nhttps:\/\/{route-hash}-{project-hash}-{cluster-level-suffix}.a.run.app",
           "type": "string"
         },
         "traffic": {
@@ -1443,7 +1439,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "RevisionConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\", \"Failed\", \"BuildComplete\", \"BuildFailed\"",
+          "description": "RevisionConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\", \"ResourcesAvailable\", and \"ContainerHealthy\".",
           "type": "string"
         },
         "status": {
@@ -1632,7 +1628,7 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by GSE.",
+                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -1752,7 +1748,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Rpc to replace a service.\nOnly the metadata and spec are modifiable but after the Replace request,\nGoogle Serverless Engine will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+                  "description": "Rpc to replace a service.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
                 },
                 "delete": {
                   "id": "serverless.projects.locations.services.delete",
@@ -1768,7 +1764,7 @@
                       "type": "string"
                     },
                     "orphanDependents": {
-                      "description": "Deprecated.\nKubernetes-compatible attribute that specifies the cascade behavior on\ndelete. GSE only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                      "description": "Deprecated.\nKubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1810,7 +1806,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Rpc to update a service.\nOnly the metadata and spec are modifiable but after the Update request,\nGoogle Serverless Engine will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+                  "description": "Rpc to update a service.\nOnly the metadata and spec are modifiable but after the Update request,\nCloud Run will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
                 }
               }
             },
@@ -1836,7 +1832,7 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by GSE.",
+                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -1900,7 +1896,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Rpc to get information about a route.\nThis will cause the route to stop serving traffic."
+                  "description": "Rpc to get information about a route."
                 }
               }
             },
@@ -1926,7 +1922,7 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by GSE.",
+                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2016,7 +2012,7 @@
                       "format": "int32"
                     },
                     "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by GSE.",
+                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2096,7 +2092,7 @@
                       "type": "string"
                     },
                     "orphanDependents": {
-                      "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. GSE only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                      "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -2142,7 +2138,7 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by GSE.",
+                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2262,7 +2258,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Rpc to replace a service.\nOnly the metadata and spec are modifiable but after the Replace request,\nGoogle Serverless Engine will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+              "description": "Rpc to replace a service.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
             },
             "delete": {
               "id": "serverless.namespaces.services.delete",
@@ -2278,7 +2274,7 @@
                   "type": "string"
                 },
                 "orphanDependents": {
-                  "description": "Deprecated.\nKubernetes-compatible attribute that specifies the cascade behavior on\ndelete. GSE only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                  "description": "Deprecated.\nKubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -2320,7 +2316,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Rpc to update a service.\nOnly the metadata and spec are modifiable but after the Update request,\nGoogle Serverless Engine will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+              "description": "Rpc to update a service.\nOnly the metadata and spec are modifiable but after the Update request,\nCloud Run will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
             }
           }
         },
@@ -2346,7 +2342,7 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by GSE.",
+                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2410,7 +2406,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Rpc to get information about a route.\nThis will cause the route to stop serving traffic."
+              "description": "Rpc to get information about a route."
             }
           }
         },
@@ -2436,7 +2432,7 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by GSE.",
+                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2526,7 +2522,7 @@
                   "format": "int32"
                 },
                 "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by GSE.",
+                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2606,7 +2602,7 @@
                   "type": "string"
                 },
                 "orphanDependents": {
-                  "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. GSE only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                  "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -2747,40 +2743,32 @@
             },
             "groups": {
               "resources": {
-                "serving": {
-                  "resources": {
-                    "knative": {
-                      "resources": {
-                        "dev": {
-                          "methods": {
-                            "list": {
-                              "id": "serverless.extensions.k8s.groups.serving.knative.dev.list",
-                              "path": "v1alpha1/extensions/k8s/groups/serving.knative.dev",
-                              "flatPath": "v1alpha1/extensions/k8s/groups/serving.knative.dev",
-                              "httpMethod": "GET",
-                              "parameters": {
-                                "timeout": {
-                                  "location": "query",
-                                  "type": "string"
-                                },
-                                "labelSelector": {
-                                  "location": "query",
-                                  "type": "string"
-                                }
-                              },
-                              "parameterOrder": [
-                              ],
-                              "response": {
-                                "$ref": "ApiResourceList"
-                              },
-                              "scopes": [
-                                "https://www.googleapis.com/auth/cloud-platform"
-                              ],
-                              "description": "Lists serverless v1alpha1 resources."
-                            }
-                          }
+                "servingknativedev": {
+                  "methods": {
+                    "list": {
+                      "id": "serverless.extensions.k8s.groups.servingknativedev.list",
+                      "path": "v1alpha1/extensions/k8s/groups/serving.knative.dev",
+                      "flatPath": "v1alpha1/extensions/k8s/groups/serving.knative.dev",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "timeout": {
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "labelSelector": {
+                          "location": "query",
+                          "type": "string"
                         }
-                      }
+                      },
+                      "parameterOrder": [
+                      ],
+                      "response": {
+                        "$ref": "ApiResourceList"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists serverless v1alpha1 resources."
                     }
                   }
                 }

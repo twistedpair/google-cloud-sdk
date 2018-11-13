@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
+import collections
 import os
 import re
 import sys
@@ -32,19 +33,152 @@ from googlecloudsdk.calliope import backend
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import command_loading
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
 
 import six
 
 
 _COMMAND_SUFFIX = '.py'
+_FLAG_FILE_LINE_NAME = '---flag-file-line-'
+
+
+class _FlagLocation(object):
+  """--flags-file (file,line_col) location."""
+
+  def __init__(self, file_name, line_col):
+    self.file_name = file_name
+    self.line = line_col.line + 1  # ruamel does 0-offset line numbers?
+
+  def __str__(self):
+    return '{}:{}'.format(self.file_name, self.line)
+
+
+class _ArgLocations(object):
+  """--flags-file (arg,locations) info."""
+
+  def __init__(self, arg, file_name, line_col, locations=None):
+    self.arg = arg
+    self.locations = locations.locations[:] if locations else []
+    self.locations.append(_FlagLocation(file_name, line_col))
+
+  def __str__(self):
+    return ';'.join([six.text_type(location) for location in self.locations])
+
+  def FileInStack(self, file_name):
+    """Returns True if file_name is in the locations stack."""
+    return any([file_name == x.file_name for x in self.locations])
+
+
+def _AddFlagsFileFlags(inject, flags_file, parent_locations=None):
+  """Recursively append the flags file flags to inject."""
+
+  flag = calliope_base.FLAGS_FILE_FLAG.name
+
+  if parent_locations and parent_locations.FileInStack(flags_file):
+    raise parser_errors.ArgumentError(
+        '{} recursive reference ({}).'.format(flag, parent_locations))
+
+  # Load the YAML flag:value dict or list of dicts. List of dicts allows
+  # flags to be specified more than once.
+
+  if flags_file == '-':
+    contents = sys.stdin.read()
+  elif not os.path.exists(flags_file):
+    raise parser_errors.ArgumentError(
+        '{} [{}] not found.'.format(flag, flags_file))
+  else:
+    contents = files.ReadFileContents(flags_file)
+  data = yaml.load(contents, location_value=True)
+  group = data if isinstance(data, list) else [data]
+
+  # Generate the list of args to inject.
+
+  for member in group:
+
+    if not isinstance(member.value, dict):
+      raise parser_errors.ArgumentError(
+          '{}:{}: {} file must contain a dictionary or list of dictionaries '
+          'of flags.'.format(flags_file, member.lc.line + 1, flag))
+
+    for arg, obj in six.iteritems(member.value):
+
+      line_col = obj.lc
+      value = obj.value
+
+      if arg == flag:
+        # The flags-file YAML arg value can be a path or list of paths.
+        file_list = obj.value if isinstance(obj.value, list) else [obj.value]
+        for path in file_list:
+          locations = _ArgLocations(arg, flags_file, line_col, parent_locations)
+          _AddFlagsFileFlags(inject, path, locations)
+        continue
+      if isinstance(value, (type(None), bool)):
+        separate_value_arg = False
+      elif isinstance(value, (list, dict)):
+        separate_value_arg = True
+      else:
+        separate_value_arg = False
+        arg = '{}={}'.format(arg, value)
+      inject.append(_FLAG_FILE_LINE_NAME)
+      inject.append(_ArgLocations(arg, flags_file, line_col, parent_locations))
+      inject.append(arg)
+      if separate_value_arg:
+        # Add the already lexed arg and with one swoop we sidestep all flag
+        # value and command line interpreter quoting issues. The ArgList and
+        # ArgDict arg parsers have been adjusted to handle this.
+        inject.append(value)
+
+
+def _ApplyFlagsFile(args):
+  """Applies FLAGS_FILE_FLAG in args and returns the new args.
+
+  The basic algorithm is arg list manipulation, done before ArgParse is called.
+  This function reaps all FLAGS_FILE_FLAG args from the command line, and
+  recursively from the flags files, and inserts them into a new args list by
+  replacing the --flags-file=YAML-FILE flag by its constituent flags. This
+  preserves the left-to-right precedence of the argument parser. Internal
+  _FLAG_FILE_LINE_NAME flags are also inserted into args. This specifies the
+  flags source file and line number for each flags file flag, and is used to
+  construct actionable error messages.
+
+  Args:
+    args: The original args list.
+
+  Returns:
+    A new args list with all FLAGS_FILE_FLAG args replaced by their constituent
+    flags.
+  """
+  flag = calliope_base.FLAGS_FILE_FLAG.name
+  flag_eq = flag + '='
+  if not any([arg == flag or arg.startswith(flag_eq) for arg in args]):
+    return args
+
+  # Find and replace all file flags by their constituent flags
+
+  peek = False
+  new_args = []
+  for arg in args:
+    if peek:
+      peek = False
+      _AddFlagsFileFlags(new_args, arg)
+    elif arg == flag:
+      peek = True
+    elif arg.startswith(flag_eq):
+      _AddFlagsFileFlags(new_args, arg[len(flag_eq):])
+    else:
+      new_args.append(arg)
+
+  return new_args
 
 
 class RunHook(object):
@@ -84,6 +218,23 @@ class RunHook(object):
       return False
     self.__func(command_path=command_path)
     return True
+
+
+class _SetFlagsFileLine(argparse.Action):
+  """FLAG_INTERNAL_FLAG_FILE_LINE action."""
+
+  def __call__(self, parser, namespace, values, option_string=None):
+    if not hasattr(parser, 'flags_locations'):
+      setattr(parser, 'flags_locations', collections.defaultdict(set))
+    parser.flags_locations[values.arg].add(six.text_type(values))
+
+
+FLAG_INTERNAL_FLAG_FILE_LINE = calliope_base.Argument(
+    _FLAG_FILE_LINE_NAME,
+    default=None,
+    action=_SetFlagsFileLine,
+    hidden=True,
+    help='Internal *--flags-file* flag, line number, and source file.')
 
 
 class CLILoader(object):
@@ -420,6 +571,7 @@ class CLILoader(object):
     Args:
       top_element: backend._CommandCommon, The root of the command tree.
     """
+    calliope_base.FLAGS_FILE_FLAG.AddToParser(top_element.ai)
     calliope_base.FLATTEN_FLAG.AddToParser(top_element.ai)
     calliope_base.FORMAT_FLAG.AddToParser(top_element.ai)
 
@@ -503,6 +655,9 @@ class CLILoader(object):
         action=actions.StoreProperty(properties.VALUES.core.http_timeout),
         hidden=True,
         help='THIS ARGUMENT NEEDS HELP TEXT.')
+
+    # --flags-file source line number hook.
+    FLAG_INTERNAL_FLAG_FILE_LINE.AddToParser(top_element.ai)
 
   def __MakeCLI(self, top_element):
     """Generate a CLI object from the given data.
@@ -807,7 +962,7 @@ class CLI(object):
     old_user_output_enabled = None
     old_verbosity = None
     try:
-      args = self.__parser.parse_args(argv)
+      args = self.__parser.parse_args(_ApplyFlagsFile(argv))
       if args.CONCEPT_ARGS is not None:
         args.CONCEPT_ARGS.ParseConcepts()
       calliope_command = args._GetCommand()  # pylint: disable=protected-access

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20181030",
+ "revision": "20181106",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -2293,7 +2293,7 @@
     },
     "utilizationTargetType": {
      "type": "string",
-     "description": "Defines how target utilization value is expressed for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is GAUGE.",
+     "description": "Defines how target utilization value is expressed for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.",
      "enum": [
       "DELTA_PER_MINUTE",
       "DELTA_PER_SECOND",
@@ -5913,7 +5913,7 @@
    "properties": {
     "bindings": {
      "type": "array",
-     "description": "Flatten Policy to create a backwacd compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
      "items": {
       "$ref": "Binding"
      }
@@ -13593,7 +13593,7 @@
    "properties": {
     "autoCreateRoutes": {
      "type": "boolean",
-     "description": "Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
+     "description": "Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
     },
     "exchangeSubnetRoutes": {
      "type": "boolean",
@@ -13662,11 +13662,11 @@
     },
     "exportCustomRoutes": {
      "type": "boolean",
-     "description": "Whether to export the custom routes to peer network."
+     "description": "This field will be deprecated soon. Prefer using export_custom_routes in network_peering instead. Whether to export the custom routes to peer network."
     },
     "importCustomRoutes": {
      "type": "boolean",
-     "description": "Whether to import the custom routes from peer network."
+     "description": "This field will be deprecated soon. Prefer using import_custom_routes in network_peering instead. Whether to import the custom routes from peer network."
     },
     "name": {
      "type": "string",
@@ -13679,7 +13679,7 @@
     },
     "networkPeering": {
      "$ref": "NetworkPeering",
-     "description": "Network peering parameters."
+     "description": "Network peering parameters. In order to specify route policies for peering using import/export custom routes, you will have to fill all peering related parameters (name, peer network, exchange_subnet_routes) in network_peeringfield. Corresponding fields in NetworksAddPeeringRequest will be deprecated soon."
     },
     "peerNetwork": {
      "type": "string",
@@ -19764,7 +19764,8 @@
    "description": "A shielded VM identity entry.",
    "properties": {
     "encryptionKey": {
-     "$ref": "ShieldedVmIdentityEntry"
+     "$ref": "ShieldedVmIdentityEntry",
+     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
     },
     "kind": {
      "type": "string",
@@ -19772,7 +19773,8 @@
      "default": "compute#shieldedVmIdentity"
     },
     "signingKey": {
-     "$ref": "ShieldedVmIdentityEntry"
+     "$ref": "ShieldedVmIdentityEntry",
+     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
     }
    }
   },
@@ -19782,10 +19784,12 @@
    "description": "A Shielded VM Identity Entry.",
    "properties": {
     "ekCert": {
-     "type": "string"
+     "type": "string",
+     "description": "A PEM-encoded X.509 certificate. This field can be empty."
     },
     "ekPub": {
-     "type": "string"
+     "type": "string",
+     "description": "A PEM-encoded public key."
     }
    }
   },
@@ -28016,7 +28020,7 @@
      "id": "compute.backendServices.get",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "GET",
-     "description": "Returns the specified BackendService resource. Gets a list of available backend services by making a list() request.",
+     "description": "Returns the specified BackendService resource. Gets a list of available backend services.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -33723,9 +33727,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -33779,9 +33783,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33882,9 +33886,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33931,7 +33935,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to delete.",
+       "description": "Name or id of the instance resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -33983,9 +33987,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -34043,9 +34047,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Instance name.",
+       "description": "Instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34090,7 +34094,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to return.",
+       "description": "Name or id of the instance resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34132,9 +34136,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34226,9 +34230,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "port": {
@@ -34283,9 +34287,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34438,9 +34442,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
+       "description": "Name or id of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
        "required": true,
-       "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "maxResults": {
@@ -34498,9 +34502,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34547,9 +34551,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34593,9 +34597,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to resume.",
+       "description": "Name or id of the instance resource to resume.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34660,9 +34664,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "zone": {
@@ -34707,9 +34711,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34799,9 +34803,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34848,9 +34852,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34897,9 +34901,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34946,9 +34950,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34995,9 +34999,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35044,9 +35048,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Instance name.",
+       "description": "Instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35093,9 +35097,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35142,9 +35146,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35191,9 +35195,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35240,9 +35244,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35281,9 +35285,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35327,9 +35331,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35381,9 +35385,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to stop.",
+       "description": "Name or id of the instance resource to stop.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35432,9 +35436,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to suspend.",
+       "description": "Name or id of the instance resource to suspend.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -35523,9 +35527,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -35579,9 +35583,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -35635,9 +35639,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -39650,6 +39654,377 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
+  "organizationSecurityPolicies": {
+   "methods": {
+    "addAssociation": {
+     "id": "compute.organizationSecurityPolicies.addAssociation",
+     "path": "locations/global/securityPolicies/{securityPolicy}/addAssociation",
+     "httpMethod": "POST",
+     "description": "Inserts an association for the specified security policy.",
+     "parameters": {
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "request": {
+      "$ref": "SecurityPolicyAssociation"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "addRule": {
+     "id": "compute.organizationSecurityPolicies.addRule",
+     "path": "locations/global/securityPolicies/{securityPolicy}/addRule",
+     "httpMethod": "POST",
+     "description": "Inserts a rule into a security policy.",
+     "parameters": {
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "request": {
+      "$ref": "SecurityPolicyRule"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "delete": {
+     "id": "compute.organizationSecurityPolicies.delete",
+     "path": "locations/global/securityPolicies/{securityPolicy}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified policy.",
+     "parameters": {
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to delete.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.organizationSecurityPolicies.get",
+     "path": "locations/global/securityPolicies/{securityPolicy}",
+     "httpMethod": "GET",
+     "description": "List all of the ordered rules present in a single specified policy.",
+     "parameters": {
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to get.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "SecurityPolicy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getAssociation": {
+     "id": "compute.organizationSecurityPolicies.getAssociation",
+     "path": "locations/global/securityPolicies/{securityPolicy}/getAssociation",
+     "httpMethod": "GET",
+     "description": "Gets an association with the specified name.",
+     "parameters": {
+      "name": {
+       "type": "string",
+       "description": "The name of the association to get from the security policy.",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to which the queried rule belongs.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "SecurityPolicyAssociation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getRule": {
+     "id": "compute.organizationSecurityPolicies.getRule",
+     "path": "locations/global/securityPolicies/{securityPolicy}/getRule",
+     "httpMethod": "GET",
+     "description": "Gets a rule at the specified priority.",
+     "parameters": {
+      "priority": {
+       "type": "integer",
+       "description": "The priority of the rule to get from the security policy.",
+       "format": "int32",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to which the queried rule belongs.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "SecurityPolicyRule"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.organizationSecurityPolicies.insert",
+     "path": "locations/global/securityPolicies",
+     "httpMethod": "POST",
+     "description": "Creates a new policy in the specified project using the data included in the request.",
+     "parameters": {
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "request": {
+      "$ref": "SecurityPolicy"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.organizationSecurityPolicies.list",
+     "path": "locations/global/securityPolicies",
+     "httpMethod": "GET",
+     "description": "List all the policies that have been configured for the specified project.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "parentId": {
+       "type": "string",
+       "description": "Parent ID for this request.",
+       "location": "query"
+      }
+     },
+     "response": {
+      "$ref": "SecurityPolicyList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "patchRule": {
+     "id": "compute.organizationSecurityPolicies.patchRule",
+     "path": "locations/global/securityPolicies/{securityPolicy}/patchRule",
+     "httpMethod": "POST",
+     "description": "Patches a rule at the specified priority.",
+     "parameters": {
+      "priority": {
+       "type": "integer",
+       "description": "The priority of the rule to patch.",
+       "format": "int32",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "request": {
+      "$ref": "SecurityPolicyRule"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "removeAssociation": {
+     "id": "compute.organizationSecurityPolicies.removeAssociation",
+     "path": "locations/global/securityPolicies/{securityPolicy}/removeAssociation",
+     "httpMethod": "POST",
+     "description": "Removes an association for the specified security policy.",
+     "parameters": {
+      "name": {
+       "type": "string",
+       "description": "Name for the attachment that will be removed.",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "removeRule": {
+     "id": "compute.organizationSecurityPolicies.removeRule",
+     "path": "locations/global/securityPolicies/{securityPolicy}/removeRule",
+     "httpMethod": "POST",
+     "description": "Deletes a rule at the specified priority.",
+     "parameters": {
+      "priority": {
+       "type": "integer",
+       "description": "The priority of the rule to remove from the security policy.",
+       "format": "int32",
+       "location": "query"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "securityPolicy": {
+       "type": "string",
+       "description": "Name of the security policy to update.",
+       "required": true,
+       "pattern": "[0-9]{0,20}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "securityPolicy"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     }
    }
@@ -46321,7 +46696,7 @@
      "id": "compute.snapshots.delete",
      "path": "{project}/global/snapshots/{snapshot}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.\n\nFor more information, see Deleting snaphots.",
+     "description": "Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.\n\nFor more information, see Deleting snapshots.",
      "parameters": {
       "project": {
        "type": "string",
@@ -47490,7 +47865,7 @@
      "id": "compute.subnetworks.patch",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.",
      "parameters": {
       "drainTimeoutSeconds": {
        "type": "integer",

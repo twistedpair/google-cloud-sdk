@@ -272,6 +272,13 @@ class Collections(enum.Enum):
       [u'project', u'zone', u'nodeType'],
       True
   )
+  ORGANIZATIONSECURITYPOLICIES = (
+      'organizationSecurityPolicies',
+      'projects/locations/global/securityPolicies/{securityPolicy}',
+      {},
+      [u'securityPolicy'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{project}',

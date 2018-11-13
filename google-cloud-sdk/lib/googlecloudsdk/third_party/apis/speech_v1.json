@@ -375,11 +375,6 @@
         "word": {
           "description": "Output only. The word corresponding to this set of information.",
           "type": "string"
-        },
-        "speakerTag": {
-          "description": "Output only. A distinct integer value is assigned for every speaker within\nthe audio. This field specifies which one of those speakers was detected to\nhave spoken this word. Value ranges from '1' to diarization_speaker_count.\nspeaker_tag is set if enable_speaker_diarization = 'true' and only in the\ntop alternative.",
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -395,6 +390,42 @@
         "audio": {
           "description": "*Required* The audio data to be recognized.",
           "$ref": "RecognitionAudio"
+        }
+      }
+    },
+    "LongRunningRecognizeMetadata": {
+      "id": "LongRunningRecognizeMetadata",
+      "description": "Describes the progress of a long-running `LongRunningRecognize` call. It is\nincluded in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
+      "type": "object",
+      "properties": {
+        "progressPercent": {
+          "description": "Approximate percentage of audio processed thus far. Guaranteed to be 100\nwhen the audio is fully processed and the results are available.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUpdateTime": {
+          "description": "Time of the most recent processing update.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "LongRunningRecognizeResponse": {
+      "id": "LongRunningRecognizeResponse",
+      "description": "The only message returned to the client by the `LongRunningRecognize` method.\nIt contains the result as zero or more sequential `SpeechRecognitionResult`\nmessages. It is included in the `result.response` field of the `Operation`\nreturned by the `GetOperation` call of the `google::longrunning::Operations`\nservice.",
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "Output only. Sequential list of transcription results corresponding to\nsequential portions of audio.",
+          "type": "array",
+          "items": {
+            "$ref": "SpeechRecognitionResult"
+          }
         }
       }
     }

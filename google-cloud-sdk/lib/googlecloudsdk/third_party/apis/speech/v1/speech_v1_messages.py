@@ -25,6 +25,24 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class LongRunningRecognizeMetadata(_messages.Message):
+  r"""Describes the progress of a long-running `LongRunningRecognize` call. It
+  is included in the `metadata` field of the `Operation` returned by the
+  `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Fields:
+    lastUpdateTime: Time of the most recent processing update.
+    progressPercent: Approximate percentage of audio processed thus far.
+      Guaranteed to be 100 when the audio is fully processed and the results
+      are available.
+    startTime: Time when the request was received.
+  """
+
+  lastUpdateTime = _messages.StringField(1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
+
+
 class LongRunningRecognizeRequest(_messages.Message):
   r"""The top-level message sent by the client for the `LongRunningRecognize`
   method.
@@ -37,6 +55,21 @@ class LongRunningRecognizeRequest(_messages.Message):
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
+
+
+class LongRunningRecognizeResponse(_messages.Message):
+  r"""The only message returned to the client by the `LongRunningRecognize`
+  method. It contains the result as zero or more sequential
+  `SpeechRecognitionResult` messages. It is included in the `result.response`
+  field of the `Operation` returned by the `GetOperation` call of the
+  `google::longrunning::Operations` service.
+
+  Fields:
+    results: Output only. Sequential list of transcription results
+      corresponding to sequential portions of audio.
+  """
+
+  results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -558,11 +591,6 @@ class WordInfo(_messages.Message):
       and corresponding to the end of the spoken word. This field is only set
       if `enable_word_time_offsets=true` and only in the top hypothesis. This
       is an experimental feature and the accuracy of the time offset can vary.
-    speakerTag: Output only. A distinct integer value is assigned for every
-      speaker within the audio. This field specifies which one of those
-      speakers was detected to have spoken this word. Value ranges from '1' to
-      diarization_speaker_count. speaker_tag is set if
-      enable_speaker_diarization = 'true' and only in the top alternative.
     startTime: Output only. Time offset relative to the beginning of the
       audio, and corresponding to the start of the spoken word. This field is
       only set if `enable_word_time_offsets=true` and only in the top
@@ -572,9 +600,8 @@ class WordInfo(_messages.Message):
   """
 
   endTime = _messages.StringField(1)
-  speakerTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(3)
-  word = _messages.StringField(4)
+  startTime = _messages.StringField(2)
+  word = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

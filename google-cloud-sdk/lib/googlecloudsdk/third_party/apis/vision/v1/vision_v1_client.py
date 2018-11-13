@@ -40,6 +40,12 @@ class VisionV1(base_api.BaseApiClient):
     self.locations_operations = self.LocationsOperationsService(self)
     self.locations = self.LocationsService(self)
     self.operations = self.OperationsService(self)
+    self.projects_locations_productSets_products = self.ProjectsLocationsProductSetsProductsService(self)
+    self.projects_locations_productSets = self.ProjectsLocationsProductSetsService(self)
+    self.projects_locations_products_referenceImages = self.ProjectsLocationsProductsReferenceImagesService(self)
+    self.projects_locations_products = self.ProjectsLocationsProductsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects = self.ProjectsService(self)
 
   class FilesService(base_api.BaseApiService):
     """Service class for the files resource."""
@@ -307,3 +313,679 @@ is the parent resource, without the operations collection id.
         response_type_name=u'ListOperationsResponse',
         supports_download=False,
     )
+
+  class ProjectsLocationsProductSetsProductsService(base_api.BaseApiService):
+    """Service class for the projects_locations_productSets_products resource."""
+
+    _NAME = u'projects_locations_productSets_products'
+
+    def __init__(self, client):
+      super(VisionV1.ProjectsLocationsProductSetsProductsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the Products in a ProductSet, in an unspecified order. If the.
+ProductSet does not exist, the products field of the response will be
+empty.
+
+Possible errors:
+
+* Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsProductsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProductsInProductSetResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}/products',
+        http_method=u'GET',
+        method_id=u'vision.projects.locations.productSets.products.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+name}/products',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductSetsProductsListRequest',
+        response_type_name=u'ListProductsInProductSetResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsProductSetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_productSets resource."""
+
+    _NAME = u'projects_locations_productSets'
+
+    def __init__(self, client):
+      super(VisionV1.ProjectsLocationsProductSetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AddProduct(self, request, global_params=None):
+      r"""Adds a Product to the specified ProductSet. If the Product is already.
+present, no change is made.
+
+One Product can be added to at most 100 ProductSets.
+
+Possible errors:
+
+* Returns NOT_FOUND if the Product or the ProductSet doesn't exist.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsAddProductRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('AddProduct')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddProduct.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}:addProduct',
+        http_method=u'POST',
+        method_id=u'vision.projects.locations.productSets.addProduct',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:addProduct',
+        request_field=u'addProductToProductSetRequest',
+        request_type_name=u'VisionProjectsLocationsProductSetsAddProductRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates and returns a new ProductSet resource.
+
+Possible errors:
+
+* Returns INVALID_ARGUMENT if display_name is missing, or is longer than
+  4096 characters.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProductSet) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets',
+        http_method=u'POST',
+        method_id=u'vision.projects.locations.productSets.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'productSetId'],
+        relative_path=u'v1/{+parent}/productSets',
+        request_field=u'productSet',
+        request_type_name=u'VisionProjectsLocationsProductSetsCreateRequest',
+        response_type_name=u'ProductSet',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Permanently deletes a ProductSet. All Products and ReferenceImages in the.
+ProductSet will be deleted.
+
+The actual image files are not deleted from Google Cloud Storage.
+
+Possible errors:
+
+* Returns NOT_FOUND if the ProductSet does not exist.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
+        http_method=u'DELETE',
+        method_id=u'vision.projects.locations.productSets.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductSetsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information associated with a ProductSet.
+
+Possible errors:
+
+* Returns NOT_FOUND if the ProductSet does not exist.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProductSet) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
+        http_method=u'GET',
+        method_id=u'vision.projects.locations.productSets.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductSetsGetRequest',
+        response_type_name=u'ProductSet',
+        supports_download=False,
+    )
+
+    def Import(self, request, global_params=None):
+      r"""Asynchronous API that imports a list of reference images to specified.
+product sets based on a list of image information.
+
+The google.longrunning.Operation API can be used to keep track of the
+progress and results of the request.
+`Operation.metadata` contains `BatchOperationMetadata`. (progress)
+`Operation.response` contains `ImportProductSetsResponse`. (results)
+
+The input source of this method is a csv file on Google Cloud Storage.
+For the format of the csv file please see
+ImportProductSetsGcsSource.csv_file_uri.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets:import',
+        http_method=u'POST',
+        method_id=u'vision.projects.locations.productSets.import',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/productSets:import',
+        request_field=u'importProductSetsRequest',
+        request_type_name=u'VisionProjectsLocationsProductSetsImportRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ProductSets in an unspecified order.
+
+Possible errors:
+
+* Returns INVALID_ARGUMENT if page_size is greater than 100, or less
+  than 1.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProductSetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets',
+        http_method=u'GET',
+        method_id=u'vision.projects.locations.productSets.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/productSets',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductSetsListRequest',
+        response_type_name=u'ListProductSetsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Makes changes to a ProductSet resource.
+Only display_name can be updated currently.
+
+Possible errors:
+
+* Returns NOT_FOUND if the ProductSet does not exist.
+* Returns INVALID_ARGUMENT if display_name is present in update_mask but
+  missing from the request or longer than 4096 characters.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ProductSet) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}',
+        http_method=u'PATCH',
+        method_id=u'vision.projects.locations.productSets.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'productSet',
+        request_type_name=u'VisionProjectsLocationsProductSetsPatchRequest',
+        response_type_name=u'ProductSet',
+        supports_download=False,
+    )
+
+    def RemoveProduct(self, request, global_params=None):
+      r"""Removes a Product from the specified ProductSet.
+
+Possible errors:
+
+* Returns NOT_FOUND If the Product is not found under the ProductSet.
+
+      Args:
+        request: (VisionProjectsLocationsProductSetsRemoveProductRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('RemoveProduct')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveProduct.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/productSets/{productSetsId}:removeProduct',
+        http_method=u'POST',
+        method_id=u'vision.projects.locations.productSets.removeProduct',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:removeProduct',
+        request_field=u'removeProductFromProductSetRequest',
+        request_type_name=u'VisionProjectsLocationsProductSetsRemoveProductRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsProductsReferenceImagesService(base_api.BaseApiService):
+    """Service class for the projects_locations_products_referenceImages resource."""
+
+    _NAME = u'projects_locations_products_referenceImages'
+
+    def __init__(self, client):
+      super(VisionV1.ProjectsLocationsProductsReferenceImagesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and returns a new ReferenceImage resource.
+
+The `bounding_poly` field is optional. If `bounding_poly` is not specified,
+the system will try to detect regions of interest in the image that are
+compatible with the product_category on the parent product. If it is
+specified, detection is ALWAYS skipped. The system converts polygons into
+non-rotated rectangles.
+
+Note that the pipeline will resize the image if the image resolution is too
+large to process (above 50MP).
+
+Possible errors:
+
+* Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
+  characters.
+* Returns INVALID_ARGUMENT if the product does not exist.
+* Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
+  compatible with the parent product's product_category is detected.
+* Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
+
+      Args:
+        request: (VisionProjectsLocationsProductsReferenceImagesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReferenceImage) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages',
+        http_method=u'POST',
+        method_id=u'vision.projects.locations.products.referenceImages.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'referenceImageId'],
+        relative_path=u'v1/{+parent}/referenceImages',
+        request_field=u'referenceImage',
+        request_type_name=u'VisionProjectsLocationsProductsReferenceImagesCreateRequest',
+        response_type_name=u'ReferenceImage',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Permanently deletes a reference image.
+
+The image metadata will be deleted right away, but search queries
+against ProductSets containing the image may still work until all related
+caches are refreshed.
+
+The actual image files are not deleted from Google Cloud Storage.
+
+Possible errors:
+
+* Returns NOT_FOUND if the reference image does not exist.
+
+      Args:
+        request: (VisionProjectsLocationsProductsReferenceImagesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages/{referenceImagesId}',
+        http_method=u'DELETE',
+        method_id=u'vision.projects.locations.products.referenceImages.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductsReferenceImagesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information associated with a ReferenceImage.
+
+Possible errors:
+
+* Returns NOT_FOUND if the specified image does not exist.
+
+      Args:
+        request: (VisionProjectsLocationsProductsReferenceImagesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReferenceImage) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages/{referenceImagesId}',
+        http_method=u'GET',
+        method_id=u'vision.projects.locations.products.referenceImages.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductsReferenceImagesGetRequest',
+        response_type_name=u'ReferenceImage',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists reference images.
+
+Possible errors:
+
+* Returns NOT_FOUND if the parent product does not exist.
+* Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
+  than 1.
+
+      Args:
+        request: (VisionProjectsLocationsProductsReferenceImagesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListReferenceImagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}/referenceImages',
+        http_method=u'GET',
+        method_id=u'vision.projects.locations.products.referenceImages.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/referenceImages',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductsReferenceImagesListRequest',
+        response_type_name=u'ListReferenceImagesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsProductsService(base_api.BaseApiService):
+    """Service class for the projects_locations_products resource."""
+
+    _NAME = u'projects_locations_products'
+
+    def __init__(self, client):
+      super(VisionV1.ProjectsLocationsProductsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and returns a new product resource.
+
+Possible errors:
+
+* Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
+  characters.
+* Returns INVALID_ARGUMENT if description is longer than 4096 characters.
+* Returns INVALID_ARGUMENT if product_category is missing or invalid.
+
+      Args:
+        request: (VisionProjectsLocationsProductsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Product) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products',
+        http_method=u'POST',
+        method_id=u'vision.projects.locations.products.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'productId'],
+        relative_path=u'v1/{+parent}/products',
+        request_field=u'product',
+        request_type_name=u'VisionProjectsLocationsProductsCreateRequest',
+        response_type_name=u'Product',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Permanently deletes a product and its reference images.
+
+Metadata of the product and all its images will be deleted right away, but
+search queries against ProductSets containing the product may still work
+until all related caches are refreshed.
+
+Possible errors:
+
+* Returns NOT_FOUND if the product does not exist.
+
+      Args:
+        request: (VisionProjectsLocationsProductsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
+        http_method=u'DELETE',
+        method_id=u'vision.projects.locations.products.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information associated with a Product.
+
+Possible errors:
+
+* Returns NOT_FOUND if the Product does not exist.
+
+      Args:
+        request: (VisionProjectsLocationsProductsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Product) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
+        http_method=u'GET',
+        method_id=u'vision.projects.locations.products.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductsGetRequest',
+        response_type_name=u'Product',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists products in an unspecified order.
+
+Possible errors:
+
+* Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+
+      Args:
+        request: (VisionProjectsLocationsProductsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProductsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products',
+        http_method=u'GET',
+        method_id=u'vision.projects.locations.products.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/products',
+        request_field='',
+        request_type_name=u'VisionProjectsLocationsProductsListRequest',
+        response_type_name=u'ListProductsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Makes changes to a Product resource.
+Only the `display_name`, `description`, and `labels` fields can be updated
+right now.
+
+If labels are updated, the change will not be reflected in queries until
+the next index time.
+
+Possible errors:
+
+* Returns NOT_FOUND if the Product does not exist.
+* Returns INVALID_ARGUMENT if display_name is present in update_mask but is
+  missing from the request or longer than 4096 characters.
+* Returns INVALID_ARGUMENT if description is present in update_mask but is
+  longer than 4096 characters.
+* Returns INVALID_ARGUMENT if product_category is present in update_mask.
+
+      Args:
+        request: (VisionProjectsLocationsProductsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Product) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/products/{productsId}',
+        http_method=u'PATCH',
+        method_id=u'vision.projects.locations.products.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'product',
+        request_type_name=u'VisionProjectsLocationsProductsPatchRequest',
+        response_type_name=u'Product',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = u'projects_locations'
+
+    def __init__(self, client):
+      super(VisionV1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsService(base_api.BaseApiService):
+    """Service class for the projects resource."""
+
+    _NAME = u'projects'
+
+    def __init__(self, client):
+      super(VisionV1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }

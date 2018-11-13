@@ -1676,6 +1676,11 @@
       "description": "The environment values to set at runtime.",
       "type": "object",
       "properties": {
+        "numWorkers": {
+          "description": "The initial number of Google Compute Engine instnaces for the job.",
+          "type": "integer",
+          "format": "int32"
+        },
         "maxWorkers": {
           "description": "The maximum number of Google Compute Engine instances to be made\navailable to your pipeline during execution, from 1 to 1000.",
           "type": "integer",
@@ -1715,6 +1720,13 @@
         "subnetwork": {
           "description": "Subnetwork to which VMs will be assigned, if desired.  Expected to be of\nthe form \"regions\/REGION\/subnetworks\/SUBNETWORK\".",
           "type": "string"
+        },
+        "additionalUserLabels": {
+          "description": "Additional user labels attached to the job.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

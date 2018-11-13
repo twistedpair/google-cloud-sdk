@@ -269,13 +269,17 @@
           "type": "boolean"
         },
         "enableSpeakerDiarization": {
-          "description": "*Optional* If 'true', enables speaker detection for each recognized word in\nthe top alternative of the recognition result using a speaker_tag provided\nin the WordInfo.\nNote: When this is true, we send all the words from the beginning of the\naudio for the top alternative in every consecutive STREAMING responses.\nThis is done in order to improve our speaker tags as our models learn to\nidentify the speakers in the conversation over time.\nFor non-streaming requests, the diarization results will be provided only\nin the top alternative of the FINAL SpeechRecognitionResult.",
+          "description": "*Optional* If 'true', enables speaker detection for each recognized word in\nthe top alternative of the recognition result using a speaker_tag provided\nin the WordInfo.\nNote: Use diarization_config instead. This field will be DEPRECATED soon.",
           "type": "boolean"
         },
         "diarizationSpeakerCount": {
-          "description": "*Optional*\nIf set, specifies the estimated number of speakers in the conversation.\nIf not set, defaults to '2'.\nIgnored unless enable_speaker_diarization is set to true.\"",
+          "description": "*Optional*\nIf set, specifies the estimated number of speakers in the conversation.\nIf not set, defaults to '2'.\nIgnored unless enable_speaker_diarization is set to true.\"\nNote: Use diarization_config instead. This field will be DEPRECATED soon.",
           "type": "integer",
           "format": "int32"
+        },
+        "diarizationConfig": {
+          "description": "*Optional* Config to enable speaker diarization and set additional\nparameters to make diarization better suited for your application.\nNote: When this is enabled, we send all the words from the beginning of the\naudio for the top alternative in every consecutive STREAMING responses.\nThis is done in order to improve our speaker tags as our models learn to\nidentify the speakers in the conversation over time.\nFor non-streaming requests, the diarization results will be provided only\nin the top alternative of the FINAL SpeechRecognitionResult.",
+          "$ref": "SpeakerDiarizationConfig"
         },
         "metadata": {
           "description": "*Optional* Metadata regarding this request.",
@@ -318,6 +322,26 @@
             "MEDIUM",
             "HIGH"
           ]
+        }
+      }
+    },
+    "SpeakerDiarizationConfig": {
+      "id": "SpeakerDiarizationConfig",
+      "type": "object",
+      "properties": {
+        "enableSpeakerDiarization": {
+          "description": "*Optional* If 'true', enables speaker detection for each recognized word in\nthe top alternative of the recognition result using a speaker_tag provided\nin the WordInfo.",
+          "type": "boolean"
+        },
+        "minSpeakerCount": {
+          "description": "*Optional* Only used if diarization_speaker_count is not set.\nMinimum number of speakers in the conversation. This range gives you more\nflexibility by allowing the system to automatically determine the correct\nnumber of speakers. If not set, the default value is 2.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxSpeakerCount": {
+          "description": "*Optional* Only used if diarization_speaker_count is not set.\nMaximum number of speakers in the conversation. This range gives you more\nflexibility by allowing the system to automatically determine the correct\nnumber of speakers. If not set, the default value is 6.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -606,7 +630,7 @@
           "type": "string"
         },
         "useLoggedData": {
-          "description": "If this is true, then use the previously logged data (for the project)\nThe logs data for this project will be preprocessed and prepared for\ndownstream pipelines (like training)",
+          "description": "If this is true, then use the previously logged data (for the project)\nThe logs data for this project will be preprocessed and prepared for\ndownstream pipelines (like training). All logs are logged to the consumer\nproject.",
           "type": "boolean"
         },
         "uri": {
@@ -622,7 +646,7 @@
           "type": "string"
         },
         "name": {
-          "description": "Output only. Resource name of the dataset. Form :-\n'\/projects\/{project_number}\/locations\/{location_id}\/datasets\/{dataset_id}'",
+          "description": "Output only. Resource name of the dataset. Form :-\n'projects\/{project_number}\/locations\/{location_id}\/datasets\/{dataset_id}'",
           "type": "string"
         },
         "dataStats": {
@@ -862,6 +886,120 @@
       "type": "object",
       "properties": {
       }
+    },
+    "LongRunningRecognizeMetadata": {
+      "id": "LongRunningRecognizeMetadata",
+      "description": "Describes the progress of a long-running `LongRunningRecognize` call. It is\nincluded in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
+      "type": "object",
+      "properties": {
+        "progressPercent": {
+          "description": "Approximate percentage of audio processed thus far. Guaranteed to be 100\nwhen the audio is fully processed and the results are available.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUpdateTime": {
+          "description": "Time of the most recent processing update.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "SpeechOperationMetadata": {
+      "id": "SpeechOperationMetadata",
+      "description": "Describes the progress of a long-running call. It is\nincluded in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
+      "type": "object",
+      "properties": {
+        "progressPercent": {
+          "description": "Approximate percentage of progress, from AutoML Operation Metadata.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUpdateTime": {
+          "description": "Time of the most recent processing update.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "worksOn": {
+          "description": "The resource being worked on.",
+          "type": "string"
+        }
+      }
+    },
+    "LongRunningRecognizeResponse": {
+      "id": "LongRunningRecognizeResponse",
+      "description": "The only message returned to the client by the `LongRunningRecognize` method.\nIt contains the result as zero or more sequential `SpeechRecognitionResult`\nmessages. It is included in the `result.response` field of the `Operation`\nreturned by the `GetOperation` call of the `google::longrunning::Operations`\nservice.",
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "Output only. Sequential list of transcription results corresponding to\nsequential portions of audio.",
+          "type": "array",
+          "items": {
+            "$ref": "SpeechRecognitionResult"
+          }
+        }
+      }
+    },
+    "CreateDatasetMetadata": {
+      "id": "CreateDatasetMetadata",
+      "description": "Describes the progress of a long-running `CreateDataset` call. It is\nincluded in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
+      "type": "object",
+      "properties": {
+        "progressPercent": {
+          "description": "Approximate percentage of data processed thus far. Guaranteed to be 100\nwhen the data is fully ingested, pre-processed and stats about the data\nare available.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUpdateTime": {
+          "description": "Time of the most recent processing update.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "name": {
+          "description": "Resource name of the dataset. Form :-\n'projects\/{project_number}\/locations\/{location_id}\/datasets\/{dataset_id}'",
+          "type": "string"
+        }
+      }
+    },
+    "CreateModelMetadata": {
+      "id": "CreateModelMetadata",
+      "description": "Describes the progress of a long-running `CreateModel` call. It is\nincluded in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
+      "type": "object",
+      "properties": {
+        "progressPercent": {
+          "description": "Approximate percentage of data processed thus far. Guaranteed to be 100\nwhen the data is fully ingested, pre-processed and stats about the data\nare available.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "startTime": {
+          "description": "Time when the request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "lastUpdateTime": {
+          "description": "Time of the most recent processing update.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "name": {
+          "description": "Resource name of the model.\nFormat: \"projects\/{project_id}\/locations\/{location_id}\/models\/{model_id}\"",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -967,7 +1105,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "List all log data stats associated with this project."
+                  "description": "List all log data stats associated with this consumer project."
                 }
               }
             },
@@ -999,7 +1137,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Performs asynchronous data upload for AutoML: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` with CreateDatasetMetadata showing a Dataset\nname or an `Operation.response` which contains a full `Dataset` message."
+                  "description": "Performs asynchronous data upload for AutoML: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` with CreateDatasetMetadata showing a Dataset\nname or an `Operation.response` which contains an Empty response."
                 },
                 "refreshData": {
                   "id": "speech.projects.locations.datasets.refreshData",
@@ -1027,7 +1165,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Refresh data for a dataset."
+                  "description": "Refresh data for a dataset. Returns an Empty response."
                 },
                 "list": {
                   "id": "speech.projects.locations.datasets.list",
@@ -1082,7 +1220,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the dataset to retrieve. Form :-\n'\/projects\/{project_number}\/locations\/{location_id}\/datasets\/{dataset_id}'",
+                      "description": "The resource name of the dataset to retrieve. Form :-\n'projects\/{project_number}\/locations\/{location_id}\/datasets\/{dataset_id}'",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
@@ -1123,7 +1261,7 @@
                       "type": "string"
                     },
                     "name": {
-                      "description": "Required. Resource name of the dataset being used to create the model.\n'\/projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}'",
+                      "description": "Required. Resource name of the dataset being used to create the model.\n'projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}'",
                       "location": "query",
                       "type": "string"
                     }

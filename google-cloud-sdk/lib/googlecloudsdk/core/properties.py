@@ -1411,6 +1411,7 @@ class _SectionApiEndpointOverrides(_Section):
   def __init__(self):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides', hidden=True)
+    self.accesscontextmanager = self._Add('accesscontextmanager')
     self.apikeys = self._Add('apikeys')
     self.appengine = self._Add('appengine')
     self.bigtableadmin = self._Add('bigtableadmin')

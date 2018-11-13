@@ -24,37 +24,12 @@ DOCS_URL = 'https://console.cloud.google.com/apis/api/cloudasset.googleapis.com/
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  ORGANIZATIONS = (
-      'organizations',
-      'organizations/{organizationsId}',
-      {},
-      [u'organizationsId'],
-      True
-  )
-  ORGANIZATIONS_OPERATIONS = (
-      'organizations.operations',
+  OPERATIONS = (
+      'operations',
       '{+name}',
       {
           '':
-              'organizations/{organizationsId}/operations/{operationsId}/'
-              '{operationsId1}',
-      },
-      [u'name'],
-      True
-  )
-  PROJECTS = (
-      'projects',
-      'projects/{projectsId}',
-      {},
-      [u'projectsId'],
-      True
-  )
-  PROJECTS_OPERATIONS = (
-      'projects.operations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/operations/{operationsId}/'
+              '{v1beta1Id}/{v1beta1Id1}/operations/{operationsId}/'
               '{operationsId1}',
       },
       [u'name'],

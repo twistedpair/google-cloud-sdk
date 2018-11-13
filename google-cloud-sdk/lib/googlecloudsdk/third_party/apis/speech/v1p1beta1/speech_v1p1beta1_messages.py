@@ -12,6 +12,49 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
+class CreateDatasetMetadata(_messages.Message):
+  r"""Describes the progress of a long-running `CreateDataset` call. It is
+  included in the `metadata` field of the `Operation` returned by the
+  `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Fields:
+    lastUpdateTime: Time of the most recent processing update.
+    name: Resource name of the dataset. Form :-
+      'projects/{project_number}/locations/{location_id}/datasets/{dataset_id}
+      '
+    progressPercent: Approximate percentage of data processed thus far.
+      Guaranteed to be 100 when the data is fully ingested, pre-processed and
+      stats about the data are available.
+    startTime: Time when the request was received.
+  """
+
+  lastUpdateTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  progressPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(4)
+
+
+class CreateModelMetadata(_messages.Message):
+  r"""Describes the progress of a long-running `CreateModel` call. It is
+  included in the `metadata` field of the `Operation` returned by the
+  `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Fields:
+    lastUpdateTime: Time of the most recent processing update.
+    name: Resource name of the model. Format:
+      "projects/{project_id}/locations/{location_id}/models/{model_id}"
+    progressPercent: Approximate percentage of data processed thus far.
+      Guaranteed to be 100 when the data is fully ingested, pre-processed and
+      stats about the data are available.
+    startTime: Time when the request was received.
+  """
+
+  lastUpdateTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  progressPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(4)
+
+
 class DataErrors(_messages.Message):
   r"""Different types of dataset errors and the stats associated with each
   error.
@@ -94,8 +137,8 @@ class Dataset(_messages.Message):
     models: All the models (including models pending training) built using the
       dataset.
     name: Output only. Resource name of the dataset. Form :-
-      '/projects/{project_number}/locations/{location_id}/datasets/{dataset_id
-      }'
+      'projects/{project_number}/locations/{location_id}/datasets/{dataset_id}
+      '
     updateTime: Output only. The timestamp this dataset is last updated.
     uri: URI that points to a file in csv file where each row has following
       format. <gs_path_to_audio>,<gs_path_to_transcript>,<label> label can be
@@ -118,7 +161,8 @@ class Dataset(_messages.Message):
       /reference-uris).
     useLoggedData: If this is true, then use the previously logged data (for
       the project) The logs data for this project will be preprocessed and
-      prepared for downstream pipelines (like training)
+      prepared for downstream pipelines (like training). All logs are logged
+      to the consumer project.
   """
 
   blockingOperationIds = _messages.StringField(1, repeated=True)
@@ -246,6 +290,24 @@ class LogBucketStats(_messages.Message):
   count = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class LongRunningRecognizeMetadata(_messages.Message):
+  r"""Describes the progress of a long-running `LongRunningRecognize` call. It
+  is included in the `metadata` field of the `Operation` returned by the
+  `GetOperation` call of the `google::longrunning::Operations` service.
+
+  Fields:
+    lastUpdateTime: Time of the most recent processing update.
+    progressPercent: Approximate percentage of audio processed thus far.
+      Guaranteed to be 100 when the audio is fully processed and the results
+      are available.
+    startTime: Time when the request was received.
+  """
+
+  lastUpdateTime = _messages.StringField(1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
+
+
 class LongRunningRecognizeRequest(_messages.Message):
   r"""The top-level message sent by the client for the `LongRunningRecognize`
   method.
@@ -258,6 +320,21 @@ class LongRunningRecognizeRequest(_messages.Message):
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
+
+
+class LongRunningRecognizeResponse(_messages.Message):
+  r"""The only message returned to the client by the `LongRunningRecognize`
+  method. It contains the result as zero or more sequential
+  `SpeechRecognitionResult` messages. It is included in the `result.response`
+  field of the `Operation` returned by the `GetOperation` call of the
+  `google::longrunning::Operations` service.
+
+  Fields:
+    results: Output only. Sequential list of transcription results
+      corresponding to sequential portions of audio.
+  """
+
+  results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
 
 
 class Model(_messages.Message):
@@ -464,9 +541,19 @@ class RecognitionConfig(_messages.Message):
       recognize the first channel by default. To perform independent
       recognition on each channel set
       `enable_separate_recognition_per_channel` to 'true'.
+    diarizationConfig: *Optional* Config to enable speaker diarization and set
+      additional parameters to make diarization better suited for your
+      application. Note: When this is enabled, we send all the words from the
+      beginning of the audio for the top alternative in every consecutive
+      STREAMING responses. This is done in order to improve our speaker tags
+      as our models learn to identify the speakers in the conversation over
+      time. For non-streaming requests, the diarization results will be
+      provided only in the top alternative of the FINAL
+      SpeechRecognitionResult.
     diarizationSpeakerCount: *Optional* If set, specifies the estimated number
       of speakers in the conversation. If not set, defaults to '2'. Ignored
-      unless enable_speaker_diarization is set to true."
+      unless enable_speaker_diarization is set to true." Note: Use
+      diarization_config instead. This field will be DEPRECATED soon.
     enableAutomaticPunctuation: *Optional* If 'true', adds punctuation to
       recognition result hypotheses. This feature is only available in select
       languages. Setting this for requests in other languages has no effect at
@@ -483,13 +570,8 @@ class RecognitionConfig(_messages.Message):
       of the audio.
     enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
       for each recognized word in the top alternative of the recognition
-      result using a speaker_tag provided in the WordInfo. Note: When this is
-      true, we send all the words from the beginning of the audio for the top
-      alternative in every consecutive STREAMING responses. This is done in
-      order to improve our speaker tags as our models learn to identify the
-      speakers in the conversation over time. For non-streaming requests, the
-      diarization results will be provided only in the top alternative of the
-      FINAL SpeechRecognitionResult.
+      result using a speaker_tag provided in the WordInfo. Note: Use
+      diarization_config instead. This field will be DEPRECATED soon.
     enableWordConfidence: *Optional* If `true`, the top result includes a list
       of words and the confidence for those words. If `false`, no word-level
       confidence information is returned. The default is `false`.
@@ -602,21 +684,22 @@ class RecognitionConfig(_messages.Message):
 
   alternativeLanguageCodes = _messages.StringField(1, repeated=True)
   audioChannelCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  diarizationSpeakerCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  enableAutomaticPunctuation = _messages.BooleanField(4)
-  enableSeparateRecognitionPerChannel = _messages.BooleanField(5)
-  enableSpeakerDiarization = _messages.BooleanField(6)
-  enableWordConfidence = _messages.BooleanField(7)
-  enableWordTimeOffsets = _messages.BooleanField(8)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 9)
-  languageCode = _messages.StringField(10)
-  maxAlternatives = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 12)
-  model = _messages.StringField(13)
-  profanityFilter = _messages.BooleanField(14)
-  sampleRateHertz = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 16, repeated=True)
-  useEnhanced = _messages.BooleanField(17)
+  diarizationConfig = _messages.MessageField('SpeakerDiarizationConfig', 3)
+  diarizationSpeakerCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  enableAutomaticPunctuation = _messages.BooleanField(5)
+  enableSeparateRecognitionPerChannel = _messages.BooleanField(6)
+  enableSpeakerDiarization = _messages.BooleanField(7)
+  enableWordConfidence = _messages.BooleanField(8)
+  enableWordTimeOffsets = _messages.BooleanField(9)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 10)
+  languageCode = _messages.StringField(11)
+  maxAlternatives = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 13)
+  model = _messages.StringField(14)
+  profanityFilter = _messages.BooleanField(15)
+  sampleRateHertz = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 17, repeated=True)
+  useEnhanced = _messages.BooleanField(18)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -804,6 +887,28 @@ class RefreshDataRequest(_messages.Message):
   uri = _messages.StringField(1)
 
 
+class SpeakerDiarizationConfig(_messages.Message):
+  r"""A SpeakerDiarizationConfig object.
+
+  Fields:
+    enableSpeakerDiarization: *Optional* If 'true', enables speaker detection
+      for each recognized word in the top alternative of the recognition
+      result using a speaker_tag provided in the WordInfo.
+    maxSpeakerCount: *Optional* Only used if diarization_speaker_count is not
+      set. Maximum number of speakers in the conversation. This range gives
+      you more flexibility by allowing the system to automatically determine
+      the correct number of speakers. If not set, the default value is 6.
+    minSpeakerCount: *Optional* Only used if diarization_speaker_count is not
+      set. Minimum number of speakers in the conversation. This range gives
+      you more flexibility by allowing the system to automatically determine
+      the correct number of speakers. If not set, the default value is 2.
+  """
+
+  enableSpeakerDiarization = _messages.BooleanField(1)
+  maxSpeakerCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minSpeakerCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class SpeechContext(_messages.Message):
   r"""Provides "hints" to the speech recognizer to favor specific words and
   phrases in the results.
@@ -851,6 +956,25 @@ class SpeechContext(_messages.Message):
   strength = _messages.EnumField('StrengthValueValuesEnum', 2)
 
 
+class SpeechOperationMetadata(_messages.Message):
+  r"""Describes the progress of a long-running call. It is included in the
+  `metadata` field of the `Operation` returned by the `GetOperation` call of
+  the `google::longrunning::Operations` service.
+
+  Fields:
+    lastUpdateTime: Time of the most recent processing update.
+    progressPercent: Approximate percentage of progress, from AutoML Operation
+      Metadata.
+    startTime: Time when the request was received.
+    worksOn: The resource being worked on.
+  """
+
+  lastUpdateTime = _messages.StringField(1)
+  progressPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(3)
+  worksOn = _messages.StringField(4)
+
+
 class SpeechOperationsGetRequest(_messages.Message):
   r"""A SpeechOperationsGetRequest object.
 
@@ -881,8 +1005,8 @@ class SpeechProjectsLocationsDatasetsGetRequest(_messages.Message):
     includeModelInfo: If true then also include information about the models
       built using this dataset.
     name: The resource name of the dataset to retrieve. Form :-
-      '/projects/{project_number}/locations/{location_id}/datasets/{dataset_id
-      }'
+      'projects/{project_number}/locations/{location_id}/datasets/{dataset_id}
+      '
   """
 
   includeModelInfo = _messages.BooleanField(1)
@@ -942,7 +1066,7 @@ class SpeechProjectsLocationsModelsCreateRequest(_messages.Message):
     model: A Model resource to be passed as the request body.
     name: Required. Resource name of the dataset being used to create the
       model.
-      '/projects/{project_id}/locations/{location_id}/datasets/{dataset_id}'
+      'projects/{project_id}/locations/{location_id}/datasets/{dataset_id}'
     parent: Required. Resource name of the parent. Has the format :-
       "projects/{project_id}/locations/{location_id}"
   """

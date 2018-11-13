@@ -17,33 +17,33 @@
 
 For details of how argparse argument pasers work, see:
 
-  http://docs.python.org/dev/library/argparse.html#type
+http://docs.python.org/dev/library/argparse.html#type
 
 Example usage:
 
-  import argparse
-  import arg_parsers
+import argparse
+import arg_parsers
 
-  parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser()
 
-  parser.add_argument(
-      '--metadata',
-      type=arg_parsers.ArgDict())
-  parser.add_argument(
-      '--delay',
-      default='5s',
-      type=arg_parsers.Duration(lower_bound='1s', upper_bound='10s')
-  parser.add_argument(
-      '--disk-size',
-      default='10GB',
-      type=arg_parsers.BinarySize(lower_bound='1GB', upper_bound='10TB')
+parser.add_argument(
+'--metadata',
+type=arg_parsers.ArgDict())
+parser.add_argument(
+'--delay',
+default='5s',
+type=arg_parsers.Duration(lower_bound='1s', upper_bound='10s')
+parser.add_argument(
+'--disk-size',
+default='10GB',
+type=arg_parsers.BinarySize(lower_bound='1GB', upper_bound='10TB')
 
-  res = parser.parse_args(
-      '--names --metadata x=y,a=b,c=d --delay 1s --disk-size 10gb'.split())
+res = parser.parse_args(
+'--names --metadata x=y,a=b,c=d --delay 1s --disk-size 10gb'.split())
 
-  assert res.metadata == {'a': 'b', 'c': 'd', 'x': 'y'}
-  assert res.delay == 1
-  assert res.disk_size == 10737418240
+assert res.metadata == {'a': 'b', 'c': 'd', 'x': 'y'}
+assert res.delay == 1
+assert res.disk_size == 10737418240
 
 """
 
@@ -805,15 +805,21 @@ class ArgList(ArgType):
 
   def __call__(self, arg_value):  # pylint:disable=missing-docstring
 
-    delim = self.DEFAULT_DELIM_CHAR
-    if (arg_value.startswith(self.ALT_DELIM_CHAR) and
-        self.ALT_DELIM_CHAR in arg_value[1:]):
-      delim, arg_value = arg_value[1:].split(self.ALT_DELIM_CHAR, 1)
-      if not delim:
-        raise ArgumentTypeError(
-            'Invalid delimiter. Please see `gcloud topic escaping` for '
-            'information on escaping list or dictionary flag values.')
-    arg_list = _TokenizeQuotedList(arg_value, delim=delim)
+    if isinstance(arg_value, list):
+      arg_list = arg_value
+    elif not isinstance(arg_value, six.string_types):
+      raise ArgumentTypeError('Invalid type [{}] for flag value [{}]'.format(
+          type(arg_value).__name__, arg_value))
+    else:
+      delim = self.DEFAULT_DELIM_CHAR
+      if (arg_value.startswith(self.ALT_DELIM_CHAR) and
+          self.ALT_DELIM_CHAR in arg_value[1:]):
+        delim, arg_value = arg_value[1:].split(self.ALT_DELIM_CHAR, 1)
+        if not delim:
+          raise ArgumentTypeError(
+              'Invalid delimiter. Please see `gcloud topic escaping` for '
+              'information on escaping list or dictionary flag values.')
+      arg_list = _TokenizeQuotedList(arg_value, delim=delim)
 
     # TODO(b/35944028): These exceptions won't present well to the user.
     if len(arg_list) < self.min_length:
@@ -955,35 +961,50 @@ class ArgDict(ArgList):
                   ', '.join(sorted(self.spec.keys()))),
               user_input=key))
 
-  def __call__(self, arg_value):  # pylint:disable=missing-docstring
-    arg_list = super(ArgDict, self).__call__(arg_value)
+  def _ValidateKeyValue(self, key, value, op='='):
+    """Converts and validates <key,value> and returns (key,value)."""
+    if (not op or value is None) and not self.allow_key_only:
+      raise ArgumentTypeError(
+          'Bad syntax for dict arg: [{0}]. Please see `gcloud topic '
+          'escaping` if you would like information on escaping list or '
+          'dictionary flag values.'.format(key))
+    if self.key_type:
+      try:
+        key = self.key_type(key)
+      except ValueError:
+        raise ArgumentTypeError('Invalid key [{0}]'.format(key))
+    convert_value = self.operators.get(op, None)
+    if convert_value:
+      try:
+        value = convert_value(value)
+      except ValueError:
+        raise ArgumentTypeError('Invalid value [{0}]'.format(value))
+    if self.spec:
+      value = self._ApplySpec(key, value)
+    return key, value
 
-    arg_dict = collections.OrderedDict()
-    for arg in arg_list:
-      match = self.key_op_value.match(arg)
-      # TODO(b/35944028): These exceptions won't present well to the user.
-      if not match:
-        raise ArgumentTypeError('Invalid flag value [{0}]'.format(arg))
-      key, op, value = match.group(1), match.group(2), match.group(3)
-      if not op and not self.allow_key_only:
-        raise ArgumentTypeError(
-            ('Bad syntax for dict arg: [{0}]. Please see `gcloud topic '
-             'escaping` if you would like information on escaping list or '
-             'dictionary flag values.').format(arg))
-      if self.key_type:
-        try:
-          key = self.key_type(key)
-        except ValueError:
-          raise ArgumentTypeError('Invalid key [{0}]'.format(key))
-      convert_value = self.operators.get(op, None)
-      if convert_value:
-        try:
-          value = convert_value(value)
-        except ValueError:
-          raise ArgumentTypeError('Invalid value [{0}]'.format(value))
-      if self.spec:
-        value = self._ApplySpec(key, value)
-      arg_dict[key] = value
+  def __call__(self, arg_value):  # pylint:disable=missing-docstring
+
+    if isinstance(arg_value, dict):
+      raw_dict = arg_value
+      arg_dict = collections.OrderedDict()
+      for key, value in six.iteritems(raw_dict):
+        key, value = self._ValidateKeyValue(key, value)
+        arg_dict[key] = value
+    elif not isinstance(arg_value, six.string_types):
+      raise ArgumentTypeError('Invalid type [{}] for flag value [{}]'.format(
+          type(arg_value).__name__, arg_value))
+    else:
+      arg_list = super(ArgDict, self).__call__(arg_value)
+      arg_dict = collections.OrderedDict()
+      for arg in arg_list:
+        match = self.key_op_value.match(arg)
+        # TODO(b/35944028): These exceptions won't present well to the user.
+        if not match:
+          raise ArgumentTypeError('Invalid flag value [{0}]'.format(arg))
+        key, op, value = match.group(1), match.group(2), match.group(3)
+        key, value = self._ValidateKeyValue(key, value, op=op)
+        arg_dict[key] = value
 
     for required_key in self.required_keys:
       if required_key not in arg_dict:

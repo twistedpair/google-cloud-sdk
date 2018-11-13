@@ -27,6 +27,8 @@ import re
 from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.api_lib.container import api_adapter as gke_api_adapter
 from googlecloudsdk.api_lib.container import util as gke_util
+from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.composer import parsers
 from googlecloudsdk.core import config
@@ -321,9 +323,8 @@ def RunKubectlCommand(args, out_func=None, err_func=None):
 def ParseRequirementsFile(requirements_file_path):
   """Parses the given requirements file into a requirements dictionary.
 
-  Expects the file to have one requirement specifier per line. Only performs
-  lightweight parsing of the file in order to form an API call. The Composer
-  frontend handles validation.
+  If the file path is GCS file path, use GCS file parser to parse requirements
+  file. Otherwise, use local file parser.
 
   Args:
     requirements_file_path: Filepath to the requirements file.
@@ -335,9 +336,17 @@ def ParseRequirementsFile(requirements_file_path):
   Raises:
     Error: if requirements file cannot be read.
   """
-  requirements = {}
   try:
-    with files.FileReader(requirements_file_path) as requirements_file:
+    is_gcs_file_path = requirements_file_path.startswith('gs://')
+    if is_gcs_file_path:
+      storage_client = storage_api.StorageClient()
+      object_ref = storage_util.ObjectReference.FromUrl(requirements_file_path)
+      file_content = storage_client.ReadObject(object_ref)
+    else:
+      file_content = files.FileReader(requirements_file_path)
+
+    requirements = {}
+    with file_content as requirements_file:
       for requirement_specifier in requirements_file:
         requirement_specifier = requirement_specifier.strip()
         if not requirement_specifier:
@@ -349,11 +358,10 @@ def ParseRequirementsFile(requirements_file_path):
               'Duplicate package in requirements file: {0}'.format(package))
         requirements[package] = version
       return requirements
-  except files.Error:
-    # EnvironmentError is parent of IOError, OSError and WindowsError.
-    # Raised when file does not exist or can't be opened/read.
-    raise Error(
-        'Unable to read requirements file {0}'.format(requirements_file_path))
+  except (files.Error, storage_api.Error, storage_util.Error):
+    # Raise error when it fails to read requirements file.
+    core_exceptions.reraise(Error(
+        'Unable to read requirements file {0}'.format(requirements_file_path)))
 
 
 def SplitRequirementSpecifier(requirement_specifier):

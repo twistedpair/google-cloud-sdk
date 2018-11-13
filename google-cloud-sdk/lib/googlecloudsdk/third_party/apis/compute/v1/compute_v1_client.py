@@ -847,7 +847,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified BackendService resource. Gets a list of available backend services by making a list() request.
+      r"""Returns the specified BackendService resource. Gets a list of available backend services.
 
       Args:
         request: (ComputeBackendServicesGetRequest) input message
@@ -7861,7 +7861,7 @@ If the group is part of a backend service that has enabled connection draining, 
     def Delete(self, request, global_params=None):
       r"""Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.
 
-For more information, see Deleting snaphots.
+For more information, see Deleting snapshots.
 
       Args:
         request: (ComputeSnapshotsDeleteRequest) input message
@@ -8437,7 +8437,7 @@ For more information, see Deleting snaphots.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.
+      r"""Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message

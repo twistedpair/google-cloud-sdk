@@ -13,251 +13,358 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""WebSocket connection class for tunnelling with Cloud IAP."""
+"""WebSocket connection class for tunneling with Cloud IAP."""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from collections import deque
 import logging
-import socket
-import ssl
-import sys
 import threading
 import time
 
+from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_helper as helper
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import retry
 
-import websocket
-
-CONNECT_ENDPOINT = 'connect'
-TUNNEL_CLOUDPROXY_ORIGIN = 'bot:iap-tunneler'
+MAX_WEBSOCKET_OPEN_WAIT_TIME_SEC = 60  # seconds
+MAX_RECONNECT_SLEEP_TIME_MS = 20 * 1000  # milliseconds
+MAX_RECONNECT_WAIT_TIME_MS = 60 * 60 * 1000  # milliseconds
+MAX_UNSENT_QUEUE_LENGTH = 20
+RECONNECT_INITIAL_SLEEP_MS = 1500  # milliseconds
 
 
 class ConnectionCreationError(exceptions.Error):
   pass
 
 
-class ErrorInfoDuringClose(exceptions.Error):
+class ConnectionReconnectTimeout(exceptions.Error):
   pass
 
 
-class ReceiveFromWebSocketError(exceptions.Error):
+class SubprotocolEarlyAckError(exceptions.Error):
   pass
 
 
-class UnexpectedConnectionCloseError(exceptions.Error):
+class SubprotocolEarlyDataError(exceptions.Error):
   pass
 
 
-class UnexpectedWebSocketDataError(exceptions.Error):
+class SubprotocolExtraConnectSuccessSid(exceptions.Error):
   pass
 
 
-class WebSocketError(exceptions.Error):
+class SubprotocolExtraReconnectSuccessAck(exceptions.Error):
+  pass
+
+
+class SubprotocolInvalidAckError(exceptions.Error):
+  pass
+
+
+class SubprotocolOutOfOrderAckError(exceptions.Error):
   pass
 
 
 class IapTunnelWebSocket(object):
   """Cloud IAP WebSocket class for tunnelling connections."""
 
-  def __init__(self, tunnel_target, access_token, data_handler_callback,
+  def __init__(self, tunnel_target, get_access_token_callback,
+               data_handler_callback, close_handler_callback,
                ignore_certs=False):
     self._tunnel_target = tunnel_target
-    self._access_token = access_token
+    self._get_access_token_callback = get_access_token_callback
     self._data_handler_callback = data_handler_callback
+    self._close_handler_callback = close_handler_callback
     self._ignore_certs = ignore_certs
-    self._ca_certs = None
 
+    self._websocket_helper = None
     self._connect_msg_received = False
     self._connection_sid = None
-    self._websocket = None
-    self._websocket_errors = []
-    self._websocket_thread = None
+    self._stopping = False
+    self._close_message_sent = False
+    self._send_and_reconnect_thread = None
 
+    self._total_bytes_confirmed = 0
     self._total_bytes_received = 0
+    self._total_bytes_received_and_acked = 0
+    self._unsent_data = deque()
+    self._unconfirmed_data = deque()
 
   def __del__(self):
-    self.Close()
+    if self._websocket_helper:
+      self._websocket_helper.Close()
+
+  def Close(self):
+    """Close down local connection and WebSocket connection."""
+    self._stopping = True
+    try:
+      self._close_handler_callback()
+    except:  # pylint: disable=bare-except
+      pass
+    if self._websocket_helper:
+      if not self._close_message_sent:
+        self._websocket_helper.SendClose()
+        self._close_message_sent = True
+      self._websocket_helper.Close()
 
   def InitiateConnection(self):
     """Initiate the WebSocket connection."""
     utils.CheckPythonVersion(self._ignore_certs)
     utils.ValidateParameters(self._tunnel_target)
-    self._ca_certs = utils.CheckCACertsFile(self._ignore_certs)
 
-    self._connect_url = utils.CreateWebSocketUrl(CONNECT_ENDPOINT,
-                                                 self._tunnel_target)
-    headers = ['User-Agent: ' + http.MakeUserAgentString(),
-               'Sec-WebSocket-Protocol: ' + utils.SUBPROTOCOL_NAME]
-    if self._access_token:
-      headers += ['Authorization: Bearer ' + self._access_token]
-    log.info('Connecting to with URL %r', self._connect_url)
-    self._websocket_errors = []
-    self._connection_sid = None
-
-    if log.GetVerbosity() == logging.DEBUG:
-      websocket.enableTrace(True)
-    else:
-      websocket_logger = logging.getLogger('websocket')
-      websocket_logger.setLevel(logging.CRITICAL)
-
-    self._websocket = websocket.WebSocketApp(
-        self._connect_url, header=headers, on_error=self._OnError,
-        on_close=self._OnClose, on_data=self._OnData)
-    log.info('Starting WebSocket receive thread.')
-    self._websocket_thread = threading.Thread(target=self._ReceiveFromWebSocket)
-    self._websocket_thread.daemon = True
-    self._websocket_thread.start()
-
-  def _IsConnected(self):
-    """Returns true if the websocket is open and we received a connect msg."""
-    return (self._websocket and self._websocket.sock and
-            self._websocket.sock.connected and self._connect_msg_received)
-
-  def _ReraiseLastErrorIfExists(self):
-    if self._websocket_errors:
-      exception_obj, tb = self._websocket_errors[-1]
-      exceptions.reraise(exception_obj, tb=tb)
-
-  def WaitForOpenOrRaiseError(self):
-    """Wait for WebSocket open confirmation or any error condition."""
-    log.info('Waiting for WebSocket connection.')
-    while (self._websocket and
-           not (self._IsConnected() or self._websocket_errors)):
-      time.sleep(0.1)
-    self._ReraiseLastErrorIfExists()
-    if not self._websocket:
-      raise ConnectionCreationError('Error while establishing WebSocket')
+    self._StartNewWebSocket()
+    self._WaitForOpenOrRaiseError()
+    self._send_and_reconnect_thread = threading.Thread(
+        target=self._SendDataAndReconnectWebSocket)
+    self._send_and_reconnect_thread.daemon = True
+    self._send_and_reconnect_thread.start()
 
   def Send(self, bytes_to_send):
     """Send bytes over WebSocket connection."""
-    if not self._IsConnected():
-      self.WaitForOpenOrRaiseError()
     while bytes_to_send:
-      bytes_to_send = self._SendData(bytes_to_send)
-    self._SendAck()
+      first_to_send = bytes_to_send[:utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE]
+      bytes_to_send = bytes_to_send[utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE:]
+      if first_to_send:
+        self._EnqueueBytesWithWaitForReconnect(first_to_send)
 
-  def _SendData(self, bytes_to_send):
-    first_to_send = bytes_to_send[:utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE]
-    bytes_to_send = bytes_to_send[utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE:]
-    if first_to_send:
-      send_data = utils.CreateSubprotocolDataFrame(first_to_send)
-      self._SendBytes(send_data)
-    return bytes_to_send
+  def _AttemptReconnect(self, reconnect_func):
+    """Attempt to reconnect with a new WebSocket."""
+
+    r = retry.Retryer(max_wait_ms=MAX_RECONNECT_WAIT_TIME_MS,
+                      exponential_sleep_multiplier=1.1,
+                      wait_ceiling_ms=MAX_RECONNECT_SLEEP_TIME_MS)
+    try:
+      r.RetryOnException(func=reconnect_func,
+                         sleep_ms=RECONNECT_INITIAL_SLEEP_MS)
+    except retry.RetryException:
+      log.warning('Unable to reconnect within [%d] ms',
+                  MAX_RECONNECT_WAIT_TIME_MS, exc_info=True)
+      self._StopConnectionAsync()
+
+  def _EnqueueBytesWithWaitForReconnect(self, bytes_to_send):
+    """Add bytes to the queue; sleep waiting for reconnect if queue is full."""
+    end_time = time.time() + MAX_RECONNECT_WAIT_TIME_MS / 1000.0
+    while time.time() < end_time:
+      if len(self._unsent_data) < MAX_UNSENT_QUEUE_LENGTH:
+        self._unsent_data.append(bytes_to_send)
+        if log.GetVerbosity() == logging.DEBUG:
+          log.info('ENQUEUE data_len [%d] bytes_to_send[:20] [%r]',
+                   len(bytes_to_send), bytes_to_send[:20])
+        return
+      time.sleep(0.01)
+    raise ConnectionReconnectTimeout()
+
+  def _HasConnected(self):
+    """Returns true if we received a connect message."""
+    return self._connect_msg_received
+
+  def _IsClosed(self):
+    return ((self._websocket_helper and self._websocket_helper.IsClosed()) or
+            (self._send_and_reconnect_thread and
+             not self._send_and_reconnect_thread.isAlive()))
+
+  def _StartNewWebSocket(self):
+    """Start a new WebSocket and thread to listen for incoming data."""
+    headers = [
+        'User-Agent: ' + http.MakeUserAgentString(),
+        'Sec-WebSocket-Protocol: ' + utils.SUBPROTOCOL_NAME]
+    if self._get_access_token_callback:
+      headers += ['Authorization: Bearer ' + self._get_access_token_callback()]
+
+    if self._connection_sid:
+      url = utils.CreateWebSocketReconnectUrl(
+          self._tunnel_target, self._connection_sid, self._total_bytes_received)
+      log.info('Reconnecting with URL [%r]', url)
+    else:
+      url = utils.CreateWebSocketConnectUrl(self._tunnel_target)
+      log.info('Connecting with URL [%r]', url)
+
+    self._connect_msg_received = False
+    self._websocket_helper = helper.IapTunnelWebSocketHelper(
+        url, headers, self._ignore_certs, self._tunnel_target.proxy_info,
+        self._OnData, self._OnClose)
+    self._websocket_helper.StartReceivingThread()
 
   def _SendAck(self):
-    if self._total_bytes_received:
-      ack_data = utils.CreateSubprotocolAckFrame(self._total_bytes_received)
-      self._SendBytes(ack_data)
-
-  def _SendBytes(self, send_data):
-    self._websocket.send(send_data, opcode=websocket.ABNF.OPCODE_BINARY)
-
-  def Close(self):
-    self._connect_msg_received = False
-    ws, self._websocket = self._websocket, None
-    if ws:
+    """Send an ACK back to server."""
+    if self._total_bytes_received > self._total_bytes_received_and_acked:
+      bytes_received = self._total_bytes_received
       try:
-        ws.close()
-      except (EnvironmentError, socket.error, websocket.WebSocketException):
+        ack_data = utils.CreateSubprotocolAckFrame(bytes_received)
+        self._websocket_helper.Send(ack_data)
+        self._total_bytes_received_and_acked = bytes_received
+      except helper.WebSocketConnectionClosed:
         pass
-    self._ReraiseLastErrorIfExists()
+      except EnvironmentError as e:
+        log.info('Unable to send WebSocket ack [%s]', str(e))
+      except:  # pylint: disable=bare-except
+        if not self._IsClosed():
+          log.info('Error while attempting to ack [%d] bytes', bytes_received,
+                   exc_info=True)
 
-  def _ReceiveFromWebSocket(self):
-    """Receive data from WebSocket connection."""
-    sslopt = {'cert_reqs': ssl.CERT_REQUIRED,
-              'ca_certs': self._ca_certs}
-    if self._ignore_certs:
-      sslopt['cert_reqs'] = ssl.CERT_OPTIONAL
-      sslopt['check_hostname'] = False
+  def _SendDataAndReconnectWebSocket(self):
+    """Main function for send_and_reconnect_thread."""
+    def Reconnect():
+      if not self._stopping:
+        self._StartNewWebSocket()
+        self._WaitForOpenOrRaiseError()
 
     try:
-      proxy_info = self._tunnel_target.proxy_info
-      if proxy_info:
-        http_proxy_auth = None
-        if proxy_info.proxy_user or proxy_info.proxy_pass:
-          http_proxy_auth = (proxy_info.proxy_user, proxy_info.proxy_pass)
-        self._websocket.run_forever(
-            origin=TUNNEL_CLOUDPROXY_ORIGIN, sslopt=sslopt,
-            http_proxy_host=proxy_info.proxy_host,
-            http_proxy_port=proxy_info.proxy_port,
-            http_proxy_auth=http_proxy_auth)
-      else:
-        self._websocket.run_forever(origin=TUNNEL_CLOUDPROXY_ORIGIN,
-                                    sslopt=sslopt)
-    except (EnvironmentError, socket.error, websocket.WebSocketException) as e:
-      exc_info = sys.exc_info()
-      self._websocket_errors.append(
-          (ReceiveFromWebSocketError('%s: %s' % (type(e).__name__, str(e))),
-           exc_info[2]))
-      self.Close()
+      while not self._stopping:
+        if self._IsClosed():
+          self._AttemptReconnect(Reconnect)
 
-  def _OnError(self, unused_websocket_app, exception_obj):
-    self._websocket_errors.append(
-        (WebSocketError('%s: %s' %
-                        (type(exception_obj).__name__, str(exception_obj))),
-         None))
+        elif self._HasConnected():
+          self._SendQueuedData()
+          if not self._IsClosed():
+            self._SendAck()
+
+        if not self._stopping:
+          time.sleep(0.01)
+    except:  # pylint: disable=bare-except
+      if log.GetVerbosity() == logging.DEBUG:
+        log.info('Error from WebSocket while sending data.', exc_info=True)
     self.Close()
 
-  def _OnClose(self, unused_websocket_app, *optional_close_data):
-    if optional_close_data:
-      self._websocket_errors.append(
-          (ErrorInfoDuringClose(repr(optional_close_data)), None))
-    else:
-      log.info('WebSocket connection closed.')
-    self.Close()
+  def _SendQueuedData(self):
+    """Send data that is sitting in the unsent data queue."""
+    while self._unsent_data and not self._stopping:
+      try:
+        send_data = utils.CreateSubprotocolDataFrame(self._unsent_data[0])
+        self._websocket_helper.Send(send_data)
+        self._unconfirmed_data.append(self._unsent_data.popleft())
+      except helper.WebSocketConnectionClosed:
+        break
+      except EnvironmentError as e:
+        log.info('Unable to send WebSocket data [%s]', str(e))
+        break
+      except:  # pylint: disable=bare-except
+        log.info('Error while attempting to send [%d] bytes', len(send_data),
+                 exc_info=True)
+        break
 
-  def _OnData(self, unused_websocket_app, binary_data, opcode, unused_finished):
-    """Receive a single message from the server.
+  def _StopConnectionAsync(self):
+    self._stopping = True
 
-    Args:
-      binary_data: str binary data of proto
-      opcode: int signal value for whether data is binary or string
-      unused_finished: bool whether this is the final message in a multi-part
-                       sequence
-    Raises:
-      UnexpectedWebSocketDataError: when receive unexpected opcodes or
-                                    subprotocol tags
-    """
-    # Even though we will only be processing BINARY messages, a bug in the
-    # underlying websocket library will report the last opcode in a multi-frame
-    # message instead of the first opcode - so CONT instead of BINARY.
-    if opcode not in (websocket.ABNF.OPCODE_CONT, websocket.ABNF.OPCODE_BINARY):
-      raise UnexpectedWebSocketDataError('Unexpected WebSocket opcode [%r].' %
-                                         opcode)
+  def _WaitForOpenOrRaiseError(self):
+    """Wait for WebSocket open confirmation or any error condition."""
+    for _ in range(MAX_WEBSOCKET_OPEN_WAIT_TIME_SEC * 100):
+      if self._IsClosed():
+        break
+      if self._HasConnected():
+        return
+      time.sleep(0.01)
+    raise ConnectionCreationError('Error while establishing WebSocket.')
 
+  def _OnClose(self):
+    self._StopConnectionAsync()
+
+  def _OnData(self, binary_data):
+    """Receive a single message from the server."""
     tag, bytes_left = utils.ExtractSubprotocolTag(binary_data)
     # In order of decreasing usage during connection:
     if tag == utils.SUBPROTOCOL_TAG_DATA:
       self._HandleSubprotocolData(bytes_left)
+    elif tag == utils.SUBPROTOCOL_TAG_ACK:
+      self._HandleSubprotocolAck(bytes_left)
     elif tag == utils.SUBPROTOCOL_TAG_CONNECT_SUCCESS_SID:
       self._HandleSubprotocolConnectSuccessSid(bytes_left)
-    else:
-      log.warning('Unsupported subprotocol tag [%r], discarding the message',
-                  tag)
+    elif tag == utils.SUBPROTOCOL_TAG_RECONNECT_SUCCESS_ACK:
+      self._HandleSubprotocolReconnectSuccessAck(bytes_left)
+    elif log.GetVerbosity() == logging.DEBUG:
+      # TODO(b/119130796): update debug logging to std log.debug()
+      log.info('Unsupported subprotocol tag [%r], discarding the message', tag)
+
+  def _HandleSubprotocolAck(self, binary_data):
+    """Handle Subprotocol ACK Frame."""
+    if not self._HasConnected():
+      self._StopConnectionAsync()
+      raise SubprotocolEarlyAckError('Received ACK before connected.')
+
+    bytes_confirmed, bytes_left = utils.ExtractSubprotocolAck(binary_data)
+    self._ConfirmData(bytes_confirmed)
+    if bytes_left and log.GetVerbosity() == logging.DEBUG:
+      log.info('Discarding [%d] extra bytes after processing ACK',
+               len(bytes_left))
 
   def _HandleSubprotocolConnectSuccessSid(self, binary_data):
     """Handle Subprotocol CONNECT_SUCCESS_SID Frame."""
+    if self._HasConnected():
+      self._StopConnectionAsync()
+      raise SubprotocolExtraConnectSuccessSid(
+          'Received CONNECT_SUCCESS_SID after already connected.')
+
     data, bytes_left = utils.ExtractSubprotocolConnectSuccessSid(binary_data)
     self._connection_sid = data
     self._connect_msg_received = True
-    if bytes_left:
-      log.warning(
-          'Discarding %d extra bytes after processing CONNECT_SUCCESS_SID',
+    if bytes_left and log.GetVerbosity() == logging.DEBUG:
+      log.info(
+          'Discarding [%d] extra bytes after processing CONNECT_SUCCESS_SID',
+          len(bytes_left))
+
+  def _HandleSubprotocolReconnectSuccessAck(self, binary_data):
+    """Handle Subprotocol RECONNECT_SUCCESS_ACK Frame."""
+    if self._HasConnected():
+      self._StopConnectionAsync()
+      raise SubprotocolExtraReconnectSuccessAck(
+          'Received RECONNECT_SUCCESS_ACK after already connected.')
+
+    bytes_confirmed, bytes_left = (
+        utils.ExtractSubprotocolReconnectSuccessAck(binary_data))
+    bytes_being_confirmed = bytes_confirmed - self._total_bytes_confirmed
+    self._ConfirmData(bytes_confirmed)
+    log.info(
+        'Reconnecting: confirming [%d] bytes and resending [%d] messages.',
+        bytes_being_confirmed, len(self._unconfirmed_data))
+    self._unsent_data.extendleft(reversed(self._unconfirmed_data))
+    self._unconfirmed_data = deque()
+    self._connect_msg_received = True
+    if bytes_left and log.GetVerbosity() == logging.DEBUG:
+      log.info(
+          'Discarding [%d] extra bytes after processing RECONNECT_SUCCESS_ACK',
           len(bytes_left))
 
   def _HandleSubprotocolData(self, binary_data):
     """Handle Subprotocol DATA Frame."""
-    if not self._IsConnected():
-      raise UnexpectedWebSocketDataError('Received DATA before connected.')
+    if not self._HasConnected():
+      self._StopConnectionAsync()
+      raise SubprotocolEarlyDataError('Received DATA before connected.')
 
     data, bytes_left = utils.ExtractSubprotocolData(binary_data)
     self._total_bytes_received += len(data)
-    self._data_handler_callback(data)
-    if bytes_left:
-      log.warning('Discarding %d extra bytes after processing DATA',
-                  len(bytes_left))
+    try:
+      self._data_handler_callback(data)
+    except:  # pylint: disable=bare-except
+      self._StopConnectionAsync()
+      raise
+    if bytes_left and log.GetVerbosity() == logging.DEBUG:
+      log.info('Discarding [%d] extra bytes after processing DATA',
+               len(bytes_left))
+
+  def _ConfirmData(self, bytes_confirmed):
+    """Discard data that has been confirmed via ACKs received from server."""
+    if bytes_confirmed < self._total_bytes_confirmed:
+      self._StopConnectionAsync()
+      raise SubprotocolOutOfOrderAckError(
+          'Received out-of-order Ack for [%d] bytes.' % bytes_confirmed)
+
+    bytes_to_confirm = bytes_confirmed - self._total_bytes_confirmed
+    while bytes_to_confirm and self._unconfirmed_data:
+      data_chunk = self._unconfirmed_data.popleft()
+      if len(data_chunk) > bytes_to_confirm:
+        self._unconfirmed_data.appendleft(data_chunk[bytes_to_confirm:])
+        self._total_bytes_confirmed += bytes_to_confirm
+      else:
+        self._total_bytes_confirmed += len(data_chunk)
+      bytes_to_confirm = bytes_confirmed - self._total_bytes_confirmed
+
+    if bytes_to_confirm:
+      self._StopConnectionAsync()
+      raise SubprotocolInvalidAckError(
+          'Bytes confirmed [%r] were larger than bytes sent [%r].' %
+          (bytes_confirmed, self._total_bytes_confirmed))

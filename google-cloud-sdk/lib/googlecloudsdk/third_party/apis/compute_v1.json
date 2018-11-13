@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20181030",
+ "revision": "20181106",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1629,7 +1629,7 @@
     },
     "utilizationTargetType": {
      "type": "string",
-     "description": "Defines how target utilization value is expressed for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE. If not specified, the default is GAUGE.",
+     "description": "Defines how target utilization value is expressed for a Stackdriver Monitoring metric. Either GAUGE, DELTA_PER_SECOND, or DELTA_PER_MINUTE.",
      "enum": [
       "DELTA_PER_MINUTE",
       "DELTA_PER_SECOND",
@@ -10048,7 +10048,7 @@
    "properties": {
     "autoCreateRoutes": {
      "type": "boolean",
-     "description": "Whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
+     "description": "Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
     },
     "name": {
      "type": "string",
@@ -20624,7 +20624,7 @@
      "id": "compute.backendServices.get",
      "path": "{project}/global/backendServices/{backendService}",
      "httpMethod": "GET",
-     "description": "Returns the specified BackendService resource. Gets a list of available backend services by making a list() request.",
+     "description": "Returns the specified BackendService resource. Gets a list of available backend services.",
      "parameters": {
       "backendService": {
        "type": "string",
@@ -24681,9 +24681,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -24791,9 +24791,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -24840,7 +24840,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to delete.",
+       "description": "Name or id of the instance resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24892,9 +24892,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -24952,9 +24952,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Instance name.",
+       "description": "Instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -24999,7 +24999,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to return.",
+       "description": "Name or id of the instance resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25041,9 +25041,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "port": {
@@ -25206,9 +25206,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
+       "description": "Name or id of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
        "required": true,
-       "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "maxResults": {
@@ -25266,9 +25266,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25330,9 +25330,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "zone": {
@@ -25377,9 +25377,9 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25425,9 +25425,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25474,9 +25474,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25523,9 +25523,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25572,9 +25572,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25621,9 +25621,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25670,9 +25670,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Instance name.",
+       "description": "Instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25719,9 +25719,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25768,9 +25768,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25817,9 +25817,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance scoping this request.",
+       "description": "Name or id of the instance scoping this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25858,9 +25858,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25904,9 +25904,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to start.",
+       "description": "Name or id of the instance resource to start.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25953,9 +25953,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name of the instance resource to stop.",
+       "description": "Name or id of the instance resource to stop.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25999,9 +25999,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -26055,9 +26055,9 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name for this request.",
+       "description": "The instance name or id for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "networkInterface": {
@@ -32038,7 +32038,7 @@
      "id": "compute.snapshots.delete",
      "path": "{project}/global/snapshots/{snapshot}",
      "httpMethod": "DELETE",
-     "description": "Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.\n\nFor more information, see Deleting snaphots.",
+     "description": "Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.\n\nFor more information, see Deleting snapshots.",
      "parameters": {
       "project": {
        "type": "string",
@@ -32935,7 +32935,7 @@
      "id": "compute.subnetworks.patch",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingeprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.",
      "parameters": {
       "project": {
        "type": "string",

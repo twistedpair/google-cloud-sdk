@@ -3264,8 +3264,12 @@ class ResourceUtilizationReportResponse(_messages.Message):
 class RuntimeEnvironment(_messages.Message):
   r"""The environment values to set at runtime.
 
+  Messages:
+    AdditionalUserLabelsValue: Additional user labels attached to the job.
+
   Fields:
     additionalExperiments: Additional experiment flags for the job.
+    additionalUserLabels: Additional user labels attached to the job.
     bypassTempDirValidation: Whether to bypass the safety checks for the job's
       temporary directory. Use with caution.
     machineType: The machine type to use for the job. Defaults to the value
@@ -3274,6 +3278,8 @@ class RuntimeEnvironment(_messages.Message):
       made available to your pipeline during execution, from 1 to 1000.
     network: Network to which VMs will be assigned.  If empty or unspecified,
       the service will use the network "default".
+    numWorkers: The initial number of Google Compute Engine instnaces for the
+      job.
     serviceAccountEmail: The email address of the service account to run the
       job as.
     subnetwork: Subnetwork to which VMs will be assigned, if desired.
@@ -3285,15 +3291,43 @@ class RuntimeEnvironment(_messages.Message):
       for launching worker instances to run your pipeline.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalUserLabelsValue(_messages.Message):
+    r"""Additional user labels attached to the job.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AdditionalUserLabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AdditionalUserLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalUserLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   additionalExperiments = _messages.StringField(1, repeated=True)
-  bypassTempDirValidation = _messages.BooleanField(2)
-  machineType = _messages.StringField(3)
-  maxWorkers = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  network = _messages.StringField(5)
-  serviceAccountEmail = _messages.StringField(6)
-  subnetwork = _messages.StringField(7)
-  tempLocation = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
+  bypassTempDirValidation = _messages.BooleanField(3)
+  machineType = _messages.StringField(4)
+  maxWorkers = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  network = _messages.StringField(6)
+  numWorkers = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  serviceAccountEmail = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
+  tempLocation = _messages.StringField(10)
+  zone = _messages.StringField(11)
 
 
 class SdkVersion(_messages.Message):

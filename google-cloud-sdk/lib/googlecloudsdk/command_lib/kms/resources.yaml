@@ -20,6 +20,8 @@ keyring:
   name: keyring
   collection: cloudkms.projects.locations.keyRings
   attributes:
+  - *project
+  - *location
   - &keyring
     parameter_name: keyRingsId
     attribute_name: keyring

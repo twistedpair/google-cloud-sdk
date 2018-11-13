@@ -287,6 +287,18 @@ class Argument(Action):
 
 COMMONLY_USED_FLAGS = 'COMMONLY USED'
 
+FLAGS_FILE_FLAG = Argument(
+    '--flags-file',
+    metavar='YAML_FILE',
+    default=None,
+    category=COMMONLY_USED_FLAGS,
+    help="""\
+        A YAML or JSON file that specifies a *--flag*:*value* dictionary.
+        Useful for specifying complex flag values with special characters
+        that work with any command interpreter. Additionally, each
+        *--flags-file* arg is replaced by its constituent flags. See
+        $ gcloud topic flags-file for more information.""")
+
 FLATTEN_FLAG = Argument(
     '--flatten',
     metavar='KEY',
@@ -439,7 +451,7 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
       The attribute value from obj for tracks.
     """
     for track in ReleaseTrack._ALL:  # pylint: disable=protected-access
-      if track not in cls._valid_release_tracks:
+      if track not in cls._valid_release_tracks:  # pylint: disable=unsupported-membership-test
         continue
       names = []
       names.append(attribute + '_' + track.id)

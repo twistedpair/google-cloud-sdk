@@ -570,7 +570,7 @@ class Block(_messages.Message):
       orientation. For example:  * when the text is horizontal it might look
       like:          0----1         |    |         3----2  * when it's rotated
       180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
@@ -1226,6 +1226,8 @@ class GoogleCloudVisionV1p1beta1AnnotateImageResponse(_messages.Message):
       completed successfully. This will be sorted descending by confidence
       score.
     logoAnnotations: If present, logo detection has completed successfully.
+    productSearchResults: If present, product search has completed
+      successfully.
     safeSearchAnnotation: If present, safe-search annotation has completed
       successfully.
     textAnnotations: If present, text (OCR) detection has completed
@@ -1243,9 +1245,10 @@ class GoogleCloudVisionV1p1beta1AnnotateImageResponse(_messages.Message):
   landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 8, repeated=True)
   localizedObjectAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1LocalizedObjectAnnotation', 9, repeated=True)
   logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 10, repeated=True)
-  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p1beta1SafeSearchAnnotation', 11)
-  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 12, repeated=True)
-  webDetection = _messages.MessageField('GoogleCloudVisionV1p1beta1WebDetection', 13)
+  productSearchResults = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResults', 11)
+  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p1beta1SafeSearchAnnotation', 12)
+  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p1beta1EntityAnnotation', 13, repeated=True)
+  webDetection = _messages.MessageField('GoogleCloudVisionV1p1beta1WebDetection', 14)
 
 
 class GoogleCloudVisionV1p1beta1AsyncAnnotateFileResponse(_messages.Message):
@@ -1286,7 +1289,7 @@ class GoogleCloudVisionV1p1beta1Block(_messages.Message):
       orientation. For example:  * when the text is horizontal it might look
       like:          0----1         |    |         3----2  * when it's rotated
       180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
@@ -1917,7 +1920,7 @@ class GoogleCloudVisionV1p1beta1Paragraph(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
@@ -1943,6 +1946,98 @@ class GoogleCloudVisionV1p1beta1Position(_messages.Message):
   x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   z = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p1beta1Product(_messages.Message):
+  r"""A Product contains ReferenceImages.
+
+  Fields:
+    description: User-provided metadata to be stored with this product. Must
+      be at most 4096 characters long.
+    displayName: The user-provided name for this Product. Must not be empty.
+      Must be at most 4096 characters long.
+    name: The resource name of the product.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+      is ignored when creating a product.
+    productCategory: The category for the product identified by the reference
+      image. This should be either "homegoods", "apparel", or "toys".  This
+      field is immutable.
+    productLabels: Key-value pairs that can be attached to a product. At query
+      time, constraints can be specified based on the product_labels.  Note
+      that integer values can be provided as strings, e.g. "1199". Only
+      strings with integer values can match a range-based restriction which is
+      to be supported soon.  Multiple values can be assigned to the same key.
+      One product may have up to 100 product_labels.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  productCategory = _messages.StringField(4)
+  productLabels = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductKeyValue', 5, repeated=True)
+
+
+class GoogleCloudVisionV1p1beta1ProductKeyValue(_messages.Message):
+  r"""A product label represented as a key-value pair.
+
+  Fields:
+    key: The key of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+    value: The value of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p1beta1ProductSearchResults(_messages.Message):
+  r"""Results for a product search request.
+
+  Fields:
+    indexTime: Timestamp of the index which provided these results. Changes
+      made after this time are not reflected in the current results.
+    productGroupedResults: List of results grouped by products detected in the
+      query image. Each entry corresponds to one bounding polygon in the query
+      image, and contains the matching products specific to that region. There
+      may be duplicate product matches in the union of all the per-product
+      results.
+    results: List of results, one for each product match.
+  """
+
+  indexTime = _messages.StringField(1)
+  productGroupedResults = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsGroupedResult', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p1beta1ProductSearchResultsGroupedResult(_messages.Message):
+  r"""Information about the products similar to a single product in a query
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon around the product detected in the
+      query image.
+    results: List of results, one for each product match.
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p1beta1BoundingPoly', 1)
+  results = _messages.MessageField('GoogleCloudVisionV1p1beta1ProductSearchResultsResult', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p1beta1ProductSearchResultsResult(_messages.Message):
+  r"""Information about a product.
+
+  Fields:
+    image: The resource name of the image from the product that is the closest
+      match to the query.
+    product: The Product.
+    score: A confidence level on the match, ranging from 0 (no confidence) to
+      1 (full confidence).
+  """
+
+  image = _messages.StringField(1)
+  product = _messages.MessageField('GoogleCloudVisionV1p1beta1Product', 2)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p1beta1Property(_messages.Message):
@@ -2328,7 +2423,7 @@ class GoogleCloudVisionV1p1beta1Word(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -2378,6 +2473,8 @@ class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
       completed successfully. This will be sorted descending by confidence
       score.
     logoAnnotations: If present, logo detection has completed successfully.
+    productSearchResults: If present, product search has completed
+      successfully.
     safeSearchAnnotation: If present, safe-search annotation has completed
       successfully.
     textAnnotations: If present, text (OCR) detection has completed
@@ -2395,9 +2492,10 @@ class GoogleCloudVisionV1p2beta1AnnotateImageResponse(_messages.Message):
   landmarkAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 8, repeated=True)
   localizedObjectAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1LocalizedObjectAnnotation', 9, repeated=True)
   logoAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 10, repeated=True)
-  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1SafeSearchAnnotation', 11)
-  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 12, repeated=True)
-  webDetection = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetection', 13)
+  productSearchResults = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResults', 11)
+  safeSearchAnnotation = _messages.MessageField('GoogleCloudVisionV1p2beta1SafeSearchAnnotation', 12)
+  textAnnotations = _messages.MessageField('GoogleCloudVisionV1p2beta1EntityAnnotation', 13, repeated=True)
+  webDetection = _messages.MessageField('GoogleCloudVisionV1p2beta1WebDetection', 14)
 
 
 class GoogleCloudVisionV1p2beta1AsyncAnnotateFileResponse(_messages.Message):
@@ -2438,7 +2536,7 @@ class GoogleCloudVisionV1p2beta1Block(_messages.Message):
       orientation. For example:  * when the text is horizontal it might look
       like:          0----1         |    |         3----2  * when it's rotated
       180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
@@ -3084,7 +3182,7 @@ class GoogleCloudVisionV1p2beta1Paragraph(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
@@ -3110,6 +3208,98 @@ class GoogleCloudVisionV1p2beta1Position(_messages.Message):
   x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   z = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudVisionV1p2beta1Product(_messages.Message):
+  r"""A Product contains ReferenceImages.
+
+  Fields:
+    description: User-provided metadata to be stored with this product. Must
+      be at most 4096 characters long.
+    displayName: The user-provided name for this Product. Must not be empty.
+      Must be at most 4096 characters long.
+    name: The resource name of the product.  Format is:
+      `projects/PROJECT_ID/locations/LOC_ID/products/PRODUCT_ID`.  This field
+      is ignored when creating a product.
+    productCategory: The category for the product identified by the reference
+      image. This should be either "homegoods", "apparel", or "toys".  This
+      field is immutable.
+    productLabels: Key-value pairs that can be attached to a product. At query
+      time, constraints can be specified based on the product_labels.  Note
+      that integer values can be provided as strings, e.g. "1199". Only
+      strings with integer values can match a range-based restriction which is
+      to be supported soon.  Multiple values can be assigned to the same key.
+      One product may have up to 100 product_labels.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  productCategory = _messages.StringField(4)
+  productLabels = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductKeyValue', 5, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1ProductKeyValue(_messages.Message):
+  r"""A product label represented as a key-value pair.
+
+  Fields:
+    key: The key of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+    value: The value of the label attached to the product. Cannot be empty and
+      cannot exceed 128 bytes.
+  """
+
+  key = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
+class GoogleCloudVisionV1p2beta1ProductSearchResults(_messages.Message):
+  r"""Results for a product search request.
+
+  Fields:
+    indexTime: Timestamp of the index which provided these results. Changes
+      made after this time are not reflected in the current results.
+    productGroupedResults: List of results grouped by products detected in the
+      query image. Each entry corresponds to one bounding polygon in the query
+      image, and contains the matching products specific to that region. There
+      may be duplicate product matches in the union of all the per-product
+      results.
+    results: List of results, one for each product match.
+  """
+
+  indexTime = _messages.StringField(1)
+  productGroupedResults = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsGroupedResult', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1ProductSearchResultsGroupedResult(_messages.Message):
+  r"""Information about the products similar to a single product in a query
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon around the product detected in the
+      query image.
+    results: List of results, one for each product match.
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 1)
+  results = _messages.MessageField('GoogleCloudVisionV1p2beta1ProductSearchResultsResult', 2, repeated=True)
+
+
+class GoogleCloudVisionV1p2beta1ProductSearchResultsResult(_messages.Message):
+  r"""Information about a product.
+
+  Fields:
+    image: The resource name of the image from the product that is the closest
+      match to the query.
+    product: The Product.
+    score: A confidence level on the match, ranging from 0 (no confidence) to
+      1 (full confidence).
+  """
+
+  image = _messages.StringField(1)
+  product = _messages.MessageField('GoogleCloudVisionV1p2beta1Product', 2)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p2beta1Property(_messages.Message):
@@ -3495,7 +3685,7 @@ class GoogleCloudVisionV1p2beta1Word(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -3648,7 +3838,7 @@ class GoogleCloudVisionV1p3beta1Block(_messages.Message):
       orientation. For example:  * when the text is horizontal it might look
       like:          0----1         |    |         3----2  * when it's rotated
       180 degrees around the top-left corner it becomes:          2----3
-      |    |         1----0    and the vertice order will still be (0, 1, 2,
+      |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
     paragraphs: List of paragraphs in this block (if this blocks is of type
@@ -4312,7 +4502,7 @@ class GoogleCloudVisionV1p3beta1Paragraph(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
@@ -4389,10 +4579,30 @@ class GoogleCloudVisionV1p3beta1ProductSearchResults(_messages.Message):
   Fields:
     indexTime: Timestamp of the index which provided these results. Changes
       made after this time are not reflected in the current results.
+    productGroupedResults: List of results grouped by products detected in the
+      query image. Each entry corresponds to one bounding polygon in the query
+      image, and contains the matching products specific to that region. There
+      may be duplicate product matches in the union of all the per-product
+      results.
     results: List of results, one for each product match.
   """
 
   indexTime = _messages.StringField(1)
+  productGroupedResults = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsGroupedResult', 2, repeated=True)
+  results = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsResult', 3, repeated=True)
+
+
+class GoogleCloudVisionV1p3beta1ProductSearchResultsGroupedResult(_messages.Message):
+  r"""Information about the products similar to a single product in a query
+  image.
+
+  Fields:
+    boundingPoly: The bounding polygon around the product detected in the
+      query image.
+    results: List of results, one for each product match.
+  """
+
+  boundingPoly = _messages.MessageField('GoogleCloudVisionV1p3beta1BoundingPoly', 1)
   results = _messages.MessageField('GoogleCloudVisionV1p3beta1ProductSearchResultsResult', 2, repeated=True)
 
 
@@ -4819,7 +5029,7 @@ class GoogleCloudVisionV1p3beta1Word(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
@@ -5470,7 +5680,7 @@ class Paragraph(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
@@ -6138,7 +6348,7 @@ class Word(_messages.Message):
       orientation. For example:   * when the text is horizontal it might look
       like:      0----1      |    |      3----2   * when it's rotated 180
       degrees around the top-left corner it becomes:      2----3      |    |
-      1----0   and the vertice order will still be (0, 1, 2, 3).
+      1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the

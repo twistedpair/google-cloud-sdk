@@ -36,6 +36,10 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_attr
 
+READY_COLUMN = ('ready_symbol.color(red="[xX]",'
+                'green="[\N{CHECK MARK}\N{HEAVY CHECK MARK}]",'
+                'yellow="[!\N{HORIZONTAL ELLIPSIS}]"):label=""')
+
 
 def _Print(prefix, color, msg, **formatters):
   """Helper function to avoid import-time races."""

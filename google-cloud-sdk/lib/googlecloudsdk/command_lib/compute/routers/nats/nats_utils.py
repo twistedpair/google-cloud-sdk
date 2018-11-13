@@ -43,7 +43,7 @@ def FindNatOrRaise(router, nat_name):
   raise NatNotFoundError(nat_name)
 
 
-def CreateNatMessage(args, compute_holder):
+def CreateNatMessage(args, compute_holder, with_logging=False):
   """Creates a NAT message from the specified arguments."""
   params = {'name': args.name}
 
@@ -59,11 +59,20 @@ def CreateNatMessage(args, compute_holder):
   params['tcpEstablishedIdleTimeoutSec'] = args.tcp_established_idle_timeout
   params['tcpTransitoryIdleTimeoutSec'] = args.tcp_transitory_idle_timeout
   params['minPortsPerVm'] = args.min_ports_per_vm
+  if with_logging:
+    if args.enable_logging is not None or args.log_filter is not None:
+      log_config = compute_holder.client.messages.RouterNatLogConfig()
+
+      log_config.enabled = args.enable_logging
+      if args.log_filter is not None:
+        log_config.filter = _TranslateLogFilter(args.log_filter, compute_holder)
+
+      params['logConfig'] = log_config
 
   return compute_holder.client.messages.RouterNat(**params)
 
 
-def UpdateNatMessage(nat, args, compute_holder):
+def UpdateNatMessage(nat, args, compute_holder, with_logging=False):
   """Updates a NAT message with the specified arguments."""
   if (args.subnet_option in [
       nat_flags.SubnetOption.ALL_RANGES, nat_flags.SubnetOption.PRIMARY_RANGES
@@ -102,6 +111,18 @@ def UpdateNatMessage(nat, args, compute_holder):
     nat.minPortsPerVm = args.min_ports_per_vm
   elif args.clear_min_ports_per_vm:
     nat.minPortsPerVm = None
+
+  if with_logging:
+    if args.enable_logging is not None or args.log_filter is not None:
+      nat.logConfig = (
+          nat.logConfig or compute_holder.client.messages.RouterNatLogConfig())
+    if args.enable_logging is not None:
+      nat.logConfig.enabled = args.enable_logging
+    if args.log_filter is not None:
+      nat.logConfig.filter = _TranslateLogFilter(args.log_filter,
+                                                 compute_holder)
+    elif args.clear_log_filter:
+      nat.logConfig.filter = None
 
   return nat
 
@@ -194,3 +215,17 @@ def _ParseNatIpFields(args, compute_holder):
       str(address) for address in nat_flags.IP_ADDRESSES_ARG.ResolveAsResource(
           args, compute_holder.resources)
   ])
+
+
+def _TranslateLogFilter(filter_str, compute_holder):
+  """Translates the specified log filter to the enum value."""
+  if filter_str == 'TRANSLATIONS_ONLY':
+    return (compute_holder.client.messages.RouterNatLogConfig
+            .FilterValueValuesEnum.TRANSLATIONS_ONLY)
+  if filter_str == 'ERRORS_ONLY':
+    return (compute_holder.client.messages.RouterNatLogConfig
+            .FilterValueValuesEnum.ERRORS_ONLY)
+
+  raise calliope_exceptions.InvalidArgumentException(
+      '--log-filter', ('--log-filter must be TRANSLATIONS_ONLY '
+                       'or ERRORS_ONLY'))

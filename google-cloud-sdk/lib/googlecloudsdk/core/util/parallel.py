@@ -103,6 +103,21 @@ class BasePool(object):  # pytype: disable=ignored-abstractmethod
     """Applies func to each element in iterable and return a future."""
     return _MultiFuture([self.ApplyAsync(func, (arg,)) for arg in iterable])
 
+  def MapEagerFetch(self, func, iterable):
+    """Applies func to each element in iterable and return a generator.
+
+    The generator yields the result immediately after the task is done. So
+    result for faster task will be yielded earlier than for slower task.
+
+    Args:
+      func: a function object
+      iterable: an iterable object and each element is the arguments to func
+
+    Returns:
+      A generator to produce the results.
+    """
+    return self.MapAsync(func, iterable).GetResultsEagerFetch()
+
   def Apply(self, func, args):
     """Applies func to args and returns the result."""
     return self.ApplyAsync(func, args).Get()
@@ -129,6 +144,10 @@ class BaseFuture(object):  # pytype: disable=ignored-abstractmethod
 
   @abc.abstractmethod
   def GetResult(self):
+    raise NotImplementedError
+
+  @abc.abstractmethod
+  def Done(self):
     raise NotImplementedError
 
 
@@ -229,6 +248,29 @@ class _MultiFuture(BaseFuture):
       return _Result(error=MultiError(errors))
     return _Result(value=(results,))
 
+  def Done(self):
+    return  all([future.Done() for future in self.futures])
+
+  def GetResultsEagerFetch(self):
+    """Collect the results of futures.
+
+    Results are yielded immediately after the task is done. So
+    result for faster task will be yielded earlier than for slower task.
+
+    Yields:
+      result which is done.
+    """
+    uncollected_future = self.futures
+    while uncollected_future:
+      next_uncollected_future = []
+      for future in uncollected_future:
+        if future.Done():
+          yield future.Get()
+        else:
+          next_uncollected_future.append(future)
+      uncollected_future = next_uncollected_future
+      time.sleep(_POLL_INTERVAL)
+
 
 class _Task(object):
   """An individual work unit to be performed in parallel.
@@ -265,6 +307,9 @@ class _DummyFuture(BaseFuture):
 
   def GetResult(self):
     return self.result
+
+  def Done(self):
+    return True
 
 
 class DummyPool(BasePool):
@@ -320,6 +365,10 @@ class _ThreadFuture(BaseFuture):
       if self._task in self._results_map:
         return self._results_map[self._task]
       time.sleep(_POLL_INTERVAL)
+
+  def Done(self):
+    """Return True if the task finished with or without errors."""
+    return self._task in self._results_map
 
 
 class _ThreadTask(object):

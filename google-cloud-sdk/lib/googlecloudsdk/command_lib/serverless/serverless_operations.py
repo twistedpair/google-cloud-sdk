@@ -153,7 +153,9 @@ class ConditionPoller(waiter.OperationPoller):
       elif not status and condition not in self._failed_stages:
         self._failed_stages.append(condition)
         self._tracker.FailStage(
-            stage, serverless_exceptions.DeploymentFailedError, message)
+            stage,
+            serverless_exceptions.DeploymentFailedError(message),
+            message)
 
     return conditions
 
@@ -478,7 +480,8 @@ class ServerlessOperations(object):
         parent=namespace_ref.RelativeName())
     with metrics.record_duration(metrics.LIST_CONFIGURATIONS):
       response = self._client.namespaces_configurations.List(request)
-    return [service.Service(item, messages) for item in response.items]
+    return [configuration.Configuration(item, messages)
+            for item in response.items]
 
   def ListRoutes(self, namespace_ref):
     messages = self._messages_module
@@ -486,7 +489,7 @@ class ServerlessOperations(object):
         parent=namespace_ref.RelativeName())
     with metrics.record_duration(metrics.LIST_ROUTES):
       response = self._client.namespaces_routes.List(request)
-    return [service.Service(item, messages) for item in response.items]
+    return [route.Route(item, messages) for item in response.items]
 
   def GetService(self, service_ref):
     """Return the relevant Service from the server, or None if 404."""

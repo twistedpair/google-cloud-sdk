@@ -59,34 +59,7 @@ def Delete(session_ref):
   return client.projects_instances_databases_sessions.Delete(req)
 
 
-def ExecuteSql(session_ref, sql, query_mode):
-  """Execute an SQL command.
-
-  Args:
-    session_ref: Session, Indicates that the repo should be created if
-        it does not exist.
-    sql: String, The SQL to execute.
-    query_mode: String, The mode in which to run the query. Must be one
-        of 'NORMAL', 'PLAN', or 'PROFILE'
-  Returns:
-    (Repo) The capture repository.
-  """
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
-
-  _RegisterCustomMessageCodec(msgs)
-
-  execute_sql_request = _GetQueryRequest(sql, query_mode)
-  req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
-      session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
-  resp = client.projects_instances_databases_sessions.ExecuteSql(req)
-  if QueryHasDml(sql):
-    result_set = msgs.ResultSet(metadata=resp.metadata)
-    Commit(session_ref, [], result_set.metadata.transaction.id)
-  return resp
-
-
-def ExecuteSqlBeta(session_ref, sql, query_mode, enable_partitioned_dml=False):
+def ExecuteSql(session_ref, sql, query_mode, enable_partitioned_dml=False):
   """Execute an SQL command.
 
   Args:
@@ -104,8 +77,8 @@ def ExecuteSqlBeta(session_ref, sql, query_mode, enable_partitioned_dml=False):
   msgs = apis.GetMessagesModule('spanner', 'v1')
   _RegisterCustomMessageCodec(msgs)
 
-  execute_sql_request = _GetQueryRequestBeta(sql, query_mode, session_ref,
-                                             enable_partitioned_dml)
+  execute_sql_request = _GetQueryRequest(sql, query_mode, session_ref,
+                                         enable_partitioned_dml)
   req = msgs.SpannerProjectsInstancesDatabasesSessionsExecuteSqlRequest(
       session=session_ref.RelativeName(), executeSqlRequest=execute_sql_request)
   resp = client.projects_instances_databases_sessions.ExecuteSql(req)
@@ -133,10 +106,10 @@ def _RegisterCustomMessageCodec(msgs):
           msgs.ResultSet.RowsValueListEntry)
 
 
-def _GetQueryRequestBeta(sql,
-                         query_mode,
-                         session_ref=None,
-                         enable_partitioned_dml=False):
+def _GetQueryRequest(sql,
+                     query_mode,
+                     session_ref=None,
+                     enable_partitioned_dml=False):
   """Formats the request based on whether the statement contains DML.
 
   Args:
@@ -154,32 +127,6 @@ def _GetQueryRequestBeta(sql,
   if enable_partitioned_dml is True:
     transaction = _GetPartitionedDmlTransaction(session_ref)
   elif QueryHasDml(sql):
-    transaction_options = msgs.TransactionOptions(readWrite=msgs.ReadWrite())
-    transaction = msgs.TransactionSelector(begin=transaction_options)
-  else:
-    transaction_options = msgs.TransactionOptions(
-        readOnly=msgs.ReadOnly(strong=True))
-    transaction = msgs.TransactionSelector(singleUse=transaction_options)
-  return msgs.ExecuteSqlRequest(
-      sql=sql,
-      queryMode=msgs.ExecuteSqlRequest.QueryModeValueValuesEnum(query_mode),
-      transaction=transaction)
-
-
-def _GetQueryRequest(sql, query_mode):
-  """Formats the request based on whether the statement contains DML.
-
-  Args:
-    sql: String, The SQL to execute.
-    query_mode: String, The mode in which to run the query. Must be one of
-      'NORMAL', 'PLAN', or 'PROFILE'
-
-  Returns:
-    ExecuteSqlRequest parameters
-  """
-  msgs = apis.GetMessagesModule('spanner', 'v1')
-
-  if QueryHasDml(sql):
     transaction_options = msgs.TransactionOptions(readWrite=msgs.ReadWrite())
     transaction = msgs.TransactionSelector(begin=transaction_options)
   else:

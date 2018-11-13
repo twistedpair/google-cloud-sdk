@@ -20,36 +20,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.calliope.concepts import util as resource_util
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 import six
-
-
-class Error(Exception):
-  """Base class for this module's exceptions."""
-  pass
-
-
-class InvalidResourceArgumentLists(Error):
-  """Exception for missing, extra, or out of order arguments."""
-
-  def __init__(self, expected, actual):
-    expected = [
-        '[' + e + ']' if e in IGNORED_FIELDS else e
-        for e in expected]
-    super(InvalidResourceArgumentLists, self).__init__(
-        'Invalid resource arguments: Expected [{}], Found [{}].'
-        .format(', '.join(expected), ', '.join(actual)))
-
-
-IGNORED_FIELDS = {
-    'project': 'project',
-    'projectId': 'project',
-    'projectsId': 'project',
-}
 
 
 class YAMLConceptArgument(object):
@@ -178,70 +153,15 @@ class YAMLResourceArgument(YAMLConceptArgument):
       resource_collection = registry.GetAPICollection(
           self._full_collection_name, api_version=self._api_version)
 
-    return self._GenerateResourceSpec(
-        resource_collection.full_name, resource_collection.api_version,
-        resource_collection.detailed_params)
-
-  def _GenerateResourceSpec(self, full_collection_name, api_version,
-                            detailed_params):
-    attributes = _GenerateAttributes(detailed_params, self._attribute_data)
+    attributes = concepts.ParseAttributesFromData(
+        self._attribute_data, resource_collection.detailed_params)
     return concepts.ResourceSpec(
-        full_collection_name, resource_name=self.name,
-        api_version=api_version,
+        resource_collection.full_name,
+        resource_name=self.name,
+        api_version=resource_collection.api_version,
         disable_auto_completers=self._disable_auto_completers,
         plural_name=self._plural_name,
-        **{param: attribute for param, attribute in attributes})
-
-
-def _GenerateAttributes(expected_param_names, attribute_data):
-  """Generate the set of concept attributes that will be part of the resource.
-
-  This also validates that all expected attributes are provided (allowing you
-  not to specify ignored fields like project) and that they are in the correct
-  order to match the API method.
-
-  Args:
-    expected_param_names: [str], The names of the API parameters that the API
-      method accepts.
-    attribute_data: [{}], A list of attribute dictionaries representing the
-      data from the yaml file.
-
-  Raises:
-    InvalidResourceArgumentLists: If the registered attributes don't match
-      the expected fields in the API method.
-
-  Returns:
-    [(str, ResourceParameterAttributeConfig)], A list of tuples of the API
-    parameter and corresponding attribute.
-  """
-  final_attributes = []
-  registered_params = [_CreateAttributeTuple(a) for a in attribute_data]
-  registered_param_names = [a[0] for a in registered_params]
-
-  for expected_name in expected_param_names:
-    if registered_params and expected_name == registered_params[0][0]:
-      # Attribute matches expected, add it and continue checking.
-      final_attributes.append(registered_params.pop(0))
-    elif expected_name in IGNORED_FIELDS:
-      # Attribute doesn't match but is being ignored. Add an auto-generated
-      # attribute as a substitute.
-      attribute_name = IGNORED_FIELDS[expected_name]
-      final_attributes.append(
-          (expected_name, concepts.DEFAULT_RESOURCE_ATTRIBUTE_CONFIGS.get(
-              attribute_name)))
-    else:
-      # It doesn't match (or there are no more registered params) and the
-      # field is not being ignored, error.
-      raise InvalidResourceArgumentLists(
-          expected_param_names, registered_param_names)
-
-  if registered_params:
-    # All expected fields were processed but there are still registered
-    # params remaining, they must be extra.
-    raise InvalidResourceArgumentLists(
-        expected_param_names, registered_param_names)
-
-  return final_attributes
+        **{attribute.parameter_name: attribute for attribute in attributes})
 
 
 def _GenerateFallthroughsMap(command_level_fallthroughs_data):
@@ -261,29 +181,6 @@ def _GenerateFallthroughsMap(command_level_fallthroughs_data):
     command_level_fallthroughs[attribute_name] = fallthroughs_list
 
   return command_level_fallthroughs
-
-
-def _CreateAttributeTuple(data):
-  """Creates a single resource attribute from YAML data.
-
-  Args:
-    data: {}, The dict of data from the YAML file for this single attribute.
-
-  Returns:
-    (str, ResourceParameterAttributeConfig), a tuple of the API parameter and
-    corresponding attribute.
-  """
-  attribute_config = concepts.ResourceParameterAttributeConfig.FromData(data)
-
-  # TODO(b/78851830): move the below logic to ResourceParameterAttributeConfig.
-  fallthrough_data = data.get('fallthroughs', [])
-  fallthroughs_from_hook = [
-      deps.Fallthrough(
-          util.Hook.FromPath(f['hook']),
-          hint=f['hint']) for f in fallthrough_data]
-  attribute_config.fallthroughs += fallthroughs_from_hook
-
-  return (attribute_config.parameter_name, attribute_config)
 
 
 class YAMLMultitypeResourceArgument(YAMLConceptArgument):

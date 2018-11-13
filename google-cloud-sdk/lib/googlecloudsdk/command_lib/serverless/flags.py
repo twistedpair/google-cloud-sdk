@@ -86,6 +86,20 @@ def AddRegionArg(parser):
       '--region', help='The region in which to create the service.')
 
 
+# TODO(b/118339293): Stop hardcoding regions.
+def AddRegionArgWithDefault(parser):
+  """Add a region arg which defaults to us-central1.
+
+  This is used by commands which list global resources.
+
+  Args:
+    parser: ArgumentParser, The calliope argparse parser.
+  """
+  parser.add_argument(
+      '--region', default='us-central1',
+      help='The region in which to list the resources.')
+
+
 def AddFunctionArg(parser):
   """Add a function resource arg."""
   parser.add_argument(
