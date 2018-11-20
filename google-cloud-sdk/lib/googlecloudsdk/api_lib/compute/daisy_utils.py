@@ -114,6 +114,12 @@ class SubnetException(exceptions.Error):
   """Exception for subnet related errors."""
 
 
+class ImageOperation(object):
+  """Enum representing image operation"""
+  IMPORT = 'import'
+  EXPORT = 'export'
+
+
 def AddCommonDaisyArgs(parser):
   """Common arguments for Daisy builds."""
   parser.add_argument(
@@ -274,6 +280,39 @@ def GetSubnetRegion():
     return properties.VALUES.compute.region.Get()
 
   raise SubnetException('Region or zone should be specified.')
+
+
+def ExtractNetworkAndSubnetDaisyVariables(args, operation):
+  """Extracts network/subnet out of CLI args in the form of Daisy variables.
+
+  Args:
+    args: CLI args that might contain network/subnet args.
+    operation: ImageOperation, specifies if this call is for import or export
+
+  Returns:
+    list of strs, network/subnet variables, if specified in args. Can be empty.
+  """
+  variables = []
+  add_network_variable = False
+  if args.subnet:
+    variables.append('{0}_subnet=regions/{1}/subnetworks/{2}'.format(
+        operation, GetSubnetRegion(), args.subnet.lower()))
+
+    # network variable should be empty string in case subnet is specified
+    # and network is not. Otherwise, Daisy will default network to
+    # `global/networks/default` which will fail except for default networks
+    network_full_path = ''
+    add_network_variable = True
+
+  if args.network:
+    add_network_variable = True
+    network_full_path = 'global/networks/{0}'.format(args.network.lower())
+
+  if add_network_variable:
+    variables.append('{0}_network={1}'.format(
+        operation, network_full_path))
+
+  return variables
 
 
 def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,

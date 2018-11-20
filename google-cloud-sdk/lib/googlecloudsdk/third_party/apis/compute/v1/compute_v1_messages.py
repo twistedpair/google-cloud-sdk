@@ -542,9 +542,13 @@ class Address(_messages.Message):
       address. Valid options are IPV4 or IPV6. This can only be specified for
       a global address.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
-      configuring this Address and can only take the following values: PREMIUM
-      , STANDARD.  If this field is not specified, it is assumed to be
-      PREMIUM.
+      configuring this Address and can only take the following values:
+      PREMIUM, STANDARD. Global forwarding rules can only be Premium Tier.
+      Regional forwarding rules can be either Premium or Standard Tier.
+      Standard Tier addresses applied to regional forwarding rules can be used
+      with any external load balancer. Regional forwarding rules in Premium
+      Tier can only be used with a Network load balancer.  If this field is
+      not specified, it is assumed to be PREMIUM.
     PurposeValueValuesEnum: The purpose of resource, only used with INTERNAL
       type.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
@@ -577,8 +581,13 @@ class Address(_messages.Message):
     network: The URL of the network in which to reserve the address. This
       field can only be used with INTERNAL type with VPC_PEERING purpose.
     networkTier: This signifies the networking tier used for configuring this
-      Address and can only take the following values: PREMIUM , STANDARD.  If
-      this field is not specified, it is assumed to be PREMIUM.
+      Address and can only take the following values: PREMIUM, STANDARD.
+      Global forwarding rules can only be Premium Tier. Regional forwarding
+      rules can be either Premium or Standard Tier. Standard Tier addresses
+      applied to regional forwarding rules can be used with any external load
+      balancer. Regional forwarding rules in Premium Tier can only be used
+      with a Network load balancer.  If this field is not specified, it is
+      assumed to be PREMIUM.
     prefixLength: The prefix length if the resource reprensents an IP range.
     purpose: The purpose of resource, only used with INTERNAL type.
     region: [Output Only] URL of the region where the regional address
@@ -627,8 +636,13 @@ class Address(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this Address
-    and can only take the following values: PREMIUM , STANDARD.  If this field
-    is not specified, it is assumed to be PREMIUM.
+    and can only take the following values: PREMIUM, STANDARD. Global
+    forwarding rules can only be Premium Tier. Regional forwarding rules can
+    be either Premium or Standard Tier. Standard Tier addresses applied to
+    regional forwarding rules can be used with any external load balancer.
+    Regional forwarding rules in Premium Tier can only be used with a Network
+    load balancer.  If this field is not specified, it is assumed to be
+    PREMIUM.
 
     Values:
       PREMIUM: <no description>
@@ -2243,8 +2257,9 @@ class BackendService(_messages.Message):
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a BackendService. An up-to-date
-      fingerprint must be provided in order to update the BackendService.  To
-      see the latest fingerprint, make a get() request to retrieve a
+      fingerprint must be provided in order to update the BackendService,
+      otherwise the request will fail with error 412 conditionNotMet.  To see
+      the latest fingerprint, make a get() request to retrieve a
       BackendService.
     healthChecks: The list of URLs to the HttpHealthCheck or HttpsHealthCheck
       resource for health checking this BackendService. Currently at most one
@@ -4490,7 +4505,7 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
   r"""A ComputeDisksCreateSnapshotRequest object.
 
   Fields:
-    disk: Name of the persistent disk to snapshot.
+    disk: Name or id of the persistent disk to snapshot.
     guestFlush: A boolean attribute.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -4519,7 +4534,7 @@ class ComputeDisksDeleteRequest(_messages.Message):
   r"""A ComputeDisksDeleteRequest object.
 
   Fields:
-    disk: Name of the persistent disk to delete.
+    disk: Name or id of the persistent disk to delete.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -4544,7 +4559,7 @@ class ComputeDisksGetRequest(_messages.Message):
   r"""A ComputeDisksGetRequest object.
 
   Fields:
-    disk: Name of the persistent disk to return.
+    disk: Name or id of the persistent disk to return.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -4633,7 +4648,7 @@ class ComputeDisksResizeRequest(_messages.Message):
   r"""A ComputeDisksResizeRequest object.
 
   Fields:
-    disk: The name of the persistent disk.
+    disk: The name or id of the persistent disk.
     disksResizeRequest: A DisksResizeRequest resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -5857,7 +5872,7 @@ class ComputeImagesDeleteRequest(_messages.Message):
   r"""A ComputeImagesDeleteRequest object.
 
   Fields:
-    image: Name of the image resource to delete.
+    image: Name or id of the image resource to delete.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -5882,7 +5897,7 @@ class ComputeImagesDeprecateRequest(_messages.Message):
   Fields:
     deprecationStatus: A DeprecationStatus resource to be passed as the
       request body.
-    image: Image name.
+    image: Image name or id .
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -5906,7 +5921,7 @@ class ComputeImagesGetFromFamilyRequest(_messages.Message):
   r"""A ComputeImagesGetFromFamilyRequest object.
 
   Fields:
-    family: Name of the image family to search for.
+    family: Name or id of the image family to search for.
     project: Project ID for this request.
   """
 
@@ -5918,7 +5933,7 @@ class ComputeImagesGetRequest(_messages.Message):
   r"""A ComputeImagesGetRequest object.
 
   Fields:
-    image: Name of the image resource to return.
+    image: Name or id of the image resource to return.
     project: Project ID for this request.
   """
 
@@ -6966,7 +6981,8 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
   r"""A ComputeInstancesDetachDiskRequest object.
 
   Fields:
-    deviceName: Disk device name to detach.
+    deviceName: The device name of the disk to detach. Make a get() request on
+      the instance to view currently attached disks and device names.
     instance: Instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -7215,7 +7231,8 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
 
   Fields:
     autoDelete: Whether to auto-delete the disk when the instance is deleted.
-    deviceName: The device name of the disk to modify.
+    deviceName: The device name of the disk to modify. Make a get() request on
+      the instance to view currently attached disks and device names.
     instance: The instance name or id for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -9897,7 +9914,7 @@ class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
   r"""A ComputeRegionDisksCreateSnapshotRequest object.
 
   Fields:
-    disk: Name of the regional persistent disk to snapshot.
+    disk: Name or id of the regional persistent disk to snapshot.
     project: Project ID for this request.
     region: Name of the region for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -9924,7 +9941,7 @@ class ComputeRegionDisksDeleteRequest(_messages.Message):
   r"""A ComputeRegionDisksDeleteRequest object.
 
   Fields:
-    disk: Name of the regional persistent disk to delete.
+    disk: Name or id of the regional persistent disk to delete.
     project: Project ID for this request.
     region: Name of the region for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -9949,7 +9966,7 @@ class ComputeRegionDisksGetRequest(_messages.Message):
   r"""A ComputeRegionDisksGetRequest object.
 
   Fields:
-    disk: Name of the regional persistent disk to return.
+    disk: Name or id of the regional persistent disk to return.
     project: Project ID for this request.
     region: Name of the region for this request.
   """
@@ -10038,7 +10055,7 @@ class ComputeRegionDisksResizeRequest(_messages.Message):
   r"""A ComputeRegionDisksResizeRequest object.
 
   Fields:
-    disk: Name of the regional persistent disk.
+    disk: Name or id of the regional persistent disk.
     project: The project ID for this request.
     region: Name of the region for this request.
     regionDisksResizeRequest: A RegionDisksResizeRequest resource to be passed
@@ -11332,7 +11349,7 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    snapshot: Name of the Snapshot resource to delete.
+    snapshot: Name or id of the Snapshot resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
@@ -11345,7 +11362,7 @@ class ComputeSnapshotsGetRequest(_messages.Message):
 
   Fields:
     project: Project ID for this request.
-    snapshot: Name of the Snapshot resource to return.
+    snapshot: Name or id of the Snapshot resource to return.
   """
 
   project = _messages.StringField(1, required=True)
@@ -13971,8 +13988,8 @@ class Disk(_messages.Message):
       locking. The fingerprint is initially generated by Compute Engine and
       changes after every request to modify or update labels. You must always
       provide an up-to-date fingerprint hash in order to update or change
-      labels.  To see the latest fingerprint, make a get() request to retrieve
-      a disk.
+      labels, otherwise the request will fail with error 412 conditionNotMet.
+      To see the latest fingerprint, make a get() request to retrieve a disk.
     labels: Labels to apply to this disk. These can be later modified by the
       setLabels method.
     lastAttachTimestamp: [Output Only] Last attach timestamp in RFC3339 text
@@ -16012,8 +16029,9 @@ class GlobalSetLabelsRequest(_messages.Message):
       resource, used to detect conflicts. The fingerprint is initially
       generated by Compute Engine and changes after every request to modify or
       update labels. You must always provide an up-to-date fingerprint hash
-      when updating or changing labels. Make a get() request to the resource
-      to get the latest fingerprint.
+      when updating or changing labels, otherwise the request will fail with
+      error 412 conditionNotMet. Make a get() request to the resource to get
+      the latest fingerprint.
     labels: A list of labels to apply for this resource. Each label key &
       value must comply with RFC1035. Specifically, the name must be 1-63
       characters long and match the regular expression
@@ -16853,8 +16871,9 @@ class Image(_messages.Message):
       locking. The fingerprint is initially generated by Compute Engine and
       changes after every request to modify or update labels. You must always
       provide an up-to-date fingerprint hash in order to update or change
-      labels.  To see the latest fingerprint, make a get() request to retrieve
-      an image.
+      labels, otherwise the request will fail with error 412 conditionNotMet.
+      To see the latest fingerprint, make a get() request to retrieve an
+      image.
     labels: Labels to apply to this image. These can be later modified by the
       setLabels method.
     licenseCodes: Integer license codes indicating which licenses are attached
@@ -17821,8 +17840,9 @@ class InstanceGroupManager(_messages.Message):
     fingerprint: Fingerprint of this resource. This field may be used in
       optimistic locking. It will be ignored when inserting an
       InstanceGroupManager. An up-to-date fingerprint must be provided in
-      order to update the InstanceGroupManager.  To see the latest
-      fingerprint, make a get() request to retrieve an InstanceGroupManager.
+      order to update the InstanceGroupManager, otherwise the request will
+      fail with error 412 conditionNotMet.  To see the latest fingerprint,
+      make a get() request to retrieve an InstanceGroupManager.
     id: [Output Only] A unique identifier for this resource type. The server
       generates this identifier.
     instanceGroup: [Output Only] The URL of the Instance Group resource.
@@ -18687,7 +18707,8 @@ class InstanceGroupsSetNamedPortsRequest(_messages.Message):
       multiple users change the named ports settings concurrently. Obtain the
       fingerprint with the instanceGroups.get method. Then, include the
       fingerprint in your request to ensure that you do not overwrite changes
-      that were applied from another concurrent request.
+      that were applied from another concurrent request. A request with an
+      incorrect fingerprint will fail with error 412 conditionNotMet.
     namedPorts: The list of named ports to set for this instance group.
   """
 
@@ -19637,8 +19658,8 @@ class InterconnectAttachment(_messages.Message):
   Enums:
     BandwidthValueValuesEnum: Provisioned bandwidth capacity for the
       interconnectAttachment. Can be set by the partner to update the
-      customer's provisioned bandwidth. Output only for for PARTNER type,
-      mutable for PARTNER_PROVIDER, not available for DEDICATED.
+      customer's provisioned bandwidth. Output only for PARTNER type, mutable
+      for PARTNER_PROVIDER and DEDICATED.
     EdgeAvailabilityDomainValueValuesEnum: Desired availability domain for the
       attachment. Only available for type PARTNER, at creation time. For
       improved reliability, customers should configure a pair of attachments
@@ -19657,8 +19678,8 @@ class InterconnectAttachment(_messages.Message):
       present for PARTNER_PROVIDER.
     bandwidth: Provisioned bandwidth capacity for the interconnectAttachment.
       Can be set by the partner to update the customer's provisioned
-      bandwidth. Output only for for PARTNER type, mutable for
-      PARTNER_PROVIDER, not available for DEDICATED.
+      bandwidth. Output only for PARTNER type, mutable for PARTNER_PROVIDER
+      and DEDICATED.
     candidateSubnets: Up to 16 candidate prefixes that can be used to restrict
       the allocation of cloudRouterIpAddress and customerRouterIpAddress for
       this attachment. All prefixes must be within link-local address space
@@ -19731,8 +19752,7 @@ class InterconnectAttachment(_messages.Message):
   class BandwidthValueValuesEnum(_messages.Enum):
     r"""Provisioned bandwidth capacity for the interconnectAttachment. Can be
     set by the partner to update the customer's provisioned bandwidth. Output
-    only for for PARTNER type, mutable for PARTNER_PROVIDER, not available for
-    DEDICATED.
+    only for PARTNER type, mutable for PARTNER_PROVIDER and DEDICATED.
 
     Values:
       BPS_100M: <no description>
@@ -21744,7 +21764,8 @@ class Metadata(_messages.Message):
       locking. The fingerprint is initially generated by Compute Engine and
       changes after every request to modify or update metadata. You must
       always provide an up-to-date fingerprint hash in order to update or
-      change metadata.  To see the latest fingerprint, make a get() request to
+      change metadata, otherwise the request will fail with error 412
+      conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve the resource.
     items: Array of key/value pairs. The total size of all keys and values
       must be less than 512 KB.
@@ -21855,7 +21876,8 @@ class NetworkInterface(_messages.Message):
     fingerprint: Fingerprint hash of contents stored in this network
       interface. This field will be ignored when inserting an Instance or
       adding a NetworkInterface. An up-to-date fingerprint must be provided in
-      order to update the NetworkInterface.
+      order to update the NetworkInterface, otherwise the request will fail
+      with error 412 conditionNotMet.
     kind: [Output Only] Type of the resource. Always compute#networkInterface
       for network interfaces.
     name: [Output Only] The name of the network interface, generated by the
@@ -27051,7 +27073,8 @@ class SecurityPolicy(_messages.Message):
       locking. The fingerprint is initially generated by Compute Engine and
       changes after every request to modify or update metadata. You must
       always provide an up-to-date fingerprint hash in order to update or
-      change metadata.  To see the latest fingerprint, make get() request to
+      change metadata, otherwise the request will fail with error 412
+      conditionNotMet.  To see the latest fingerprint, make get() request to
       the security policy.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -27373,7 +27396,8 @@ class Snapshot(_messages.Message):
       optimistic locking. The fingerprint is initially generated by Compute
       Engine and changes after every request to modify or update labels. You
       must always provide an up-to-date fingerprint hash in order to update or
-      change labels.  To see the latest fingerprint, make a get() request to
+      change labels, otherwise the request will fail with error 412
+      conditionNotMet.  To see the latest fingerprint, make a get() request to
       retrieve a snapshot.
     labels: Labels to apply to this snapshot. These can be later modified by
       the setLabels method. Label values may be empty.
@@ -27962,7 +27986,8 @@ class SslPolicy(_messages.Message):
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a SslPolicy. An up-to-date fingerprint
-      must be provided in order to update the SslPolicy.  To see the latest
+      must be provided in order to update the SslPolicy, otherwise the request
+      will fail with error 412 conditionNotMet.  To see the latest
       fingerprint, make a get() request to retrieve an SslPolicy.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -28193,7 +28218,8 @@ class Subnetwork(_messages.Message):
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a Subnetwork. An up-to-date fingerprint
-      must be provided in order to update the Subnetwork.  To see the latest
+      must be provided in order to update the Subnetwork, otherwise the
+      request will fail with error 412 conditionNotMet.  To see the latest
       fingerprint, make a get() request to retrieve a Subnetwork.
     gatewayAddress: [Output Only] The gateway address for default routes to
       reach destination addresses outside this subnetwork.
@@ -31123,8 +31149,9 @@ class UrlMap(_messages.Message):
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
       will be ignored when inserting a UrlMap. An up-to-date fingerprint must
-      be provided in order to update the UrlMap.  To see the latest
-      fingerprint, make a get() request to retrieve a UrlMap.
+      be provided in order to update the UrlMap, otherwise the request will
+      fail with error 412 conditionNotMet.  To see the latest fingerprint,
+      make a get() request to retrieve a UrlMap.
     hostRules: The list of HostRules to use against the URL.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.

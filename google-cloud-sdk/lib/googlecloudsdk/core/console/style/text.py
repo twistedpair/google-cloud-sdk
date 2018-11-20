@@ -81,4 +81,7 @@ class TextTypes(_TextTypes):
   URL = 2
   USER_INPUT = 3
   COMMAND = 4
+  INFO = 5
+  URI = 6
+  OUTPUT = 7
 

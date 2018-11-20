@@ -5162,6 +5162,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def UpdateDisplayDevice(self, request, global_params=None):
+      r"""Updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInstancesUpdateDisplayDeviceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateDisplayDevice')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateDisplayDevice.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.instances.updateDisplayDevice',
+        ordered_params=[u'project', u'zone', u'instance'],
+        path_params=[u'instance', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/updateDisplayDevice',
+        request_field=u'displayDevice',
+        request_type_name=u'ComputeInstancesUpdateDisplayDeviceRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def UpdateNetworkInterface(self, request, global_params=None):
       r"""Updates an instance's network interface. This method follows PATCH semantics.
 

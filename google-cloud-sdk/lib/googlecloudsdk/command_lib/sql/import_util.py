@@ -69,8 +69,8 @@ def RunImportCommand(args, client, import_context):
       collection='sql.instances')
 
   console_io.PromptContinue(
-      message='Data from [{0}] will be imported to [{1}].'.format(
-          args.uri, args.instance),
+      message='Data from [{uri}] will be imported to [{instance}].'.format(
+          uri=args.uri, instance=args.instance),
       default=True,
       cancel_on_no=True)
 

@@ -743,6 +743,10 @@
             "$ref": "YarnApplication"
           }
         },
+        "submittedBy": {
+          "description": "Output only. The email address of the user submitting the job. For jobs submitted on the cluster, the address is <code>username@hostname<\/code>.",
+          "type": "string"
+        },
         "driverOutputResourceUri": {
           "description": "Output only. A URI pointing to the location of the stdout of the job's driver program.",
           "type": "string"

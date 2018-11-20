@@ -1885,7 +1885,7 @@ class V1Beta1Adapter(V1Adapter):
         if istio_config is not None:
           auth_config = istio_config.get('auth')
           if auth_config is not None:
-            if auth_config == 'MUTUAL_TLS':
+            if auth_config == 'MTLS_STRICT':
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
@@ -1913,7 +1913,7 @@ class V1Beta1Adapter(V1Adapter):
         if istio_config is not None:
           auth_config = istio_config.get('auth')
           if auth_config is not None:
-            if auth_config == 'MUTUAL_TLS':
+            if auth_config == 'MTLS_STRICT':
               istio_auth = mtls
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)
@@ -2078,7 +2078,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         if istio_config is not None:
           auth_config = istio_config.get('auth')
           if auth_config is not None:
-            if auth_config == 'MUTUAL_TLS':
+            if auth_config == 'MTLS_STRICT':
               istio_auth = mtls
         cluster.addonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=False, auth=istio_auth)
@@ -2115,7 +2115,7 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         if istio_config is not None:
           auth_config = istio_config.get('auth')
           if auth_config is not None:
-            if auth_config == 'MUTUAL_TLS':
+            if auth_config == 'MTLS_STRICT':
               istio_auth = mtls
         update.desiredAddonsConfig.istioConfig = self.messages.IstioConfig(
             disabled=options.disable_addons.get(ISTIO), auth=istio_auth)

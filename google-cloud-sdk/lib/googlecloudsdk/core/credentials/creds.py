@@ -458,7 +458,7 @@ def ToJson(credentials):
 
 
 def FromJson(json_value):
-  """Returns Oauth2client credentials from library independend json format."""
+  """Returns Oauth2client credentials from library independent json format."""
   json_key = json.loads(json_value)
   cred_type = CredentialType.FromTypeKey(json_key['type'])
   if cred_type == CredentialType.SERVICE_ACCOUNT:

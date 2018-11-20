@@ -134,11 +134,12 @@ def SnakeToCamel(msg, skip=None):
     skip = []
   if isinstance(msg, dict):
     return {
-        SnakeToCamelString(key): SnakeToCamel(val) if key not in skip else val
+        SnakeToCamelString(key):
+        (SnakeToCamel(val, skip) if key not in skip else val)
         for key, val in six.iteritems(msg)
     }
   elif isinstance(msg, list):
-    return [SnakeToCamel(elem) for elem in msg]
+    return [SnakeToCamel(elem, skip) for elem in msg]
   else:
     return msg
 

@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20181106",
+ "revision": "20181109",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -585,7 +585,7 @@
    "properties": {
     "csvExportOptions": {
      "type": "object",
-     "description": "Options for exporting data as CSV.\nExporting in CSV format using the Cloud SQL Admin API is not supported for PostgreSQL instances.",
+     "description": "Options for exporting data as CSV.",
      "properties": {
       "selectQuery": {
        "type": "string",
@@ -595,14 +595,14 @@
     },
     "databases": {
      "type": "array",
-     "description": "Databases to be exported.\nMySQL instances: If fileType is SQL and no database is specified, all databases are exported, except for the mysql system database. If fileType is CSV, you can specify one database, either by using this property or by using the csvExportOptions.selectQuery property, which takes precedence over this property.\nPostgreSQL instances: If fileType is SQL, you must specify one database to be exported. A fileType of CSV is not supported for PostgreSQL instances.",
+     "description": "Databases to be exported.\nMySQL instances: If fileType is SQL and no database is specified, all databases are exported, except for the mysql system database. If fileType is CSV, you can specify one database, either by using this property or by using the csvExportOptions.selectQuery property, which takes precedence over this property.\nPostgreSQL instances: Specify exactly one database to be exported. If fileType is CSV, this database must match the database used in the csvExportOptions.selectQuery property.",
      "items": {
       "type": "string"
      }
     },
     "fileType": {
      "type": "string",
-     "description": "The file type for the specified uri.\nSQL: The file contains SQL statements.\nCSV: The file contains CSV data.\nCSV is not supported for PostgreSQL instances."
+     "description": "The file type for the specified uri.\nSQL: The file contains SQL statements.\nCSV: The file contains CSV data."
     },
     "kind": {
      "type": "string",
@@ -734,7 +734,7 @@
    "properties": {
     "csvImportOptions": {
      "type": "object",
-     "description": "Options for importing data as CSV.\nImporting CSV data using the Cloud SQL Admin API is not supported for PostgreSQL instances.",
+     "description": "Options for importing data as CSV.",
      "properties": {
       "columns": {
        "type": "array",
@@ -755,11 +755,11 @@
     },
     "fileType": {
      "type": "string",
-     "description": "The file type for the specified uri.\nSQL: The file contains SQL statements.\nCSV: The file contains CSV data.\nImporting CSV data using the Cloud SQL Admin API is not supported for PostgreSQL instances."
+     "description": "The file type for the specified uri.\nSQL: The file contains SQL statements.\nCSV: The file contains CSV data."
     },
     "importUser": {
      "type": "string",
-     "description": "The PostgreSQL user for this import operation. Defaults to cloudsqlsuperuser. PostgreSQL instances only."
+     "description": "The PostgreSQL user for this import operation. PostgreSQL instances only."
     },
     "kind": {
      "type": "string",

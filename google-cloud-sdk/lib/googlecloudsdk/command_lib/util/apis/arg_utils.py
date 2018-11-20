@@ -298,7 +298,9 @@ def ConvertValue(field, value, repeated=None, processor=None, choices=None):
   if processor:
     value = processor(value)
   else:
+    valid_choices = None
     if choices:
+      valid_choices = choices.keys()
       if arg_repeated:
         value = [_MapChoice(choices, v) for v in value]
       else:
@@ -306,9 +308,9 @@ def ConvertValue(field, value, repeated=None, processor=None, choices=None):
     if field.variant == messages.Variant.ENUM:
       t = field.type
       if arg_repeated:
-        value = [ChoiceToEnum(v, t) for v in value]
+        value = [ChoiceToEnum(v, t, valid_choices=valid_choices) for v in value]
       else:
-        value = ChoiceToEnum(value, t)
+        value = ChoiceToEnum(value, t, valid_choices=valid_choices)
 
   if field.repeated and not arg_repeated and not isinstance(value, list):
     # If we manually made this arg singular, but it is actually a repeated field
@@ -421,11 +423,21 @@ def ParseExistingMessageIntoMessage(message, existing_message, method):
   return message
 
 
-def ChoiceToEnum(choice, enum_type):
-  # type: (str, enum.Enum) -> enum.Enum
+def ChoiceToEnum(choice, enum_type, valid_choices=None):
+  # type: (str, enum.Enum, list) -> enum.Enum
   """Converts the typed choice into an apitools Enum value."""
+  if choice is None:
+    return None
   name = choice.replace('-', '_').upper()
-  return enum_type.lookup_by_name(name)
+  valid_choices = (valid_choices or
+                   [EnumNameToChoice(n) for n in enum_type.names()])
+  try:
+    return enum_type.lookup_by_name(name)
+  except KeyError:
+    raise arg_parsers.ArgumentTypeError(
+        'Invalid choice: {}. Valid choices are: [{}].'.format(
+            EnumNameToChoice(name),
+            ', '.join(c for c in sorted(valid_choices))))
 
 
 def EnumNameToChoice(name):

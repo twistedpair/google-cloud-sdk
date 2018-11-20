@@ -293,6 +293,96 @@
         }
       }
     },
+    "ListServiceAccountIdentityBindingsResponse": {
+      "id": "ListServiceAccountIdentityBindingsResponse",
+      "description": "The service account identity bindings list response.",
+      "type": "object",
+      "properties": {
+        "identityBinding": {
+          "description": "The identity bindings trusted to assert the service account.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceAccountIdentityBinding"
+          }
+        }
+      }
+    },
+    "ServiceAccountIdentityBinding": {
+      "id": "ServiceAccountIdentityBinding",
+      "description": "Represents a service account identity provider reference.\n\nA service account has at most one identity binding for the EAP.\n\nThis is an alternative to service account keys and enables the service\naccount to be configured to trust an external IDP through the provided\nidentity binding.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the service account identity binding in the following\nformat\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/identityBindings\/{BINDING}`.",
+          "type": "string"
+        },
+        "oidc": {
+          "description": "OIDC with discovery.",
+          "$ref": "IDPReferenceOIDC"
+        },
+        "acceptanceFilter": {
+          "description": "A CEL expression that is evaluated to determine whether a credential should\nbe accepted. To accept any credential, specify \"true\". See:\nhttps:\/\/github.com\/google\/cel-spec .\nThis field supports a subset of the CEL functionality to select fields and\nevaluate boolean expressions based on the input (no functions or\narithmetics).\nThe values for input claims are available using `inclaim.attribute_name`\nor `inclaim[\\\"attribute_name\\\"]`.\nThe values for output attributes calculated by the translator are available\nusing `outclaim.attribute_name` or `outclaim[\\\"attribute_name\\\"]`.",
+          "type": "string"
+        },
+        "cel": {
+          "description": "A set of output attributes and corresponding input attribute expressions.",
+          "$ref": "AttributeTranslatorCEL"
+        }
+      }
+    },
+    "IDPReferenceOIDC": {
+      "id": "IDPReferenceOIDC",
+      "description": "Represents a reference to an OIDC provider.",
+      "type": "object",
+      "properties": {
+        "url": {
+          "description": "The OpenID Connect Discovery URL.",
+          "type": "string"
+        },
+        "audience": {
+          "description": "Optional. The acceptable audience. Default is the unique_id of the Service\nAccount.",
+          "type": "string"
+        },
+        "maxTokenLifetimeSeconds": {
+          "description": "This optional field allows enforcing a maximum lifetime for tokens.\nUsing a lifetime that is as short as possible improves security since\nit prevents use of exfiltrated tokens after a certain amount of time.\nAll tokens must specify both exp and iat or they will be rejected.\nIf \"nbf\" is present we will reject tokens that are not yet valid.\nExpiration and lifetime will be enforced in the following way:\n- \"exp\" > \"current time\" is always required (expired tokens are rejected)\n- \"iat\" < \"current time\" + 300 seconds is required (tokens from the future\n.      are rejected although a small amount of clock skew is tolerated).\n- If max_token_lifetime_seconds is set:\n       \"exp\"  - \"iat\" < max_token_lifetime_seconds will be checked\n- The default is otherwise to accept a max_token_lifetime_seconds of 3600\n(1 hour)",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "AttributeTranslatorCEL": {
+      "id": "AttributeTranslatorCEL",
+      "description": "Specifies a list of output attribute names and the corresponding input\nattribute to use for that output attribute. Each defined output attribute\nis populated with the value of the specified input attribute.",
+      "type": "object",
+      "properties": {
+        "attributes": {
+          "description": "Each entry specifies the desired output attribute and a CEL field selector\nexpression for the corresponding input to read.\nThis field supports a subset of the CEL functionality to select fields from\nthe input (no boolean expressions, functions or arithmetics).\n\nOutput attributes must match `(google.sub|a-z_*)`.\n\nThe output attribute google.sub is interpreted to be the \"identity\" of\nthe requesting user.\n\nFor example, to copy the inbound attribute \"sub\" into the output\n`google.sub` add an entry `google.sub` -> `inclaim.sub` or\n`google.sub` -> `inclaim[\\\"sub\\\"]`.\n\nSee https:\/\/github.com\/google\/cel-spec for more details.\n\nIf the input does not exist the output attribute will be null.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CreateServiceAccountIdentityBindingRequest": {
+      "id": "CreateServiceAccountIdentityBindingRequest",
+      "description": "The service account identity binding create request.",
+      "type": "object",
+      "properties": {
+        "oidc": {
+          "description": "An OIDC reference with Discovery.",
+          "$ref": "IDPReferenceOIDC"
+        },
+        "acceptanceFilter": {
+          "description": "A CEL expression that is evaluated to determine whether a credential should\nbe accepted. To accept any credential, specify \"true\". See:\nhttps:\/\/github.com\/google\/cel-spec .\nThe input claims are available using \"inclaim[\\\"attribute_name\\\"]\".\nThe output attributes calculated by the translator are available using\n\"outclaim[\\\"attribute_name\\\"]\"",
+          "type": "string"
+        },
+        "cel": {
+          "description": "A set of output attributes and corresponding input attribute names.",
+          "$ref": "AttributeTranslatorCEL"
+        }
+      }
+    },
     "SignBlobRequest": {
       "id": "SignBlobRequest",
       "description": "The service account sign blob request.",
@@ -1376,6 +1466,113 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a ServiceAccountKey."
+                }
+              }
+            },
+            "identityBindings": {
+              "methods": {
+                "list": {
+                  "id": "iam.projects.serviceAccounts.identityBindings.list",
+                  "path": "v1/{+name}/identityBindings",
+                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nUsing `-` as a wildcard for the `PROJECT_ID`, will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListServiceAccountIdentityBindingsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists the ServiceAccountIdentityBindings\nfor a service account."
+                },
+                "get": {
+                  "id": "iam.projects.serviceAccounts.identityBindings.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings/{identityBindingsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the service account identity binding in the following\nformat\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/identityBindings\/{BINDING}`.\n\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/identityBindings\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ServiceAccountIdentityBinding"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the ServiceAccountIdentityBinding\nfor a service account."
+                },
+                "create": {
+                  "id": "iam.projects.serviceAccounts.identityBindings.create",
+                  "path": "v1/{+name}/identityBindings",
+                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "CreateServiceAccountIdentityBindingRequest"
+                  },
+                  "response": {
+                    "$ref": "ServiceAccountIdentityBinding"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a ServiceAccountIdentityBinding\nand returns it."
+                },
+                "delete": {
+                  "id": "iam.projects.serviceAccounts.identityBindings.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings/{identityBindingsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the service account identity binding in the following\nformat\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/identityBindings\/{BINDING}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/identityBindings\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a ServiceAccountIdentityBinding."
                 }
               }
             }

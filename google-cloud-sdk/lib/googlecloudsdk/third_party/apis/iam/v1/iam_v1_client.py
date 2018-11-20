@@ -40,6 +40,7 @@ class IamV1(base_api.BaseApiClient):
     self.organizations = self.OrganizationsService(self)
     self.permissions = self.PermissionsService(self)
     self.projects_roles = self.ProjectsRolesService(self)
+    self.projects_serviceAccounts_identityBindings = self.ProjectsServiceAccountsIdentityBindingsService(self)
     self.projects_serviceAccounts_keys = self.ProjectsServiceAccountsKeysService(self)
     self.projects_serviceAccounts = self.ProjectsServiceAccountsService(self)
     self.projects = self.ProjectsService(self)
@@ -531,6 +532,127 @@ with the role are removed.
         request_field=u'undeleteRoleRequest',
         request_type_name=u'IamProjectsRolesUndeleteRequest',
         response_type_name=u'Role',
+        supports_download=False,
+    )
+
+  class ProjectsServiceAccountsIdentityBindingsService(base_api.BaseApiService):
+    """Service class for the projects_serviceAccounts_identityBindings resource."""
+
+    _NAME = u'projects_serviceAccounts_identityBindings'
+
+    def __init__(self, client):
+      super(IamV1.ProjectsServiceAccountsIdentityBindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a ServiceAccountIdentityBinding.
+and returns it.
+
+      Args:
+        request: (IamProjectsServiceAccountsIdentityBindingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccountIdentityBinding) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.identityBindings.create',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/identityBindings',
+        request_field=u'createServiceAccountIdentityBindingRequest',
+        request_type_name=u'IamProjectsServiceAccountsIdentityBindingsCreateRequest',
+        response_type_name=u'ServiceAccountIdentityBinding',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a ServiceAccountIdentityBinding.
+
+      Args:
+        request: (IamProjectsServiceAccountsIdentityBindingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings/{identityBindingsId}',
+        http_method=u'DELETE',
+        method_id=u'iam.projects.serviceAccounts.identityBindings.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'IamProjectsServiceAccountsIdentityBindingsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the ServiceAccountIdentityBinding.
+for a service account.
+
+      Args:
+        request: (IamProjectsServiceAccountsIdentityBindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccountIdentityBinding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings/{identityBindingsId}',
+        http_method=u'GET',
+        method_id=u'iam.projects.serviceAccounts.identityBindings.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'IamProjectsServiceAccountsIdentityBindingsGetRequest',
+        response_type_name=u'ServiceAccountIdentityBinding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the ServiceAccountIdentityBindings.
+for a service account.
+
+      Args:
+        request: (IamProjectsServiceAccountsIdentityBindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceAccountIdentityBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings',
+        http_method=u'GET',
+        method_id=u'iam.projects.serviceAccounts.identityBindings.list',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}/identityBindings',
+        request_field='',
+        request_type_name=u'IamProjectsServiceAccountsIdentityBindingsListRequest',
+        response_type_name=u'ListServiceAccountIdentityBindingsResponse',
         supports_download=False,
     )
 

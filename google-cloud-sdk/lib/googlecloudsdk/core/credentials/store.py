@@ -133,6 +133,11 @@ class InvalidCredentialFileException(Error):
         .format(f=f, message=str(e)))
 
 
+class AccountImpersonationError(Error):
+  """Exception for when attempting to impersonate a service account fails."""
+  pass
+
+
 class CredentialFileSaveError(Error):
   """An error for when we fail to save a credential file."""
   pass
@@ -144,6 +149,9 @@ class FlowError(Error):
 
 class RevokeError(Error):
   """Exception for when there was a problem revoking."""
+
+
+IMPERSONATION_TOKEN_PROVIDER = None
 
 
 class StaticCredentialProviders(object):
@@ -256,13 +264,18 @@ def AvailableAccounts():
   return sorted(accounts)
 
 
-def LoadIfEnabled():
+def LoadIfEnabled(allow_account_impersonation=True):
   """Get the credentials associated with the current account.
 
   If credentials have been disabled via properties, this will return None.
   Otherwise it will load credentials like normal. If credential loading fails
   for any reason (including the user not being logged in), the usual exception
   is raised.
+
+  Args:
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured). If False, the active user
+      credentials will always be loaded.
 
   Returns:
     The credentials or None. The only time None is returned is if credentials
@@ -279,10 +292,11 @@ def LoadIfEnabled():
   """
   if properties.VALUES.auth.disable_credentials.GetBool():
     return None
-  return Load()
+  return Load(allow_account_impersonation=allow_account_impersonation)
 
 
-def Load(account=None, scopes=None, prevent_refresh=False):
+def Load(account=None, scopes=None, prevent_refresh=False,
+         allow_account_impersonation=True):
   """Get the credentials associated with the provided account.
 
   This loads credentials regardless of whether credentials have been disabled
@@ -298,6 +312,9 @@ def Load(account=None, scopes=None, prevent_refresh=False):
     prevent_refresh: bool, If True, do not refresh the access token even if it
         is out of date. (For use with operations that do not require a current
         access token, such as credential revocation.)
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials (if that is configured). If False, the active user
+      credentials will always be loaded.
 
   Returns:
     oauth2client.client.Credentials, The specified credentials.
@@ -311,7 +328,30 @@ def Load(account=None, scopes=None, prevent_refresh=False):
         be reached.
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
+    AccountImpersonationError: If impersonation is requested but an
+      impersonation provider is not configured.
   """
+  cred = _Load(account, scopes, prevent_refresh)
+  if not allow_account_impersonation:
+    return cred
+  impersonate_service_account = (
+      properties.VALUES.auth.impersonate_service_account.Get())
+  if not impersonate_service_account:
+    return cred
+  if not IMPERSONATION_TOKEN_PROVIDER:
+    raise AccountImpersonationError(
+        'gcloud is configured to impersonate service account [{}] but '
+        'impersonation support is not available.'
+        .format(impersonate_service_account))
+  log.warning(
+      'This command is using service account impersonation. All API calls will '
+      'be executed as [{}].'.format(impersonate_service_account))
+  return IMPERSONATION_TOKEN_PROVIDER.GetElevationAccessToken(
+      impersonate_service_account, scopes or config.CLOUDSDK_SCOPES)
+
+
+def _Load(account, scopes, prevent_refresh):
+  """Helper for Load()."""
   # If a credential file is set, just use that and ignore the active account
   # and whatever is in the credential store.
   cred_file_override = properties.VALUES.auth.credential_file_override.Get()

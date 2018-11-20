@@ -14,6 +14,72 @@ from apitools.base.py import extra_types
 package = 'iam'
 
 
+class AttributeTranslatorCEL(_messages.Message):
+  r"""Specifies a list of output attribute names and the corresponding input
+  attribute to use for that output attribute. Each defined output attribute is
+  populated with the value of the specified input attribute.
+
+  Messages:
+    AttributesValue: Each entry specifies the desired output attribute and a
+      CEL field selector expression for the corresponding input to read. This
+      field supports a subset of the CEL functionality to select fields from
+      the input (no boolean expressions, functions or arithmetics).  Output
+      attributes must match `(google.sub|a-z_*)`.  The output attribute
+      google.sub is interpreted to be the "identity" of the requesting user.
+      For example, to copy the inbound attribute "sub" into the output
+      `google.sub` add an entry `google.sub` -> `inclaim.sub` or `google.sub`
+      -> `inclaim[\"sub\"]`.  See https://github.com/google/cel-spec for more
+      details.  If the input does not exist the output attribute will be null.
+
+  Fields:
+    attributes: Each entry specifies the desired output attribute and a CEL
+      field selector expression for the corresponding input to read. This
+      field supports a subset of the CEL functionality to select fields from
+      the input (no boolean expressions, functions or arithmetics).  Output
+      attributes must match `(google.sub|a-z_*)`.  The output attribute
+      google.sub is interpreted to be the "identity" of the requesting user.
+      For example, to copy the inbound attribute "sub" into the output
+      `google.sub` add an entry `google.sub` -> `inclaim.sub` or `google.sub`
+      -> `inclaim[\"sub\"]`.  See https://github.com/google/cel-spec for more
+      details.  If the input does not exist the output attribute will be null.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributesValue(_messages.Message):
+    r"""Each entry specifies the desired output attribute and a CEL field
+    selector expression for the corresponding input to read. This field
+    supports a subset of the CEL functionality to select fields from the input
+    (no boolean expressions, functions or arithmetics).  Output attributes
+    must match `(google.sub|a-z_*)`.  The output attribute google.sub is
+    interpreted to be the "identity" of the requesting user.  For example, to
+    copy the inbound attribute "sub" into the output `google.sub` add an entry
+    `google.sub` -> `inclaim.sub` or `google.sub` -> `inclaim[\"sub\"]`.  See
+    https://github.com/google/cel-spec for more details.  If the input does
+    not exist the output attribute will be null.
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributes = _messages.MessageField('AttributesValue', 1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -183,6 +249,25 @@ class CreateRoleRequest(_messages.Message):
   roleId = _messages.StringField(2)
 
 
+class CreateServiceAccountIdentityBindingRequest(_messages.Message):
+  r"""The service account identity binding create request.
+
+  Fields:
+    acceptanceFilter: A CEL expression that is evaluated to determine whether
+      a credential should be accepted. To accept any credential, specify
+      "true". See: https://github.com/google/cel-spec . The input claims are
+      available using "inclaim[\"attribute_name\"]". The output attributes
+      calculated by the translator are available using
+      "outclaim[\"attribute_name\"]"
+    cel: A set of output attributes and corresponding input attribute names.
+    oidc: An OIDC reference with Discovery.
+  """
+
+  acceptanceFilter = _messages.StringField(1)
+  cel = _messages.MessageField('AttributeTranslatorCEL', 2)
+  oidc = _messages.MessageField('IDPReferenceOIDC', 3)
+
+
 class CreateServiceAccountKeyRequest(_messages.Message):
   r"""The service account key create request.
 
@@ -285,6 +370,32 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class IDPReferenceOIDC(_messages.Message):
+  r"""Represents a reference to an OIDC provider.
+
+  Fields:
+    audience: Optional. The acceptable audience. Default is the unique_id of
+      the Service Account.
+    maxTokenLifetimeSeconds: This optional field allows enforcing a maximum
+      lifetime for tokens. Using a lifetime that is as short as possible
+      improves security since it prevents use of exfiltrated tokens after a
+      certain amount of time. All tokens must specify both exp and iat or they
+      will be rejected. If "nbf" is present we will reject tokens that are not
+      yet valid. Expiration and lifetime will be enforced in the following
+      way: - "exp" > "current time" is always required (expired tokens are
+      rejected) - "iat" < "current time" + 300 seconds is required (tokens
+      from the future .      are rejected although a small amount of clock
+      skew is tolerated). - If max_token_lifetime_seconds is set:        "exp"
+      - "iat" < max_token_lifetime_seconds will be checked - The default is
+      otherwise to accept a max_token_lifetime_seconds of 3600 (1 hour)
+    url: The OpenID Connect Discovery URL.
+  """
+
+  audience = _messages.StringField(1)
+  maxTokenLifetimeSeconds = _messages.IntegerField(2)
+  url = _messages.StringField(3)
 
 
 class IamOrganizationsRolesCreateRequest(_messages.Message):
@@ -546,6 +657,66 @@ class IamProjectsServiceAccountsGetRequest(_messages.Message):
     name: The resource name of the service account in the following format:
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
       wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsServiceAccountsIdentityBindingsCreateRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsIdentityBindingsCreateRequest object.
+
+  Fields:
+    createServiceAccountIdentityBindingRequest: A
+      CreateServiceAccountIdentityBindingRequest resource to be passed as the
+      request body.
+    name: The resource name of the service account in the following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
+  """
+
+  createServiceAccountIdentityBindingRequest = _messages.MessageField('CreateServiceAccountIdentityBindingRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class IamProjectsServiceAccountsIdentityBindingsDeleteRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsIdentityBindingsDeleteRequest object.
+
+  Fields:
+    name: The resource name of the service account identity binding in the
+      following format `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/identi
+      tyBindings/{BINDING}`. Using `-` as a wildcard for the `PROJECT_ID` will
+      infer the project from the account. The `ACCOUNT` value can be the
+      `email` address or the `unique_id` of the service account.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsServiceAccountsIdentityBindingsGetRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsIdentityBindingsGetRequest object.
+
+  Fields:
+    name: The resource name of the service account identity binding in the
+      following format `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/identi
+      tyBindings/{BINDING}`.  Using `-` as a wildcard for the `PROJECT_ID`
+      will infer the project from the account. The `ACCOUNT` value can be the
+      `email` address or the `unique_id` of the service account.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class IamProjectsServiceAccountsIdentityBindingsListRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsIdentityBindingsListRequest object.
+
+  Fields:
+    name: The resource name of the service account in the following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Using `-` as a
+      wildcard for the `PROJECT_ID`, will infer the project from the account.
       The `ACCOUNT` value can be the `email` address or the `unique_id` of the
       service account.
   """
@@ -973,6 +1144,17 @@ class ListRolesResponse(_messages.Message):
   roles = _messages.MessageField('Role', 2, repeated=True)
 
 
+class ListServiceAccountIdentityBindingsResponse(_messages.Message):
+  r"""The service account identity bindings list response.
+
+  Fields:
+    identityBinding: The identity bindings trusted to assert the service
+      account.
+  """
+
+  identityBinding = _messages.MessageField('ServiceAccountIdentityBinding', 1, repeated=True)
+
+
 class ListServiceAccountKeysResponse(_messages.Message):
   r"""The service account keys list response.
 
@@ -1308,6 +1490,36 @@ class ServiceAccount(_messages.Message):
   oauth2ClientId = _messages.StringField(5)
   projectId = _messages.StringField(6)
   uniqueId = _messages.StringField(7)
+
+
+class ServiceAccountIdentityBinding(_messages.Message):
+  r"""Represents a service account identity provider reference.  A service
+  account has at most one identity binding for the EAP.  This is an
+  alternative to service account keys and enables the service account to be
+  configured to trust an external IDP through the provided identity binding.
+
+  Fields:
+    acceptanceFilter: A CEL expression that is evaluated to determine whether
+      a credential should be accepted. To accept any credential, specify
+      "true". See: https://github.com/google/cel-spec . This field supports a
+      subset of the CEL functionality to select fields and evaluate boolean
+      expressions based on the input (no functions or arithmetics). The values
+      for input claims are available using `inclaim.attribute_name` or
+      `inclaim[\"attribute_name\"]`. The values for output attributes
+      calculated by the translator are available using
+      `outclaim.attribute_name` or `outclaim[\"attribute_name\"]`.
+    cel: A set of output attributes and corresponding input attribute
+      expressions.
+    name: The resource name of the service account identity binding in the
+      following format `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/identi
+      tyBindings/{BINDING}`.
+    oidc: OIDC with discovery.
+  """
+
+  acceptanceFilter = _messages.StringField(1)
+  cel = _messages.MessageField('AttributeTranslatorCEL', 2)
+  name = _messages.StringField(3)
+  oidc = _messages.MessageField('IDPReferenceOIDC', 4)
 
 
 class ServiceAccountKey(_messages.Message):

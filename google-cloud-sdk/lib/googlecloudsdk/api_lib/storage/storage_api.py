@@ -91,6 +91,13 @@ class StorageClient(object):
       chunksize += gcs_chunk_granularity - (chunksize % gcs_chunk_granularity)
     return chunksize
 
+  def ListBuckets(self, project):
+    """List the buckets associated with the given project."""
+    request = self.messages.StorageBucketsListRequest(project=project)
+    for b in list_pager.YieldFromList(self.client.buckets,
+                                      request, batch_size=None):
+      yield b
+
   def Copy(self, src, dst):
     """Copy one GCS object to another.
 

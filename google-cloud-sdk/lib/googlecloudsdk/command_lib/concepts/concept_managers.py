@@ -120,14 +120,24 @@ class RuntimeParser(object):
 
     Stores the result of parsing concepts, keyed to the namespace format of
     their presentation name. Afterward, will be accessible as
-    args.CONCEPT_ARGS.<LOWER_SNAKE_CASE_NAME>.
+    args.<LOWER_SNAKE_CASE_NAME>.
 
     Raises:
       googlecloudsdk.command_lib.concepts.exceptions.Error: if parsing fails.
     """
+
+    # Collect all final parse values in final before assigning back to args
+    # because multiple FinalParse calls may use an attr_name multiple times.
+    final = {}
     for attr_name, attribute in six.iteritems(self._attributes):
       dependencies = dependency_managers.DependencyNode.FromAttribute(attribute)
-      setattr(self, attr_name, FinalParse(dependencies, self.ParsedArgs))
+      final[attr_name] = FinalParse(dependencies, self.ParsedArgs)
+
+    # Set the final parsed name=value in the args namespace. add_argument(),
+    # either called explicitly, or via the concept manager, detects duplicate
+    # names and raises an exception before this method is called.
+    for name, value in six.iteritems(final):
+      setattr(self.parsed_args, name, value)
 
   def ParsedArgs(self):
     """A lazy property to use during concept parsing.

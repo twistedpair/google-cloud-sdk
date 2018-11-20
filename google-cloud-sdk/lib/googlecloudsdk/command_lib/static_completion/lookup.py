@@ -176,7 +176,7 @@ def CompletionCliTreePath(directory=None):
       directory or _GetCompletionCliTreeDir(), 'gcloud_completions.py')
 
 
-def _LoadCompletionCliTree():
+def LoadCompletionCliTree():
   """Loads and returns the static completion CLI tree."""
   try:
     sys_path = sys.path[:]
@@ -198,7 +198,7 @@ def _OpenCompletionsOutputStream():
 
 def _GetCompletions():
   """Returns the static completions, None if there are none."""
-  root = _LoadCompletionCliTree()
+  root = LoadCompletionCliTree()
   cmd_line = _GetCmdLineFromEnv()
   return _FindCompletions(root, cmd_line)
 

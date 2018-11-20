@@ -818,6 +818,20 @@ class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
   zone = _messages.StringField(4)
 
 
+class ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest(_messages.Message):
+  r"""A
+  ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest
+  object.
+
+  Fields:
+    parent: The parent (project, location, cluster id) where the node pools
+      will be listed. Specified in the format
+      'projects/*/locations/*/clusters/*'.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
   r"""A ContainerProjectsLocationsGetServerConfigRequest object.
 
@@ -1255,6 +1269,29 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GetOpenIDConfigurationResponse(_messages.Message):
+  r"""GetOpenIDConfigurationResponse is an OIDC discovery document for the
+  cluster. See the OpenID Connect Discovery 1.0 specification for details.
+
+  Fields:
+    claimsSupported: NOLINT
+    grantTypes: NOLINT
+    idTokenSigningAlgValuesSupported: NOLINT
+    issuer: NOLINT
+    jwksUri: NOLINT
+    responseTypesSupported: NOLINT
+    subjectTypesSupported: NOLINT
+  """
+
+  claimsSupported = _messages.StringField(1, repeated=True)
+  grantTypes = _messages.StringField(2, repeated=True)
+  idTokenSigningAlgValuesSupported = _messages.StringField(3, repeated=True)
+  issuer = _messages.StringField(4)
+  jwksUri = _messages.StringField(5)
+  responseTypesSupported = _messages.StringField(6, repeated=True)
+  subjectTypesSupported = _messages.StringField(7, repeated=True)
 
 
 class GoogleIamV1Binding(_messages.Message):

@@ -17,8 +17,8 @@
 
 To use a concept, give it at least help text and a name (or use
 the default name if the concept provides one) and add it to a concept manager.
-During command.Run, the parsed concept will be available under
-args.CONCEPT_ARGS. For example:
+During command.Run, the parsed concept will be available under args.
+For example:
 
 from googlecloudsdk.command_lib.concepts import concept_managers
 
@@ -29,7 +29,7 @@ from googlecloudsdk.command_lib.concepts import concept_managers
     manager.AddToParser(parser)
 
   def Run(self, args):
-    return args.CONCEPT_ARGS.foo
+    return args.foo
 """
 
 from __future__ import absolute_import

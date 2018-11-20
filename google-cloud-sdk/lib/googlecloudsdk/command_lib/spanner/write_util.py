@@ -48,6 +48,10 @@ class InvalidKeysError(Error):
   """Raised when the number of keys user input does not match the DDL."""
 
 
+class InvalidArrayInputError(Error):
+  """Raised when the user tries to input a list as a value in the data flag."""
+
+
 class _TableColumn(object):
   """A wrapper that stores the column information.
 
@@ -375,6 +379,17 @@ class Table(object):
         'Table name [{}] is invalid. Valid table names: [{}].'.format(
             table_name, ', '.join(table_name_list)))
 
+  def GetColumnTypes(self):
+    """Maps the column name to the column type.
+
+    Returns:
+      OrderedDict of column names to types.
+    """
+    col_to_type = OrderedDict()
+    for name, column in six.iteritems(self._columns):
+      col_to_type[name] = column.col_type
+    return col_to_type
+
   def _FindColumnByName(self, col_name):
     """Find the _TableColumn object with the given column name.
 
@@ -396,55 +411,25 @@ class Table(object):
               col_name, valid_column_names))
 
 
-def RowDataParser(data_value):
-  """Parse a data input string to an ordered dictionary.
-
-  For example, --data=SingerId=1,Name=Jay -> (SingerId:1, Name:Jay).
+def ValidateArrayInput(table, data):
+  """Checks array input is valid.
 
   Args:
-    data_value: String, the input string of the row user wants to modify.
+    table: Table, the table which data is being modified.
+    data: OrderedDict, the data entered by the user.
 
   Returns:
-    An ordered dictionary, the keys of which are the column names and values
-      are user input data value of the row to modify.
+    data (OrderedDict) the validated data.
+
+  Raises:
+    InvalidArrayInputError: if the input contains an array which is invalid.
   """
-  data_dict = OrderedDict()
-  column_names = re.findall(r'\,?(\w+)\=', data_value)
-  for idx, name in enumerate(column_names):
-    start = data_value.index(name + '=')
-    if idx + 1 == len(column_names):
-      end = None
-    else:
-      end_pattern = r'\,\s*' + column_names[idx + 1] + r'\='
-      (end, _) = re.compile(end_pattern).search(data_value).span(0)
-
-    [_, column_value] = data_value[start:end].split('=', 1)
-    column_value = _StripQuotes(column_value)
-    if column_value.startswith('[') and column_value.endswith(']'):
-      # When the column is array, '[1,2]' -> ['1', '2'].
-      array_value = column_value[1:-1]
-      column_value = array_value.split(',') if array_value else []
-      for i, value in enumerate(column_value):
-        column_value[i] = _StripQuotes(value)
-
-    data_dict[name] = column_value
-
-  return data_dict
-
-
-def _StripQuotes(str_value):
-  """Strip matching quote characters from the beginning and end of a value.
-
-  For example, "'testing'" -> 'testing' and '"testing"' -> 'testing'
-
-  Args:
-    str_value: String, the given value for a column.
-
-  Returns:
-    A string version of the given value without excess quotes.
-  """
-  if str_value.startswith('"') and str_value.endswith('"'):
-    return str_value[1:-1]
-  if str_value.startswith("'") and str_value.endswith("'"):
-    return str_value[1:-1]
-  return str_value
+  col_to_type = table.GetColumnTypes()
+  for column, value in six.iteritems(data):
+    col_type = col_to_type[column]
+    if isinstance(col_type,
+                  _ArrayColumnType) and isinstance(value, list) is False:
+      raise InvalidArrayInputError(
+          'Column name [{}] has an invalid array input: {}. `--flags-file` '
+          'should be used to specify array values.'.format(column, value))
+  return data

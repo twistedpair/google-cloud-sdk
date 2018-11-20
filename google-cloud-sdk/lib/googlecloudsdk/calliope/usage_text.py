@@ -854,8 +854,15 @@ def GetCategoricalUsage(command, categories):
     buf.write('\n### {category}\n\n'.format(category=category))
     buf.write('---------------------- | ---\n')
     for element in sorted(elements, key=lambda e: e.name):
+      short_help = None
+      if element.name == 'alpha':
+        short_help = element.short_help[10:]
+      elif element.name == 'beta':
+        short_help = element.short_help[9:]
+      else:
+        short_help = element.short_help
       buf.write('{name} | {description}\n'.format(
-          name=element.name, description=element.short_help))
+          name=element.name, description=short_help))
   return buf.getvalue()
 
 

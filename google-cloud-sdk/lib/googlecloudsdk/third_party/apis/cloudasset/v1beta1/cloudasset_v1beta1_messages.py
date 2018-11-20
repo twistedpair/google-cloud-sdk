@@ -142,8 +142,8 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
-  r"""A CloudassetBatchGetAssetsHistoryRequest object.
+class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
+  r"""A CloudassetOrganizationsBatchGetAssetsHistoryRequest object.
 
   Enums:
     ContentTypeValueValuesEnum: Required. The content type.
@@ -184,8 +184,8 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
   readTimeWindow_startTime = _messages.StringField(5)
 
 
-class CloudassetExportAssetsRequest(_messages.Message):
-  r"""A CloudassetExportAssetsRequest object.
+class CloudassetOrganizationsExportAssetsRequest(_messages.Message):
+  r"""A CloudassetOrganizationsExportAssetsRequest object.
 
   Fields:
     exportAssetsRequest: A ExportAssetsRequest resource to be passed as the
@@ -200,8 +200,76 @@ class CloudassetExportAssetsRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class CloudassetOperationsGetRequest(_messages.Message):
-  r"""A CloudassetOperationsGetRequest object.
+class CloudassetOrganizationsOperationsGetRequest(_messages.Message):
+  r"""A CloudassetOrganizationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudassetProjectsBatchGetAssetsHistoryRequest(_messages.Message):
+  r"""A CloudassetProjectsBatchGetAssetsHistoryRequest object.
+
+  Enums:
+    ContentTypeValueValuesEnum: Required. The content type.
+
+  Fields:
+    assetNames: A list of the full names of the assets. For example: `//comput
+      e.googleapis.com/projects/my_project_123/zones/zone1/instances/instance1
+      `. See [Resource Names](https://cloud.google.com/apis/design/resource_na
+      mes#full_resource_name) for more info.  The request becomes a no-op if
+      the asset name list is empty, and the max size of the asset name list is
+      100 in one request.
+    contentType: Required. The content type.
+    parent: Required. The relative name of the root asset. It can only be an
+      organization number (such as "organizations/123"), a project ID (such as
+      "projects/my-project-id")", or a project number (such as
+      "projects/12345").
+    readTimeWindow_endTime: End time of the time window (inclusive). Current
+      timestamp if not specified.
+    readTimeWindow_startTime: Start time of the time window (exclusive).
+  """
+
+  class ContentTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The content type.
+
+    Values:
+      CONTENT_TYPE_UNSPECIFIED: <no description>
+      RESOURCE: <no description>
+      IAM_POLICY: <no description>
+    """
+    CONTENT_TYPE_UNSPECIFIED = 0
+    RESOURCE = 1
+    IAM_POLICY = 2
+
+  assetNames = _messages.StringField(1, repeated=True)
+  contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
+  parent = _messages.StringField(3, required=True)
+  readTimeWindow_endTime = _messages.StringField(4)
+  readTimeWindow_startTime = _messages.StringField(5)
+
+
+class CloudassetProjectsExportAssetsRequest(_messages.Message):
+  r"""A CloudassetProjectsExportAssetsRequest object.
+
+  Fields:
+    exportAssetsRequest: A ExportAssetsRequest resource to be passed as the
+      request body.
+    parent: Required. The relative name of the root asset. This can only be an
+      organization number (such as "organizations/123"), a project ID (such as
+      "projects/my-project-id"), or a project number (such as
+      "projects/12345").
+  """
+
+  exportAssetsRequest = _messages.MessageField('ExportAssetsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudassetProjectsOperationsGetRequest(_messages.Message):
+  r"""A CloudassetProjectsOperationsGetRequest object.
 
   Fields:
     name: The name of the operation resource.

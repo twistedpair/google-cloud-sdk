@@ -8,8 +8,8 @@ args:
     As a general rule, execution `n + 1` of a job will not begin until
     execution `n` has finished. Cloud Scheduler will never allow two
     simultaneously outstanding executions. For example, this implies that if
-    the ```n+1```th execution is scheduled to run at `16:00` but the ```n```th
-    execution takes until `16:15`, the ```n+1```th execution will not start
+    the `n+1` execution is scheduled to run at `16:00` but the `n`
+    execution takes until `16:15`, the `n+1` execution will not start
     until `16:15`. A scheduled start time will be delayed if the previous
     execution has not ended when its scheduled time occurs.
 

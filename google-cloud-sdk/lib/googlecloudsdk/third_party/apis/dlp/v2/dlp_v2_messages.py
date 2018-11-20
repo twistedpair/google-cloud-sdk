@@ -4013,7 +4013,7 @@ class GooglePrivacyDlpV2TransformationSummary(_messages.Message):
     fieldTransformations: The field transformation that was applied. If
       multiple field transformations are requested for a single field, this
       list will contain all of them; otherwise, only one is supplied.
-    infoType: Set if the transformation was limited to a specific info_type.
+    infoType: Set if the transformation was limited to a specific InfoType.
     recordSuppress: The specific suppression option these stats apply to.
     results: A GooglePrivacyDlpV2SummaryResult attribute.
     transformation: The specific transformation these stats apply to.

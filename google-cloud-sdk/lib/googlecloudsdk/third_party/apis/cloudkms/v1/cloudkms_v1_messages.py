@@ -1018,7 +1018,7 @@ class KeyOperationAttestation(_messages.Message):
     r"""Output only. The format of the attestation data.
 
     Values:
-      ATTESTATION_FORMAT_UNSPECIFIED: <no description>
+      ATTESTATION_FORMAT_UNSPECIFIED: Not specified.
       CAVIUM_V1_COMPRESSED: Cavium HSM attestation compressed with gzip. Note
         that this format is defined by Cavium and subject to change at any
         time.

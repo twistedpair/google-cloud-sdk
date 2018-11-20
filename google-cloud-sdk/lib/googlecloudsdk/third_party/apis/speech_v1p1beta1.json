@@ -306,22 +306,6 @@
           "items": {
             "type": "string"
           }
-        },
-        "strength": {
-          "description": "Hint strength to use (high, medium or low). If you use a high strength then\nyou are more likely to see those phrases in the results. If strength is not\nspecified then by default medium strength will be used. If you'd like\ndifferent phrases to have different strengths, you can specify multiple\nspeech_contexts.",
-          "enumDescriptions": [
-            "",
-            "Low strength",
-            "Medium strength",
-            "High strength"
-          ],
-          "type": "string",
-          "enum": [
-            "STRENGTH_UNSPECIFIED",
-            "LOW",
-            "MEDIUM",
-            "HIGH"
-          ]
         }
       }
     },

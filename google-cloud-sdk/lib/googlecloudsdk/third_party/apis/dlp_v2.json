@@ -1841,7 +1841,7 @@
       "type": "object",
       "properties": {
         "infoType": {
-          "description": "Set if the transformation was limited to a specific info_type.",
+          "description": "Set if the transformation was limited to a specific InfoType.",
           "$ref": "GooglePrivacyDlpV2InfoType"
         },
         "field": {

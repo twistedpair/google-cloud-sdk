@@ -105,9 +105,9 @@ def AddSourceFlag(parser):
 
       Location of the source can be one of the following three options:
 
-        1. Source code in Google Cloud Storage (must be a `.zip` archive),
-        2. Reference to source repository or,
-        3. Local filesystem path (root directory of function source).
+      * Source code in Google Cloud Storage (must be a `.zip` archive),
+      * Reference to source repository or,
+      * Local filesystem path (root directory of function source).
 
       The value of the flag will be interpreted as a Cloud Storage location, if
       it starts with `gs://`.
@@ -130,9 +130,9 @@ def AddSourceFlag(parser):
       If you want to deploy from a revision different from `master`, append one
       of the following three sources to the URL:
 
-        1. `/revisions/${REVISION}`,
-        2. `/moveable-aliases/${MOVEABLE_ALIAS}`,
-        3. `/fixed-aliases/${FIXED_ALIAS}`.
+      * `/revisions/${REVISION}`,
+      * `/moveable-aliases/${MOVEABLE_ALIAS}`,
+      * `/fixed-aliases/${FIXED_ALIAS}`.
 
       If you'd like to deploy sources from a directory different from the root,
       you must specify a revision, a moveable alias, or a fixed alias, as above,

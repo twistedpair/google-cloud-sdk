@@ -418,7 +418,7 @@ class Application(object):
       except KeyboardInterrupt:
         # ignore ctrl-c
         pass
-      except interactive_coshell.CoshellExitException:
+      except interactive_coshell.CoshellExitError:
         break
 
 

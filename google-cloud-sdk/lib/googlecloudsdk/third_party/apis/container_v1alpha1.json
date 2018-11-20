@@ -2125,6 +2125,56 @@
         }
       }
     },
+    "GetOpenIDConfigurationResponse": {
+      "id": "GetOpenIDConfigurationResponse",
+      "description": "GetOpenIDConfigurationResponse is an OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.",
+      "type": "object",
+      "properties": {
+        "issuer": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "jwksUri": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "responseTypesSupported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subjectTypesSupported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "idTokenSigningAlgValuesSupported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claimsSupported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "grantTypes": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "CreateNodePoolRequest": {
       "id": "CreateNodePoolRequest",
       "description": "CreateNodePoolRequest creates a node pool for a cluster.",
@@ -3545,6 +3595,35 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Sets the size for a specific node pool."
+                    }
+                  }
+                },
+                "well-known": {
+                  "methods": {
+                    "getOpenid-configuration": {
+                      "id": "container.projects.locations.clusters.well-known.getOpenid-configuration",
+                      "path": "v1alpha1/{+parent}/well-known/openid-configuration",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/well-known/openid-configuration",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "The parent (project, location, cluster id) where the node pools will be\nlisted. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GetOpenIDConfigurationResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "GetOpenIDConfiguration gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html"
                     }
                   }
                 }

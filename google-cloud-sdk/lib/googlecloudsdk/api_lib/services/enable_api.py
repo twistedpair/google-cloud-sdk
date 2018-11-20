@@ -101,6 +101,31 @@ def IsServiceEnabled(project_id, service_name):
   return False
 
 
+def EnableService(project_id, service_name, is_async=False):
+  """Enable a service without checking if it is already enabled.
+
+  Args:
+    project_id: The ID of the project for which to enable the service.
+    service_name: The name of the service to enable on the project.
+    is_async: bool, if True, print the operation ID and return immediately,
+           without waiting for the op to complete.
+
+  Raises:
+    exceptions.EnableServicePermissionDeniedException: when enabling the API
+        fails with a 403 or 404 error code.
+    api_lib_exceptions.HttpException: Another miscellaneous error with the
+        servicemanagement service.
+  """
+  log.status.Print('Enabling service [{0}] on project [{1}]...'.format(
+      service_name, project_id))
+
+  # Enable the service
+  operation = EnableServiceApiCall(project_id, service_name)
+
+  # Process the enable operation
+  services_util.ProcessOperationResult(operation, is_async)
+
+
 def EnableServiceIfDisabled(project_id, service_name, is_async=False):
   """Check to see if the service is enabled, and if it is not, do so.
 
@@ -125,12 +150,5 @@ def EnableServiceIfDisabled(project_id, service_name, is_async=False):
         service_name, project_id))
     return
 
-  # If the service is not yet enabled, enable it
-  log.status.Print('Enabling service {0} on project {1}...'.format(
-      service_name, project_id))
+  EnableService(project_id, service_name, is_async=is_async)
 
-  # Enable the service
-  operation = EnableServiceApiCall(project_id, service_name)
-
-  # Process the enable operation
-  services_util.ProcessOperationResult(operation, is_async)

@@ -131,7 +131,8 @@ def _GetClientClassFromDef(api_def):
 
 def _GetClientInstance(api_name, api_version, no_http=False,
                        check_response_func=None, enable_resource_quota=True,
-                       ca_certs=None):
+                       force_resource_quota=False,
+                       ca_certs=None, allow_account_impersonation=True):
   """Returns an instance of the API client specified in the args.
 
   Args:
@@ -143,8 +144,14 @@ def _GetClientInstance(api_name, api_version, no_http=False,
       the quota of the project being operated on. For some APIs we want to use
       gcloud's quota, so you can explicitly disable that behavior by passing
       False here.
+    force_resource_quota: bool, If true resource project quota will be used by
+      this client regardless of the settings in gcloud. This should be used for
+      newer APIs that cannot work with legacy project quota.
     ca_certs: str, absolute path of a ca_certs file to use instead of the
       default
+    allow_account_impersonation: bool, True to allow use of impersonated service
+      account credentials for calls made with this client. If False, the active
+      user credentials will always be used.
 
   Returns:
     base_api.BaseApiClient, An instance of the specified API client.
@@ -159,8 +166,12 @@ def _GetClientInstance(api_name, api_version, no_http=False,
     # Import http only when needed, as it depends on credential infrastructure
     # which is not needed in all cases.
     from googlecloudsdk.core.credentials import http
-    http_client = http.Http(enable_resource_quota=enable_resource_quota,
-                            response_encoding=encoding, ca_certs=ca_certs)
+    http_client = http.Http(
+        enable_resource_quota=enable_resource_quota,
+        force_resource_quota=force_resource_quota,
+        response_encoding=encoding,
+        ca_certs=ca_certs,
+        allow_account_impersonation=allow_account_impersonation)
 
   client_class = _GetClientClass(api_name, api_version)
   client_instance = client_class(

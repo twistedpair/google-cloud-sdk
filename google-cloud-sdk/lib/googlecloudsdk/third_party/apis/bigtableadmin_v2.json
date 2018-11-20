@@ -248,7 +248,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A collection of Bigtable Tables and\nthe resources that serve them.\nAll tables in an instance are served from a single\nCluster.",
+      "description": "A collection of Bigtable Tables and\nthe resources that serve them.\nAll tables in an instance are served from all\nClusters in the instance.",
       "type": "object",
       "properties": {
         "name": {

@@ -345,7 +345,7 @@
         "format": {
           "description": "Output only. The format of the attestation data.",
           "enumDescriptions": [
-            "",
+            "Not specified.",
             "Cavium HSM attestation compressed with gzip. Note that this format is\ndefined by Cavium and subject to change at any time."
           ],
           "type": "string",

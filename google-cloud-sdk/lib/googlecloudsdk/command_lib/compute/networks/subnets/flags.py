@@ -126,10 +126,13 @@ def AddUpdateArgs(parser, include_alpha=False):
         type=arg_parsers.Duration(lower_bound='0s'),
         default='0s',
         help="""\
-        The drain timeout specifies the upper bound in seconds on the amount of
-        time allowed to drain connections from the current ACTIVE subnetwork to
-        the current BACKUP subnetwork. The drain timeout is only applicable when
-        the [--set-role-active] flag is being used.
+        The time period for draining traffic from Internal HTTP(S) Load Balancer
+        proxies that are assigned addresses in the current ACTIVE subnetwork.
+        For example, ``1h'', ``60m'' and ``3600s'' each specify a duration of
+        1 hour for draining the traffic. Longer times reduce the number of
+        proxies that are draining traffic at any one time, and so improve
+        the availability of proxies for load balancing. The drain timeout is
+        only applicable when the [--role=ACTIVE] flag is being used.
         """)
 
     aggregation_interval_argument = base.ChoiceArgument(
@@ -167,3 +170,8 @@ def AddUpdateArgs(parser, include_alpha=False):
         reported VPC flow logs. Default is to include all metadata.
         """)
     metadata_argument.AddToParser(parser)
+
+    updated_field.add_argument(
+        '--enable-private-ipv6-access',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=('Enable/disable private IPv6 access for the subnet.'))

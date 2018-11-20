@@ -913,13 +913,6 @@ class SpeechContext(_messages.Message):
   r"""Provides "hints" to the speech recognizer to favor specific words and
   phrases in the results.
 
-  Enums:
-    StrengthValueValuesEnum: Hint strength to use (high, medium or low). If
-      you use a high strength then you are more likely to see those phrases in
-      the results. If strength is not specified then by default medium
-      strength will be used. If you'd like different phrases to have different
-      strengths, you can specify multiple speech_contexts.
-
   Fields:
     phrases: *Optional* A list of strings containing words and phrases "hints"
       so that the speech recognition is more likely to recognize them. This
@@ -927,33 +920,9 @@ class SpeechContext(_messages.Message):
       example, if specific commands are typically spoken by the user. This can
       also be used to add additional words to the vocabulary of the
       recognizer. See [usage limits](/speech-to-text/quotas#content).
-    strength: Hint strength to use (high, medium or low). If you use a high
-      strength then you are more likely to see those phrases in the results.
-      If strength is not specified then by default medium strength will be
-      used. If you'd like different phrases to have different strengths, you
-      can specify multiple speech_contexts.
   """
 
-  class StrengthValueValuesEnum(_messages.Enum):
-    r"""Hint strength to use (high, medium or low). If you use a high strength
-    then you are more likely to see those phrases in the results. If strength
-    is not specified then by default medium strength will be used. If you'd
-    like different phrases to have different strengths, you can specify
-    multiple speech_contexts.
-
-    Values:
-      STRENGTH_UNSPECIFIED: <no description>
-      LOW: Low strength
-      MEDIUM: Medium strength
-      HIGH: High strength
-    """
-    STRENGTH_UNSPECIFIED = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-
   phrases = _messages.StringField(1, repeated=True)
-  strength = _messages.EnumField('StrengthValueValuesEnum', 2)
 
 
 class SpeechOperationMetadata(_messages.Message):

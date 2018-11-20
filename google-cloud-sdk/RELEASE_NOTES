@@ -5,6 +5,50 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 226.0.0 (2018-11-20)
+
+### Breaking Changes
+
+*   **(Cloud Spanner)** Updated `--data` flag of `gcloud beta spanner rows` to reject array values. `--flags-file` should be used to specify an array value.
+
+
+### App Engine
+
+* Added command group `gcloud beta app migrate-config` for migrating
+  datastore-indexes.xml, cron.xml, queue.xml and dispatch.xml to their
+  yaml counterparts.
+
+### BigQuery
+
+* Fixed a bug in the update table command.
+
+### Cloud Endpoints
+
+* Modified `gcloud endpoints` such that it no longer attempts to enable either
+  the Endpoints meta-service or the produced service during the service
+  deployment process, except if the produced service was created for the first
+  time during the deployment.
+
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.2.1
+  * This is the first beta release of the emulator.
+
+### Cloud Scheduler
+
+* Fixed bug in `gcloud beta scheduler jobs create pubsub` that caused the
+  message body to be base-64 encoded twice.
+
+### Deployment Manager
+
+* Fixed a bug to match operation timeout and service timeout;
+  both are now set at 2 hours.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 225.0.0 (2018-11-13)
 
 ### Cloud SDK

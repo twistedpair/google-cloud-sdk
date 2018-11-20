@@ -18,7 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from collections import OrderedDict
+import collections
 import copy
 
 
@@ -57,7 +57,7 @@ LIST_FORMAT = """
 
 TPU_YAML_RESOURCE_PATH = 'googlecloudsdk.command_lib.compute.tpus.resources'
 
-TPU_YAML_SPEC_TEMPLATE = OrderedDict({
+TPU_YAML_SPEC_TEMPLATE = collections.OrderedDict({
     'tpu': {
         'help_text': 'The name of the Cloud TPU.',
         'is_positional': True,

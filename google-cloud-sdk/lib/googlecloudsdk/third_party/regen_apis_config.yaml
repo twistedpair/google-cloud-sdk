@@ -518,3 +518,6 @@ apis:
   remotebuildexecution:
     v1alpha:
       discovery_doc: remotebuildexecution_v1alpha.json
+  bigquery:
+    v2:
+      discovery_doc: bigquery_v2.json

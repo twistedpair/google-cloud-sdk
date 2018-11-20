@@ -126,6 +126,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
     format=_FORMAT-STRING_: Prints the key data indented by 4 spaces using
       _FORMAT-STRING_ which can reference any of the supported formats.
     no-heading: Disables the column headings.
+    margin=N: Right hand side padding when one or more columns are wrapped.
     pad=N: Sets the column horizontal pad to _N_ spaces. The default is 1 for
       box, 2 otherwise.
     title=_TITLE_: Prints a centered _TITLE_ at the top of the table, within
@@ -401,6 +402,7 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       if box:
         table_padding = (_BOX_CHAR_LENGTH * (visible_cols + 1)
                          + visible_cols * table_column_pad * 2)
+      table_padding += self.attributes.get('margin', 0)
       total_col_width = self._console_attr.GetTermSize()[0] - table_padding
       if total_col_width < sum(col_widths):
         non_wrappable_width = sum(

@@ -43,23 +43,85 @@ class StyleMapping(object):
 
 STYLE_MAPPINGS_BASIC = StyleMapping({
     text.TextTypes.RESOURCE_NAME: text.TextAttributes('[{}]'),
+    text.TextTypes.OUTPUT: text.TextAttributes('{}'),
     text.TextTypes.USER_INPUT: text.TextAttributes('{}'),
+    text.TextTypes.URI: text.TextAttributes('{}'),
+    text.TextTypes.URL: text.TextAttributes('{}'),
+    text.TextTypes.COMMAND: text.TextAttributes('{}'),
+    text.TextTypes.INFO: text.TextAttributes('{}'),
 })
 
 
 STYLE_MAPPINGS_ANSI = StyleMapping({
     text.TextTypes.RESOURCE_NAME: text.TextAttributes(
-        '[{}]', color=ansi.Colors.BLUE, attrs=[]),
+        '[{}]',
+        color=ansi.Colors.BLUE,
+        attrs=[]),
+    text.TextTypes.OUTPUT: text.TextAttributes(
+        '[{}]',
+        color=ansi.Colors.BLUE,
+        attrs=[]),
     text.TextTypes.USER_INPUT: text.TextAttributes(
-        '{}', color=None, attrs=[ansi.Attrs.BOLD]),
+        '{}',
+        color=ansi.Colors.CYAN,
+        attrs=[ansi.Attrs.BOLD]),
+    text.TextTypes.URI: text.TextAttributes(
+        '{}',
+        color=None,
+        attrs=[]),
+    text.TextTypes.URL: text.TextAttributes(
+        '{}',
+        color=None,
+        attrs=[ansi.Attrs.UNDERLINE]),
     text.TextTypes.COMMAND: text.TextAttributes(
-        '{}', color=None, attrs=[ansi.Attrs.ITALICS]),
+        '{}',
+        color=ansi.Colors.GREEN,
+        attrs=[]),
+    text.TextTypes.INFO: text.TextAttributes(
+        '{}',
+        color=ansi.Colors.YELLOW,
+        attrs=[]),
+})
+
+
+STYLE_MAPPINGS_ANSI_256 = StyleMapping({
+    text.TextTypes.RESOURCE_NAME: text.TextAttributes(
+        '[{}]',
+        color=ansi.Colors.COLOR_33,
+        attrs=[]),
+    text.TextTypes.OUTPUT: text.TextAttributes(
+        '[{}]',
+        color=ansi.Colors.COLOR_33,
+        attrs=[]),
+    text.TextTypes.USER_INPUT: text.TextAttributes(
+        '{}',
+        color=ansi.Colors.COLOR_81,
+        attrs=[ansi.Attrs.BOLD]),
+    text.TextTypes.URI: text.TextAttributes(
+        '{}',
+        color=None,
+        attrs=[]),
+    text.TextTypes.URL: text.TextAttributes(
+        '{}',
+        color=None,
+        attrs=[ansi.Attrs.UNDERLINE]),
+    text.TextTypes.COMMAND: text.TextAttributes(
+        '{}',
+        color=ansi.Colors.COLOR_34,
+        attrs=[]),
+    text.TextTypes.INFO: text.TextAttributes(
+        '{}',
+        color=ansi.Colors.COLOR_167,
+        attrs=[]),
 })
 
 
 def GetStyleMappings(console_attributes=None):
   console_attributes = console_attributes or console_attr.GetConsoleAttr()
   if console_attributes.SupportsAnsi():
-    return STYLE_MAPPINGS_ANSI
+    if console_attributes._term == 'xterm-256color':  # pylint: disable=protected-access
+      return STYLE_MAPPINGS_ANSI_256
+    else:
+      return STYLE_MAPPINGS_ANSI
   else:
     return STYLE_MAPPINGS_BASIC

@@ -30,6 +30,7 @@ import errno
 import os
 import sys
 
+from googlecloudsdk.api_lib.iamcredentials import util as iamcred_util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import cli
 from googlecloudsdk.command_lib import crash_handling
@@ -128,6 +129,9 @@ def main(gcloud_cli=None, credential_providers=None):
   ]
   for provider in credential_providers:
     provider.Register()
+  # Register support for service account impersonation.
+  creds_store.IMPERSONATION_TOKEN_PROVIDER = (
+      iamcred_util.ImpersonationAccessTokenProvider())
 
   try:
     try:

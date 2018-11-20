@@ -55,6 +55,7 @@ class TableAttributes(object):
     box: True if table and rows framed by box.
     columns: The list of column attributes.
     heading: The number of non-empty headings.
+    margin: Extra margin to handle post-processing indent.
   """
 
   def __init__(self, box=False):
@@ -69,25 +70,29 @@ class TableAttributes(object):
     self.columns.append(
         TableColumnAttributes(align=align, label=label, width=width))
 
-  def GetPrintFormat(self):
+  def GetPrintFormat(self, margin=0):
     """Constructs and returns a resource_printer print format."""
     fmt = ['table']
     attr = []
     if self.box:
-      attr += 'box'
+      attr.append('box')
     if not self.heading:
-      attr += 'no-heading'
+      attr.append('no-heading')
+    if margin:
+      attr.append('margin={}'.format(margin))
     if attr:
-      fmt += '[' + ','.join(attr) + ']'
-    fmt += '('
+      fmt.append('[' + ','.join(attr) + ']')
+    fmt.append('(')
     for index, column in enumerate(self.columns):
       if index:
-        fmt += ','
-      fmt += '[{}]:label={}:align={}'.format(
-          index, repr(column.label or '').lstrip('u'), column.align)
+        fmt.append(',')
+      fmt.append('[{}]:label={}:align={}'.format(
+          index, repr(column.label or '').lstrip('u'), column.align))
       if column.width:
-        fmt += ':width={}'.format(column.width)
-    fmt += ')'
+        fmt.append(':width={}'.format(column.width))
+    if margin:
+      fmt.append(':wrap')
+    fmt.append(')')
     return ''.join(fmt)
 
 
@@ -228,8 +233,9 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
     """
     self.Line()
     indent = self._indent[self._level].indent + 2
+    margin = indent if any([True for r in rows if ' ' in r[-1]]) else 0
     buf = io.StringIO()
-    resource_printer.Print(rows, table.GetPrintFormat(), out=buf)
+    resource_printer.Print(rows, table.GetPrintFormat(margin=margin), out=buf)
     for line in buf.getvalue().split('\n')[:-1]:
       self.TableLine(line, indent=indent)
     self.Content()

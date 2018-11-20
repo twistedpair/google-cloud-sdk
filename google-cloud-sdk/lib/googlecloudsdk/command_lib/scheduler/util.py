@@ -18,8 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import base64
-
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
@@ -70,37 +68,6 @@ def ModifyCreatePubsubJobRequest(job_ref, args, create_job_req):
   if args.attributes:
     create_job_req.job.pubsubTarget.attributes = args.attributes
   return create_job_req
-
-
-def ParseMessageBody(message_body):
-  """Parse "--message-body" flag as an argparse type.
-
-  The flag is given as a string:
-
-      --message-body 'some data'
-
-  Args:
-    message_body: str, the value of the --message-body flag.
-
-  Returns:
-    AdditionalProperty, a cloudscheduler additional property object with
-        'data' as a key, and a JSON object (with a base64-encoded string value)
-        as the value.
-  """
-  pubsub_messages = _GetPubsubMessages()
-
-  # First, put into a PubsubMessage to make sure we've got the general format
-  # right.
-  pubsub_message = pubsub_messages.PubsubMessage(
-      data=http_encoding.Encode(message_body))
-
-  encoded_data = base64.urlsafe_b64encode(pubsub_message.data)
-  encoded_data = http_encoding.Decode(encoded_data)
-  return encoded_data
-
-
-def ParseMessageBodyFromFile(path):
-  return ParseMessageBody(arg_parsers.BufferedFileInput()(path))
 
 
 def ParseAttributes(attributes):

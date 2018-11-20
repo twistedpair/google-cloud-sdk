@@ -938,15 +938,6 @@ class CLI(object):
     if not args:
       args = sys.argv[1:]
 
-    # help ... is the same as ... --help or ... --document=style=help. We use
-    # --document=style=help to signal the metrics.Help() 'help' label in
-    # actions.RenderDocumentAction().Action(). It doesn't matter if we append
-    # to a command that already has --help or --document=style=... because the
-    # first --help/--document from the left takes effect. Note that
-    # `help ... --help` produces help for the help command itself.
-    if args and args[0] == 'help' and '--help' not in args:
-      args = args[1:] + ['--document=style=help']
-
     # Look for a --configuration flag and update property state based on
     # that before proceeding to the main argparse parse step.
     named_configs.FLAG_OVERRIDE_STACK.PushFromArgs(args)

@@ -2439,6 +2439,13 @@
           "items": {
             "$ref": "GoogleCloudVisionV1p1beta1Vertex"
           }
+        },
+        "normalizedVertices": {
+          "description": "The bounding polygon normalized vertices.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudVisionV1p1beta1NormalizedVertex"
+          }
         }
       }
     },
@@ -2456,6 +2463,23 @@
           "description": "Y coordinate.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudVisionV1p1beta1NormalizedVertex": {
+      "id": "GoogleCloudVisionV1p1beta1NormalizedVertex",
+      "description": "A vertex represents a 2D point in the image.\nNOTE: the normalized vertex coordinates are relative to the original image\nand range from 0 to 1.",
+      "type": "object",
+      "properties": {
+        "x": {
+          "description": "X coordinate.",
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "description": "Y coordinate.",
+          "type": "number",
+          "format": "float"
         }
       }
     },

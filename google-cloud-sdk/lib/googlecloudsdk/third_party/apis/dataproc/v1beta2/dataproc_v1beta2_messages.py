@@ -1789,6 +1789,9 @@ class Job(_messages.Message):
       status information may be contained in the <code>type_job</code> and
       <code>yarn_applications</code> fields.
     statusHistory: Output only. The previous job status.
+    submittedBy: Output only. The email address of the user submitting the
+      job. For jobs submitted on the cluster, the address is
+      <code>username@hostname</code>.
     yarnApplications: Output only. The collection of YARN applications spun up
       by this job.Beta Feature: This report is available for testing purposes
       only. It may be changed before final release.
@@ -1839,7 +1842,8 @@ class Job(_messages.Message):
   sparkSqlJob = _messages.MessageField('SparkSqlJob', 14)
   status = _messages.MessageField('JobStatus', 15)
   statusHistory = _messages.MessageField('JobStatus', 16, repeated=True)
-  yarnApplications = _messages.MessageField('YarnApplication', 17, repeated=True)
+  submittedBy = _messages.StringField(17)
+  yarnApplications = _messages.MessageField('YarnApplication', 18, repeated=True)
 
 
 class JobPlacement(_messages.Message):

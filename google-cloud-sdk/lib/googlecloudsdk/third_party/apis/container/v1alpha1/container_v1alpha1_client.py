@@ -38,6 +38,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
     self.projects_aggregated_usableSubnetworks = self.ProjectsAggregatedUsableSubnetworksService(self)
     self.projects_aggregated = self.ProjectsAggregatedService(self)
     self.projects_locations_clusters_nodePools = self.ProjectsLocationsClustersNodePoolsService(self)
+    self.projects_locations_clusters_well_known = self.ProjectsLocationsClustersWellKnownService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -345,6 +346,45 @@ This will be an no-op if the last upgrade successfully completed.
         request_field='<request>',
         request_type_name=u'UpdateNodePoolRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsClustersWellKnownService(base_api.BaseApiService):
+    """Service class for the projects_locations_clusters_well_known resource."""
+
+    _NAME = u'projects_locations_clusters_well_known'
+
+    def __init__(self, client):
+      super(ContainerV1alpha1.ProjectsLocationsClustersWellKnownService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetOpenid_configuration(self, request, global_params=None):
+      r"""GetOpenIDConfiguration gets the OIDC discovery document for the cluster.
+See the OpenID Connect Discovery 1.0 specification for details.
+https://openid.net/specs/openid-connect-discovery-1_0.html
+
+      Args:
+        request: (ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetOpenIDConfigurationResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetOpenid_configuration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOpenid_configuration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/well-known/openid-configuration',
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.well-known.getOpenid-configuration',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/well-known/openid-configuration',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest',
+        response_type_name=u'GetOpenIDConfigurationResponse',
         supports_download=False,
     )
 

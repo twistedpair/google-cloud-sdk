@@ -967,10 +967,12 @@ class GoogleCloudVisionV1p1beta1BoundingPoly(_messages.Message):
   r"""A bounding polygon for the detected image annotation.
 
   Fields:
+    normalizedVertices: The bounding polygon normalized vertices.
     vertices: The bounding polygon vertices.
   """
 
-  vertices = _messages.MessageField('GoogleCloudVisionV1p1beta1Vertex', 1, repeated=True)
+  normalizedVertices = _messages.MessageField('GoogleCloudVisionV1p1beta1NormalizedVertex', 1, repeated=True)
+  vertices = _messages.MessageField('GoogleCloudVisionV1p1beta1Vertex', 2, repeated=True)
 
 
 class GoogleCloudVisionV1p1beta1ColorInfo(_messages.Message):
@@ -1475,6 +1477,19 @@ class GoogleCloudVisionV1p1beta1LocationInfo(_messages.Message):
   """
 
   latLng = _messages.MessageField('LatLng', 1)
+
+
+class GoogleCloudVisionV1p1beta1NormalizedVertex(_messages.Message):
+  r"""A vertex represents a 2D point in the image. NOTE: the normalized vertex
+  coordinates are relative to the original image and range from 0 to 1.
+
+  Fields:
+    x: X coordinate.
+    y: Y coordinate.
+  """
+
+  x = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  y = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudVisionV1p1beta1OperationMetadata(_messages.Message):

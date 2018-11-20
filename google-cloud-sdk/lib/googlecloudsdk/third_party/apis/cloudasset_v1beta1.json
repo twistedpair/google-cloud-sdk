@@ -464,48 +464,19 @@
     }
   },
   "resources": {
-    "operations": {
-      "methods": {
-        "get": {
-          "id": "cloudasset.operations.get",
-          "path": "v1beta1/{+name}",
-          "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}/operations/{operationsId}/{operationsId1}",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource.",
-              "location": "path",
-              "required": true,
-              "pattern": "^[^\/]+\/[^\/]+\/operations\/[^\/]+\/[^\/]+$",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
-        }
-      }
-    },
-    "v1beta1": {
+    "projects": {
       "methods": {
         "exportAssets": {
-          "id": "cloudasset.exportAssets",
+          "id": "cloudasset.projects.exportAssets",
           "path": "v1beta1/{+parent}:exportAssets",
-          "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}:exportAssets",
+          "flatPath": "v1beta1/projects/{projectsId}:exportAssets",
           "httpMethod": "POST",
           "parameters": {
             "parent": {
               "description": "Required. The relative name of the root asset. This can only be an organization\nnumber (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\"), or a project number (such as \"projects\/12345\").",
               "location": "path",
               "required": true,
-              "pattern": "^[^\/]+\/[^\/]+$",
+              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             }
           },
@@ -524,16 +495,16 @@
           "description": "Exports assets with time and resource types to a given Cloud Storage\nlocation. The output format is newline-delimited JSON.\nThis API implements the google.longrunning.Operation API allowing you\nto keep track of the export."
         },
         "batchGetAssetsHistory": {
-          "id": "cloudasset.batchGetAssetsHistory",
+          "id": "cloudasset.projects.batchGetAssetsHistory",
           "path": "v1beta1/{+parent}:batchGetAssetsHistory",
-          "flatPath": "v1beta1/{v1beta1Id}/{v1beta1Id1}:batchGetAssetsHistory",
+          "flatPath": "v1beta1/projects/{projectsId}:batchGetAssetsHistory",
           "httpMethod": "GET",
           "parameters": {
             "parent": {
               "description": "Required. The relative name of the root asset. It can only be an\norganization number (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\")\", or a project number (such as \"projects\/12345\").",
               "location": "path",
               "required": true,
-              "pattern": "^[^\/]+\/[^\/]+$",
+              "pattern": "^projects\/[^\/]+$",
               "type": "string"
             },
             "assetNames": {
@@ -575,6 +546,155 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Batch gets the update history of assets that overlap a time window.\nFor RESOURCE content, this API outputs history with asset in both\nnon-delete or deleted status.\nFor IAM_POLICY content, this API outputs history when the asset and its\nattached IAM POLICY both exist. This can create gaps in the output history."
+        }
+      }
+      ,
+      "resources": {
+        "operations": {
+          "methods": {
+            "get": {
+              "id": "cloudasset.projects.operations.get",
+              "path": "v1beta1/{+name}",
+              "flatPath": "v1beta1/projects/{projectsId}/operations/{operationsId}/{operationsId1}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+            }
+          }
+        }
+      }
+    },
+    "organizations": {
+      "methods": {
+        "exportAssets": {
+          "id": "cloudasset.organizations.exportAssets",
+          "path": "v1beta1/{+parent}:exportAssets",
+          "flatPath": "v1beta1/organizations/{organizationsId}:exportAssets",
+          "httpMethod": "POST",
+          "parameters": {
+            "parent": {
+              "description": "Required. The relative name of the root asset. This can only be an organization\nnumber (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\"), or a project number (such as \"projects\/12345\").",
+              "location": "path",
+              "required": true,
+              "pattern": "^organizations\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "request": {
+            "$ref": "ExportAssetsRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Exports assets with time and resource types to a given Cloud Storage\nlocation. The output format is newline-delimited JSON.\nThis API implements the google.longrunning.Operation API allowing you\nto keep track of the export."
+        },
+        "batchGetAssetsHistory": {
+          "id": "cloudasset.organizations.batchGetAssetsHistory",
+          "path": "v1beta1/{+parent}:batchGetAssetsHistory",
+          "flatPath": "v1beta1/organizations/{organizationsId}:batchGetAssetsHistory",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "Required. The relative name of the root asset. It can only be an\norganization number (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\")\", or a project number (such as \"projects\/12345\").",
+              "location": "path",
+              "required": true,
+              "pattern": "^organizations\/[^\/]+$",
+              "type": "string"
+            },
+            "assetNames": {
+              "description": "A list of the full names of the assets. For example:\n`\/\/compute.googleapis.com\/projects\/my_project_123\/zones\/zone1\/instances\/instance1`.\nSee [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name)\nfor more info.\n\nThe request becomes a no-op if the asset name list is empty, and the max\nsize of the asset name list is 100 in one request.",
+              "location": "query",
+              "repeated": true,
+              "type": "string"
+            },
+            "contentType": {
+              "description": "Required. The content type.",
+              "location": "query",
+              "type": "string",
+              "enum": [
+                "CONTENT_TYPE_UNSPECIFIED",
+                "RESOURCE",
+                "IAM_POLICY"
+              ]
+            },
+            "readTimeWindow.startTime": {
+              "description": "Start time of the time window (exclusive).",
+              "location": "query",
+              "type": "string",
+              "format": "google-datetime"
+            },
+            "readTimeWindow.endTime": {
+              "description": "End time of the time window (inclusive).\nCurrent timestamp if not specified.",
+              "location": "query",
+              "type": "string",
+              "format": "google-datetime"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "response": {
+            "$ref": "BatchGetAssetsHistoryResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Batch gets the update history of assets that overlap a time window.\nFor RESOURCE content, this API outputs history with asset in both\nnon-delete or deleted status.\nFor IAM_POLICY content, this API outputs history when the asset and its\nattached IAM POLICY both exist. This can create gaps in the output history."
+        }
+      }
+      ,
+      "resources": {
+        "operations": {
+          "methods": {
+            "get": {
+              "id": "cloudasset.organizations.operations.get",
+              "path": "v1beta1/{+name}",
+              "flatPath": "v1beta1/organizations/{organizationsId}/operations/{operationsId}/{operationsId1}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+            }
+          }
         }
       }
     }

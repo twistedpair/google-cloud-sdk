@@ -212,12 +212,15 @@ def ArgsForExecutableTool(executable_path, *args):
 
 
 class _ProcessHolder(object):
+  """Process holder that can handle signals raised during processing."""
 
   def __init__(self):
     self.process = None
+    self.signum = None
 
-  # pylint: disable=unused-argument
-  def Handler(self, signum, frame):
+  def Handler(self, signum, unused_frame):
+    """Handle the intercepted signal."""
+    self.signum = signum
     if self.process:
       log.debug('Subprocess [{pid}] got [{signum}]'.format(
           signum=signum,
@@ -232,8 +235,7 @@ class _ProcessHolder(object):
       # process).
       if self.process.poll() is None:
         self.process.terminate()
-      ret_val = self.process.wait()
-      sys.exit(ret_val)
+      # The return code will be checked later in the normal processing flow.
 
 
 @contextlib.contextmanager
@@ -312,6 +314,13 @@ def Exec(args,
         raise
       process_holder.process = p
 
+      if process_holder.signum is not None:
+        # This covers the small possibility that process_holder handled a
+        # signal when the process was starting but not yet set to
+        # process_holder.process.
+        if p.poll() is None:
+          p.terminate()
+
       if isinstance(in_str, six.text_type):
         in_str = in_str.encode('utf-8')
       stdout, stderr = list(map(encoding.Decode, p.communicate(input=in_str)))
@@ -322,7 +331,7 @@ def Exec(args,
         err_func(stderr)
       ret_val = p.returncode
 
-  if no_exit:
+  if no_exit and process_holder.signum is None:
     return ret_val
   sys.exit(ret_val)
 

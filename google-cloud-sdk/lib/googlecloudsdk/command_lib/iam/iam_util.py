@@ -1127,6 +1127,12 @@ def EmailAndKeyToResourceName(email, key):
   return 'projects/-/serviceAccounts/{0}/keys/{1}'.format(email, key)
 
 
+def EmailAndIdentityBindingToResourceName(email, identity_binding):
+  """Turns an email and identity binding id into a key resource name."""
+  return 'projects/-/serviceAccounts/{0}/identityBindings/{1}'.format(
+      email, identity_binding)
+
+
 def GetKeyIdFromResourceName(name):
   """Gets the key id from a resource name. No validation is done."""
   return name.split('/')[5]

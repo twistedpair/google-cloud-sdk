@@ -1617,14 +1617,14 @@ def AddIstioConfigFlag(parser, suppressed=False):
 Configurations for Istio addon, requires --addons contains Istio for create,
 or --update-addons Istio=ENABLED for update.
 
-*auth*:::Optional Type of auth NONE or MUTUAL_TLS
+*auth*:::Optional Type of auth MTLS_PERMISSIVE or MTLS_STRICT
 Example:
 
-  $ {command} example-cluster --istio-config=auth=NONE
+  $ {command} example-cluster --istio-config=auth=MTLS_PERMISSIVE
 """
   parser.add_argument(
       '--istio-config',
-      metavar='auth=NONE',
+      metavar='auth=MTLS_PERMISSIVE',
       type=arg_parsers.ArgDict(
           spec={
               'auth': (lambda x: x.upper()),
@@ -1640,15 +1640,15 @@ def ValidateIstioConfigCreateArgs(istio_config_args, addons_args):
     istio_config_args: parsed comandline arguments for --istio_config.
     addons_args: parsed comandline arguments for --addons.
   Raises:
-    InvalidArgumentException: when auth is not NONE nor MUTUAL_TLS, or
-    --addon=Istio is not specified
+    InvalidArgumentException: when auth is not MTLS_PERMISSIVE nor MTLS_STRICT,
+    or --addon=Istio is not specified
   """
   if istio_config_args:
     auth = istio_config_args.get('auth', '')
-    if auth not in ['NONE', 'MUTUAL_TLS']:
+    if auth not in ['MTLS_PERMISSIVE', 'MTLS_STRICT']:
       raise exceptions.InvalidArgumentException(
-          '--istio-config', 'auth is either NONE or MUTUAL_TLS '
-          'e.g. --istio-config auth=NONE')
+          '--istio-config', 'auth is either MTLS_PERMISSIVE or MTLS_STRICT'
+          'e.g. --istio-config auth=MTLS_PERMISSIVE')
     if 'Istio' not in addons_args:
       raise exceptions.InvalidArgumentException(
           '--istio-config', '--addon=Istio must be specified when '
@@ -1662,15 +1662,15 @@ def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
     istio_config_args: parsed comandline arguments for --istio_config.
     disable_addons_args: parsed comandline arguments for --update-addons.
   Raises:
-    InvalidArgumentException: when auth is not NONE nor MUTUAL_TLS, or
-    --update-addons=Istio=ENABLED is not specified
+    InvalidArgumentException: when auth is not MTLS_PERMISSIVE nor MTLS_STRICT,
+    or --update-addons=Istio=ENABLED is not specified
   """
   if istio_config_args:
     auth = istio_config_args.get('auth', '')
-    if auth not in ['NONE', 'MUTUAL_TLS']:
+    if auth not in ['MTLS_PERMISSIVE', 'MTLS_STRICT']:
       raise exceptions.InvalidArgumentException(
-          '--istio-config', 'auth must be one of NONE or MUTUAL_TLS '
-          'e.g. --istio-config auth=NONE')
+          '--istio-config', 'auth must be one of MTLS_PERMISSIVE or '
+          'MTLS_STRICT e.g. --istio-config auth=MTLS_PERMISSIVE')
     disable_istio = disable_addons_args.get('Istio')
     if disable_istio is None or disable_istio:
       raise exceptions.InvalidArgumentException(

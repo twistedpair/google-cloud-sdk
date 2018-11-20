@@ -31,7 +31,7 @@ Usage:
     command = <the next command line to run>
     try:
       command_exit_status = cosh.Run(command)
-    except coshell.CoshellExitException:
+    except coshell.CoshellExitError:
       break
   coshell_exit_status = cosh.Close()
 
@@ -302,11 +302,11 @@ __coshell_init_completions__
 """
 
 
-class CoshellExitException(Exception):
+class CoshellExitError(Exception):
   """The coshell exited."""
 
   def __init__(self, message, status=None):
-    super(CoshellExitException, self).__init__(message)
+    super(CoshellExitError, self).__init__(message)
     self.status = status
 
 
@@ -453,7 +453,7 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
       # Yeah, ValueError for IO on a closed file.
       pass
     status = self._ShellStatus(self._shell.returncode)
-    raise CoshellExitException(
+    raise CoshellExitError(
         'The coshell exited [status={}].'.format(status),
         status=status)
 
@@ -462,8 +462,8 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
     return self._Decode(self._shell.stdout.readline()).strip()
 
   def _ReadStatusChar(self):
-    """Reads and returns one decoded character from the coshell status fd."""
-    return self._Decode(os.read(self._status_fd, 1))
+    """Reads and returns one encoded character from the coshell status fd."""
+    return os.read(self._status_fd, 1)
 
   def _WriteLine(self, line):
     """Writes an encoded line to the coshell."""
@@ -481,13 +481,14 @@ class _UnixCoshellBase(six.with_metaclass(abc.ABCMeta, _CoshellBase)):
   def _GetStatus(self):
     """Gets the status of the last command sent to the coshell."""
     line = []
+    shell_status_exit = self.SHELL_STATUS_EXIT.encode('ascii')
     while True:
       c = self._ReadStatusChar()
-      if c in (None, '\n', self.SHELL_STATUS_EXIT):
+      if c in (None, b'\n', shell_status_exit):
         break
       line.append(c)
-    status_string = ''.join(line)
-    if not status_string.isdigit() or c == self.SHELL_STATUS_EXIT:
+    status_string = self._Decode(b''.join(line))
+    if not status_string.isdigit() or c == shell_status_exit:
       self._Exited()
     return int(status_string)
 
@@ -713,10 +714,10 @@ class _UnixCoshell(_UnixCoshellBase):
       except (IOError, OSError, ValueError):
         # Yeah, ValueError for IO on a closed file.
         self._Exited()
-      if c in (None, '\n'):
+      if c in (None, b'\n'):
         if not line:
           break
-        lines.append(''.join(line).rstrip())
+        lines.append(self._Decode(b''.join(line).rstrip()))
         line = []
       else:
         line.append(c)

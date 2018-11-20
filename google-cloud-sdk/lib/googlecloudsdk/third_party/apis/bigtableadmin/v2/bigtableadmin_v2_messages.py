@@ -957,7 +957,7 @@ class GetIamPolicyRequest(_messages.Message):
 
 class Instance(_messages.Message):
   r"""A collection of Bigtable Tables and the resources that serve them. All
-  tables in an instance are served from a single Cluster.
+  tables in an instance are served from all Clusters in the instance.
 
   Enums:
     StateValueValuesEnum: (`OutputOnly`) The current state of the instance.
