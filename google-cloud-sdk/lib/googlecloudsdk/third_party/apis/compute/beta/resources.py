@@ -38,6 +38,13 @@ class Collections(enum.Enum):
       [u'project', u'region', u'address'],
       True
   )
+  ALLOCATIONS = (
+      'allocations',
+      'projects/{project}/zones/{zone}/allocations/{allocation}',
+      {},
+      [u'project', u'zone', u'allocation'],
+      True
+  )
   AUTOSCALERS = (
       'autoscalers',
       'projects/{project}/zones/{zone}/autoscalers/{autoscaler}',

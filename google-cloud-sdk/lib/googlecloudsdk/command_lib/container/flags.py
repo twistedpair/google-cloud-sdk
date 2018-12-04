@@ -1163,6 +1163,7 @@ When specified, the nodes for the new node pool will be scheduled on host with
 specified CPU architecture or a newer one.
 
 Examples:
+
   $ {command} node-pool-1 --cluster=example-cluster --min-cpu-platform=PLATFORM
 
 """
@@ -1172,6 +1173,7 @@ When specified, the nodes for the new cluster's default node pool will be
 scheduled on host with specified CPU architecture or a newer one.
 
 Examples:
+
   $ {command} example-cluster --min-cpu-platform=PLATFORM
 
 """
@@ -1716,8 +1718,8 @@ The list of predefined machine types is available using the following command:
   $ gcloud compute machine-types list
 
 You can also specify custom machine types with the string "custom-CPUS-RAM"
-where ``CPUS`` is the number of virtual CPUs and ``RAM`` is the amount of RAM in
-MiB.
+where ```CPUS``` is the number of virtual CPUs and ```RAM``` is the amount of
+RAM in MiB.
 
 For example, to create a node pool using custom machines with 2 vCPUs and 12 GB
 of RAM:
@@ -1809,8 +1811,6 @@ Network egress metering is disabled if this flag is omitted, or when
       '--enable-network-egress-metering',
       action='store_true',
       default=None,
-      # TODO(b/118979273) unhide this flag once the GKE backend is ready.
-      hidden=True,
       help=network_egress_help_text)
 
 

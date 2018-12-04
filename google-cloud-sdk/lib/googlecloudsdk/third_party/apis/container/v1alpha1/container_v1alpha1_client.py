@@ -375,13 +375,13 @@ https://openid.net/specs/openid-connect-discovery-1_0.html
           config, request, global_params=global_params)
 
     GetOpenid_configuration.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/well-known/openid-configuration',
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/.well-known/openid-configuration',
         http_method=u'GET',
         method_id=u'container.projects.locations.clusters.well-known.getOpenid-configuration',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
         query_params=[],
-        relative_path=u'v1alpha1/{+parent}/well-known/openid-configuration',
+        relative_path=u'v1alpha1/{+parent}/.well-known/openid-configuration',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest',
         response_type_name=u'GetOpenIDConfigurationResponse',
@@ -523,6 +523,34 @@ at the initial create time.
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersGetRequest',
         response_type_name=u'Cluster',
+        supports_download=False,
+    )
+
+    def GetJwks(self, request, global_params=None):
+      r"""GetJSONWebKeys gets the public component of the cluster signing keys in.
+JSON Web Key format.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersGetJwksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetJSONWebKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetJwks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetJwks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/jwks',
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.getJwks',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/jwks',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersGetJwksRequest',
+        response_type_name=u'GetJSONWebKeysResponse',
         supports_download=False,
     )
 

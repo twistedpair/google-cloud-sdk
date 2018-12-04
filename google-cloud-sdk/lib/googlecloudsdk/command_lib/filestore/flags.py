@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.command_lib.projects import resource_args
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
@@ -55,7 +54,7 @@ def GetLocationResourceSpec():
   return concepts.ResourceSpec(
       'file.projects.locations',
       'location',
-      projectsId=resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=location_attribute_config)
 
 
@@ -67,7 +66,7 @@ def GetListingLocationResourceSpec():
   return concepts.ResourceSpec(
       'file.projects.locations',
       'location',
-      projectsId=resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=location_attribute_config)
 
 
@@ -75,7 +74,7 @@ def GetInstanceResourceSpec():
   return concepts.ResourceSpec(
       'file.projects.locations.instances',
       'instance',
-      projectsId=resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
       instancesId=GetInstanceAttributeConfig())
 
@@ -84,7 +83,7 @@ def GetOperationResourceSpec():
   return concepts.ResourceSpec(
       'file.projects.locations.operations',
       'operation',
-      projectsId=resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=GetLocationAttributeConfig(),
       operationsId=GetOperationAttributeConfig())
 

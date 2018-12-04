@@ -323,20 +323,21 @@ class DnsKeySpec(_messages.Message):
   Enums:
     AlgorithmValueValuesEnum: String mnemonic specifying the DNSSEC algorithm
       of this key.
-    KeyTypeValueValuesEnum: One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of
-      type KEY_SIGNING have the Secure Entry Point flag set and, when active,
-      will be used to sign only resource record sets of type DNSKEY.
-      Otherwise, the Secure Entry Point flag will be cleared and this key will
-      be used to sign only resource record sets of other types.
+    KeyTypeValueValuesEnum: Specifies whether this is a key signing key (KSK)
+      or a zone signing key (ZSK). Key signing keys have the Secure Entry
+      Point flag set and, when active, will only be used to sign resource
+      record sets of type DNSKEY. Zone signing keys do not have the Secure
+      Entry Point flag set and will be used to sign all other types of
+      resource record sets.
 
   Fields:
     algorithm: String mnemonic specifying the DNSSEC algorithm of this key.
     keyLength: Length of the keys in bits.
-    keyType: One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING
-      have the Secure Entry Point flag set and, when active, will be used to
-      sign only resource record sets of type DNSKEY. Otherwise, the Secure
-      Entry Point flag will be cleared and this key will be used to sign only
-      resource record sets of other types.
+    keyType: Specifies whether this is a key signing key (KSK) or a zone
+      signing key (ZSK). Key signing keys have the Secure Entry Point flag set
+      and, when active, will only be used to sign resource record sets of type
+      DNSKEY. Zone signing keys do not have the Secure Entry Point flag set
+      and will be used to sign all other types of resource record sets.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#dnsKeySpec".
   """
@@ -358,11 +359,11 @@ class DnsKeySpec(_messages.Message):
     rsasha512 = 4
 
   class KeyTypeValueValuesEnum(_messages.Enum):
-    r"""One of "KEY_SIGNING" or "ZONE_SIGNING". Keys of type KEY_SIGNING have
-    the Secure Entry Point flag set and, when active, will be used to sign
-    only resource record sets of type DNSKEY. Otherwise, the Secure Entry
-    Point flag will be cleared and this key will be used to sign only resource
-    record sets of other types.
+    r"""Specifies whether this is a key signing key (KSK) or a zone signing
+    key (ZSK). Key signing keys have the Secure Entry Point flag set and, when
+    active, will only be used to sign resource record sets of type DNSKEY.
+    Zone signing keys do not have the Secure Entry Point flag set and will be
+    used to sign all other types of resource record sets.
 
     Values:
       keySigning: <no description>

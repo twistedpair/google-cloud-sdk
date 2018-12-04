@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Class for representing Serverless source objects."""
+"""Class for representing Cloud Run source objects."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -25,7 +25,7 @@ from googlecloudsdk.command_lib.run import config_changes
 
 
 class Deployable(config_changes.ConfigChanger):
-  """An object representing a Serverless app, conainer, or function."""
+  """An object representing a Cloud Run app, container, or function."""
 
   @abc.abstractmethod
   def UploadFiles(self):
@@ -50,7 +50,7 @@ class Deployable(config_changes.ConfigChanger):
 
 
 class ServerlessContainer(Deployable):
-  """A Serverless container deployment."""
+  """A Cloud Run container deployment."""
 
   deployment_type = 'container'
 

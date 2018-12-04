@@ -25,7 +25,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
@@ -335,7 +334,7 @@ def GetFunctionResourceSpec():
       'cloudfunctions.projects.locations.functions',
       resource_name='function',
       disable_auto_completers=False,
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=RegionAttributeConfig(),
       functionsId=FunctionAttributeConfig(),
   )

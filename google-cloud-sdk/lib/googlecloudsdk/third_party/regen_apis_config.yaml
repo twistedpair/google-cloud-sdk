@@ -227,6 +227,8 @@ apis:
       resources:
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
+        securityPolicyRules:
+          path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
   container:
     v1:
       discovery_doc: container_v1.json
@@ -310,6 +312,8 @@ apis:
       default: true
     v1beta1:
       discovery_doc: file_v1beta1.json
+    v1:
+      discovery_doc: file_v1.json
   firestore:
     v1beta1:
       discovery_doc: firestore_v1beta1.json
@@ -521,3 +525,6 @@ apis:
   bigquery:
     v2:
       discovery_doc: bigquery_v2.json
+  bigquerydatatransfer:
+    v1:
+      discovery_doc: bigquerydatatransfer_v1.json

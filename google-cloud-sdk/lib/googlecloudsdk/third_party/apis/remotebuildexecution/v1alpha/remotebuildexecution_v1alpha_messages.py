@@ -709,7 +709,10 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messa
   Fields:
     instance: Instance specifies the instance to create. The name in the
       instance, if specified in the Instance, is ignored.
-    instanceId: ID of the created instance.
+    instanceId: ID of the created instance. A valid instance_id must: be 6-50
+      characters long, contains only lowercase letters, digits, hyphens and
+      underscores, start with a lowercase letter, and end with a lowercase
+      letter or a digit.
     parent: parent is the resource name of the project containing the
       instance. Format: 'projects/{project_id}'
   """
@@ -726,7 +729,10 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest(_mes
     parent: parent is the resource name of the Instance in which this
       WorkerPool is created. Format:
       'projects/{project_id}/instances/{instance_id}'
-    poolId: ID of the created WorkerPool.
+    poolId: ID of the created WorkerPool. A valid pool_id must: be 6-50
+      characters long, contains only lowercase letters, digits, hyphens and
+      underscores, start with a lowercase letter, and end with a lowercase
+      letter or a digit.
     workerPool: WorkerPool specifies the WorkerPool to create. The name in the
       WorkerPool, if specified, is ignored.
   """
@@ -740,7 +746,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteInstanceRequest(_messa
   r"""The request used for DeleteInstance.
 
   Fields:
-    name: name is the resource name of the Instance to delete.
+    name: name is the resource name of the Instance to delete. Format:
+      'projects/{project_id}/instances/{instance_id}'.
   """
 
   name = _messages.StringField(1)
@@ -750,7 +757,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteWorkerPoolRequest(_mes
   r"""The request used for DeleteWorkerPool.
 
   Fields:
-    name: name is the resource name of the WorkerPool to delete.
+    name: name is the resource name of the WorkerPool to delete. Format:
+      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
   """
 
   name = _messages.StringField(1)
@@ -760,7 +768,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetInstanceRequest(_messages
   r"""The request used for GetInstance.
 
   Fields:
-    name: name is the resource name of the Instance to retrieve.
+    name: name is the resource name of the Instance to retrieve. Format:
+      'projects/{project_id}/instances/{instance_id}'.
   """
 
   name = _messages.StringField(1)
@@ -770,7 +779,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetWorkerPoolRequest(_messag
   r"""The request used for GetWorkerPool.
 
   Fields:
-    name: name is the resource name of the WorkerPool to retrieve.
+    name: name is the resource name of the WorkerPool to retrieve. Format:
+      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
   """
 
   name = _messages.StringField(1)
@@ -788,7 +798,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
   Fields:
     location: The location is a GCP region (e.g. "us-central1").
     name: Output only. Instance resource name formatted as:
-      'projects/{project_id}/instances/{instance_id}'
+      'projects/{project_id}/instances/{instance_id}' name should not be
+      populated when creating an instance since it is provided in the
+      instance_id field.
     state: Output only. state of the Instance.
   """
 
@@ -894,12 +906,20 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       See https://cloud.google.com/compute/docs/machine-types.
     minCpuPlatform: Optional. Minimum CPU platform to use when creating the
       worker. See https://cloud.google.com/compute/docs/cpu-platforms.
+    reserved: Optional. Specify whether or not the worker is reserved, i.e.
+      no-preemptible. If true, the worker is reserved and won't be preempted.
+      See https://cloud.google.com/compute/docs/instances/preemptible  This
+      field is supported by UpdateWorkerPool but is currently ignored by
+      CreateWorkerPool. Temporarily, in CreateWorkerPool, the WorkerPool is
+      created with reserved=true regardless of what is specified in
+      CreateWorkerPoolRequest, but this will change soon.
   """
 
   diskSizeGb = _messages.IntegerField(1)
   diskType = _messages.StringField(2)
   machineType = _messages.StringField(3)
   minCpuPlatform = _messages.StringField(4)
+  reserved = _messages.BooleanField(5)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):
@@ -911,9 +931,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
 
   Fields:
     name: WorkerPool resource name formatted as:
-      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'
+      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
+      name should not be populated when creating a worker pool since it is
+      provided in the pool_id field.
     state: Output only. State of the WorkerPool.
-    workerConfig: Worker config specifies the properties used for creating
+    workerConfig: worker_config specifies the properties used for creating
       workers in a WorkerPool.
     workerCount: worker_count is the desired number of workers in the
       WorkerPool. If the actual number of workers does not match this value,
@@ -1901,7 +1923,8 @@ class RemotebuildexecutionProjectsInstancesDeleteRequest(_messages.Message):
   r"""A RemotebuildexecutionProjectsInstancesDeleteRequest object.
 
   Fields:
-    name: name is the resource name of the Instance to delete.
+    name: name is the resource name of the Instance to delete. Format:
+      'projects/{project_id}/instances/{instance_id}'.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1911,7 +1934,8 @@ class RemotebuildexecutionProjectsInstancesGetRequest(_messages.Message):
   r"""A RemotebuildexecutionProjectsInstancesGetRequest object.
 
   Fields:
-    name: name is the resource name of the Instance to retrieve.
+    name: name is the resource name of the Instance to retrieve. Format:
+      'projects/{project_id}/instances/{instance_id}'.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1932,7 +1956,8 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest(_messages.Me
   r"""A RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest object.
 
   Fields:
-    name: name is the resource name of the WorkerPool to delete.
+    name: name is the resource name of the WorkerPool to delete. Format:
+      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1942,7 +1967,8 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest(_messages.Messa
   r"""A RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest object.
 
   Fields:
-    name: name is the resource name of the WorkerPool to retrieve.
+    name: name is the resource name of the WorkerPool to retrieve. Format:
+      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1968,7 +1994,9 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsPatchRequest(_messages.Mes
       GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest
       resource to be passed as the request body.
     name: WorkerPool resource name formatted as:
-      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'
+      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
+      name should not be populated when creating a worker pool since it is
+      provided in the pool_id field.
   """
 
   googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest', 1)

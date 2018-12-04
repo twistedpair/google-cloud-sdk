@@ -335,6 +335,14 @@ class Collections(enum.Enum):
       [u'project', u'securityPolicy'],
       True
   )
+  SECURITYPOLICYRULES = (
+      'securityPolicyRules',
+      'projects/{project}/global/securityPolicies/{securityPolicy}/'
+      'securityPolicyRules/{securityPolicyRule}',
+      {},
+      [u'project', u'securityPolicy', u'securityPolicyRule'],
+      True
+  )
   SNAPSHOTS = (
       'snapshots',
       'projects/{project}/global/snapshots/{snapshot}',

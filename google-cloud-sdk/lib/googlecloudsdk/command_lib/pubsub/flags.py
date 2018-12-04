@@ -169,17 +169,24 @@ def ParseRetentionDurationWithDefault(value):
   return util.FormatDuration(arg_parsers.Duration()(value))
 
 
+def ParseExpirationPeriodWithNeverSentinel(value):
+  if value == subscriptions.NEVER_EXPIRATION_PERIOD_VALUE:
+    return value
+  return util.FormatDuration(arg_parsers.Duration()(value))
+
+
 def AddSubscriptionSettingsFlags(parser, track, is_update=False):
   AddAckDeadlineFlag(parser)
   AddPushEndpointFlag(parser)
-  if track == base.ReleaseTrack.ALPHA or track == base.ReleaseTrack.BETA:
-    if not is_update:
+  if track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
+    if is_update:
+      retention_parser = ParseRetentionDurationWithDefault
+      retention_default_help = 'Specify "default" to use the default value.'
+    else:
       retention_parser = arg_parsers.Duration()
       retention_default_help = ('The default value is 7 days, the minimum is '
                                 '10 minutes, and the maximum is 7 days.')
-    else:
-      retention_parser = ParseRetentionDurationWithDefault
-      retention_default_help = 'Specify "default" to use the default value.'
+
     retention_parser = retention_parser or arg_parsers.Duration()
     parser.add_argument(
         '--retain-acked-messages',
@@ -202,6 +209,15 @@ def AddSubscriptionSettingsFlags(parser, track, is_update=False):
             where UNIT is one of "s", "m", "h", and "d" for seconds,
             seconds, minutes, hours, and days, respectively.  If the unit
             is omitted, seconds is assumed.""".format(retention_default_help))
+    parser.add_argument(
+        '--expiration-period',
+        type=ParseExpirationPeriodWithNeverSentinel,
+        help="""The subscription will expire if it is inactive for the given
+            period. Valid values are strings of the form INTEGER[UNIT], where
+            UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
+            and days, respectively. If the unit is omitted, seconds is
+            assumed. This flag additionally accepts the special value "never" to
+            indicate that the subscription will never expire.""")
 
 
 def AddPublishMessageFlags(parser, add_deprecated=False):

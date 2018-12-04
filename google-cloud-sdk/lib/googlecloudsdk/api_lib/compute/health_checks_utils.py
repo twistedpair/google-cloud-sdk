@@ -19,9 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 THRESHOLD_UPPER_BOUND = 10
@@ -131,12 +129,10 @@ def AddProtocolAgnosticUpdateArgs(parser, protocol_string):
             ' health check. Pass in an empty string to unset.'))
 
 
-def AddHttpRelatedCreationArgs(parser, port_specification=False,
-                               use_serving_port=False):
+def AddHttpRelatedCreationArgs(parser, use_serving_port=False):
   """Adds parser arguments for creation related to HTTP."""
 
-  _AddPortRelatedCreationArgs(parser, port_specification=port_specification,
-                              use_serving_port=use_serving_port)
+  _AddPortRelatedCreationArgs(parser, use_serving_port=use_serving_port)
   AddProxyHeaderRelatedCreateArgs(parser)
 
   parser.add_argument(
@@ -169,10 +165,10 @@ def AddHttpRelatedResponseArg(parser):
       """)
 
 
-def AddHttpRelatedUpdateArgs(parser):
+def AddHttpRelatedUpdateArgs(parser, use_serving_port=False):
   """Adds parser arguments for update subcommands related to HTTP."""
 
-  _AddPortRelatedUpdateArgs(parser)
+  _AddPortRelatedUpdateArgs(parser, use_serving_port=use_serving_port)
   AddProxyHeaderRelatedUpdateArgs(parser)
 
   parser.add_argument(
@@ -193,20 +189,18 @@ def AddHttpRelatedUpdateArgs(parser):
       """)
 
 
-def AddTcpRelatedCreationArgs(parser, port_specification=False,
-                              use_serving_port=False):
+def AddTcpRelatedCreationArgs(parser, use_serving_port=False):
   """Adds parser arguments for creation related to TCP."""
 
-  _AddPortRelatedCreationArgs(parser, port_specification=port_specification,
-                              use_serving_port=use_serving_port)
+  _AddPortRelatedCreationArgs(parser, use_serving_port=use_serving_port)
   AddProxyHeaderRelatedCreateArgs(parser)
   _AddTcpRelatedArgsImpl(add_info_about_clearing=False, parser=parser)
 
 
-def AddTcpRelatedUpdateArgs(parser):
+def AddTcpRelatedUpdateArgs(parser, use_serving_port=False):
   """Adds parser arguments for update subcommands related to TCP."""
 
-  _AddPortRelatedUpdateArgs(parser)
+  _AddPortRelatedUpdateArgs(parser, use_serving_port=use_serving_port)
   AddProxyHeaderRelatedUpdateArgs(parser)
   _AddTcpRelatedArgsImpl(add_info_about_clearing=True, parser=parser)
 
@@ -233,9 +227,10 @@ def AddUdpRelatedArgs(parser, request_and_response_required=True):
       """)
 
 
-def _AddPortRelatedCreationArgs(parser, port_specification=False,
+def _AddPortRelatedCreationArgs(parser,
                                 use_serving_port=False,
-                                port_type='TCP', default_port=80):
+                                port_type='TCP',
+                                default_port=80):
   """Adds parser create subcommand arguments --port and --port-name."""
 
   port_group_help = [
@@ -266,14 +261,11 @@ def _AddPortRelatedCreationArgs(parser, port_specification=False,
       empty.
       """)
 
-  if port_specification:
-    _AddPortSpecificationFlag(port_group)
-
   if use_serving_port:
     _AddUseServingPortFlag(port_group)
 
 
-def _AddPortRelatedUpdateArgs(parser):
+def _AddPortRelatedUpdateArgs(parser, use_serving_port=False):
   """Adds parser update subcommand arguments --port and --port-name."""
 
   port_group = parser.add_group(help=(
@@ -293,6 +285,9 @@ def _AddPortRelatedUpdateArgs(parser):
       empty. Setting this to an empty string will clear any existing
       port-name value.
       """)
+
+  if use_serving_port:
+    _AddUseServingPortFlag(port_group)
 
 
 def _AddTcpRelatedArgsImpl(add_info_about_clearing, parser):
@@ -393,29 +388,6 @@ def CheckProtocolAgnosticArgs(args):
                                             args.unhealthy_threshold))
 
 
-def _AddPortSpecificationFlag(parser):
-  """Adds parser argument for specfiying proxy specification."""
-  choices = {
-      'use-fixed-port': '--port is used for health checking.',
-      'use-named-port': '--port-name is used for health checking.',
-      'use-serving-port': """\
-          For NetworkEndpointGroup, the port specified for each
-          network endpoint is used for health checking. For other backends, the
-          port or named port specified in the Backend Service is used for health
-          checking.
-          """
-  }
-
-  base.ChoiceArgument(
-      '--port-specification',
-      choices=choices,
-      help_str="""\
-      Specifies how port is selected for health checking. If not specified,
-      HTTP2 health check follows behavior specified in --port and -port-name
-      fields.
-      """).AddToParser(parser)
-
-
 def _RaiseBadPortSpecificationError(invalid_flag, port_spec_flag,
                                     invalid_value):
   raise calliope_exceptions.InvalidArgumentException(
@@ -423,43 +395,79 @@ def _RaiseBadPortSpecificationError(invalid_flag, port_spec_flag,
           invalid_flag, invalid_value))
 
 
-def ValidateAndAddPortSpecificationToHealthCheck(args, x_health_check):
+def ValidateAndAddPortSpecificationToHealthCheck(args, x_health_check,
+                                                 supports_port_specification):
   """Modifies the health check as needed and adds port spec to the check."""
-  enum_class = type(x_health_check).PortSpecificationValueValuesEnum
-  if hasattr(args, 'port_specification') and args.port_specification:
-    enum_value = arg_utils.ChoiceToEnum(args.port_specification, enum_class)
-    if enum_value == enum_class.USE_FIXED_PORT:
-      if args.IsSpecified('port_name'):
-        _RaiseBadPortSpecificationError('--port-name', '--port-specification',
-                                        'USE_FIXED_PORT')
-    if enum_value == enum_class.USE_NAMED_PORT:
-      if args.IsSpecified('port'):
-        _RaiseBadPortSpecificationError('--port', '--port-specification',
-                                        'USE_NAMED_PORT')
-      # TODO(b/77489293): Stop overriding default values here.
-      x_health_check.port = None
-    if enum_value == enum_class.USE_SERVING_PORT:
-      if args.IsSpecified('port_name'):
-        _RaiseBadPortSpecificationError('--port-name', '--port-specification',
-                                        'USE_SERVING_PORT')
-      if args.IsSpecified('port'):
-        _RaiseBadPortSpecificationError('--port', '--port-specification',
-                                        'USE_SERVING_PORT')
-      # TODO(b/77489293): Stop overriding default values here.
-      x_health_check.port = None
-    if hasattr(args, 'use_serving_port') and args.use_serving_port:
-      _RaiseBadPortSpecificationError(
-          '--use-serving-port', '--port-specification', enum_value)
-    x_health_check.portSpecification = enum_value
-  elif hasattr(args, 'use_serving_port') and args.use_serving_port:
-    if args.IsSpecified('port_name'):
-      _RaiseBadPortSpecificationError('--port-name', '--use-serving-port',
-                                      '--use-serving-port')
-    if args.IsSpecified('port'):
-      _RaiseBadPortSpecificationError('--port', '--use-serving-port',
-                                      '--use-serving-port')
-    x_health_check.portSpecification = enum_class.USE_SERVING_PORT
+  if args.IsSpecified('port_name') and not args.IsSpecified('port'):
+    # When only portName is specified (port is unspecified), we should remove
+    # port so that its default value doesn't cause port to take precedence.
     x_health_check.port = None
+  if supports_port_specification:
+    enum_class = type(x_health_check).PortSpecificationValueValuesEnum
+    if args.use_serving_port:
+      if args.IsSpecified('port_name'):
+        _RaiseBadPortSpecificationError('--port-name', '--use-serving-port',
+                                        '--use-serving-port')
+      if args.IsSpecified('port'):
+        _RaiseBadPortSpecificationError('--port', '--use-serving-port',
+                                        '--use-serving-port')
+      x_health_check.portSpecification = enum_class.USE_SERVING_PORT
+      x_health_check.port = None
+    else:
+      if args.IsSpecified('port') and args.IsSpecified('port_name'):
+        # Fixed port takes precedence over port name.
+        x_health_check.portSpecification = enum_class.USE_FIXED_PORT
+        x_health_check.portName = None
+      elif args.IsSpecified('port_name'):
+        x_health_check.portSpecification = enum_class.USE_NAMED_PORT
+      else:
+        x_health_check.portSpecification = enum_class.USE_FIXED_PORT
+
+
+def HandlePortRelatedFlagsForUpdate(args, x_health_check,
+                                    supports_port_specification):
+  """Calculate port, port_name and port_specification for HC update."""
+  port = x_health_check.port
+  port_name = x_health_check.portName
+  port_specification = None
+  enum_class = None
+
+  if supports_port_specification:
+    port_specification = x_health_check.portSpecification
+    enum_class = type(x_health_check).PortSpecificationValueValuesEnum
+    if args.use_serving_port:
+      if args.IsSpecified('port_name'):
+        _RaiseBadPortSpecificationError('--port-name', '--use-serving-port',
+                                        '--use-serving-port')
+      if args.IsSpecified('port'):
+        _RaiseBadPortSpecificationError('--port', '--use-serving-port',
+                                        '--use-serving-port')
+      port = None
+      port_name = None
+      port_specification = enum_class.USE_SERVING_PORT
+
+  if args.IsSpecified('port'):
+    # Fixed port takes precedence over port name.
+    port = args.port
+    port_name = None
+    if supports_port_specification:
+      port_specification = enum_class.USE_FIXED_PORT
+  elif args.IsSpecified('port_name'):
+    if args.port_name:
+      port = None
+      port_name = args.port_name
+      if supports_port_specification:
+        port_specification = enum_class.USE_NAMED_PORT
+    else:
+      # Empty port_name value is used to clear out the field.
+      port_name = None
+      if supports_port_specification:
+        port_specification = enum_class.USE_FIXED_PORT
+  else:
+    # Inherited values from existing health check should remain.
+    pass
+
+  return port, port_name, port_specification
 
 
 def _AddUseServingPortFlag(parser):

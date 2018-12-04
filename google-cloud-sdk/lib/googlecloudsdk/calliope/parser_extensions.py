@@ -73,11 +73,13 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base  # pylint: disable=unused-import
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_errors
+from googlecloudsdk.calliope import suggest_commands
 from googlecloudsdk.calliope import usage_text
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_attr
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.document_renderers import render_document
 from googlecloudsdk.core.updater import update_manager
 import six
@@ -330,6 +332,7 @@ class ArgumentParser(argparse.ArgumentParser):
   This overrides the default argparse parser.
 
   Attributes:
+    _args: Original argv passed to argparse.
     _calliope_command: base._Command, The Calliope command or group for this
       parser.
     _error_context: The most recent self.error() method _ErrorContext.
@@ -346,6 +349,7 @@ class ArgumentParser(argparse.ArgumentParser):
   """
 
   def __init__(self, *args, **kwargs):
+    self._args = None
     self._calliope_command = kwargs.pop('calliope_command')
     # Would rather isinstance(self._calliope_command, CommandGroup) here but
     # that would introduce a circular dependency on calliope.backend.
@@ -636,6 +640,7 @@ class ArgumentParser(argparse.ArgumentParser):
     """Overrides argparse.ArgumentParser's .parse_known_args method."""
     if args is None:
       args = sys.argv[1:]
+    self._args = args
     if namespace is None:
       namespace = Namespace()
     namespace._SetParser(self)  # pylint: disable=protected-access
@@ -788,23 +793,19 @@ class ArgumentParser(argparse.ArgumentParser):
           extra_path_arg=arg,
           suggestions=existing_alternatives))
 
-    # See if the spelling was close to something else that exists here.
+    # If we are dealing with flags, see if the spelling was close to something
+    # else that exists here.
+    suggestion = None
     choices = sorted(action.choices)
-    suggester = usage_text.TextChoiceSuggester(choices)
-    suggester.AddSynonyms()
-    if is_subparser:
-      # Add command suggestions if the group registered any.
-      cmd_suggestions = self._calliope_command._common_type.CommandSuggestions()
-      cli_name = self._calliope_command.GetPath()[0]
-      for cmd, suggestion in six.iteritems(cmd_suggestions):
-        suggester.AddAliases([cmd], cli_name + ' ' + suggestion)
-    suggestion = suggester.GetSuggestion(arg)
-    if suggestion:
-      message += " Did you mean '{0}'?".format(suggestion)
-    elif not is_subparser:
-      # Command group choices will be displayed in the usage message.
-      message += '\n\nValid choices are [{0}].'.format(
-          ', '.join([six.text_type(c) for c in choices]))
+    if not is_subparser:
+      suggester = usage_text.TextChoiceSuggester(choices)
+      suggestion = suggester.GetSuggestion(arg)
+      if suggestion:
+        message += " Did you mean '{0}'?".format(suggestion)
+      else:
+        # Command group choices will be displayed in the usage message.
+        message += '\n\nValid choices are [{0}].'.format(
+            ', '.join([six.text_type(c) for c in choices]))
 
     # Log to analytics the attempt to execute a command.
     # We don't know if the user entered 'value' is a mistyped command or
@@ -966,8 +967,6 @@ class ArgumentParser(argparse.ArgumentParser):
           not re.search('in dict arg but not provided', message)):
         return
 
-    parser.ReportErrorMetrics(error, message)
-
     # No need to output help/usage text if we are in completion mode. However,
     # we do need to populate group/command level choices. These choices are not
     # loaded when there is a parser error since we do lazy loading.
@@ -981,26 +980,51 @@ class ArgumentParser(argparse.ArgumentParser):
       # multi-line message means hints already added, no need for usage.
       # pylint: disable=protected-access
       if '\n' not in message:
-        # Determine if we want to display available commands and groups
-        # semantically categorized in case of a missing command name.
-        show_categories = 'Command name argument expected.' == message
-        usage_string = None
-        if show_categories:
-          usage_string = self._calliope_command.GetCategoricalUsage()
-        # The next if clause is executed if show_categories is False or there
-        # were no categories to display.
-        if not usage_string:
-          show_categories = False
-          usage_string = self._calliope_command.GetUsage()
+        # Provide "Maybe you meant" suggestions if we are dealing with an
+        # invalid command.
         # pytype: disable=module-attr
-        if show_categories:
-          argparse._sys.stderr.write('\n')
-          render_document.RenderDocument(
-              fin=io.StringIO(usage_string), out=argparse._sys.stderr)
+        suggestions = None
+        if 'Invalid choice' in message:
+          suggestions = suggest_commands.GetCommandSuggestions(self._args)
+        if suggestions:
+          argparse._sys.stderr.write(
+              '\n  '.join(['Maybe you meant:'] + suggestions) + '\n')
+          argparse._sys.stderr.write('\n' + _HELP_SEARCH_HINT + '\n')
+          error.error_extra_info = {
+              'suggestions': suggestions,
+              'total_suggestions': len(suggestions),
+              'total_unrecognized': 1,
+          }
+        # Otherwise print out usage string.
         else:
-          argparse._sys.stderr.write(usage_string)
+          # Determine if we want to display available commands and groups
+          # semantically categorized in case of a missing command name.
+          show_categories = 'Command name argument expected.' == message
+          usage_string = None
+          if show_categories:
+            usage_string = self._calliope_command.GetCategoricalUsage()
+          # The next if clause is executed if show_categories is False or there
+          # were no categories to display.
+          if not usage_string:
+            show_categories = False
+            usage_string = self._calliope_command.GetUsage()
+          if show_categories:
+            interactive = console_io.IsInteractive(error=True)
+            if interactive:
+              out = io.StringIO()
+              out.write('{message}\n'.format(message=message))
+            else:
+              out = argparse._sys.stderr
+            out.write('\n')
+            render_document.RenderDocument(
+                fin=io.StringIO(usage_string), out=out)
+            if interactive:
+              console_io.More(out.getvalue(), out=argparse._sys.stderr)
+          else:
+            argparse._sys.stderr.write(usage_string)
         # pytype: enable=module-attr
 
+    parser.ReportErrorMetrics(error, message)
     self.exit(2, exception=error)
 
   def exit(self, status=0, message=None, exception=None):
@@ -1286,3 +1310,4 @@ class DynamicPositionalAction(six.with_metaclass(abc.ABCMeta,
       # argument lookup down the road.
       # for _, arg in args.iteritems():
       #   arg.RemoveFromParser(ai)
+

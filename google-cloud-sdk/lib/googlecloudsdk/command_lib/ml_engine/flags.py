@@ -31,7 +31,6 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.iam import completers as iam_completers
 from googlecloudsdk.command_lib.ml_engine import models_util
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import repeated
 from googlecloudsdk.command_lib.util.args import update_util
@@ -475,7 +474,7 @@ def GetVersionResourceSpec():
       resource_name='version',
       versionsId=VersionAttributeConfig(),
       modelsId=ModelAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def AddVersionResourceArg(parser, verb):

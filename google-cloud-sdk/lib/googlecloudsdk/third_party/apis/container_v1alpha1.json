@@ -2134,44 +2134,101 @@
           "description": "NOLINT",
           "type": "string"
         },
-        "jwksUri": {
+        "jwks_uri": {
           "description": "NOLINT",
           "type": "string"
         },
-        "responseTypesSupported": {
+        "response_types_supported": {
           "description": "NOLINT",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "subjectTypesSupported": {
+        "subject_types_supported": {
           "description": "NOLINT",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "idTokenSigningAlgValuesSupported": {
+        "id_token_signing_alg_values_supported": {
           "description": "NOLINT",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "claimsSupported": {
+        "claims_supported": {
           "description": "NOLINT",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "grantTypes": {
+        "grant_types": {
           "description": "NOLINT",
           "type": "array",
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GetJSONWebKeysResponse": {
+      "id": "GetJSONWebKeysResponse",
+      "description": "GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc 7517",
+      "type": "object",
+      "properties": {
+        "keys": {
+          "description": "The public component of the keys used by the cluster to sign token\nrequests.",
+          "type": "array",
+          "items": {
+            "$ref": "Jwk"
+          }
+        }
+      }
+    },
+    "Jwk": {
+      "id": "Jwk",
+      "description": "Jwk is a JSON Web Key as specified in RFC 7517",
+      "type": "object",
+      "properties": {
+        "kty": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "alg": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "use": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "kid": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "n": {
+          "description": "Fields for RSA keys.\nNOLINT",
+          "type": "string"
+        },
+        "e": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "x": {
+          "description": "Fields for ECDSA keys.\nNOLINT",
+          "type": "string"
+        },
+        "y": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "crv": {
+          "description": "NOLINT",
+          "type": "string"
         }
       }
     },
@@ -3125,6 +3182,31 @@
                   ],
                   "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
                 },
+                "getJwks": {
+                  "id": "container.projects.locations.clusters.getJwks",
+                  "path": "v1alpha1/{+parent}/jwks",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/jwks",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The parent (project, location, cluster id) where the node pools will be\nlisted. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GetJSONWebKeysResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format."
+                },
                 "setResourceLabels": {
                   "id": "container.projects.locations.clusters.setResourceLabels",
                   "path": "v1alpha1/{+name}:setResourceLabels",
@@ -3602,8 +3684,8 @@
                   "methods": {
                     "getOpenid-configuration": {
                       "id": "container.projects.locations.clusters.well-known.getOpenid-configuration",
-                      "path": "v1alpha1/{+parent}/well-known/openid-configuration",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/well-known/openid-configuration",
+                      "path": "v1alpha1/{+parent}/.well-known/openid-configuration",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/.well-known/openid-configuration",
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {

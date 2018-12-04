@@ -773,12 +773,11 @@ class ExecuteBatchDmlRequest(_messages.Message):
     seqno: A per-transaction sequence number used to identify this request.
       This is used in the same space as the seqno in ExecuteSqlRequest. See
       more details in ExecuteSqlRequest.
-    statements: The list of statements to execute in this batch.  Statements
+    statements: The list of statements to execute in this batch. Statements
       are executed serially, such that the effects of statement i are visible
-      to statement i+1. Each statement must be a DML statement. If there is a
-      problem executing any of the statements, the operation will fail; the
-      remaining statements are not executed and `ABORTED` will be returned,
-      with an error message specifying the index of the failed statement.
+      to statement i+1. Each statement must be a DML statement. Execution will
+      stop at the first failed statement; the remaining statements will not
+      run.  REQUIRES: statements_size() > 0.
     transaction: The transaction to use. A ReadWrite transaction is required.
       Single-use transactions are not supported (to avoid replay).  The caller
       must either supply an existing transaction ID or begin a new
@@ -791,18 +790,33 @@ class ExecuteBatchDmlRequest(_messages.Message):
 
 
 class ExecuteBatchDmlResponse(_messages.Message):
-  r"""The response for ExecuteBatchDml. Only the first ResultSet in the
-  response contains a valid ResultSetMetadata.
+  r"""The response for ExecuteBatchDml. Contains a list of ResultSet, one for
+  each DML statement that has successfully executed. If a statement fails, the
+  error is returned as part of the response payload. Clients can determine
+  whether all DML statements have run successfully, or if a statement failed,
+  using one of the following approaches:    1. Check if 'status' field is
+  OkStatus.   2. Check if result_sets_size() equals the number of statements
+  in      ExecuteBatchDmlRequest.  Example 1: A request with 5 DML statements,
+  all executed successfully. Result: A response with 5 ResultSets, one for
+  each statement in the same order, and an OK status.  Example 2: A request
+  with 5 DML statements. The 3rd statement has a syntax error. Result: A
+  response with 2 ResultSets, for the first 2 statements that run
+  successfully, and a syntax error (INVALID_ARGUMENT) status. From
+  result_set_size() client can determine that the 3rd statement has failed.
 
   Fields:
-    resultSets: ResultSets, one for each statement in the batch, in the same
-      order as the request. Each ResultSet will not contain any rows. The
-      ResultSetStats in each ResultSet will contain updated row count for each
-      statement. The ResultSetMetadata in the first ResultSet will contain row
-      type and transaction information.
+    resultSets: ResultSets, one for each statement in the request that ran
+      successfully, in the same order as the statements in the request. Each
+      ResultSet will not contain any rows. The ResultSetStats in each
+      ResultSet will contain the number of rows modified by the statement.
+      Only the first ResultSet in the response contains a valid
+      ResultSetMetadata.
+    status: If all DML statements are executed successfully, status will be
+      OK. Otherwise, the error status of the first failed statement.
   """
 
   resultSets = _messages.MessageField('ResultSet', 1, repeated=True)
+  status = _messages.MessageField('Status', 2)
 
 
 class ExecuteSqlRequest(_messages.Message):

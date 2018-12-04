@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console.style import ansi
 from googlecloudsdk.core.console.style import text
@@ -116,9 +117,25 @@ STYLE_MAPPINGS_ANSI_256 = StyleMapping({
 })
 
 
+STYLE_MAPPINGS_TESTING = StyleMapping(dict([
+    (text_type, text.TextAttributes('[{{}}]({})'.format(text_type.name)))
+    for text_type in [
+        text.TextTypes.RESOURCE_NAME,
+        text.TextTypes.OUTPUT,
+        text.TextTypes.USER_INPUT,
+        text.TextTypes.URI,
+        text.TextTypes.URL,
+        text.TextTypes.COMMAND,
+        text.TextTypes.INFO]]))
+
+
 def GetStyleMappings(console_attributes=None):
+  """Gets the style mappings based on the console and user properties."""
   console_attributes = console_attributes or console_attr.GetConsoleAttr()
-  if console_attributes.SupportsAnsi():
+  if properties.VALUES.core.color_theme.Get() == 'testing':
+    return STYLE_MAPPINGS_TESTING
+  elif (console_attributes.SupportsAnsi() and
+        properties.VALUES.core.color_theme.Get() != 'off'):
     if console_attributes._term == 'xterm-256color':  # pylint: disable=protected-access
       return STYLE_MAPPINGS_ANSI_256
     else:

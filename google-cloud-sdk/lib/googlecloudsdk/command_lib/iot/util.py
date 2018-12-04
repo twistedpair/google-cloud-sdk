@@ -75,6 +75,10 @@ class BadCredentialIndexError(exceptions.Error):
             resource=resource))
 
 
+class InvalidAuthMethodError(exceptions.Error):
+  """Indicates that auth method was provided for non-gateway device."""
+
+
 class BadDeviceError(exceptions.Error):
   """Indicates that a given device is malformed."""
 
@@ -144,6 +148,7 @@ def _ValidatePublicKeyDict(public_key):
 
 
 def _ConvertStringToFormatEnum(type_, messages):
+  """Convert string values to Enum object type."""
   # TODO(b/71388306): Enums aren't handled well by pytype.
   # pytype: disable=attribute-error
   if (type_ == flags.KeyTypes.RS256.choice_name or
@@ -405,17 +410,9 @@ def AddMetadataToRequest(ref, args, req):
   return req
 
 
-def ParseEventNotificationConfig(event_notification_configs, event_pubsub_topic,
-                                 messages=None):
+def ParseEventNotificationConfig(event_notification_configs, messages=None):
   """Creates a list of EventNotificationConfigs from args."""
   messages = messages or registries.GetMessagesModule()
-
-  # These flags are in a mutex group.
-  if event_pubsub_topic:
-    topic_ref = ParsePubsubTopic(event_pubsub_topic)
-    return [messages.EventNotificationConfig(
-        pubsubTopicName=topic_ref.RelativeName())]
-
   if event_notification_configs:
     configs = []
     for config in event_notification_configs:
@@ -430,9 +427,67 @@ def ParseEventNotificationConfig(event_notification_configs, event_pubsub_topic,
 def AddEventNotificationConfigsToRequest(ref, args, req):
   """Python hook for yaml commands to process event config flags."""
   del ref
-  configs = ParseEventNotificationConfig(args.event_notification_configs,
-                                         args.event_pubsub_topic)
+  configs = ParseEventNotificationConfig(args.event_notification_configs)
   req.deviceRegistry.eventNotificationConfigs = configs or []
+  return req
+
+
+def AddCreateGatewayArgsToRequest(ref, args, req):
+  """Python hook for yaml create command to process gateway flags."""
+  del ref
+  gateway = args.device_type
+  auth_method = args.auth_method
+
+  # Don't set gateway config if no flags provided
+  if not (gateway or auth_method):
+    return req
+
+  messages = devices.GetMessagesModule()
+  req.device.gatewayConfig = messages.GatewayConfig()
+  if auth_method:
+    if not gateway or gateway == 'non-gateway':
+      raise InvalidAuthMethodError(
+          'auth_method can only be set on gateway devices.')
+    auth_enum = flags.GATEWAY_AUTH_METHOD_ENUM_MAPPER.GetEnumForChoice(
+        auth_method)
+    req.device.gatewayConfig.gatewayAuthMethod = auth_enum
+
+  if gateway:
+    gateway_enum = flags.CREATE_GATEWAY_ENUM_MAPPER.GetEnumForChoice(gateway)
+    req.device.gatewayConfig.gatewayType = gateway_enum
+
+  return req
+
+
+def AddBindArgsToRequest(ref, args, req):
+  """Python hook for yaml gateways bind command to process resource_args."""
+  del ref
+  messages = devices.GetMessagesModule()
+  gateway_ref = args.CONCEPTS.gateway.Parse()
+  device_ref = args.CONCEPTS.device.Parse()
+  registry_ref = gateway_ref.Parent()
+
+  bind_request = messages.BindDeviceToGatewayRequest(
+      deviceId=device_ref.Name(), gatewayId=gateway_ref.Name())
+  req.bindDeviceToGatewayRequest = bind_request
+  req.parent = registry_ref.RelativeName()
+
+  return req
+
+
+def AddUnBindArgsToRequest(ref, args, req):
+  """Python hook for yaml gateways unbind command to process resource_args."""
+  del ref
+  messages = devices.GetMessagesModule()
+  gateway_ref = args.CONCEPTS.gateway.Parse()
+  device_ref = args.CONCEPTS.device.Parse()
+  registry_ref = gateway_ref.Parent()
+
+  unbind_request = messages.UnbindDeviceFromGatewayRequest(
+      deviceId=device_ref.Name(), gatewayId=gateway_ref.Name())
+  req.unbindDeviceFromGatewayRequest = unbind_request
+  req.parent = registry_ref.RelativeName()
+
   return req
 
 
@@ -454,3 +509,4 @@ def GetCommandFromFileProcessor(path):
 
   except Exception as e:
     raise ValueError('Command File [{}] can not be opened: {}'.format(path, e))
+

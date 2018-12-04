@@ -498,6 +498,10 @@
           "description": "The APK for the application under test.",
           "$ref": "FileReference"
         },
+        "appBundle": {
+          "description": "A multi-apk app bundle for the application under test.",
+          "$ref": "AppBundle"
+        },
         "testApk": {
           "description": "The APK containing the test code to be executed.\nRequired",
           "$ref": "FileReference"
@@ -537,6 +541,17 @@
         }
       }
     },
+    "AppBundle": {
+      "id": "AppBundle",
+      "description": "An Android App Bundle file format, containing a BundleConfig.pb file,\na base module directory, zero or more dynamic feature module directories.\n<p>See https:\/\/developer.android.com\/guide\/app-bundle\/build for guidance on\nbuilding App Bundles.",
+      "type": "object",
+      "properties": {
+        "bundleLocation": {
+          "description": ".aab file representing the app bundle under test.",
+          "$ref": "FileReference"
+        }
+      }
+    },
     "AndroidRoboTest": {
       "id": "AndroidRoboTest",
       "description": "A test of an android application that explores the application on a virtual\nor physical Android Device, finding culprits and crashes as it goes.",
@@ -545,6 +560,10 @@
         "appApk": {
           "description": "The APK for the application under test.",
           "$ref": "FileReference"
+        },
+        "appBundle": {
+          "description": "A multi-apk app bundle for the application under test.",
+          "$ref": "AppBundle"
         },
         "appPackageId": {
           "description": "The java package for the application under test.\nOptional, default is determined by examining the application's manifest.",
@@ -663,6 +682,10 @@
         "appApk": {
           "description": "The APK for the application under test.",
           "$ref": "FileReference"
+        },
+        "appBundle": {
+          "description": "A multi-apk app bundle for the application under test.",
+          "$ref": "AppBundle"
         },
         "appPackageId": {
           "description": "The java package for the application under test.\nOptional, default is determined by examining the application's manifest.",

@@ -4,7 +4,7 @@
  "id": "compute:v1",
  "name": "compute",
  "version": "v1",
- "revision": "20181109",
+ "revision": "20181126",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1120,6 +1120,86 @@
     }
    }
   },
+  "AuditConfig": {
+   "id": "AuditConfig",
+   "type": "object",
+   "description": "Specifies the audit configuration for a service. The configuration determines which permission types are logged, and what identities, if any, are exempted from logging. An AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service, the union of the two AuditConfigs is used for that service: the log_types specified in each AuditConfig are enabled, and the exempted_members in each AuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n{ \"audit_configs\": [ { \"service\": \"allServices\" \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:foo@gmail.com\" ] }, { \"log_type\": \"DATA_WRITE\", }, { \"log_type\": \"ADMIN_READ\", } ] }, { \"service\": \"fooservice.googleapis.com\" \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", }, { \"log_type\": \"DATA_WRITE\", \"exempted_members\": [ \"user:bar@gmail.com\" ] } ] } ] }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging, and bar@gmail.com from DATA_WRITE logging.",
+   "properties": {
+    "auditLogConfigs": {
+     "type": "array",
+     "description": "The configuration for logging of each type of permission.",
+     "items": {
+      "$ref": "AuditLogConfig"
+     }
+    },
+    "exemptedMembers": {
+     "type": "array",
+     "description": "",
+     "items": {
+      "type": "string"
+     }
+    },
+    "service": {
+     "type": "string",
+     "description": "Specifies a service that will be enabled for audit logging. For example, `storage.googleapis.com`, `cloudsql.googleapis.com`. `allServices` is a special value that covers all services."
+    }
+   }
+  },
+  "AuditLogConfig": {
+   "id": "AuditLogConfig",
+   "type": "object",
+   "description": "Provides the configuration for logging a type of permissions. Example:\n\n{ \"audit_log_configs\": [ { \"log_type\": \"DATA_READ\", \"exempted_members\": [ \"user:foo@gmail.com\" ] }, { \"log_type\": \"DATA_WRITE\", } ] }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting foo@gmail.com from DATA_READ logging.",
+   "properties": {
+    "exemptedMembers": {
+     "type": "array",
+     "description": "Specifies the identities that do not cause logging for this type of permission. Follows the same format of [Binding.members][].",
+     "items": {
+      "type": "string"
+     }
+    },
+    "logType": {
+     "type": "string",
+     "description": "The log type that this config enables.",
+     "enum": [
+      "ADMIN_READ",
+      "DATA_READ",
+      "DATA_WRITE",
+      "LOG_TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "AuthorizationLoggingOptions": {
+   "id": "AuthorizationLoggingOptions",
+   "type": "object",
+   "description": "Authorization-related information used by Cloud Audit Logging.",
+   "properties": {
+    "permissionType": {
+     "type": "string",
+     "description": "The type of the permission that was checked.",
+     "enum": [
+      "ADMIN_READ",
+      "ADMIN_WRITE",
+      "DATA_READ",
+      "DATA_WRITE",
+      "PERMISSION_TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "Autoscaler": {
    "id": "Autoscaler",
    "type": "object",
@@ -1767,7 +1847,7 @@
    "properties": {
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
-     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a ?Cache-Control: public, max-age=[TTL]? header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
+     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
      "format": "int64"
     },
     "signedUrlKeyNames": {
@@ -2159,7 +2239,7 @@
     },
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
-     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a ?Cache-Control: public, max-age=[TTL]? header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
+     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
      "format": "int64"
     },
     "signedUrlKeyNames": {
@@ -2412,6 +2492,28 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "Binding": {
+   "id": "Binding",
+   "type": "object",
+   "description": "Associates `members` with a `role`.",
+   "properties": {
+    "condition": {
+     "$ref": "Expr",
+     "description": "Unimplemented. The condition that is associated with this binding. NOTE: an unsatisfied condition will not allow user access via current binding. Different bindings, including their conditions, are examined independently."
+    },
+    "members": {
+     "type": "array",
+     "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@gmail.com` .\n\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`.\n\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the users of that domain. For example, `google.com` or `example.com`.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "role": {
+     "type": "string",
+     "description": "Role that is assigned to `members`. For example, `roles/viewer`, `roles/editor`, or `roles/owner`."
     }
    }
   },
@@ -2866,6 +2968,88 @@
     }
    }
   },
+  "Condition": {
+   "id": "Condition",
+   "type": "object",
+   "description": "A condition to be met.",
+   "properties": {
+    "iam": {
+     "type": "string",
+     "description": "Trusted attributes supplied by the IAM system.",
+     "enum": [
+      "APPROVER",
+      "ATTRIBUTION",
+      "AUTHORITY",
+      "CREDENTIALS_TYPE",
+      "JUSTIFICATION_TYPE",
+      "NO_ATTR",
+      "SECURITY_REALM"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "op": {
+     "type": "string",
+     "description": "An operator to apply the subject with.",
+     "enum": [
+      "DISCHARGED",
+      "EQUALS",
+      "IN",
+      "NOT_EQUALS",
+      "NOT_IN",
+      "NO_OP"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "svc": {
+     "type": "string",
+     "description": "Trusted attributes discharged by the service."
+    },
+    "sys": {
+     "type": "string",
+     "description": "Trusted attributes supplied by any service that owns resources and uses the IAM system for access control.",
+     "enum": [
+      "IP",
+      "NAME",
+      "NO_ATTR",
+      "REGION",
+      "SERVICE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "value": {
+     "type": "string",
+     "description": "DEPRECATED. Use 'values' instead."
+    },
+    "values": {
+     "type": "array",
+     "description": "The objects of the condition. This is mutually exclusive with 'value'.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
   "ConnectionDraining": {
    "id": "ConnectionDraining",
    "type": "object",
@@ -3030,6 +3214,11 @@
     "options": {
      "type": "string",
      "description": "Internal use only."
+    },
+    "physicalBlockSizeBytes": {
+     "type": "string",
+     "description": "Physical block size of the persistent disk, in bytes. If not present in a request, a default value is used. Currently supported sizes are 4096 and 16384, other sizes may be added in the future. If an unsupported value is requested, the error message will list the supported values for the caller's project.",
+     "format": "int64"
     },
     "region": {
      "type": "string",
@@ -3893,6 +4082,29 @@
     }
    }
   },
+  "Expr": {
+   "id": "Expr",
+   "type": "object",
+   "description": "Represents an expression text. Example:\n\ntitle: \"User account presence\" description: \"Determines whether the request has a user account\" expression: \"size(request.user) \u003e 0\"",
+   "properties": {
+    "description": {
+     "type": "string",
+     "description": "An optional description of the expression. This is a longer text which describes the expression, e.g. when hovered over it in a UI."
+    },
+    "expression": {
+     "type": "string",
+     "description": "Textual representation of an expression in Common Expression Language syntax.\n\nThe application context of the containing message determines which well-known feature set of CEL is supported."
+    },
+    "location": {
+     "type": "string",
+     "description": "An optional string indicating the location of the expression for error reporting, e.g. a file name and a position in the file."
+    },
+    "title": {
+     "type": "string",
+     "description": "An optional title for the expression, i.e. a short string describing its purpose. This can be used e.g. in UIs which allow to enter the expression."
+    }
+   }
+  },
   "Firewall": {
    "id": "Firewall",
    "type": "object",
@@ -4629,6 +4841,28 @@
      "additionalProperties": {
       "type": "string"
      }
+    }
+   }
+  },
+  "GlobalSetPolicyRequest": {
+   "id": "GlobalSetPolicyRequest",
+   "type": "object",
+   "properties": {
+    "bindings": {
+     "type": "array",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
+     "items": {
+      "$ref": "Binding"
+     }
+    },
+    "etag": {
+     "type": "string",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify the etag.",
+     "format": "byte"
+    },
+    "policy": {
+     "$ref": "Policy",
+     "description": "REQUIRED: The complete policy to be applied to the 'resource'. The size of the policy is limited to a few 10s of KB. An empty policy is in general a valid policy but certain services (like Projects) might reject them."
     }
    }
   },
@@ -8290,7 +8524,7 @@
    "properties": {
     "interconnectName": {
      "type": "string",
-     "description": "Plain text name of the Interconnect this attachment is connected to, as displayed in the Partner?s portal. For instance ?Chicago 1?. This value may be validated to match approved Partner values."
+     "description": "Plain text name of the Interconnect this attachment is connected to, as displayed in the Partner?s portal. For instance \"Chicago 1\". This value may be validated to match approved Partner values."
     },
     "partnerName": {
      "type": "string",
@@ -9239,6 +9473,84 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "LogConfig": {
+   "id": "LogConfig",
+   "type": "object",
+   "description": "Specifies what kind of log the caller must write",
+   "properties": {
+    "cloudAudit": {
+     "$ref": "LogConfigCloudAuditOptions",
+     "description": "Cloud audit options."
+    },
+    "counter": {
+     "$ref": "LogConfigCounterOptions",
+     "description": "Counter options."
+    },
+    "dataAccess": {
+     "$ref": "LogConfigDataAccessOptions",
+     "description": "Data access options."
+    }
+   }
+  },
+  "LogConfigCloudAuditOptions": {
+   "id": "LogConfigCloudAuditOptions",
+   "type": "object",
+   "description": "Write a Cloud Audit log",
+   "properties": {
+    "authorizationLoggingOptions": {
+     "$ref": "AuthorizationLoggingOptions",
+     "description": "Information used by the Cloud Audit Logging pipeline."
+    },
+    "logName": {
+     "type": "string",
+     "description": "The log_name to populate in the Cloud Audit Record.",
+     "enum": [
+      "ADMIN_ACTIVITY",
+      "DATA_ACCESS",
+      "UNSPECIFIED_LOG_NAME"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "LogConfigCounterOptions": {
+   "id": "LogConfigCounterOptions",
+   "type": "object",
+   "description": "Increment a streamz counter with the specified metric and field names.\n\nMetric names should start with a '/', generally be lowercase-only, and end in \"_count\". Field names should not contain an initial slash. The actual exported metric names will have \"/iam/policy\" prepended.\n\nField names correspond to IAM request parameters and field values are their respective values.\n\nSupported field names: - \"authority\", which is \"[token]\" if IAMContext.token is present, otherwise the value of IAMContext.authority_selector if present, and otherwise a representation of IAMContext.principal; or - \"iam_principal\", a representation of IAMContext.principal even if a token or authority selector is present; or - \"\" (empty string), resulting in a counter with no fields.\n\nExamples: counter { metric: \"/debug_access_count\" field: \"iam_principal\" } ==\u003e increment counter /iam/policy/backend_debug_access_count {iam_principal=[value of IAMContext.principal]}\n\nAt this time we do not support multiple field names (though this may be supported in the future).",
+   "properties": {
+    "field": {
+     "type": "string",
+     "description": "The field value to attribute."
+    },
+    "metric": {
+     "type": "string",
+     "description": "The metric to update."
+    }
+   }
+  },
+  "LogConfigDataAccessOptions": {
+   "id": "LogConfigDataAccessOptions",
+   "type": "object",
+   "description": "Write a Data Access (Gin) log",
+   "properties": {
+    "logMode": {
+     "type": "string",
+     "description": "Whether Gin logging should happen in a fail-closed manner at the caller. This is relevant only in the LocalIAM implementation, for now.\n\nNOTE: Logging to Gin in a fail-closed manner is currently unsupported while work is being done to satisfy the requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still exists because there is active work being done to support it (b/115874152).",
+     "enum": [
+      "LOG_FAIL_CLOSED",
+      "LOG_MODE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
     }
    }
   },
@@ -12052,6 +12364,48 @@
     }
    }
   },
+  "Policy": {
+   "id": "Policy",
+   "type": "object",
+   "description": "Defines an Identity and Access Management (IAM) policy. It is used to specify access control policies for Cloud Platform resources.\n\n\n\nA `Policy` consists of a list of `bindings`. A `binding` binds a list of `members` to a `role`, where the members can be user accounts, Google groups, Google domains, and service accounts. A `role` is a named list of permissions defined by IAM.\n\n**JSON Example**\n\n{ \"bindings\": [ { \"role\": \"roles/owner\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-other-app@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles/viewer\", \"members\": [\"user:sean@example.com\"] } ] }\n\n**YAML Example**\n\nbindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-other-app@appspot.gserviceaccount.com role: roles/owner - members: - user:sean@example.com role: roles/viewer\n\n\n\nFor a description of IAM and its features, see the [IAM developer's guide](https://cloud.google.com/iam/docs).",
+   "properties": {
+    "auditConfigs": {
+     "type": "array",
+     "description": "Specifies cloud audit logging configuration for this policy.",
+     "items": {
+      "$ref": "AuditConfig"
+     }
+    },
+    "bindings": {
+     "type": "array",
+     "description": "Associates a list of `members` to a `role`. `bindings` with no members will result in an error.",
+     "items": {
+      "$ref": "Binding"
+     }
+    },
+    "etag": {
+     "type": "string",
+     "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a policy from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform policy updates in order to avoid race conditions: An `etag` is returned in the response to `getIamPolicy`, and systems are expected to put that etag in the request to `setIamPolicy` to ensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing policy is overwritten blindly.",
+     "format": "byte"
+    },
+    "iamOwned": {
+     "type": "boolean",
+     "description": ""
+    },
+    "rules": {
+     "type": "array",
+     "description": "If more than one rule is specified, the rules are applied in the following manner: - All matching LOG rules are always applied. - If any DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be applied if one or more matching rule requires logging. - Otherwise, if any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging will be applied if one or more matching rule requires logging. - Otherwise, if no rule applies, permission is denied.",
+     "items": {
+      "$ref": "Rule"
+     }
+    },
+    "version": {
+     "type": "integer",
+     "description": "Deprecated.",
+     "format": "int32"
+    }
+   }
+  },
   "Project": {
    "id": "Project",
    "type": "object",
@@ -13267,6 +13621,28 @@
     }
    }
   },
+  "RegionSetPolicyRequest": {
+   "id": "RegionSetPolicyRequest",
+   "type": "object",
+   "properties": {
+    "bindings": {
+     "type": "array",
+     "description": "Flatten Policy to create a backwacd compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
+     "items": {
+      "$ref": "Binding"
+     }
+    },
+    "etag": {
+     "type": "string",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify the etag.",
+     "format": "byte"
+    },
+    "policy": {
+     "$ref": "Policy",
+     "description": "REQUIRED: The complete policy to be applied to the 'resource'. The size of the policy is limited to a few 10s of KB. An empty policy is in general a valid policy but certain services (like Projects) might reject them."
+    }
+   }
+  },
   "ResourceCommitment": {
    "id": "ResourceCommitment",
    "type": "object",
@@ -14442,6 +14818,72 @@
     }
    }
   },
+  "Rule": {
+   "id": "Rule",
+   "type": "object",
+   "description": "A rule to be applied in a Policy.",
+   "properties": {
+    "action": {
+     "type": "string",
+     "description": "Required",
+     "enum": [
+      "ALLOW",
+      "ALLOW_WITH_LOG",
+      "DENY",
+      "DENY_WITH_LOG",
+      "LOG",
+      "NO_ACTION"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "conditions": {
+     "type": "array",
+     "description": "Additional restrictions that must be met. All conditions must pass for the rule to match.",
+     "items": {
+      "$ref": "Condition"
+     }
+    },
+    "description": {
+     "type": "string",
+     "description": "Human-readable description of the rule."
+    },
+    "ins": {
+     "type": "array",
+     "description": "If one or more 'in' clauses are specified, the rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "logConfigs": {
+     "type": "array",
+     "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries that match the LOG action.",
+     "items": {
+      "$ref": "LogConfig"
+     }
+    },
+    "notIns": {
+     "type": "array",
+     "description": "If one or more 'not_in' clauses are specified, the rule matches if the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "permissions": {
+     "type": "array",
+     "description": "A permission is a string of form '..' (e.g., 'storage.buckets.list'). A value of '*' matches all permissions, and a verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
   "SSLHealthCheck": {
    "id": "SSLHealthCheck",
    "type": "object",
@@ -14733,7 +15175,7 @@
     },
     "priority": {
      "type": "integer",
-     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated in the increasing order of priority.",
+     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.",
      "format": "int32"
     }
    }
@@ -15592,7 +16034,7 @@
     },
     "secondaryIpRanges": {
      "type": "array",
-     "description": "An array of configurations for secondary IP ranges for VM instances contained in this subnetwork. The primary IP of such VM must belong to the primary ipCidrRange of the subnetwork. The alias IPs may belong to either primary or secondary ranges.",
+     "description": "An array of configurations for secondary IP ranges for VM instances contained in this subnetwork. The primary IP of such VM must belong to the primary ipCidrRange of the subnetwork. The alias IPs may belong to either primary or secondary ranges. This field can be updated with a patch request.",
      "items": {
       "$ref": "SubnetworkSecondaryRange"
      }
@@ -19396,6 +19838,28 @@
      }
     }
    }
+  },
+  "ZoneSetPolicyRequest": {
+   "id": "ZoneSetPolicyRequest",
+   "type": "object",
+   "properties": {
+    "bindings": {
+     "type": "array",
+     "description": "Flatten Policy to create a backwacd compatible wire-format. Deprecated. Use 'policy' to specify bindings.",
+     "items": {
+      "$ref": "Binding"
+     }
+    },
+    "etag": {
+     "type": "string",
+     "description": "Flatten Policy to create a backward compatible wire-format. Deprecated. Use 'policy' to specify the etag.",
+     "format": "byte"
+    },
+    "policy": {
+     "$ref": "Policy",
+     "description": "REQUIRED: The complete policy to be applied to the 'resource'. The size of the policy is limited to a few 10s of KB. An empty policy is in general a valid policy but certain services (like Projects) might reject them."
+    }
+   }
   }
  },
  "resources": {
@@ -21107,7 +21571,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to snapshot.",
+       "description": "Name of the persistent disk to snapshot.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -21160,7 +21624,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to delete.",
+       "description": "Name of the persistent disk to delete.",
        "required": true,
        "location": "path"
       },
@@ -21205,7 +21669,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to return.",
+       "description": "Name of the persistent disk to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -21232,6 +21696,48 @@
      ],
      "response": {
       "$ref": "Disk"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getIamPolicy": {
+     "id": "compute.disks.getIamPolicy",
+     "path": "{project}/zones/{zone}/disks/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -21350,7 +21856,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The name or id of the persistent disk.",
+       "description": "The name of the persistent disk.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -21391,6 +21897,50 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "setIamPolicy": {
+     "id": "compute.disks.setIamPolicy",
+     "path": "{project}/zones/{zone}/disks/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "request": {
+      "$ref": "ZoneSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setLabels": {
      "id": "compute.disks.setLabels",
      "path": "{project}/zones/{zone}/disks/{resource}/setLabels",
@@ -21411,9 +21961,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "zone": {
@@ -21438,6 +21988,51 @@
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.disks.testIamPermissions",
+     "path": "{project}/zones/{zone}/disks/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     }
    }
@@ -23223,7 +23818,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Name or id of the image resource to delete.",
+       "description": "Name of the image resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -23261,7 +23856,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Image name or id .",
+       "description": "Image name.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -23302,7 +23897,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Name or id of the image resource to return.",
+       "description": "Name of the image resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -23336,7 +23931,7 @@
      "parameters": {
       "family": {
        "type": "string",
-       "description": "Name or id of the image family to search for.",
+       "description": "Name of the image family to search for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -23355,6 +23950,40 @@
      ],
      "response": {
       "$ref": "Image"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getIamPolicy": {
+     "id": "compute.images.getIamPolicy",
+     "path": "{project}/global/images/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -23452,6 +24081,42 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "setIamPolicy": {
+     "id": "compute.images.setIamPolicy",
+     "path": "{project}/global/images/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "GlobalSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setLabels": {
      "id": "compute.images.setLabels",
      "path": "{project}/global/images/{resource}/setLabels",
@@ -23467,9 +24132,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -23486,6 +24151,43 @@
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.images.testIamPermissions",
+     "path": "{project}/global/images/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     }
    }
@@ -23876,6 +24578,53 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "patch": {
+     "id": "compute.instanceGroupManagers.patch",
+     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}",
+     "httpMethod": "PATCH",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the instance group manager.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where you want to create the managed instance group.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManager"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "recreateInstances": {
@@ -24587,6 +25336,40 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.instanceTemplates.getIamPolicy",
+     "path": "{project}/global/instanceTemplates/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.instanceTemplates.insert",
      "path": "{project}/global/instanceTemplates",
@@ -24668,6 +25451,79 @@
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
      ]
+    },
+    "setIamPolicy": {
+     "id": "compute.instanceTemplates.setIamPolicy",
+     "path": "{project}/global/instanceTemplates/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "GlobalSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.instanceTemplates.testIamPermissions",
+     "path": "{project}/global/instanceTemplates/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
     }
    }
   },
@@ -24681,7 +25537,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24791,7 +25647,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24840,7 +25696,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to delete.",
+       "description": "Name of the instance resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24892,7 +25748,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24952,7 +25808,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Instance name or id for this request.",
+       "description": "Instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24999,7 +25855,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to return.",
+       "description": "Name of the instance resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25033,6 +25889,48 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.instances.getIamPolicy",
+     "path": "{project}/zones/{zone}/instances/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "getSerialPortOutput": {
      "id": "compute.instances.getSerialPortOutput",
      "path": "{project}/zones/{zone}/instances/{instance}/serialPort",
@@ -25041,7 +25939,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25206,7 +26104,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name or id of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
+       "description": "Name of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
        "required": true,
        "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25266,7 +26164,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25377,7 +26275,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25417,6 +26315,50 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "setIamPolicy": {
+     "id": "compute.instances.setIamPolicy",
+     "path": "{project}/zones/{zone}/instances/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "request": {
+      "$ref": "ZoneSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setLabels": {
      "id": "compute.instances.setLabels",
      "path": "{project}/zones/{zone}/instances/{instance}/setLabels",
@@ -25425,7 +26367,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25474,7 +26416,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25523,7 +26465,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25572,7 +26514,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25621,7 +26563,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25670,7 +26612,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Instance name or id for this request.",
+       "description": "Instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25719,7 +26661,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25768,7 +26710,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25817,7 +26759,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25858,7 +26800,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25904,7 +26846,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25953,7 +26895,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to stop.",
+       "description": "Name of the instance resource to stop.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -25991,6 +26933,51 @@
       "https://www.googleapis.com/auth/compute"
      ]
     },
+    "testIamPermissions": {
+     "id": "compute.instances.testIamPermissions",
+     "path": "{project}/zones/{zone}/instances/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "updateAccessConfig": {
      "id": "compute.instances.updateAccessConfig",
      "path": "{project}/zones/{zone}/instances/{instance}/updateAccessConfig",
@@ -25999,7 +26986,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -26055,7 +27042,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -26862,6 +27849,40 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.licenses.getIamPolicy",
+     "path": "{project}/global/licenses/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.licenses.insert",
      "path": "{project}/global/licenses",
@@ -26945,6 +27966,42 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.licenses.setIamPolicy",
+     "path": "{project}/global/licenses/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "GlobalSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "testIamPermissions": {
@@ -27694,6 +28751,48 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.nodeGroups.getIamPolicy",
+     "path": "{project}/zones/{zone}/nodeGroups/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.nodeGroups.insert",
      "path": "{project}/zones/{zone}/nodeGroups",
@@ -27865,6 +28964,50 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "setIamPolicy": {
+     "id": "compute.nodeGroups.setIamPolicy",
+     "path": "{project}/zones/{zone}/nodeGroups/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "request": {
+      "$ref": "ZoneSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setNodeTemplate": {
      "id": "compute.nodeGroups.setNodeTemplate",
      "path": "{project}/zones/{zone}/nodeGroups/{nodeGroup}/setNodeTemplate",
@@ -27912,6 +29055,51 @@
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.nodeGroups.testIamPermissions",
+     "path": "{project}/zones/{zone}/nodeGroups/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     }
    }
@@ -28055,6 +29243,48 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.nodeTemplates.getIamPolicy",
+     "path": "{project}/regions/{region}/nodeTemplates/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.nodeTemplates.insert",
      "path": "{project}/regions/{region}/nodeTemplates",
@@ -28146,6 +29376,95 @@
      ],
      "response": {
       "$ref": "NodeTemplateList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.nodeTemplates.setIamPolicy",
+     "path": "{project}/regions/{region}/nodeTemplates/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "RegionSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.nodeTemplates.testIamPermissions",
+     "path": "{project}/regions/{region}/nodeTemplates/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -29677,7 +30996,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to snapshot.",
+       "description": "Name of the regional persistent disk to snapshot.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29726,7 +31045,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to delete.",
+       "description": "Name of the regional persistent disk to delete.",
        "required": true,
        "location": "path"
       },
@@ -29771,7 +31090,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to return.",
+       "description": "Name of the regional persistent disk to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29916,7 +31235,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk.",
+       "description": "Name of the regional persistent disk.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29984,9 +31303,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -30390,6 +31709,53 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "patch": {
+     "id": "compute.regionInstanceGroupManagers.patch",
+     "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}",
+     "httpMethod": "PATCH",
+     "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the instance group manager.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "Name of the region scoping this request.",
+       "required": true,
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManager"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     },
     "recreateInstances": {
@@ -32054,7 +33420,7 @@
       },
       "snapshot": {
        "type": "string",
-       "description": "Name or id of the Snapshot resource to delete.",
+       "description": "Name of the Snapshot resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -32087,7 +33453,7 @@
       },
       "snapshot": {
        "type": "string",
-       "description": "Name or id of the Snapshot resource to return.",
+       "description": "Name of the Snapshot resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -32099,6 +33465,40 @@
      ],
      "response": {
       "$ref": "Snapshot"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getIamPolicy": {
+     "id": "compute.snapshots.getIamPolicy",
+     "path": "{project}/global/snapshots/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -32155,6 +33555,42 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "setIamPolicy": {
+     "id": "compute.snapshots.setIamPolicy",
+     "path": "{project}/global/snapshots/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "GlobalSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setLabels": {
      "id": "compute.snapshots.setLabels",
      "path": "{project}/global/snapshots/{resource}/setLabels",
@@ -32170,9 +33606,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -32189,6 +33625,43 @@
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.snapshots.testIamPermissions",
+     "path": "{project}/global/snapshots/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     }
    }
@@ -32784,6 +34257,48 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "getIamPolicy": {
+     "id": "compute.subnetworks.getIamPolicy",
+     "path": "{project}/regions/{region}/subnetworks/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
     "insert": {
      "id": "compute.subnetworks.insert",
      "path": "{project}/regions/{region}/subnetworks",
@@ -32935,7 +34450,7 @@
      "id": "compute.subnetworks.patch",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingeprint of the subnetwork resource being patched.",
      "parameters": {
       "project": {
        "type": "string",
@@ -32974,6 +34489,50 @@
      },
      "response": {
       "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.subnetworks.setIamPolicy",
+     "path": "{project}/regions/{region}/subnetworks/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "RegionSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -33027,6 +34586,51 @@
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.subnetworks.testIamPermissions",
+     "path": "{project}/regions/{region}/subnetworks/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
      ]
     }
    }

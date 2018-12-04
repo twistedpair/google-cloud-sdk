@@ -390,7 +390,8 @@ class IDPReferenceOIDC(_messages.Message):
       skew is tolerated). - If max_token_lifetime_seconds is set:        "exp"
       - "iat" < max_token_lifetime_seconds will be checked - The default is
       otherwise to accept a max_token_lifetime_seconds of 3600 (1 hour)
-    url: The OpenID Connect Discovery URL.
+    url: The OpenID Connect URL. To use this Identity Binding, JWT 'iss' field
+      should match this field.
   """
 
   audience = _messages.StringField(1)

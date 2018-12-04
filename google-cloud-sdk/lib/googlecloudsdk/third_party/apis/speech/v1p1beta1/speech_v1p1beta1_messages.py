@@ -76,7 +76,7 @@ class DataErrors(_messages.Message):
         the cloud speech API
       FILE_EXTENSION_MISMATCH_WITH_AUDIO_FORMAT: File format different from
         what is specified in the file name extension
-      FILE_TOO_LARGE: File too large. Maximum allowed size is 50 MB.
+      FILE_TOO_LARGE: File too large. Maximum allowed size is 500 MB.
     """
     ERROR_TYPE_UNSPECIFIED = 0
     UNSUPPORTED_AUDIO_FORMAT = 1
@@ -142,12 +142,12 @@ class Dataset(_messages.Message):
     updateTime: Output only. The timestamp this dataset is last updated.
     uri: URI that points to a file in csv file where each row has following
       format. <gs_path_to_audio>,<gs_path_to_transcript>,<label> label can be
-      HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. To be valid, rows must do the
-      following: 1. Each row must have at least a label and
+      HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Rows must comply to the
+      following to be valid: 1. Each row must have at least a label and
       <gs_path_to_transcript> 2. If a row is marked HUMAN_TRANSCRIBED, then
       you must specify both <gs_path_to_audio> and <gs_path_to_transcript>.
       Only WAV file formats which encode linear 16-bit pulse-code modulation
-      (PCM) audio format are supported. The maximum audio file size is 50 MB.
+      (PCM) audio format are supported. The maximum audio file size is 500 MB.
       Also note that the audio has to be single channel audio. 3. There has to
       be at least 500 rows labelled HUMAN_TRANSCRIBED covering at least ~10K
       words in order to get reliable word error rate results. 4. To create a
@@ -276,6 +276,19 @@ class ListModelsResponse(_messages.Message):
 
   models = _messages.MessageField('Model', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListOperationsResponse(_messages.Message):
+  r"""The response message for Operations.ListOperations.
+
+  Fields:
+    nextPageToken: The standard List next-page token.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
 class LogBucketStats(_messages.Message):
@@ -868,20 +881,23 @@ class RefreshDataRequest(_messages.Message):
   Fields:
     uri: URI that points to a file in csv file where each row has following
       format. <gs_path_to_audio>,<gs_path_to_transcript>,<label> label can be
-      HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row to be
-      considered valid are :- 1. Each row must have at least a label and
+      HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Rows must comply to the
+      following to be valid: 1. Each row must have at least a label and
       <gs_path_to_transcript> 2. If a row is marked HUMAN_TRANSCRIBED, then
-      both <gs_path_to_audio> and <gs_path_to_transcript> needs to be
-      specified. 3. There has to be minimum 500 number of rows labelled
-      HUMAN_TRANSCRIBED if evaluation stats are required. 4. If
-      use_logged_data_for_training is set to true, then we ignore the rows
-      labelled as MACHINE_TRANSCRIBED. 5. There has to be minimum 100,000
-      words in the transcripts in order to provide sufficient textual training
-      data for the language model. Currently, only Google Cloud Storage URIs
-      are supported, which must be specified in the following format:
-      `gs://bucket_name/object_name` (other URI formats will be ignored). For
-      more information, see [Request
-      URIs](https://cloud.google.com/storage/docs/reference-uris).
+      you must specify both <gs_path_to_audio> and <gs_path_to_transcript>.
+      Only WAV file formats which encode linear 16-bit pulse-code modulation
+      (PCM) audio format are supported. The maximum audio file size is 500 MB.
+      Also note that the audio has to be single channel audio. 3. There has to
+      be at least 500 rows labelled HUMAN_TRANSCRIBED covering at least ~10K
+      words in order to get reliable word error rate results. 4. To create a
+      language model, you should provide at least 100,000 words in your
+      transcriptions as training data if you have conversational and captions
+      type of data. You should provide at least 10,000 words if you have short
+      utterances like voice commands and search type of use cases. Currently,
+      only Google Cloud Storage URIs are supported, which must be specified in
+      the following format: `gs://bucket_name/object_name` (other URI formats
+      will be ignored). For more information, see [Request URIs](/storage/docs
+      /reference-uris).
   """
 
   uri = _messages.StringField(1)
@@ -952,6 +968,22 @@ class SpeechOperationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SpeechOperationsListRequest(_messages.Message):
+  r"""A SpeechOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class SpeechProjectsLocationsDatasetsCreateRequest(_messages.Message):

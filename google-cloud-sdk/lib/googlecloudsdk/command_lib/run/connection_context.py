@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Dynamic context for connection to Serverless."""
+"""Dynamic context for connection to Cloud Run."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -42,10 +42,10 @@ _SERVERLESS_API_VERSION = 'v1alpha1'
 
 @contextlib.contextmanager
 def _OverrideEndpointOverrides(override):
-  """Context manager to override the Serverless endpoint overrides for a while.
+  """Context manager to override the Cloud Run endpoint overrides for a while.
 
   Args:
-    override: str, New value for serverless endpoint.
+    override: str, New value for Cloud Run endpoint.
   Yields:
     None.
   """
@@ -100,7 +100,7 @@ def _CheckTLSSupport():
     min_required_version = ('2.7.9' if sys.version_info.major == 2 else '3.4')
     raise serverless_exceptions.NoTLSError(
         'Your Python {}.{}.{} installation does not support TLS 1.2, which is'
-        ' required to connect to the GKE Serverless add-on. Please upgrade to'
+        ' required to connect to the GKE Cloud Run add-on. Please upgrade to'
         ' Python {} or greater.'.format(
             sys.version_info.major,
             sys.version_info.minor,
@@ -109,7 +109,7 @@ def _CheckTLSSupport():
 
 
 class _GKEConnectionContext(ConnectionInfo):
-  """Context manager to connect to the GKE Serverless add-in."""
+  """Context manager to connect to the GKE Cloud Run add-in."""
 
   def __init__(self, cluster_ref):
     super(_GKEConnectionContext, self).__init__()
@@ -136,7 +136,7 @@ class _GKEConnectionContext(ConnectionInfo):
 
 
 class _RegionalConnectionContext(ConnectionInfo):
-  """Context manager to connect a particular Serverless region."""
+  """Context manager to connect a particular Cloud Run region."""
 
   def __init__(self, region):
     super(_RegionalConnectionContext, self).__init__()

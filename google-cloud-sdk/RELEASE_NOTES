@@ -5,6 +5,91 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 227.0.0 (2018-12-04)
+
+### Breaking Changes
+
+*   **(Cloud Datastore)** `gcloud datastore <create|cleanup>-indexes` is removed. Please use
+  `gcloud datastore indexes <create|cleanup>` instead. See
+  https://cloud.google.com/sdk/gcloud/reference/datastore/indexes/ for
+  additional details.
+*   **(Cloud IoT)** Removed deprecated `-event-pubsub-topic` and `--pubsub-topic` flags from `gcloud iot registries create|update`
+*   **(Container Builder)** Removed `gcloud container builds` command group. Use `gcloud builds`
+    instead.
+
+
+### Cloud SDK
+
+* Invalid commands (wrongly ordered, partial) now prompt more robust suggestions
+  of valid commands instead of the regular usage text.
+
+### App Engine
+
+
+* Updated the Java SDK to version 1.9.69.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### Cloud Bigtable
+
+* Added support for arbitrary bytes in regex filters.
+* Added support for `row_sample_filter`.
+* Added support for `apply_label_transformer`.
+
+### Cloud DNS
+
+* Added the `--forwarding-targets` flag to `gcloud beta dns managed-zones <create|update>`
+
+### Cloud Dataproc
+
+* Added `gcloud beta dataproc jobs submit sparkr` to enable submitting SparkR
+  jobs to a Dataproc cluster.
+* Promoted `--num-preemptible-worker-local-ssds` flag of
+  `gcloud dataproc clusters create` to GA
+
+### Cloud Functions
+
+* Promoted `--service-account` flag of `gcloud functions deploy` to beta.
+* Promoted the following environment variable flags of `gcloud functions deploy` to GA:
+    * `--set-env-vars`
+    * `--update-env-vars`
+    * `--remove-env-vars`
+    * `--clear-env-vars`
+    * `--env-vars-file`
+
+### Cloud IoT
+
+* Promoted `gcloud iot devices commands send` command group to GA.
+* Promoted `--log-level` flag of `gcloud iot <devices|registries>` to GA.
+* Promoted `gcloud iot devices gateways` command group to beta.
+
+### Cloud PubSub
+
+* Added support for defining an expiration period for a subscription to
+  `gcloud beta pubsub subscriptions`.
+
+### Cloud Spanner
+
+* Promoted `gcloud spanner rows` to GA.
+
+### Compute Engine
+
+* Added `--use-serving-port` flag to `gcloud beta compute health-checks update`.
+* Added `--container-mount-disk` flag to `gcloud beta compute instance-templates
+  create-with-container`.
+* Promoted `gcloud compute security-policies` and
+  `gcloud compute security-policies rules` to GA.
+* Promoted `--security-policy` flag of `gcloud compute backend-services update`
+  to GA.
+
+### Kubernetes Engine
+
+* Promoted resource usage export to beta. Use `--resource-usage-bigquery-dataset` with `gcloud beta container clusters create` or `gcloud beta container clusters update` to enable this feature.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 226.0.0 (2018-11-20)
 
 ### Breaking Changes

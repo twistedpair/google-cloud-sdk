@@ -21,9 +21,10 @@ from __future__ import unicode_literals
 
 import enum
 
-from googlecloudsdk.calliope import actions
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 from six.moves import map  # pylint: disable=redefined-builtin
 
@@ -42,15 +43,13 @@ def GetIndexFlag(noun, action):
       help='The index (zero-based) of the {} {}.'.format(noun, action))
 
 
-def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True,
-                                           include_deprecated=True):
+def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True):
   """Get flags for device registry commands.
 
   Args:
     parser: argparse parser to which to add these flags.
     defaults: bool, whether to populate default values (for instance, should be
         false for Patch commands).
-    include_deprecated: bool, whether to include deprecated flags.
 
   Returns:
     list of base.Argument, the flags common to and specific to device commands.
@@ -74,40 +73,17 @@ def AddDeviceRegistrySettingsFlagsToParser(parser, defaults=True,
       help=('A Google Cloud Pub/Sub topic name for state notifications.')
   ).AddToParser(parser)
 
-  for f in _GetEventNotificationConfigFlags(
-      include_deprecated=include_deprecated):
+  for f in _GetEventNotificationConfigFlags():
     f.AddToParser(parser)
 
 
-def _GetEventNotificationConfigFlags(include_deprecated=True):
+def _GetEventNotificationConfigFlags():
   """Returns a list of flags for specfiying Event Notification Configs."""
-  event_config_group = base.ArgumentGroup(mutex=True)
-  if include_deprecated:
-    # TODO(b/64597199): Remove this flag when usage is low.
-    event_config_group.AddArgument(base.Argument(
-        '--pubsub-topic',
-        required=False,
-        action=actions.DeprecationAction(
-            '--pubsub-topic',
-            removed=True,
-            error='Flag {flag_name} is removed. Use '
-                  '--event-notification-config instead.'),
-        hidden=True,
-        help='A Google Cloud Pub/Sub topic name for event notifications'))
-    event_config_group.AddArgument(base.Argument(
-        '--event-pubsub-topic',
-        required=False,
-        action=actions.DeprecationAction(
-            '--event-pubsub-topic',
-            warn='Flag {flag_name} is deprecated. Use '
-                 '--event-notification-config instead.'),
-        help='A Google Cloud Pub/Sub topic name for event notifications'))
-
   event_notification_spec = {
       'topic': str,
       'subfolder': str
   }
-  event_config_group.AddArgument(base.Argument(
+  event_config = base.Argument(
       '--event-notification-config',
       dest='event_notification_configs',
       action='append',
@@ -125,11 +101,12 @@ allowed and must be specified last.
 
 *subfolder*::::If the subfolder name matches this string exactly, this
 configuration will be used to publish telemetry events. If empty all strings
-are matched."""))
-  return [event_config_group]
+are matched.""")
+  return [event_config]
 
 
 def AddDeviceRegistryCredentialFlagsToParser(parser, credentials_surface=True):
+  """Add device credential flags to arg parser."""
   help_text = ('Path to a file containing an X.509v3 certificate '
                '([RFC5280](https://www.ietf.org/rfc/rfc5280.txt)), encoded in '
                'base64, and wrapped by `-----BEGIN CERTIFICATE-----` and '
@@ -381,6 +358,13 @@ def _GetCreateFlags():
   return _GetDeviceFlags() + _GetDeviceCredentialFlags()
 
 
+def _GetCreateFlagsForGateways():
+  """Generates all the flags for the create command."""
+  return (_GetDeviceFlags() + _GetDeviceCredentialFlags() +
+          [CREATE_GATEWAY_ENUM_MAPPER.choice_arg,
+           GATEWAY_AUTH_METHOD_ENUM_MAPPER.choice_arg])
+
+
 def AddDeviceConfigFlagsToParser(parser):
   """Add flags for the `configs update` command."""
   base.Argument(
@@ -404,3 +388,51 @@ def AddDeviceConfigFlagsToParser(parser):
             'that contain special characters (in the context of your shell), '
             'use the `--config-file` flag instead.')
   ).AddToParser(data_group)
+
+
+def _GetGatewayEnum(parent='list_request'):
+  """Get GatewayTypeValueEnum from the specified parent message."""
+  messages = apis.GetMessagesModule('cloudiot', 'v1')
+  if parent == 'list_request':
+    request = (messages.CloudiotProjectsLocationsRegistriesDevicesListRequest)
+  else:
+    request = (messages.GatewayConfig)
+  return request.GatewayTypeValueValuesEnum
+
+
+def _GetAuthMethodEnum():
+  """Get GatewayAuthMethodValueValuesEnum from api messages."""
+  messages = apis.GetMessagesModule('cloudiot', 'v1')
+  return messages.GatewayConfig.GatewayAuthMethodValueValuesEnum
+
+GATEWAY_AUTH_METHOD_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--auth-method',
+    _GetAuthMethodEnum(),
+    custom_mappings={
+        'ASSOCIATION_ONLY': ('association-only',
+                             ('The device is authenticated through the '
+                              'gateway association only. Device credentials '
+                              'are ignored if provided.')),
+        'DEVICE_AUTH_TOKEN_ONLY': ('device-auth-token-only',
+                                   ('The device is authenticated through its '
+                                    'own credentials. Gateway association '
+                                    'is not checked.')),
+        'ASSOCIATION_AND_DEVICE_AUTH_TOKEN': (
+            'association-and-device-auth-token',
+            ('The device is authenticated through both device '
+             'credentials and gateway association.'))
+    },
+    required=False,
+    help_str=('The authorization/authentication method used by devices in '
+              'relation to the gateway. This property is set only on gateways. '
+              'If left unspecified, devices will not be able to access '
+              'the gateway.'))
+
+
+CREATE_GATEWAY_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--device-type',
+    _GetGatewayEnum(parent='create_request'),
+    required=False,
+    include_filter=lambda x: x != 'GATEWAY_TYPE_UNSPECIFIED',
+    help_str=('Whether this device is a gateway. If unspecified, '
+              'non-gateway is assumed. '))

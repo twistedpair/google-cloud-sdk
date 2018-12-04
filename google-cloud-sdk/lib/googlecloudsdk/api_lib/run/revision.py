@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Wraps a Serverless revision message with convenience methods."""
+"""Wraps a Cloud Run revision message with convenience methods."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -28,7 +28,7 @@ SERVICE_LABEL = 'serving.knative.dev/service'
 
 
 class Revision(k8s_object.KubernetesObject):
-  """Wraps a Serverless Revision message, making fields more convenient."""
+  """Wraps a Cloud Run Revision message, making fields more convenient."""
 
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Revision'

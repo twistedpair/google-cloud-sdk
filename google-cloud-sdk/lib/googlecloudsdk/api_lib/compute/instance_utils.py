@@ -454,7 +454,7 @@ def ParseDiskResource(resources, name, project, zone, type_):
         })
 
 
-def _GetDiskDeviceName(disk, name, container_mount_disk):
+def GetDiskDeviceName(disk, name, container_mount_disk):
   """Helper method to get device-name for a disk message."""
   if (container_mount_disk and
       filter(bool,
@@ -514,7 +514,7 @@ def CreatePersistentAttachedDiskMessages(
     else:
       kwargs = {}
 
-    device_name = _GetDiskDeviceName(disk, name, container_mount_disk)
+    device_name = GetDiskDeviceName(disk, name, container_mount_disk)
 
     attached_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
@@ -627,8 +627,6 @@ def CreatePersistentCreateDiskMessages(compute_client,
     if enable_kms:
       disk_key = kms_utils.MaybeGetKmsKeyFromDict(disk, messages, disk_key)
 
-    device_name = _GetDiskDeviceName(disk, name, container_mount_disk)
-
     initialize_params = messages.AttachedDiskInitializeParams(
         diskName=name,
         description=disk.get('description'),
@@ -646,7 +644,7 @@ def CreatePersistentCreateDiskMessages(compute_client,
         initialize_params.sourceImage = None
         initialize_params.sourceSnapshot = attached_snapshot_uri
 
-    device_name = _GetDiskDeviceName(disk, name, container_mount_disk)
+    device_name = GetDiskDeviceName(disk, name, container_mount_disk)
     create_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=False,

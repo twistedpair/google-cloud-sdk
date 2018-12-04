@@ -20,7 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import argparse
-from collections import OrderedDict
+import collections
 import copy
 import difflib
 import io
@@ -64,12 +64,6 @@ class TextChoiceSuggester(object):
   """Utility to suggest mistyped commands.
 
   """
-  _SYNONYM_SETS = [
-      set(['create', 'add']),
-      set(['delete', 'remove']),
-      set(['describe', 'get']),
-      set(['patch', 'update']),
-  ]
 
   def __init__(self, choices=None):
     # A mapping of 'thing typed' to the suggestion that should be offered.
@@ -105,17 +99,6 @@ class TextChoiceSuggester(object):
     for alias in aliases:
       if alias not in self._choices:
         self._choices[alias] = suggestion
-
-  def AddSynonyms(self):
-    """Activate the set of synonyms for this suggester."""
-    for s_set in TextChoiceSuggester._SYNONYM_SETS:
-      valid_choices = set(self._choices.keys()) & s_set
-      for choice in valid_choices:
-        # Add all synonyms in the set as aliases for each real choice that is
-        # valid.  This will never clobber the original choice that is there.
-        # If none of the synonyms are valid choices, this will not add any
-        # aliases for this synonym set.
-        self.AddAliases(s_set, choice)
 
   def GetSuggestion(self, arg):
     """Find the item that is closest to what was attempted.
@@ -318,7 +301,7 @@ def GetArgDetails(arg, depth=0):
       one_of = '(currently only one value is supported)'
     if isinstance(choices, dict):
       choices_iteritems = six.iteritems(choices)
-      if not isinstance(choices, OrderedDict):
+      if not isinstance(choices, collections.OrderedDict):
         choices_iteritems = sorted(choices_iteritems)
       choices = [
           '*{name}*{depth} {desc}'.format(

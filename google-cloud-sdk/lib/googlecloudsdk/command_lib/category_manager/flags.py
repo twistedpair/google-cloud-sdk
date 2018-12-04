@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
@@ -61,7 +60,7 @@ def _GetProjectAnnotationResourceSpec():
   return concepts.ResourceSpec(
       'categorymanager.projects.taxonomies.annotations',
       resource_name='annotation',
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       taxonomiesId=_TaxonomyAttributeConfig(),
       annotationsId=_AnnotationsAttributeConfig())
 
@@ -70,7 +69,7 @@ def _GetProjectTaxonomyResourceSpec():
   return concepts.ResourceSpec(
       'categorymanager.projects.taxonomies',
       resource_name='taxonomy',
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       taxonomiesId=_TaxonomyAttributeConfig())
 
 

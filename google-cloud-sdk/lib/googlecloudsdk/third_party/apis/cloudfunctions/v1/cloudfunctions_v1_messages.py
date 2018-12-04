@@ -146,8 +146,8 @@ class CloudFunction(_messages.Message):
     StatusValueValuesEnum: Output only. Status of the function deployment.
 
   Messages:
-    EnvironmentVariablesValue: **Beta Feature**  Environment variables that
-      shall be available during function execution.
+    EnvironmentVariablesValue: Environment variables that shall be available
+      during function execution.
     LabelsValue: Labels associated with this Cloud Function.
 
   Fields:
@@ -160,8 +160,8 @@ class CloudFunction(_messages.Message):
       the system will try to use function named "function". For Node.js this
       is name of a function exported by the module specified in
       `source_location`.
-    environmentVariables: **Beta Feature**  Environment variables that shall
-      be available during function execution.
+    environmentVariables: Environment variables that shall be available during
+      function execution.
     eventTrigger: A source that fires events in response to a condition in
       another service.
     httpsTrigger: An HTTPS endpoint type of source that can be triggered via
@@ -233,8 +233,8 @@ class CloudFunction(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EnvironmentVariablesValue(_messages.Message):
-    r"""**Beta Feature**  Environment variables that shall be available during
-    function execution.
+    r"""Environment variables that shall be available during function
+    execution.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -866,7 +866,7 @@ class OperationMetadataV1(_messages.Message):
     type: Type of operation.
     updateTime: The last update timestamp of the operation.
     versionId: Version id of the function created or updated by an API call.
-      This field is only pupulated for Create and Update operations.
+      This field is only populated for Create and Update operations.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -931,7 +931,7 @@ class OperationMetadataV1Beta2(_messages.Message):
     type: Type of operation.
     updateTime: The last update timestamp of the operation.
     versionId: Version id of the function created or updated by an API call.
-      This field is only pupulated for Create and Update operations.
+      This field is only populated for Create and Update operations.
   """
 
   class TypeValueValuesEnum(_messages.Enum):

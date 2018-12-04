@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Semantic text objects that are used for styled outputting."""
+# pytype: skip-file
 
 from __future__ import absolute_import
 from __future__ import division
@@ -74,7 +75,7 @@ class _TextTypes(enum.Enum):
     return TypedText(list(args), self)
 
 
-# TODO(b/113525269): Not finalized. Do not use.
+# TODO(b/113525269): Add more types.
 class TextTypes(_TextTypes):
   """Defines text types that can be used for styling text."""
   RESOURCE_NAME = 1

@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This module holds exceptions raised by Serverless commands."""
+"""This module holds exceptions raised by Cloud Run commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -63,7 +63,7 @@ class NoActiveRevisionsError(exceptions.Error):
 
 
 class SourceNotSupportedError(exceptions.Error):
-  """Your serverless install does not support source deployment."""
+  """Your Cloud Run install does not support source deployment."""
   pass
 
 

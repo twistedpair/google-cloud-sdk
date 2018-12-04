@@ -1002,6 +1002,12 @@ class _SectionCore(_Section):
         default=True,
         hidden=True,
         help_text='If true, allow a Python 3 interpreter to run gcloud.')
+    self.color_theme = self._Add(
+        'color_theme',
+        help_text='Color palette for output.',
+        hidden=True,
+        default='off',
+        choices=['off', 'normal', 'testing'])
 
     def ShowStructuredLogsValidator(show_structured_logs):
       if show_structured_logs is None:
@@ -1458,8 +1464,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.redis = self._Add('redis')
-    # TODO(b/117986529): rename to 'run' once control plane finishes renaming,
-    # which will be reflected in third_party/apis/apis_map.py
+    # TODO(b/119917957): rename to 'run' once control plane finishes renaming,
+    # which will be reflected in third_party/apis/apis_map.py See b/117986529
+    # for additional context.
     self.run = self._Add('serverless')
     self.servicemanagement = self._Add('servicemanagement')
     self.serviceregistry = self._Add('serviceregistry')

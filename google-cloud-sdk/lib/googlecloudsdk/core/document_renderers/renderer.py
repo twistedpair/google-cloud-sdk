@@ -70,8 +70,16 @@ class TableAttributes(object):
     self.columns.append(
         TableColumnAttributes(align=align, label=label, width=width))
 
-  def GetPrintFormat(self, margin=0):
-    """Constructs and returns a resource_printer print format."""
+  def GetPrintFormat(self, margin=0, width=0):
+    """Constructs and returns a resource_printer print format.
+
+    Args:
+      margin: Right hand side padding when one or more columns are wrapped.
+      width: The table width.
+
+    Returns:
+      The resource printer format string.
+    """
     fmt = ['table']
     attr = []
     if self.box:
@@ -80,6 +88,8 @@ class TableAttributes(object):
       attr.append('no-heading')
     if margin:
       attr.append('margin={}'.format(margin))
+    if width:
+      attr.append('width={}'.format(width))
     if attr:
       fmt.append('[' + ','.join(attr) + ']')
     fmt.append('(')
@@ -106,18 +116,20 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
   Attributes:
     _blank: True if the output already contains a blank line. Used to avoid
       sequences of 2 or more blank lines in the output.
+    _command: The command split into component names.
     _font: The font attribute bitmask.
     _indent: List of left indentations in characters indexed by _level.
     _lang: ```lang\n...\n``` code block language. None if not in code block,
       '' if in code block with no explicit lang specified.
     _level: The section or list level counting from 0.
     _out: The output stream.
-    _title: The document tile.
+    _title: The document title.
     _width: The output width in characters.
   """
 
   def __init__(self, out=None, title=None, width=80):
     self._blank = True
+    self._command = ['gcloud']  # use command[0] instead of literal 'gcloud'
     self._font = 0
     self._indent = []
     self._lang = None
@@ -125,6 +137,11 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
     self._out = out or log.out
     self._title = title
     self._width = width
+
+  @property
+  def command(self):
+    """Returns the command split into component names."""
+    return self._command
 
   def Blank(self):
     """The last output line is blank."""
@@ -181,6 +198,14 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
     """
     return ''
 
+  def SetCommand(self, command):
+    """Sets the document command name.
+
+    Args:
+      command: The command split into component names.
+    """
+    self._command = command
+
   def SetLang(self, lang):
     """Sets the ```...``` code block language.
 
@@ -213,6 +238,17 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
       return target
     return '[]()'
 
+  def LinkGlobalFlags(self, line):
+    """Add global flags links to line if any.
+
+    Args:
+      line: The text line.
+
+    Returns:
+      line with annoted global flag links.
+    """
+    return line
+
   def TableLine(self, line, indent=0):
     """Adds an indented table line to the output.
 
@@ -235,7 +271,10 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
     indent = self._indent[self._level].indent + 2
     margin = indent if any([True for r in rows if ' ' in r[-1]]) else 0
     buf = io.StringIO()
-    resource_printer.Print(rows, table.GetPrintFormat(margin=margin), out=buf)
+    resource_printer.Print(
+        rows,
+        table.GetPrintFormat(margin=margin, width=self._width),
+        out=buf)
     for line in buf.getvalue().split('\n')[:-1]:
       self.TableLine(line, indent=indent)
     self.Content()

@@ -245,7 +245,7 @@
       "type": "object",
       "properties": {
         "apiTargets": {
-          "description": "A restriction for a specific service and optionally one or\nmultiple specific methods. Requests will be allowed if they\nmatch any of these restrictions. If no restrictions are\nspecified, all targets are allowed.\nKey is the service name for this restriction. It should be api_v1_name of\nservice config for legacy services. For new service, it should be the fully\nqualified service name (eg. apikeys.googleapi.com).",
+          "description": "A restriction for a specific service and optionally one or\nmultiple specific methods. Requests will be allowed if they\nmatch any of these restrictions. If no restrictions are\nspecified, all targets are allowed.\nKey is the service name for this restriction. It should be api_v1_name of\nservice config for legacy services. For new service, it should be the fully\nqualified service name (eg. apikeys.googleapis.com).",
           "type": "object",
           "additionalProperties": {
             "$ref": "ApiTarget"

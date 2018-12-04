@@ -1230,6 +1230,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeDisksGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.disks.getIamPolicy',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeDisksGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a persistent disk in the specified project using the data in the request. You can create a disk with a sourceImage, a sourceSnapshot, or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
 
@@ -1308,6 +1334,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeDisksSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.disks.setIamPolicy',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/setIamPolicy',
+        request_field=u'zoneSetPolicyRequest',
+        request_type_name=u'ComputeDisksSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def SetLabels(self, request, global_params=None):
       r"""Sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
 
@@ -1331,6 +1383,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field=u'zoneSetLabelsRequest',
         request_type_name=u'ComputeDisksSetLabelsRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeDisksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.disks.testIamPermissions',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/disks/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeDisksTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -2648,6 +2726,32 @@ If an empty request body is given, clears the deprecation status instead.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeImagesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.images.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/images/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeImagesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates an image in the specified project using the data included in the request.
 
@@ -2700,6 +2804,32 @@ If an empty request body is given, clears the deprecation status instead.
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeImagesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.images.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/images/{resource}/setIamPolicy',
+        request_field=u'globalSetPolicyRequest',
+        request_type_name=u'ComputeImagesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def SetLabels(self, request, global_params=None):
       r"""Sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
 
@@ -2723,6 +2853,32 @@ If an empty request body is given, clears the deprecation status instead.
         request_field=u'globalSetLabelsRequest',
         request_type_name=u'ComputeImagesSetLabelsRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeImagesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.images.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/images/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeImagesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -2951,6 +3107,32 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
         request_field='',
         request_type_name=u'ComputeInstanceGroupManagersListManagedInstancesRequest',
         response_type_name=u'InstanceGroupManagersListManagedInstancesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeInstanceGroupManagersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.instanceGroupManagers.patch',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}',
+        request_field=u'instanceGroupManagerResource',
+        request_type_name=u'ComputeInstanceGroupManagersPatchRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -3378,6 +3560,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeInstanceTemplatesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instanceTemplates.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/instanceTemplates/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeInstanceTemplatesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
 
@@ -3427,6 +3635,58 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeInstanceTemplatesListRequest',
         response_type_name=u'InstanceTemplateList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeInstanceTemplatesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceTemplates.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/instanceTemplates/{resource}/setIamPolicy',
+        request_field=u'globalSetPolicyRequest',
+        request_type_name=u'ComputeInstanceTemplatesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstanceTemplatesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceTemplates.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/instanceTemplates/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeInstanceTemplatesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -3622,6 +3882,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeInstancesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.instances.getIamPolicy',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeInstancesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def GetSerialPortOutput(self, request, global_params=None):
       r"""Returns the last 1 MB of serial port output from the specified instance.
 
@@ -3801,6 +4087,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeInstancesSetDiskAutoDeleteRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeInstancesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.setIamPolicy',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/setIamPolicy',
+        request_field=u'zoneSetPolicyRequest',
+        request_type_name=u'ComputeInstancesSetIamPolicyRequest',
+        response_type_name=u'Policy',
         supports_download=False,
     )
 
@@ -4113,6 +4425,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeInstancesStopRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstancesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instances.testIamPermissions',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/instances/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeInstancesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -4686,6 +5024,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeLicensesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.licenses.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/licenses/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeLicensesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Create a License resource in the specified project.
 
@@ -4735,6 +5099,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeLicensesListRequest',
         response_type_name=u'LicensesListResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeLicensesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.licenses.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/licenses/{resource}/setIamPolicy',
+        request_field=u'globalSetPolicyRequest',
+        request_type_name=u'ComputeLicensesSetIamPolicyRequest',
+        response_type_name=u'Policy',
         supports_download=False,
     )
 
@@ -5210,6 +5600,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeNodeGroupsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.nodeGroups.getIamPolicy',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeNodeGroupsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a NodeGroup resource in the specified project using the data included in the request.
 
@@ -5288,6 +5704,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeNodeGroupsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.nodeGroups.setIamPolicy',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{resource}/setIamPolicy',
+        request_field=u'zoneSetPolicyRequest',
+        request_type_name=u'ComputeNodeGroupsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def SetNodeTemplate(self, request, global_params=None):
       r"""Updates the node template of the node group.
 
@@ -5311,6 +5753,32 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field=u'nodeGroupsSetNodeTemplateRequest',
         request_type_name=u'ComputeNodeGroupsSetNodeTemplateRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeNodeGroupsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.nodeGroups.testIamPermissions',
+        ordered_params=[u'project', u'zone', u'resource'],
+        path_params=[u'project', u'resource', u'zone'],
+        query_params=[],
+        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeNodeGroupsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -5402,6 +5870,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeNodeTemplatesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.nodeTemplates.getIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeNodeTemplatesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a NodeTemplate resource in the specified project using the data included in the request.
 
@@ -5451,6 +5945,58 @@ If the group is part of a backend service that has enabled connection draining, 
         request_field='',
         request_type_name=u'ComputeNodeTemplatesListRequest',
         response_type_name=u'NodeTemplateList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeNodeTemplatesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.nodeTemplates.setIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/setIamPolicy',
+        request_field=u'regionSetPolicyRequest',
+        request_type_name=u'ComputeNodeTemplatesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeNodeTemplatesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.nodeTemplates.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/nodeTemplates/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeNodeTemplatesTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -6844,6 +7390,32 @@ A regional managed instance group can contain up to 2000 instances.
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'PATCH',
+        method_id=u'compute.regionInstanceGroupManagers.patch',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}',
+        request_field=u'instanceGroupManagerResource',
+        request_type_name=u'ComputeRegionInstanceGroupManagersPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def RecreateInstances(self, request, global_params=None):
       r"""Flags the specified instances in the managed instance group to be immediately recreated. The instances are deleted and recreated using the current instance template for the managed instance group. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of the recreating action with the listmanagedinstances method.
 
@@ -7912,6 +8484,32 @@ For more information, see Deleting snapshots.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeSnapshotsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.snapshots.getIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/snapshots/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeSnapshotsGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Retrieves the list of Snapshot resources contained within the specified project.
 
@@ -7938,6 +8536,32 @@ For more information, see Deleting snapshots.
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeSnapshotsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.snapshots.setIamPolicy',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/snapshots/{resource}/setIamPolicy',
+        request_field=u'globalSetPolicyRequest',
+        request_type_name=u'ComputeSnapshotsSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def SetLabels(self, request, global_params=None):
       r"""Sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
 
@@ -7961,6 +8585,32 @@ For more information, see Deleting snapshots.
         request_field=u'globalSetLabelsRequest',
         request_type_name=u'ComputeSnapshotsSetLabelsRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSnapshotsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.snapshots.testIamPermissions',
+        ordered_params=[u'project', u'resource'],
+        path_params=[u'project', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/global/snapshots/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeSnapshotsTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -8358,6 +9008,32 @@ For more information, see Deleting snapshots.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeSubnetworksGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'GET',
+        method_id=u'compute.subnetworks.getIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name=u'ComputeSubnetworksGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a subnetwork in the specified project using the data included in the request.
 
@@ -8437,7 +9113,7 @@ For more information, see Deleting snapshots.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.
+      r"""Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingeprint of the subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message
@@ -8459,6 +9135,32 @@ For more information, see Deleting snapshots.
         request_field=u'subnetworkResource',
         request_type_name=u'ComputeSubnetworksPatchRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeSubnetworksSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.subnetworks.setIamPolicy',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/setIamPolicy',
+        request_field=u'regionSetPolicyRequest',
+        request_type_name=u'ComputeSubnetworksSetIamPolicyRequest',
+        response_type_name=u'Policy',
         supports_download=False,
     )
 
@@ -8485,6 +9187,32 @@ For more information, see Deleting snapshots.
         request_field=u'subnetworksSetPrivateIpGoogleAccessRequest',
         request_type_name=u'ComputeSubnetworksSetPrivateIpGoogleAccessRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeSubnetworksTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.subnetworks.testIamPermissions',
+        ordered_params=[u'project', u'region', u'resource'],
+        path_params=[u'project', u'region', u'resource'],
+        query_params=[],
+        relative_path=u'projects/{project}/regions/{region}/subnetworks/{resource}/testIamPermissions',
+        request_field=u'testPermissionsRequest',
+        request_type_name=u'ComputeSubnetworksTestIamPermissionsRequest',
+        response_type_name=u'TestPermissionsResponse',
         supports_download=False,
     )
 

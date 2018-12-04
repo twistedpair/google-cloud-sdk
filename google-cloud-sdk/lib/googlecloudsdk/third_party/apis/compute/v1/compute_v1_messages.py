@@ -1326,6 +1326,101 @@ class AttachedDiskInitializeParams(_messages.Message):
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
 
 
+class AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
+  multiple AuditConfigs:  { "audit_configs": [ { "service": "allServices"
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", }, { "log_type":
+  "ADMIN_READ", } ] }, { "service": "fooservice.googleapis.com"
+  "audit_log_configs": [ { "log_type": "DATA_READ", }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:bar@gmail.com" ] } ] } ] }  For
+  fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts foo@gmail.com from DATA_READ logging, and
+  bar@gmail.com from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    exemptedMembers:
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  exemptedMembers = _messages.StringField(2, repeated=True)
+  service = _messages.StringField(3)
+
+
+class AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example:
+  { "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:foo@gmail.com" ] }, { "log_type": "DATA_WRITE", } ] }  This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting foo@gmail.com from
+  DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of [Binding.members][].
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      ADMIN_READ: <no description>
+      DATA_READ: <no description>
+      DATA_WRITE: <no description>
+      LOG_TYPE_UNSPECIFIED: <no description>
+    """
+    ADMIN_READ = 0
+    DATA_READ = 1
+    DATA_WRITE = 2
+    LOG_TYPE_UNSPECIFIED = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AuthorizationLoggingOptions(_messages.Message):
+  r"""Authorization-related information used by Cloud Audit Logging.
+
+  Enums:
+    PermissionTypeValueValuesEnum: The type of the permission that was
+      checked.
+
+  Fields:
+    permissionType: The type of the permission that was checked.
+  """
+
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the permission that was checked.
+
+    Values:
+      ADMIN_READ: <no description>
+      ADMIN_WRITE: <no description>
+      DATA_READ: <no description>
+      DATA_WRITE: <no description>
+      PERMISSION_TYPE_UNSPECIFIED: <no description>
+    """
+    ADMIN_READ = 0
+    ADMIN_WRITE = 1
+    DATA_READ = 2
+    DATA_WRITE = 3
+    PERMISSION_TYPE_UNSPECIFIED = 4
+
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
+
+
 class Autoscaler(_messages.Message):
   r"""Represents an Autoscaler resource. Autoscalers allow you to
   automatically scale virtual machine instances in managed instance groups
@@ -2084,7 +2179,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       response will be revalidated before being served. Defaults to 1hr
       (3600s). When serving responses to signed URL requests, Cloud CDN will
       internally behave as though all responses from this backend had a
-      ?Cache-Control: public, max-age=[TTL]? header, regardless of any
+      "Cache-Control: public, max-age=[TTL]" header, regardless of any
       existing Cache-Control header. The actual headers served in responses
       will not be altered.
     signedUrlKeyNames: [Output Only] Names of the keys for signing request
@@ -2548,7 +2643,7 @@ class BackendServiceCdnPolicy(_messages.Message):
       response will be revalidated before being served. Defaults to 1hr
       (3600s). When serving responses to signed URL requests, Cloud CDN will
       internally behave as though all responses from this backend had a
-      ?Cache-Control: public, max-age=[TTL]? header, regardless of any
+      "Cache-Control: public, max-age=[TTL]" header, regardless of any
       existing Cache-Control header. The actual headers served in responses
       will not be altered.
     signedUrlKeyNames: [Output Only] Names of the keys for signing request
@@ -2829,6 +2924,36 @@ class BackendServicesScopedList(_messages.Message):
 
   backendServices = _messages.MessageField('BackendService', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class Binding(_messages.Message):
+  r"""Associates `members` with a `role`.
+
+  Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@gmail.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`.  *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`.    * `domain:{domain}`: A Google Apps
+      domain name that represents all the users of that domain. For example,
+      `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class CacheInvalidationRule(_messages.Message):
@@ -4505,7 +4630,7 @@ class ComputeDisksCreateSnapshotRequest(_messages.Message):
   r"""A ComputeDisksCreateSnapshotRequest object.
 
   Fields:
-    disk: Name or id of the persistent disk to snapshot.
+    disk: Name of the persistent disk to snapshot.
     guestFlush: A boolean attribute.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -4534,7 +4659,7 @@ class ComputeDisksDeleteRequest(_messages.Message):
   r"""A ComputeDisksDeleteRequest object.
 
   Fields:
-    disk: Name or id of the persistent disk to delete.
+    disk: Name of the persistent disk to delete.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -4555,11 +4680,25 @@ class ComputeDisksDeleteRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeDisksGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeDisksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeDisksGetRequest(_messages.Message):
   r"""A ComputeDisksGetRequest object.
 
   Fields:
-    disk: Name or id of the persistent disk to return.
+    disk: Name of the persistent disk to return.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -4648,7 +4787,7 @@ class ComputeDisksResizeRequest(_messages.Message):
   r"""A ComputeDisksResizeRequest object.
 
   Fields:
-    disk: The name or id of the persistent disk.
+    disk: The name of the persistent disk.
     disksResizeRequest: A DisksResizeRequest resource to be passed as the
       request body.
     project: Project ID for this request.
@@ -4672,6 +4811,23 @@ class ComputeDisksResizeRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeDisksSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeDisksSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
+
+
 class ComputeDisksSetLabelsRequest(_messages.Message):
   r"""A ComputeDisksSetLabelsRequest object.
 
@@ -4687,7 +4843,7 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
     zone: The name of the zone for this request.
     zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
       request body.
@@ -4698,6 +4854,23 @@ class ComputeDisksSetLabelsRequest(_messages.Message):
   resource = _messages.StringField(3, required=True)
   zone = _messages.StringField(4, required=True)
   zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 5)
+
+
+class ComputeDisksTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeDisksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeFirewallsDeleteRequest(_messages.Message):
@@ -5872,7 +6045,7 @@ class ComputeImagesDeleteRequest(_messages.Message):
   r"""A ComputeImagesDeleteRequest object.
 
   Fields:
-    image: Name or id of the image resource to delete.
+    image: Name of the image resource to delete.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -5897,7 +6070,7 @@ class ComputeImagesDeprecateRequest(_messages.Message):
   Fields:
     deprecationStatus: A DeprecationStatus resource to be passed as the
       request body.
-    image: Image name or id .
+    image: Image name.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -5921,7 +6094,7 @@ class ComputeImagesGetFromFamilyRequest(_messages.Message):
   r"""A ComputeImagesGetFromFamilyRequest object.
 
   Fields:
-    family: Name or id of the image family to search for.
+    family: Name of the image family to search for.
     project: Project ID for this request.
   """
 
@@ -5929,11 +6102,23 @@ class ComputeImagesGetFromFamilyRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeImagesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeImagesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeImagesGetRequest(_messages.Message):
   r"""A ComputeImagesGetRequest object.
 
   Fields:
-    image: Name or id of the image resource to return.
+    image: Name of the image resource to return.
     project: Project ID for this request.
   """
 
@@ -6012,6 +6197,21 @@ class ComputeImagesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeImagesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeImagesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeImagesSetLabelsRequest(_messages.Message):
   r"""A ComputeImagesSetLabelsRequest object.
 
@@ -6019,12 +6219,27 @@ class ComputeImagesSetLabelsRequest(_messages.Message):
     globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
   project = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
+
+
+class ComputeImagesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeImagesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -6293,6 +6508,35 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstanceGroupManagersPatchRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersPatchRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the instance group manager.
+    instanceGroupManagerResource: A InstanceGroupManager resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where you want to create the managed instance
+      group.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
@@ -6735,6 +6979,18 @@ class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ComputeInstanceTemplatesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstanceTemplatesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeInstanceTemplatesGetRequest(_messages.Message):
   r"""A ComputeInstanceTemplatesGetRequest object.
 
@@ -6817,12 +7073,42 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeInstanceTemplatesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstanceTemplatesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeInstanceTemplatesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeInstanceTemplatesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+
+
 class ComputeInstancesAddAccessConfigRequest(_messages.Message):
   r"""A ComputeInstancesAddAccessConfigRequest object.
 
   Fields:
     accessConfig: A AccessConfig resource to be passed as the request body.
-    instance: The instance name or id for this request.
+    instance: The instance name for this request.
     networkInterface: The name of the network interface to add to this
       instance.
     project: Project ID for this request.
@@ -6900,7 +7186,7 @@ class ComputeInstancesAttachDiskRequest(_messages.Message):
     attachedDisk: A AttachedDisk resource to be passed as the request body.
     forceAttach: Whether to force attach the disk even if it's currently
       attached to another instance. This is only available for regional disks.
-    instance: The instance name or id for this request.
+    instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -6928,7 +7214,7 @@ class ComputeInstancesDeleteAccessConfigRequest(_messages.Message):
 
   Fields:
     accessConfig: The name of the access config to delete.
-    instance: The instance name or id for this request.
+    instance: The instance name for this request.
     networkInterface: The name of the network interface.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -6956,7 +7242,7 @@ class ComputeInstancesDeleteRequest(_messages.Message):
   r"""A ComputeInstancesDeleteRequest object.
 
   Fields:
-    instance: Name or id of the instance resource to delete.
+    instance: Name of the instance resource to delete.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -6983,7 +7269,7 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
   Fields:
     deviceName: The device name of the disk to detach. Make a get() request on
       the instance to view currently attached disks and device names.
-    instance: Instance name or id for this request.
+    instance: Instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7005,11 +7291,25 @@ class ComputeInstancesDetachDiskRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstancesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeInstancesGetRequest(_messages.Message):
   r"""A ComputeInstancesGetRequest object.
 
   Fields:
-    instance: Name or id of the instance resource to return.
+    instance: Name of the instance resource to return.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -7023,7 +7323,7 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   r"""A ComputeInstancesGetSerialPortOutputRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     port: Specifies which COM or serial port to retrieve data from.
     project: Project ID for this request.
     start: Returns output starting from a specific byte position. Use this to
@@ -7094,8 +7394,8 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
       an AND expression. However, you can include AND and OR expressions
       explicitly. For example, (cpuPlatform = "Intel Skylake") OR (cpuPlatform
       = "Intel Broadwell") AND (scheduling.automaticRestart = true).
-    instance: Name or id of the target instance scoping this request, or '-'
-      if the request should span over all instances in the container.
+    instance: Name of the target instance scoping this request, or '-' if the
+      request should span over all instances in the container.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than maxResults,
       Compute Engine returns a nextPageToken that can be used to get the next
@@ -7177,7 +7477,7 @@ class ComputeInstancesResetRequest(_messages.Message):
   r"""A ComputeInstancesResetRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7233,7 +7533,7 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
     autoDelete: Whether to auto-delete the disk when the instance is deleted.
     deviceName: The device name of the disk to modify. Make a get() request on
       the instance to view currently attached disks and device names.
-    instance: The instance name or id for this request.
+    instance: The instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7256,11 +7556,28 @@ class ComputeInstancesSetDiskAutoDeleteRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeInstancesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeInstancesSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
+
+
 class ComputeInstancesSetLabelsRequest(_messages.Message):
   r"""A ComputeInstancesSetLabelsRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     instancesSetLabelsRequest: A InstancesSetLabelsRequest resource to be
       passed as the request body.
     project: Project ID for this request.
@@ -7288,7 +7605,7 @@ class ComputeInstancesSetMachineResourcesRequest(_messages.Message):
   r"""A ComputeInstancesSetMachineResourcesRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     instancesSetMachineResourcesRequest: A InstancesSetMachineResourcesRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -7316,7 +7633,7 @@ class ComputeInstancesSetMachineTypeRequest(_messages.Message):
   r"""A ComputeInstancesSetMachineTypeRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     instancesSetMachineTypeRequest: A InstancesSetMachineTypeRequest resource
       to be passed as the request body.
     project: Project ID for this request.
@@ -7344,7 +7661,7 @@ class ComputeInstancesSetMetadataRequest(_messages.Message):
   r"""A ComputeInstancesSetMetadataRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     metadata: A Metadata resource to be passed as the request body.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -7371,7 +7688,7 @@ class ComputeInstancesSetMinCpuPlatformRequest(_messages.Message):
   r"""A ComputeInstancesSetMinCpuPlatformRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     instancesSetMinCpuPlatformRequest: A InstancesSetMinCpuPlatformRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -7399,7 +7716,7 @@ class ComputeInstancesSetSchedulingRequest(_messages.Message):
   r"""A ComputeInstancesSetSchedulingRequest object.
 
   Fields:
-    instance: Instance name or id for this request.
+    instance: Instance name for this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7426,7 +7743,7 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
   r"""A ComputeInstancesSetServiceAccountRequest object.
 
   Fields:
-    instance: Name or id of the instance resource to start.
+    instance: Name of the instance resource to start.
     instancesSetServiceAccountRequest: A InstancesSetServiceAccountRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -7454,7 +7771,7 @@ class ComputeInstancesSetTagsRequest(_messages.Message):
   r"""A ComputeInstancesSetTagsRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7481,7 +7798,7 @@ class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
   r"""A ComputeInstancesSimulateMaintenanceEventRequest object.
 
   Fields:
-    instance: Name or id of the instance scoping this request.
+    instance: Name of the instance scoping this request.
     project: Project ID for this request.
     zone: The name of the zone for this request.
   """
@@ -7495,7 +7812,7 @@ class ComputeInstancesStartRequest(_messages.Message):
   r"""A ComputeInstancesStartRequest object.
 
   Fields:
-    instance: Name or id of the instance resource to start.
+    instance: Name of the instance resource to start.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7520,7 +7837,7 @@ class ComputeInstancesStartWithEncryptionKeyRequest(_messages.Message):
   r"""A ComputeInstancesStartWithEncryptionKeyRequest object.
 
   Fields:
-    instance: Name or id of the instance resource to start.
+    instance: Name of the instance resource to start.
     instancesStartWithEncryptionKeyRequest: A
       InstancesStartWithEncryptionKeyRequest resource to be passed as the
       request body.
@@ -7549,7 +7866,7 @@ class ComputeInstancesStopRequest(_messages.Message):
   r"""A ComputeInstancesStopRequest object.
 
   Fields:
-    instance: Name or id of the instance resource to stop.
+    instance: Name of the instance resource to stop.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
@@ -7570,12 +7887,29 @@ class ComputeInstancesStopRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeInstancesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeInstancesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
+
+
 class ComputeInstancesUpdateAccessConfigRequest(_messages.Message):
   r"""A ComputeInstancesUpdateAccessConfigRequest object.
 
   Fields:
     accessConfig: A AccessConfig resource to be passed as the request body.
-    instance: The instance name or id for this request.
+    instance: The instance name for this request.
     networkInterface: The name of the network interface where the access
       config is attached.
     project: Project ID for this request.
@@ -7604,7 +7938,7 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
   r"""A ComputeInstancesUpdateNetworkInterfaceRequest object.
 
   Fields:
-    instance: The instance name or id for this request.
+    instance: The instance name for this request.
     networkInterface: The name of the network interface to update.
     networkInterfaceResource: A NetworkInterface resource to be passed as the
       request body.
@@ -8067,6 +8401,18 @@ class ComputeLicensesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ComputeLicensesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeLicensesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeLicensesGetRequest(_messages.Message):
   r"""A ComputeLicensesGetRequest object.
 
@@ -8146,6 +8492,21 @@ class ComputeLicensesListRequest(_messages.Message):
   orderBy = _messages.StringField(3)
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
+
+
+class ComputeLicensesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeLicensesSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeLicensesTestIamPermissionsRequest(_messages.Message):
@@ -8602,6 +8963,20 @@ class ComputeNodeGroupsDeleteRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeNodeGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeNodeGroupsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeNodeGroupsGetRequest(_messages.Message):
   r"""A ComputeNodeGroupsGetRequest object.
 
@@ -8741,6 +9116,23 @@ class ComputeNodeGroupsListRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeNodeGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeNodeGroupsSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    zone: The name of the zone for this request.
+    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
+
+
 class ComputeNodeGroupsSetNodeTemplateRequest(_messages.Message):
   r"""A ComputeNodeGroupsSetNodeTemplateRequest object.
 
@@ -8767,6 +9159,23 @@ class ComputeNodeGroupsSetNodeTemplateRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
+
+
+class ComputeNodeGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeNodeGroupsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
@@ -8838,6 +9247,20 @@ class ComputeNodeTemplatesDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeNodeTemplatesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeNodeTemplatesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
 
 
 class ComputeNodeTemplatesGetRequest(_messages.Message):
@@ -8925,6 +9348,40 @@ class ComputeNodeTemplatesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeNodeTemplatesSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeNodeTemplatesSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
+class ComputeNodeTemplatesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeNodeTemplatesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeNodeTypesAggregatedListRequest(_messages.Message):
@@ -9914,7 +10371,7 @@ class ComputeRegionDisksCreateSnapshotRequest(_messages.Message):
   r"""A ComputeRegionDisksCreateSnapshotRequest object.
 
   Fields:
-    disk: Name or id of the regional persistent disk to snapshot.
+    disk: Name of the regional persistent disk to snapshot.
     project: Project ID for this request.
     region: Name of the region for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -9941,7 +10398,7 @@ class ComputeRegionDisksDeleteRequest(_messages.Message):
   r"""A ComputeRegionDisksDeleteRequest object.
 
   Fields:
-    disk: Name or id of the regional persistent disk to delete.
+    disk: Name of the regional persistent disk to delete.
     project: Project ID for this request.
     region: Name of the region for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -9966,7 +10423,7 @@ class ComputeRegionDisksGetRequest(_messages.Message):
   r"""A ComputeRegionDisksGetRequest object.
 
   Fields:
-    disk: Name or id of the regional persistent disk to return.
+    disk: Name of the regional persistent disk to return.
     project: Project ID for this request.
     region: Name of the region for this request.
   """
@@ -10055,7 +10512,7 @@ class ComputeRegionDisksResizeRequest(_messages.Message):
   r"""A ComputeRegionDisksResizeRequest object.
 
   Fields:
-    disk: Name or id of the regional persistent disk.
+    disk: Name of the regional persistent disk.
     project: The project ID for this request.
     region: Name of the region for this request.
     regionDisksResizeRequest: A RegionDisksResizeRequest resource to be passed
@@ -10097,7 +10554,7 @@ class ComputeRegionDisksSetLabelsRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -10343,6 +10800,34 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionInstanceGroupManagersPatchRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersPatchRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the instance group manager.
+    instanceGroupManagerResource: A InstanceGroupManager resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagerResource = _messages.MessageField('InstanceGroupManager', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Message):
@@ -11349,7 +11834,7 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
       clients from accidentally creating duplicate commitments.  The request
       ID must be a valid UUID with the exception that zero UUID is not
       supported (00000000-0000-0000-0000-000000000000).
-    snapshot: Name or id of the Snapshot resource to delete.
+    snapshot: Name of the Snapshot resource to delete.
   """
 
   project = _messages.StringField(1, required=True)
@@ -11357,12 +11842,24 @@ class ComputeSnapshotsDeleteRequest(_messages.Message):
   snapshot = _messages.StringField(3, required=True)
 
 
+class ComputeSnapshotsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeSnapshotsGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeSnapshotsGetRequest(_messages.Message):
   r"""A ComputeSnapshotsGetRequest object.
 
   Fields:
     project: Project ID for this request.
-    snapshot: Name or id of the Snapshot resource to return.
+    snapshot: Name of the Snapshot resource to return.
   """
 
   project = _messages.StringField(1, required=True)
@@ -11415,6 +11912,21 @@ class ComputeSnapshotsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class ComputeSnapshotsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeSnapshotsSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeSnapshotsSetLabelsRequest(_messages.Message):
   r"""A ComputeSnapshotsSetLabelsRequest object.
 
@@ -11422,12 +11934,27 @@ class ComputeSnapshotsSetLabelsRequest(_messages.Message):
     globalSetLabelsRequest: A GlobalSetLabelsRequest resource to be passed as
       the request body.
     project: Project ID for this request.
-    resource: Name of the resource for this request.
+    resource: Name or id of the resource for this request.
   """
 
   globalSetLabelsRequest = _messages.MessageField('GlobalSetLabelsRequest', 1)
   project = _messages.StringField(2, required=True)
   resource = _messages.StringField(3, required=True)
+
+
+class ComputeSnapshotsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeSnapshotsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeSslCertificatesDeleteRequest(_messages.Message):
@@ -11812,6 +12339,20 @@ class ComputeSubnetworksExpandIpCidrRangeRequest(_messages.Message):
   subnetworksExpandIpCidrRangeRequest = _messages.MessageField('SubnetworksExpandIpCidrRangeRequest', 5)
 
 
+class ComputeSubnetworksGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeSubnetworksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeSubnetworksGetRequest(_messages.Message):
   r"""A ComputeSubnetworksGetRequest object.
 
@@ -11973,6 +12514,23 @@ class ComputeSubnetworksPatchRequest(_messages.Message):
   subnetworkResource = _messages.MessageField('Subnetwork', 5)
 
 
+class ComputeSubnetworksSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeSubnetworksSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
+
+
 class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
   r"""A ComputeSubnetworksSetPrivateIpGoogleAccessRequest object.
 
@@ -12000,6 +12558,23 @@ class ComputeSubnetworksSetPrivateIpGoogleAccessRequest(_messages.Message):
   requestId = _messages.StringField(3)
   subnetwork = _messages.StringField(4, required=True)
   subnetworksSetPrivateIpGoogleAccessRequest = _messages.MessageField('SubnetworksSetPrivateIpGoogleAccessRequest', 5)
+
+
+class ComputeSubnetworksTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeSubnetworksTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
@@ -13853,6 +14428,89 @@ class ComputeZonesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
 
 
+class Condition(_messages.Message):
+  r"""A condition to be met.
+
+  Enums:
+    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
+    OpValueValuesEnum: An operator to apply the subject with.
+    SysValueValuesEnum: Trusted attributes supplied by any service that owns
+      resources and uses the IAM system for access control.
+
+  Fields:
+    iam: Trusted attributes supplied by the IAM system.
+    op: An operator to apply the subject with.
+    svc: Trusted attributes discharged by the service.
+    sys: Trusted attributes supplied by any service that owns resources and
+      uses the IAM system for access control.
+    value: DEPRECATED. Use 'values' instead.
+    values: The objects of the condition. This is mutually exclusive with
+      'value'.
+  """
+
+  class IamValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by the IAM system.
+
+    Values:
+      APPROVER: <no description>
+      ATTRIBUTION: <no description>
+      AUTHORITY: <no description>
+      CREDENTIALS_TYPE: <no description>
+      JUSTIFICATION_TYPE: <no description>
+      NO_ATTR: <no description>
+      SECURITY_REALM: <no description>
+    """
+    APPROVER = 0
+    ATTRIBUTION = 1
+    AUTHORITY = 2
+    CREDENTIALS_TYPE = 3
+    JUSTIFICATION_TYPE = 4
+    NO_ATTR = 5
+    SECURITY_REALM = 6
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""An operator to apply the subject with.
+
+    Values:
+      DISCHARGED: <no description>
+      EQUALS: <no description>
+      IN: <no description>
+      NOT_EQUALS: <no description>
+      NOT_IN: <no description>
+      NO_OP: <no description>
+    """
+    DISCHARGED = 0
+    EQUALS = 1
+    IN = 2
+    NOT_EQUALS = 3
+    NOT_IN = 4
+    NO_OP = 5
+
+  class SysValueValuesEnum(_messages.Enum):
+    r"""Trusted attributes supplied by any service that owns resources and
+    uses the IAM system for access control.
+
+    Values:
+      IP: <no description>
+      NAME: <no description>
+      NO_ATTR: <no description>
+      REGION: <no description>
+      SERVICE: <no description>
+    """
+    IP = 0
+    NAME = 1
+    NO_ATTR = 2
+    REGION = 3
+    SERVICE = 4
+
+  iam = _messages.EnumField('IamValueValuesEnum', 1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  svc = _messages.StringField(3)
+  sys = _messages.EnumField('SysValueValuesEnum', 4)
+  value = _messages.StringField(5)
+  values = _messages.StringField(6, repeated=True)
+
+
 class ConnectionDraining(_messages.Message):
   r"""Message containing connection draining configuration.
 
@@ -14007,6 +14665,11 @@ class Disk(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     options: Internal use only.
+    physicalBlockSizeBytes: Physical block size of the persistent disk, in
+      bytes. If not present in a request, a default value is used. Currently
+      supported sizes are 4096 and 16384, other sizes may be added in the
+      future. If an unsupported value is requested, the error message will
+      list the supported values for the caller's project.
     region: [Output Only] URL of the region where the disk resides. Only
       applicable for regional resources. You must specify this field as part
       of the HTTP request URL. It is not settable as a field in the request
@@ -14121,20 +14784,21 @@ class Disk(_messages.Message):
   licenses = _messages.StringField(12, repeated=True)
   name = _messages.StringField(13)
   options = _messages.StringField(14)
-  region = _messages.StringField(15)
-  replicaZones = _messages.StringField(16, repeated=True)
-  selfLink = _messages.StringField(17)
-  sizeGb = _messages.IntegerField(18)
-  sourceImage = _messages.StringField(19)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  sourceImageId = _messages.StringField(21)
-  sourceSnapshot = _messages.StringField(22)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceSnapshotId = _messages.StringField(24)
-  status = _messages.EnumField('StatusValueValuesEnum', 25)
-  type = _messages.StringField(26)
-  users = _messages.StringField(27, repeated=True)
-  zone = _messages.StringField(28)
+  physicalBlockSizeBytes = _messages.IntegerField(15)
+  region = _messages.StringField(16)
+  replicaZones = _messages.StringField(17, repeated=True)
+  selfLink = _messages.StringField(18)
+  sizeGb = _messages.IntegerField(19)
+  sourceImage = _messages.StringField(20)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  sourceImageId = _messages.StringField(22)
+  sourceSnapshot = _messages.StringField(23)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceSnapshotId = _messages.StringField(25)
+  status = _messages.EnumField('StatusValueValuesEnum', 26)
+  type = _messages.StringField(27)
+  users = _messages.StringField(28, repeated=True)
+  zone = _messages.StringField(29)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -15084,6 +15748,30 @@ class DistributionPolicyZoneConfiguration(_messages.Message):
   """
 
   zone = _messages.StringField(1)
+
+
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:  title: "User account presence"
+  description: "Determines whether the request has a user account" expression:
+  "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
 
 
 class Firewall(_messages.Message):
@@ -16074,6 +16762,25 @@ class GlobalSetLabelsRequest(_messages.Message):
 
   labelFingerprint = _messages.BytesField(1)
   labels = _messages.MessageField('LabelsValue', 2)
+
+
+class GlobalSetPolicyRequest(_messages.Message):
+  r"""A GlobalSetPolicyRequest object.
+
+  Fields:
+    bindings: Flatten Policy to create a backward compatible wire-format.
+      Deprecated. Use 'policy' to specify bindings.
+    etag: Flatten Policy to create a backward compatible wire-format.
+      Deprecated. Use 'policy' to specify the etag.
+    policy: REQUIRED: The complete policy to be applied to the 'resource'. The
+      size of the policy is limited to a few 10s of KB. An empty policy is in
+      general a valid policy but certain services (like Projects) might reject
+      them.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  policy = _messages.MessageField('Policy', 3)
 
 
 class GuestOsFeature(_messages.Message):
@@ -20151,7 +20858,7 @@ class InterconnectAttachmentPartnerMetadata(_messages.Message):
   Fields:
     interconnectName: Plain text name of the Interconnect this attachment is
       connected to, as displayed in the Partner?s portal. For instance
-      ?Chicago 1?. This value may be validated to match approved Partner
+      "Chicago 1". This value may be validated to match approved Partner
       values.
     partnerName: Plain text name of the Partner providing this attachment.
       This value may be validated to match approved Partner values.
@@ -21123,6 +21830,115 @@ class LicensesListResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
   selfLink = _messages.StringField(4)
   warning = _messages.MessageField('WarningValue', 5)
+
+
+class LogConfig(_messages.Message):
+  r"""Specifies what kind of log the caller must write
+
+  Fields:
+    cloudAudit: Cloud audit options.
+    counter: Counter options.
+    dataAccess: Data access options.
+  """
+
+  cloudAudit = _messages.MessageField('LogConfigCloudAuditOptions', 1)
+  counter = _messages.MessageField('LogConfigCounterOptions', 2)
+  dataAccess = _messages.MessageField('LogConfigDataAccessOptions', 3)
+
+
+class LogConfigCloudAuditOptions(_messages.Message):
+  r"""Write a Cloud Audit log
+
+  Enums:
+    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
+      Record.
+
+  Fields:
+    authorizationLoggingOptions: Information used by the Cloud Audit Logging
+      pipeline.
+    logName: The log_name to populate in the Cloud Audit Record.
+  """
+
+  class LogNameValueValuesEnum(_messages.Enum):
+    r"""The log_name to populate in the Cloud Audit Record.
+
+    Values:
+      ADMIN_ACTIVITY: <no description>
+      DATA_ACCESS: <no description>
+      UNSPECIFIED_LOG_NAME: <no description>
+    """
+    ADMIN_ACTIVITY = 0
+    DATA_ACCESS = 1
+    UNSPECIFIED_LOG_NAME = 2
+
+  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+
+
+class LogConfigCounterOptions(_messages.Message):
+  r"""Increment a streamz counter with the specified metric and field names.
+  Metric names should start with a '/', generally be lowercase-only, and end
+  in "_count". Field names should not contain an initial slash. The actual
+  exported metric names will have "/iam/policy" prepended.  Field names
+  correspond to IAM request parameters and field values are their respective
+  values.  Supported field names: - "authority", which is "[token]" if
+  IAMContext.token is present, otherwise the value of
+  IAMContext.authority_selector if present, and otherwise a representation of
+  IAMContext.principal; or - "iam_principal", a representation of
+  IAMContext.principal even if a token or authority selector is present; or -
+  "" (empty string), resulting in a counter with no fields.  Examples: counter
+  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
+  counter /iam/policy/backend_debug_access_count {iam_principal=[value of
+  IAMContext.principal]}  At this time we do not support multiple field names
+  (though this may be supported in the future).
+
+  Fields:
+    field: The field value to attribute.
+    metric: The metric to update.
+  """
+
+  field = _messages.StringField(1)
+  metric = _messages.StringField(2)
+
+
+class LogConfigDataAccessOptions(_messages.Message):
+  r"""Write a Data Access (Gin) log
+
+  Enums:
+    LogModeValueValuesEnum: Whether Gin logging should happen in a fail-closed
+      manner at the caller. This is relevant only in the LocalIAM
+      implementation, for now.  NOTE: Logging to Gin in a fail-closed manner
+      is currently unsupported while work is being done to satisfy the
+      requirements of go/345. Currently, setting LOG_FAIL_CLOSED mode will
+      have no effect, but still exists because there is active work being done
+      to support it (b/115874152).
+
+  Fields:
+    logMode: Whether Gin logging should happen in a fail-closed manner at the
+      caller. This is relevant only in the LocalIAM implementation, for now.
+      NOTE: Logging to Gin in a fail-closed manner is currently unsupported
+      while work is being done to satisfy the requirements of go/345.
+      Currently, setting LOG_FAIL_CLOSED mode will have no effect, but still
+      exists because there is active work being done to support it
+      (b/115874152).
+  """
+
+  class LogModeValueValuesEnum(_messages.Enum):
+    r"""Whether Gin logging should happen in a fail-closed manner at the
+    caller. This is relevant only in the LocalIAM implementation, for now.
+    NOTE: Logging to Gin in a fail-closed manner is currently unsupported
+    while work is being done to satisfy the requirements of go/345. Currently,
+    setting LOG_FAIL_CLOSED mode will have no effect, but still exists because
+    there is active work being done to support it (b/115874152).
+
+    Values:
+      LOG_FAIL_CLOSED: <no description>
+      LOG_MODE_UNSPECIFIED: <no description>
+    """
+    LOG_FAIL_CLOSED = 0
+    LOG_MODE_UNSPECIFIED = 1
+
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
 class MachineType(_messages.Message):
@@ -24411,6 +25227,55 @@ class PathRule(_messages.Message):
   service = _messages.StringField(2)
 
 
+class Policy(_messages.Message):
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.    A `Policy`
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **JSON Example**  { "bindings": [ { "role": "roles/owner",
+  "members": [ "user:mike@example.com", "group:admins@example.com",
+  "domain:google.com", "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com" ] }, { "role": "roles/viewer", "members":
+  ["user:sean@example.com"] } ] }  **YAML Example**  bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-other-app@appspot.gserviceaccount.com role: roles/owner -
+  members: - user:sean@example.com role: roles/viewer    For a description of
+  IAM and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
+
+  Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    iamOwned:
+    rules: If more than one rule is specified, the rules are applied in the
+      following manner: - All matching LOG rules are always applied. - If any
+      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
+      applied if one or more matching rule requires logging. - Otherwise, if
+      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
+      will be applied if one or more matching rule requires logging. -
+      Otherwise, if no rule applies, permission is denied.
+    version: Deprecated.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  iamOwned = _messages.BooleanField(4)
+  rules = _messages.MessageField('Rule', 5, repeated=True)
+  version = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class Project(_messages.Message):
   r"""A Project resource. For an overview of projects, see  Cloud Platform
   Resource Hierarchy. (== resource_for v1.projects ==) (== resource_for
@@ -25709,6 +26574,25 @@ class RegionSetLabelsRequest(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
 
 
+class RegionSetPolicyRequest(_messages.Message):
+  r"""A RegionSetPolicyRequest object.
+
+  Fields:
+    bindings: Flatten Policy to create a backwacd compatible wire-format.
+      Deprecated. Use 'policy' to specify bindings.
+    etag: Flatten Policy to create a backward compatible wire-format.
+      Deprecated. Use 'policy' to specify the etag.
+    policy: REQUIRED: The complete policy to be applied to the 'resource'. The
+      size of the policy is limited to a few 10s of KB. An empty policy is in
+      general a valid policy but certain services (like Projects) might reject
+      them.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  policy = _messages.MessageField('Policy', 3)
+
+
 class ResourceCommitment(_messages.Message):
   r"""Commitment for a particular resource (a Commitment is composed of one or
   more of these).
@@ -26940,6 +27824,55 @@ class RoutersScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class Rule(_messages.Message):
+  r"""A rule to be applied in a Policy.
+
+  Enums:
+    ActionValueValuesEnum: Required
+
+  Fields:
+    action: Required
+    conditions: Additional restrictions that must be met. All conditions must
+      pass for the rule to match.
+    description: Human-readable description of the rule.
+    ins: If one or more 'in' clauses are specified, the rule matches if the
+      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
+    logConfigs: The config returned to callers of tech.iam.IAM.CheckPolicy for
+      any entries that match the LOG action.
+    notIns: If one or more 'not_in' clauses are specified, the rule matches if
+      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.
+    permissions: A permission is a string of form '..' (e.g.,
+      'storage.buckets.list'). A value of '*' matches all permissions, and a
+      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""Required
+
+    Values:
+      ALLOW: <no description>
+      ALLOW_WITH_LOG: <no description>
+      DENY: <no description>
+      DENY_WITH_LOG: <no description>
+      LOG: <no description>
+      NO_ACTION: <no description>
+    """
+    ALLOW = 0
+    ALLOW_WITH_LOG = 1
+    DENY = 2
+    DENY_WITH_LOG = 3
+    LOG = 4
+    NO_ACTION = 5
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  conditions = _messages.MessageField('Condition', 2, repeated=True)
+  description = _messages.StringField(3)
+  ins = _messages.StringField(4, repeated=True)
+  logConfigs = _messages.MessageField('LogConfig', 5, repeated=True)
+  notIns = _messages.StringField(6, repeated=True)
+  permissions = _messages.StringField(7, repeated=True)
+
+
 class SSLHealthCheck(_messages.Message):
   r"""A SSLHealthCheck object.
 
@@ -27254,7 +28187,8 @@ class SecurityPolicyRule(_messages.Message):
     preview: If set to true, the specified action is not enforced.
     priority: An integer indicating the priority of a rule in the list. The
       priority must be a positive value between 0 and 2147483647. Rules are
-      evaluated in the increasing order of priority.
+      evaluated from highest to lowest priority where 0 is the highest
+      priority and 2147483647 is the lowest prority.
   """
 
   action = _messages.StringField(1)
@@ -28252,7 +29186,8 @@ class Subnetwork(_messages.Message):
     secondaryIpRanges: An array of configurations for secondary IP ranges for
       VM instances contained in this subnetwork. The primary IP of such VM
       must belong to the primary ipCidrRange of the subnetwork. The alias IPs
-      may belong to either primary or secondary ranges.
+      may belong to either primary or secondary ranges. This field can be
+      updated with a patch request.
     selfLink: [Output Only] Server-defined URL for the resource.
   """
 
@@ -32572,5 +33507,24 @@ class ZoneSetLabelsRequest(_messages.Message):
 
   labelFingerprint = _messages.BytesField(1)
   labels = _messages.MessageField('LabelsValue', 2)
+
+
+class ZoneSetPolicyRequest(_messages.Message):
+  r"""A ZoneSetPolicyRequest object.
+
+  Fields:
+    bindings: Flatten Policy to create a backwacd compatible wire-format.
+      Deprecated. Use 'policy' to specify bindings.
+    etag: Flatten Policy to create a backward compatible wire-format.
+      Deprecated. Use 'policy' to specify the etag.
+    policy: REQUIRED: The complete policy to be applied to the 'resource'. The
+      size of the policy is limited to a few 10s of KB. An empty policy is in
+      general a valid policy but certain services (like Projects) might reject
+      them.
+  """
+
+  bindings = _messages.MessageField('Binding', 1, repeated=True)
+  etag = _messages.BytesField(2)
+  policy = _messages.MessageField('Policy', 3)
 
 

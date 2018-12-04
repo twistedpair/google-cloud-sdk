@@ -125,6 +125,14 @@ MAP = {
             default_version=True
         ),
     },
+    'bigquerydatatransfer': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.bigquerydatatransfer.v1',
+            client_classpath='bigquerydatatransfer_v1_client.BigquerydatatransferV1',
+            messages_modulepath='bigquerydatatransfer_v1_messages',
+            default_version=True
+        ),
+    },
     'bigtableadmin': {
         'v2': APIDef(
             class_path='googlecloudsdk.third_party.apis.bigtableadmin.v2',
@@ -486,6 +494,12 @@ MAP = {
         ),
     },
     'file': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.file.v1',
+            client_classpath='file_v1_client.FileV1',
+            messages_modulepath='file_v1_messages',
+            default_version=False
+        ),
         'v1alpha1': APIDef(
             class_path='googlecloudsdk.third_party.apis.file.v1alpha1',
             client_classpath='file_v1alpha1_client.FileV1alpha1',

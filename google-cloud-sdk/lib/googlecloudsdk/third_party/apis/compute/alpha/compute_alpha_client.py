@@ -3942,6 +3942,32 @@ You can specify a maximum of 1000 instances with this method per request.
         supports_download=False,
     )
 
+    def CreateInstances(self, request, global_params=None):
+      r"""Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeInstanceGroupManagersCreateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.instanceGroupManagers.createInstances',
+        ordered_params=[u'project', u'zone', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/createInstances',
+        request_field=u'instanceGroupManagersCreateInstancesRequest',
+        request_type_name=u'ComputeInstanceGroupManagersCreateInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read  Deleting an instance group for more information.
 
@@ -4277,7 +4303,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetAutoHealingPolicies(self, request, global_params=None):
-      r"""Modifies the autohealing policies.
+      r"""Modifies the autohealing policies. [Deprecated] This method is deprecated. Please use Patch instead.
 
       Args:
         request: (ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
@@ -5199,7 +5225,7 @@ If the group is part of a backend service that has enabled connection draining, 
         request: (ComputeInstancesGetShieldedVmIdentityRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ShieldedVmIdentity) The response message.
+        (ShieldedInstanceIdentity) The response message.
       """
       config = self.GetMethodConfig('GetShieldedVmIdentity')
       return self._RunMethod(
@@ -5214,7 +5240,7 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getShieldedVmIdentity',
         request_field='',
         request_type_name=u'ComputeInstancesGetShieldedVmIdentityRequest',
-        response_type_name=u'ShieldedVmIdentity',
+        response_type_name=u'ShieldedInstanceIdentity',
         supports_download=False,
     )
 
@@ -10491,7 +10517,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetAutoHealingPolicies(self, request, global_params=None):
-      r"""Modifies the autohealing policy for the instances in this managed instance group.
+      r"""Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Please use Patch instead.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest) input message
@@ -13451,7 +13477,7 @@ For more information, see Deleting snapshots.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.
+      r"""Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingeprint of the subnetwork resource being patched.
 
       Args:
         request: (ComputeSubnetworksPatchRequest) input message

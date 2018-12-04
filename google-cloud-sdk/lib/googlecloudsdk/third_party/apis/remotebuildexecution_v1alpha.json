@@ -181,7 +181,7 @@
           "type": "string"
         },
         "instanceId": {
-          "description": "ID of the created instance.",
+          "description": "ID of the created instance.\nA valid instance_id must:\nbe 6-50 characters long,\ncontains only lowercase letters, digits, hyphens and underscores,\nstart with a lowercase letter, and\nend with a lowercase letter or a digit.",
           "type": "string"
         },
         "instance": {
@@ -196,7 +196,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Instance resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}'",
+          "description": "Output only. Instance resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}'\nname should not be populated when creating an instance since it is provided\nin the instance_id field.",
           "type": "string"
         },
         "location": {
@@ -244,7 +244,7 @@
           "type": "string"
         },
         "poolId": {
-          "description": "ID of the created WorkerPool.",
+          "description": "ID of the created WorkerPool.\nA valid pool_id must:\nbe 6-50 characters long,\ncontains only lowercase letters, digits, hyphens and underscores,\nstart with a lowercase letter, and\nend with a lowercase letter or a digit.",
           "type": "string"
         },
         "workerPool": {
@@ -259,11 +259,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "WorkerPool resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'",
+          "description": "WorkerPool resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.\nname should not be populated when creating a worker pool since it is\nprovided in the pool_id field.",
           "type": "string"
         },
         "workerConfig": {
-          "description": "Worker config specifies the properties used for creating workers in a\nWorkerPool.",
+          "description": "worker_config specifies the properties used for creating workers in a\nWorkerPool.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig"
         },
         "workerCount": {
@@ -312,6 +312,10 @@
           "description": "Required. Size of the disk attached to the worker, in GB.\nSee https:\/\/cloud.google.com\/compute\/docs\/disks\/",
           "type": "string",
           "format": "int64"
+        },
+        "reserved": {
+          "description": "Optional. Specify whether or not the worker is reserved, i.e.\nno-preemptible. If true, the worker is reserved and won't be preempted.\nSee https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible\n\nThis field is supported by UpdateWorkerPool but is currently ignored by\nCreateWorkerPool. Temporarily, in CreateWorkerPool, the WorkerPool is\ncreated with reserved=true regardless of what is specified in\nCreateWorkerPoolRequest, but this will change soon.",
+          "type": "boolean"
         }
       }
     },
@@ -917,7 +921,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the Instance to retrieve.",
+          "description": "name is the resource name of the Instance to retrieve.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'.",
           "type": "string"
         }
       }
@@ -928,7 +932,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the Instance to delete.",
+          "description": "name is the resource name of the Instance to delete.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'.",
           "type": "string"
         }
       }
@@ -949,7 +953,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the WorkerPool to retrieve.",
+          "description": "name is the resource name of the WorkerPool to retrieve.\nFormat:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.",
           "type": "string"
         }
       }
@@ -960,7 +964,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the WorkerPool to delete.",
+          "description": "name is the resource name of the WorkerPool to delete.\nFormat:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.",
           "type": "string"
         }
       }
@@ -1687,7 +1691,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "name is the resource name of the Instance to retrieve.",
+                  "description": "name is the resource name of the Instance to retrieve.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
@@ -1712,7 +1716,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "name is the resource name of the Instance to delete.",
+                  "description": "name is the resource name of the Instance to delete.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
@@ -1795,7 +1799,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "WorkerPool resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'",
+                      "description": "WorkerPool resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.\nname should not be populated when creating a worker pool since it is\nprovided in the pool_id field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
@@ -1823,7 +1827,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "name is the resource name of the WorkerPool to retrieve.",
+                      "description": "name is the resource name of the WorkerPool to retrieve.\nFormat:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
@@ -1848,7 +1852,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "name is the resource name of the WorkerPool to delete.",
+                      "description": "name is the resource name of the WorkerPool to delete.\nFormat:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",

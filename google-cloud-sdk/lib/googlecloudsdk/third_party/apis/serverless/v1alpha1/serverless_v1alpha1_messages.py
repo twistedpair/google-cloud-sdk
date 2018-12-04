@@ -814,12 +814,8 @@ class ObjectMeta(_messages.Message):
       intended for creation idempotence and configuration definition. Cannot
       be updated. More info: http://kubernetes.io/docs/user-
       guide/identifiers#names +optional
-    namespace: Namespace defines the space within each name must be unique. An
-      empty namespace is equivalent to the "default" namespace, but "default"
-      is the canonical representation. Not all objects are required to be
-      scoped to a namespace - the value of this field for those objects will
-      be empty.  Must be a DNS_LABEL. Cannot be updated. More info:
-      http://kubernetes.io/docs/user-guide/namespaces +optional
+    namespace: Namespace defines the space within each name must be unique. In
+      Cloud Run this must be equal to either the project ID or project number.
     ownerReferences: List of objects that own this object. If ALL objects in
       the list have been deleted, this object will be garbage collected.
       +optional
@@ -1100,8 +1096,11 @@ class RevisionCondition(_messages.Message):
     type: RevisionConditionType is used to communicate the status of the
       reconciliation process. See also:
       https://github.com/knative/serving/blob/master/docs/spec/errors.md
-      #error-conditions-and-reporting Types include: "Ready",
-      "ResourcesAvailable", and "ContainerHealthy".
+      #error-conditions-and-reporting Types include:  * "Ready": True when the
+      Revision is ready. * "ResourcesAvailable": True when underlying
+      resources have been provisioned. * "ContainerHealthy": True when the
+      Revision readiness check completes. * "Active": True when the Revision
+      may receive traffic.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -1186,7 +1185,10 @@ class RevisionStatus(_messages.Message):
 
   Fields:
     conditions: List of observed RevisionConditions, indicating the current
-      state of the Revision.
+      state of the Revision. As a Revision is being prepared, it will
+      incrementally update conditions "ResourcesAvailable",
+      "ContainerHealthy", and "Active", which contribute to the overall
+      "Ready" condition.
     imageDigest: ImageDigest holds the resolved digest for the image specified
       within .Spec.Container.Image. The digest is resolved during the creation
       of Revision. This field holds the digest value regardless of whether a
@@ -1488,8 +1490,8 @@ class ServerlessNamespacesConfigurationsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project and location from which the configurations should be
-      listed.
+    parent: The project ID or project number from which the configurations
+      should be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
@@ -1557,8 +1559,8 @@ class ServerlessNamespacesRevisionsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project and location from which the revisions should be
-      listed.
+    parent: The project ID or project number from which the revisions should
+      be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
@@ -1598,7 +1600,8 @@ class ServerlessNamespacesRoutesListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project and location from which the routes should be listed.
+    parent: The project ID or project number from which the routes should be
+      listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
@@ -1619,8 +1622,8 @@ class ServerlessNamespacesServicesCreateRequest(_messages.Message):
   r"""A ServerlessNamespacesServicesCreateRequest object.
 
   Fields:
-    parent: The project name (and optionally the region) in which this service
-      should be created.
+    parent: The project ID or project number in which this service should be
+      created.
     service: A Service resource to be passed as the request body.
   """
 
@@ -1667,7 +1670,8 @@ class ServerlessNamespacesServicesListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project and location from which the services should be listed.
+    parent: The project ID or project number from which the services should be
+      listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
@@ -1731,8 +1735,8 @@ class ServerlessProjectsLocationsConfigurationsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project and location from which the configurations should be
-      listed.
+    parent: The project ID or project number from which the configurations
+      should be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
@@ -1788,8 +1792,8 @@ class ServerlessProjectsLocationsRevisionsListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project and location from which the revisions should be
-      listed.
+    parent: The project ID or project number from which the revisions should
+      be listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
@@ -1829,7 +1833,8 @@ class ServerlessProjectsLocationsRoutesListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project and location from which the routes should be listed.
+    parent: The project ID or project number from which the routes should be
+      listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
@@ -1850,8 +1855,8 @@ class ServerlessProjectsLocationsServicesCreateRequest(_messages.Message):
   r"""A ServerlessProjectsLocationsServicesCreateRequest object.
 
   Fields:
-    parent: The project name (and optionally the region) in which this service
-      should be created.
+    parent: The project ID or project number in which this service should be
+      created.
     service: A Service resource to be passed as the request body.
   """
 
@@ -1898,7 +1903,8 @@ class ServerlessProjectsLocationsServicesListRequest(_messages.Message):
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
     limit: The maximum number of records that should be returned.
-    parent: The project and location from which the services should be listed.
+    parent: The project ID or project number from which the services should be
+      listed.
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as

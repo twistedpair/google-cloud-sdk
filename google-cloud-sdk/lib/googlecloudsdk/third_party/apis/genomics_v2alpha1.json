@@ -417,7 +417,7 @@
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "The machine type of the virtual machine to create. Must be the short name\nof a standard machine type (such as \"n1-standard-1\") or a custom machine\ntype (such as \"custom-1-4096\").",
+          "description": "The machine type of the virtual machine to create. Must be the short name\nof a standard machine type (such as \"n1-standard-1\") or a custom machine\ntype (such as \"custom-1-4096\", where \"1\" indicates the number of vCPUs and\n\"4096\" indicates the memory in MB). See\n[Creating an instance with a custom machine\ntype](https:\/\/cloud.google.com\/compute\/docs\/instances\/creating-instance-with-custom-machine-type#create)\nfor more specifications on creating a custom machine type.",
           "type": "string"
         },
         "preemptible": {

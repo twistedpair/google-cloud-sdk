@@ -128,10 +128,9 @@ class BigqueryJobsCancelRequest(_messages.Message):
 
   Fields:
     jobId: [Required] Job ID of the job to cancel
-    location: [Experimental] The geographic location of the job. Required
-      except for US and EU. See details at
-      https://cloud.google.com/bigquery/docs/dataset-
-      locations#specifying_your_location.
+    location: The geographic location of the job. Required except for US and
+      EU. See details at https://cloud.google.com/bigquery/docs/locations#spec
+      ifying_your_location.
     projectId: [Required] Project ID of the job to cancel
   """
 
@@ -145,10 +144,9 @@ class BigqueryJobsGetQueryResultsRequest(_messages.Message):
 
   Fields:
     jobId: [Required] Job ID of the query job
-    location: [Experimental] The geographic location where the job should run.
-      Required except for US and EU. See details at
-      https://cloud.google.com/bigquery/docs/dataset-
-      locations#specifying_your_location.
+    location: The geographic location where the job should run. Required
+      except for US and EU. See details at https://cloud.google.com/bigquery/d
+      ocs/locations#specifying_your_location.
     maxResults: Maximum number of results to read
     pageToken: Page token, returned by a previous call, to request the next
       page of results
@@ -173,10 +171,9 @@ class BigqueryJobsGetRequest(_messages.Message):
 
   Fields:
     jobId: [Required] Job ID of the requested job
-    location: [Experimental] The geographic location of the job. Required
-      except for US and EU. See details at
-      https://cloud.google.com/bigquery/docs/dataset-
-      locations#specifying_your_location.
+    location: The geographic location of the job. Required except for US and
+      EU. See details at https://cloud.google.com/bigquery/docs/locations#spec
+      ifying_your_location.
     projectId: [Required] Project ID of the requested job
   """
 
@@ -652,7 +649,7 @@ class Dataset(_messages.Message):
       tables was last modified, in milliseconds since the epoch.
     location: The geographic location where the dataset should reside. The
       default value is US. See details at
-      https://cloud.google.com/bigquery/docs/dataset-locations.
+      https://cloud.google.com/bigquery/docs/locations.
     selfLink: [Output-only] A URL that can be used to access the resource
       again. You can use this URL in Get or Update requests to the resource.
   """
@@ -1084,7 +1081,9 @@ class GoogleSheetsOptions(_messages.Message):
 
   Fields:
     range: [Beta] [Optional] Range of a sheet to query from. Only used when
-      non-empty. Typical format: !:
+      non-empty. Typical format:
+      sheet_name!top_left_cell_id:bottom_right_cell_id For example:
+      sheet1!A1:B20
     skipLeadingRows: [Optional] The number of rows at the top of a sheet that
       BigQuery will skip when reading the data. The default value is 0. This
       property is useful if you have header rows that should be skipped. When
@@ -1900,6 +1899,19 @@ class JsonObject(_messages.Message):
 JsonValue = extra_types.JsonValue
 
 
+class MaterializedViewDefinition(_messages.Message):
+  r"""A MaterializedViewDefinition object.
+
+  Fields:
+    lastRefreshTime: [Output-only] [TrustedTester] The time when this
+      materialized view was last modified, in milliseconds since the epoch.
+    query: [Required] A query whose result is persisted.
+  """
+
+  lastRefreshTime = _messages.IntegerField(1)
+  query = _messages.StringField(2)
+
+
 class ModelDefinition(_messages.Message):
   r"""A ModelDefinition object.
 
@@ -2093,8 +2105,9 @@ class QueryRequest(_messages.Message):
       how many bytes would be processed. If the query is invalid, an error
       returns. The default value is false.
     kind: The resource type of the request.
-    location: The geographic location where the job should run. Required
-      except for US and EU.
+    location: The geographic location where the job should run. See details at
+      https://cloud.google.com/bigquery/docs/locations#specifying_your_locatio
+      n.
     maxResults: [Optional] The maximum number of rows of data to return per
       page of results. Setting this flag to a small value such as 1000 and
       then paging through results might improve reliability when the query
@@ -2348,6 +2361,7 @@ class Table(_messages.Message):
       modified, in milliseconds since the epoch.
     location: [Output-only] The geographic location where the table resides.
       This value is inherited from the dataset.
+    materializedView: [Optional] Materialized view definition.
     model: [Output-only, Beta] Present iff this table represents a ML model.
       Describes the training information for the model, and it is required to
       run 'PREDICT' queries.
@@ -2378,7 +2392,8 @@ class Table(_messages.Message):
       Only one of timePartitioning and rangePartitioning should be specified.
     type: [Output-only] Describes the table type. The following values are
       supported: TABLE: A normal BigQuery table. VIEW: A virtual table defined
-      by a SQL query. EXTERNAL: A table that references data stored in an
+      by a SQL query. [TrustedTester] MATERIALIZED_VIEW: SQL query whose
+      result is persisted. EXTERNAL: A table that references data stored in an
       external storage system, such as Google Cloud Storage. The default value
       is TABLE.
     view: [Optional] The view definition.
@@ -2426,20 +2441,21 @@ class Table(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 11)
   lastModifiedTime = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
   location = _messages.StringField(13)
-  model = _messages.MessageField('ModelDefinition', 14)
-  numBytes = _messages.IntegerField(15)
-  numLongTermBytes = _messages.IntegerField(16)
-  numPhysicalBytes = _messages.IntegerField(17)
-  numRows = _messages.IntegerField(18, variant=_messages.Variant.UINT64)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 19)
-  requirePartitionFilter = _messages.BooleanField(20, default=False)
-  schema = _messages.MessageField('TableSchema', 21)
-  selfLink = _messages.StringField(22)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 23)
-  tableReference = _messages.MessageField('TableReference', 24)
-  timePartitioning = _messages.MessageField('TimePartitioning', 25)
-  type = _messages.StringField(26)
-  view = _messages.MessageField('ViewDefinition', 27)
+  materializedView = _messages.MessageField('MaterializedViewDefinition', 14)
+  model = _messages.MessageField('ModelDefinition', 15)
+  numBytes = _messages.IntegerField(16)
+  numLongTermBytes = _messages.IntegerField(17)
+  numPhysicalBytes = _messages.IntegerField(18)
+  numRows = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 20)
+  requirePartitionFilter = _messages.BooleanField(21, default=False)
+  schema = _messages.MessageField('TableSchema', 22)
+  selfLink = _messages.StringField(23)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 24)
+  tableReference = _messages.MessageField('TableReference', 25)
+  timePartitioning = _messages.MessageField('TimePartitioning', 26)
+  type = _messages.StringField(27)
+  view = _messages.MessageField('ViewDefinition', 28)
 
 
 class TableCell(_messages.Message):

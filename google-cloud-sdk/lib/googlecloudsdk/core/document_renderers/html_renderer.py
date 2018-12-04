@@ -51,6 +51,7 @@ class HTMLRenderer(renderer.Renderer):
     self._document_ids = set()
     self._example = False
     self._fill = 0
+    self._global_flags = False
     self._heading = ''
     self._level = 0
     self._paragraph = False
@@ -211,6 +212,9 @@ class HTMLRenderer(renderer.Renderer):
       self._paragraph = False
       self._out.write('<p>\n')
     self.Blank()
+    if self._global_flags:
+      self._global_flags = False
+      line = self.LinkGlobalFlags(line)
     for word in line.split():
       n = len(word)
       if self._fill + n >= self._width:
@@ -293,6 +297,8 @@ class HTMLRenderer(renderer.Renderer):
       self._out.write(self._heading)
     self._Heading(level, heading)
     self._section = True
+    if heading.endswith(' WIDE FLAGS'):
+      self._global_flags = True
 
   def Line(self):
     """Renders a paragraph separating line."""
@@ -324,6 +330,20 @@ class HTMLRenderer(renderer.Renderer):
       target = target[:-len(tail)]
     target = target.replace('/', '_') + '.html'
     return '<a href="{target}">{text}</a>'.format(target=target, text=text)
+
+  def LinkGlobalFlags(self, line):
+    """Add global flags links to line if any.
+
+    Args:
+      line: The text line.
+
+    Returns:
+      line with annoted global flag links.
+    """
+    return re.sub(
+        r'(--[-a-z]+)',
+        r'<a href="/#\1">\1</a>',
+        line)
 
   def List(self, level, definition=None, end=False):
     """Renders a bullet or definition list item.
@@ -407,11 +427,13 @@ class HTMLRenderer(renderer.Renderer):
                   r'\1<a href="#\2">\2</a>\3',
                   line)
 
-    # Add GCLOUD WIDE FLAGS local link.
+    # Add self.command[0].upper() WIDE FLAGS local link.
 
-    line = re.sub('>GCLOUD_WIDE_FLAG ',
-                  '><a href="#GCLOUD-WIDE-FLAGS">GCLOUD_WIDE_FLAG</a> ',
-                  line)
+    root = self.command[0].upper()
+    line = re.sub(
+        '>{root}_WIDE_FLAG '.format(root=root),
+        '><a href="#{root}-WIDE-FLAGS">{root}_WIDE_FLAG</a> '.format(root=root),
+        line)
 
     nest = 0
     chars = collections.deque(line)

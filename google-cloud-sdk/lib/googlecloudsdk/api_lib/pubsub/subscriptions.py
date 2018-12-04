@@ -27,6 +27,7 @@ from googlecloudsdk.core import exceptions
 
 
 DEFAULT_MESSAGE_RETENTION_VALUE = 'default'
+NEVER_EXPIRATION_PERIOD_VALUE = 'never'
 
 
 class NoFieldsSpecifiedError(exceptions.Error):
@@ -89,7 +90,7 @@ class SubscriptionsClient(object):
 
   def Create(self, subscription_ref, topic_ref, ack_deadline, push_config=None,
              retain_acked_messages=None, message_retention_duration=None,
-             labels=None):
+             labels=None, no_expiration=False, expiration_period=None):
     """Creates a Subscription.
 
     Args:
@@ -104,6 +105,8 @@ class SubscriptionsClient(object):
       retain_acked_messages (bool): Whether or not to retain acked messages.
       message_retention_duration (int): How long to retained unacked messages.
       labels (Subscriptions.LabelsValue): The labels for the request.
+      no_expiration (bool): Whether or not to set no expiration on subscription.
+      expiration_period (str): TTL on expiration_policy.
     Returns:
       Subscription: the created subscription
     """
@@ -114,7 +117,9 @@ class SubscriptionsClient(object):
         pushConfig=push_config,
         retainAckedMessages=retain_acked_messages,
         labels=labels,
-        messageRetentionDuration=message_retention_duration)
+        messageRetentionDuration=message_retention_duration,
+        expirationPolicy=self._ExpirationPolicy(no_expiration,
+                                                expiration_period))
 
     return self._service.Create(subscription)
 
@@ -222,13 +227,28 @@ class SubscriptionsClient(object):
         subscription=subscription_ref.RelativeName())
     return self._service.Seek(seek_req)
 
+  def _ExpirationPolicy(self, no_expiration, expiration_period):
+    """Build ExpirationPolicy message from argument values.
+
+    Args:
+      no_expiration (bool): Whether or not to set no expiration on subscription.
+      expiration_period (str): TTL on expiration_policy.
+    Returns:
+      ExpirationPolicy message or None.
+    """
+    if no_expiration:
+      return self.messages.ExpirationPolicy(ttl=None)
+    if expiration_period:
+      return self.messages.ExpirationPolicy(ttl=expiration_period)
+    return None
+
   def _HandleMessageRetentionUpdate(self, update_setting):
     if update_setting.value == DEFAULT_MESSAGE_RETENTION_VALUE:
       update_setting.value = None
 
   def Patch(self, subscription_ref, ack_deadline=None, push_config=None,
             retain_acked_messages=None, message_retention_duration=None,
-            labels=None):
+            labels=None, no_expiration=False, expiration_period=None):
     """Updates a Subscription.
 
     Args:
@@ -241,6 +261,8 @@ class SubscriptionsClient(object):
       retain_acked_messages (bool): Whether or not to retain acked messages.
       message_retention_duration (str): How long to retained unacked messages.
       labels (LabelsValue): The Cloud labels for the subscription.
+      no_expiration (bool): Whether or not to set no expiration on subscription.
+      expiration_period (str): TTL on expiration_policy.
     Returns:
       Subscription: The updated subscription.
     Raises:
@@ -262,6 +284,9 @@ class SubscriptionsClient(object):
         _SubscriptionUpdateSetting(
             'labels',
             labels),
+        _SubscriptionUpdateSetting(
+            'expirationPolicy',
+            self._ExpirationPolicy(no_expiration, expiration_period)),
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName())

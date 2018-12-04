@@ -492,7 +492,6 @@ class Group(_Common):
   IS_COMMAND_GROUP = True
 
   _allow_py3 = True
-  _command_suggestions = {}
 
   def __init__(self):
     super(Group, self).__init__(is_group=True)
@@ -507,10 +506,6 @@ class Group(_Common):
           .Run() invocation.
     """
     pass
-
-  @classmethod
-  def CommandSuggestions(cls):
-    return cls._command_suggestions
 
 
 class Command(six.with_metaclass(abc.ABCMeta, _Common)):
@@ -701,29 +696,6 @@ def DisallowPython3(group_class):
   # pylint: disable=protected-access
   group_class._allow_py3 = False
   return group_class
-
-
-def CommandSuggestion(command, suggestion):
-  """Decorator for adding a suggestion when a command is mistyped.
-
-  This applies to base.Group classes. When a user tries to run the given
-  `command` that does not exist, `suggestion` will but suggested as a
-  "did you mean".
-
-  Args:
-    command: str, The name of the command (just the command itself not including
-      the group).
-    suggestion: str, The full command name to suggest (excluding the gcloud
-      prefix).
-
-  Returns:
-    The inner decorator.
-  """
-  def Inner(cmd_class):
-    # pylint: disable=protected-access
-    cmd_class._command_suggestions[command] = suggestion
-    return cmd_class
-  return Inner
 
 
 def UnicodeIsSupported(cmd_class):

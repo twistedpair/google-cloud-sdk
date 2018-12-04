@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import sys
 from argcomplete.completers import FilesCompleter
 
 from googlecloudsdk.calliope import actions
@@ -82,7 +81,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     Args:
       compute_holder: The ComputeApiHolder.
       args: argparse.Namespace, the args the command was invoked with.
-      port: str, int or None, Port number to use for SSH connection.
+      port: str or None, Port number to use for SSH connection.
       recursive: bool, Whether to use recursive copying using -R flag.
       compress: bool, Whether to use compression.
       extra_flags: [str] or None, extra flags to add to command invocation.
@@ -141,13 +140,29 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       options = self.GetConfig(ssh_utils.HostKeyAlias(instance),
                                args.strict_host_key_checking)
 
+    tunnel_helper = None
+    cmd_port = port
+    interface = None
+    if hasattr(args, 'tunnel_through_iap') and args.tunnel_through_iap:
+      tunnel_helper, interface = ssh_utils.CreateIapTunnelHelper(
+          args, instance_ref, instance, ip_type, port=port)
+      tunnel_helper.StartListener()
+      cmd_port = str(tunnel_helper.GetLocalPort())
+      if dst.remote:
+        dst.remote.host = 'localhost'
+      else:
+        for src in srcs:
+          src.remote.host = 'localhost'
+
     cmd = ssh.SCPCommand(
         srcs, dst, identity_file=identity_file, options=options,
-        recursive=recursive, compress=compress, port=port,
+        recursive=recursive, compress=compress, port=cmd_port,
         extra_flags=extra_flags)
 
     if args.dry_run:
       log.out.Print(' '.join(cmd.Build(self.env)))
+      if tunnel_helper:
+        tunnel_helper.StopListener()
       return
 
     if args.plain or use_oslogin:
@@ -160,21 +175,37 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
           project)
 
     if keys_newly_added:
-      poller = ssh.SSHPoller(
-          remote, identity_file=identity_file, options=options,
-          max_wait_ms=ssh_utils.SSH_KEY_PROPAGATION_TIMEOUT_SEC)
+      poller_tunnel_helper = None
+      if tunnel_helper:
+        poller_tunnel_helper, _ = ssh_utils.CreateIapTunnelHelper(
+            args, instance_ref, instance, ip_type, port=port,
+            interface=interface)
+        poller_tunnel_helper.StartListener(accept_multiple_connections=True)
+      poller = ssh_utils.CreateSSHPoller(
+          remote, identity_file, options, poller_tunnel_helper, port=port)
+
       log.status.Print('Waiting for SSH key to propagate.')
       # TODO(b/35355795): Don't force_connect
       try:
         poller.Poll(self.env, force_connect=True)
       except retry.WaitException:
+        if tunnel_helper:
+          tunnel_helper.StopListener()
         raise ssh_utils.NetworkError()
+      finally:
+        if poller_tunnel_helper:
+          poller_tunnel_helper.StopListener()
 
-    if ip_type is ip.IpTypeEnum.INTERNAL:
+    if ip_type is ip.IpTypeEnum.INTERNAL and not tunnel_helper:
+      # The IAP Tunnel connection uses instance name and network interface name,
+      # so do not need to additionally verify the instance. Also, the
+      # SSHCommand used within the function does not support IAP Tunnels.
       self.PreliminarilyVerifyInstance(instance.id, remote, identity_file,
                                        options)
-    return_code = cmd.Run(self.env, force_connect=True)
-    if return_code:
-      # Can't raise an exception because we don't want any "ERROR" message
-      # printed; the output from `ssh` will be enough.
-      sys.exit(return_code)
+
+    try:
+      # Errors from the SCP command result in an ssh.CommandError being raised
+      cmd.Run(self.env, force_connect=True)
+    finally:
+      if tunnel_helper:
+        tunnel_helper.StopListener()

@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
@@ -54,7 +53,7 @@ def GetInstanceResourceSpec():
       'spanner.projects.instances',
       resource_name='instance',
       instancesId=InstanceAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetDatabaseResourceSpec():
@@ -63,7 +62,7 @@ def GetDatabaseResourceSpec():
       resource_name='database',
       databasesId=DatabaseAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetSessionResourceSpec():
@@ -73,7 +72,7 @@ def GetSessionResourceSpec():
       sessionsId=SessionAttributeConfig(),
       databasesId=DatabaseAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def AddInstanceResourceArg(parser, verb, positional=True):

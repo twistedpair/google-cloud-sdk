@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20181109",
+ "revision": "20181126",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1002,6 +1002,477 @@
     }
    }
   },
+  "Allocation": {
+   "id": "Allocation",
+   "type": "object",
+   "description": "Allocation resource",
+   "properties": {
+    "creationTimestamp": {
+     "type": "string",
+     "description": "[Output Only] Creation timestamp in RFC3339 text format."
+    },
+    "description": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server.",
+     "format": "uint64"
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#allocations for allocations.",
+     "default": "compute#allocation"
+    },
+    "name": {
+     "type": "string",
+     "description": "The name of the resource, provided by the client when initially creating the resource. The resource name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+     "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+     "annotations": {
+      "required": [
+       "compute.instances.insert"
+      ]
+     }
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined fully-qualified URL for this resource."
+    },
+    "specificAllocation": {
+     "$ref": "AllocationSpecificSKUAllocation"
+    },
+    "specificAllocationRequired": {
+     "type": "boolean",
+     "description": "Indicates whether the allocation can be consumed by VMs with \"any allocation\" defined. If the field is set, then only VMs that target the allocation by name using --allocation-affinity can consume this allocation."
+    },
+    "zone": {
+     "type": "string"
+    }
+   }
+  },
+  "AllocationAffinity": {
+   "id": "AllocationAffinity",
+   "type": "object",
+   "description": "AllocationAffinity is the configuration of desired allocation which this instance could take capacity from.",
+   "properties": {
+    "consumeAllocationType": {
+     "type": "string",
+     "enum": [
+      "ANY_ALLOCATION",
+      "NO_ALLOCATION",
+      "SPECIFIC_ALLOCATION",
+      "UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "key": {
+     "type": "string",
+     "description": "Corresponds to the label key of allocation resource."
+    },
+    "values": {
+     "type": "array",
+     "description": "Corresponds to the label values of allocation resource.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "AllocationAggregatedList": {
+   "id": "AllocationAggregatedList",
+   "type": "object",
+   "description": "Contains a list of allocations.",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] Unique identifier for the resource; defined by the server."
+    },
+    "items": {
+     "type": "object",
+     "description": "A list of Allocation resources.",
+     "additionalProperties": {
+      "$ref": "AllocationsScopedList",
+      "description": "Name of the scope containing this set of allocations."
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "Type of resource.",
+     "default": "compute#allocationAggregatedList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
+  "AllocationList": {
+   "id": "AllocationList",
+   "type": "object",
+   "properties": {
+    "id": {
+     "type": "string",
+     "description": "[Output Only] The unique identifier for the resource. This identifier is defined by the server."
+    },
+    "items": {
+     "type": "array",
+     "description": "[Output Only] A list of Allocation resources.",
+     "items": {
+      "$ref": "Allocation"
+     }
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of resource.Always compute#allocationsList for listsof allocations",
+     "default": "compute#allocationList"
+    },
+    "nextPageToken": {
+     "type": "string",
+     "description": "[Output Only] This token allows you to get the next page of results for list requests. If the number of results is larger than maxResults, use the nextPageToken as a value for the query parameter pageToken in the next list request. Subsequent list requests will have their own nextPageToken to continue paging through the results."
+    },
+    "selfLink": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource."
+    },
+    "warning": {
+     "type": "object",
+     "description": "[Output Only] Informational warning message.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
+  "AllocationSpecificSKUAllocation": {
+   "id": "AllocationSpecificSKUAllocation",
+   "type": "object",
+   "description": "This allocation type allows to pre allocate specific instance configuration.",
+   "properties": {
+    "count": {
+     "type": "string",
+     "description": "Specifies number of resources that are allocated.",
+     "format": "int64"
+    },
+    "inUseCount": {
+     "type": "string",
+     "description": "[OutputOnly] Indicates how many resource are in use.",
+     "format": "int64"
+    },
+    "instanceProperties": {
+     "$ref": "AllocationSpecificSKUAllocationAllocatedInstanceProperties"
+    }
+   }
+  },
+  "AllocationSpecificSKUAllocationAllocatedInstanceProperties": {
+   "id": "AllocationSpecificSKUAllocationAllocatedInstanceProperties",
+   "type": "object",
+   "description": "Properties of the SKU instances being reserved.",
+   "properties": {
+    "guestAccelerators": {
+     "type": "array",
+     "description": "Specifies accelerator type and count.",
+     "items": {
+      "$ref": "AcceleratorConfig"
+     }
+    },
+    "localSsds": {
+     "type": "array",
+     "description": "Specifies amount of local ssd to reserve with each instance. The type of disk is local-ssd.",
+     "items": {
+      "$ref": "AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk"
+     }
+    },
+    "machineType": {
+     "type": "string",
+     "description": "Specifies type of machine (name only) which has fixed number of vCPUs and fixed amount of memory. This also includes specifying custom machine type following custom-NUMBER_OF_CPUS-AMOUNT_OF_MEMORY pattern."
+    },
+    "minCpuPlatform": {
+     "type": "string",
+     "description": "Minimum cpu platform the allocation."
+    }
+   }
+  },
+  "AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk": {
+   "id": "AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk",
+   "type": "object",
+   "properties": {
+    "diskSizeGb": {
+     "type": "string",
+     "description": "Specifies the size of the disk in base-2 GB.",
+     "format": "int64"
+    },
+    "interface": {
+     "type": "string",
+     "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance.",
+     "enum": [
+      "NVME",
+      "SCSI"
+     ],
+     "enumDescriptions": [
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "AllocationsScopedList": {
+   "id": "AllocationsScopedList",
+   "type": "object",
+   "properties": {
+    "allocations": {
+     "type": "array",
+     "description": "A list of allocations contained in this scope.",
+     "items": {
+      "$ref": "Allocation"
+     }
+    },
+    "warning": {
+     "type": "object",
+     "description": "Informational warning which replaces the list of allocations when the list is empty.",
+     "properties": {
+      "code": {
+       "type": "string",
+       "description": "[Output Only] A warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.",
+       "enum": [
+        "CLEANUP_FAILED",
+        "DEPRECATED_RESOURCE_USED",
+        "DEPRECATED_TYPE_USED",
+        "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+        "EXPERIMENTAL_TYPE_USED",
+        "EXTERNAL_API_WARNING",
+        "FIELD_VALUE_OVERRIDEN",
+        "INJECTED_KERNELS_DEPRECATED",
+        "MISSING_TYPE_DEPENDENCY",
+        "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+        "NEXT_HOP_CANNOT_IP_FORWARD",
+        "NEXT_HOP_INSTANCE_NOT_FOUND",
+        "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+        "NEXT_HOP_NOT_RUNNING",
+        "NOT_CRITICAL_ERROR",
+        "NO_RESULTS_ON_PAGE",
+        "REQUIRED_TOS_AGREEMENT",
+        "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+        "RESOURCE_NOT_DELETED",
+        "SCHEMA_VALIDATION_IGNORED",
+        "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+        "UNDECLARED_PROPERTIES",
+        "UNREACHABLE"
+       ],
+       "enumDescriptions": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+       ]
+      },
+      "data": {
+       "type": "array",
+       "description": "[Output Only] Metadata about this warning in key: value format. For example:\n\"data\": [ { \"key\": \"scope\", \"value\": \"zones/us-east1-d\" }",
+       "items": {
+        "type": "object",
+        "properties": {
+         "key": {
+          "type": "string",
+          "description": "[Output Only] A key that provides more detail on the warning being returned. For example, for warnings where there are no results in a list request for a particular zone, this key might be scope and the key value might be the zone name. Other examples might be a key indicating a deprecated resource and a suggested replacement, or a warning about invalid network settings (for example, if an instance attempts to perform IP forwarding but is not enabled for IP forwarding)."
+         },
+         "value": {
+          "type": "string",
+          "description": "[Output Only] A warning data value corresponding to the key."
+         }
+        }
+       }
+      },
+      "message": {
+       "type": "string",
+       "description": "[Output Only] A human-readable description of the warning code."
+      }
+     }
+    }
+   }
+  },
   "AttachedDisk": {
    "id": "AttachedDisk",
    "type": "object",
@@ -1878,7 +2349,7 @@
    "properties": {
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
-     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a ?Cache-Control: public, max-age=[TTL]? header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
+     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
      "format": "int64"
     },
     "signedUrlKeyNames": {
@@ -2279,7 +2750,7 @@
     },
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
-     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a ?Cache-Control: public, max-age=[TTL]? header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
+     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
      "format": "int64"
     },
     "signedUrlKeyNames": {
@@ -2617,6 +3088,13 @@
    "type": "object",
    "description": "Represents a Commitment resource. Creating a Commitment resource means that you are purchasing a committed use contract with an explicit start and end time. You can create commitments based on vCPUs and memory usage and receive discounted rates. For full details, read Signing Up for Committed Use Discounts.\n\nCommitted use discounts are subject to Google Cloud Platform's Service Specific Terms. By purchasing a committed use discount, you agree to these terms. Committed use discounts will not renew, so you must purchase a new commitment to continue receiving discounts. (== resource_for beta.commitments ==) (== resource_for v1.commitments ==)",
    "properties": {
+    "allocations": {
+     "type": "array",
+     "description": "List of allocations for this commitment.",
+     "items": {
+      "$ref": "Allocation"
+     }
+    },
     "creationTimestamp": {
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
@@ -3270,7 +3748,7 @@
     },
     "physicalBlockSizeBytes": {
      "type": "string",
-     "description": "Physical block size of the persistent disk, in bytes. If not present in a request, a default value is used. Initially only 4096 is supported, but other powers of two may be added. If an unsupported value is requested, the error message will list the supported values, but even a supported value may be allowed for only some projects.",
+     "description": "Physical block size of the persistent disk, in bytes. If not present in a request, a default value is used. Currently supported sizes are 4096 and 16384, other sizes may be added in the future. If an unsupported value is requested, the error message will list the supported values for the caller's project.",
      "format": "int64"
     },
     "region": {
@@ -6393,6 +6871,10 @@
    "type": "object",
    "description": "An Instance resource. (== resource_for beta.instances ==) (== resource_for v1.instances ==)",
    "properties": {
+    "allocationAffinity": {
+     "$ref": "AllocationAffinity",
+     "description": "The configuration of desired allocations which this Instance could consume capacity from."
+    },
     "canIpForward": {
      "type": "boolean",
      "description": "Allows this instance to send and receive packets with non-matching destination or source IPs. This is required if you plan to use this instance to forward routes. For more information, see Enabling IP Forwarding."
@@ -8208,6 +8690,10 @@
    "type": "object",
    "description": "",
    "properties": {
+    "allocationAffinity": {
+     "$ref": "AllocationAffinity",
+     "description": "The configuration of desired allocations which this Instance could consume capacity from."
+    },
     "canIpForward": {
      "type": "boolean",
      "description": "Enables instances created based on this template to send packets with source IP addresses other than their own and receive packets with destination IP addresses other than their own. If these instances will be used as an IP gateway or it will be set as the next-hop in a Route resource, specify true. If unsure, leave this set to false. See the Enable IP forwarding documentation for more information."
@@ -9268,7 +9754,7 @@
    "properties": {
     "interconnectName": {
      "type": "string",
-     "description": "Plain text name of the Interconnect this attachment is connected to, as displayed in the Partner?s portal. For instance ?Chicago 1?. This value may be validated to match approved Partner values."
+     "description": "Plain text name of the Interconnect this attachment is connected to, as displayed in the Partner?s portal. For instance \"Chicago 1\". This value may be validated to match approved Partner values."
     },
     "partnerName": {
      "type": "string",
@@ -15463,7 +15949,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM\", where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -15483,7 +15969,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM\", where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -15649,7 +16135,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM\", where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -17197,7 +17683,7 @@
     },
     "priority": {
      "type": "integer",
-     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated in the increasing order of priority.",
+     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.",
      "format": "int32"
     }
    }
@@ -17288,6 +17774,41 @@
     }
    }
   },
+  "ShieldedInstanceIdentity": {
+   "id": "ShieldedInstanceIdentity",
+   "type": "object",
+   "description": "A shielded instance identity entry.",
+   "properties": {
+    "encryptionKey": {
+     "$ref": "ShieldedInstanceIdentityEntry",
+     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#ShieldedInstanceIdentity for shielded VM identity entry.",
+     "default": "compute#shieldedInstanceIdentity"
+    },
+    "signingKey": {
+     "$ref": "ShieldedInstanceIdentityEntry",
+     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
+    }
+   }
+  },
+  "ShieldedInstanceIdentityEntry": {
+   "id": "ShieldedInstanceIdentityEntry",
+   "type": "object",
+   "description": "A Shielded VM Identity Entry.",
+   "properties": {
+    "ekCert": {
+     "type": "string",
+     "description": "A PEM-encoded X.509 certificate. This field can be empty."
+    },
+    "ekPub": {
+     "type": "string",
+     "description": "A PEM-encoded public key."
+    }
+   }
+  },
   "ShieldedVmConfig": {
    "id": "ShieldedVmConfig",
    "type": "object",
@@ -17304,41 +17825,6 @@
     "enableVtpm": {
      "type": "boolean",
      "description": "Defines whether the instance has the vTPM enabled."
-    }
-   }
-  },
-  "ShieldedVmIdentity": {
-   "id": "ShieldedVmIdentity",
-   "type": "object",
-   "description": "A shielded VM identity entry.",
-   "properties": {
-    "encryptionKey": {
-     "$ref": "ShieldedVmIdentityEntry",
-     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
-    },
-    "kind": {
-     "type": "string",
-     "description": "[Output Only] Type of the resource. Always compute#shieldedVmIdentity for shielded VM identity entry.",
-     "default": "compute#shieldedVmIdentity"
-    },
-    "signingKey": {
-     "$ref": "ShieldedVmIdentityEntry",
-     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
-    }
-   }
-  },
-  "ShieldedVmIdentityEntry": {
-   "id": "ShieldedVmIdentityEntry",
-   "type": "object",
-   "description": "A Shielded VM Identity Entry.",
-   "properties": {
-    "ekCert": {
-     "type": "string",
-     "description": "A PEM-encoded X.509 certificate. This field can be empty."
-    },
-    "ekPub": {
-     "type": "string",
-     "description": "A PEM-encoded public key."
     }
    }
   },
@@ -18247,7 +18733,7 @@
     },
     "secondaryIpRanges": {
      "type": "array",
-     "description": "An array of configurations for secondary IP ranges for VM instances contained in this subnetwork. The primary IP of such VM must belong to the primary ipCidrRange of the subnetwork. The alias IPs may belong to either primary or secondary ranges.",
+     "description": "An array of configurations for secondary IP ranges for VM instances contained in this subnetwork. The primary IP of such VM must belong to the primary ipCidrRange of the subnetwork. The alias IPs may belong to either primary or secondary ranges. This field can be updated with a patch request.",
      "items": {
       "$ref": "SubnetworkSecondaryRange"
      }
@@ -22564,9 +23050,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -22617,6 +23103,376 @@
      "parameterOrder": [
       "project",
       "region",
+      "resource"
+     ],
+     "request": {
+      "$ref": "TestPermissionsRequest"
+     },
+     "response": {
+      "$ref": "TestPermissionsResponse"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    }
+   }
+  },
+  "allocations": {
+   "methods": {
+    "aggregatedList": {
+     "id": "compute.allocations.aggregatedList",
+     "path": "{project}/aggregated/allocations",
+     "httpMethod": "GET",
+     "description": "Retrieves an aggregated list of allocations.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project"
+     ],
+     "response": {
+      "$ref": "AllocationAggregatedList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "delete": {
+     "id": "compute.allocations.delete",
+     "path": "{project}/zones/{zone}/allocations/{allocation}",
+     "httpMethod": "DELETE",
+     "description": "Deletes the specified allocation.",
+     "parameters": {
+      "allocation": {
+       "type": "string",
+       "description": "Name of the allocation to delete.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "Name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "allocation"
+     ],
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "get": {
+     "id": "compute.allocations.get",
+     "path": "{project}/zones/{zone}/allocations/{allocation}",
+     "httpMethod": "GET",
+     "description": "Retrieves all information of the specified allocation.",
+     "parameters": {
+      "allocation": {
+       "type": "string",
+       "description": "Name of the allocation to retrieve.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "Name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "allocation"
+     ],
+     "response": {
+      "$ref": "Allocation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "getIamPolicy": {
+     "id": "compute.allocations.getIamPolicy",
+     "path": "{project}/zones/{zone}/allocations/{resource}/getIamPolicy",
+     "httpMethod": "GET",
+     "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "insert": {
+     "id": "compute.allocations.insert",
+     "path": "{project}/zones/{zone}/allocations",
+     "httpMethod": "POST",
+     "description": "Creates a new allocation.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "Name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone"
+     ],
+     "request": {
+      "$ref": "Allocation"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "list": {
+     "id": "compute.allocations.list",
+     "path": "{project}/zones/{zone}/allocations",
+     "httpMethod": "GET",
+     "description": "A list all the allocations that have been configured for the specified project in specified zone.",
+     "parameters": {
+      "filter": {
+       "type": "string",
+       "description": "A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, \u003e, or \u003c.\n\nFor example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.\n\nYou can also filter nested fields. For example, you could specify scheduling.automaticRestart = false to include instances only if they are not scheduled for automatic restarts. You can use filtering on nested fields to filter based on resource labels.\n\nTo filter on multiple expressions, provide each separate expression within parentheses. For example, (scheduling.automaticRestart = true) (cpuPlatform = \"Intel Skylake\"). By default, each expression is an AND expression. However, you can include AND and OR expressions explicitly. For example, (cpuPlatform = \"Intel Skylake\") OR (cpuPlatform = \"Intel Broadwell\") AND (scheduling.automaticRestart = true).",
+       "location": "query"
+      },
+      "maxResults": {
+       "type": "integer",
+       "description": "The maximum number of results per page that should be returned. If the number of available results is larger than maxResults, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 500, inclusive. (Default: 500)",
+       "default": "500",
+       "format": "uint32",
+       "minimum": "0",
+       "location": "query"
+      },
+      "orderBy": {
+       "type": "string",
+       "description": "Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation timestamp using orderBy=\"creationTimestamp desc\". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by name or creationTimestamp desc is supported.",
+       "location": "query"
+      },
+      "pageToken": {
+       "type": "string",
+       "description": "Specifies a page token to use. Set pageToken to the nextPageToken returned by a previous list request to get the next page of results.",
+       "location": "query"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "Name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone"
+     ],
+     "response": {
+      "$ref": "AllocationList"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute",
+      "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.allocations.setIamPolicy",
+     "path": "{project}/zones/{zone}/allocations/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "resource"
+     ],
+     "request": {
+      "$ref": "ZoneSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "testIamPermissions": {
+     "id": "compute.allocations.testIamPermissions",
+     "path": "{project}/zones/{zone}/allocations/{resource}/testIamPermissions",
+     "httpMethod": "POST",
+     "description": "Returns permissions that a caller has on the specified resource.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
       "resource"
      ],
      "request": {
@@ -23983,7 +24839,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The disk name or id for this request.",
+       "description": "The disk name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24081,7 +24937,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to snapshot.",
+       "description": "Name of the persistent disk to snapshot.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24134,7 +24990,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to delete.",
+       "description": "Name of the persistent disk to delete.",
        "required": true,
        "location": "path"
       },
@@ -24179,7 +25035,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to return.",
+       "description": "Name of the persistent disk to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24366,7 +25222,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The disk name or id for this request.",
+       "description": "The disk name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24415,7 +25271,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The name or id of the persistent disk.",
+       "description": "The name of the persistent disk.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -24520,9 +25376,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "zone": {
@@ -25137,9 +25993,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -25426,9 +26282,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -25657,9 +26513,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -26765,7 +27621,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Name or id of the image resource to delete.",
+       "description": "Name of the image resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -26803,7 +27659,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Image name or id .",
+       "description": "Image name.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -26844,7 +27700,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Name or id of the image resource to return.",
+       "description": "Name of the image resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -26878,7 +27734,7 @@
      "parameters": {
       "family": {
        "type": "string",
-       "description": "Name or id of the image family to search for.",
+       "description": "Name of the image family to search for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -27079,9 +27935,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -27724,7 +28580,7 @@
      "id": "compute.instanceGroupManagers.setAutoHealingPolicies",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies",
      "httpMethod": "POST",
-     "description": "Modifies the autohealing policies.",
+     "description": "Modifies the autohealing policies. [Deprecated] This method is deprecated. Please use Patch instead.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -28715,7 +29571,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -28825,7 +29681,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -28874,7 +29730,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to delete.",
+       "description": "Name of the instance resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -28926,7 +29782,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -28986,7 +29842,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Instance name or id for this request.",
+       "description": "Instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29033,7 +29889,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to return.",
+       "description": "Name of the instance resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29075,7 +29931,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29169,7 +30025,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29226,7 +30082,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29252,7 +30108,7 @@
       "instance"
      ],
      "response": {
-      "$ref": "ShieldedVmIdentity"
+      "$ref": "ShieldedInstanceIdentity"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -29376,7 +30232,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name or id of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
+       "description": "Name of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
        "required": true,
        "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29436,7 +30292,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29482,7 +30338,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to resume.",
+       "description": "Name of the instance resource to resume.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29596,7 +30452,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29688,7 +30544,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29737,7 +30593,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29786,7 +30642,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29835,7 +30691,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29884,7 +30740,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29933,7 +30789,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Instance name or id for this request.",
+       "description": "Instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29982,7 +30838,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30031,7 +30887,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30080,7 +30936,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30129,7 +30985,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30170,7 +31026,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30216,7 +31072,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30265,7 +31121,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to stop.",
+       "description": "Name of the instance resource to stop.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30316,7 +31172,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to suspend.",
+       "description": "Name of the instance resource to suspend.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30407,7 +31263,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30512,7 +31368,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30568,7 +31424,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -30924,9 +31780,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -31326,9 +32182,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -31581,6 +32437,42 @@
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/compute",
       "https://www.googleapis.com/auth/compute.readonly"
+     ]
+    },
+    "setIamPolicy": {
+     "id": "compute.licenses.setIamPolicy",
+     "path": "{project}/global/licenses/{resource}/setIamPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the access control policy on the specified resource. Replaces any existing policy.",
+     "parameters": {
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "resource": {
+       "type": "string",
+       "description": "Name or id of the resource for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "resource"
+     ],
+     "request": {
+      "$ref": "GlobalSetPolicyRequest"
+     },
+     "response": {
+      "$ref": "Policy"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
      ]
     }
    }
@@ -35224,7 +36116,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The disk name or id for this request.",
+       "description": "The disk name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35273,7 +36165,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to snapshot.",
+       "description": "Name of the regional persistent disk to snapshot.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35322,7 +36214,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to delete.",
+       "description": "Name of the regional persistent disk to delete.",
        "required": true,
        "location": "path"
       },
@@ -35367,7 +36259,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to return.",
+       "description": "Name of the regional persistent disk to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35512,7 +36404,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The disk name or id for this request.",
+       "description": "The disk name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35561,7 +36453,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk.",
+       "description": "Name of the regional persistent disk.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35629,9 +36521,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -36188,7 +37080,7 @@
      "id": "compute.regionInstanceGroupManagers.setAutoHealingPolicies",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies",
      "httpMethod": "POST",
-     "description": "Modifies the autohealing policy for the instances in this managed instance group.",
+     "description": "Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Please use Patch instead.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -38350,9 +39242,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -38432,7 +39324,7 @@
       },
       "snapshot": {
        "type": "string",
-       "description": "Name or id of the Snapshot resource to delete.",
+       "description": "Name of the Snapshot resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -38465,7 +39357,7 @@
       },
       "snapshot": {
        "type": "string",
-       "description": "Name or id of the Snapshot resource to return.",
+       "description": "Name of the Snapshot resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -38618,9 +39510,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -39536,7 +40428,7 @@
      "id": "compute.subnetworks.patch",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingeprint of the subnetwork resource being patched.",
      "parameters": {
       "project": {
        "type": "string",
@@ -42040,9 +42932,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -42727,9 +43619,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },

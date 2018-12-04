@@ -23,7 +23,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core.util import text
@@ -251,7 +250,7 @@ def GetInstanceResourceSpec():
       'bigtableadmin.projects.instances',
       resource_name='instance',
       instancesId=InstanceAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 
@@ -262,7 +261,7 @@ def GetClusterResourceSpec():
       resource_name='cluster',
       clustersId=ClusterAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 
@@ -272,7 +271,7 @@ def GetAppProfileResourceSpec():
       'bigtableadmin.projects.instances.appProfiles',
       resource_name='app-profile',
       instancesId=InstanceAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 

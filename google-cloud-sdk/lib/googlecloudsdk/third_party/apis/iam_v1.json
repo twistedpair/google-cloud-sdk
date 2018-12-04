@@ -336,7 +336,7 @@
       "type": "object",
       "properties": {
         "url": {
-          "description": "The OpenID Connect Discovery URL.",
+          "description": "The OpenID Connect URL. To use this Identity Binding, JWT 'iss' field\nshould match this field.",
           "type": "string"
         },
         "audience": {

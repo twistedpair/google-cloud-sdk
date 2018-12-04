@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Shared resource flags for Serverless commands."""
+"""Shared resource flags for Cloud Run commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -25,7 +25,6 @@ import re
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
@@ -68,7 +67,7 @@ def GenerateServiceName(source_ref):
     source_ref: SourceRef, The app's source directory or container path.
 
   Returns:
-    A valid Serverless service name.
+    A valid Cloud Run service name.
   """
   base_name = os.path.basename(source_ref.source_path.rstrip(os.sep))
   base_name = base_name.split(':')[0]  # Discard image tag if present.
@@ -103,7 +102,8 @@ class DefaultFallthrough(deps.Fallthrough):
   def __init__(self):
     super(DefaultFallthrough, self).__init__(
         function=None,
-        hint='on the GKE Serverless add-on, defaults to "default"')
+        hint='For Cloud Run on Kubernetes Engine, defaults to "default". '
+        'Otherwise, defaults to project ID.')
 
   def _Call(self, parsed_args):
     if (getattr(parsed_args, 'cluster', None) or
@@ -115,7 +115,8 @@ class DefaultFallthrough(deps.Fallthrough):
 def NamespaceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='namespace',
-      help_text='The Kubernetes-style namespace for the {resource}.',
+      help_text='Specific to Cloud Run on Kubernetes Engine: '
+      'The Kubernetes namespace for the {resource}',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.namespace),
           DefaultFallthrough(),
@@ -159,7 +160,8 @@ def RevisionAttributeConfig():
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
-      help_text='The name of the cluster to use.',
+      help_text='Specific to Cloud Run on Kubernetes Engine: '
+      'The name of the Kubernetes Engine cluster to use.',
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.cluster)])
 
@@ -167,7 +169,8 @@ def ClusterAttributeConfig():
 def ClusterLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
-      help_text='The location of the {resource}.',
+      help_text='Specific to Cloud Run on Kubernetes Engine: '
+      'The location of the {resource}.',
       fallthroughs=[
           deps.PropertyFallthrough(
               properties.VALUES.run.cluster_location)])
@@ -176,7 +179,7 @@ def ClusterLocationAttributeConfig():
 def GetClusterResourceSpec():
   return concepts.ResourceSpec(
       'container.projects.zones.clusters',
-      projectId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       zone=ClusterLocationAttributeConfig(),
       clusterId=ClusterAttributeConfig(),
       resource_name='cluster')
@@ -224,7 +227,8 @@ def GetNamespaceResourceSpec():
 CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
     '--cluster',
     GetClusterResourceSpec(),
-    'The cluster to connect to.',
+    'Specific to Cloud Run on Kubernetes Engine: '
+    'The Kubernetes Engine cluster to connect to.',
     required=False,
     prefixes=True)
 

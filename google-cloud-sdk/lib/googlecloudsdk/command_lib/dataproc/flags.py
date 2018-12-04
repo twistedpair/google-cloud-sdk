@@ -22,7 +22,6 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
@@ -176,7 +175,7 @@ def GetTemplateResourceSpec(api_version):
       api_version=api_version,
       resource_name='template',
       disable_auto_completers=False,
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       regionsId=RegionAttributeConfig(),
       workflowTemplatesId=TemplateAttributeConfig(),
   )

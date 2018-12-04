@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs as presentation_specs_lib
 
@@ -71,12 +70,11 @@ def _GetAttestorResourceSpec():
   return concepts.ResourceSpec(
       'binaryauthorization.projects.attestors',
       resource_name='attestor',
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       attestorsId=concepts.ResourceParameterAttributeConfig(
           name='name',
           help_text='The ID of the {resource}.',
-      )
-  )
+      ))
 
 
 def GetAttestorPresentationSpec(group_help,

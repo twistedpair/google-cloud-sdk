@@ -521,20 +521,19 @@ def TransformError(r, message=None):
 
 
 def TransformExtract(r, *keys):
-  """Extract an ordered list of values from the resource for the specified keys.
+  """Extract a list of non-empty values for the specified resource keys.
 
   Args:
     r: A JSON-serializable object.
-    *keys: The list of keys in the resource whose associated values will be
+    *keys: The list of keys in the resource whose non-empty values will be
         included in the result.
 
   Returns:
-    The list of extracted values.
+    The list of extracted values with empty / null values omitted.
   """
   try:
-    # Use undefined=TransformExtract to test if k is in r.
-    values = [GetKeyValue(r, k, TransformExtract) for k in keys]
-    return [v for v in values if v is not TransformExtract]
+    values = [GetKeyValue(r, k, None) for k in keys]
+    return [v for v in values if v]
   except TypeError:
     return []
 

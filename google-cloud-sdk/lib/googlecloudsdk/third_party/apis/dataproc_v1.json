@@ -1693,7 +1693,7 @@
           ]
         },
         "clusterName": {
-          "description": "Output only. The name of the managed cluster.",
+          "description": "Output only. The name of the target cluster.",
           "type": "string"
         },
         "parameters": {
@@ -1712,6 +1712,10 @@
           "description": "Output only. Workflow end time.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "clusterUuid": {
+          "description": "Output only. The UUID of target cluster.",
+          "type": "string"
         }
       }
     },

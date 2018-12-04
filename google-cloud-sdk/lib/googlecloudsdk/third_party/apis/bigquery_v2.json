@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20181111",
+ "revision": "20181126",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -326,7 +326,7 @@
     },
     "location": {
      "type": "string",
-     "description": "The geographic location where the dataset should reside. The default value is US. See details at https://cloud.google.com/bigquery/docs/dataset-locations."
+     "description": "The geographic location where the dataset should reside. The default value is US. See details at https://cloud.google.com/bigquery/docs/locations."
     },
     "selfLink": {
      "type": "string",
@@ -766,7 +766,7 @@
    "properties": {
     "range": {
      "type": "string",
-     "description": "[Beta] [Optional] Range of a sheet to query from. Only used when non-empty. Typical format: !:"
+     "description": "[Beta] [Optional] Range of a sheet to query from. Only used when non-empty. Typical format: sheet_name!top_left_cell_id:bottom_right_cell_id For example: sheet1!A1:B20"
     },
     "skipLeadingRows": {
      "type": "string",
@@ -1559,6 +1559,21 @@
    "id": "JsonValue",
    "type": "any"
   },
+  "MaterializedViewDefinition": {
+   "id": "MaterializedViewDefinition",
+   "type": "object",
+   "properties": {
+    "lastRefreshTime": {
+     "type": "string",
+     "description": "[Output-only] [TrustedTester] The time when this materialized view was last modified, in milliseconds since the epoch.",
+     "format": "int64"
+    },
+    "query": {
+     "type": "string",
+     "description": "[Required] A query whose result is persisted."
+    }
+   }
+  },
   "ModelDefinition": {
    "id": "ModelDefinition",
    "type": "object",
@@ -1751,7 +1766,7 @@
     },
     "location": {
      "type": "string",
-     "description": "The geographic location where the job should run. Required except for US and EU."
+     "description": "The geographic location where the job should run. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location."
     },
     "maxResults": {
      "type": "integer",
@@ -2005,6 +2020,10 @@
      "type": "string",
      "description": "[Output-only] The geographic location where the table resides. This value is inherited from the dataset."
     },
+    "materializedView": {
+     "$ref": "MaterializedViewDefinition",
+     "description": "[Optional] Materialized view definition."
+    },
     "model": {
      "$ref": "ModelDefinition",
      "description": "[Output-only, Beta] Present iff this table represents a ML model. Describes the training information for the model, and it is required to run 'PREDICT' queries."
@@ -2060,7 +2079,7 @@
     },
     "type": {
      "type": "string",
-     "description": "[Output-only] Describes the table type. The following values are supported: TABLE: A normal BigQuery table. VIEW: A virtual table defined by a SQL query. EXTERNAL: A table that references data stored in an external storage system, such as Google Cloud Storage. The default value is TABLE."
+     "description": "[Output-only] Describes the table type. The following values are supported: TABLE: A normal BigQuery table. VIEW: A virtual table defined by a SQL query. [TrustedTester] MATERIALIZED_VIEW: SQL query whose result is persisted. EXTERNAL: A table that references data stored in an external storage system, such as Google Cloud Storage. The default value is TABLE."
     },
     "view": {
      "$ref": "ViewDefinition",
@@ -2705,7 +2724,7 @@
       },
       "location": {
        "type": "string",
-       "description": "[Experimental] The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/dataset-locations#specifying_your_location.",
+       "description": "The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.",
        "location": "query"
       },
       "projectId": {
@@ -2741,7 +2760,7 @@
       },
       "location": {
        "type": "string",
-       "description": "[Experimental] The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/dataset-locations#specifying_your_location.",
+       "description": "The geographic location of the job. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.",
        "location": "query"
       },
       "projectId": {
@@ -2778,7 +2797,7 @@
       },
       "location": {
        "type": "string",
-       "description": "[Experimental] The geographic location where the job should run. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/dataset-locations#specifying_your_location.",
+       "description": "The geographic location where the job should run. Required except for US and EU. See details at https://cloud.google.com/bigquery/docs/locations#specifying_your_location.",
        "location": "query"
       },
       "maxResults": {

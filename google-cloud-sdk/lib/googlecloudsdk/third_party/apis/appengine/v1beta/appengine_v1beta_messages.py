@@ -1082,11 +1082,9 @@ class Deployment(_messages.Message):
     build: Google Cloud Build build information. Only applicable for instances
       running in the App Engine flexible environment.
     cloudBuildOptions: Options for any Google Cloud Build builds created as a
-      part of this deployment.Note that this is orthogonal to the build
-      parameter, where the deployment depends on an already existing cloud
-      build. These options will only be used if a new build is created, such
-      as when deploying to the App Engine flexible environment using files or
-      zip.
+      part of this deployment.These options will only be used if a new build
+      is created, such as when deploying to the App Engine flexible
+      environment using files or zip.
     container: The Docker image for the container that runs the version. Only
       applicable for instances running in the App Engine flexible environment.
     files: Manifest of the files stored in Google Cloud Storage that are

@@ -35,6 +35,8 @@ from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.compute import iap_tunnel
+from googlecloudsdk.command_lib.util.ssh import ip
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -45,6 +47,7 @@ from googlecloudsdk.core.console import progress_tracker
 # The maximum amount of time to wait for a newly-added SSH key to
 # propagate before giving up.
 SSH_KEY_PROPAGATION_TIMEOUT_SEC = 60
+DEFAULT_SSH_PORT = 22
 
 _TROUBLESHOOTING_URL = (
     'https://cloud.google.com/compute/docs/troubleshooting#ssherrors')
@@ -97,8 +100,8 @@ class NetworkError(core_exceptions.Error):
         'instance are set to accept ssh traffic.')
 
 
-def GetExternalIPAddress(instance_resource, no_raise=False):
-  """Returns the external IP address of the instance.
+def GetExternalInterface(instance_resource, no_raise=False):
+  """Returns the network interface of the instance with an external IP address.
 
   Args:
     instance_resource: An instance resource object.
@@ -110,16 +113,17 @@ def GetExternalIPAddress(instance_resource, no_raise=False):
       has yet to be allocated.
     MissingExternalIPAddressError: If no external IP address is found for the
       instance_resource and no_raise is False.
+
   Returns:
-    A string IP or None is no_raise is True and no ip exists.
+    A network interface resource object or None if no_raise and a network
+    interface with an external IP address does not exist.
   """
   if instance_resource.networkInterfaces:
     for network_interface in instance_resource.networkInterfaces:
       access_configs = network_interface.accessConfigs
       if access_configs:
-        ip_address = access_configs[0].natIP
-        if ip_address:
-          return ip_address
+        if access_configs[0].natIP:
+          return network_interface
         elif not no_raise:
           raise UnallocatedIPAddressError(
               'Instance [{0}] in zone [{1}] has not been allocated an external '
@@ -137,6 +141,47 @@ def GetExternalIPAddress(instance_resource, no_raise=False):
           instance_resource.name, path_simplifier.Name(instance_resource.zone)))
 
 
+def GetExternalIPAddress(instance_resource, no_raise=False):
+  """Returns the external IP address of the instance.
+
+  Args:
+    instance_resource: An instance resource object.
+    no_raise: A boolean flag indicating whether or not to return None instead of
+      raising.
+
+  Raises:
+    UnallocatedIPAddressError: If the instance_resource's external IP address
+      has yet to be allocated.
+    MissingExternalIPAddressError: If no external IP address is found for the
+      instance_resource and no_raise is False.
+
+  Returns:
+    A string IP address or None if no_raise is True and no external IP exists.
+  """
+  network_interface = GetExternalInterface(instance_resource, no_raise=no_raise)
+  return network_interface.accessConfigs[0].natIP if network_interface else None
+
+
+def GetInternalInterface(instance_resource):
+  """Returns the a network interface of the instance.
+
+  Args:
+    instance_resource: An instance resource object.
+
+  Raises:
+    ToolException: If instance has no network interfaces.
+
+  Returns:
+    A network interface resource object.
+  """
+  if instance_resource.networkInterfaces:
+    return instance_resource.networkInterfaces[0]
+  raise exceptions.ToolException(
+      'Instance [{0}] in zone [{1}] has no network interfaces.'.format(
+          instance_resource.name,
+          path_simplifier.Name(instance_resource.zone)))
+
+
 def GetInternalIPAddress(instance_resource):
   """Returns the internal IP address of the instance.
 
@@ -147,14 +192,9 @@ def GetInternalIPAddress(instance_resource):
     ToolException: If instance has no network interfaces.
 
   Returns:
-    A string IP or None if no_raise is True and no ip exists.
+    A string IP address.
   """
-  if instance_resource.networkInterfaces:
-    return instance_resource.networkInterfaces[0].networkIP
-  raise exceptions.ToolException(
-      'Instance [{0}] in zone [{1}] has no network interfaces.'.format(
-          instance_resource.name,
-          path_simplifier.Name(instance_resource.zone)))
+  return GetInternalInterface(instance_resource).networkIP
 
 
 def _GetSSHKeyListFromMetadataEntry(metadata_entry):
@@ -668,3 +708,35 @@ def GetUserAndInstance(user_host):
   raise exceptions.ToolException(
       'Expected argument of the form [USER@]INSTANCE; received [{0}].'
       .format(user_host))
+
+
+def CreateIapTunnelHelper(args, instance_ref, instance, ip_type,
+                          port=DEFAULT_SSH_PORT, interface=None):
+  """Creates an IAP Tunnel helper for SSH connections."""
+  if interface is None:
+    if ip_type is ip.IpTypeEnum.INTERNAL:
+      interface = GetInternalInterface(instance)
+    else:
+      try:
+        interface = GetExternalInterface(instance)
+      except MissingExternalIPAddressError as e:
+        raise MissingExternalIPAddressError(
+            str(e) +
+            ' Using [--internal-ip] may allow connecting to an instance '
+            'without an external IP address.')
+  tunnel_helper = iap_tunnel.IapTunnelConnectionHelper(
+      args, instance_ref.project, instance_ref.zone, instance.name,
+      interface.name, int(port) if port else DEFAULT_SSH_PORT)
+  return tunnel_helper, interface
+
+
+def CreateSSHPoller(remote, identity_file, options, iap_tunnel_helper,
+                    extra_flags=None, port=DEFAULT_SSH_PORT):
+  if iap_tunnel_helper:
+    remote = ssh.Remote('localhost', remote.user)
+    port = iap_tunnel_helper.GetLocalPort()
+  return ssh.SSHPoller(
+      remote, port=str(port) if port else None, identity_file=identity_file,
+      options=options, extra_flags=extra_flags,
+      max_wait_ms=SSH_KEY_PROPAGATION_TIMEOUT_SEC)
+

@@ -72,8 +72,9 @@ MAX_WAIT_MS = 660000
 _CONDITION_TO_STAGE = OrderedDict([
     ('ConfigurationsReady', progress_tracker.Stage(
         'Creating Revision...')),
-    ('RoutesReady', progress_tracker.Stage('Routing traffic...')),
-    ('Ready', progress_tracker.Stage('Readying...'))])
+    ('RoutesReady', progress_tracker.Stage('Routing traffic...'))])
+
+_READY_CONDITION = 'Ready'
 
 
 class UnknownAPIError(exceptions.Error):
@@ -141,23 +142,74 @@ class ConditionPoller(waiter.OperationPoller):
 
     for condition in conditions:
       message = conditions[condition]['message']
-      stage = _CONDITION_TO_STAGE[condition]
       status = conditions[condition]['status']
-      if message:
-        self._tracker.UpdateStage(stage, message)
+
+      self._PossiblyUpdateMessage(condition, message)
+
       if status is None:
         continue
-      elif status and condition not in self._completed_stages:
-        self._completed_stages.append(condition)
-        self._tracker.CompleteStage(stage, message)
-      elif not status and condition not in self._failed_stages:
-        self._failed_stages.append(condition)
-        self._tracker.FailStage(
-            stage,
-            serverless_exceptions.DeploymentFailedError(message),
-            message)
+
+      elif status:
+        self._PossiblyCompleteStage(condition, message)
+
+      else:
+        self._PossiblyFailStage(condition, message)
 
     return conditions
+
+  def _PossiblyUpdateMessage(self, condition, message):
+    """Update the stage message or header message.
+
+    Args:
+      condition: str, The name of the status condition.
+      message: str, The new message to display
+    """
+    if condition in self._completed_stages or not message:
+      return
+
+    if condition == _READY_CONDITION:
+      self._tracker.UpdateHeaderMessage(message)
+    else:
+      self._tracker.UpdateStage(_CONDITION_TO_STAGE[condition], message)
+
+  def _PossiblyCompleteStage(self, condition, message):
+    """Possibly complete the stage.
+
+    Args:
+      condition: str, The name of the status whose stage should be completed.
+      message: str, The detailed message for the condition.
+    """
+
+    if condition in self._completed_stages or condition == _READY_CONDITION:
+      return
+
+    stage = _CONDITION_TO_STAGE[condition]
+    self._completed_stages.append(condition)
+    self._tracker.CompleteStage(stage, message)
+
+  def _PossiblyFailStage(self, condition, message):
+    """Possibly fail the stage.
+
+    Args:
+      condition: str, The name of the status whose stage failed.
+      message: str, The detailed message for the condition.
+
+    Raises:
+      DeploymentFailedError: If the 'Ready' condition failed.
+    """
+    # Don't fail an already failed stage.
+    if condition in self._failed_stages:
+      return
+
+    if condition == _READY_CONDITION:
+      raise serverless_exceptions.DeploymentFailedError(message)
+
+    stage = _CONDITION_TO_STAGE[condition]
+    self._failed_stages.append(condition)
+    self._tracker.FailStage(
+        stage,
+        serverless_exceptions.DeploymentFailedError(message),
+        message)
 
   def GetResult(self, conditions):
     """Overrides.

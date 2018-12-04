@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20181109",
+ "revision": "20181126",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -219,12 +219,11 @@
     },
     "id": {
      "type": "string",
-     "description": "Output only. Unique identifier for the resource; defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
      "type": "string",
-     "description": "Output only. Timestamp when the composite type was created, in RFC3339 text format."
+     "description": "Output only. Creation timestamp in RFC3339 text format."
     },
     "labels": {
      "type": "array",
@@ -243,7 +242,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "Output only. Self link for the type provider."
+     "description": "Output only. Server defined URL for the resource."
     },
     "status": {
      "type": "string"
@@ -394,12 +393,11 @@
     },
     "id": {
      "type": "string",
-     "description": "Output only. Unique identifier for the resource; defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
      "type": "string",
-     "description": "Output only. Timestamp when the deployment was created, in RFC3339 text format ."
+     "description": "Output only. Creation timestamp in RFC3339 text format."
     },
     "labels": {
      "type": "array",
@@ -429,7 +427,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "Output only. Self link for the deployment."
+     "description": "Output only. Server defined URL for the resource."
     },
     "target": {
      "$ref": "TargetConfiguration",
@@ -438,6 +436,10 @@
     "update": {
      "$ref": "DeploymentUpdate",
      "description": "Output only. If Deployment Manager is currently updating or previewing an update to this deployment, the updated configuration appears here."
+    },
+    "updateTime": {
+     "type": "string",
+     "description": "Output only. Update timestamp in RFC3339 text format."
     }
    }
   },
@@ -718,7 +720,6 @@
     },
     "id": {
      "type": "string",
-     "description": "Output only. Unique identifier for the resource; defined by the server.",
      "format": "uint64"
     },
     "imports": {
@@ -730,7 +731,7 @@
     },
     "insertTime": {
      "type": "string",
-     "description": "Output only. Timestamp when the manifest was created, in RFC3339 text format."
+     "description": "Output only. Creation timestamp in RFC3339 text format."
     },
     "layout": {
      "type": "string",
@@ -1082,12 +1083,11 @@
     },
     "id": {
      "type": "string",
-     "description": "Output only. Unique identifier for the resource; defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
      "type": "string",
-     "description": "Output only. Timestamp when the resource was created or acquired, in RFC3339 text format ."
+     "description": "Output only. Creation timestamp in RFC3339 text format."
     },
     "lastUsedCredential": {
      "$ref": "Credential",
@@ -1122,7 +1122,7 @@
     },
     "updateTime": {
      "type": "string",
-     "description": "Output only. Timestamp when the resource was updated, in RFC3339 text format ."
+     "description": "Output only. Update timestamp in RFC3339 text format."
     },
     "url": {
      "type": "string",
@@ -1446,12 +1446,11 @@
     },
     "id": {
      "type": "string",
-     "description": "Output only. Unique identifier for the resource; defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
      "type": "string",
-     "description": "Output only. Timestamp when the type was created, in RFC3339 text format."
+     "description": "Output only. Creation timestamp in RFC3339 text format."
     },
     "labels": {
      "type": "array",
@@ -1470,14 +1469,14 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "Output only. Self link for the type."
+     "description": "Output only. Server defined URL for the resource."
     }
    }
   },
   "TypeInfo": {
    "id": "TypeInfo",
    "type": "object",
-   "description": "Contains detailed information about a composite type, base type, or base type with specific collection.",
+   "description": "Type Information. Contains detailed information about a composite type, base type, or base type with specific collection.",
    "properties": {
     "description": {
      "type": "string",
@@ -1489,8 +1488,7 @@
     },
     "kind": {
      "type": "string",
-     "description": "Output only. Type of the output. Always deploymentManager#TypeInfo for TypeInfo.",
-     "default": "deploymentmanager#typeInfo"
+     "description": "Output only. Type of the output. Always deploymentManager#TypeInfo for TypeInfo."
     },
     "name": {
      "type": "string",
@@ -1502,7 +1500,7 @@
     },
     "selfLink": {
      "type": "string",
-     "description": "Output only. Server-defined URL for the resource."
+     "description": "Output only. Self link for the type provider."
     },
     "title": {
      "type": "string",
@@ -1563,12 +1561,12 @@
     },
     "id": {
      "type": "string",
-     "description": "Output only. Unique identifier for the resource; defined by the server.",
+     "description": "Output only. Unique identifier for the resource defined by the server.",
      "format": "uint64"
     },
     "insertTime": {
      "type": "string",
-     "description": "Output only. Timestamp when the type provider was created, in RFC3339 text format."
+     "description": "Output only. Creation timestamp in RFC3339 text format."
     },
     "labels": {
      "type": "array",

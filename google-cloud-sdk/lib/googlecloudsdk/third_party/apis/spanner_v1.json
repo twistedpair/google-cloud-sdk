@@ -1614,7 +1614,7 @@
           "$ref": "TransactionSelector"
         },
         "statements": {
-          "description": "The list of statements to execute in this batch.  Statements are executed\nserially, such that the effects of statement i are visible to\nstatement i+1. Each statement must be a DML statement. If there is a\nproblem executing any of the statements, the operation will fail; the\nremaining statements are not executed and `ABORTED` will be returned, with\nan error message specifying the index of the failed statement.",
+          "description": "The list of statements to execute in this batch. Statements are executed\nserially, such that the effects of statement i are visible to statement\ni+1. Each statement must be a DML statement. Execution will stop at the\nfirst failed statement; the remaining statements will not run.\n\nREQUIRES: statements_size() > 0.",
           "type": "array",
           "items": {
             "$ref": "Statement"
@@ -1655,15 +1655,19 @@
     },
     "ExecuteBatchDmlResponse": {
       "id": "ExecuteBatchDmlResponse",
-      "description": "The response for ExecuteBatchDml. Only the first\nResultSet in the response contains a valid ResultSetMetadata.",
+      "description": "The response for ExecuteBatchDml. Contains a list\nof ResultSet, one for each DML statement that has successfully executed.\nIf a statement fails, the error is returned as part of the response payload.\nClients can determine whether all DML statements have run successfully, or if\na statement failed, using one of the following approaches:\n\n  1. Check if 'status' field is OkStatus.\n  2. Check if result_sets_size() equals the number of statements in\n     ExecuteBatchDmlRequest.\n\nExample 1: A request with 5 DML statements, all executed successfully.\nResult: A response with 5 ResultSets, one for each statement in the same\norder, and an OK status.\n\nExample 2: A request with 5 DML statements. The 3rd statement has a syntax\nerror.\nResult: A response with 2 ResultSets, for the first 2 statements that\nrun successfully, and a syntax error (INVALID_ARGUMENT) status. From\nresult_set_size() client can determine that the 3rd statement has failed.",
       "type": "object",
       "properties": {
         "resultSets": {
-          "description": "ResultSets, one for each statement in the batch, in the same order as the\nrequest. Each ResultSet will not contain any rows. The ResultSetStats\nin each ResultSet will contain updated row count for each statement. The\nResultSetMetadata in the first ResultSet will contain row type and\ntransaction information.",
+          "description": "ResultSets, one for each statement in the request that ran successfully, in\nthe same order as the statements in the request. Each ResultSet will\nnot contain any rows. The ResultSetStats in each ResultSet will\ncontain the number of rows modified by the statement.\n\nOnly the first ResultSet in the response contains a valid\nResultSetMetadata.",
           "type": "array",
           "items": {
             "$ref": "ResultSet"
           }
+        },
+        "status": {
+          "description": "If all DML statements are executed successfully, status will be OK.\nOtherwise, the error status of the first failed statement.",
+          "$ref": "Status"
         }
       }
     },
@@ -3184,7 +3188,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/spanner.data"
                       ],
-                      "description": "Executes a batch of SQL DML statements, returning an array of\nResultSets for each statement in the batch in a single reply. This API\nallows many DML statements to be run with lower latency than submitting\nthem serially with ExecuteSql.\n\nStatements are executed in order, sequentially. If there is a problem\nexecuting any of the statements, the operation will fail; the remaining\nstatements are not executed and `ABORTED` will be returned, with an error\nmessage specifying the index of the failed statement and the reason for\nthe failure. If this occurs, the application should restart the\ntransaction from the beginning. See Transaction for more details.\n\nEach individual statement must be a DML statement. Otherwise the\ntransaction will be aborted."
+                      "description": "Executes a batch of SQL DML statements. This method allows many statements\nto be run with lower latency than submitting them sequentially with\nExecuteSql.\n\nStatements are executed in order, sequentially.\nExecuteBatchDmlResponse will contain a\nResultSet for each DML statement that has successfully executed. If a\nstatement fails, its error status will be returned as part of the\nExecuteBatchDmlResponse. Execution will\nstop at the first failed statement; the remaining statements will not run.\n\nExecuteBatchDml is expected to return an OK status with a response even if\nthere was an error while processing one of the DML statements. Clients must\ninspect response.status to determine if there were any errors while\nprocessing the request.\n\nSee more details in\nExecuteBatchDmlRequest and\nExecuteBatchDmlResponse."
                     },
                     "read": {
                       "id": "spanner.projects.instances.databases.sessions.read",

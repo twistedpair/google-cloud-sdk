@@ -131,6 +131,8 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
       box, 2 otherwise.
     title=_TITLE_: Prints a centered _TITLE_ at the top of the table, within
       the table box if *box* is enabled.
+    width=N: The table width. The default is the terminal width or 80 if the
+      output is not a terminal.
 
   Attributes:
     _optional: True if at least one column is optional. An optional
@@ -403,7 +405,9 @@ class TablePrinter(resource_printer_base.ResourcePrinter):
         table_padding = (_BOX_CHAR_LENGTH * (visible_cols + 1)
                          + visible_cols * table_column_pad * 2)
       table_padding += self.attributes.get('margin', 0)
-      total_col_width = self._console_attr.GetTermSize()[0] - table_padding
+      table_width = self.attributes.get(
+          'width', self._console_attr.GetTermSize()[0])
+      total_col_width = table_width - table_padding
       if total_col_width < sum(col_widths):
         non_wrappable_width = sum(
             [col_width for (i, col_width) in enumerate(col_widths)

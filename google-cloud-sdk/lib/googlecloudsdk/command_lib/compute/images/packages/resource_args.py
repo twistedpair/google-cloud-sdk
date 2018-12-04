@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
@@ -33,9 +32,8 @@ def GetImageResourceSpec():
   return concepts.ResourceSpec(
       'compute.images',
       resource_name='image',
-      project=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False
-  )
+      project=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
 
 
 def CreateImageResourcePresentationSpec(group_help, image_prefix=''):

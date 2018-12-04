@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Wraps a Serverless Configuration message, making fields more convenient."""
+"""Wraps a Cloud Run Configuration message, making fields more convenient."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -27,7 +27,7 @@ USER_IMAGE_ANNOTATION = 'client.knative.dev/user-image'
 
 
 class Configuration(k8s_object.KubernetesObject):
-  """Wraps a Serverless Configuration message, making fields more convenient.
+  """Wraps a Cloud Run Configuration message, making fields more convenient.
 
   Setting properties on a Configuration (where possible) writes through to the
   nested Kubernetes-style fields.
@@ -56,7 +56,7 @@ class Configuration(k8s_object.KubernetesObject):
     # TODO(b/112662240): Remove once this field is public
     if not hasattr(self._m.spec, 'build'):
       raise NotImplementedError(
-          'gcloud serverless does not support source deploy at this time')
+          'gcloud run does not support source deploy at this time')
 
   @property
   def source_manifest(self):
@@ -87,6 +87,9 @@ class Configuration(k8s_object.KubernetesObject):
 
   def _EnsureResources(self):
     if self.container.resources is not None:
+      if self.container.resources.limits is None:
+        self.container.resources.limits = k8s_object.InitializedInstance(
+            self._messages.ResourceRequirements.LimitsValue)
       return
     else:
       self.container.resources = k8s_object.InitializedInstance(

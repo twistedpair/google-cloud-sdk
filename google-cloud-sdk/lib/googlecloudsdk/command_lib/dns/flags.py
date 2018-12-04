@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -87,7 +86,7 @@ def GetZoneResourceSpec():
       'dns.managedZones',
       resource_name='zone',
       managedZone=ZoneAttributeConfig(),
-      project=project_resource_args.PROJECT_ATTRIBUTE_CONFIG,
+      project=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
 
 
@@ -204,5 +203,14 @@ def GetManagedZoneNetworksArg():
       help='List of networks that the zone should be visible in if the zone '
       'visibility is [private].')
 
+
+def GetForwardingTargetsArg():
+  return base.Argument(
+      '--forwarding-targets',
+      type=arg_parsers.ArgList(),
+      required=False,
+      metavar='IP_ADDRESSES',
+      help=('List of IPv4 addresses of target name servers that the zone '
+            'will forward queries to. Ignored for `private` visibility.'))
 
 CHANGES_FORMAT = 'table(id, startTime, status)'

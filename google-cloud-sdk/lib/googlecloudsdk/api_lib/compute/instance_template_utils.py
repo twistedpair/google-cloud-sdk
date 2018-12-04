@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import image_utils
+from googlecloudsdk.api_lib.compute import instance_utils
 from googlecloudsdk.api_lib.compute import kms_utils
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.command_lib.compute import scope as compute_scope
@@ -134,7 +135,8 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
   return result
 
 
-def CreatePersistentAttachedDiskMessages(messages, disks):
+def CreatePersistentAttachedDiskMessages(
+    messages, disks, container_mount_disk=None):
   """Returns a list of AttachedDisk messages and the boot disk's reference.
 
   Args:
@@ -146,6 +148,7 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
              * autodelete - whether disks is deleted when VM is deleted ('yes'
                if True),
              * device-name - device name on VM.
+    container_mount_disk: list of disks to be mounted to container, if any.
 
   Returns:
     list of API messages for attached disks
@@ -163,11 +166,13 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
 
     boot = disk.get('boot') == 'yes'
     auto_delete = disk.get('auto-delete') == 'yes'
+    device_name = instance_utils.GetDiskDeviceName(disk, name,
+                                                   container_mount_disk)
 
     attached_disk = messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=boot,
-        deviceName=disk.get('device-name'),
+        deviceName=device_name,
         mode=mode,
         source=name,
         type=messages.AttachedDisk.TypeValueValuesEnum.PERSISTENT)
@@ -181,8 +186,9 @@ def CreatePersistentAttachedDiskMessages(messages, disks):
   return disks_messages
 
 
-def CreatePersistentCreateDiskMessages(client, resources, user_project,
-                                       create_disks, support_kms=False):
+def CreatePersistentCreateDiskMessages(
+    client, resources, user_project, create_disks, support_kms=False,
+    container_mount_disk=None):
   """Returns a list of AttachedDisk messages.
 
   Args:
@@ -202,6 +208,7 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
                if True),
              * device-name - device name on VM.
     support_kms: if KMS is supported
+    container_mount_disk: list of disks to be mounted to container, if any.
 
   Returns:
     list of API messages for attached disks
@@ -238,10 +245,13 @@ def CreatePersistentCreateDiskMessages(client, resources, user_project,
       disk_key = kms_utils.MaybeGetKmsKeyFromDict(
           disk, client.messages, disk_key)
 
+    device_name = instance_utils.GetDiskDeviceName(disk, name,
+                                                   container_mount_disk)
+
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,
         boot=False,
-        deviceName=disk.get('device-name'),
+        deviceName=device_name,
         initializeParams=client.messages.AttachedDiskInitializeParams(
             diskName=name,
             description=disk.get('description'),

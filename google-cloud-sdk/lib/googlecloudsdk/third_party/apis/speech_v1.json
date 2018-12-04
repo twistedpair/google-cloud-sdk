@@ -481,7 +481,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^[^\/]+$",
+              "pattern": "^.+$",
               "type": "string"
             }
           },

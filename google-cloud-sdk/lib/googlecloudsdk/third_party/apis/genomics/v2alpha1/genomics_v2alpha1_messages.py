@@ -1502,7 +1502,12 @@ class VirtualMachine(_messages.Message):
       shortly after VM creation.
     machineType: The machine type of the virtual machine to create. Must be
       the short name of a standard machine type (such as "n1-standard-1") or a
-      custom machine type (such as "custom-1-4096").
+      custom machine type (such as "custom-1-4096", where "1" indicates the
+      number of vCPUs and "4096" indicates the memory in MB). See [Creating an
+      instance with a custom machine
+      type](https://cloud.google.com/compute/docs/instances/creating-instance-
+      with-custom-machine-type#create) for more specifications on creating a
+      custom machine type.
     network: The VM network configuration.
     nvidiaDriverVersion: The NVIDIA driver version to use when attaching an
       NVIDIA GPU accelerator. The version specified here must be compatible

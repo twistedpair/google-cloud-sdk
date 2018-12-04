@@ -1064,6 +1064,7 @@ def GetLogFilePath():
   return _log_manager.current_log_file
 
 
+# TODO(b/117488015): Remove this in favor of console.style.log
 def _PrintResourceChange(operation,
                          resource,
                          kind,
@@ -1182,6 +1183,23 @@ def ResetResource(resource, kind=None, is_async=False, details=None,
   """
   _PrintResourceChange('reset', resource, kind, is_async, details, failed,
                        operation_past_tense='reset')
+
+
+def ExportResource(resource,
+                   kind=None,
+                   is_async=False,
+                   details=None,
+                   failed=None):
+  """Prints a status message indicating that a resource was exported.
+
+  Args:
+    resource: str, The resource name.
+    kind: str, The resource kind (instance, cluster, project, etc.).
+    is_async: bool, True if the operation is in progress.
+    details: str, Extra details appended to the message. Keep it succinct.
+    failed: str, Failure message.
+  """
+  _PrintResourceChange('export', resource, kind, is_async, details, failed)
 
 
 # pylint: disable=invalid-name

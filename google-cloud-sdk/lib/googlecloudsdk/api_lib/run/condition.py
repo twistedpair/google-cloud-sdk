@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Wraps a Serverless Condition messages, making fields easier to access."""
+"""Wraps a Cloud Run Condition messages, making fields easier to access."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -24,7 +24,7 @@ from collections import Mapping
 class Conditions(Mapping):
   """Wraps a repeated ResourceCondition messages field in a dict-like object.
 
-  Resource means a serverless resource, e.g: Configuration.
+  Resource means a Cloud Run resource, e.g: Configuration.
 
   Note, status field of conditions is converted to boolean type.
   """

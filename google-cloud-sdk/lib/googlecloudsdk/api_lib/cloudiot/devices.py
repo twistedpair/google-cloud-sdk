@@ -128,12 +128,8 @@ class DevicesClient(object):
         self._service, list_req, batch_size=page_size, limit=limit,
         field='devices', batch_size_attribute='pageSize')
 
-  def Patch(self,
-            device_ref,
-            blocked=None,
-            credentials=None,
-            metadata=None,
-            log_level=None):
+  def Patch(self, device_ref, blocked=None, credentials=None, metadata=None,
+            auth_method=None, log_level=None):
     """Updates a Device.
 
     Any fields not specified will not be updated; at least one field must be
@@ -147,6 +143,8 @@ class DevicesClient(object):
       credentials: List of DeviceCredential or None. If given, update the
         credentials for the device.
       metadata: MetadataValue, the metadata message for the device.
+      auth_method: GatewayAuthMethodValueValuesEnum, auth method to update on
+        a gateway device.
       log_level: LogLevelValueValuesEnum, the default logging verbosity for the
         device.
 
@@ -157,16 +155,34 @@ class DevicesClient(object):
       NoFieldsSpecifiedError: if no fields were specified.
     """
     device = self.messages.Device()
+
     update_settings = [
-        _DeviceUpdateSetting('blocked', 'blocked', blocked),
-        _DeviceUpdateSetting('credentials', 'credentials', credentials),
-        _DeviceUpdateSetting('metadata', 'metadata', metadata),
-        _DeviceUpdateSetting('logLevel', 'logLevel', log_level),
+        _DeviceUpdateSetting(
+            'blocked',
+            'blocked',
+            blocked),
+        _DeviceUpdateSetting(
+            'credentials',
+            'credentials',
+            credentials),
+        _DeviceUpdateSetting(
+            'metadata',
+            'metadata',
+            metadata),
+        _DeviceUpdateSetting(
+            'gatewayConfig.gatewayAuthMethod',
+            'gatewayConfig.gatewayAuthMethod',
+            auth_method),
+        _DeviceUpdateSetting(
+            'logLevel',
+            'logLevel',
+            log_level),
     ]
     update_mask = []
     for update_setting in update_settings:
       if update_setting.value is not None:
-        arg_utils.SetFieldInMessage(device, update_setting.field_name,
+        arg_utils.SetFieldInMessage(device,
+                                    update_setting.field_name,
                                     update_setting.value)
         update_mask.append(update_setting.update_mask)
     if not update_mask:

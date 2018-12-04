@@ -622,20 +622,25 @@ periodically, e.g., `"SELECT 1"`.
     )
 
     def ExecuteBatchDml(self, request, global_params=None):
-      r"""Executes a batch of SQL DML statements, returning an array of.
-ResultSets for each statement in the batch in a single reply. This API
-allows many DML statements to be run with lower latency than submitting
-them serially with ExecuteSql.
+      r"""Executes a batch of SQL DML statements. This method allows many statements.
+to be run with lower latency than submitting them sequentially with
+ExecuteSql.
 
-Statements are executed in order, sequentially. If there is a problem
-executing any of the statements, the operation will fail; the remaining
-statements are not executed and `ABORTED` will be returned, with an error
-message specifying the index of the failed statement and the reason for
-the failure. If this occurs, the application should restart the
-transaction from the beginning. See Transaction for more details.
+Statements are executed in order, sequentially.
+ExecuteBatchDmlResponse will contain a
+ResultSet for each DML statement that has successfully executed. If a
+statement fails, its error status will be returned as part of the
+ExecuteBatchDmlResponse. Execution will
+stop at the first failed statement; the remaining statements will not run.
 
-Each individual statement must be a DML statement. Otherwise the
-transaction will be aborted.
+ExecuteBatchDml is expected to return an OK status with a response even if
+there was an error while processing one of the DML statements. Clients must
+inspect response.status to determine if there were any errors while
+processing the request.
+
+See more details in
+ExecuteBatchDmlRequest and
+ExecuteBatchDmlResponse.
 
       Args:
         request: (SpannerProjectsInstancesDatabasesSessionsExecuteBatchDmlRequest) input message

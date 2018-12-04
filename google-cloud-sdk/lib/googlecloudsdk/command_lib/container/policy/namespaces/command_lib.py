@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
@@ -49,7 +48,7 @@ def GetNamespaceResourceSpec():
       'kubernetespolicy.projects.namespaces',
       resource_name='namespace',
       namespacesId=NamespaceAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def AddNamespaceResourceArg(parser, verb):
@@ -65,4 +64,3 @@ def AddNamespaceResourceArg(parser, verb):
       'The namespace {}.'.format(verb),
       required=True,
       prefixes=False).AddToParser(parser)
-

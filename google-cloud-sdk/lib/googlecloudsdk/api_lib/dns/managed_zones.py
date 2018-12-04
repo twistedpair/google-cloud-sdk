@@ -42,8 +42,14 @@ class Client(object):
             project=zone_ref.project,
             managedZone=zone_ref.managedZone))
 
-  def Patch(self, zone_ref, dnssec_config=None, description=None, labels=None,
-            private_visibility_config=None):
+  def Patch(self,
+            zone_ref,
+            dnssec_config=None,
+            description=None,
+            labels=None,
+            private_visibility_config=None,
+            forwarding_config=None):
+    """Managed Zones Update Request."""
     zone = self.messages.ManagedZone(
         name=zone_ref.Name(),
         dnssecConfig=dnssec_config,
@@ -51,6 +57,8 @@ class Client(object):
         labels=labels)
     if private_visibility_config:
       zone.privateVisibilityConfig = private_visibility_config
+    if forwarding_config:
+      zone.forwardingConfig = forwarding_config
     return self._service.Patch(
         self.messages.DnsManagedZonesPatchRequest(
             managedZoneResource=zone,

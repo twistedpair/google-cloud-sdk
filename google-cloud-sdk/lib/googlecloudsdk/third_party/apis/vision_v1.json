@@ -6611,7 +6611,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-vision"
                   ],
-                  "description": "Permanently deletes a ProductSet. All Products and ReferenceImages in the\nProductSet will be deleted.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\n* Returns NOT_FOUND if the ProductSet does not exist."
+                  "description": "Permanently deletes a ProductSet. Products and ReferenceImages in the\nProductSet are not deleted.\n\nThe actual image files are not deleted from Google Cloud Storage.\n\nPossible errors:\n\n* Returns NOT_FOUND if the ProductSet does not exist."
                 },
                 "addProduct": {
                   "id": "vision.projects.locations.productSets.addProduct",

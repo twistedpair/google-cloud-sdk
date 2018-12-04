@@ -49,7 +49,6 @@ class _StyleContext(object):
 class TypedTextParser(object):
   """Logger used to styled text to stderr."""
 
-  _PARSER_STATE = None
   CSI = '\x1b['  # Control Sequence Introducer
   SGR = 'm'  # Select Graphic Rendition, acts as a terminator for the sequence
   SET_FOREGROUND = '38;5;{}'
@@ -154,18 +153,9 @@ def _ColorsEnabled():
   return True
 
 
-def GetTypedTextParser(enabled=True, reset=False, style_mappings=None):
+def GetTypedTextParser(enabled=True, style_mappings=None):
   """Returns a typed text parser, creating a new one if necessary."""
   can_enable = _ColorsEnabled()
   enabled = can_enable and enabled  # Cannot force color printing.
   style_mappings = style_mappings or mappings.GetStyleMappings()
-  logger = TypedTextParser._PARSER_STATE  # pylint: disable=protected-access
-  if not logger or logger.style_enabled != enabled or reset:
-    # pylint: disable=protected-access
-    TypedTextParser._PARSER_STATE = TypedTextParser(style_mappings, enabled)
-  return TypedTextParser._PARSER_STATE  # pylint: disable=protected-access
-
-
-def ResetTypedTextParser(enabled=True):
-  """Resets the cached typed text parser to the default."""
-  return GetTypedTextParser(enabled=enabled, reset=True)
+  return TypedTextParser(style_mappings, enabled)

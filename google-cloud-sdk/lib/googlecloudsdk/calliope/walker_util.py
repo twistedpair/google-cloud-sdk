@@ -400,6 +400,34 @@ class ManPageGenerator(DocumentGenerator):
         cli, directory=section_dir, style='man', suffix='.1')
 
 
+class LinterGenerator(DocumentGenerator):
+  """Generates linter files with suffix .txt in an output directory.
+
+  The output directory will contain a man1 subdirectory containing all of the
+  linter files.
+  """
+
+  def __init__(self, cli, directory, hidden=False, progress_callback=None,
+               restrict=None):
+    """Constructor.
+
+    Args:
+      cli: The Cloud SDK CLI object.
+      directory: The linter output directory path name.
+      hidden: Boolean indicating whether to consider the hidden CLI.
+      progress_callback: f(float), The function to call to update the progress
+        bar or None for no progress bar.
+      restrict: Restricts the walk to the command/group dotted paths in this
+        list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
+        restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
+        commands/groups.
+
+    """
+
+    super(LinterGenerator, self).__init__(
+        cli, directory=directory, style='linter', suffix='.txt')
+
+
 class CommandTreeGenerator(walker.Walker):
   """Constructs a CLI command dict tree.
 

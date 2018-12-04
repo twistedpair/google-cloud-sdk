@@ -195,7 +195,7 @@
           "type": "string"
         },
         "namespace": {
-          "description": "Namespace defines the space within each name must be unique. An empty\nnamespace is equivalent to the \"default\" namespace, but \"default\" is the\ncanonical representation. Not all objects are required to be scoped to a\nnamespace - the value of this field for those objects will be empty.\n\nMust be a DNS_LABEL.\nCannot be updated.\nMore info: http:\/\/kubernetes.io\/docs\/user-guide\/namespaces\n+optional",
+          "description": "Namespace defines the space within each name must be unique. In Cloud Run\nthis must be equal to either the project ID or project number.",
           "type": "string"
         },
         "selfLink": {
@@ -1412,7 +1412,7 @@
           "type": "string"
         },
         "conditions": {
-          "description": "List of observed RevisionConditions, indicating the current state\nof the Revision.",
+          "description": "List of observed RevisionConditions, indicating the current state\nof the Revision. As a Revision is being prepared, it will incrementally\nupdate conditions \"ResourcesAvailable\", \"ContainerHealthy\", and \"Active\",\nwhich contribute to the overall \"Ready\" condition.",
           "type": "array",
           "items": {
             "$ref": "RevisionCondition"
@@ -1439,7 +1439,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "RevisionConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"Ready\", \"ResourcesAvailable\", and \"ContainerHealthy\".",
+          "description": "RevisionConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\n\n* \"Ready\": True when the Revision is ready.\n* \"ResourcesAvailable\": True when underlying resources have been\nprovisioned.\n* \"ContainerHealthy\": True when the Revision readiness check completes.\n* \"Active\": True when the Revision may receive traffic.",
           "type": "string"
         },
         "status": {
@@ -1615,7 +1615,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location from which the services should be listed.",
+                      "description": "The project ID or project number from which the services should be listed.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1701,7 +1701,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "The project name (and optionally the region) in which this service should\nbe created.",
+                      "description": "The project ID or project number in which this service should be created.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1819,7 +1819,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location from which the routes should be listed.",
+                      "description": "The project ID or project number from which the routes should be listed.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1909,7 +1909,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location from which the configurations should be listed.",
+                      "description": "The project ID or project number from which the configurations should be\nlisted.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -1999,7 +1999,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The project and location from which the revisions should be listed.",
+                      "description": "The project ID or project number from which the revisions should be listed.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2125,7 +2125,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The project and location from which the services should be listed.",
+                  "description": "The project ID or project number from which the services should be listed.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+$",
@@ -2211,7 +2211,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "The project name (and optionally the region) in which this service should\nbe created.",
+                  "description": "The project ID or project number in which this service should be created.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+$",
@@ -2329,7 +2329,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The project and location from which the routes should be listed.",
+                  "description": "The project ID or project number from which the routes should be listed.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+$",
@@ -2419,7 +2419,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The project and location from which the configurations should be listed.",
+                  "description": "The project ID or project number from which the configurations should be\nlisted.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+$",
@@ -2509,7 +2509,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "The project and location from which the revisions should be listed.",
+                  "description": "The project ID or project number from which the revisions should be listed.",
                   "location": "path",
                   "required": true,
                   "pattern": "^namespaces\/[^\/]+$",

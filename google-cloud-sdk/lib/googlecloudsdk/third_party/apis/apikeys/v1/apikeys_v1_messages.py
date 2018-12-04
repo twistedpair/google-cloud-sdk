@@ -99,7 +99,7 @@ class ApiTargetKeyDetails(_messages.Message):
       of these restrictions. If no restrictions are specified, all targets are
       allowed. Key is the service name for this restriction. It should be
       api_v1_name of service config for legacy services. For new service, it
-      should be the fully qualified service name (eg. apikeys.googleapi.com).
+      should be the fully qualified service name (eg. apikeys.googleapis.com).
 
   Fields:
     apiTargets: A restriction for a specific service and optionally one or
@@ -107,7 +107,7 @@ class ApiTargetKeyDetails(_messages.Message):
       these restrictions. If no restrictions are specified, all targets are
       allowed. Key is the service name for this restriction. It should be
       api_v1_name of service config for legacy services. For new service, it
-      should be the fully qualified service name (eg. apikeys.googleapi.com).
+      should be the fully qualified service name (eg. apikeys.googleapis.com).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -117,7 +117,7 @@ class ApiTargetKeyDetails(_messages.Message):
     restrictions. If no restrictions are specified, all targets are allowed.
     Key is the service name for this restriction. It should be api_v1_name of
     service config for legacy services. For new service, it should be the
-    fully qualified service name (eg. apikeys.googleapi.com).
+    fully qualified service name (eg. apikeys.googleapis.com).
 
     Messages:
       AdditionalProperty: An additional property for a ApiTargetsValue object.

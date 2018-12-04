@@ -3210,7 +3210,8 @@ class WorkflowMetadata(_messages.Message):
       those parameters.
 
   Fields:
-    clusterName: Output only. The name of the managed cluster.
+    clusterName: Output only. The name of the target cluster.
+    clusterUuid: Output only. The UUID of target cluster.
     createCluster: Output only. The create cluster operation metadata.
     deleteCluster: Output only. The delete cluster operation metadata.
     endTime: Output only. Workflow end time.
@@ -3264,15 +3265,16 @@ class WorkflowMetadata(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   clusterName = _messages.StringField(1)
-  createCluster = _messages.MessageField('ClusterOperation', 2)
-  deleteCluster = _messages.MessageField('ClusterOperation', 3)
-  endTime = _messages.StringField(4)
-  graph = _messages.MessageField('WorkflowGraph', 5)
-  parameters = _messages.MessageField('ParametersValue', 6)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  template = _messages.StringField(9)
-  version = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  clusterUuid = _messages.StringField(2)
+  createCluster = _messages.MessageField('ClusterOperation', 3)
+  deleteCluster = _messages.MessageField('ClusterOperation', 4)
+  endTime = _messages.StringField(5)
+  graph = _messages.MessageField('WorkflowGraph', 6)
+  parameters = _messages.MessageField('ParametersValue', 7)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  template = _messages.StringField(10)
+  version = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class WorkflowNode(_messages.Message):

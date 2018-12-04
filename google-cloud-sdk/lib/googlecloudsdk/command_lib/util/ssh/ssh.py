@@ -919,7 +919,7 @@ class SSHCommand(object):
 
     Args:
       remote: Remote, the remote to connect to.
-      port: int, port.
+      port: str, port.
       identity_file: str, path to private key file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to ssh invocation. Both binary
@@ -1066,7 +1066,7 @@ class SCPCommand(object):
         source, this must be local, and vice versa.
       recursive: bool, recursive directory copy.
       compress: bool, enable compression.
-      port: int, port.
+      port: str, port.
       identity_file: str, path to private key file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to scp invocation. Both binary
@@ -1219,7 +1219,7 @@ class SSHPoller(object):
 
     Args:
       remote: Remote, the remote to poll.
-      port: int, port to poll.
+      port: str, port to poll.
       identity_file: str, path to private key file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to ssh invocation. Both binary

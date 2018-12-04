@@ -142,6 +142,13 @@ def ArgsForClusterRef(parser, beta=False, include_deprecated=True): \
       type=int,
       help='The number of local SSDs to attach to the master in a cluster.')
   parser.add_argument(
+      '--num-preemptible-worker-local-ssds',
+      type=int,
+      help="""\
+      The number of local SSDs to attach to each preemptible worker in
+      a cluster.
+      """)
+  parser.add_argument(
       '--initialization-actions',
       type=arg_parsers.ArgList(min_length=1),
       metavar='CLOUD_STORAGE_URI',
@@ -342,14 +349,6 @@ def BetaArgsForClusterRef(parser):
   """Register beta-only flags for creating a Dataproc cluster."""
   flags.AddComponentFlag(parser)
   flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
-
-  parser.add_argument(
-      '--num-preemptible-worker-local-ssds',
-      type=int,
-      help="""\
-      The number of local SSDs to attach to each preemptible worker in
-      a cluster.
-      """)
 
   parser.add_argument(
       '--max-idle',
@@ -606,15 +605,12 @@ def GetClusterConfig(args,
           raise exceptions.ArgumentError(
               '--gce-pd-kms-key was not fully specified.')
 
-  num_preemptible_worker_local_ssds = (
-      args.num_preemptible_worker_local_ssds if beta else None)
-
   # Secondary worker group is optional. However, users may specify
   # future pVMs configuration at creation time.
   if (args.num_preemptible_workers is not None or
       preemptible_worker_boot_disk_size_gb is not None or
       args.preemptible_worker_boot_disk_type is not None or
-      num_preemptible_worker_local_ssds is not None or
+      args.num_preemptible_worker_local_ssds is not None or
       (beta and args.worker_min_cpu_platform is not None)):
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
@@ -623,7 +619,7 @@ def GetClusterConfig(args,
                 dataproc,
                 args.preemptible_worker_boot_disk_type,
                 preemptible_worker_boot_disk_size_gb,
-                num_preemptible_worker_local_ssds,
+                args.num_preemptible_worker_local_ssds,
             )))
     if beta and args.worker_min_cpu_platform:
       cluster_config.secondaryWorkerConfig.minCpuPlatform = (

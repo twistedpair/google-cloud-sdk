@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20181109",
+ "revision": "20181126",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1063,7 +1063,7 @@
     },
     "specificAllocationRequired": {
      "type": "boolean",
-     "description": "Indicates whether the allocation can be consumed by VMs with ?any allocation? defined. If the field is set, then only VMs that target the allocation by name using --allocation-affinity can consume this allocation."
+     "description": "Indicates whether the allocation can be consumed by VMs with \"any allocation\" defined. If the field is set, then only VMs that target the allocation by name using --allocation-affinity can consume this allocation."
     },
     "zone": {
      "type": "string"
@@ -2481,7 +2481,7 @@
    "properties": {
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
-     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a ?Cache-Control: public, max-age=[TTL]? header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
+     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
      "format": "int64"
     },
     "signedUrlKeyNames": {
@@ -2920,7 +2920,7 @@
     },
     "signedUrlCacheMaxAgeSec": {
      "type": "string",
-     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a ?Cache-Control: public, max-age=[TTL]? header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
+     "description": "Maximum number of seconds the response to a signed URL request will be considered fresh. After this time period, the response will be revalidated before being served. Defaults to 1hr (3600s). When serving responses to signed URL requests, Cloud CDN will internally behave as though all responses from this backend had a \"Cache-Control: public, max-age=[TTL]\" header, regardless of any existing Cache-Control header. The actual headers served in responses will not be altered.",
      "format": "int64"
     },
     "signedUrlKeyNames": {
@@ -4011,7 +4011,7 @@
     },
     "physicalBlockSizeBytes": {
      "type": "string",
-     "description": "Physical block size of the persistent disk, in bytes. If not present in a request, a default value is used. Initially only 4096 is supported, but other powers of two may be added. If an unsupported value is requested, the error message will list the supported values, but even a supported value may be allowed for only some projects.",
+     "description": "Physical block size of the persistent disk, in bytes. If not present in a request, a default value is used. Currently supported sizes are 4096 and 16384, other sizes may be added in the future. If an unsupported value is requested, the error message will list the supported values for the caller's project.",
      "format": "int64"
     },
     "region": {
@@ -8595,6 +8595,20 @@
     }
    }
   },
+  "InstanceGroupManagersCreateInstancesRequest": {
+   "id": "InstanceGroupManagersCreateInstancesRequest",
+   "type": "object",
+   "description": "InstanceGroupManagers.createInstances",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "[Required] List of specifications of per-instance configs.",
+     "items": {
+      "$ref": "PerInstanceConfig"
+     }
+    }
+   }
+  },
   "InstanceGroupManagersDeleteInstancesRequest": {
    "id": "InstanceGroupManagersDeleteInstancesRequest",
    "type": "object",
@@ -10524,7 +10538,7 @@
    "properties": {
     "interconnectName": {
      "type": "string",
-     "description": "Plain text name of the Interconnect this attachment is connected to, as displayed in the Partner?s portal. For instance ?Chicago 1?. This value may be validated to match approved Partner values."
+     "description": "Plain text name of the Interconnect this attachment is connected to, as displayed in the Partner?s portal. For instance \"Chicago 1\". This value may be validated to match approved Partner values."
     },
     "partnerName": {
      "type": "string",
@@ -11897,7 +11911,7 @@
     },
     "sourceInstanceProperties": {
      "$ref": "SourceInstanceProperties",
-     "description": "[Output Only] properties of source instance. Currently, input for this field is not supported."
+     "description": "Properties of source instance."
     },
     "status": {
      "type": "string",
@@ -13621,6 +13635,10 @@
    "type": "object",
    "description": "A network peering attached to a network resource. The message includes the peering name, peer network, peering state, and a flag indicating whether Google Compute Engine should automatically create routes for the peering.",
    "properties": {
+    "advertisePeerSubnetsViaRouters": {
+     "type": "boolean",
+     "description": "Whether Cloud Routers in this network can automatically advertise subnets from the peer network."
+    },
     "autoCreateRoutes": {
      "type": "boolean",
      "description": "Indicates whether full mesh connectivity is created and managed automatically. When it is set to true, Google Compute Engine will automatically create and manage the routes between two networks when the state is ACTIVE. Otherwise, user needs to create routes manually to route packets to peer network."
@@ -17744,7 +17762,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM\", where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -17764,7 +17782,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM\", where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -17950,7 +17968,7 @@
     },
     "startTime": {
      "type": "string",
-     "description": "Time within the window to start the operations. It must be in format \"HH:MM?, where HH : [00-23] and MM : [00-00] GMT."
+     "description": "Time within the window to start the operations. It must be in format \"HH:MM\", where HH : [00-23] and MM : [00-00] GMT."
     }
    }
   },
@@ -18484,9 +18502,13 @@
      "items": {
       "type": "string",
       "enum": [
-       "ALL_SUBNETS"
+       "ALL_PEER_VPC_SUBNETS",
+       "ALL_SUBNETS",
+       "ALL_VPC_SUBNETS"
       ],
       "enumDescriptions": [
+       "",
+       "",
        ""
       ]
      }
@@ -18527,9 +18549,13 @@
      "items": {
       "type": "string",
       "enum": [
-       "ALL_SUBNETS"
+       "ALL_PEER_VPC_SUBNETS",
+       "ALL_SUBNETS",
+       "ALL_VPC_SUBNETS"
       ],
       "enumDescriptions": [
+       "",
+       "",
        ""
       ]
      }
@@ -19706,7 +19732,7 @@
     },
     "priority": {
      "type": "integer",
-     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated in the increasing order of priority.",
+     "description": "An integer indicating the priority of a rule in the list. The priority must be a positive value between 0 and 2147483647. Rules are evaluated from highest to lowest priority where 0 is the highest priority and 2147483647 is the lowest prority.",
      "format": "int32"
     },
     "targetResources": {
@@ -19856,6 +19882,41 @@
     }
    }
   },
+  "ShieldedInstanceIdentity": {
+   "id": "ShieldedInstanceIdentity",
+   "type": "object",
+   "description": "A shielded instance identity entry.",
+   "properties": {
+    "encryptionKey": {
+     "$ref": "ShieldedInstanceIdentityEntry",
+     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#ShieldedInstanceIdentity for shielded VM identity entry.",
+     "default": "compute#shieldedInstanceIdentity"
+    },
+    "signingKey": {
+     "$ref": "ShieldedInstanceIdentityEntry",
+     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
+    }
+   }
+  },
+  "ShieldedInstanceIdentityEntry": {
+   "id": "ShieldedInstanceIdentityEntry",
+   "type": "object",
+   "description": "A Shielded VM Identity Entry.",
+   "properties": {
+    "ekCert": {
+     "type": "string",
+     "description": "A PEM-encoded X.509 certificate. This field can be empty."
+    },
+    "ekPub": {
+     "type": "string",
+     "description": "A PEM-encoded public key."
+    }
+   }
+  },
   "ShieldedVmConfig": {
    "id": "ShieldedVmConfig",
    "type": "object",
@@ -19872,41 +19933,6 @@
     "enableVtpm": {
      "type": "boolean",
      "description": "Defines whether the instance has the vTPM enabled."
-    }
-   }
-  },
-  "ShieldedVmIdentity": {
-   "id": "ShieldedVmIdentity",
-   "type": "object",
-   "description": "A shielded VM identity entry.",
-   "properties": {
-    "encryptionKey": {
-     "$ref": "ShieldedVmIdentityEntry",
-     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
-    },
-    "kind": {
-     "type": "string",
-     "description": "[Output Only] Type of the resource. Always compute#shieldedVmIdentity for shielded VM identity entry.",
-     "default": "compute#shieldedVmIdentity"
-    },
-    "signingKey": {
-     "$ref": "ShieldedVmIdentityEntry",
-     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
-    }
-   }
-  },
-  "ShieldedVmIdentityEntry": {
-   "id": "ShieldedVmIdentityEntry",
-   "type": "object",
-   "description": "A Shielded VM Identity Entry.",
-   "properties": {
-    "ekCert": {
-     "type": "string",
-     "description": "A PEM-encoded X.509 certificate. This field can be empty."
-    },
-    "ekPub": {
-     "type": "string",
-     "description": "A PEM-encoded public key."
     }
    }
   },
@@ -21242,7 +21268,7 @@
     },
     "role": {
      "type": "string",
-     "description": "The role of subnetwork. Currenly, this field is only used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready to be promoted to ACTIVE or is currently draining.",
+     "description": "The role of subnetwork. Currenly, this field is only used when purpose = INTERNAL_HTTPS_LOAD_BALANCER. The value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being used for Internal HTTP(S) Load Balancing. A BACKUP subnetwork is one that is ready to be promoted to ACTIVE or is currently draining. This field can be updated with a patch request.",
      "enum": [
       "ACTIVE",
       "BACKUP"
@@ -21254,7 +21280,7 @@
     },
     "secondaryIpRanges": {
      "type": "array",
-     "description": "An array of configurations for secondary IP ranges for VM instances contained in this subnetwork. The primary IP of such VM must belong to the primary ipCidrRange of the subnetwork. The alias IPs may belong to either primary or secondary ranges.",
+     "description": "An array of configurations for secondary IP ranges for VM instances contained in this subnetwork. The primary IP of such VM must belong to the primary ipCidrRange of the subnetwork. The alias IPs may belong to either primary or secondary ranges. This field can be updated with a patch request.",
      "items": {
       "$ref": "SubnetworkSecondaryRange"
      }
@@ -26698,9 +26724,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -28643,7 +28669,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The disk name or id for this request.",
+       "description": "The disk name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -28741,7 +28767,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to snapshot.",
+       "description": "Name of the persistent disk to snapshot.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -28794,7 +28820,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to delete.",
+       "description": "Name of the persistent disk to delete.",
        "required": true,
        "location": "path"
       },
@@ -28839,7 +28865,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the persistent disk to return.",
+       "description": "Name of the persistent disk to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29026,7 +29052,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The disk name or id for this request.",
+       "description": "The disk name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29075,7 +29101,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The name or id of the persistent disk.",
+       "description": "The name of the persistent disk.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -29180,9 +29206,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "zone": {
@@ -29846,9 +29872,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -30135,9 +30161,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -30407,9 +30433,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -31735,7 +31761,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Name or id of the image resource to delete.",
+       "description": "Name of the image resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -31773,7 +31799,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Image name or id .",
+       "description": "Image name.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -31814,7 +31840,7 @@
      "parameters": {
       "image": {
        "type": "string",
-       "description": "Name or id of the image resource to return.",
+       "description": "Name of the image resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -31848,7 +31874,7 @@
      "parameters": {
       "family": {
        "type": "string",
-       "description": "Name or id of the image family to search for.",
+       "description": "Name of the image family to search for.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -32049,9 +32075,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -32240,6 +32266,53 @@
      ],
      "request": {
       "$ref": "InstanceGroupManagersApplyUpdatesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "createInstances": {
+     "id": "compute.instanceGroupManagers.createInstances",
+     "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/createInstances",
+     "httpMethod": "POST",
+     "description": "Creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone where the managed instance group is located. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "InstanceGroupManagersCreateInstancesRequest"
      },
      "response": {
       "$ref": "Operation"
@@ -32841,7 +32914,7 @@
      "id": "compute.instanceGroupManagers.setAutoHealingPolicies",
      "path": "{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies",
      "httpMethod": "POST",
-     "description": "Modifies the autohealing policies.",
+     "description": "Modifies the autohealing policies. [Deprecated] This method is deprecated. Please use Patch instead.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -33879,7 +33952,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -33935,7 +34008,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34038,7 +34111,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34087,7 +34160,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to delete.",
+       "description": "Name of the instance resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34139,7 +34212,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34199,7 +34272,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Instance name or id for this request.",
+       "description": "Instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34246,7 +34319,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to return.",
+       "description": "Name of the instance resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34288,7 +34361,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34382,7 +34455,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34439,7 +34512,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34465,7 +34538,7 @@
       "instance"
      ],
      "response": {
-      "$ref": "ShieldedVmIdentity"
+      "$ref": "ShieldedInstanceIdentity"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -34594,7 +34667,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name or id of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
+       "description": "Name of the target instance scoping this request, or '-' if the request should span over all instances in the container.",
        "required": true,
        "pattern": "-|[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34654,7 +34727,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34703,7 +34776,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34749,7 +34822,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to resume.",
+       "description": "Name of the instance resource to resume.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34863,7 +34936,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -34955,7 +35028,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35004,7 +35077,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35053,7 +35126,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35102,7 +35175,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35151,7 +35224,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35200,7 +35273,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Instance name or id for this request.",
+       "description": "Instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35249,7 +35322,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35298,7 +35371,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35347,7 +35420,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35396,7 +35469,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35437,7 +35510,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35483,7 +35556,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to start.",
+       "description": "Name of the instance resource to start.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35537,7 +35610,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to stop.",
+       "description": "Name of the instance resource to stop.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35588,7 +35661,7 @@
       },
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance resource to suspend.",
+       "description": "Name of the instance resource to suspend.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35679,7 +35752,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35784,7 +35857,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "The instance name or id for this request.",
+       "description": "The instance name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -35840,7 +35913,7 @@
      "parameters": {
       "instance": {
        "type": "string",
-       "description": "Name or id of the instance scoping this request.",
+       "description": "Name of the instance scoping this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -36282,9 +36355,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -36791,9 +36864,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -41768,7 +41841,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The disk name or id for this request.",
+       "description": "The disk name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -41817,7 +41890,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to snapshot.",
+       "description": "Name of the regional persistent disk to snapshot.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -41870,7 +41943,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to delete.",
+       "description": "Name of the regional persistent disk to delete.",
        "required": true,
        "location": "path"
       },
@@ -41915,7 +41988,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk to return.",
+       "description": "Name of the regional persistent disk to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -42060,7 +42133,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "The disk name or id for this request.",
+       "description": "The disk name for this request.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -42109,7 +42182,7 @@
      "parameters": {
       "disk": {
        "type": "string",
-       "description": "Name or id of the regional persistent disk.",
+       "description": "Name of the regional persistent disk.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -42177,9 +42250,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -43216,7 +43289,7 @@
      "id": "compute.regionInstanceGroupManagers.setAutoHealingPolicies",
      "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setAutoHealingPolicies",
      "httpMethod": "POST",
-     "description": "Modifies the autohealing policy for the instances in this managed instance group.",
+     "description": "Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Please use Patch instead.",
      "parameters": {
       "instanceGroupManager": {
        "type": "string",
@@ -46831,9 +46904,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -46913,7 +46986,7 @@
       },
       "snapshot": {
        "type": "string",
-       "description": "Name or id of the Snapshot resource to delete.",
+       "description": "Name of the Snapshot resource to delete.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -46946,7 +47019,7 @@
       },
       "snapshot": {
        "type": "string",
-       "description": "Name or id of the Snapshot resource to return.",
+       "description": "Name of the Snapshot resource to return.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
@@ -47099,9 +47172,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9_]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -48066,7 +48139,7 @@
      "id": "compute.subnetworks.patch",
      "path": "{project}/regions/{region}/subnetworks/{subnetwork}",
      "httpMethod": "PATCH",
-     "description": "Patches the specified subnetwork with the data included in the request. Only the following fields within the subnetwork resource can be specified in the request: secondary_ip_range, allow_subnet_cidr_routes_overlap and role. It is also mandatory to specify the current fingerprint of the subnetwork resource being patched.",
+     "description": "Patches the specified subnetwork with the data included in the request. Only certain fields can up updated with a patch request as indicated in the field descriptions. You must specify the current fingeprint of the subnetwork resource being patched.",
      "parameters": {
       "drainTimeoutSeconds": {
        "type": "integer",
@@ -50711,9 +50784,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -51447,9 +51520,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -51780,9 +51853,9 @@
       },
       "resource": {
        "type": "string",
-       "description": "Name of the resource for this request.",
+       "description": "Name or id of the resource for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },

@@ -91,6 +91,7 @@ class AndroidInstrumentationTest(_messages.Message):
 
   Fields:
     appApk: The APK for the application under test.
+    appBundle: A multi-apk app bundle for the application under test.
     appPackageId: The java package for the application under test. Optional,
       default is determined by examining the application's manifest.
     orchestratorOption: The option of whether running each test within its own
@@ -139,12 +140,13 @@ class AndroidInstrumentationTest(_messages.Message):
     DO_NOT_USE_ORCHESTRATOR = 2
 
   appApk = _messages.MessageField('FileReference', 1)
-  appPackageId = _messages.StringField(2)
-  orchestratorOption = _messages.EnumField('OrchestratorOptionValueValuesEnum', 3)
-  testApk = _messages.MessageField('FileReference', 4)
-  testPackageId = _messages.StringField(5)
-  testRunnerClass = _messages.StringField(6)
-  testTargets = _messages.StringField(7, repeated=True)
+  appBundle = _messages.MessageField('AppBundle', 2)
+  appPackageId = _messages.StringField(3)
+  orchestratorOption = _messages.EnumField('OrchestratorOptionValueValuesEnum', 4)
+  testApk = _messages.MessageField('FileReference', 5)
+  testPackageId = _messages.StringField(6)
+  testRunnerClass = _messages.StringField(7)
+  testTargets = _messages.StringField(8, repeated=True)
 
 
 class AndroidMatrix(_messages.Message):
@@ -263,6 +265,7 @@ class AndroidRoboTest(_messages.Message):
 
   Fields:
     appApk: The APK for the application under test.
+    appBundle: A multi-apk app bundle for the application under test.
     appInitialActivity: The initial activity that should be used to start the
       app. Optional
     appPackageId: The java package for the application under test. Optional,
@@ -284,13 +287,14 @@ class AndroidRoboTest(_messages.Message):
   """
 
   appApk = _messages.MessageField('FileReference', 1)
-  appInitialActivity = _messages.StringField(2)
-  appPackageId = _messages.StringField(3)
-  maxDepth = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maxSteps = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  roboDirectives = _messages.MessageField('RoboDirective', 6, repeated=True)
-  roboScript = _messages.MessageField('FileReference', 7)
-  startingIntents = _messages.MessageField('RoboStartingIntent', 8, repeated=True)
+  appBundle = _messages.MessageField('AppBundle', 2)
+  appInitialActivity = _messages.StringField(3)
+  appPackageId = _messages.StringField(4)
+  maxDepth = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxSteps = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  roboDirectives = _messages.MessageField('RoboDirective', 7, repeated=True)
+  roboScript = _messages.MessageField('FileReference', 8)
+  startingIntents = _messages.MessageField('RoboStartingIntent', 9, repeated=True)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):
@@ -312,6 +316,7 @@ class AndroidTestLoop(_messages.Message):
 
   Fields:
     appApk: The APK for the application under test.
+    appBundle: A multi-apk app bundle for the application under test.
     appPackageId: The java package for the application under test. Optional,
       default is determined by examining the application's manifest.
     scenarioLabels: The list of scenario labels that should be run during the
@@ -327,9 +332,10 @@ class AndroidTestLoop(_messages.Message):
   """
 
   appApk = _messages.MessageField('FileReference', 1)
-  appPackageId = _messages.StringField(2)
-  scenarioLabels = _messages.StringField(3, repeated=True)
-  scenarios = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.INT32)
+  appBundle = _messages.MessageField('AppBundle', 2)
+  appPackageId = _messages.StringField(3)
+  scenarioLabels = _messages.StringField(4, repeated=True)
+  scenarios = _messages.IntegerField(5, repeated=True, variant=_messages.Variant.INT32)
 
 
 class AndroidVersion(_messages.Message):
@@ -404,6 +410,19 @@ class ApkManifest(_messages.Message):
   maxSdkVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minSdkVersion = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   packageName = _messages.StringField(5)
+
+
+class AppBundle(_messages.Message):
+  r"""An Android App Bundle file format, containing a BundleConfig.pb file, a
+  base module directory, zero or more dynamic feature module directories.
+  <p>See https://developer.android.com/guide/app-bundle/build for guidance on
+  building App Bundles.
+
+  Fields:
+    bundleLocation: .aab file representing the app bundle under test.
+  """
+
+  bundleLocation = _messages.MessageField('FileReference', 1)
 
 
 class CancelTestMatrixResponse(_messages.Message):

@@ -18,9 +18,8 @@ args:
     scheduled start time.
 
     The schedule can be either of the following types:
-    * Crontab (http://en.wikipedia.org/wiki/Cron#Overview)
-    * English-like schedule
-      (https://cloud.google.com/scheduler/docs/running-cron-jobs-with-cloud-scheduler#defining_the_job_schedule)
+    * Crontab: http://en.wikipedia.org/wiki/Cron#Overview
+    * English-like schedule: https://cloud.google.com/scheduler/docs/quickstart#defining_the_job_schedule
 - api_field: job.timeZone
   arg_name: time-zone
   default: Etc/UTC

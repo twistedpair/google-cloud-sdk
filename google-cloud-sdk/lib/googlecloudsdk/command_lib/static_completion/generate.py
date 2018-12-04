@@ -99,9 +99,10 @@ class _Command(object):
 class _CompletionTreeGenerator(walker.Walker):
   """Generates the gcloud static completion CLI tree."""
 
-  def __init__(self, cli=None, branch=None):
+  def __init__(self, cli=None, branch=None, ignore_load_errors=False):
     """branch is the command path of the CLI subtree to generate."""
-    super(_CompletionTreeGenerator, self).__init__(cli=cli)
+    super(_CompletionTreeGenerator, self).__init__(
+        cli=cli, ignore_load_errors=ignore_load_errors)
     self._branch = branch
 
   def Visit(self, node, parent, is_group):
@@ -158,12 +159,13 @@ class _CompletionTreeGenerator(walker.Walker):
     return False
 
 
-def GenerateCompletionTree(cli, branch=None):
+def GenerateCompletionTree(cli, branch=None, ignore_load_errors=False):
   """Generates and returns the static completion CLI tree.
 
   Args:
     cli: The CLI.
     branch: The path of the CLI subtree to generate.
+    ignore_load_errors: Ignore CLI tree load errors if True.
 
   Returns:
     Returns the serialized static completion CLI tree.
@@ -171,7 +173,8 @@ def GenerateCompletionTree(cli, branch=None):
   with progress_tracker.ProgressTracker(
       'Generating the static completion CLI tree.'):
     return resource_projector.MakeSerializable(
-        _CompletionTreeGenerator(cli, branch).Walk())
+        _CompletionTreeGenerator(
+            cli, branch=branch, ignore_load_errors=ignore_load_errors).Walk())
 
 
 def ListCompletionTree(cli, branch=None, out=None):

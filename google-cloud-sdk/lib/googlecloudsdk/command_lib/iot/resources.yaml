@@ -27,9 +27,27 @@ device:
   attributes:
   - *region
   - *registry
-  - parameter_name: devicesId
+  - &device
+    parameter_name: devicesId
     attribute_name: device
     help: The name of the Cloud IoT device.,
+    completion_request_params:
+    - fieldName: fieldMask
+      value: name
+    completion_id_field: id
+  disable_auto_completers: false
+
+gateway:
+  name: gateway
+  collection: cloudiot.projects.locations.registries.devices
+  request_id_field: gateway.id
+  attributes:
+  - *region
+  - *registry
+  - &gateway
+    parameter_name: devicesId
+    attribute_name: gateway
+    help: The name of the Cloud IoT gateway device.,
     completion_request_params:
     - fieldName: fieldMask
       value: name

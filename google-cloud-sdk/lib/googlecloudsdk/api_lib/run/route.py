@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Wraps a Serverless Route message, making fields more convenient to access."""
+"""Wraps a Cloud Run Route message, making fields more convenient to access."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -22,7 +22,7 @@ from googlecloudsdk.api_lib.run import k8s_object
 
 
 class Route(k8s_object.KubernetesObject):
-  """Wraps a Serverless Route message, making fields more convenient to access.
+  """Wraps a Cloud Run Route message, making fields more convenient to access.
 
   Setting properties on a Route (where possible) writes through to the nested
   Kubernetes-style fields.

@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Provides common arguments for the Serverless command surface."""
+"""Provides common arguments for the Run command surface."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import local_config
 from googlecloudsdk.command_lib.run import source_ref as source_ref_util
+from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -113,7 +114,25 @@ def AddFunctionArg(parser):
 
 def AddMutexEnvVarsFlags(parser):
   """Add flags for creating updating and deleting env vars."""
-  env_vars_util.AddUpdateEnvVarsFlags(parser)
+  # TODO(b/119837621): Use env_vars_util.AddUpdateEnvVarsFlags when
+  # `gcloud run` supports an env var file.
+  key_type = env_vars_util.EnvVarKeyType
+  value_type = env_vars_util.EnvVarValueType
+  flag_name = 'env-vars'
+  long_name = 'environment variables'
+
+  group = parser.add_mutually_exclusive_group()
+  update_remove_group = group.add_argument_group(
+      help=('Only --update-{0} and --remove-{0} can be used together.  If both '
+            'are specified, --remove-{0} will be applied first.'
+           ).format(flag_name))
+  map_util.AddMapUpdateFlag(update_remove_group, flag_name, long_name,
+                            key_type=key_type, value_type=value_type)
+  map_util.AddMapRemoveFlag(update_remove_group, flag_name, long_name,
+                            key_type=key_type)
+  map_util.AddMapClearFlag(group, flag_name, long_name)
+  map_util.AddMapSetFlag(group, flag_name, long_name, key_type=key_type,
+                         value_type=value_type)
 
 
 def AddMemoryFlag(parser):
@@ -161,6 +180,9 @@ def GetConfigurationChanges(args):
     changes.append(_GetEnvChanges(args))
 
   if 'memory' in args and args.memory:
+    if args.CONCEPTS.cluster.Parse():
+      raise ArgumentError('The --memory argument is not yet supported for '
+                          'Cloud Run on Kubernetes Engine.')
     changes.append(config_changes.ResourceChanges(memory=args.memory))
   if 'concurrency' in args and args.concurrency:
     try:
@@ -219,7 +241,7 @@ def GetRegion(args, prompt=False):
   Region is decided in the following order:
   - region argument;
   - local config file;
-  - serverless/region gcloud config;
+  - run/region gcloud config;
   - compute/region gcloud config;
   - prompt user.
 
@@ -245,7 +267,7 @@ def GetRegion(args, prompt=False):
     region = REGIONS[idx]
     log.status.Print(
         'To make this the default region, run '
-        '`gcloud config set serverless/region {}`.'.format(region))
+        '`gcloud config set run/region {}`.'.format(region))
     return region
 
 
@@ -264,5 +286,5 @@ def ValidateClusterArgs(args):
   if cluster_name and not cluster_location:
     raise serverless_exceptions.ConfigurationError(
         'Connecting to a cluster requires a cluster location to be specified.'
-        'Either set the serverless/cluster_location property '
+        'Either set the run/cluster_location property '
         'or use the --cluster-location flag.')

@@ -227,7 +227,7 @@ def GetZoneOrRegion(args, ignore_property=False, required=True):
   location = region or zone or zone_property
   if required and not location:
     raise calliope_exceptions.MinimumArgumentException(
-        ['--zone', '--region'], 'Please specify location.')
+        ['--zone', '--region'], 'Please specify location')
 
   return location
 

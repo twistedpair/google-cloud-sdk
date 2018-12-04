@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
@@ -42,7 +41,7 @@ def GetSubscriptionResourceSpec():
       'pubsub.projects.subscriptions',
       resource_name='subscription',
       subscriptionsId=SubscriptionAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetTopicResourceSpec():
@@ -50,7 +49,7 @@ def GetTopicResourceSpec():
       'pubsub.projects.topics',
       resource_name='topic',
       topicsId=TopicAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def CreateSubscriptionResourceArg(verb, plural=False):

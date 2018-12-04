@@ -38,6 +38,7 @@ import sys
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.document_renderers import devsite_renderer
 from googlecloudsdk.core.document_renderers import html_renderer
+from googlecloudsdk.core.document_renderers import linter_renderer
 from googlecloudsdk.core.document_renderers import man_renderer
 from googlecloudsdk.core.document_renderers import markdown_renderer
 from googlecloudsdk.core.document_renderers import renderer
@@ -49,7 +50,8 @@ STYLES = {
     'html': html_renderer.HTMLRenderer,
     'man': man_renderer.ManRenderer,
     'markdown': markdown_renderer.MarkdownRenderer,
-    'text': text_renderer.TextRenderer
+    'text': text_renderer.TextRenderer,
+    'linter': linter_renderer.LinterRenderer
 }
 
 
@@ -452,6 +454,8 @@ class MarkdownRenderer(object):
     self._Fill()
     self._buf = self._line[i + 1:end_index]
     heading = self._Attributes()
+    if i == 1 and heading.endswith('(1)'):
+      self._renderer.SetCommand(heading[:-3].lower().split('_'))
     self._renderer.Heading(i, heading)
     self._depth = 0
     if heading in ['NAME', 'SYNOPSIS']:

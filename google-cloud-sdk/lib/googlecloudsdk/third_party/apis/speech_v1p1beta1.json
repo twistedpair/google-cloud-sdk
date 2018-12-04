@@ -109,6 +109,24 @@
     }
   },
   "schemas": {
+    "ListOperationsResponse": {
+      "id": "ListOperationsResponse",
+      "description": "The response message for Operations.ListOperations.",
+      "type": "object",
+      "properties": {
+        "operations": {
+          "description": "A list of operations that matches the specified filter in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Operation"
+          }
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      }
+    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a\nnetwork API call.",
@@ -618,7 +636,7 @@
           "type": "boolean"
         },
         "uri": {
-          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. To be valid, rows\nmust do the following:\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then you must specify both\n<gs_path_to_audio> and <gs_path_to_transcript>. Only WAV file formats\nwhich encode linear 16-bit pulse-code modulation (PCM) audio format are\nsupported. The maximum audio file size is 50 MB. Also note that the audio\nhas to be single channel audio.\n3. There has to be at least 500 rows labelled HUMAN_TRANSCRIBED covering\nat least ~10K words in order to get reliable word error rate results.\n4. To create a language model, you should provide at least 100,000 words\nin your transcriptions as training data if you have conversational and\ncaptions type of data. You should provide at least 10,000 words if you\nhave short utterances like voice commands and search type of use cases.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](\/storage\/docs\/reference-uris).",
+          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Rows must comply to\nthe following to be valid:\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then you must specify both\n<gs_path_to_audio> and <gs_path_to_transcript>. Only WAV file formats\nwhich encode linear 16-bit pulse-code modulation (PCM) audio format are\nsupported. The maximum audio file size is 500 MB. Also note that the audio\nhas to be single channel audio.\n3. There has to be at least 500 rows labelled HUMAN_TRANSCRIBED covering\nat least ~10K words in order to get reliable word error rate results.\n4. To create a language model, you should provide at least 100,000 words\nin your transcriptions as training data if you have conversational and\ncaptions type of data. You should provide at least 10,000 words if you\nhave short utterances like voice commands and search type of use cases.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](\/storage\/docs\/reference-uris).",
           "type": "string"
         },
         "languageCode": {
@@ -715,7 +733,7 @@
             "Not specified.",
             "Audio format not in the formats supported by the cloud speech API",
             "File format different from what is specified in the file name extension",
-            "File too large. Maximum allowed size is 50 MB."
+            "File too large. Maximum allowed size is 500 MB."
           ],
           "type": "string",
           "enum": [
@@ -818,7 +836,7 @@
       "type": "object",
       "properties": {
         "uri": {
-          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Few rules for a row\nto be considered valid are :-\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then both <gs_path_to_audio>\nand <gs_path_to_transcript> needs to be specified.\n3. There has to be minimum 500 number of rows labelled HUMAN_TRANSCRIBED if\nevaluation stats are required.\n4. If use_logged_data_for_training is set to true, then we ignore the rows\nlabelled as MACHINE_TRANSCRIBED.\n5. There has to be minimum 100,000 words in the transcripts in order to\nprovide sufficient textual training data for the language model.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](https:\/\/cloud.google.com\/storage\/docs\/reference-uris).",
+          "description": "URI that points to a file in csv file where each row has following format.\n<gs_path_to_audio>,<gs_path_to_transcript>,<label>\nlabel can be HUMAN_TRANSCRIBED or MACHINE_TRANSCRIBED. Rows must comply to\nthe following to be valid:\n1. Each row must have at least a label and <gs_path_to_transcript>\n2. If a row is marked HUMAN_TRANSCRIBED, then you must specify both\n<gs_path_to_audio> and <gs_path_to_transcript>. Only WAV file formats\nwhich encode linear 16-bit pulse-code modulation (PCM) audio format are\nsupported. The maximum audio file size is 500 MB. Also note that the audio\nhas to be single channel audio.\n3. There has to be at least 500 rows labelled HUMAN_TRANSCRIBED covering\nat least ~10K words in order to get reliable word error rate results.\n4. To create a language model, you should provide at least 100,000 words\nin your transcriptions as training data if you have conversational and\ncaptions type of data. You should provide at least 10,000 words if you\nhave short utterances like voice commands and search type of use cases.\nCurrently, only Google Cloud Storage URIs are\nsupported, which must be specified in the following format:\n`gs:\/\/bucket_name\/object_name` (other URI formats will be ignored).\nFor more information, see\n[Request URIs](\/storage\/docs\/reference-uris).",
           "type": "string"
         }
       }
@@ -989,6 +1007,44 @@
   "resources": {
     "operations": {
       "methods": {
+        "list": {
+          "id": "speech.operations.list",
+          "path": "v1p1beta1/operations",
+          "flatPath": "v1p1beta1/operations",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "The name of the operation's parent resource.",
+              "location": "query",
+              "type": "string"
+            },
+            "filter": {
+              "description": "The standard list filter.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "The standard list page size.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "The standard list page token.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListOperationsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+        },
         "get": {
           "id": "speech.operations.get",
           "path": "v1p1beta1/operations/{+name}",
@@ -999,7 +1055,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^[^\/]+$",
+              "pattern": "^.+$",
               "type": "string"
             }
           },

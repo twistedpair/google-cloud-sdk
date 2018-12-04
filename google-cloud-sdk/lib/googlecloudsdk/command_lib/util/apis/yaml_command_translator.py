@@ -278,8 +278,10 @@ class CommandBuilder(object):
 
       def Run(self_, args):
         ref, response = self._CommonRun(args)
+        is_parent_resource = (self.spec.arguments.resource and
+                              self.spec.arguments.resource.is_parent_resource)
         if self.spec.async:
-          if ref is not None:
+          if ref is not None and not is_parent_resource:
             request_string = 'Create request issued for: [{{{}}}]'.format(
                 yaml_command_schema.NAME_FORMAT_KEY)
           else:
@@ -291,8 +293,7 @@ class CommandBuilder(object):
             return self._HandleResponse(response, args)
 
         response = self._HandleResponse(response, args)
-        if not (self.spec.arguments.resource
-                and self.spec.arguments.resource.is_parent_resource):
+        if not is_parent_resource:
           log.CreatedResource(self._GetDisplayName(ref, args),
                               kind=self.resource_type)
         return response

@@ -697,6 +697,18 @@ class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
   zone = _messages.StringField(4)
 
 
+class ContainerProjectsLocationsClustersGetJwksRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersGetJwksRequest object.
+
+  Fields:
+    parent: The parent (project, location, cluster id) where the node pools
+      will be listed. Specified in the format
+      'projects/*/locations/*/clusters/*'.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class ContainerProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A ContainerProjectsLocationsClustersGetRequest object.
 
@@ -1271,27 +1283,39 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GetJSONWebKeysResponse(_messages.Message):
+  r"""GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc
+  7517
+
+  Fields:
+    keys: The public component of the keys used by the cluster to sign token
+      requests.
+  """
+
+  keys = _messages.MessageField('Jwk', 1, repeated=True)
+
+
 class GetOpenIDConfigurationResponse(_messages.Message):
   r"""GetOpenIDConfigurationResponse is an OIDC discovery document for the
   cluster. See the OpenID Connect Discovery 1.0 specification for details.
 
   Fields:
-    claimsSupported: NOLINT
-    grantTypes: NOLINT
-    idTokenSigningAlgValuesSupported: NOLINT
+    claims_supported: NOLINT
+    grant_types: NOLINT
+    id_token_signing_alg_values_supported: NOLINT
     issuer: NOLINT
-    jwksUri: NOLINT
-    responseTypesSupported: NOLINT
-    subjectTypesSupported: NOLINT
+    jwks_uri: NOLINT
+    response_types_supported: NOLINT
+    subject_types_supported: NOLINT
   """
 
-  claimsSupported = _messages.StringField(1, repeated=True)
-  grantTypes = _messages.StringField(2, repeated=True)
-  idTokenSigningAlgValuesSupported = _messages.StringField(3, repeated=True)
+  claims_supported = _messages.StringField(1, repeated=True)
+  grant_types = _messages.StringField(2, repeated=True)
+  id_token_signing_alg_values_supported = _messages.StringField(3, repeated=True)
   issuer = _messages.StringField(4)
-  jwksUri = _messages.StringField(5)
-  responseTypesSupported = _messages.StringField(6, repeated=True)
-  subjectTypesSupported = _messages.StringField(7, repeated=True)
+  jwks_uri = _messages.StringField(5)
+  response_types_supported = _messages.StringField(6, repeated=True)
+  subject_types_supported = _messages.StringField(7, repeated=True)
 
 
 class GoogleIamV1Binding(_messages.Message):
@@ -1548,6 +1572,32 @@ class IstioConfig(_messages.Message):
 
   auth = _messages.EnumField('AuthValueValuesEnum', 1)
   disabled = _messages.BooleanField(2)
+
+
+class Jwk(_messages.Message):
+  r"""Jwk is a JSON Web Key as specified in RFC 7517
+
+  Fields:
+    alg: NOLINT
+    crv: NOLINT
+    e: NOLINT
+    kid: NOLINT
+    kty: NOLINT
+    n: Fields for RSA keys. NOLINT
+    use: NOLINT
+    x: Fields for ECDSA keys. NOLINT
+    y: NOLINT
+  """
+
+  alg = _messages.StringField(1)
+  crv = _messages.StringField(2)
+  e = _messages.StringField(3)
+  kid = _messages.StringField(4)
+  kty = _messages.StringField(5)
+  n = _messages.StringField(6)
+  use = _messages.StringField(7)
+  x = _messages.StringField(8)
+  y = _messages.StringField(9)
 
 
 class KubernetesDashboard(_messages.Message):

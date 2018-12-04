@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
-from googlecloudsdk.command_lib.projects import resource_args as project_resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
@@ -47,7 +46,7 @@ def GetAlertPolicyResourceSpec():
       'monitoring.projects.alertPolicies',
       resource_name='Alert Policy',
       alertPoliciesId=AlertPolicyAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetConditionResourceSpec():
@@ -56,7 +55,7 @@ def GetConditionResourceSpec():
       resource_name='condition',
       conditionsId=ConditionAttributeConfig(),
       alertPoliciesId=AlertPolicyAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetNotificationChannelResourceSpec():
@@ -64,7 +63,7 @@ def GetNotificationChannelResourceSpec():
       'monitoring.projects.notificationChannels',
       resource_name='Notification Channel',
       notificationChannelsId=NotificationChannelAttributeConfig(),
-      projectsId=project_resource_args.PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def CreateAlertPolicyResourceArg(verb, positional=True):
