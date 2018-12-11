@@ -1076,7 +1076,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Invokes synchronously deployed function. To be used for testing, very\nlimited traffic allowed."
+                  "description": "Synchronously invokes a deployed Cloud Function. To be used for testing\npurposes as very limited traffic is allowed. For more information on\nthe actual limits refer to [API Calls](\nhttps:\/\/cloud.google.com\/functions\/quotas#rate_limits)."
                 },
                 "generateUploadUrl": {
                   "id": "cloudfunctions.projects.locations.functions.generateUploadUrl",
@@ -1149,12 +1149,12 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "The name of the operation's parent resource.",
+              "description": "Must not be set.",
               "location": "query",
               "type": "string"
             },
             "filter": {
-              "description": "The standard list filter.",
+              "description": "Required. A filter for matching the requested operations.<br><br> The supported formats of <b>filter<\/b> are:<br> To query for specific function: <code>project:*,location:*,function:*<\/code><br> To query for all of the latest operations for a project: <code>project:*,latest:true<\/code>",
               "location": "query",
               "type": "string"
             },

@@ -105,6 +105,7 @@ VALID_REGIONS = [
     region_util.Region('us-central', True, True),
     region_util.Region('europe-west', True, True),
     region_util.Region('asia-northeast1', True, True),
+    region_util.Region('us-east1', True, True),
 ]
 
 

@@ -5,7 +5,7 @@
  "name": "sqladmin",
  "canonicalName": "SQL Admin",
  "version": "v1beta4",
- "revision": "20181126",
+ "revision": "20181205",
  "title": "Cloud SQL Admin API",
  "description": "Creates and manages Cloud SQL instances, which provide fully managed MySQL or PostgreSQL databases.",
  "ownerDomain": "google.com",
@@ -20,7 +20,7 @@
  "basePath": "/sql/v1beta4/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "sql/v1beta4/",
- "batchPath": "batch",
+ "batchPath": "batch/sqladmin/v1beta4",
  "parameters": {
   "alt": {
    "type": "string",

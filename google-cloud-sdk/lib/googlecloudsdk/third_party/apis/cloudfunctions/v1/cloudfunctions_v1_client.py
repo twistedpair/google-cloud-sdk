@@ -125,8 +125,10 @@ is the parent resource, without the operations collection id.
           }
 
     def Call(self, request, global_params=None):
-      r"""Invokes synchronously deployed function. To be used for testing, very.
-limited traffic allowed.
+      r"""Synchronously invokes a deployed Cloud Function. To be used for testing.
+purposes as very limited traffic is allowed. For more information on
+the actual limits refer to [API Calls](
+https://cloud.google.com/functions/quotas#rate_limits).
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsCallRequest) input message

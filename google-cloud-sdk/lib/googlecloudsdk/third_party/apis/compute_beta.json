@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20181126",
+ "revision": "20181206",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -19,7 +19,7 @@
  "basePath": "/compute/beta/projects/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "compute/beta/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/compute/beta",
  "parameters": {
   "alt": {
    "type": "string",
@@ -102,7 +102,7 @@
     },
     "acceleratorType": {
      "type": "string",
-     "description": "Full or partial URL of the accelerator type resource to attach to this instance. If you are creating an instance template, specify only the accelerator name."
+     "description": "Full or partial URL of the accelerator type resource to attach to this instance. For example: projects/my-project/zones/us-central1-c/acceleratorTypes/nvidia-tesla-p100 If you are creating an instance template, specify only the accelerator name. See GPUs on Compute Engine for a full list of accelerator types."
     }
    }
   },
@@ -17774,41 +17774,6 @@
     }
    }
   },
-  "ShieldedInstanceIdentity": {
-   "id": "ShieldedInstanceIdentity",
-   "type": "object",
-   "description": "A shielded instance identity entry.",
-   "properties": {
-    "encryptionKey": {
-     "$ref": "ShieldedInstanceIdentityEntry",
-     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
-    },
-    "kind": {
-     "type": "string",
-     "description": "[Output Only] Type of the resource. Always compute#ShieldedInstanceIdentity for shielded VM identity entry.",
-     "default": "compute#shieldedInstanceIdentity"
-    },
-    "signingKey": {
-     "$ref": "ShieldedInstanceIdentityEntry",
-     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
-    }
-   }
-  },
-  "ShieldedInstanceIdentityEntry": {
-   "id": "ShieldedInstanceIdentityEntry",
-   "type": "object",
-   "description": "A Shielded VM Identity Entry.",
-   "properties": {
-    "ekCert": {
-     "type": "string",
-     "description": "A PEM-encoded X.509 certificate. This field can be empty."
-    },
-    "ekPub": {
-     "type": "string",
-     "description": "A PEM-encoded public key."
-    }
-   }
-  },
   "ShieldedVmConfig": {
    "id": "ShieldedVmConfig",
    "type": "object",
@@ -17825,6 +17790,41 @@
     "enableVtpm": {
      "type": "boolean",
      "description": "Defines whether the instance has the vTPM enabled."
+    }
+   }
+  },
+  "ShieldedVmIdentity": {
+   "id": "ShieldedVmIdentity",
+   "type": "object",
+   "description": "A shielded VM identity entry.",
+   "properties": {
+    "encryptionKey": {
+     "$ref": "ShieldedVmIdentityEntry",
+     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#shieldedVmIdentity for shielded VM identity entry.",
+     "default": "compute#shieldedVmIdentity"
+    },
+    "signingKey": {
+     "$ref": "ShieldedVmIdentityEntry",
+     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
+    }
+   }
+  },
+  "ShieldedVmIdentityEntry": {
+   "id": "ShieldedVmIdentityEntry",
+   "type": "object",
+   "description": "A Shielded VM Identity Entry.",
+   "properties": {
+    "ekCert": {
+     "type": "string",
+     "description": "A PEM-encoded X.509 certificate. This field can be empty."
+    },
+    "ekPub": {
+     "type": "string",
+     "description": "A PEM-encoded public key."
     }
    }
   },
@@ -22404,7 +22404,7 @@
    "properties": {
     "id": {
      "type": "string",
-     "description": "The ID of the service resource. In the case of projects, this field matches the project ID (e.g., my-project), not the project number (e.g., 12345678)."
+     "description": "The ID of the service resource. In the case of projects, this field supports project id (e.g., my-project-123) and project number (e.g. 12345678)."
     },
     "type": {
      "type": "string",
@@ -24526,7 +24526,7 @@
        "type": "string",
        "description": "Name of the BackendService resource to patch.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25464,7 +25464,7 @@
        "type": "string",
        "description": "Name of the firewall rule to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25502,7 +25502,7 @@
        "type": "string",
        "description": "Name of the firewall rule to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25618,7 +25618,7 @@
        "type": "string",
        "description": "Name of the firewall rule to patch.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -25696,7 +25696,7 @@
        "type": "string",
        "description": "Name of the firewall rule to update.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -30108,7 +30108,7 @@
       "instance"
      ],
      "response": {
-      "$ref": "ShieldedInstanceIdentity"
+      "$ref": "ShieldedVmIdentity"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -33079,7 +33079,7 @@
        "type": "string",
        "description": "Name of the network resource to add peering to.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33120,7 +33120,7 @@
        "type": "string",
        "description": "Name of the network to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33158,7 +33158,7 @@
        "type": "string",
        "description": "Name of the network to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33300,7 +33300,7 @@
        "type": "string",
        "description": "Name of the network for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "orderBy": {
@@ -33354,7 +33354,7 @@
        "type": "string",
        "description": "Name of the network to update.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33395,7 +33395,7 @@
        "type": "string",
        "description": "Name of the network resource to remove peering from.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33436,7 +33436,7 @@
        "type": "string",
        "description": "Name of the network to be updated.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -33511,7 +33511,7 @@
        "type": "string",
        "description": "Name of the network resource which the updated peering is belonging to.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34046,7 +34046,7 @@
      "parameters": {
       "nodeGroup": {
        "type": "string",
-       "description": "Name of the NodeGroup resource to delete.",
+       "description": "Name of the NodeGroup resource to update.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -35675,7 +35675,7 @@
        "type": "string",
        "description": "Name of the BackendService resource to patch.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -38639,7 +38639,7 @@
        "type": "string",
        "description": "Name of the Route resource to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -38672,7 +38672,7 @@
        "type": "string",
        "description": "Name of the Route resource to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },

@@ -360,7 +360,7 @@ This will be an no-op if the last upgrade successfully completed.
           }
 
     def GetOpenid_configuration(self, request, global_params=None):
-      r"""GetOpenIDConfiguration gets the OIDC discovery document for the cluster.
+      r"""GetOpenIDConfig gets the OIDC discovery document for the cluster.
 See the OpenID Connect Discovery 1.0 specification for details.
 https://openid.net/specs/openid-connect-discovery-1_0.html
 
@@ -368,7 +368,7 @@ https://openid.net/specs/openid-connect-discovery-1_0.html
         request: (ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GetOpenIDConfigurationResponse) The response message.
+        (GetOpenIDConfigResponse) The response message.
       """
       config = self.GetMethodConfig('GetOpenid_configuration')
       return self._RunMethod(
@@ -384,7 +384,7 @@ https://openid.net/specs/openid-connect-discovery-1_0.html
         relative_path=u'v1alpha1/{+parent}/.well-known/openid-configuration',
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest',
-        response_type_name=u'GetOpenIDConfigurationResponse',
+        response_type_name=u'GetOpenIDConfigResponse',
         supports_download=False,
     )
 

@@ -135,6 +135,19 @@ class Concept(six.with_metaclass(abc.ABCMeta, object)):
     """
     raise NotImplementedError
 
+  @abc.abstractmethod
+  def IsArgRequired(self):
+    """Returns whether this concept is required to be specified by argparse."""
+    return False
+
+  def MakeArgKwargs(self):
+    """Returns argparse kwargs shared between all concept types."""
+    return {
+        'help': self.BuildHelpText(),
+        'required': self.IsArgRequired(),
+        'hidden': self.hidden,
+    }
+
 
 class Attribute(object):
   """An attribute that gets transformed to an argument.
@@ -171,9 +184,9 @@ class AttributeGroup(object):
     attributes: [Attribute | AttributeGroup], the list of attributes or
       attribute groups contained in this attribute group.
     kwargs: {str: any}, other metadata describing the attribute. Available
-      keys include: required (bool), hidden (bool), help (str).  **Note:
-      This is currently used essentially as a passthrough to the argparse
-      library.
+      keys include: required (bool), mutex (bool), hidden (bool), help (str).
+      **Note: This is currently used essentially as a passthrough to the
+      argparse library.
   """
 
   def __init__(self, concept=None, attributes=None, **kwargs):

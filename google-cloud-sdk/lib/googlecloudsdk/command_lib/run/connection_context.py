@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 import contextlib
+import re
 import ssl
 import sys
 from googlecloudsdk.api_lib.run import gke
@@ -94,14 +95,27 @@ class ConnectionInfo(six.with_metaclass(abc.ABCMeta)):
 
 
 def _CheckTLSSupport():
+  """Provide a useful error message if the user's doesn't have TLS 1.2."""
+  if re.match('OpenSSL 0\\.', ssl.OPENSSL_VERSION):
+    # User's OpenSSL is too old.
+    min_required_version = ('2.7.15' if sys.version_info.major == 2 else '3.4')
+    raise serverless_exceptions.NoTLSError(
+        'Your Python installation is using the SSL library {}, '
+        'which does not support TLS 1.2. '
+        'TLS 1.2 is required to connect to Cloud Run on Kubernetes Engine. '
+        'Please upgrade to '
+        'Python {} or greater, which comes bundled with OpenSSL >1.0.'.format(
+            ssl.OPENSSL_VERSION,
+            min_required_version))
   # PROTOCOL_TLSv1_2 applies to [2.7.9, 2.7.13) or [3.4, 3.6).
   # PROTOCOL_TLS applies to 2.7.13 and above, or 3.6 and above.
   if not (hasattr(ssl, 'PROTOCOL_TLS') or hasattr(ssl, 'PROTOCOL_TLSv1_2')):
+    # User's Python is too old.
     min_required_version = ('2.7.9' if sys.version_info.major == 2 else '3.4')
     raise serverless_exceptions.NoTLSError(
         'Your Python {}.{}.{} installation does not support TLS 1.2, which is'
-        ' required to connect to the GKE Cloud Run add-on. Please upgrade to'
-        ' Python {} or greater.'.format(
+        ' required to connect to Cloud Run on Kubernetes Engine. '
+        'Please upgrade to Python {} or greater.'.format(
             sys.version_info.major,
             sys.version_info.minor,
             sys.version_info.micro,

@@ -392,6 +392,10 @@
         "displayName": {
           "description": "A human readable display name for this service.",
           "type": "string"
+        },
+        "businessEntityName": {
+          "description": "The business under which the service is offered.\nEx. \"businessEntities\/GCP\", \"businessEntities\/Maps\"",
+          "type": "string"
         }
       }
     },

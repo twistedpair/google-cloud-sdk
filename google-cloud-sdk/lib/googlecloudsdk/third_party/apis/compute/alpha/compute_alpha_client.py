@@ -5225,7 +5225,7 @@ If the group is part of a backend service that has enabled connection draining, 
         request: (ComputeInstancesGetShieldedVmIdentityRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ShieldedInstanceIdentity) The response message.
+        (ShieldedVmIdentity) The response message.
       """
       config = self.GetMethodConfig('GetShieldedVmIdentity')
       return self._RunMethod(
@@ -5240,7 +5240,7 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getShieldedVmIdentity',
         request_field='',
         request_type_name=u'ComputeInstancesGetShieldedVmIdentityRequest',
-        response_type_name=u'ShieldedInstanceIdentity',
+        response_type_name=u'ShieldedVmIdentity',
         supports_download=False,
     )
 
@@ -8022,6 +8022,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def SetAutoscalingPolicy(self, request, global_params=None):
+      r"""Sets the autoscaling policy of the node group.
+
+      Args:
+        request: (ComputeNodeGroupsSetAutoscalingPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetAutoscalingPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAutoscalingPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.nodeGroups.setAutoscalingPolicy',
+        ordered_params=[u'project', u'zone', u'nodeGroup'],
+        path_params=[u'nodeGroup', u'project', u'zone'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/setAutoscalingPolicy',
+        request_field=u'nodeGroupsSetAutoscalingPolicyRequest',
+        request_type_name=u'ComputeNodeGroupsSetAutoscalingPolicyRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -10212,6 +10238,32 @@ You can specify a maximum of 1000 instances with this method per request.
         relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/applyUpdatesToInstances',
         request_field=u'regionInstanceGroupManagersApplyUpdatesRequest',
         request_type_name=u'ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def CreateInstances(self, request, global_params=None):
+      r"""Creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersCreateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method=u'POST',
+        method_id=u'compute.regionInstanceGroupManagers.createInstances',
+        ordered_params=[u'project', u'region', u'instanceGroupManager'],
+        path_params=[u'instanceGroupManager', u'project', u'region'],
+        query_params=[u'requestId'],
+        relative_path=u'projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/createInstances',
+        request_field=u'regionInstanceGroupManagersCreateInstancesRequest',
+        request_type_name=u'ComputeRegionInstanceGroupManagersCreateInstancesRequest',
         response_type_name=u'Operation',
         supports_download=False,
     )

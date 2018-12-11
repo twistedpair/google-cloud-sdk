@@ -994,6 +994,13 @@
           "description": "The time at which the operation failed or was completed successfully.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "tables": {
+          "description": "Keys: the full `name` of each table that existed in the instance when\nCreateCluster was first called, i.e.\n`projects\/<project>\/instances\/<instance>\/tables\/<table>`. Any table added\nto the instance by a later API call will be created in the new cluster by\nthat API call, not this one.\n\nValues: information on how much of a table's data has been copied to the\nnewly-created cluster so far.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "TableProgress"
+          }
         }
       }
     },
@@ -1013,6 +1020,40 @@
         "cluster": {
           "description": "The cluster to be created.\nFields marked `OutputOnly` must be left blank.",
           "$ref": "Cluster"
+        }
+      }
+    },
+    "TableProgress": {
+      "id": "TableProgress",
+      "description": "Progress info for copying a table's data to the new cluster.",
+      "type": "object",
+      "properties": {
+        "estimatedSizeBytes": {
+          "description": "Estimate of the size of the table to be copied.",
+          "type": "string",
+          "format": "int64"
+        },
+        "estimatedCopiedBytes": {
+          "description": "Estimate of the number of bytes copied so far for this table.\nThis will eventually reach 'estimated_size_bytes' unless the table copy\nis CANCELLED.",
+          "type": "string",
+          "format": "int64"
+        },
+        "state": {
+          "enumDescriptions": [
+            "",
+            "The table has not yet begun copying to the new cluster.",
+            "The table is actively being copied to the new cluster.",
+            "The table has been fully copied to the new cluster.",
+            "The table was deleted before it finished copying to the new cluster.\nNote that tables deleted after completion will stay marked as\nCOMPLETED, not CANCELLED."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "COPYING",
+            "COMPLETED",
+            "CANCELLED"
+          ]
         }
       }
     },

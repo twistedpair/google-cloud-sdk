@@ -430,7 +430,12 @@ def AddNetwork(parser):
   parser.add_argument(
       '--network',
       help=('Network in the current project that the instance will be part '
-            'of.'))
+            'of. To specify using a network with a shared VPC, use the full '
+            'URL of the network. For an example host project, \'testproject\', '
+            'and shared network, \'testsharednetwork\', this would be of the '
+            'form:'
+            '`--network`=`projects/testproject/global/networks/'
+            'testsharednetwork`'))
 
 
 def AddReplication(parser):

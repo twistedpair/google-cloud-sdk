@@ -47,8 +47,7 @@ class AppEngineHttpTarget(_messages.Message):
       headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
       /creating-handlers#reading_request_headers).  In addition, some App
       Engine headers, which contain job-specific information, are also be sent
-      to the job handler; see [request headers](https://cloud.google.comappeng
-      ine/docs/standard/python/config/cron#securing_urls_for_cron).
+      to the job handler.
 
   Fields:
     appEngineRouting: App Engine Routing setting for the job.
@@ -74,8 +73,7 @@ class AppEngineHttpTarget(_messages.Message):
       headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
       /creating-handlers#reading_request_headers).  In addition, some App
       Engine headers, which contain job-specific information, are also be sent
-      to the job handler; see [request headers](https://cloud.google.comappeng
-      ine/docs/standard/python/config/cron#securing_urls_for_cron).
+      to the job handler.
     httpMethod: The HTTP method to use for the request. PATCH and OPTIONS are
       not permitted.
     relativeUri: The relative URI.  The relative URL must begin with "/" and
@@ -129,8 +127,7 @@ class AppEngineHttpTarget(_messages.Message):
     headers](https://cloud.google.com/appengine/docs/python/taskqueue/push
     /creating-handlers#reading_request_headers).  In addition, some App Engine
     headers, which contain job-specific information, are also be sent to the
-    job handler; see [request headers](https://cloud.google.comappengine/docs/
-    standard/python/config/cron#securing_urls_for_cron).
+    job handler.
 
     Messages:
       AdditionalProperty: An additional property for a HeadersValue object.

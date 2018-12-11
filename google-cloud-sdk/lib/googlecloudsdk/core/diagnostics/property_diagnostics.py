@@ -29,12 +29,12 @@ from googlecloudsdk.core.diagnostics import diagnostic_base
 class PropertyDiagnostic(diagnostic_base.Diagnostic):
   """Diagnoses issues that may be caused by properties."""
 
-  def __init__(self):
+  def __init__(self, ignore_hidden_property_whitelist):
     intro = ('Property diagnostic detects issues that may be caused by '
              'properties.')
     super(PropertyDiagnostic, self).__init__(
         intro=intro, title='Property diagnostic',
-        checklist=[HiddenPropertiesChecker()])
+        checklist=[HiddenPropertiesChecker(ignore_hidden_property_whitelist)])
 
 
 def _AllProperties():
@@ -46,7 +46,16 @@ def _AllProperties():
 class HiddenPropertiesChecker(check_base.Checker):
   """Checks whether any hidden properties have been set."""
 
-  def __init__(self):
+  _WHITELIST = {
+      'metrics/environment',
+  }
+
+  def __init__(self, ignore_hidden_property_whitelist):
+    self.ignore_hidden_property_whitelist = ignore_hidden_property_whitelist
+    self.whitelist = set(
+        (properties.VALUES.diagnostics.hidden_property_whitelist.Get() or '')
+        .split(',')
+    )
     self._properties_file = named_configs.ActivePropertiesFile.Load()
 
   @property
@@ -84,10 +93,16 @@ class HiddenPropertiesChecker(check_base.Checker):
     return result, None
 
   def _CheckHiddenProperty(self, prop):
+    if str(prop) in self._WHITELIST:
+      return
+    if not self.ignore_hidden_property_whitelist and \
+        str(prop) in self.whitelist:
+      return
+
     # pylint:disable=protected-access
     value = properties._GetPropertyWithoutCallback(prop, self._properties_file)
     if value is not None:
-      msg = '[{0}]'.format(prop.name)
+      msg = '[{0}]'.format(prop)
       return check_base.Failure(message=msg)
 
   def _ConstructMessageFromFailures(self, failures, first_run):

@@ -64,6 +64,7 @@ SUBCOMMAND_WHITELIST = [
     'clear',
     'connections',
     'dag_state',
+    'delete_dag',
     'initdb',
     'kerberos',
     'list_dags',

@@ -1088,9 +1088,10 @@ def AddServiceAccountAndScopeArgs(parser, instance_exists,
   service_account_help = """\
   A service account is an identity attached to the instance. Its access tokens
   can be accessed through the instance metadata server and are used to
-  authenticate applications on the instance. The account can be either an email
-  address or an alias corresponding to a service account. You can explicitly
-  specify the Compute Engine default service account using the 'default' alias.
+  authenticate applications on the instance. The account can be set using an
+  email address corresponding to the required service account. You can
+  explicitly specify the Compute Engine default service account using the
+  'default' alias.
 
   If not provided, the instance will {0}.
   """.format(sa_exists if instance_exists else sa_not_exists)

@@ -524,6 +524,12 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.firestore.v1beta1',
             client_classpath='firestore_v1beta1_client.FirestoreV1beta1',
             messages_modulepath='firestore_v1beta1_messages',
+            default_version=False
+        ),
+        'v1beta2': APIDef(
+            class_path='googlecloudsdk.third_party.apis.firestore.v1beta2',
+            client_classpath='firestore_v1beta2_client.FirestoreV1beta2',
+            messages_modulepath='firestore_v1beta2_messages',
             default_version=True
         ),
     },

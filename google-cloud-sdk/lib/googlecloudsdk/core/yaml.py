@@ -126,7 +126,7 @@ def load(stream, file_hint=None, round_trip=False, location_value=False):
 
 
 def load_all(stream, file_hint=None):
-  # type: (typing.Union[str, typing.IO[typing.AnyStr]], typing.Optional[str]) -> typing.Generator[typing.Any]  # pylint: disable=line-too-long
+  # type: (typing.Union[str, typing.IO[typing.AnyStr]], typing.Optional[str]) -> typing.Generator[typing.Any, None, None]  # pylint: disable=line-too-long
   """Loads multiple YAML documents from the given steam.
 
   Args:
@@ -176,7 +176,7 @@ def load_path(path, round_trip=False, location_value=False):
 
 
 def load_all_path(path):
-  # type: (str) -> typing.Generator[typing.Any]
+  # type: (str) -> typing.Generator[typing.Any, None, None]
   """Loads multiple YAML documents from the given file path.
 
   Args:

@@ -59,17 +59,6 @@ class AddonsConfig(_messages.Message):
   serverlessConfig = _messages.MessageField('ServerlessConfig', 7)
 
 
-class AuditConfig(_messages.Message):
-  r"""Configuration for audit logging.
-
-  Fields:
-    enabled: Enable audit logging of the Kubernetes API.  If enabled, audit
-      logs will be exported to Cloud Audit Logging.
-  """
-
-  enabled = _messages.BooleanField(1)
-
-
 class AuthenticatorGroupsConfig(_messages.Message):
   r"""Configuration for returning group information from authenticators.
 
@@ -208,7 +197,6 @@ class Cluster(_messages.Message):
   Fields:
     addonsConfig: Configurations for the various addons available to run in
       the cluster.
-    auditConfig: Configuration for audit logging.
     authenticatorGroupsConfig: Configuration controlling RBAC group membership
       information.
     autoscaling: Cluster-level autoscaling configuration.
@@ -434,62 +422,61 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   addonsConfig = _messages.MessageField('AddonsConfig', 1)
-  auditConfig = _messages.MessageField('AuditConfig', 2)
-  authenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 3)
-  autoscaling = _messages.MessageField('ClusterAutoscaling', 4)
-  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 5)
-  clusterIpv4Cidr = _messages.StringField(6)
-  conditions = _messages.MessageField('StatusCondition', 7, repeated=True)
-  createTime = _messages.StringField(8)
-  currentMasterVersion = _messages.StringField(9)
-  currentNodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  currentNodeVersion = _messages.StringField(11)
-  databaseEncryption = _messages.MessageField('DatabaseEncryption', 12)
-  databaseEncryptionKeyId = _messages.StringField(13)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 14)
-  description = _messages.StringField(15)
-  enableKubernetesAlpha = _messages.BooleanField(16)
-  enableTpu = _messages.BooleanField(17)
-  endpoint = _messages.StringField(18)
-  expireTime = _messages.StringField(19)
-  initialClusterVersion = _messages.StringField(20)
-  initialNodeCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(22, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 23)
-  labelFingerprint = _messages.StringField(24)
-  legacyAbac = _messages.MessageField('LegacyAbac', 25)
-  location = _messages.StringField(26)
-  locations = _messages.StringField(27, repeated=True)
-  loggingService = _messages.StringField(28)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 29)
-  managedPodIdentityConfig = _messages.MessageField('ManagedPodIdentityConfig', 30)
-  masterAuth = _messages.MessageField('MasterAuth', 31)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 32)
-  masterIpv4CidrBlock = _messages.StringField(33)
-  monitoringService = _messages.StringField(34)
-  name = _messages.StringField(35)
-  network = _messages.StringField(36)
-  networkConfig = _messages.MessageField('NetworkConfig', 37)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 38)
-  nodeConfig = _messages.MessageField('NodeConfig', 39)
-  nodeIpv4CidrSize = _messages.IntegerField(40, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 41, repeated=True)
-  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 42)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 43)
-  privateCluster = _messages.BooleanField(44)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 45)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 46)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 47)
-  resourceVersion = _messages.StringField(48)
-  securityProfile = _messages.MessageField('SecurityProfile', 49)
-  selfLink = _messages.StringField(50)
-  servicesIpv4Cidr = _messages.StringField(51)
-  status = _messages.EnumField('StatusValueValuesEnum', 52)
-  statusMessage = _messages.StringField(53)
-  subnetwork = _messages.StringField(54)
-  tpuIpv4CidrBlock = _messages.StringField(55)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 56)
-  zone = _messages.StringField(57)
+  authenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 2)
+  autoscaling = _messages.MessageField('ClusterAutoscaling', 3)
+  binaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
+  clusterIpv4Cidr = _messages.StringField(5)
+  conditions = _messages.MessageField('StatusCondition', 6, repeated=True)
+  createTime = _messages.StringField(7)
+  currentMasterVersion = _messages.StringField(8)
+  currentNodeCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  currentNodeVersion = _messages.StringField(10)
+  databaseEncryption = _messages.MessageField('DatabaseEncryption', 11)
+  databaseEncryptionKeyId = _messages.StringField(12)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 13)
+  description = _messages.StringField(14)
+  enableKubernetesAlpha = _messages.BooleanField(15)
+  enableTpu = _messages.BooleanField(16)
+  endpoint = _messages.StringField(17)
+  expireTime = _messages.StringField(18)
+  initialClusterVersion = _messages.StringField(19)
+  initialNodeCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(21, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 22)
+  labelFingerprint = _messages.StringField(23)
+  legacyAbac = _messages.MessageField('LegacyAbac', 24)
+  location = _messages.StringField(25)
+  locations = _messages.StringField(26, repeated=True)
+  loggingService = _messages.StringField(27)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 28)
+  managedPodIdentityConfig = _messages.MessageField('ManagedPodIdentityConfig', 29)
+  masterAuth = _messages.MessageField('MasterAuth', 30)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 31)
+  masterIpv4CidrBlock = _messages.StringField(32)
+  monitoringService = _messages.StringField(33)
+  name = _messages.StringField(34)
+  network = _messages.StringField(35)
+  networkConfig = _messages.MessageField('NetworkConfig', 36)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 37)
+  nodeConfig = _messages.MessageField('NodeConfig', 38)
+  nodeIpv4CidrSize = _messages.IntegerField(39, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 40, repeated=True)
+  nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 41)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 42)
+  privateCluster = _messages.BooleanField(43)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 44)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 45)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 46)
+  resourceVersion = _messages.StringField(47)
+  securityProfile = _messages.MessageField('SecurityProfile', 48)
+  selfLink = _messages.StringField(49)
+  servicesIpv4Cidr = _messages.StringField(50)
+  status = _messages.EnumField('StatusValueValuesEnum', 51)
+  statusMessage = _messages.StringField(52)
+  subnetwork = _messages.StringField(53)
+  tpuIpv4CidrBlock = _messages.StringField(54)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 55)
+  zone = _messages.StringField(56)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -518,7 +505,6 @@ class ClusterUpdate(_messages.Message):
       maximum of 20 concurrent nodes is allowed.
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
-    desiredAuditConfig: The desired configuration for audit logging.
     desiredBinaryAuthorization: The desired configuration options for the
       Binary Authorization feature.
     desiredCloudNatStatus: The desired status of Cloud NAT for this cluster.
@@ -587,27 +573,26 @@ class ClusterUpdate(_messages.Message):
 
   concurrentNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   desiredAddonsConfig = _messages.MessageField('AddonsConfig', 2)
-  desiredAuditConfig = _messages.MessageField('AuditConfig', 3)
-  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 4)
-  desiredCloudNatStatus = _messages.MessageField('CloudNatStatus', 5)
-  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 6)
-  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 7)
-  desiredImage = _messages.StringField(8)
-  desiredImageProject = _messages.StringField(9)
-  desiredImageType = _messages.StringField(10)
-  desiredLocations = _messages.StringField(11, repeated=True)
-  desiredLoggingService = _messages.StringField(12)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 13)
-  desiredMasterVersion = _messages.StringField(14)
-  desiredMonitoringService = _messages.StringField(15)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 16)
-  desiredNodePoolId = _messages.StringField(17)
-  desiredNodeVersion = _messages.StringField(18)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 19)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 20)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 21)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 22)
-  securityProfile = _messages.MessageField('SecurityProfile', 23)
+  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 3)
+  desiredCloudNatStatus = _messages.MessageField('CloudNatStatus', 4)
+  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 5)
+  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 6)
+  desiredImage = _messages.StringField(7)
+  desiredImageProject = _messages.StringField(8)
+  desiredImageType = _messages.StringField(9)
+  desiredLocations = _messages.StringField(10, repeated=True)
+  desiredLoggingService = _messages.StringField(11)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 12)
+  desiredMasterVersion = _messages.StringField(13)
+  desiredMonitoringService = _messages.StringField(14)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 15)
+  desiredNodePoolId = _messages.StringField(16)
+  desiredNodeVersion = _messages.StringField(17)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 18)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 19)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 20)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 21)
+  securityProfile = _messages.MessageField('SecurityProfile', 22)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1295,9 +1280,9 @@ class GetJSONWebKeysResponse(_messages.Message):
   keys = _messages.MessageField('Jwk', 1, repeated=True)
 
 
-class GetOpenIDConfigurationResponse(_messages.Message):
-  r"""GetOpenIDConfigurationResponse is an OIDC discovery document for the
-  cluster. See the OpenID Connect Discovery 1.0 specification for details.
+class GetOpenIDConfigResponse(_messages.Message):
+  r"""GetOpenIDConfigResponse is an OIDC discovery document for the cluster.
+  See the OpenID Connect Discovery 1.0 specification for details.
 
   Fields:
     claims_supported: NOLINT
@@ -2126,6 +2111,9 @@ class NodePool(_messages.Message):
     instanceGroupUrls: [Output only] The resource URLs of the [managed
       instance groups](/compute/docs/instance-groups/creating-groups-of-
       managed-instances) associated with this node pool.
+    locations: The list of Google Compute Engine
+      [zones](/compute/docs/zones#available) in which the NodePool's nodes
+      should be located.
     management: NodeManagement configuration for this NodePool.
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.
@@ -2172,14 +2160,15 @@ class NodePool(_messages.Message):
   config = _messages.MessageField('NodeConfig', 3)
   initialNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   instanceGroupUrls = _messages.StringField(5, repeated=True)
-  management = _messages.MessageField('NodeManagement', 6)
-  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 7)
-  name = _messages.StringField(8)
-  resourceVersion = _messages.StringField(9)
-  selfLink = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusMessage = _messages.StringField(12)
-  version = _messages.StringField(13)
+  locations = _messages.StringField(6, repeated=True)
+  management = _messages.MessageField('NodeManagement', 7)
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 8)
+  name = _messages.StringField(9)
+  resourceVersion = _messages.StringField(10)
+  selfLink = _messages.StringField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
+  version = _messages.StringField(14)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -3114,6 +3103,11 @@ class UpdateNodePoolRequest(_messages.Message):
     imageProject: The project containing the desired image to use for this
       node pool. This is used to create clusters using a custom image.
     imageType: The desired image type for the node pool.
+    locations: The desired list of Google Compute Engine
+      [zones](/compute/docs/zones#available) in which the node pool's nodes
+      should be located. Changing the locations for a node pool will result in
+      nodes being either created or removed from the node pool, depending on
+      whether locations are being added or removed.
     name: The name (project, location, cluster, node pool) of the node pool to
       update. Specified in the format
       'projects/*/locations/*/clusters/*/nodePools/*'.
@@ -3131,7 +3125,8 @@ class UpdateNodePoolRequest(_messages.Message):
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
     updatedNodePool: The updated node pool object. This field must be empty if
-      'node_version' or 'image_type' is set.
+      any other node pool field is set (e.g. 'node_version', 'image_type',
+      'locations', etc.)
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field has been deprecated and replaced by the name field.
@@ -3141,12 +3136,13 @@ class UpdateNodePoolRequest(_messages.Message):
   image = _messages.StringField(2)
   imageProject = _messages.StringField(3)
   imageType = _messages.StringField(4)
-  name = _messages.StringField(5)
-  nodePoolId = _messages.StringField(6)
-  nodeVersion = _messages.StringField(7)
-  projectId = _messages.StringField(8)
-  updatedNodePool = _messages.MessageField('NodePool', 9)
-  zone = _messages.StringField(10)
+  locations = _messages.StringField(5, repeated=True)
+  name = _messages.StringField(6)
+  nodePoolId = _messages.StringField(7)
+  nodeVersion = _messages.StringField(8)
+  projectId = _messages.StringField(9)
+  updatedNodePool = _messages.MessageField('NodePool', 10)
+  zone = _messages.StringField(11)
 
 
 class UsableSubnetwork(_messages.Message):

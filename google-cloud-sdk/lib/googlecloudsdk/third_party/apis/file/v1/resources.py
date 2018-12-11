@@ -41,17 +41,6 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
-  PROJECTS_LOCATIONS_INSTANCES = (
-      'projects.locations.instances',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/instances/'
-              '{instancesId}',
-      },
-      [u'name'],
-      True
-  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

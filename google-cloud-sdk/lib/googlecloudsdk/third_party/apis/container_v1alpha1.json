@@ -221,10 +221,6 @@
           "description": "Configuration for cluster IP allocation.",
           "$ref": "IPAllocationPolicy"
         },
-        "auditConfig": {
-          "description": "Configuration for audit logging.",
-          "$ref": "AuditConfig"
-        },
         "masterAuthorizedNetworksConfig": {
           "description": "The configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
@@ -841,6 +837,13 @@
           "description": "The constraint on the maximum number of pods that can be run\nsimultaneously on a node in the node pool.",
           "$ref": "MaxPodsConstraint"
         },
+        "locations": {
+          "description": "The list of Google Compute Engine [zones](\/compute\/docs\/zones#available)\nin which the NodePool's nodes should be located.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -1088,17 +1091,6 @@
         },
         "tpuUseServiceNetworking": {
           "description": "Enable Cloud TPU's Service Networking mode. In this mode, the CIDR blocks\nused by the Cloud TPUs will be allocated and managed by Service Networking,\ninstead of GKE.\n\nThis field must be `false` when `tpu_ipv4_cidr_block` is specified.",
-          "type": "boolean"
-        }
-      }
-    },
-    "AuditConfig": {
-      "id": "AuditConfig",
-      "description": "Configuration for audit logging.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Enable audit logging of the Kubernetes API.  If enabled, audit logs will be\nexported to Cloud Audit Logging.",
           "type": "boolean"
         }
       }
@@ -1680,10 +1672,6 @@
           "description": "The desired configuration options for master authorized networks feature.",
           "$ref": "MasterAuthorizedNetworksConfig"
         },
-        "desiredAuditConfig": {
-          "description": "The desired configuration for audit logging.",
-          "$ref": "AuditConfig"
-        },
         "desiredPodSecurityPolicyConfig": {
           "description": "The desired configuration options for the PodSecurityPolicy feature.",
           "$ref": "PodSecurityPolicyConfig"
@@ -1803,8 +1791,15 @@
           "type": "string"
         },
         "updatedNodePool": {
-          "description": "The updated node pool object.\nThis field must be empty if 'node_version' or 'image_type' is set.",
+          "description": "The updated node pool object.\nThis field must be empty if any other node pool field is set (e.g.\n'node_version', 'image_type', 'locations', etc.)",
           "$ref": "NodePool"
+        },
+        "locations": {
+          "description": "The desired list of Google Compute Engine\n[zones](\/compute\/docs\/zones#available) in which the node pool's nodes\nshould be located. Changing the locations for a node pool will result\nin nodes being either created or removed from the node pool, depending\non whether locations are being added or removed.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "name": {
           "description": "The name (project, location, cluster, node pool) of the node pool to\nupdate. Specified in the format\n'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
@@ -2125,9 +2120,9 @@
         }
       }
     },
-    "GetOpenIDConfigurationResponse": {
-      "id": "GetOpenIDConfigurationResponse",
-      "description": "GetOpenIDConfigurationResponse is an OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.",
+    "GetOpenIDConfigResponse": {
+      "id": "GetOpenIDConfigResponse",
+      "description": "GetOpenIDConfigResponse is an OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.",
       "type": "object",
       "properties": {
         "issuer": {
@@ -3700,12 +3695,12 @@
                         "parent"
                       ],
                       "response": {
-                        "$ref": "GetOpenIDConfigurationResponse"
+                        "$ref": "GetOpenIDConfigResponse"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "GetOpenIDConfiguration gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html"
+                      "description": "GetOpenIDConfig gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html"
                     }
                   }
                 }

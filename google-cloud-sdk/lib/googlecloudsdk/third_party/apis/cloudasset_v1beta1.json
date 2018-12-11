@@ -182,7 +182,7 @@
           "format": "google-datetime"
         },
         "assetTypes": {
-          "description": "A list of asset types of which to take a snapshot for. For example:\n\"google.compute.disk\". If specified, only matching assets will be returned.\nSee [Introduction to Cloud Asset\nInventory](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-asset-inventory\/overview)\nfor all supported asset types.",
+          "description": "A list of asset types of which to take a snapshot for. For example:\n\"google.compute.Disk\". If specified, only matching assets will be returned.\nSee [Introduction to Cloud Asset\nInventory](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-asset-inventory\/overview)\nfor all supported asset types.",
           "type": "array",
           "items": {
             "type": "string"
@@ -290,7 +290,7 @@
           "type": "string"
         },
         "assetType": {
-          "description": "Type of the asset. Example: \"google.compute.disk\".",
+          "description": "Type of the asset. Example: \"google.compute.Disk\".",
           "type": "string"
         },
         "resource": {

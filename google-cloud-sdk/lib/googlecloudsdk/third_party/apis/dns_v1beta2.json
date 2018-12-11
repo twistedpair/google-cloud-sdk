@@ -4,7 +4,7 @@
  "id": "dns:v1beta2",
  "name": "dns",
  "version": "v1beta2",
- "revision": "20181126",
+ "revision": "20181205",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -19,7 +19,7 @@
  "basePath": "/dns/v1beta2/projects/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "dns/v1beta2/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/dns/v1beta2",
  "parameters": {
   "alt": {
    "type": "string",
@@ -395,11 +395,11 @@
     },
     "privateVisibilityConfig": {
      "$ref": "ManagedZonePrivateVisibilityConfig",
-     "description": "For privately visible zones, the set of GCP resources that the zone is visible from."
+     "description": "For privately visible zones, the set of Virtual Private Cloud resources that the zone is visible from."
     },
     "visibility": {
      "type": "string",
-     "description": "The zone's visibility: public zones are exposed to the Internet, while private zones are visible only to GCP resources.",
+     "description": "The zone's visibility: public zones are exposed to the Internet, while private zones are visible only to Virtual Private Cloud resources.",
      "enum": [
       "private",
       "public"
@@ -524,7 +524,7 @@
     },
     "networks": {
      "type": "array",
-     "description": "The list of GCE private network IDs that can see this zone.",
+     "description": "The list of VPC networks that can see this zone.",
      "items": {
       "$ref": "ManagedZonePrivateVisibilityConfigNetwork"
      }
@@ -542,7 +542,7 @@
     },
     "networkUrl": {
      "type": "string",
-     "description": "The fully qualified URL of the GCE private network to bind to. This should be formatted like https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}"
+     "description": "The fully qualified URL of the VPC network to bind to. This should be formatted like https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}"
     }
    }
   },
@@ -699,7 +699,7 @@
   "Policy": {
    "id": "Policy",
    "type": "object",
-   "description": "A policy is a collection of rules applied to one or more networks that specify forwarding behavior for that network.",
+   "description": "A policy is a collection of DNS rules applied to one or more Virtual Private Cloud resources.",
    "properties": {
     "alternativeNameServerConfig": {
      "$ref": "PolicyAlternativeNameServerConfig",
@@ -780,7 +780,7 @@
     },
     "networkUrl": {
      "type": "string",
-     "description": "The fully qualified URL of the GCE private network to bind to. This should be formatted like https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}"
+     "description": "The fully qualified URL of the VPC network to bind to. This should be formatted like https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network}"
     }
    }
   },

@@ -639,15 +639,18 @@ class Service(_messages.Message):
   r"""Encapsulates a single service in Google Cloud Platform.
 
   Fields:
+    businessEntityName: The business under which the service is offered. Ex.
+      "businessEntities/GCP", "businessEntities/Maps"
     displayName: A human readable display name for this service.
     name: The resource name for the service. Example:
       "services/DA34-426B-A397"
     serviceId: The identifier for the service. Example: "DA34-426B-A397"
   """
 
-  displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  serviceId = _messages.StringField(3)
+  businessEntityName = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  serviceId = _messages.StringField(4)
 
 
 class SetIamPolicyRequest(_messages.Message):

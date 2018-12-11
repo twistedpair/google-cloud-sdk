@@ -254,6 +254,11 @@ class ArgumentInterceptor(Argument):
     if help_text == argparse.SUPPRESS:
       raise ValueError('Argument {} needs hidden=True instead of '
                        'help=argparse.SUPPRESS.'.format(name))
+    # A flag that determines if when doing coverage we need to check for a unit
+    # test that exercises it. For example, list commands have the same flags and
+    # they have the same underlying implementation so they might not always be
+    # exclusively tested.
+    require_coverage_in_tests = kwargs.pop('require_coverage_in_tests', True)
     # A global flag that is added at each level explicitly because each command
     # has a different behavior (like -h).
     is_replicated = kwargs.pop('is_replicated', False)
@@ -307,6 +312,7 @@ class ArgumentInterceptor(Argument):
     else:
       added_argument = self.parser.add_argument(*args, **kwargs)
     self._AttachCompleter(added_argument, completer, positional)
+    added_argument.require_coverage_in_tests = require_coverage_in_tests
     added_argument.is_global = is_global
     added_argument.is_group = False
     added_argument.is_hidden = hidden

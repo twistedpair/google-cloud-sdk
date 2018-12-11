@@ -2738,7 +2738,7 @@ def ParseExpiration(expiration):
 
 #####################################################################
 # These regexps must be the same as those in:
-#   - apphosting/api/app_config/filepath_validator.cc
+#   - apphosting/api/app_config/request_validator.cc
 #   - java/com/google/appengine/tools/admin/AppVersionUpload.java
 #   - java/com/google/apphosting/admin/legacy/LegacyAppInfo.java
 

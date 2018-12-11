@@ -125,6 +125,7 @@ class Kubeconfig(object):
 
     kubeconfig = encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
     if kubeconfig:
+      kubeconfig = kubeconfig.split(os.pathsep)[0]
       return os.path.abspath(kubeconfig)
 
     # This follows the same resolution process as kubectl for the config file.

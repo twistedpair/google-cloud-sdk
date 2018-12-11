@@ -680,7 +680,7 @@ class ServerlessOperations(object):
     """
     # Or returns None if not available by nonce & the control plane has not
     # implemented latestCreatedRevisionName on the Service object yet.
-    base_revision_nonce = config.revision_labels[NONCE_LABEL]
+    base_revision_nonce = config.revision_labels.get(NONCE_LABEL, None)
     base_revision = None
     if base_revision_nonce:
       try:

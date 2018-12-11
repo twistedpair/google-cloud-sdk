@@ -911,6 +911,20 @@
         }
       }
     },
+    "LongRunningRecognizeResponse": {
+      "id": "LongRunningRecognizeResponse",
+      "description": "The only message returned to the client by the `LongRunningRecognize` method.\nIt contains the result as zero or more sequential `SpeechRecognitionResult`\nmessages. It is included in the `result.response` field of the `Operation`\nreturned by the `GetOperation` call of the `google::longrunning::Operations`\nservice.",
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "Output only. Sequential list of transcription results corresponding to\nsequential portions of audio.",
+          "type": "array",
+          "items": {
+            "$ref": "SpeechRecognitionResult"
+          }
+        }
+      }
+    },
     "SpeechOperationMetadata": {
       "id": "SpeechOperationMetadata",
       "description": "Describes the progress of a long-running call. It is\nincluded in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
@@ -933,72 +947,6 @@
         },
         "worksOn": {
           "description": "The resource being worked on.",
-          "type": "string"
-        }
-      }
-    },
-    "LongRunningRecognizeResponse": {
-      "id": "LongRunningRecognizeResponse",
-      "description": "The only message returned to the client by the `LongRunningRecognize` method.\nIt contains the result as zero or more sequential `SpeechRecognitionResult`\nmessages. It is included in the `result.response` field of the `Operation`\nreturned by the `GetOperation` call of the `google::longrunning::Operations`\nservice.",
-      "type": "object",
-      "properties": {
-        "results": {
-          "description": "Output only. Sequential list of transcription results corresponding to\nsequential portions of audio.",
-          "type": "array",
-          "items": {
-            "$ref": "SpeechRecognitionResult"
-          }
-        }
-      }
-    },
-    "CreateDatasetMetadata": {
-      "id": "CreateDatasetMetadata",
-      "description": "Describes the progress of a long-running `CreateDataset` call. It is\nincluded in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
-      "type": "object",
-      "properties": {
-        "progressPercent": {
-          "description": "Approximate percentage of data processed thus far. Guaranteed to be 100\nwhen the data is fully ingested, pre-processed and stats about the data\nare available.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "startTime": {
-          "description": "Time when the request was received.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "lastUpdateTime": {
-          "description": "Time of the most recent processing update.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "name": {
-          "description": "Resource name of the dataset. Form :-\n'projects\/{project_number}\/locations\/{location_id}\/datasets\/{dataset_id}'",
-          "type": "string"
-        }
-      }
-    },
-    "CreateModelMetadata": {
-      "id": "CreateModelMetadata",
-      "description": "Describes the progress of a long-running `CreateModel` call. It is\nincluded in the `metadata` field of the `Operation` returned by the\n`GetOperation` call of the `google::longrunning::Operations` service.",
-      "type": "object",
-      "properties": {
-        "progressPercent": {
-          "description": "Approximate percentage of data processed thus far. Guaranteed to be 100\nwhen the data is fully ingested, pre-processed and stats about the data\nare available.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "startTime": {
-          "description": "Time when the request was received.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "lastUpdateTime": {
-          "description": "Time of the most recent processing update.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "name": {
-          "description": "Resource name of the model.\nFormat: \"projects\/{project_id}\/locations\/{location_id}\/models\/{model_id}\"",
           "type": "string"
         }
       }
@@ -1177,7 +1125,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Performs asynchronous data upload for AutoML: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` with CreateDatasetMetadata showing a Dataset\nname or an `Operation.response` which contains an Empty response."
+                  "description": "Creates a new dataset for custom model training. The name of created\ndataset is stored in `response.metadata.works_on` field. Metadata type\nis SpeechOperationMetadata. Response type is Empty."
                 },
                 "refreshData": {
                   "id": "speech.projects.locations.datasets.refreshData",
@@ -1318,7 +1266,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Performs asynchronous model training for AutoML: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains a `Model`\nmessage."
+                  "description": "Creates a new custom model. Metadata type is SpeechOperationMetadata.\nResponse type is Model."
                 },
                 "list": {
                   "id": "speech.projects.locations.models.list",

@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20181126",
+ "revision": "20181205",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -19,7 +19,7 @@
  "basePath": "/bigquery/v2/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "bigquery/v2/",
- "batchPath": "batch",
+ "batchPath": "batch/bigquery/v2",
  "parameters": {
   "alt": {
    "type": "string",

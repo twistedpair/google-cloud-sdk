@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.dns import util as api_util
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.dns import flags
 
 
@@ -131,3 +133,49 @@ def ParseManagedZoneForwardingConfig(server_list, messages):
   ]
 
   return messages.ManagedZoneForwardingConfig(targetNameServers=target_servers)
+
+
+def PolicyNetworkProcessor(parsed_value):
+  """Build PolicyNetwork message from parsed_value."""
+  # Parsed Value should be a list of compute.network resources
+  m = GetMessages()
+  if not parsed_value:
+    return []
+
+  return [
+      m.PolicyNetwork(networkUrl=network_ref.SelfLink())
+      for network_ref in parsed_value
+  ]
+
+
+def TargetNameServerType(value):
+  """Build PolicyAlternativeNameServerConfigTargetNameServer msg from value."""
+  m = GetMessages()
+  return m.PolicyAlternativeNameServerConfigTargetNameServer(ipv4Address=value)
+
+
+def ParseNetworks(value, project):
+  """Build a list of PolicyNetworks from command line args."""
+  if not value:
+    return []
+  registry = api_util.GetRegistry('v1beta2')
+  networks = [
+      registry.Parse(
+          network_name,
+          collection='compute.networks',
+          params={'project': project}) for network_name in value
+  ]
+  return PolicyNetworkProcessor(networks)
+
+
+def ParseAltNameServers(value):
+  """Build a list of TargetNameServers from command line args."""
+  if not value:
+    return None
+  m = GetMessages()
+  name_servers = [TargetNameServerType(ipv4) for ipv4 in value]
+  return m.PolicyAlternativeNameServerConfig(targetNameServers=name_servers)
+
+
+def GetMessages():
+  return apis.GetMessagesModule('dns', 'v1beta2')

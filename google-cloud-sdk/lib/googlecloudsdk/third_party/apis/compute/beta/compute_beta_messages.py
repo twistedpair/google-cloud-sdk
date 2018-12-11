@@ -19,8 +19,10 @@ class AcceleratorConfig(_messages.Message):
     acceleratorCount: The number of the guest accelerator cards exposed to
       this instance.
     acceleratorType: Full or partial URL of the accelerator type resource to
-      attach to this instance. If you are creating an instance template,
-      specify only the accelerator name.
+      attach to this instance. For example: projects/my-project/zones/us-
+      central1-c/acceleratorTypes/nvidia-tesla-p100 If you are creating an
+      instance template, specify only the accelerator name. See GPUs on
+      Compute Engine for a full list of accelerator types.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -11019,7 +11021,7 @@ class ComputeNodeGroupsSetNodeTemplateRequest(_messages.Message):
   r"""A ComputeNodeGroupsSetNodeTemplateRequest object.
 
   Fields:
-    nodeGroup: Name of the NodeGroup resource to delete.
+    nodeGroup: Name of the NodeGroup resource to update.
     nodeGroupsSetNodeTemplateRequest: A NodeGroupsSetNodeTemplateRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -33292,33 +33294,6 @@ class ServiceAccount(_messages.Message):
   scopes = _messages.StringField(2, repeated=True)
 
 
-class ShieldedInstanceIdentity(_messages.Message):
-  r"""A shielded instance identity entry.
-
-  Fields:
-    encryptionKey: An Endorsement Key (EK) issued to the Shielded VM's vTPM.
-    kind: [Output Only] Type of the resource. Always
-      compute#ShieldedInstanceIdentity for shielded VM identity entry.
-    signingKey: An Attestation Key (AK) issued to the Shielded VM's vTPM.
-  """
-
-  encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
-  kind = _messages.StringField(2, default=u'compute#shieldedInstanceIdentity')
-  signingKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 3)
-
-
-class ShieldedInstanceIdentityEntry(_messages.Message):
-  r"""A Shielded VM Identity Entry.
-
-  Fields:
-    ekCert: A PEM-encoded X.509 certificate. This field can be empty.
-    ekPub: A PEM-encoded public key.
-  """
-
-  ekCert = _messages.StringField(1)
-  ekPub = _messages.StringField(2)
-
-
 class ShieldedVmConfig(_messages.Message):
   r"""A set of Shielded VM options.
 
@@ -33332,6 +33307,33 @@ class ShieldedVmConfig(_messages.Message):
   enableIntegrityMonitoring = _messages.BooleanField(1)
   enableSecureBoot = _messages.BooleanField(2)
   enableVtpm = _messages.BooleanField(3)
+
+
+class ShieldedVmIdentity(_messages.Message):
+  r"""A shielded VM identity entry.
+
+  Fields:
+    encryptionKey: An Endorsement Key (EK) issued to the Shielded VM's vTPM.
+    kind: [Output Only] Type of the resource. Always
+      compute#shieldedVmIdentity for shielded VM identity entry.
+    signingKey: An Attestation Key (AK) issued to the Shielded VM's vTPM.
+  """
+
+  encryptionKey = _messages.MessageField('ShieldedVmIdentityEntry', 1)
+  kind = _messages.StringField(2, default=u'compute#shieldedVmIdentity')
+  signingKey = _messages.MessageField('ShieldedVmIdentityEntry', 3)
+
+
+class ShieldedVmIdentityEntry(_messages.Message):
+  r"""A Shielded VM Identity Entry.
+
+  Fields:
+    ekCert: A PEM-encoded X.509 certificate. This field can be empty.
+    ekPub: A PEM-encoded public key.
+  """
+
+  ekCert = _messages.StringField(1)
+  ekPub = _messages.StringField(2)
 
 
 class ShieldedVmIntegrityPolicy(_messages.Message):
@@ -38653,7 +38655,7 @@ class XpnResourceId(_messages.Message):
 
   Fields:
     id: The ID of the service resource. In the case of projects, this field
-      matches the project ID (e.g., my-project), not the project number (e.g.,
+      supports project id (e.g., my-project-123) and project number (e.g.
       12345678).
     type: The type of the service resource.
   """

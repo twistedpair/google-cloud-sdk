@@ -100,7 +100,7 @@ class SimpleArg(base.Concept):
                metavar=None, default=None, choices=None, action=None, **kwargs):
     """Initializes the concept."""
     if name is None:
-      raise ValueError('Concept name required.')
+      raise exceptions.InitializationError('Concept name required.')
     self.fallthroughs = fallthroughs or []
     self.positional = positional
     self.completer = completer
@@ -113,14 +113,12 @@ class SimpleArg(base.Concept):
   def Attribute(self):
     return base.Attribute(concept=self,
                           fallthroughs=self.fallthroughs,
-                          help=self.BuildHelpText(),
-                          required=self._ArgIsRequired(),
-                          hidden=self.hidden,
                           completer=self.completer,
                           metavar=self.metavar,
                           default=self.default,
                           action=self.action,
-                          choices=self.choices)
+                          choices=self.choices,
+                          **self.MakeArgKwargs())
 
   def Constraints(self):
     """Returns the type constraints message text if any.
@@ -149,7 +147,7 @@ class SimpleArg(base.Concept):
       return dependencies.value
     except deps_lib.AttributeNotFoundError as e:
       if self.required:
-        raise exceptions.MissingRequiredArgumentException(
+        raise exceptions.MissingRequiredArgumentError(
             self.GetPresentationName(), _SubException(e))
       return None
 
@@ -159,7 +157,7 @@ class SimpleArg(base.Concept):
       return names.ConvertToPositionalName(self.name)
     return names.ConvertToFlagName(self.name)
 
-  def _ArgIsRequired(self):
+  def IsArgRequired(self):
     """Determines whether command line argument for attribute is required.
 
     Returns:
@@ -168,7 +166,61 @@ class SimpleArg(base.Concept):
         fallthroughs. There may still be a parsing error if the argument isn't
         provided and none of the fallthroughs work.
     """
-    return self.required and not bool(self.fallthroughs)
+    return self.required and not self.fallthroughs
+
+
+class GroupArg(base.Concept):
+  """A group concept.
+
+  Attributes:
+    mutex: bool, True if this is a mutex (mutually exclusive) group.
+  """
+
+  def __init__(self, name, mutex=False, prefixes=False, **kwargs):
+    """Initializes the concept."""
+    if name is None:
+      raise exceptions.InitializationError('Concept name required.')
+    self.mutex = mutex
+    self.prefixes = prefixes
+    self.concepts = []
+    super(GroupArg, self).__init__(name, **kwargs)
+
+  def AddConcept(self, concept):
+    new_concept = copy.copy(concept)
+    new_concept.name = self._GetSubConceptName(new_concept.name)
+    self.concepts.append(new_concept)
+
+  def Attribute(self):
+    return base.AttributeGroup(
+        concept=self,
+        attributes=[c.Attribute() for c in self.concepts],
+        mutex=self.mutex,
+        **self.MakeArgKwargs()
+    )
+
+  def _GetSubConceptName(self, attribute_name):
+    if self.prefixes:
+      return names.ConvertToNamespaceName(self.name + '_' + attribute_name)
+    return attribute_name
+
+  def Parse(self, dependencies):
+    """Returns a namespace with the values of the child concepts."""
+    return dependencies
+
+  def GetPresentationName(self):
+    """Gets presentation name for the attribute group."""
+    return self.name
+
+  def IsArgRequired(self):
+    """Determines whether the concept group is required to be specified.
+
+    Returns:
+      bool: True, if the command line argument is required to be provided,
+        meaning that the attribute is required and that there are no
+        fallthroughs. There may still be a parsing error if the argument isn't
+        provided and none of the fallthroughs work.
+    """
+    return self.required and not any(c.fallthroughs for c in self.concepts)
 
 
 class ConceptType(SimpleArg):
@@ -482,9 +534,11 @@ class Enum(ConceptType):
 
   def __init__(self, name, choices=None, default=None, **kwargs):
     if not choices:
-      raise ValueError('Choices must be specified for Enum type.')
+      raise exceptions.InitializationError(
+          'Choices must be specified for Enum type.')
     if default and default not in choices:
-      raise ValueError('Enum default value must be a valid choice.')
+      raise exceptions.InitializationError(
+          'Enum default value must be a valid choice.')
     self.choices = choices
     super(Enum, self).__init__(name, choices=choices, default=default, **kwargs)
 
@@ -738,7 +792,7 @@ class Duration(TypeWithIntervalConstraint):
   Attributes:
     _default_suffix: string, the time unit suffix if none is specified.
     _subsecond: bool, return floating point values if True.
-   """
+  """
 
   def __init__(self, name, default_suffix='s', subsecond=False, **kwargs):
     self._default_suffix = default_suffix
@@ -905,7 +959,7 @@ class List(TypeWithSizeConstraint):
     except deps_lib.AttributeNotFoundError as e:
       if not self.required:
         return None
-      raise exceptions.MissingRequiredArgumentException(
+      raise exceptions.MissingRequiredArgumentError(
           self.GetPresentationName(), e)
     items, self._delim = self._Split(value)
     for item in items:
@@ -985,7 +1039,7 @@ class Dict(TypeWithSizeConstraint):
     except deps_lib.AttributeNotFoundError as e:
       if not self.required:
         return None
-      raise exceptions.MissingRequiredArgumentException(
+      raise exceptions.MissingRequiredArgumentError(
           self.GetPresentationName(), e)
     items, self._delim = self._Split(value)
     for item in items:

@@ -128,10 +128,9 @@ is the parent resource, without the operations collection id.
           }
 
     def Create(self, request, global_params=None):
-      r"""Performs asynchronous data upload for AutoML: receive results via the.
-google.longrunning.Operations interface. Returns either an
-`Operation.error` with CreateDatasetMetadata showing a Dataset
-name or an `Operation.response` which contains an Empty response.
+      r"""Creates a new dataset for custom model training. The name of created.
+dataset is stored in `response.metadata.works_on` field. Metadata type
+is SpeechOperationMetadata. Response type is Empty.
 
       Args:
         request: (SpeechProjectsLocationsDatasetsCreateRequest) input message
@@ -286,10 +285,8 @@ name or an `Operation.response` which contains an Empty response.
           }
 
     def Create(self, request, global_params=None):
-      r"""Performs asynchronous model training for AutoML: receive results via the.
-google.longrunning.Operations interface. Returns either an
-`Operation.error` or an `Operation.response` which contains a `Model`
-message.
+      r"""Creates a new custom model. Metadata type is SpeechOperationMetadata.
+Response type is Model.
 
       Args:
         request: (SpeechProjectsLocationsModelsCreateRequest) input message

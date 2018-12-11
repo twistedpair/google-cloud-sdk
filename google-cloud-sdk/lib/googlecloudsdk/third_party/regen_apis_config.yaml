@@ -315,9 +315,14 @@ apis:
     v1:
       discovery_doc: file_v1.json
   firestore:
+    v1beta2:
+      discovery_doc: firestore_v1beta2.json
+      default: true
+      resources:
+        projects.databases.operations:
+          path: projects/{projectsId}/databases/{databasesId}/operations/{operationsId}
     v1beta1:
       discovery_doc: firestore_v1beta1.json
-      default: true
     v1:
       discovery_doc: firestore_v1.json
   genomics:
@@ -463,6 +468,9 @@ apis:
   storage:
     v1:
       discovery_doc: storage_v1.json
+      resources:
+        projects:
+          path: projects/{project}
   testing:
     v1:
       discovery_doc: testing_v1.json

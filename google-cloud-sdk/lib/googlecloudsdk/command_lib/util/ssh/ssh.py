@@ -671,7 +671,7 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
 
   Args:
     instance: instance, The object representing the instance we are
-      connecting to.
+      connecting to. If None, instance metadata will be ignored.
     project: project, The object representing the current project.
     requested_user: str, The default or requested username to connect as.
     public_key: str, The public key of the user connecting.
@@ -683,7 +683,9 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
   """
   # Instance metadata has priority
   use_oslogin = False
-  oslogin_enabled = _MetadataHasOsloginEnable(instance.metadata)
+  oslogin_enabled = None
+  if instance is not None:
+    oslogin_enabled = _MetadataHasOsloginEnable(instance.metadata)
   if oslogin_enabled is None:
     project_metadata = project.commonInstanceMetadata
     oslogin_enabled = _MetadataHasOsloginEnable(project_metadata)

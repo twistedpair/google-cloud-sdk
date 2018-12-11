@@ -721,7 +721,7 @@ class GoogleDatastoreAdminV1ImportEntitiesRequest(_messages.Message):
 
 
 class GoogleDatastoreAdminV1Index(_messages.Message):
-  r"""A minimal index definition. Next tag: 8
+  r"""A minimal index definition.
 
   Enums:
     AncestorValueValuesEnum: The index's ancestor mode.  Must not be
@@ -801,7 +801,7 @@ class GoogleDatastoreAdminV1IndexOperationMetadata(_messages.Message):
 
 
 class GoogleDatastoreAdminV1IndexedProperty(_messages.Message):
-  r"""Next tag: 3
+  r"""A property of an index.
 
   Enums:
     DirectionValueValuesEnum: The indexed property's direction.  Must not be

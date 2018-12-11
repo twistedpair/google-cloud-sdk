@@ -1814,6 +1814,36 @@ Network egress metering is disabled if this flag is omitted, or when
       help=network_egress_help_text)
 
 
+def AddEnablePrivateIpv6AccessFlag(parser, hidden=False):
+  """Adds --enable-private-ipv6-access flag to the parser.
+
+  When enabled, this allows gRPC clients on this cluster's pods a fast
+  path to access Google hosted services (eg. Cloud Spanner,
+  Cloud Dataflow, Cloud Bigtable)
+  This is currently only available on Alpha clusters, and needs
+  '--enable-kubernetes-alpha' to be specified also.
+
+  Args:
+    parser: A given parser.
+    hidden: If true, suppress help text for added options.
+  """
+  parser.add_argument(
+      '--enable-private-ipv6-access',
+      default=None,
+      help="""\
+Enables private access to Google services over IPv6.
+
+When enabled, this allows gRPC clients on this cluster's pods a fast path to
+access Google hosted services (eg. Cloud Spanner, Cloud Dataflow, Cloud
+Bigtable).
+
+This is currently only available on Alpha clusters, specified by using
+--enable-kubernetes-alpha.
+      """,
+      hidden=hidden,
+      action='store_true')
+
+
 def AddVerticalPodAutoscalingFlag(parser, hidden=False):
   """Adds vertical pod autoscaling related flag to the parser.
 

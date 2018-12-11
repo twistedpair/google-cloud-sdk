@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20181126",
+ "revision": "20181206",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -19,7 +19,7 @@
  "basePath": "/compute/alpha/projects/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "compute/alpha/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/compute/alpha",
  "parameters": {
   "alt": {
    "type": "string",
@@ -102,7 +102,7 @@
     },
     "acceleratorType": {
      "type": "string",
-     "description": "Full or partial URL of the accelerator type resource to attach to this instance. If you are creating an instance template, specify only the accelerator name."
+     "description": "Full or partial URL of the accelerator type resource to attach to this instance. For example: projects/my-project/zones/us-central1-c/acceleratorTypes/nvidia-tesla-p100 If you are creating an instance template, specify only the accelerator name. See GPUs on Compute Engine for a full list of accelerator types."
     }
    }
   },
@@ -3852,6 +3852,61 @@
     }
    }
   },
+  "CorsPolicy": {
+   "id": "CorsPolicy",
+   "type": "object",
+   "description": "The specification for allowing client side cross-origin requests. Please see W3C Recommendation for Cross Origin Resource Sharing",
+   "properties": {
+    "allowCredentials": {
+     "type": "boolean",
+     "description": "In response to a preflight request, setting this to true indicates that the actual request can include user credentials. This translates to the Access-Control-Allow-Credentials header.\nDefault is false."
+    },
+    "allowHeaders": {
+     "type": "array",
+     "description": "Specifies the content for the Access-Control-Allow-Headers header.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "allowMethods": {
+     "type": "array",
+     "description": "Specifies the content for the Access-Control-Allow-Methods header.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "allowOriginRegexes": {
+     "type": "array",
+     "description": "Specifies the regualar expression patterns that match allowed origins. For regular expression grammar please see en.cppreference.com/w/cpp/regex/ecmascript \nAn origin is allowed if it matches either allow_origins or allow_origin_regex.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "allowOrigins": {
+     "type": "array",
+     "description": "Specifies the list of origins that will be allowed to do CORS requests.\nAn origin is allowed if it matches either allow_origins or allow_origin_regex.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "disabled": {
+     "type": "boolean",
+     "description": "If true, specifies the CORS policy is disabled. The default value of false, which indicates that the CORS policy is in effect."
+    },
+    "exposeHeaders": {
+     "type": "array",
+     "description": "Specifies the content for the Access-Control-Expose-Headers header.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "maxAge": {
+     "type": "integer",
+     "description": "Specifies how long the results of a preflight request can be cached. This translates to the content for the Access-Control-Max-Age header.",
+     "format": "int32"
+    }
+   }
+  },
   "CustomerEncryptionKey": {
    "id": "CustomerEncryptionKey",
    "type": "object",
@@ -4930,6 +4985,23 @@
        "compute.regionInstanceGroupManagers.update"
       ]
      }
+    }
+   }
+  },
+  "Duration": {
+   "id": "Duration",
+   "type": "object",
+   "description": "A Duration represents a fixed-length span of time represented as a count of seconds and fractions of seconds at nanosecond resolution. It is independent of any calendar and concepts like \"day\" or \"month\". Range is approximately 10,000 years.",
+   "properties": {
+    "nanos": {
+     "type": "integer",
+     "description": "Span of time that's a fraction of a second at nanosecond resolution. Durations less than one second are represented with a 0 `seconds` field and a positive `nanos` field. Must be from 0 to 999,999,999 inclusive.",
+     "format": "int32"
+    },
+    "seconds": {
+     "type": "string",
+     "description": "Span of time at a resolution of a second. Must be from 0 to 315,576,000,000 inclusive. Note: these bounds are computed from: 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years",
+     "format": "int64"
     }
    }
   },
@@ -6710,6 +6782,147 @@
     }
    }
   },
+  "HttpFaultAbort": {
+   "id": "HttpFaultAbort",
+   "type": "object",
+   "description": "Specification for how requests are aborted as part of fault injection.",
+   "properties": {
+    "httpStatus": {
+     "type": "integer",
+     "description": "The HTTP status code used to abort the request.\nThe value must be between 200 and 599 inclusive.",
+     "format": "uint32"
+    },
+    "percentage": {
+     "type": "number",
+     "description": "The percentage of traffic (connections/operations/requests) which will be aborted as part of fault injection.\nThe value must be between 0.0 and 100.0 inclusive.",
+     "format": "double"
+    }
+   }
+  },
+  "HttpFaultDelay": {
+   "id": "HttpFaultDelay",
+   "type": "object",
+   "description": "Specifies the delay introduced by Loadbalancer before forwarding the request to the backend service as part of fault injection.",
+   "properties": {
+    "fixedDelay": {
+     "$ref": "Duration",
+     "description": "Specifies the value of the fixed delay interval."
+    },
+    "percentage": {
+     "type": "number",
+     "description": "The percentage of traffic (connections/operations/requests) on which delay will be introduced as part of fault injection.\nThe value must be between 0.0 and 100.0 inclusive.",
+     "format": "double"
+    }
+   }
+  },
+  "HttpFaultInjection": {
+   "id": "HttpFaultInjection",
+   "type": "object",
+   "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to backend service failure. As part of fault injection, when clients send requests to a backend service, delays can be introduced by Loadbalancer on a percentage of requests before sending those request to the backend service. Similarly requests from clients can be aborted by the Loadbalancer for a percentage of requests.",
+   "properties": {
+    "abort": {
+     "$ref": "HttpFaultAbort",
+     "description": "The specification for how client requests are aborted as part of fault injection."
+    },
+    "delay": {
+     "$ref": "HttpFaultDelay",
+     "description": "The specification for how client requests are delayed as part of fault injection, before being sent to a backend service."
+    }
+   }
+  },
+  "HttpHeaderAction": {
+   "id": "HttpHeaderAction",
+   "type": "object",
+   "description": "The request and response header transformations that take effect before the request is passed along to the selected backendService.",
+   "properties": {
+    "requestHeadersToAdd": {
+     "type": "array",
+     "description": "Headers to add to a matching request prior to forwarding the request to the backendService.",
+     "items": {
+      "$ref": "HttpHeaderOption"
+     }
+    },
+    "requestHeadersToRemove": {
+     "type": "array",
+     "description": "A list of header names for headers that need to be removed from the request prior to forwarding the request to the backendService.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "responseHeadersToAdd": {
+     "type": "array",
+     "description": "Headers to add the response prior to sending the response back to the client.",
+     "items": {
+      "$ref": "HttpHeaderOption"
+     }
+    },
+    "responseHeadersToRemove": {
+     "type": "array",
+     "description": "A list of header names for headers that need to be removed from the response prior to sending the response back to the client.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "HttpHeaderMatch": {
+   "id": "HttpHeaderMatch",
+   "type": "object",
+   "description": "matchRule criteria for request header matches.",
+   "properties": {
+    "exactMatch": {
+     "type": "string",
+     "description": "The value should exactly match contents of exactMatch.\nOnly one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or rangeMatch must be set."
+    },
+    "headerName": {
+     "type": "string",
+     "description": "The name of the HTTP header to match.\nFor matching against the HTTP request's authority, use a headerMatch with the header name \":authority\".\nFor matching a request's method, use the headerName \":method\"."
+    },
+    "invertMatch": {
+     "type": "boolean",
+     "description": "If set to false, the headerMatch is considered a match if the match criteria above are met. If set to true, the headerMatch is considered a match if the match criteria above are NOT met.\nThe default setting is false."
+    },
+    "prefixMatch": {
+     "type": "string",
+     "description": "The value of the header must start with the contents of prefixMatch.\nOnly one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or rangeMatch must be set."
+    },
+    "presentMatch": {
+     "type": "boolean",
+     "description": "A header with the contents of headerName must exist. The match takes place whether or not the request's header has a value or not.\nOnly one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or rangeMatch must be set."
+    },
+    "rangeMatch": {
+     "$ref": "Int64RangeMatch",
+     "description": "The header value must be an integer and its value must be in the range specified in rangeMatch. If the header does not contain an integer, number or is empty, the match fails.\nFor example for a range [-5, 0]  \n- -3 will match. \n- 0 will not match. \n- 0.25 will not match. \n- -3someString will not match.  \nOnly one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or rangeMatch must be set."
+    },
+    "regexMatch": {
+     "type": "string",
+     "description": "The value of the header must match the regualar expression specified in regexMatch. For regular expression grammar, please see:  en.cppreference.com/w/cpp/regex/ecmascript \nFor matching against a port specified in the HTTP request, use a headerMatch with headerName set to PORT and a regular expression that satisfies the RFC2616 Host header's port specifier.\nOnly one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or rangeMatch must be set."
+    },
+    "suffixMatch": {
+     "type": "string",
+     "description": "The value of the header must end with the contents of suffixMatch.\nOnly one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or rangeMatch must be set."
+    }
+   }
+  },
+  "HttpHeaderOption": {
+   "id": "HttpHeaderOption",
+   "type": "object",
+   "description": "Specification determining how headers are added to requests or responses.",
+   "properties": {
+    "headerName": {
+     "type": "string",
+     "description": "The name of the header."
+    },
+    "headerValue": {
+     "type": "string",
+     "description": "The value of the header to add."
+    },
+    "replace": {
+     "type": "boolean",
+     "description": "If false, headerValue is appended to any values that already exist for the header. If true, headerValue is set for the header, discarding any values that were set for that header.\nThe default value is false."
+    }
+   }
+  },
   "HttpHealthCheck": {
    "id": "HttpHealthCheck",
    "type": "object",
@@ -6886,6 +7099,203 @@
        "description": "[Output Only] A human-readable description of the warning code."
       }
      }
+    }
+   }
+  },
+  "HttpQueryParameterMatch": {
+   "id": "HttpQueryParameterMatch",
+   "type": "object",
+   "description": "HttpRouteRuleMatch criteria for a request's query parameter.",
+   "properties": {
+    "exactMatch": {
+     "type": "string",
+     "description": "The queryParameterMatch matches if the value of the parameter exactly matches the contents of exactMatch.\nOnly one of presentMatch, exactMatch and regexMatch must be set."
+    },
+    "name": {
+     "type": "string",
+     "description": "The name of the query parameter to match. The query parameter must exist in the request, in the absence of which the request match fails."
+    },
+    "presentMatch": {
+     "type": "boolean",
+     "description": "Specifies that the queryParameterMatch matches if the request contains the query parameter, irrespective of whether the parameter has a value or not.\nOnly one of presentMatch, exactMatch and regexMatch must be set."
+    },
+    "regexMatch": {
+     "type": "string",
+     "description": "The queryParameterMatch matches if the value of the parameter matches the regular expression specified by regexMatch. For the regular expression grammar, please see en.cppreference.com/w/cpp/regex/ecmascript \nOnly one of presentMatch, exactMatch and regexMatch must be set."
+    }
+   }
+  },
+  "HttpRedirectAction": {
+   "id": "HttpRedirectAction",
+   "type": "object",
+   "description": "Specifies settings for an HTTP redirect.",
+   "properties": {
+    "hostRedirect": {
+     "type": "string",
+     "description": "The host that will be used in the redirect response instead of the one that was supplied in the request.\nThe value must be between 1 and 255 characters."
+    },
+    "httpsRedirect": {
+     "type": "boolean",
+     "description": "If set to true, the URL scheme in the redirected request is set to https. If set to false, the URL scheme of the redirected request will remain the same as that of the request.\nThis must only be set for UrlMaps used in TargetHttpProxys. Setting this true for TargetHttpsProxy is not permitted.\nThe default is set to false."
+    },
+    "pathRedirect": {
+     "type": "string",
+     "description": "The path that will be used in the redirect response instead of the one that was supplied in the request.\nOnly one of pathRedirect or prefixRedirect must be specified.\nThe value must be between 1 and 1024 characters."
+    },
+    "prefixRedirect": {
+     "type": "string",
+     "description": "The prefix that replaces the prefixMatch specified in the HttpRouteRuleMatch, retaining the remaining portion of the URL before redirecting the request."
+    },
+    "redirectResponseCode": {
+     "type": "string",
+     "description": "The HTTP Status code to use for this RedirectAction.\nSupported values are:  \n- MOVED_PERMANENTLY_DEFAULT, which is the default value and corresponds to 301. \n- FOUND, which corresponds to 302. \n- SEE_OTHER which corresponds to 303. \n- TEMPORARY_REDIRECT, which corresponds to 307. In this case, the request method will be retained. \n- PERMANENT_REDIRECT, which corresponds to 308. In this case, the request method will be retained.",
+     "enum": [
+      "FOUND",
+      "MOVED_PERMANENTLY_DEFAULT",
+      "PERMANENT_REDIRECT",
+      "SEE_OTHER",
+      "TEMPORARY_REDIRECT"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "stripQuery": {
+     "type": "boolean",
+     "description": "If set to true, any accompanying query portion of the original URL is removed prior to redirecting the request. If set to false, the query portion of the original URL is retained.\nThe default is set to false."
+    }
+   }
+  },
+  "HttpRetryPolicy": {
+   "id": "HttpRetryPolicy",
+   "type": "object",
+   "description": "The retry policy associates with HttpRouteRule",
+   "properties": {
+    "numRetries": {
+     "type": "integer",
+     "description": "Specifies the allowed number retries. This number must be \u003e 0.",
+     "format": "uint32"
+    },
+    "perTryTimeout": {
+     "$ref": "Duration",
+     "description": "Specifies a non-zero timeout per retry attempt."
+    },
+    "retryConditions": {
+     "type": "array",
+     "description": "Specfies one or more conditions when this retry rule applies. Valid values are:  \n- 5xx: Loadbalancer will attempt a retry if the backend service responds with any 5xx response code, or if the backend service does not respond at all, example: disconnects, reset, read timeout, connection failure, and refused streams. \n- gateway-error: Similar to 5xx, but only applies to response codes 502, 503 or 504.\n- \n- connect-failure: Loadbalancer will retry on failures connecting to backend services, for example due to connection timeouts. \n- retriable-4xx: Loadbalancer will retry for retriable 4xx response codes. Currently the only retriable error supported is 409. \n- refused-stream:Loadbalancer will retry if the backend service resets the stream with a REFUSED_STREAM error code. This reset type indicates that it is safe to retry. \n- cancelledLoadbalancer will retry if the gRPC status code in the response header is set to cancelled \n- deadline-exceeded: Loadbalancer will retry if the gRPC status code in the response header is set to deadline-exceeded \n- resource-exhausted: Loadbalancer will retry if the gRPC status code in the response header is set to resource-exhausted \n- unavailable: Loadbalancer will retry if the gRPC status code in the response header is set to unavailable",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "HttpRouteAction": {
+   "id": "HttpRouteAction",
+   "type": "object",
+   "properties": {
+    "corsPolicy": {
+     "$ref": "CorsPolicy",
+     "description": "The specification for allowing client side cross-origin requests. Please see W3C Recommendation for Cross Origin Resource Sharing"
+    },
+    "faultInjectionPolicy": {
+     "$ref": "HttpFaultInjection",
+     "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to backend service failure. As part of fault injection, when clients send requests to a backend service, delays can be introduced by Loadbalancer on a percentage of requests before sending those request to the backend service. Similarly requests from clients can be aborted by the Loadbalancer for a percentage of requests.\ntimeout and retry_policy will be ignored by clients that are configured with a fault_injection_policy."
+    },
+    "requestMirrorPolicy": {
+     "$ref": "RequestMirrorPolicy",
+     "description": "Specifies the policy on how requests intended for the route's backends are shadowed to a separate mirrored backend service. Loadbalancer does not wait for responses from the shadow service. Prior to sending traffic to the shadow service, the host / authority header is suffixed with -shadow."
+    },
+    "retryPolicy": {
+     "$ref": "HttpRetryPolicy",
+     "description": "Specifies the retry policy associated with this route."
+    },
+    "timeout": {
+     "$ref": "Duration",
+     "description": "Specifies the timeout for the selected route. Timeout is computed from the time the request is has been fully processed (i.e. end-of-stream) up until the response has been completely processed. Timeout includes all retries.\nIf not specified, the default value is 15 seconds."
+    },
+    "urlRewrite": {
+     "$ref": "UrlRewrite",
+     "description": "The spec to modify the URL of the request, prior to forwarding the request to the matched service"
+    },
+    "weightedBackendServices": {
+     "type": "array",
+     "description": "A list of weighted backend services to send traffic to when a route match occurs. The weights determine the percentage of traffic that flows to their corresponding backend service. The weights must add up to 100. If all traffic needs to go to a single backend service, there must be one weightedBackendService with weight set to 100.\nOnce a backendService is identified and before forwarding the request to the backend service, advanced routing actions like Url rewrites and header transformations are applied depending on additional settings specified in this HttpRouteAction.",
+     "items": {
+      "$ref": "WeightedBackendService"
+     }
+    }
+   }
+  },
+  "HttpRouteRule": {
+   "id": "HttpRouteRule",
+   "type": "object",
+   "description": "An HttpRouteRule specifies how to match an HTTP request and the corresponding routing action that load balancing proxies will perform.",
+   "properties": {
+    "headerAction": {
+     "$ref": "HttpHeaderAction",
+     "description": "Specifies changes to request and response headers that need to take effect for the selected backendService.\nThe headerAction specified here are applied before the matching pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeAction.weightedBackendService.backendServiceWeightAction[].headerAction"
+    },
+    "matchRules": {
+     "type": "array",
+     "items": {
+      "$ref": "HttpRouteRuleMatch"
+     }
+    },
+    "routeAction": {
+     "$ref": "HttpRouteAction",
+     "description": "In response to a matching matchRule, the load balancer routes the request to the backend service specified by this  routeAction.\nOnly one of routeAction or urlRedirect must be set."
+    },
+    "urlRedirect": {
+     "$ref": "HttpRedirectAction",
+     "description": "In response to a route rule match, the load balancer redirects the request to a URL specified by the following HttpRedirectAction.\nOnly one of urlRedirect or routeAction must be set."
+    }
+   }
+  },
+  "HttpRouteRuleMatch": {
+   "id": "HttpRouteRuleMatch",
+   "type": "object",
+   "description": "HttpRouteRuleMatch specifies a set of criteria for matching requests to an HttpRouteRule. All specified criteria must be satisfied for a match to occur.",
+   "properties": {
+    "fullPathMatch": {
+     "type": "string",
+     "description": "For satifying the matchRule condition, the path of the request must exactly match the value specified in fullPathMatch after removing any query parameters and anchor that may be part of the original URL.\nFullPathMatch must be between 1 and 1024 characters.\nOnly one of prefixMatch, fullPathMatch or regexMatch must be specified."
+    },
+    "headerMatches": {
+     "type": "array",
+     "description": "Specifies a list of header match criteria, all of which must match corresponding headers in the request.",
+     "items": {
+      "$ref": "HttpHeaderMatch"
+     }
+    },
+    "ignoreCase": {
+     "type": "boolean",
+     "description": "Specifies that prefixMatch and fullPathMatch matches are case sensitive.\nThe default value is false.\ncaseSensitive must not be used with regexMatch."
+    },
+    "metadataFilters": {
+     "type": "array",
+     "description": "Opaque filter criteria used by Loadbalancer to restrict routing configuration to a limited set xDS compliant clients. In their xDS requests to Loadbalancer, xDS clients present node metadata. If a match takes place, the relevant routing configuration is made available to those proxies.\nFor each metadataFilter in this list, if its filterMatchCriteria is set to MATCH_ANY, at least one of the filterLabels must match the corresponding label provided in the metadata. If its filterMatchCriteria is set to MATCH_ALL, then all of its filterLabels must match with corresponding labels in the provided metadata.\nmetadataFilters specified here can be overrides those specified in ForwardingRule that refers to this UrlMap.\nmetadataFilters only applies to Loadbalancers that have their loadBalancingScheme set to INTERNAL_SELF_MANAGED.",
+     "items": {
+      "$ref": "MetadataFilter"
+     }
+    },
+    "prefixMatch": {
+     "type": "string",
+     "description": "For satifying the matchRule condition, the request's path must begin with the specified prefixMatch. prefixMatch must begin with a /.\nThe value must be between 1 and 1024 characters.\nOnly one of prefixMatch, fullPathMatch or regexMatch must be specified."
+    },
+    "queryParameterMatches": {
+     "type": "array",
+     "description": "Specifies a list of query parameter match criteria, all of which must match corresponding query parameters in the request.",
+     "items": {
+      "$ref": "HttpQueryParameterMatch"
+     }
+    },
+    "regexMatch": {
+     "type": "string",
+     "description": "For satifying the matchRule condition, the path of the request must satisfy the regular expression specified in regexMatch after removing any query parameters and anchor supplied with the original URL. For regular expression grammar please see en.cppreference.com/w/cpp/regex/ecmascript \nOnly one of prefixMatch, fullPathMatch or regexMatch must be specified."
     }
    }
   },
@@ -7251,6 +7661,13 @@
       "",
       ""
      ]
+    },
+    "storageLocations": {
+     "type": "array",
+     "description": "GCS bucket storage location of the image (regional or multi-regional).",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -9954,6 +10371,23 @@
     "instanceEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
      "description": "Decrypts data associated with an instance that is protected with a customer-supplied encryption key.\n\nIf the instance you are starting is protected with a customer-supplied encryption key, the correct key must be provided otherwise the instance start will not succeed."
+    }
+   }
+  },
+  "Int64RangeMatch": {
+   "id": "Int64RangeMatch",
+   "type": "object",
+   "description": "HttpRouteRuleMatch criteria for field values that must stay within the specified integer range.",
+   "properties": {
+    "rangeEnd": {
+     "type": "string",
+     "description": "The end of the range (exclusive) in signed long integer format.",
+     "format": "int64"
+    },
+    "rangeStart": {
+     "type": "string",
+     "description": "The start of the range (inclusive) in signed long integer format.",
+     "format": "int64"
     }
    }
   },
@@ -12738,6 +13172,49 @@
     }
    }
   },
+  "MetadataFilter": {
+   "id": "MetadataFilter",
+   "type": "object",
+   "description": "Opaque filter criteria used by loadbalancers to restrict routing configuration to a limited set of loadbalancing proxies. Proxies and sidecars involved in loadbalancing would typically present metadata to the loadbalancers which need to match criteria specified here. If a match takes place, the relevant routing configuration is made available to those proxies.\nFor each metadataFilter in this list, if its filterMatchCriteria is set to MATCH_ANY, at least one of the filterLabels must match the corresponding label provided in the metadata. If its filterMatchCriteria is set to MATCH_ALL, then all of its filterLabels must match with corresponding labels in the provided metadata.\nAn example for using metadataFilters would be: if loadbalancing involves  Envoys, they will only receive routing configuration when values in metadataFilters match values supplied in \u003ca href=\"https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/core/base.proto#envoy-api-msg-core-node\" Node metadata of their XDS requests to loadbalancers.",
+   "properties": {
+    "filterLabels": {
+     "type": "array",
+     "description": "The list of label value pairs that must match labels in the provided metadata based on filterMatchCriteria \nThis list must not be empty and can have at the most 64 entries.",
+     "items": {
+      "$ref": "MetadataFilterLabelMatch"
+     }
+    },
+    "filterMatchCriteria": {
+     "type": "string",
+     "description": "Specifies how individual filterLabel matches within the list of filterLabels contribute towards the overall metadataFilter match.\nSupported values are:  \n- MATCH_ANY: At least one of the filterLabels must have a matching label in the provided metadata. \n- MATCH_ALL: All filterLabels must have matching labels in the provided metadata.",
+     "enum": [
+      "MATCH_ALL",
+      "MATCH_ANY",
+      "NOT_SET"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "MetadataFilterLabelMatch": {
+   "id": "MetadataFilterLabelMatch",
+   "type": "object",
+   "description": "MetadataFilter label name value pairs that are expected to match corresponding labels presented as metadata to the loadbalancer.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "Name of metadata label.\nThe name can have a maximum length of 1024 characters and must be at least 1 character long."
+    },
+    "value": {
+     "type": "string",
+     "description": "The value of the label must match the specified value.\nvalue can have a maximum length of 1024 characters."
+    }
+   }
+  },
   "NamedPort": {
    "id": "NamedPort",
    "type": "object",
@@ -14326,6 +14803,15 @@
     }
    }
   },
+  "NodeGroupsSetAutoscalingPolicyRequest": {
+   "id": "NodeGroupsSetAutoscalingPolicyRequest",
+   "type": "object",
+   "properties": {
+    "autoscalingPolicy": {
+     "$ref": "NodeGroupAutoscalingPolicy"
+    }
+   }
+  },
   "NodeGroupsSetNodeTemplateRequest": {
    "id": "NodeGroupsSetNodeTemplateRequest",
    "type": "object",
@@ -15664,13 +16150,25 @@
    "type": "object",
    "description": "A matcher for the path portion of the URL. The BackendService from the longest-matched rule will serve the URL. If no rule was matched, the default service will be used.",
    "properties": {
+    "defaultRouteAction": {
+     "$ref": "HttpRouteAction",
+     "description": "The default HttpRouteAction to follow if none of the pathRules or routeRules defined by this pathMatcher are matched. Use defaultRouteAction instead of defaultService when more advanced default routing actions like traffic splitting and URL rewrites are desired.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect must be set."
+    },
     "defaultService": {
      "type": "string",
      "description": "The full or partial URL to the BackendService resource. This will be used if none of the pathRules or routeRules defined by this PathMatcher are matched. For example, the following are all valid URLs to a BackendService resource:  \n- https://www.googleapis.com/compute/v1/projects/project/global/backendServices/backendService \n- compute/v1/projects/project/global/backendServices/backendService \n- global/backendServices/backendService  \nUse defaultService instead of defaultRouteAction when simple routing to a backend service is desired and other advanced capabilities like traffic splitting and URL rewrites are not required.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect must be set.\nAuthorization requires one or more of the following Google IAM permissions on the specified resource default_service:  \n- compute.backendBuckets.use \n- compute.backendServices.use"
     },
+    "defaultUrlRedirect": {
+     "$ref": "HttpRedirectAction",
+     "description": "The request is redirected by default to a URL specified by defaultUrlRedirect when none of the specified pathRules or routeRules match.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect must be set."
+    },
     "description": {
      "type": "string",
      "description": "An optional description of this resource. Provide this property when you create the resource."
+    },
+    "headerAction": {
+     "$ref": "HttpHeaderAction",
+     "description": "Specifies changes to request and response headers that need to take effect for the selected backendService.\nHeaderAction specified here are applied after the matching HttpRouteRule HeaderAction and before the HeaderAction in the UrlMap"
     },
     "name": {
      "type": "string",
@@ -15681,6 +16179,13 @@
      "description": "The list of path rules. Use this list instead of routeRules when routing based on simple path matching is all that's required. The order by which path rules are specified does not matter. Matches are always done on the longest-path-first basis.\nFor example: a pathRule with a path /a/b/c/* will match before /a/b/* irrespective of the order in which those paths appear in this list.\nOnly one of pathRules or routeRules must be set.",
      "items": {
       "$ref": "PathRule"
+     }
+    },
+    "routeRules": {
+     "type": "array",
+     "description": "The list of ordered HTTP route rules. Use this list instead of pathRules when advanced route matching and routing actions are desired. The order of specifying routeRules matters: the first rule that matches will cause its specified routing action to take effect.\nOnly one of pathRules or routeRules must be set.",
+     "items": {
+      "$ref": "HttpRouteRule"
      }
     }
    }
@@ -15697,9 +16202,17 @@
       "type": "string"
      }
     },
+    "routeAction": {
+     "$ref": "HttpRouteAction",
+     "description": "The HttpRouteAction to follow if this rule is matched. Use routeAction instead of service when more advanced default routing actions like traffic splitting and Url rewrites are desired.\nOnly one of service, routeAction or urlRedirect should must be set."
+    },
     "service": {
      "type": "string",
      "description": "The URL of the backend service resource if this rule is matched.\nUse service instead of routeAction when simple routing to a backend service is desired and other advanced capabilities like traffic splitting and rewrites are not required.\nOnly one of service, routeAction or urlRedirect should must be set."
+    },
+    "urlRedirect": {
+     "$ref": "HttpRedirectAction",
+     "description": "The request is redirected to a URL specified by urlRedirect if this rule is matched.\nOnly one of service, routeAction or urlRedirect should must be set."
     }
    }
   },
@@ -16836,6 +17349,20 @@
     }
    }
   },
+  "RegionInstanceGroupManagersCreateInstancesRequest": {
+   "id": "RegionInstanceGroupManagersCreateInstancesRequest",
+   "type": "object",
+   "description": "RegionInstanceGroupManagers.createInstances",
+   "properties": {
+    "instances": {
+     "type": "array",
+     "description": "[Required] List of specifications of per-instance configs.",
+     "items": {
+      "$ref": "PerInstanceConfig"
+     }
+    }
+   }
+  },
   "RegionInstanceGroupManagersDeleteInstancesRequest": {
    "id": "RegionInstanceGroupManagersDeleteInstancesRequest",
    "type": "object",
@@ -17341,6 +17868,17 @@
     "resource": {
      "$ref": "UrlMap",
      "description": "Content of the UrlMap to be validated."
+    }
+   }
+  },
+  "RequestMirrorPolicy": {
+   "id": "RequestMirrorPolicy",
+   "type": "object",
+   "description": "A policy that specifies how requests intended for the route's backends are shadowed to a separate mirrored backend service. Loadbalancer does not wait for responses from the shadow service. Prior to sending traffic to the shadow service, the host / authority header is suffixed with -shadow.",
+   "properties": {
+    "backendService": {
+     "type": "string",
+     "description": "The full or partial URL to the BackendService resource being mirrored to."
     }
    }
   },
@@ -19402,9 +19940,9 @@
      "description": "Specifies whether the instance should be automatically restarted if it is terminated by Compute Engine (not terminated by a user). You can only set the automatic restart option for standard instances. Preemptible instances cannot be automatically restarted.\n\nBy default, this is set to true so an instance is automatically restarted if it is terminated by Compute Engine."
     },
     "minNodeCpus": {
-     "type": "number",
+     "type": "integer",
      "description": "The minimum number of virtual CPUs this instance will consume when running on a sole-tenant node.",
-     "format": "float"
+     "format": "int32"
     },
     "nodeAffinities": {
      "type": "array",
@@ -19882,41 +20420,6 @@
     }
    }
   },
-  "ShieldedInstanceIdentity": {
-   "id": "ShieldedInstanceIdentity",
-   "type": "object",
-   "description": "A shielded instance identity entry.",
-   "properties": {
-    "encryptionKey": {
-     "$ref": "ShieldedInstanceIdentityEntry",
-     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
-    },
-    "kind": {
-     "type": "string",
-     "description": "[Output Only] Type of the resource. Always compute#ShieldedInstanceIdentity for shielded VM identity entry.",
-     "default": "compute#shieldedInstanceIdentity"
-    },
-    "signingKey": {
-     "$ref": "ShieldedInstanceIdentityEntry",
-     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
-    }
-   }
-  },
-  "ShieldedInstanceIdentityEntry": {
-   "id": "ShieldedInstanceIdentityEntry",
-   "type": "object",
-   "description": "A Shielded VM Identity Entry.",
-   "properties": {
-    "ekCert": {
-     "type": "string",
-     "description": "A PEM-encoded X.509 certificate. This field can be empty."
-    },
-    "ekPub": {
-     "type": "string",
-     "description": "A PEM-encoded public key."
-    }
-   }
-  },
   "ShieldedVmConfig": {
    "id": "ShieldedVmConfig",
    "type": "object",
@@ -19933,6 +20436,41 @@
     "enableVtpm": {
      "type": "boolean",
      "description": "Defines whether the instance has the vTPM enabled."
+    }
+   }
+  },
+  "ShieldedVmIdentity": {
+   "id": "ShieldedVmIdentity",
+   "type": "object",
+   "description": "A shielded VM identity entry.",
+   "properties": {
+    "encryptionKey": {
+     "$ref": "ShieldedVmIdentityEntry",
+     "description": "An Endorsement Key (EK) issued to the Shielded VM's vTPM."
+    },
+    "kind": {
+     "type": "string",
+     "description": "[Output Only] Type of the resource. Always compute#shieldedVmIdentity for shielded VM identity entry.",
+     "default": "compute#shieldedVmIdentity"
+    },
+    "signingKey": {
+     "$ref": "ShieldedVmIdentityEntry",
+     "description": "An Attestation Key (AK) issued to the Shielded VM's vTPM."
+    }
+   }
+  },
+  "ShieldedVmIdentityEntry": {
+   "id": "ShieldedVmIdentityEntry",
+   "type": "object",
+   "description": "A Shielded VM Identity Entry.",
+   "properties": {
+    "ekCert": {
+     "type": "string",
+     "description": "A PEM-encoded X.509 certificate. This field can be empty."
+    },
+    "ekPub": {
+     "type": "string",
+     "description": "A PEM-encoded public key."
     }
    }
   },
@@ -24286,9 +24824,17 @@
      "type": "string",
      "description": "[Output Only] Creation timestamp in RFC3339 text format."
     },
+    "defaultRouteAction": {
+     "$ref": "HttpRouteAction",
+     "description": "The default HttpRouteAction to follow if none of the hostRules match. Use defaultRouteAction instead of defaultService when more advanced default routing actions like traffic splitting and Url rewrites are desired.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect should must be set."
+    },
     "defaultService": {
      "type": "string",
      "description": "The URL of the backendService resource if none of the hostRules match.\nUse defaultService instead of defaultRouteAction when simple routing to a backendService is desired and other advanced capabilities like traffic splitting and rewrites are not required.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect should must be set."
+    },
+    "defaultUrlRedirect": {
+     "$ref": "HttpRedirectAction",
+     "description": "The request is redirected to a default URL specified by defaultUrlRedirect if none of the HostRules match.\nOnly one of defaultService, defaultRouteAction or defaultUrlRedirect should must be set."
     },
     "description": {
      "type": "string",
@@ -24298,6 +24844,10 @@
      "type": "string",
      "description": "Fingerprint of this resource. A hash of the contents stored in this object. This field is used in optimistic locking. This field will be ignored when inserting a UrlMap. An up-to-date fingerprint must be provided in order to update the UrlMap, otherwise the request will fail with error 412 conditionNotMet.\n\nTo see the latest fingerprint, make a get() request to retrieve a UrlMap.",
      "format": "byte"
+    },
+    "headerAction": {
+     "$ref": "HttpHeaderAction",
+     "description": "Specifies changes to request and response headers that need to take effect for the selected backendService.\nThe headerAction specified here take effect after headerAction specified under pathMatcher."
     },
     "hostRules": {
      "type": "array",
@@ -24471,9 +25021,18 @@
    "type": "object",
    "description": "Message for the expected URL mappings.",
    "properties": {
+    "backendServiceWeight": {
+     "type": "integer",
+     "description": "The weight to use for the supplied host and path when using advanced routing rules that involve traffic splitting.",
+     "format": "uint32"
+    },
     "description": {
      "type": "string",
      "description": "Description of this test case."
+    },
+    "expectedUrlRedirect": {
+     "type": "string",
+     "description": "The expected URL that should be redirected to for the host and path being tested."
     },
     "host": {
      "type": "string",
@@ -24738,6 +25297,21 @@
    "properties": {
     "result": {
      "$ref": "UrlMapValidationResult"
+    }
+   }
+  },
+  "UrlRewrite": {
+   "id": "UrlRewrite",
+   "type": "object",
+   "description": "The spec for modifying the path before sending the request to the matched backend service.",
+   "properties": {
+    "hostRewrite": {
+     "type": "string",
+     "description": "Prior to forwarding the request to the selected service, the request's host header is replaced with contents of hostRewrite.\nThe value must be between 1 and 255 characters."
+    },
+    "pathPrefixRewrite": {
+     "type": "string",
+     "description": "Prior to forwarding the request to the selected backend service, the matching portion of the request's path is replaced by pathPrefixRewrite.\nThe value must be between 1 and 1024 characters."
     }
    }
   },
@@ -25960,6 +26534,26 @@
     }
    }
   },
+  "WeightedBackendService": {
+   "id": "WeightedBackendService",
+   "type": "object",
+   "description": "In contrast to a single BackendService in  HttpRouteAction to which all matching traffic is directed to, WeightedBackendService allows traffic to be split across multiple BackendServices. The volume of traffic for each BackendService is proportional to the weight specified in each WeightedBackendService",
+   "properties": {
+    "backendService": {
+     "type": "string",
+     "description": "The full or partial URL to the default BackendService resource. Before forwarding the request to backendService, the loadbalancer applies any relevant headerActions specified as part of this backendServiceWeight."
+    },
+    "headerAction": {
+     "$ref": "HttpHeaderAction",
+     "description": "Specifies changes to request and response headers that need to take effect for the selected backendService.\nheaderAction specified here take effect before headerAction in the enclosing HttpRouteRule, PathMatcher and UrlMap."
+    },
+    "weight": {
+     "type": "integer",
+     "description": "Specifies the fraction of traffic sent to backendService. The sum of all weights specified in weightedBackendServices within HttpRouteAction must equal 100.\nThe selection of a backend service is determined only for new traffic. Once a user's request has been directed to a backendService, subsequent requests will be sent to the same backendService as determined by the BackendService's session affinity policy.",
+     "format": "uint32"
+    }
+   }
+  },
   "XpnHostList": {
    "id": "XpnHostList",
    "type": "object",
@@ -26078,7 +26672,7 @@
    "properties": {
     "id": {
      "type": "string",
-     "description": "The ID of the service resource. In the case of projects, this field matches the project ID (e.g., my-project), not the project number (e.g., 12345678)."
+     "description": "The ID of the service resource. In the case of projects, this field supports project id (e.g., my-project-123) and project number (e.g. 12345678)."
     },
     "type": {
      "type": "string",
@@ -28356,7 +28950,7 @@
        "type": "string",
        "description": "Name of the BackendService resource to patch.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29294,7 +29888,7 @@
        "type": "string",
        "description": "Name of the firewall rule to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29332,7 +29926,7 @@
        "type": "string",
        "description": "Name of the firewall rule to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29448,7 +30042,7 @@
        "type": "string",
        "description": "Name of the firewall rule to patch.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -29526,7 +30120,7 @@
        "type": "string",
        "description": "Name of the firewall rule to update.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -34538,7 +35132,7 @@
       "instance"
      ],
      "response": {
-      "$ref": "ShieldedInstanceIdentity"
+      "$ref": "ShieldedVmIdentity"
      },
      "scopes": [
       "https://www.googleapis.com/auth/cloud-platform",
@@ -38209,7 +38803,7 @@
        "type": "string",
        "description": "Name of the network resource to add peering to.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -38250,7 +38844,7 @@
        "type": "string",
        "description": "Name of the network to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -38288,7 +38882,7 @@
        "type": "string",
        "description": "Name of the network to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -38417,7 +39011,7 @@
        "type": "string",
        "description": "Name of the network for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "orderBy": {
@@ -38484,7 +39078,7 @@
        "type": "string",
        "description": "Name of the network to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "orderBy": {
@@ -38576,7 +39170,7 @@
        "type": "string",
        "description": "Name of the network for this request.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "orderBy": {
@@ -38630,7 +39224,7 @@
        "type": "string",
        "description": "Name of the network to update.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -38671,7 +39265,7 @@
        "type": "string",
        "description": "Name of the network resource to remove peering from.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -38712,7 +39306,7 @@
        "type": "string",
        "description": "Name of the network to be updated.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -38787,7 +39381,7 @@
        "type": "string",
        "description": "Name of the network resource which the updated peering is belonging to.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -39270,6 +39864,55 @@
       "https://www.googleapis.com/auth/compute.readonly"
      ]
     },
+    "setAutoscalingPolicy": {
+     "id": "compute.nodeGroups.setAutoscalingPolicy",
+     "path": "{project}/zones/{zone}/nodeGroups/{nodeGroup}/setAutoscalingPolicy",
+     "httpMethod": "POST",
+     "description": "Sets the autoscaling policy of the node group.",
+     "parameters": {
+      "nodeGroup": {
+       "type": "string",
+       "description": "Name of the NodeGroup resource to update.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      },
+      "zone": {
+       "type": "string",
+       "description": "The name of the zone for this request.",
+       "required": true,
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "location": "path"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "zone",
+      "nodeGroup"
+     ],
+     "request": {
+      "$ref": "NodeGroupsSetAutoscalingPolicyRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
     "setIamPolicy": {
      "id": "compute.nodeGroups.setIamPolicy",
      "path": "{project}/zones/{zone}/nodeGroups/{resource}/setIamPolicy",
@@ -39322,7 +39965,7 @@
      "parameters": {
       "nodeGroup": {
        "type": "string",
-       "description": "Name of the NodeGroup resource to delete.",
+       "description": "Name of the NodeGroup resource to update.",
        "required": true,
        "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
        "location": "path"
@@ -41355,7 +41998,7 @@
        "type": "string",
        "description": "Name of the BackendService resource to patch.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       },
       "project": {
@@ -42734,6 +43377,53 @@
      ],
      "request": {
       "$ref": "RegionInstanceGroupManagersApplyUpdatesRequest"
+     },
+     "response": {
+      "$ref": "Operation"
+     },
+     "scopes": [
+      "https://www.googleapis.com/auth/cloud-platform",
+      "https://www.googleapis.com/auth/compute"
+     ]
+    },
+    "createInstances": {
+     "id": "compute.regionInstanceGroupManagers.createInstances",
+     "path": "{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/createInstances",
+     "httpMethod": "POST",
+     "description": "Creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.",
+     "parameters": {
+      "instanceGroupManager": {
+       "type": "string",
+       "description": "The name of the managed instance group. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "project": {
+       "type": "string",
+       "description": "Project ID for this request.",
+       "required": true,
+       "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+       "location": "path"
+      },
+      "region": {
+       "type": "string",
+       "description": "The name of the region where the managed instance group is located. It should conform to RFC1035.",
+       "required": true,
+       "location": "path"
+      },
+      "requestId": {
+       "type": "string",
+       "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed.\n\nFor example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request.\n\nThe request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+       "location": "query"
+      }
+     },
+     "parameterOrder": [
+      "project",
+      "region",
+      "instanceGroupManager"
+     ],
+     "request": {
+      "$ref": "RegionInstanceGroupManagersCreateInstancesRequest"
      },
      "response": {
       "$ref": "Operation"
@@ -46301,7 +46991,7 @@
        "type": "string",
        "description": "Name of the Route resource to delete.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },
@@ -46334,7 +47024,7 @@
        "type": "string",
        "description": "Name of the Route resource to return.",
        "required": true,
-       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+       "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
        "location": "path"
       }
      },

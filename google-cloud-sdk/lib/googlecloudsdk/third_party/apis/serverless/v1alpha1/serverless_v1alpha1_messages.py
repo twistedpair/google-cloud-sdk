@@ -13,6 +13,16 @@ from apitools.base.py import extra_types
 package = 'serverless'
 
 
+class Addressable(_messages.Message):
+  r"""Information for connecting over HTTP(s).
+
+  Fields:
+    hostname: A string attribute.
+  """
+
+  hostname = _messages.StringField(1)
+
+
 class ApiGroup(_messages.Message):
   r"""An API group.
 
@@ -1144,6 +1154,8 @@ class RevisionSpec(_messages.Message):
       Kubernetes resources should be in for this Revision. Users must not
       specify this when creating a revision. It is expected that the system
       will manipulate this based on routability and load.
+    timeoutSeconds: TimeoutSeconds holds the max duration the instance is
+      allowed for responding to a request. (not used by Cloud Run)
   """
 
   class ServingStateValueValuesEnum(_messages.Enum):
@@ -1177,6 +1189,7 @@ class RevisionSpec(_messages.Message):
   generation = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   serviceAccountName = _messages.StringField(5)
   servingState = _messages.EnumField('ServingStateValueValuesEnum', 6)
+  timeoutSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class RevisionStatus(_messages.Message):
@@ -1300,6 +1313,8 @@ class RouteStatus(_messages.Message):
   controller).
 
   Fields:
+    address: Similar to domain, information on where the service is available
+      on HTTP.
     conditions: Conditions communicates information about ongoing/complete
       reconciliation processes that bring the "spec" inline with the observed
       state of the world.
@@ -1319,11 +1334,12 @@ class RouteStatus(_messages.Message):
       last observed.
   """
 
-  conditions = _messages.MessageField('RouteCondition', 1, repeated=True)
-  domain = _messages.StringField(2)
-  domainInternal = _messages.StringField(3)
-  observedGeneration = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  traffic = _messages.MessageField('TrafficTarget', 5, repeated=True)
+  address = _messages.MessageField('Addressable', 1)
+  conditions = _messages.MessageField('RouteCondition', 2, repeated=True)
+  domain = _messages.StringField(3)
+  domainInternal = _messages.StringField(4)
+  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  traffic = _messages.MessageField('TrafficTarget', 6, repeated=True)
 
 
 class SELinuxOptions(_messages.Message):
@@ -2045,6 +2061,8 @@ class ServiceStatus(_messages.Message):
   r"""The current state of the Service. Output only.
 
   Fields:
+    address: Similar to domain, information on where the service is available
+      on HTTP.
     conditions: Array of observed ServiceCondition, indicating the current
       state of the Service.
     domain: The top-level domain from the underlying Route.
@@ -2064,12 +2082,13 @@ class ServiceStatus(_messages.Message):
       this will hold the LatestReadyRevisionName that was last observed.
   """
 
-  conditions = _messages.MessageField('ServiceCondition', 1, repeated=True)
-  domain = _messages.StringField(2)
-  latestCreatedRevisionName = _messages.StringField(3)
-  latestReadyRevisionName = _messages.StringField(4)
-  observedGeneration = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  traffic = _messages.MessageField('TrafficTarget', 6, repeated=True)
+  address = _messages.MessageField('Addressable', 1)
+  conditions = _messages.MessageField('ServiceCondition', 2, repeated=True)
+  domain = _messages.StringField(3)
+  latestCreatedRevisionName = _messages.StringField(4)
+  latestReadyRevisionName = _messages.StringField(5)
+  observedGeneration = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  traffic = _messages.MessageField('TrafficTarget', 7, repeated=True)
 
 
 class StandardQueryParameters(_messages.Message):

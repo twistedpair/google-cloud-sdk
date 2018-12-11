@@ -26,8 +26,10 @@ from googlecloudsdk.core.document_renderers import text_renderer
 class LinterRenderer(text_renderer.TextRenderer):
   """Renders markdown to a list of lines where there is a linter error."""
 
-  _HEADINGS_TO_LINT = ['NAME', 'EXAMPLES']
+  _HEADINGS_TO_LINT = ['NAME', 'EXAMPLES', 'DESCRIPTION']
   _NAME_WORD_LIMIT = 15
+  _PERSONAL_PRONOUNS = [' me ', ' we ', ' I ', ' us ', ' he ', ' she ', ' him ',
+                        ' her ', ' them ', ' they ']
 
   def __init__(self, *args, **kwargs):
     super(LinterRenderer, self).__init__(*args, **kwargs)
@@ -36,10 +38,14 @@ class LinterRenderer(text_renderer.TextRenderer):
     self._buffer = io.StringIO()
     self._out = self._buffer
     self._analyze = {'NAME': self._analyze_name,
-                     'EXAMPLES': self._analyze_examples}
+                     'EXAMPLES': self._analyze_examples,
+                     'DESCRIPTION': self._analyze_description}
     self._heading = ''
     self._prev_heading = ''
     self.example = False
+    self.command_name = ''
+    self.name_section = ''
+    self.length_of_command_name = 0
 
   def _CaptureOutput(self, heading):
     # check if buffer is full from previous heading
@@ -56,6 +62,14 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   def _Analyze(self, heading, section):
     self._analyze[heading](section)
+
+  def check_for_personal_pronouns(self, section):
+    warnings = ''
+    for pronoun in self._PERSONAL_PRONOUNS:
+      if pronoun in section:
+        warnings += '\nPlease remove personal pronouns.'
+        break
+    return warnings
 
   def Finish(self):
     if self._buffer.getvalue() and self._prev_heading:
@@ -77,7 +91,11 @@ class LinterRenderer(text_renderer.TextRenderer):
       self._DiscardOutput(heading)
 
   def _analyze_name(self, section):
-    warnings = ''
+    self.command_name = section.strip().split(' - ')[0]
+    self.name_section = section.strip().split(' - ')[1].lower()
+    self.length_of_command_name = len(self.command_name)
+    warnings = self.check_for_personal_pronouns(section)
+
     # if more than 15 words
     if len(section.split()) > self._NAME_WORD_LIMIT:
       warnings += '\nPlease shorten the NAME section to less than '
@@ -93,5 +111,25 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   def _analyze_examples(self, section):
     self.example = True
-    self._file_out.write('There are no errors for the EXAMPLES '
-                         'section.\n\n')
+    warnings = self.check_for_personal_pronouns(section)
+    if warnings:
+      # TODO(b/119550825): remove the go/ link from open source code
+      self._file_out.write('Refer to the detailed style guide: '
+                           'go/cloud-sdk-help-guide#examples\n'
+                           'This is the analysis for EXAMPLES:')
+      self._file_out.write(warnings + '\n\n')
+    else:
+      self._file_out.write('There are no errors for the EXAMPLES '
+                           'section.\n\n')
+
+  def _analyze_description(self, section):
+    warnings = self.check_for_personal_pronouns(section)
+    if warnings:
+      # TODO(b/119550825): remove the go/ link from open source code
+      self._file_out.write('Refer to the detailed style guide: '
+                           'go/cloud-sdk-help-guide#description\n'
+                           'This is the analysis for DESCRIPTION:')
+      self._file_out.write(warnings + '\n\n')
+    else:
+      self._file_out.write('There are no errors for the DESCRIPTION '
+                           'section.\n\n')

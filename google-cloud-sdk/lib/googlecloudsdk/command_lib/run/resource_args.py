@@ -97,6 +97,8 @@ class DefaultFallthrough(deps.Fallthrough):
   """Use the namespace "default".
 
   For Knative only.
+
+  For Cloud Run, raises an ArgumentError if project not set.
   """
 
   def __init__(self):
@@ -109,6 +111,14 @@ class DefaultFallthrough(deps.Fallthrough):
     if (getattr(parsed_args, 'cluster', None) or
         properties.VALUES.run.cluster.Get()):
       return 'default'
+    elif not (getattr(parsed_args, 'project', None) or
+              properties.VALUES.core.project.Get()):
+      # HACK: Compensate for how "namespace" is actually "project" in Cloud Run
+      # by providing an error message explicitly early here.
+      raise flags.ArgumentError(
+          'The [project] resource is not properly specified. '
+          'Please specify the argument [--project] on the command line or '
+          'set the property [core/project].')
     return None
 
 

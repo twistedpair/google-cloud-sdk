@@ -318,8 +318,12 @@ class CloudfunctionsOperationsListRequest(_messages.Message):
   r"""A CloudfunctionsOperationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
+    filter: Required. A filter for matching the requested operations.<br><br>
+      The supported formats of <b>filter</b> are:<br> To query for specific
+      function: <code>project:*,location:*,function:*</code><br> To query for
+      all of the latest operations for a project:
+      <code>project:*,latest:true</code>
+    name: Must not be set.
     pageSize: The standard list page size.
     pageToken: The standard list page token.
   """

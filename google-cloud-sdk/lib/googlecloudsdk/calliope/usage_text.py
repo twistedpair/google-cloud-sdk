@@ -845,7 +845,7 @@ def GetCategoricalUsage(command, categories):
       else:
         short_help = element.short_help
       buf.write('{name} | {description}\n'.format(
-          name=element.name, description=short_help))
+          name=element.name.replace('_', '-'), description=short_help))
   return buf.getvalue()
 
 

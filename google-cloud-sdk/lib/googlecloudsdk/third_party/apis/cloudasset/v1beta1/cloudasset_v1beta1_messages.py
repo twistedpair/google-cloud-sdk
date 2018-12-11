@@ -17,7 +17,7 @@ class Asset(_messages.Message):
   IAM policies, and other non-GCP assets.
 
   Fields:
-    assetType: Type of the asset. Example: "google.compute.disk".
+    assetType: Type of the asset. Example: "google.compute.Disk".
     iamPolicy: Representation of the actual Cloud IAM policy set on a cloud
       resource. For each resource, there must be at most one Cloud IAM policy
       set on it.
@@ -287,7 +287,7 @@ class ExportAssetsRequest(_messages.Message):
 
   Fields:
     assetTypes: A list of asset types of which to take a snapshot for. For
-      example: "google.compute.disk". If specified, only matching assets will
+      example: "google.compute.Disk". If specified, only matching assets will
       be returned. See [Introduction to Cloud Asset
       Inventory](https://cloud.google.com/resource-manager/docs/cloud-asset-
       inventory/overview) for all supported asset types.

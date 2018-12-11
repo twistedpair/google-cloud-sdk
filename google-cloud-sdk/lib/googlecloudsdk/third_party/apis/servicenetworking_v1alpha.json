@@ -995,7 +995,7 @@
           "type": "string"
         },
         "authorizationUrl": {
-          "description": "Redirect URL if JWT token is required but no present or is expired.\nImplement authorizationUrl of securityDefinitions in OpenAPI spec.",
+          "description": "Redirect URL if JWT token is required but not present or is expired.\nImplement authorizationUrl of securityDefinitions in OpenAPI spec.",
           "type": "string"
         }
       }
@@ -1640,7 +1640,7 @@
     },
     "Subnetwork": {
       "id": "Subnetwork",
-      "description": "Message returning the created service subnetwork.",
+      "description": "Represents a subnet that was created by a peered service.",
       "type": "object",
       "properties": {
         "name": {
@@ -1648,11 +1648,11 @@
           "type": "string"
         },
         "ipCidrRange": {
-          "description": "Subnetwork CIDR range in \"10.x.x.x\/y\" format.",
+          "description": "Subnetwork CIDR range in `10.x.x.x\/y` format.",
           "type": "string"
         },
         "network": {
-          "description": "Shared VPC host project network peered with consumer network.\nFor example: projects\/1234321\/global\/networks\/host-network",
+          "description": "In the Shared VPC host project, the VPC network that's peered with the\nconsumer network. For example:\n`projects\/1234321\/global\/networks\/host-network`",
           "type": "string"
         }
       }

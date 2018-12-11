@@ -66,6 +66,13 @@ class Collections(enum.Enum):
       [u'bucket', u'object'],
       True
   )
+  PROJECTS = (
+      'projects',
+      'projects/{project}',
+      {},
+      [u'project'],
+      True
+  )
   PROJECTS_SERVICEACCOUNT = (
       'projects.serviceAccount',
       'projects/{projectId}/serviceAccount',

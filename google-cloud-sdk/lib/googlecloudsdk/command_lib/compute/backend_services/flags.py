@@ -340,8 +340,9 @@ def HealthCheckArgument(required=False, include_alpha=False):
       if include_alpha else None,
       short_help="""\
       Specifies a list of health check objects for checking the health of
-      the backend service. Health checks need not be for the same protocol
-      as that of the backend service.
+      the backend service. Currently at most one health check can be specified.
+      Health checks need not be for the same protocol as that of the backend
+      service.
       """,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION
       if include_alpha else None)
@@ -543,7 +544,7 @@ def AddProtocol(parser, default='HTTP'):
       `TCP`, `UDP`.
 
       If the load-balancing-scheme is `EXTERNAL`, the protocol must be one of:
-      `HTTP`, `HTTPS`, `HTTP2`, `SSL`, `TCP`, `UDP`.
+      `HTTP`, `HTTPS`, `HTTP2`, `SSL`, `TCP`.
       """
   )
 

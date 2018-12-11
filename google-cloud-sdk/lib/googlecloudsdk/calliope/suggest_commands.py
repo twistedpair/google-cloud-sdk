@@ -146,6 +146,13 @@ def _WordScore(index, normalized_command_word,
       extra *= 2
     score += extra
 
+  # Prefer matching on surface words.
+  if index == 0 and canonical_command_length > 1:
+    score += 30
+  # Also prefer matching on group words.
+  elif index > 0 and canonical_command_length > index + 1:
+    score += 15
+
   return score
 
 

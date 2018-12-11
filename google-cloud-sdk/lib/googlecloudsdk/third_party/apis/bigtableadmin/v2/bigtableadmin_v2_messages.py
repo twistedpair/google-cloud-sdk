@@ -732,17 +732,61 @@ class ColumnFamily(_messages.Message):
 class CreateClusterMetadata(_messages.Message):
   r"""The metadata for the Operation returned by CreateCluster.
 
+  Messages:
+    TablesValue: Keys: the full `name` of each table that existed in the
+      instance when CreateCluster was first called, i.e.
+      `projects/<project>/instances/<instance>/tables/<table>`. Any table
+      added to the instance by a later API call will be created in the new
+      cluster by that API call, not this one.  Values: information on how much
+      of a table's data has been copied to the newly-created cluster so far.
+
   Fields:
     finishTime: The time at which the operation failed or was completed
       successfully.
     originalRequest: The request that prompted the initiation of this
       CreateCluster operation.
     requestTime: The time at which the original request was received.
+    tables: Keys: the full `name` of each table that existed in the instance
+      when CreateCluster was first called, i.e.
+      `projects/<project>/instances/<instance>/tables/<table>`. Any table
+      added to the instance by a later API call will be created in the new
+      cluster by that API call, not this one.  Values: information on how much
+      of a table's data has been copied to the newly-created cluster so far.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TablesValue(_messages.Message):
+    r"""Keys: the full `name` of each table that existed in the instance when
+    CreateCluster was first called, i.e.
+    `projects/<project>/instances/<instance>/tables/<table>`. Any table added
+    to the instance by a later API call will be created in the new cluster by
+    that API call, not this one.  Values: information on how much of a table's
+    data has been copied to the newly-created cluster so far.
+
+    Messages:
+      AdditionalProperty: An additional property for a TablesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TableProgress attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TableProgress', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   finishTime = _messages.StringField(1)
   originalRequest = _messages.MessageField('CreateClusterRequest', 2)
   requestTime = _messages.StringField(3)
+  tables = _messages.MessageField('TablesValue', 4)
 
 
 class CreateClusterRequest(_messages.Message):
@@ -1663,6 +1707,43 @@ class Table(_messages.Message):
   columnFamilies = _messages.MessageField('ColumnFamiliesValue', 2)
   granularity = _messages.EnumField('GranularityValueValuesEnum', 3)
   name = _messages.StringField(4)
+
+
+class TableProgress(_messages.Message):
+  r"""Progress info for copying a table's data to the new cluster.
+
+  Enums:
+    StateValueValuesEnum:
+
+  Fields:
+    estimatedCopiedBytes: Estimate of the number of bytes copied so far for
+      this table. This will eventually reach 'estimated_size_bytes' unless the
+      table copy is CANCELLED.
+    estimatedSizeBytes: Estimate of the size of the table to be copied.
+    state: A StateValueValuesEnum attribute.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      STATE_UNSPECIFIED: <no description>
+      PENDING: The table has not yet begun copying to the new cluster.
+      COPYING: The table is actively being copied to the new cluster.
+      COMPLETED: The table has been fully copied to the new cluster.
+      CANCELLED: The table was deleted before it finished copying to the new
+        cluster. Note that tables deleted after completion will stay marked as
+        COMPLETED, not CANCELLED.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    COPYING = 2
+    COMPLETED = 3
+    CANCELLED = 4
+
+  estimatedCopiedBytes = _messages.IntegerField(1)
+  estimatedSizeBytes = _messages.IntegerField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class TestIamPermissionsRequest(_messages.Message):

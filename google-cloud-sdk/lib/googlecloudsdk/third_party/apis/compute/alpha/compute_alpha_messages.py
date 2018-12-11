@@ -19,8 +19,10 @@ class AcceleratorConfig(_messages.Message):
     acceleratorCount: The number of the guest accelerator cards exposed to
       this instance.
     acceleratorType: Full or partial URL of the accelerator type resource to
-      attach to this instance. If you are creating an instance template,
-      specify only the accelerator name.
+      attach to this instance. For example: projects/my-project/zones/us-
+      central1-c/acceleratorTypes/nvidia-tesla-p100 If you are creating an
+      instance template, specify only the accelerator name. See GPUs on
+      Compute Engine for a full list of accelerator types.
   """
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -12204,6 +12206,35 @@ class ComputeNodeGroupsListRequest(_messages.Message):
   zone = _messages.StringField(6, required=True)
 
 
+class ComputeNodeGroupsSetAutoscalingPolicyRequest(_messages.Message):
+  r"""A ComputeNodeGroupsSetAutoscalingPolicyRequest object.
+
+  Fields:
+    nodeGroup: Name of the NodeGroup resource to update.
+    nodeGroupsSetAutoscalingPolicyRequest: A
+      NodeGroupsSetAutoscalingPolicyRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  nodeGroup = _messages.StringField(1, required=True)
+  nodeGroupsSetAutoscalingPolicyRequest = _messages.MessageField('NodeGroupsSetAutoscalingPolicyRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeNodeGroupsSetIamPolicyRequest(_messages.Message):
   r"""A ComputeNodeGroupsSetIamPolicyRequest object.
 
@@ -12225,7 +12256,7 @@ class ComputeNodeGroupsSetNodeTemplateRequest(_messages.Message):
   r"""A ComputeNodeGroupsSetNodeTemplateRequest object.
 
   Fields:
-    nodeGroup: Name of the NodeGroup resource to delete.
+    nodeGroup: Name of the NodeGroup resource to update.
     nodeGroupsSetNodeTemplateRequest: A NodeGroupsSetNodeTemplateRequest
       resource to be passed as the request body.
     project: Project ID for this request.
@@ -14285,6 +14316,36 @@ class ComputeRegionInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersApplyUpdatesRequest = _messages.MessageField('RegionInstanceGroupManagersApplyUpdatesRequest', 4)
+
+
+class ComputeRegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersCreateInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It should
+      conform to RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the managed instance group is
+      located. It should conform to RFC1035.
+    regionInstanceGroupManagersCreateInstancesRequest: A
+      RegionInstanceGroupManagersCreateInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request.  The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersCreateInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersCreateInstancesRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
@@ -20035,6 +20096,45 @@ class ConnectionDraining(_messages.Message):
   drainingTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class CorsPolicy(_messages.Message):
+  r"""The specification for allowing client side cross-origin requests. Please
+  see W3C Recommendation for Cross Origin Resource Sharing
+
+  Fields:
+    allowCredentials: In response to a preflight request, setting this to true
+      indicates that the actual request can include user credentials. This
+      translates to the Access-Control-Allow-Credentials header. Default is
+      false.
+    allowHeaders: Specifies the content for the Access-Control-Allow-Headers
+      header.
+    allowMethods: Specifies the content for the Access-Control-Allow-Methods
+      header.
+    allowOriginRegexes: Specifies the regualar expression patterns that match
+      allowed origins. For regular expression grammar please see
+      en.cppreference.com/w/cpp/regex/ecmascript  An origin is allowed if it
+      matches either allow_origins or allow_origin_regex.
+    allowOrigins: Specifies the list of origins that will be allowed to do
+      CORS requests. An origin is allowed if it matches either allow_origins
+      or allow_origin_regex.
+    disabled: If true, specifies the CORS policy is disabled. The default
+      value of false, which indicates that the CORS policy is in effect.
+    exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
+      header.
+    maxAge: Specifies how long the results of a preflight request can be
+      cached. This translates to the content for the Access-Control-Max-Age
+      header.
+  """
+
+  allowCredentials = _messages.BooleanField(1)
+  allowHeaders = _messages.StringField(2, repeated=True)
+  allowMethods = _messages.StringField(3, repeated=True)
+  allowOriginRegexes = _messages.StringField(4, repeated=True)
+  allowOrigins = _messages.StringField(5, repeated=True)
+  disabled = _messages.BooleanField(6)
+  exposeHeaders = _messages.StringField(7, repeated=True)
+  maxAge = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
 class CustomerEncryptionKey(_messages.Message):
   r"""Represents a customer-supplied encryption key
 
@@ -21317,6 +21417,26 @@ class DistributionPolicyZoneConfiguration(_messages.Message):
   """
 
   zone = _messages.StringField(1)
+
+
+class Duration(_messages.Message):
+  r"""A Duration represents a fixed-length span of time represented as a count
+  of seconds and fractions of seconds at nanosecond resolution. It is
+  independent of any calendar and concepts like "day" or "month". Range is
+  approximately 10,000 years.
+
+  Fields:
+    nanos: Span of time that's a fraction of a second at nanosecond
+      resolution. Durations less than one second are represented with a 0
+      `seconds` field and a positive `nanos` field. Must be from 0 to
+      999,999,999 inclusive.
+    seconds: Span of time at a resolution of a second. Must be from 0 to
+      315,576,000,000 inclusive. Note: these bounds are computed from: 60
+      sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
+  """
+
+  nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(2)
 
 
 class ExchangedPeeringRoute(_messages.Message):
@@ -23566,6 +23686,146 @@ class HostRule(_messages.Message):
   pathMatcher = _messages.StringField(3)
 
 
+class HttpFaultAbort(_messages.Message):
+  r"""Specification for how requests are aborted as part of fault injection.
+
+  Fields:
+    httpStatus: The HTTP status code used to abort the request. The value must
+      be between 200 and 599 inclusive.
+    percentage: The percentage of traffic (connections/operations/requests)
+      which will be aborted as part of fault injection. The value must be
+      between 0.0 and 100.0 inclusive.
+  """
+
+  httpStatus = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  percentage = _messages.FloatField(2)
+
+
+class HttpFaultDelay(_messages.Message):
+  r"""Specifies the delay introduced by Loadbalancer before forwarding the
+  request to the backend service as part of fault injection.
+
+  Fields:
+    fixedDelay: Specifies the value of the fixed delay interval.
+    percentage: The percentage of traffic (connections/operations/requests) on
+      which delay will be introduced as part of fault injection. The value
+      must be between 0.0 and 100.0 inclusive.
+  """
+
+  fixedDelay = _messages.MessageField('Duration', 1)
+  percentage = _messages.FloatField(2)
+
+
+class HttpFaultInjection(_messages.Message):
+  r"""The specification for fault injection introduced into traffic to test
+  the resiliency of clients to backend service failure. As part of fault
+  injection, when clients send requests to a backend service, delays can be
+  introduced by Loadbalancer on a percentage of requests before sending those
+  request to the backend service. Similarly requests from clients can be
+  aborted by the Loadbalancer for a percentage of requests.
+
+  Fields:
+    abort: The specification for how client requests are aborted as part of
+      fault injection.
+    delay: The specification for how client requests are delayed as part of
+      fault injection, before being sent to a backend service.
+  """
+
+  abort = _messages.MessageField('HttpFaultAbort', 1)
+  delay = _messages.MessageField('HttpFaultDelay', 2)
+
+
+class HttpHeaderAction(_messages.Message):
+  r"""The request and response header transformations that take effect before
+  the request is passed along to the selected backendService.
+
+  Fields:
+    requestHeadersToAdd: Headers to add to a matching request prior to
+      forwarding the request to the backendService.
+    requestHeadersToRemove: A list of header names for headers that need to be
+      removed from the request prior to forwarding the request to the
+      backendService.
+    responseHeadersToAdd: Headers to add the response prior to sending the
+      response back to the client.
+    responseHeadersToRemove: A list of header names for headers that need to
+      be removed from the response prior to sending the response back to the
+      client.
+  """
+
+  requestHeadersToAdd = _messages.MessageField('HttpHeaderOption', 1, repeated=True)
+  requestHeadersToRemove = _messages.StringField(2, repeated=True)
+  responseHeadersToAdd = _messages.MessageField('HttpHeaderOption', 3, repeated=True)
+  responseHeadersToRemove = _messages.StringField(4, repeated=True)
+
+
+class HttpHeaderMatch(_messages.Message):
+  r"""matchRule criteria for request header matches.
+
+  Fields:
+    exactMatch: The value should exactly match contents of exactMatch. Only
+      one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or
+      rangeMatch must be set.
+    headerName: The name of the HTTP header to match. For matching against the
+      HTTP request's authority, use a headerMatch with the header name
+      ":authority". For matching a request's method, use the headerName
+      ":method".
+    invertMatch: If set to false, the headerMatch is considered a match if the
+      match criteria above are met. If set to true, the headerMatch is
+      considered a match if the match criteria above are NOT met. The default
+      setting is false.
+    prefixMatch: The value of the header must start with the contents of
+      prefixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
+      regexMatch, presentMatch or rangeMatch must be set.
+    presentMatch: A header with the contents of headerName must exist. The
+      match takes place whether or not the request's header has a value or
+      not. Only one of exactMatch, prefixMatch, suffixMatch, regexMatch,
+      presentMatch or rangeMatch must be set.
+    rangeMatch: The header value must be an integer and its value must be in
+      the range specified in rangeMatch. If the header does not contain an
+      integer, number or is empty, the match fails. For example for a range
+      [-5, 0]   - -3 will match.  - 0 will not match.  - 0.25 will not match.
+      - -3someString will not match.   Only one of exactMatch, prefixMatch,
+      suffixMatch, regexMatch, presentMatch or rangeMatch must be set.
+    regexMatch: The value of the header must match the regualar expression
+      specified in regexMatch. For regular expression grammar, please see:
+      en.cppreference.com/w/cpp/regex/ecmascript  For matching against a port
+      specified in the HTTP request, use a headerMatch with headerName set to
+      PORT and a regular expression that satisfies the RFC2616 Host header's
+      port specifier. Only one of exactMatch, prefixMatch, suffixMatch,
+      regexMatch, presentMatch or rangeMatch must be set.
+    suffixMatch: The value of the header must end with the contents of
+      suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
+      regexMatch, presentMatch or rangeMatch must be set.
+  """
+
+  exactMatch = _messages.StringField(1)
+  headerName = _messages.StringField(2)
+  invertMatch = _messages.BooleanField(3)
+  prefixMatch = _messages.StringField(4)
+  presentMatch = _messages.BooleanField(5)
+  rangeMatch = _messages.MessageField('Int64RangeMatch', 6)
+  regexMatch = _messages.StringField(7)
+  suffixMatch = _messages.StringField(8)
+
+
+class HttpHeaderOption(_messages.Message):
+  r"""Specification determining how headers are added to requests or
+  responses.
+
+  Fields:
+    headerName: The name of the header.
+    headerValue: The value of the header to add.
+    replace: If false, headerValue is appended to any values that already
+      exist for the header. If true, headerValue is set for the header,
+      discarding any values that were set for that header. The default value
+      is false.
+  """
+
+  headerName = _messages.StringField(1)
+  headerValue = _messages.StringField(2)
+  replace = _messages.BooleanField(3)
+
+
 class HttpHealthCheck(_messages.Message):
   r"""An HttpHealthCheck resource. This resource defines a template for how
   individual instances should be checked for health, via HTTP.
@@ -23742,6 +24002,259 @@ class HttpHealthCheckList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class HttpQueryParameterMatch(_messages.Message):
+  r"""HttpRouteRuleMatch criteria for a request's query parameter.
+
+  Fields:
+    exactMatch: The queryParameterMatch matches if the value of the parameter
+      exactly matches the contents of exactMatch. Only one of presentMatch,
+      exactMatch and regexMatch must be set.
+    name: The name of the query parameter to match. The query parameter must
+      exist in the request, in the absence of which the request match fails.
+    presentMatch: Specifies that the queryParameterMatch matches if the
+      request contains the query parameter, irrespective of whether the
+      parameter has a value or not. Only one of presentMatch, exactMatch and
+      regexMatch must be set.
+    regexMatch: The queryParameterMatch matches if the value of the parameter
+      matches the regular expression specified by regexMatch. For the regular
+      expression grammar, please see
+      en.cppreference.com/w/cpp/regex/ecmascript  Only one of presentMatch,
+      exactMatch and regexMatch must be set.
+  """
+
+  exactMatch = _messages.StringField(1)
+  name = _messages.StringField(2)
+  presentMatch = _messages.BooleanField(3)
+  regexMatch = _messages.StringField(4)
+
+
+class HttpRedirectAction(_messages.Message):
+  r"""Specifies settings for an HTTP redirect.
+
+  Enums:
+    RedirectResponseCodeValueValuesEnum: The HTTP Status code to use for this
+      RedirectAction. Supported values are:   - MOVED_PERMANENTLY_DEFAULT,
+      which is the default value and corresponds to 301.  - FOUND, which
+      corresponds to 302.  - SEE_OTHER which corresponds to 303.  -
+      TEMPORARY_REDIRECT, which corresponds to 307. In this case, the request
+      method will be retained.  - PERMANENT_REDIRECT, which corresponds to
+      308. In this case, the request method will be retained.
+
+  Fields:
+    hostRedirect: The host that will be used in the redirect response instead
+      of the one that was supplied in the request. The value must be between 1
+      and 255 characters.
+    httpsRedirect: If set to true, the URL scheme in the redirected request is
+      set to https. If set to false, the URL scheme of the redirected request
+      will remain the same as that of the request. This must only be set for
+      UrlMaps used in TargetHttpProxys. Setting this true for TargetHttpsProxy
+      is not permitted. The default is set to false.
+    pathRedirect: The path that will be used in the redirect response instead
+      of the one that was supplied in the request. Only one of pathRedirect or
+      prefixRedirect must be specified. The value must be between 1 and 1024
+      characters.
+    prefixRedirect: The prefix that replaces the prefixMatch specified in the
+      HttpRouteRuleMatch, retaining the remaining portion of the URL before
+      redirecting the request.
+    redirectResponseCode: The HTTP Status code to use for this RedirectAction.
+      Supported values are:   - MOVED_PERMANENTLY_DEFAULT, which is the
+      default value and corresponds to 301.  - FOUND, which corresponds to
+      302.  - SEE_OTHER which corresponds to 303.  - TEMPORARY_REDIRECT, which
+      corresponds to 307. In this case, the request method will be retained.
+      - PERMANENT_REDIRECT, which corresponds to 308. In this case, the
+      request method will be retained.
+    stripQuery: If set to true, any accompanying query portion of the original
+      URL is removed prior to redirecting the request. If set to false, the
+      query portion of the original URL is retained. The default is set to
+      false.
+  """
+
+  class RedirectResponseCodeValueValuesEnum(_messages.Enum):
+    r"""The HTTP Status code to use for this RedirectAction. Supported values
+    are:   - MOVED_PERMANENTLY_DEFAULT, which is the default value and
+    corresponds to 301.  - FOUND, which corresponds to 302.  - SEE_OTHER which
+    corresponds to 303.  - TEMPORARY_REDIRECT, which corresponds to 307. In
+    this case, the request method will be retained.  - PERMANENT_REDIRECT,
+    which corresponds to 308. In this case, the request method will be
+    retained.
+
+    Values:
+      FOUND: <no description>
+      MOVED_PERMANENTLY_DEFAULT: <no description>
+      PERMANENT_REDIRECT: <no description>
+      SEE_OTHER: <no description>
+      TEMPORARY_REDIRECT: <no description>
+    """
+    FOUND = 0
+    MOVED_PERMANENTLY_DEFAULT = 1
+    PERMANENT_REDIRECT = 2
+    SEE_OTHER = 3
+    TEMPORARY_REDIRECT = 4
+
+  hostRedirect = _messages.StringField(1)
+  httpsRedirect = _messages.BooleanField(2)
+  pathRedirect = _messages.StringField(3)
+  prefixRedirect = _messages.StringField(4)
+  redirectResponseCode = _messages.EnumField('RedirectResponseCodeValueValuesEnum', 5)
+  stripQuery = _messages.BooleanField(6)
+
+
+class HttpRetryPolicy(_messages.Message):
+  r"""The retry policy associates with HttpRouteRule
+
+  Fields:
+    numRetries: Specifies the allowed number retries. This number must be > 0.
+    perTryTimeout: Specifies a non-zero timeout per retry attempt.
+    retryConditions: Specfies one or more conditions when this retry rule
+      applies. Valid values are:   - 5xx: Loadbalancer will attempt a retry if
+      the backend service responds with any 5xx response code, or if the
+      backend service does not respond at all, example: disconnects, reset,
+      read timeout, connection failure, and refused streams.  - gateway-error:
+      Similar to 5xx, but only applies to response codes 502, 503 or 504. -  -
+      connect-failure: Loadbalancer will retry on failures connecting to
+      backend services, for example due to connection timeouts.  - retriable-
+      4xx: Loadbalancer will retry for retriable 4xx response codes. Currently
+      the only retriable error supported is 409.  - refused-
+      stream:Loadbalancer will retry if the backend service resets the stream
+      with a REFUSED_STREAM error code. This reset type indicates that it is
+      safe to retry.  - cancelledLoadbalancer will retry if the gRPC status
+      code in the response header is set to cancelled  - deadline-exceeded:
+      Loadbalancer will retry if the gRPC status code in the response header
+      is set to deadline-exceeded  - resource-exhausted: Loadbalancer will
+      retry if the gRPC status code in the response header is set to resource-
+      exhausted  - unavailable: Loadbalancer will retry if the gRPC status
+      code in the response header is set to unavailable
+  """
+
+  numRetries = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  perTryTimeout = _messages.MessageField('Duration', 2)
+  retryConditions = _messages.StringField(3, repeated=True)
+
+
+class HttpRouteAction(_messages.Message):
+  r"""A HttpRouteAction object.
+
+  Fields:
+    corsPolicy: The specification for allowing client side cross-origin
+      requests. Please see W3C Recommendation for Cross Origin Resource
+      Sharing
+    faultInjectionPolicy: The specification for fault injection introduced
+      into traffic to test the resiliency of clients to backend service
+      failure. As part of fault injection, when clients send requests to a
+      backend service, delays can be introduced by Loadbalancer on a
+      percentage of requests before sending those request to the backend
+      service. Similarly requests from clients can be aborted by the
+      Loadbalancer for a percentage of requests. timeout and retry_policy will
+      be ignored by clients that are configured with a fault_injection_policy.
+    requestMirrorPolicy: Specifies the policy on how requests intended for the
+      route's backends are shadowed to a separate mirrored backend service.
+      Loadbalancer does not wait for responses from the shadow service. Prior
+      to sending traffic to the shadow service, the host / authority header is
+      suffixed with -shadow.
+    retryPolicy: Specifies the retry policy associated with this route.
+    timeout: Specifies the timeout for the selected route. Timeout is computed
+      from the time the request is has been fully processed (i.e. end-of-
+      stream) up until the response has been completely processed. Timeout
+      includes all retries. If not specified, the default value is 15 seconds.
+    urlRewrite: The spec to modify the URL of the request, prior to forwarding
+      the request to the matched service
+    weightedBackendServices: A list of weighted backend services to send
+      traffic to when a route match occurs. The weights determine the
+      percentage of traffic that flows to their corresponding backend service.
+      The weights must add up to 100. If all traffic needs to go to a single
+      backend service, there must be one weightedBackendService with weight
+      set to 100. Once a backendService is identified and before forwarding
+      the request to the backend service, advanced routing actions like Url
+      rewrites and header transformations are applied depending on additional
+      settings specified in this HttpRouteAction.
+  """
+
+  corsPolicy = _messages.MessageField('CorsPolicy', 1)
+  faultInjectionPolicy = _messages.MessageField('HttpFaultInjection', 2)
+  requestMirrorPolicy = _messages.MessageField('RequestMirrorPolicy', 3)
+  retryPolicy = _messages.MessageField('HttpRetryPolicy', 4)
+  timeout = _messages.MessageField('Duration', 5)
+  urlRewrite = _messages.MessageField('UrlRewrite', 6)
+  weightedBackendServices = _messages.MessageField('WeightedBackendService', 7, repeated=True)
+
+
+class HttpRouteRule(_messages.Message):
+  r"""An HttpRouteRule specifies how to match an HTTP request and the
+  corresponding routing action that load balancing proxies will perform.
+
+  Fields:
+    headerAction: Specifies changes to request and response headers that need
+      to take effect for the selected backendService. The headerAction
+      specified here are applied before the matching
+      pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeA
+      ction.weightedBackendService.backendServiceWeightAction[].headerAction
+    matchRules: A HttpRouteRuleMatch attribute.
+    routeAction: In response to a matching matchRule, the load balancer routes
+      the request to the backend service specified by this  routeAction. Only
+      one of routeAction or urlRedirect must be set.
+    urlRedirect: In response to a route rule match, the load balancer
+      redirects the request to a URL specified by the following
+      HttpRedirectAction. Only one of urlRedirect or routeAction must be set.
+  """
+
+  headerAction = _messages.MessageField('HttpHeaderAction', 1)
+  matchRules = _messages.MessageField('HttpRouteRuleMatch', 2, repeated=True)
+  routeAction = _messages.MessageField('HttpRouteAction', 3)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 4)
+
+
+class HttpRouteRuleMatch(_messages.Message):
+  r"""HttpRouteRuleMatch specifies a set of criteria for matching requests to
+  an HttpRouteRule. All specified criteria must be satisfied for a match to
+  occur.
+
+  Fields:
+    fullPathMatch: For satifying the matchRule condition, the path of the
+      request must exactly match the value specified in fullPathMatch after
+      removing any query parameters and anchor that may be part of the
+      original URL. FullPathMatch must be between 1 and 1024 characters. Only
+      one of prefixMatch, fullPathMatch or regexMatch must be specified.
+    headerMatches: Specifies a list of header match criteria, all of which
+      must match corresponding headers in the request.
+    ignoreCase: Specifies that prefixMatch and fullPathMatch matches are case
+      sensitive. The default value is false. caseSensitive must not be used
+      with regexMatch.
+    metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
+      routing configuration to a limited set xDS compliant clients. In their
+      xDS requests to Loadbalancer, xDS clients present node metadata. If a
+      match takes place, the relevant routing configuration is made available
+      to those proxies. For each metadataFilter in this list, if its
+      filterMatchCriteria is set to MATCH_ANY, at least one of the
+      filterLabels must match the corresponding label provided in the
+      metadata. If its filterMatchCriteria is set to MATCH_ALL, then all of
+      its filterLabels must match with corresponding labels in the provided
+      metadata. metadataFilters specified here can be overrides those
+      specified in ForwardingRule that refers to this UrlMap. metadataFilters
+      only applies to Loadbalancers that have their loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED.
+    prefixMatch: For satifying the matchRule condition, the request's path
+      must begin with the specified prefixMatch. prefixMatch must begin with a
+      /. The value must be between 1 and 1024 characters. Only one of
+      prefixMatch, fullPathMatch or regexMatch must be specified.
+    queryParameterMatches: Specifies a list of query parameter match criteria,
+      all of which must match corresponding query parameters in the request.
+    regexMatch: For satifying the matchRule condition, the path of the request
+      must satisfy the regular expression specified in regexMatch after
+      removing any query parameters and anchor supplied with the original URL.
+      For regular expression grammar please see
+      en.cppreference.com/w/cpp/regex/ecmascript  Only one of prefixMatch,
+      fullPathMatch or regexMatch must be specified.
+  """
+
+  fullPathMatch = _messages.StringField(1)
+  headerMatches = _messages.MessageField('HttpHeaderMatch', 2, repeated=True)
+  ignoreCase = _messages.BooleanField(3)
+  metadataFilters = _messages.MessageField('MetadataFilter', 4, repeated=True)
+  prefixMatch = _messages.StringField(5)
+  queryParameterMatches = _messages.MessageField('HttpQueryParameterMatch', 6, repeated=True)
+  regexMatch = _messages.StringField(7)
 
 
 class HttpsHealthCheck(_messages.Message):
@@ -24028,6 +24541,8 @@ class Image(_messages.Message):
       create other resources, such as instances, only after the image has been
       successfully created and the status is set to READY. Possible values are
       FAILED, PENDING, or READY.
+    storageLocations: GCS bucket storage location of the image (regional or
+      multi-regional).
   """
 
   class SourceTypeValueValuesEnum(_messages.Enum):
@@ -24142,6 +24657,7 @@ class Image(_messages.Message):
   sourceSnapshotId = _messages.StringField(26)
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 27, default=u'RAW')
   status = _messages.EnumField('StatusValueValuesEnum', 28)
+  storageLocations = _messages.StringField(29, repeated=True)
 
 
 class ImageList(_messages.Message):
@@ -27179,6 +27695,20 @@ class InstancesStartWithEncryptionKeyRequest(_messages.Message):
 
   disks = _messages.MessageField('CustomerEncryptionKeyProtectedDisk', 1, repeated=True)
   instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 2)
+
+
+class Int64RangeMatch(_messages.Message):
+  r"""HttpRouteRuleMatch criteria for field values that must stay within the
+  specified integer range.
+
+  Fields:
+    rangeEnd: The end of the range (exclusive) in signed long integer format.
+    rangeStart: The start of the range (inclusive) in signed long integer
+      format.
+  """
+
+  rangeEnd = _messages.IntegerField(1)
+  rangeStart = _messages.IntegerField(2)
 
 
 class Interconnect(_messages.Message):
@@ -30314,6 +30844,78 @@ class Metadata(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#metadata')
 
 
+class MetadataFilter(_messages.Message):
+  r"""Opaque filter criteria used by loadbalancers to restrict routing
+  configuration to a limited set of loadbalancing proxies. Proxies and
+  sidecars involved in loadbalancing would typically present metadata to the
+  loadbalancers which need to match criteria specified here. If a match takes
+  place, the relevant routing configuration is made available to those
+  proxies. For each metadataFilter in this list, if its filterMatchCriteria is
+  set to MATCH_ANY, at least one of the filterLabels must match the
+  corresponding label provided in the metadata. If its filterMatchCriteria is
+  set to MATCH_ALL, then all of its filterLabels must match with corresponding
+  labels in the provided metadata. An example for using metadataFilters would
+  be: if loadbalancing involves  Envoys, they will only receive routing
+  configuration when values in metadataFilters match values supplied in <a hre
+  f="https://www.envoyproxy.io/docs/envoy/latest/api-v2/api/v2/core/base.proto
+  #envoy-api-msg-core-node" Node metadata of their XDS requests to
+  loadbalancers.
+
+  Enums:
+    FilterMatchCriteriaValueValuesEnum: Specifies how individual filterLabel
+      matches within the list of filterLabels contribute towards the overall
+      metadataFilter match. Supported values are:   - MATCH_ANY: At least one
+      of the filterLabels must have a matching label in the provided metadata.
+      - MATCH_ALL: All filterLabels must have matching labels in the provided
+      metadata.
+
+  Fields:
+    filterLabels: The list of label value pairs that must match labels in the
+      provided metadata based on filterMatchCriteria  This list must not be
+      empty and can have at the most 64 entries.
+    filterMatchCriteria: Specifies how individual filterLabel matches within
+      the list of filterLabels contribute towards the overall metadataFilter
+      match. Supported values are:   - MATCH_ANY: At least one of the
+      filterLabels must have a matching label in the provided metadata.  -
+      MATCH_ALL: All filterLabels must have matching labels in the provided
+      metadata.
+  """
+
+  class FilterMatchCriteriaValueValuesEnum(_messages.Enum):
+    r"""Specifies how individual filterLabel matches within the list of
+    filterLabels contribute towards the overall metadataFilter match.
+    Supported values are:   - MATCH_ANY: At least one of the filterLabels must
+    have a matching label in the provided metadata.  - MATCH_ALL: All
+    filterLabels must have matching labels in the provided metadata.
+
+    Values:
+      MATCH_ALL: <no description>
+      MATCH_ANY: <no description>
+      NOT_SET: <no description>
+    """
+    MATCH_ALL = 0
+    MATCH_ANY = 1
+    NOT_SET = 2
+
+  filterLabels = _messages.MessageField('MetadataFilterLabelMatch', 1, repeated=True)
+  filterMatchCriteria = _messages.EnumField('FilterMatchCriteriaValueValuesEnum', 2)
+
+
+class MetadataFilterLabelMatch(_messages.Message):
+  r"""MetadataFilter label name value pairs that are expected to match
+  corresponding labels presented as metadata to the loadbalancer.
+
+  Fields:
+    name: Name of metadata label. The name can have a maximum length of 1024
+      characters and must be at least 1 character long.
+    value: The value of the label must match the specified value. value can
+      have a maximum length of 1024 characters.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class NamedPort(_messages.Message):
   r"""The named port. For example: .
 
@@ -32149,6 +32751,16 @@ class NodeGroupsScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class NodeGroupsSetAutoscalingPolicyRequest(_messages.Message):
+  r"""A NodeGroupsSetAutoscalingPolicyRequest object.
+
+  Fields:
+    autoscalingPolicy: A NodeGroupAutoscalingPolicy attribute.
+  """
+
+  autoscalingPolicy = _messages.MessageField('NodeGroupAutoscalingPolicy', 1)
+
+
 class NodeGroupsSetNodeTemplateRequest(_messages.Message):
   r"""A NodeGroupsSetNodeTemplateRequest object.
 
@@ -33728,6 +34340,12 @@ class PathMatcher(_messages.Message):
   service will be used.
 
   Fields:
+    defaultRouteAction: The default HttpRouteAction to follow if none of the
+      pathRules or routeRules defined by this pathMatcher are matched. Use
+      defaultRouteAction instead of defaultService when more advanced default
+      routing actions like traffic splitting and URL rewrites are desired.
+      Only one of defaultService, defaultRouteAction or defaultUrlRedirect
+      must be set.
     defaultService: The full or partial URL to the BackendService resource.
       This will be used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -33742,8 +34360,16 @@ class PathMatcher(_messages.Message):
       the following Google IAM permissions on the specified resource
       default_service:   - compute.backendBuckets.use  -
       compute.backendServices.use
+    defaultUrlRedirect: The request is redirected by default to a URL
+      specified by defaultUrlRedirect when none of the specified pathRules or
+      routeRules match. Only one of defaultService, defaultRouteAction or
+      defaultUrlRedirect must be set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    headerAction: Specifies changes to request and response headers that need
+      to take effect for the selected backendService. HeaderAction specified
+      here are applied after the matching HttpRouteRule HeaderAction and
+      before the HeaderAction in the UrlMap
     name: The name to which this PathMatcher is referred by the HostRule.
     pathRules: The list of path rules. Use this list instead of routeRules
       when routing based on simple path matching is all that's required. The
@@ -33752,12 +34378,21 @@ class PathMatcher(_messages.Message):
       with a path /a/b/c/* will match before /a/b/* irrespective of the order
       in which those paths appear in this list. Only one of pathRules or
       routeRules must be set.
+    routeRules: The list of ordered HTTP route rules. Use this list instead of
+      pathRules when advanced route matching and routing actions are desired.
+      The order of specifying routeRules matters: the first rule that matches
+      will cause its specified routing action to take effect. Only one of
+      pathRules or routeRules must be set.
   """
 
-  defaultService = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  pathRules = _messages.MessageField('PathRule', 4, repeated=True)
+  defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
+  defaultService = _messages.StringField(2)
+  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 3)
+  description = _messages.StringField(4)
+  headerAction = _messages.MessageField('HttpHeaderAction', 5)
+  name = _messages.StringField(6)
+  pathRules = _messages.MessageField('PathRule', 7, repeated=True)
+  routeRules = _messages.MessageField('HttpRouteRule', 8, repeated=True)
 
 
 class PathRule(_messages.Message):
@@ -33769,15 +34404,24 @@ class PathRule(_messages.Message):
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
       those chars are not allowed here.
+    routeAction: The HttpRouteAction to follow if this rule is matched. Use
+      routeAction instead of service when more advanced default routing
+      actions like traffic splitting and Url rewrites are desired. Only one of
+      service, routeAction or urlRedirect should must be set.
     service: The URL of the backend service resource if this rule is matched.
       Use service instead of routeAction when simple routing to a backend
       service is desired and other advanced capabilities like traffic
       splitting and rewrites are not required. Only one of service,
       routeAction or urlRedirect should must be set.
+    urlRedirect: The request is redirected to a URL specified by urlRedirect
+      if this rule is matched. Only one of service, routeAction or urlRedirect
+      should must be set.
   """
 
   paths = _messages.StringField(1, repeated=True)
-  service = _messages.StringField(2)
+  routeAction = _messages.MessageField('HttpRouteAction', 2)
+  service = _messages.StringField(3)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 4)
 
 
 class PerInstanceConfig(_messages.Message):
@@ -35014,6 +35658,16 @@ class RegionInstanceGroupManagersApplyUpdatesRequest(_messages.Message):
   minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
 
 
+class RegionInstanceGroupManagersCreateInstancesRequest(_messages.Message):
+  r"""RegionInstanceGroupManagers.createInstances
+
+  Fields:
+    instances: [Required] List of specifications of per-instance configs.
+  """
+
+  instances = _messages.MessageField('PerInstanceConfig', 1, repeated=True)
+
+
 class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   r"""A RegionInstanceGroupManagersDeleteInstancesRequest object.
 
@@ -35586,6 +36240,20 @@ class RegionUrlMapsValidateRequest(_messages.Message):
   """
 
   resource = _messages.MessageField('UrlMap', 1)
+
+
+class RequestMirrorPolicy(_messages.Message):
+  r"""A policy that specifies how requests intended for the route's backends
+  are shadowed to a separate mirrored backend service. Loadbalancer does not
+  wait for responses from the shadow service. Prior to sending traffic to the
+  shadow service, the host / authority header is suffixed with -shadow.
+
+  Fields:
+    backendService: The full or partial URL to the BackendService resource
+      being mirrored to.
+  """
+
+  backendService = _messages.StringField(1)
 
 
 class ResourceCommitment(_messages.Message):
@@ -37895,7 +38563,7 @@ class Scheduling(_messages.Message):
     TERMINATE = 1
 
   automaticRestart = _messages.BooleanField(1)
-  minNodeCpus = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  minNodeCpus = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 3, repeated=True)
   onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 4)
   preemptible = _messages.BooleanField(5)
@@ -38405,33 +39073,6 @@ class ServiceAccount(_messages.Message):
   scopes = _messages.StringField(2, repeated=True)
 
 
-class ShieldedInstanceIdentity(_messages.Message):
-  r"""A shielded instance identity entry.
-
-  Fields:
-    encryptionKey: An Endorsement Key (EK) issued to the Shielded VM's vTPM.
-    kind: [Output Only] Type of the resource. Always
-      compute#ShieldedInstanceIdentity for shielded VM identity entry.
-    signingKey: An Attestation Key (AK) issued to the Shielded VM's vTPM.
-  """
-
-  encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
-  kind = _messages.StringField(2, default=u'compute#shieldedInstanceIdentity')
-  signingKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 3)
-
-
-class ShieldedInstanceIdentityEntry(_messages.Message):
-  r"""A Shielded VM Identity Entry.
-
-  Fields:
-    ekCert: A PEM-encoded X.509 certificate. This field can be empty.
-    ekPub: A PEM-encoded public key.
-  """
-
-  ekCert = _messages.StringField(1)
-  ekPub = _messages.StringField(2)
-
-
 class ShieldedVmConfig(_messages.Message):
   r"""A set of Shielded VM options.
 
@@ -38445,6 +39086,33 @@ class ShieldedVmConfig(_messages.Message):
   enableIntegrityMonitoring = _messages.BooleanField(1)
   enableSecureBoot = _messages.BooleanField(2)
   enableVtpm = _messages.BooleanField(3)
+
+
+class ShieldedVmIdentity(_messages.Message):
+  r"""A shielded VM identity entry.
+
+  Fields:
+    encryptionKey: An Endorsement Key (EK) issued to the Shielded VM's vTPM.
+    kind: [Output Only] Type of the resource. Always
+      compute#shieldedVmIdentity for shielded VM identity entry.
+    signingKey: An Attestation Key (AK) issued to the Shielded VM's vTPM.
+  """
+
+  encryptionKey = _messages.MessageField('ShieldedVmIdentityEntry', 1)
+  kind = _messages.StringField(2, default=u'compute#shieldedVmIdentity')
+  signingKey = _messages.MessageField('ShieldedVmIdentityEntry', 3)
+
+
+class ShieldedVmIdentityEntry(_messages.Message):
+  r"""A Shielded VM Identity Entry.
+
+  Fields:
+    ekCert: A PEM-encoded X.509 certificate. This field can be empty.
+    ekPub: A PEM-encoded public key.
+  """
+
+  ekCert = _messages.StringField(1)
+  ekPub = _messages.StringField(2)
 
 
 class ShieldedVmIntegrityPolicy(_messages.Message):
@@ -43744,12 +44412,21 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultRouteAction: The default HttpRouteAction to follow if none of the
+      hostRules match. Use defaultRouteAction instead of defaultService when
+      more advanced default routing actions like traffic splitting and Url
+      rewrites are desired. Only one of defaultService, defaultRouteAction or
+      defaultUrlRedirect should must be set.
     defaultService: The URL of the backendService resource if none of the
       hostRules match. Use defaultService instead of defaultRouteAction when
       simple routing to a backendService is desired and other advanced
       capabilities like traffic splitting and rewrites are not required. Only
       one of defaultService, defaultRouteAction or defaultUrlRedirect should
       must be set.
+    defaultUrlRedirect: The request is redirected to a default URL specified
+      by defaultUrlRedirect if none of the HostRules match. Only one of
+      defaultService, defaultRouteAction or defaultUrlRedirect should must be
+      set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
@@ -43758,6 +44435,10 @@ class UrlMap(_messages.Message):
       be provided in order to update the UrlMap, otherwise the request will
       fail with error 412 conditionNotMet.  To see the latest fingerprint,
       make a get() request to retrieve a UrlMap.
+    headerAction: Specifies changes to request and response headers that need
+      to take effect for the selected backendService. The headerAction
+      specified here take effect after headerAction specified under
+      pathMatcher.
     hostRules: The list of HostRules to use against the URL.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -43782,17 +44463,20 @@ class UrlMap(_messages.Message):
   """
 
   creationTimestamp = _messages.StringField(1)
-  defaultService = _messages.StringField(2)
-  description = _messages.StringField(3)
-  fingerprint = _messages.BytesField(4)
-  hostRules = _messages.MessageField('HostRule', 5, repeated=True)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default=u'compute#urlMap')
-  name = _messages.StringField(8)
-  pathMatchers = _messages.MessageField('PathMatcher', 9, repeated=True)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  tests = _messages.MessageField('UrlMapTest', 12, repeated=True)
+  defaultRouteAction = _messages.MessageField('HttpRouteAction', 2)
+  defaultService = _messages.StringField(3)
+  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 4)
+  description = _messages.StringField(5)
+  fingerprint = _messages.BytesField(6)
+  headerAction = _messages.MessageField('HttpHeaderAction', 7)
+  hostRules = _messages.MessageField('HostRule', 8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#urlMap')
+  name = _messages.StringField(11)
+  pathMatchers = _messages.MessageField('PathMatcher', 12, repeated=True)
+  region = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  tests = _messages.MessageField('UrlMapTest', 15, repeated=True)
 
 
 class UrlMapList(_messages.Message):
@@ -43933,17 +44617,23 @@ class UrlMapTest(_messages.Message):
   r"""Message for the expected URL mappings.
 
   Fields:
+    backendServiceWeight: The weight to use for the supplied host and path
+      when using advanced routing rules that involve traffic splitting.
     description: Description of this test case.
+    expectedUrlRedirect: The expected URL that should be redirected to for the
+      host and path being tested.
     host: Host portion of the URL.
     path: Path portion of the URL.
     service: Expected BackendService resource the given URL should be mapped
       to.
   """
 
-  description = _messages.StringField(1)
-  host = _messages.StringField(2)
-  path = _messages.StringField(3)
-  service = _messages.StringField(4)
+  backendServiceWeight = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  description = _messages.StringField(2)
+  expectedUrlRedirect = _messages.StringField(3)
+  host = _messages.StringField(4)
+  path = _messages.StringField(5)
+  service = _messages.StringField(6)
 
 
 class UrlMapValidationResult(_messages.Message):
@@ -44245,6 +44935,23 @@ class UrlMapsValidateResponse(_messages.Message):
   """
 
   result = _messages.MessageField('UrlMapValidationResult', 1)
+
+
+class UrlRewrite(_messages.Message):
+  r"""The spec for modifying the path before sending the request to the
+  matched backend service.
+
+  Fields:
+    hostRewrite: Prior to forwarding the request to the selected service, the
+      request's host header is replaced with contents of hostRewrite. The
+      value must be between 1 and 255 characters.
+    pathPrefixRewrite: Prior to forwarding the request to the selected backend
+      service, the matching portion of the request's path is replaced by
+      pathPrefixRewrite. The value must be between 1 and 1024 characters.
+  """
+
+  hostRewrite = _messages.StringField(1)
+  pathPrefixRewrite = _messages.StringField(2)
 
 
 class UsableSubnetwork(_messages.Message):
@@ -45647,6 +46354,36 @@ class WafExpressionSetExpression(_messages.Message):
   id = _messages.StringField(1)
 
 
+class WeightedBackendService(_messages.Message):
+  r"""In contrast to a single BackendService in  HttpRouteAction to which all
+  matching traffic is directed to, WeightedBackendService allows traffic to be
+  split across multiple BackendServices. The volume of traffic for each
+  BackendService is proportional to the weight specified in each
+  WeightedBackendService
+
+  Fields:
+    backendService: The full or partial URL to the default BackendService
+      resource. Before forwarding the request to backendService, the
+      loadbalancer applies any relevant headerActions specified as part of
+      this backendServiceWeight.
+    headerAction: Specifies changes to request and response headers that need
+      to take effect for the selected backendService. headerAction specified
+      here take effect before headerAction in the enclosing HttpRouteRule,
+      PathMatcher and UrlMap.
+    weight: Specifies the fraction of traffic sent to backendService. The sum
+      of all weights specified in weightedBackendServices within
+      HttpRouteAction must equal 100. The selection of a backend service is
+      determined only for new traffic. Once a user's request has been directed
+      to a backendService, subsequent requests will be sent to the same
+      backendService as determined by the BackendService's session affinity
+      policy.
+  """
+
+  backendService = _messages.StringField(1)
+  headerAction = _messages.MessageField('HttpHeaderAction', 2)
+  weight = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+
+
 class XpnHostList(_messages.Message):
   r"""A XpnHostList object.
 
@@ -45780,7 +46517,7 @@ class XpnResourceId(_messages.Message):
 
   Fields:
     id: The ID of the service resource. In the case of projects, this field
-      matches the project ID (e.g., my-project), not the project number (e.g.,
+      supports project id (e.g., my-project-123) and project number (e.g.
       12345678).
     type: The type of the service resource.
   """

@@ -382,6 +382,7 @@ class CreateClusterOptions(object):
                federating_service_account=None,
                resource_usage_bigquery_dataset=None,
                security_group=None,
+               enable_private_ipv6_access=None,
                enable_vertical_pod_autoscaling=None,
                security_profile=None,
                security_profile_runtime_rules=None,
@@ -458,6 +459,7 @@ class CreateClusterOptions(object):
     self.federating_service_account = federating_service_account
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
     self.security_group = security_group
+    self.enable_private_ipv6_access = enable_private_ipv6_access
     self.enable_vertical_pod_autoscaling = enable_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
@@ -2098,6 +2100,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       cluster.databaseEncryption = self.messages.DatabaseEncryption(
           keyName=options.database_encryption,
           state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
+    if options.enable_private_ipv6_access is not None:
+      cluster.networkConfig = self.messages.NetworkConfig(
+          enablePrivateIpv6Access=options.enable_private_ipv6_access)
 
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),

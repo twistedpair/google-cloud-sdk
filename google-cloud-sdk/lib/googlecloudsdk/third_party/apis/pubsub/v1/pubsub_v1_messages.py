@@ -256,7 +256,9 @@ class ModifyAckDeadlineRequest(_messages.Message):
       request was sent to the Pub/Sub system. For example, if the value is 10,
       the new ack deadline will expire 10 seconds after the
       `ModifyAckDeadline` call was made. Specifying zero may immediately make
-      the message available for another pull request. The minimum deadline you
+      the message available for another pull request. Note that for high
+      throughput subscribers, specifying zero might result in an increase in
+      number of duplicate messages being delivered. The minimum deadline you
       can specify is 0 seconds. The maximum deadline you can specify is 600
       seconds (10 minutes).
     ackIds: List of acknowledgment IDs.

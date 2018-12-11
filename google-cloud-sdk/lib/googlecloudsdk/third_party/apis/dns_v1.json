@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20181126",
+ "revision": "20181205",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -19,7 +19,7 @@
  "basePath": "/dns/v1/projects/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "dns/v1/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/dns/v1",
  "parameters": {
   "alt": {
    "type": "string",

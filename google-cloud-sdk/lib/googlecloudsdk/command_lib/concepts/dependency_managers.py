@@ -23,9 +23,14 @@ import functools
 
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.command_lib.concepts import base
+from googlecloudsdk.command_lib.concepts import exceptions
 from googlecloudsdk.command_lib.concepts import names
 
 import six
+
+
+def GetPresentationNames(nodes):
+  return (child.GetPresentationName() for child in nodes)
 
 
 class DependencyManager(object):
@@ -42,6 +47,10 @@ class DependencyManager(object):
   def ParseConcept(self, parsed_args):
     """Parse the concept recursively by building the dependencies in a DFS.
 
+    Args are formatted in the same way as usage_text.py:GetArgsUsage, except
+    concepts in a concept group are not sorted. Concepts are displayed in the
+    order they were added to the group.
+
     Args:
       parsed_args: the raw parsed argparse namespace.
 
@@ -54,7 +63,7 @@ class DependencyManager(object):
 
     def _ParseConcept(node):
       """Recursive parsing."""
-      if not node.dependencies or node.marshalled:
+      if not node.is_group:
         fallthroughs = []
         if node.arg_name:
           fallthroughs.append(deps_lib.ArgFallthrough(node.arg_name))
@@ -64,16 +73,71 @@ class DependencyManager(object):
                 functools.partial(
                     deps_lib.GetFromFallthroughs, fallthroughs, parsed_args),
                 marshalled_dependencies=node.dependencies))
-      return node.concept.Parse(
-          DependencyView(
-              {name: _ParseConcept(child)
-               for name, child in six.iteritems(node.dependencies)}))
+
+      # TODO(b/120132521) Replace and eliminate argparse extensions
+      also_optional = []  # The optional concepts that were not specified.
+      have_optional = []  # The specified optional (not required) concepts.
+      have_required = []  # The specified required concepts.
+      need_required = []  # The required concepts that must be specified.
+      namespace = {}
+      for name, child in six.iteritems(node.dependencies):
+        result = None
+        try:
+          result = _ParseConcept(child)
+          if result:
+            if child.concept.required:
+              have_required.append(child.concept)
+            else:
+              have_optional.append(child.concept)
+          else:
+            also_optional.append(child.concept)
+        except exceptions.MissingRequiredArgumentError:
+          need_required.append(child.concept)
+        namespace[name] = result
+
+      if need_required:
+        missing = ' '.join(GetPresentationNames(need_required))
+        if have_optional or have_required:
+          specified_parts = []
+          if have_required:
+            specified_parts.append(' '.join(
+                GetPresentationNames(have_required)))
+          if have_required and have_optional:
+            specified_parts.append(':')
+          if have_optional:
+            specified_parts.append(' '.join(
+                GetPresentationNames(have_optional)))
+
+          specified = ' '.join(specified_parts)
+          if have_required and have_optional:
+            if node.concept.required:
+              specified = '({})'.format(specified)
+            else:
+              specified = '[{}]'.format(specified)
+          raise exceptions.ModalGroupError(
+              node.concept.GetPresentationName(), specified, missing)
+
+      count = len(have_required) + len(have_optional)
+      if node.concept.mutex:
+        specified = ' | '.join(
+            GetPresentationNames(node.concept.concepts))
+        if node.concept.required:
+          specified = '({specified})'.format(specified=specified)
+          if count != 1:
+            raise exceptions.RequiredMutexGroupError(
+                node.concept.GetPresentationName(), specified)
+        else:
+          if count > 1:
+            raise exceptions.OptionalMutexGroupError(
+                node.concept.GetPresentationName(), specified)
+
+      return node.concept.Parse(DependencyView(namespace))
 
     return _ParseConcept(self.node)
 
 
 class DependencyView(object):
-  """Simple namespace used by concept.Parse."""
+  """Simple namespace used by concept.Parse for concept groups."""
 
   def __init__(self, values_dict):
     for key, value in six.iteritems(values_dict):
@@ -125,14 +189,14 @@ class DependencyNode(object):
       parsing.
   """
 
-  def __init__(self, name, concept=None, dependencies=None, arg_name=None,
-               fallthroughs=None, marshalled=False):
+  def __init__(self, name, is_group, concept=None, dependencies=None,
+               arg_name=None, fallthroughs=None):
     self.name = name
+    self.is_group = is_group
     self.concept = concept
     self.dependencies = dependencies
     self.arg_name = arg_name
     self.fallthroughs = fallthroughs or []
-    self.marshalled = marshalled
 
   @classmethod
   def FromAttribute(cls, attribute):
@@ -142,16 +206,16 @@ class DependencyNode(object):
     }
     marshal = attribute.concept.Marshal()
     if marshal:
-      kwargs['marshalled'] = True
       attributes = [concept.Attribute() for concept in marshal]
     elif not isinstance(attribute, base.Attribute):
       attributes = attribute.attributes
     else:
       attributes = None
-    if marshal or not attributes:
+    if isinstance(attribute, base.Attribute) and (marshal or not attributes):
       kwargs['arg_name'] = attribute.arg_name
       kwargs['fallthroughs'] = attribute.fallthroughs
     if attributes:
       kwargs['dependencies'] = {a.concept.key: DependencyNode.FromAttribute(a)
                                 for a in attributes}
-    return DependencyNode(attribute.concept.key, **kwargs)
+    return DependencyNode(attribute.concept.key,
+                          not isinstance(attribute, base.Attribute), **kwargs)

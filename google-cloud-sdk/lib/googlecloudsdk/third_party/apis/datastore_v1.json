@@ -264,7 +264,7 @@
     },
     "GoogleDatastoreAdminV1Index": {
       "id": "GoogleDatastoreAdminV1Index",
-      "description": "A minimal index definition.\nNext tag: 8",
+      "description": "A minimal index definition.",
       "type": "object",
       "properties": {
         "projectId": {
@@ -322,7 +322,7 @@
     },
     "GoogleDatastoreAdminV1IndexedProperty": {
       "id": "GoogleDatastoreAdminV1IndexedProperty",
-      "description": "Next tag: 3",
+      "description": "A property of an index.",
       "type": "object",
       "properties": {
         "name": {

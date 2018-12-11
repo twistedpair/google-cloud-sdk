@@ -4738,7 +4738,7 @@ If the group is part of a backend service that has enabled connection draining, 
         request: (ComputeInstancesGetShieldedVmIdentityRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ShieldedInstanceIdentity) The response message.
+        (ShieldedVmIdentity) The response message.
       """
       config = self.GetMethodConfig('GetShieldedVmIdentity')
       return self._RunMethod(
@@ -4753,7 +4753,7 @@ If the group is part of a backend service that has enabled connection draining, 
         relative_path=u'projects/{project}/zones/{zone}/instances/{instance}/getShieldedVmIdentity',
         request_field='',
         request_type_name=u'ComputeInstancesGetShieldedVmIdentityRequest',
-        response_type_name=u'ShieldedInstanceIdentity',
+        response_type_name=u'ShieldedVmIdentity',
         supports_download=False,
     )
 

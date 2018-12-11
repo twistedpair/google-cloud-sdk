@@ -404,6 +404,11 @@
           "type": "integer",
           "format": "int32"
         },
+        "timeoutSeconds": {
+          "description": "TimeoutSeconds holds the max duration the instance is allowed for\nresponding to a request. (not used by Cloud Run)",
+          "type": "integer",
+          "format": "int32"
+        },
         "serviceAccountName": {
           "description": "ServiceAccountName holds the name of the Kubernetes service account\nas which the underlying K8s resources should be run. If unspecified\nthis will default to the \"default\" service account for the namespace\nin which the Revision exists.\nThis may be used to provide access to private container images by\nfollowing:\nhttps:\/\/kubernetes.io\/docs\/tasks\/configure-pod-container\/configure-service-account\/#add-imagepullsecrets-to-a-service-account",
           "type": "string"
@@ -999,6 +1004,10 @@
           "description": "The top-level domain from the underlying Route.",
           "type": "string"
         },
+        "address": {
+          "description": "Similar to domain, information on where the service is available on HTTP.",
+          "$ref": "Addressable"
+        },
         "observedGeneration": {
           "description": "Generation of the service that was last processed by the controller.",
           "type": "integer",
@@ -1046,6 +1055,16 @@
           "description": "Last time the condition transitioned from one status to another.\n+optional",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "Addressable": {
+      "id": "Addressable",
+      "description": "Information for connecting over HTTP(s).",
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string"
         }
       }
     },
@@ -1210,6 +1229,10 @@
         "domainInternal": {
           "description": "DomainInternal holds the top-level domain that will distribute traffic over\nthe provided targets from inside the cluster. It generally has the form\n{route-name}.{route-namespace}.svc.cluster.local",
           "type": "string"
+        },
+        "address": {
+          "description": "Similar to domain, information on where the service is available on HTTP.",
+          "$ref": "Addressable"
         }
       }
     },

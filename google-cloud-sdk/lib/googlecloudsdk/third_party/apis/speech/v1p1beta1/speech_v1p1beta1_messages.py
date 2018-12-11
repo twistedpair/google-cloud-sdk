@@ -12,49 +12,6 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
-class CreateDatasetMetadata(_messages.Message):
-  r"""Describes the progress of a long-running `CreateDataset` call. It is
-  included in the `metadata` field of the `Operation` returned by the
-  `GetOperation` call of the `google::longrunning::Operations` service.
-
-  Fields:
-    lastUpdateTime: Time of the most recent processing update.
-    name: Resource name of the dataset. Form :-
-      'projects/{project_number}/locations/{location_id}/datasets/{dataset_id}
-      '
-    progressPercent: Approximate percentage of data processed thus far.
-      Guaranteed to be 100 when the data is fully ingested, pre-processed and
-      stats about the data are available.
-    startTime: Time when the request was received.
-  """
-
-  lastUpdateTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  progressPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(4)
-
-
-class CreateModelMetadata(_messages.Message):
-  r"""Describes the progress of a long-running `CreateModel` call. It is
-  included in the `metadata` field of the `Operation` returned by the
-  `GetOperation` call of the `google::longrunning::Operations` service.
-
-  Fields:
-    lastUpdateTime: Time of the most recent processing update.
-    name: Resource name of the model. Format:
-      "projects/{project_id}/locations/{location_id}/models/{model_id}"
-    progressPercent: Approximate percentage of data processed thus far.
-      Guaranteed to be 100 when the data is fully ingested, pre-processed and
-      stats about the data are available.
-    startTime: Time when the request was received.
-  """
-
-  lastUpdateTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  progressPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(4)
-
-
 class DataErrors(_messages.Message):
   r"""Different types of dataset errors and the stats associated with each
   error.

@@ -146,7 +146,15 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       variables. If a replacement environment  variable map is not included in
       `environment`, all custom environment  variables  are cleared.  It is an
       error to provide both this mask and a mask specifying one or  more
-      individual environment variables.</td>  </tr>  </tbody>  </table>
+      individual environment variables.</td>  </tr>  <tr>
+      <td>config.softwareConfig.imageVersion</td>  <td>Upgrade the version of
+      the environment in-place. Refer to  `SoftwareConfig.image_version` for
+      information on how to format the new  image version. Additionally, the
+      new image version cannot effect a version  downgrade and must match the
+      current image version's Composer major  version and Airflow major and
+      minor versions. Consult the  <a href="/composer/docs/concepts/versioning
+      /composer-versions">Cloud  Composer Version List</a> for valid
+      values.</td>  </tr>  </tbody>  </table>
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -648,20 +656,20 @@ class SoftwareConfig(_messages.Message):
       * `C_FORCE_ROOT` * `CONTAINER_NAME` * `DAGS_FOLDER` * `GCP_PROJECT` *
       `GCS_BUCKET` * `GKE_CLUSTER_NAME` * `SQL_DATABASE` * `SQL_INSTANCE` *
       `SQL_PASSWORD` * `SQL_PROJECT` * `SQL_REGION` * `SQL_USER`
-    imageVersion: Immutable. The version of the software running in the
-      environment. This encapsulates both the version of Cloud Composer
-      functionality and the version of Apache Airflow. It must match the
-      regular expression `composer-([0-9]+\.[0-9]+\.[0-9]+|latest)-airflow-[0-
-      9]+\.[0-9]+(\.[0-9]+.*)?`. When used as input, the server will also
-      check if the provided version is supported and deny the creation request
-      for an unsupported version.  The Cloud Composer portion of the version
-      is a [semantic version](https://semver.org) or `latest`. The patch
-      version can be omitted and the current Cloud Composer patch version will
-      be selected. When `latest` is provided instead of an explicit version
-      number, the server will replace `latest` with the current Cloud Composer
-      version and store that version number in the same field.  The portion of
-      the image version that follows <em>airflow-</em> is an official Apache
-      Airflow repository [release name](https://github.com/apache/incubator-
+    imageVersion: The version of the software running in the environment. This
+      encapsulates both the version of Cloud Composer functionality and the
+      version of Apache Airflow. It must match the regular expression `compose
+      r-([0-9]+\.[0-9]+\.[0-9]+|latest)-airflow-[0-9]+\.[0-9]+(\.[0-9]+.*)?`.
+      When used as input, the server will also check if the provided version
+      is supported and deny the request for an unsupported version.  The Cloud
+      Composer portion of the version is a [semantic
+      version](https://semver.org) or `latest`. The patch version can be
+      omitted and the current Cloud Composer patch version will be selected.
+      When `latest` is provided instead of an explicit version number, the
+      server will replace `latest` with the current Cloud Composer version and
+      store that version number in the same field.  The portion of the image
+      version that follows <em>airflow-</em> is an official Apache Airflow
+      repository [release name](https://github.com/apache/incubator-
       airflow/releases).  Supported values for input are: * `composer-latest-
       airflow-1.10.0` * `composer-latest-airflow-1.9.0` * `composer-latest-
       airflow-1.10` * `composer-latest-airflow-1.9` *

@@ -337,6 +337,7 @@ ASYNC_FLAG = Argument(
 FILTER_FLAG = Argument(
     '--filter',
     metavar='EXPRESSION',
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help="""\
     Apply a Boolean filter _EXPRESSION_ to each resource item to be listed.
@@ -348,6 +349,7 @@ FILTER_FLAG = Argument(
 LIMIT_FLAG = Argument(
     '--limit',
     type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help="""\
     Maximum number of resources to list. The default is *unlimited*.
@@ -358,6 +360,7 @@ LIMIT_FLAG = Argument(
 PAGE_SIZE_FLAG = Argument(
     '--page-size',
     type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help="""\
     Some services group resource list output into pages. This flag specifies
@@ -371,6 +374,7 @@ SORT_BY_FLAG = Argument(
     '--sort-by',
     metavar='FIELD',
     type=arg_parsers.ArgList(),
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help="""\
     Comma-separated list of resource field key names to sort by. The
@@ -382,6 +386,7 @@ SORT_BY_FLAG = Argument(
 URI_FLAG = Argument(
     '--uri',
     action='store_true',
+    require_coverage_in_tests=False,
     category=LIST_COMMAND_FLAGS,
     help='Print a list of resource URIs instead of the default output.')
 

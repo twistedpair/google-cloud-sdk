@@ -5,6 +5,64 @@ Copyright 2014-2018 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 228.0.0 (2018-12-11)
+
+### Breaking Changes
+
+*   **(Cloud Endpoints)** Deprecated `--full` flag of `gcloud endpoints operations describe`. All
+    described operations are now printed without redacting any content.
+
+
+### App Engine
+
+
+* Updated the Java SDK to version 1.9.70.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### Cloud Composer
+
+*   Promoted `--python-version` flag of `gcloud composer environments create`
+    to GA. This flag can be used to specify the Python version used within a
+    created environment.
+
+### Cloud DNS
+
+* Added the `gcloud beta dns policies` command group.
+
+### Compute Engine
+
+* Added `--use-serving-port` flag to `gcloud beta compute health-checks update`.
+* Added `--container-mount-disk` flag to `gcloud beta compute instance-templates
+  create-with-container`.
+* Promoted `gcloud compute security-policies` and
+  `gcloud compute security-policies rules` to GA.
+* Promoted `--security-policy` flag of `gcloud compute backend-services update`
+  to GA.
+* Added `--no-guest-environment` flag to `gcloud beta compute images import`
+  which prevents Google Guest Agent from being installed on the image.
+* Added `--network` and `--subnet` flags to `gcloud beta compute images import`.
+* Added `--subnet` flag to `gcloud beta compute images export`.
+* Fixed `gcloud beta compute images import` to use gcloud command line tool
+  config for `zone` flag in addition to `--zone` command line flag.
+* Modified `gcloud beta compute images <import|export>` to use temporary bucket
+  in the same region as source/destination buckets to avoid cross-region copying
+  and its associated cost and performance penalty.
+* Added `--prefix-length`, `--purpose` and `--network` flags to GA for
+  `gcloud compute addresses create` to support reserving IP range from
+  virtual network for peering.
+* Added the `gcloud beta compute start-iap-tunnel` command for Cloud IAP TCP
+  Forwarding which creates a TCP tunnel to an instance without requiring an
+  external IP and with access granted using Cloud IAP.
+
+### Kubernetes Engine
+
+* Promoted Vertical Pod Autoscaling to beta. Use `--enable-vertical-pod-autoscaling` with `gcloud beta container clusters create` or `gcloud beta container clusters update` to enable this feature.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 227.0.0 (2018-12-04)
 
 ### Breaking Changes

@@ -723,18 +723,17 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messa
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest(_messages.Message):
-  r"""The request used for CreateWorkerPool.
+  r"""The request used for `CreateWorkerPool`.
 
   Fields:
-    parent: parent is the resource name of the Instance in which this
-      WorkerPool is created. Format:
-      'projects/{project_id}/instances/{instance_id}'
-    poolId: ID of the created WorkerPool. A valid pool_id must: be 6-50
-      characters long, contains only lowercase letters, digits, hyphens and
+    parent: Resource name of the instance in which to create the new worker
+      pool. Format: `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`
+    poolId: ID of the created worker pool. A valid pool ID must: be 6-50
+      characters long, contain only lowercase letters, digits, hyphens and
       underscores, start with a lowercase letter, and end with a lowercase
       letter or a digit.
-    workerPool: WorkerPool specifies the WorkerPool to create. The name in the
-      WorkerPool, if specified, is ignored.
+    workerPool: Specifies the worker pool to create. The name in the worker
+      pool, if specified, is ignored.
   """
 
   parent = _messages.StringField(1)
@@ -757,8 +756,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteWorkerPoolRequest(_mes
   r"""The request used for DeleteWorkerPool.
 
   Fields:
-    name: name is the resource name of the WorkerPool to delete. Format:
-      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
+    name: Name of the worker pool to delete. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
   """
 
   name = _messages.StringField(1)
@@ -779,8 +778,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetWorkerPoolRequest(_messag
   r"""The request used for GetWorkerPool.
 
   Fields:
-    name: name is the resource name of the WorkerPool to retrieve. Format:
-      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
+    name: name is the resource name of the worker pool to retrieve. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
   """
 
   name = _messages.StringField(1)
@@ -855,9 +854,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsRequest(_mess
   object.
 
   Fields:
-    parent: parent is the resource name of the Instance whose WorkerPools
-      should be listed. Format:
-      'projects/{project_id}/instances/{instance_id}'
+    parent: Resource name of the instance. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`
   """
 
   parent = _messages.StringField(1)
@@ -868,7 +866,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsResponse(_mes
   object.
 
   Fields:
-    workerPools: The list of WorkerPools in a given Instance.
+    workerPools: The list of worker pools in a given instance.
   """
 
   workerPools = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 1, repeated=True)
@@ -881,11 +879,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest(_mes
     updateMask: The update mask applies to worker_pool. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask If an empty update_mask
-      is provided, only the non-default valued field in the WorkerPool field
+      is provided, only the non-default valued field in the worker pool field
       will be updated. Note that in order to update a field to the default
       value (zero, false, empty string) an explicit update_mask must be
       provided.
-    workerPool: WorkerPool specifies the WorkerPool to update.
+    workerPool: Specifies the worker pool to update.
   """
 
   updateMask = _messages.StringField(1)
@@ -893,26 +891,22 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest(_mes
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Message):
-  r"""WorkerConfig defines the configuration to be used for a creating workers
-  in the WorkerPool.
+  r"""Defines the configuration to be used for a creating workers in the
+  worker pool.
 
   Fields:
     diskSizeGb: Required. Size of the disk attached to the worker, in GB. See
       https://cloud.google.com/compute/docs/disks/
-    diskType: Required. Disk Type to use for the worker. See
-      https://cloud.google.com/compute/docs/disks. Currently only "pd-
-      standard" is supported.
-    machineType: Required. Machine Type of the worker, such as n1-standard-2.
-      See https://cloud.google.com/compute/docs/machine-types.
-    minCpuPlatform: Optional. Minimum CPU platform to use when creating the
-      worker. See https://cloud.google.com/compute/docs/cpu-platforms.
-    reserved: Optional. Specify whether or not the worker is reserved, i.e.
-      no-preemptible. If true, the worker is reserved and won't be preempted.
-      See https://cloud.google.com/compute/docs/instances/preemptible  This
-      field is supported by UpdateWorkerPool but is currently ignored by
-      CreateWorkerPool. Temporarily, in CreateWorkerPool, the WorkerPool is
-      created with reserved=true regardless of what is specified in
-      CreateWorkerPoolRequest, but this will change soon.
+    diskType: Required. Disk Type to use for the worker. See [Storage
+      options](https://cloud.google.com/compute/docs/disks/#introduction).
+      Currently only `pd-standard` is supported.
+    machineType: Required. Machine type of the worker, such as n1-standard-2.
+      See https://cloud.google.com/compute/docs/machine-types for a list of
+      supported machine types.
+    minCpuPlatform: Minimum CPU platform to use when creating the worker. See
+      [CPU Platforms](https://cloud.google.com/compute/docs/cpu-platforms).
+    reserved: Output only. `reserved=true` means the worker is reserved and
+      won't be preempted.
   """
 
   diskSizeGb = _messages.IntegerField(1)
@@ -923,46 +917,47 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):
-  r"""WorkerPool defines the complete configuration of a WorkerPool for a
-  consumer.
+  r"""A worker pool resource in the Remote Build Execution API.
 
   Enums:
-    StateValueValuesEnum: Output only. State of the WorkerPool.
+    StateValueValuesEnum: Output only. State of the worker pool.
 
   Fields:
     name: WorkerPool resource name formatted as:
-      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
+      'projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]'.
       name should not be populated when creating a worker pool since it is
-      provided in the pool_id field.
-    state: Output only. State of the WorkerPool.
-    workerConfig: worker_config specifies the properties used for creating
-      workers in a WorkerPool.
-    workerCount: worker_count is the desired number of workers in the
-      WorkerPool. If the actual number of workers does not match this value,
-      worker provider will either create or delete workers as needed.
+      provided in the `poolId` field.
+    state: Output only. State of the worker pool.
+    workerConfig: Specifies the properties, such as machine type and disk
+      size, used for creating workers in a worker pool.
+    workerCount: The desired number of workers in the worker pool. Must be a
+      value between 0 and 1000.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the WorkerPool.
+    r"""Output only. State of the worker pool.
 
     Values:
       STATE_UNSPECIFIED: Not a valid state, but the default value of the enum.
-      CREATING: The WorkerPool is in state CREATING once CreateWorkerPool is
-        called and before all requested workers are ready.
-      RUNNING: The WorkerPool is in state RUNNING when all its workers are
+      CREATING: The worker pool is in state `CREATING` once `CreateWorkerPool`
+        is called and before all requested workers are ready.
+      RUNNING: The worker pool is in state `RUNNING` when all its workers are
         ready for use.
-      UPDATING: The WorkerPool is in state UPDATING once UpdateWorkerPool is
-        called and before the new configurations has all the requested workers
-        ready for use, and no older configuration has any workers. At that
-        point the state transitions to RUNNING.
-      DELETING: The WorkerPool is in state DELETING once the Delete method is
-        called and before the deletion completes.
+      UPDATING: The worker pool is in state `UPDATING` once `UpdateWorkerPool`
+        is called and before the new configuration has all the requested
+        workers ready for use, and no older configuration has any workers. At
+        that point the state transitions to `RUNNING`.
+      DELETING: The worker pool is in state `DELETING` once the `Delete`
+        method is called and before the deletion completes.
+      INACTIVE: The worker pool is in state `INACTIVE` when the instance
+        hosting the worker pool in not running.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     RUNNING = 2
     UPDATING = 3
     DELETING = 4
+    INACTIVE = 5
 
   name = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -1956,8 +1951,8 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest(_messages.Me
   r"""A RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest object.
 
   Fields:
-    name: name is the resource name of the WorkerPool to delete. Format:
-      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
+    name: Name of the worker pool to delete. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1967,8 +1962,8 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest(_messages.Messa
   r"""A RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest object.
 
   Fields:
-    name: name is the resource name of the WorkerPool to retrieve. Format:
-      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
+    name: name is the resource name of the worker pool to retrieve. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1978,9 +1973,8 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest(_messages.Mess
   r"""A RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest object.
 
   Fields:
-    parent: parent is the resource name of the Instance whose WorkerPools
-      should be listed. Format:
-      'projects/{project_id}/instances/{instance_id}'
+    parent: Resource name of the instance. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1994,9 +1988,9 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsPatchRequest(_messages.Mes
       GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest
       resource to be passed as the request body.
     name: WorkerPool resource name formatted as:
-      'projects/{project_id}/instances/{instance_id}/workerpools/{pool_id}'.
+      'projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]'.
       name should not be populated when creating a worker pool since it is
-      provided in the pool_id field.
+      provided in the `poolId` field.
   """
 
   googleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest', 1)

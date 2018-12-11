@@ -321,7 +321,8 @@
             "Nvidia Tesla K80 GPU.",
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
-            "Nvidia Tesla P4 GPU."
+            "Nvidia Tesla P4 GPU.",
+            "Nvidia Tesla T4 GPU."
           ],
           "type": "string",
           "enum": [
@@ -329,7 +330,8 @@
             "NVIDIA_TESLA_K80",
             "NVIDIA_TESLA_P100",
             "NVIDIA_TESLA_V100",
-            "NVIDIA_TESLA_P4"
+            "NVIDIA_TESLA_P4",
+            "NVIDIA_TESLA_T4"
           ]
         }
       }
@@ -470,7 +472,7 @@
     },
     "GoogleCloudMlV1__PredictionInput": {
       "id": "GoogleCloudMlV1__PredictionInput",
-      "description": "Represents input parameters for a prediction job. Next field: 19",
+      "description": "Represents input parameters for a prediction job. Next field: 20",
       "type": "object",
       "properties": {
         "modelName": {
@@ -746,7 +748,8 @@
             "Nvidia Tesla K80 GPU.",
             "Nvidia Tesla P100 GPU.",
             "Nvidia Tesla V100 GPU.",
-            "Nvidia Tesla P4 GPU."
+            "Nvidia Tesla P4 GPU.",
+            "Nvidia Tesla T4 GPU."
           ],
           "type": "array",
           "items": {
@@ -756,7 +759,8 @@
               "NVIDIA_TESLA_K80",
               "NVIDIA_TESLA_P100",
               "NVIDIA_TESLA_V100",
-              "NVIDIA_TESLA_P4"
+              "NVIDIA_TESLA_P4",
+              "NVIDIA_TESLA_T4"
             ]
           }
         }

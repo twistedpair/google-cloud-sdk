@@ -155,6 +155,14 @@ def HandleGcloudCrash(err):
   else:
     log.error('gcloud crashed ({0}): {1}'.format(
         getattr(err, 'error_name', type(err).__name__), err_string))
+    if 'certificate verify failed' in err_string:
+      log.err.Print(
+          '\ngcloud\'s default CA certificates failed to verify your connection'
+          ', which can happen if you are behind a proxy or firewall.')
+      log.err.Print('To use a custom CA certificates file, please run the '
+                    'following command:')
+      log.err.Print(
+          '  gcloud config set core/custom_ca_certs_file /path/to/ca_certs')
     ReportError(is_crash=True)
     log.err.Print('\nIf you would like to report this issue, please run the '
                   'following command:')

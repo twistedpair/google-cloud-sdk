@@ -76,11 +76,11 @@ class ConceptManager(object):
         argparse parser to which to add argparse arguments.
     """
     attributes = [concept.Attribute() for concept in self.concepts]
-    self.AddToArgparse(attributes, parser)
+    self._AddToArgparse(attributes, parser)
     self.runtime_parser = RuntimeParser(attributes)
     parser.add_concepts(self.runtime_parser)
 
-  def AddToArgparse(self, attributes, parser):
+  def _AddToArgparse(self, attributes, parser):
     """Recursively add an arg definition to the parser."""
     for attribute in attributes:
       if isinstance(attribute, base.Attribute):
@@ -88,7 +88,7 @@ class ConceptManager(object):
         continue
       group = parser.add_argument_group(attribute.kwargs.pop('help'),
                                         **attribute.kwargs)
-      self.AddToArgparse(attribute.attributes, group)
+      self._AddToArgparse(attribute.attributes, group)
 
 
 class RuntimeParser(object):

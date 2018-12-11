@@ -168,7 +168,7 @@ class AuthProvider(_messages.Message):
       example.googleapis.com/google.example.library.v1.LibraryService".
       Example:      audiences: bookstore_android.apps.googleusercontent.com,
       bookstore_web.apps.googleusercontent.com
-    authorizationUrl: Redirect URL if JWT token is required but no present or
+    authorizationUrl: Redirect URL if JWT token is required but not present or
       is expired. Implement authorizationUrl of securityDefinitions in OpenAPI
       spec.
     id: The unique identifier of the auth provider. It will be referred to by

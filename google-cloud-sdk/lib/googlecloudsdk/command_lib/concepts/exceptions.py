@@ -50,9 +50,41 @@ class ValidationError(Error):
         'Failed to validate [{}]. {}'.format(concept_name, message))
 
 
-class MissingRequiredArgumentException(Error):
+class InitializationError(Error):
+  """Error when a concept was initialized with an invalid value."""
+
+
+class MissingRequiredArgumentError(Error):
   """Error when a required concept can't be found."""
 
   def __init__(self, concept_name, message):
-    super(MissingRequiredArgumentException, self).__init__(
+    super(MissingRequiredArgumentError, self).__init__(
         'No value was provided for [{}]: {}'.format(concept_name, message))
+
+
+class ModalGroupError(Error):
+  """Error when a modal group was not specified correctly."""
+
+  def __init__(self, concept_name, specified, missing):
+    super(ModalGroupError, self).__init__(
+        'Failed to specify [{}]: '
+        '{specified}: {missing} must be specified.'
+        .format(concept_name, specified=specified, missing=missing))
+
+
+class OptionalMutexGroupError(Error):
+  """Error when an optional mutex group was not specified correctly."""
+
+  def __init__(self, concept_name, conflict):
+    super(OptionalMutexGroupError, self).__init__(
+        'Failed to specify [{}]: At most one of {conflict} may be specified.'
+        .format(concept_name, conflict=conflict))
+
+
+class RequiredMutexGroupError(Error):
+  """Error when a required mutex group was not specified correctly."""
+
+  def __init__(self, concept_name, conflict):
+    super(RequiredMutexGroupError, self).__init__(
+        'Failed to specify [{}]: Exactly one of {conflict} must be specified.'
+        .format(concept_name, conflict=conflict))

@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20181126",
+ "revision": "20181205",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -20,7 +20,7 @@
  "basePath": "/deploymentmanager/alpha/projects/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "deploymentmanager/alpha/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/deploymentmanager/alpha",
  "parameters": {
   "alt": {
    "type": "string",

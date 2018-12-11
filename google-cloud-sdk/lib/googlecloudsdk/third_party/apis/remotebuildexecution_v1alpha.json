@@ -236,49 +236,50 @@
     },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest",
-      "description": "The request used for CreateWorkerPool.",
+      "description": "The request used for `CreateWorkerPool`.",
       "type": "object",
       "properties": {
         "parent": {
-          "description": "parent is the resource name of the Instance in which this WorkerPool is\ncreated.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'",
+          "description": "Resource name of the instance in which to create the new worker pool.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`",
           "type": "string"
         },
         "poolId": {
-          "description": "ID of the created WorkerPool.\nA valid pool_id must:\nbe 6-50 characters long,\ncontains only lowercase letters, digits, hyphens and underscores,\nstart with a lowercase letter, and\nend with a lowercase letter or a digit.",
+          "description": "ID of the created worker pool.\nA valid pool ID must:\nbe 6-50 characters long,\ncontain only lowercase letters, digits, hyphens and underscores,\nstart with a lowercase letter, and\nend with a lowercase letter or a digit.",
           "type": "string"
         },
         "workerPool": {
-          "description": "WorkerPool specifies the WorkerPool to create.\nThe name in the WorkerPool, if specified, is ignored.",
+          "description": "Specifies the worker pool to create.\nThe name in the worker pool, if specified, is ignored.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool"
         }
       }
     },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool",
-      "description": "WorkerPool defines the complete configuration of a WorkerPool for a consumer.",
+      "description": "A worker pool resource in the Remote Build Execution API.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "WorkerPool resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.\nname should not be populated when creating a worker pool since it is\nprovided in the pool_id field.",
+          "description": "WorkerPool resource name formatted as:\n'projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]'.\nname should not be populated when creating a worker pool since it is\nprovided in the `poolId` field.",
           "type": "string"
         },
         "workerConfig": {
-          "description": "worker_config specifies the properties used for creating workers in a\nWorkerPool.",
+          "description": "Specifies the properties, such as machine type and disk size, used for\ncreating workers in a worker pool.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig"
         },
         "workerCount": {
-          "description": "worker_count is the desired number of workers in the WorkerPool.\nIf the actual number of workers does not match this value, worker provider\nwill either create or delete workers as needed.",
+          "description": "The desired number of workers in the worker pool. Must be a value between\n0 and 1000.",
           "type": "string",
           "format": "int64"
         },
         "state": {
-          "description": "Output only. State of the WorkerPool.",
+          "description": "Output only. State of the worker pool.",
           "enumDescriptions": [
             "Not a valid state, but the default value of the enum.",
-            "The WorkerPool is in state CREATING once CreateWorkerPool is called and\nbefore all requested workers are ready.",
-            "The WorkerPool is in state RUNNING when all its workers are ready for\nuse.",
-            "The WorkerPool is in state UPDATING once UpdateWorkerPool is called and\nbefore the new configurations has all the requested workers ready for\nuse, and no older configuration has any workers. At that point the state\ntransitions to RUNNING.",
-            "The WorkerPool is in state DELETING once the Delete method is called and\nbefore the deletion completes."
+            "The worker pool is in state `CREATING` once `CreateWorkerPool` is called\nand before all requested workers are ready.",
+            "The worker pool is in state `RUNNING` when all its workers are ready for\nuse.",
+            "The worker pool is in state `UPDATING` once `UpdateWorkerPool` is called\nand before the new configuration has all the requested workers ready for\nuse, and no older configuration has any workers. At that point the state\ntransitions to `RUNNING`.",
+            "The worker pool is in state `DELETING` once the `Delete` method is called\nand before the deletion completes.",
+            "The worker pool is in state `INACTIVE` when the instance hosting the\nworker pool in not running."
           ],
           "type": "string",
           "enum": [
@@ -286,26 +287,27 @@
             "CREATING",
             "RUNNING",
             "UPDATING",
-            "DELETING"
+            "DELETING",
+            "INACTIVE"
           ]
         }
       }
     },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig",
-      "description": "WorkerConfig defines the configuration to be used for a creating workers in\nthe WorkerPool.",
+      "description": "Defines the configuration to be used for a creating workers in\nthe worker pool.",
       "type": "object",
       "properties": {
         "machineType": {
-          "description": "Required. Machine Type of the worker, such as n1-standard-2.\nSee https:\/\/cloud.google.com\/compute\/docs\/machine-types.",
+          "description": "Required. Machine type of the worker, such as n1-standard-2.\nSee https:\/\/cloud.google.com\/compute\/docs\/machine-types for a list of\nsupported machine types.",
           "type": "string"
         },
         "minCpuPlatform": {
-          "description": "Optional. Minimum CPU platform to use when creating the worker.\nSee https:\/\/cloud.google.com\/compute\/docs\/cpu-platforms.",
+          "description": "Minimum CPU platform to use when creating the worker.\nSee [CPU Platforms](https:\/\/cloud.google.com\/compute\/docs\/cpu-platforms).",
           "type": "string"
         },
         "diskType": {
-          "description": "Required. Disk Type to use for the worker.\nSee https:\/\/cloud.google.com\/compute\/docs\/disks.\nCurrently only \"pd-standard\" is supported.",
+          "description": "Required. Disk Type to use for the worker.\nSee [Storage options](https:\/\/cloud.google.com\/compute\/docs\/disks\/#introduction).\nCurrently only `pd-standard` is supported.",
           "type": "string"
         },
         "diskSizeGb": {
@@ -314,7 +316,7 @@
           "format": "int64"
         },
         "reserved": {
-          "description": "Optional. Specify whether or not the worker is reserved, i.e.\nno-preemptible. If true, the worker is reserved and won't be preempted.\nSee https:\/\/cloud.google.com\/compute\/docs\/instances\/preemptible\n\nThis field is supported by UpdateWorkerPool but is currently ignored by\nCreateWorkerPool. Temporarily, in CreateWorkerPool, the WorkerPool is\ncreated with reserved=true regardless of what is specified in\nCreateWorkerPoolRequest, but this will change soon.",
+          "description": "Output only. `reserved=true` means the worker is reserved and won't be\npreempted.",
           "type": "boolean"
         }
       }
@@ -325,11 +327,11 @@
       "type": "object",
       "properties": {
         "workerPool": {
-          "description": "WorkerPool specifies the WorkerPool to update.",
+          "description": "Specifies the worker pool to update.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool"
         },
         "updateMask": {
-          "description": "The update mask applies to worker_pool. For the `FieldMask` definition,\nsee https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nIf an empty update_mask is provided, only the non-default valued field in\nthe WorkerPool field will be updated. Note that in order to update a field\nto the default value (zero, false, empty string) an explicit update_mask\nmust be provided.",
+          "description": "The update mask applies to worker_pool. For the `FieldMask` definition,\nsee https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask\nIf an empty update_mask is provided, only the non-default valued field in\nthe worker pool field will be updated. Note that in order to update a field\nto the default value (zero, false, empty string) an explicit update_mask\nmust be provided.",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -340,7 +342,7 @@
       "type": "object",
       "properties": {
         "workerPools": {
-          "description": "The list of WorkerPools in a given Instance.",
+          "description": "The list of worker pools in a given instance.",
           "type": "array",
           "items": {
             "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool"
@@ -953,7 +955,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the WorkerPool to retrieve.\nFormat:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.",
+          "description": "name is the resource name of the worker pool to retrieve.\nFormat:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
           "type": "string"
         }
       }
@@ -964,7 +966,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the WorkerPool to delete.\nFormat:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.",
+          "description": "Name of the worker pool to delete.\nFormat:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
           "type": "string"
         }
       }
@@ -974,7 +976,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "parent is the resource name of the Instance whose WorkerPools should be\nlisted.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'",
+          "description": "Resource name of the instance.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`",
           "type": "string"
         }
       }
@@ -1771,7 +1773,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "parent is the resource name of the Instance in which this WorkerPool is\ncreated.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'",
+                      "description": "Resource name of the instance in which to create the new worker pool.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
@@ -1790,7 +1792,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "CreateWorkerPool creates a new WorkerPool with a specified size and\nconfiguration.\nReturns a long running operation which contains a WorkerPool on completion.\nWhile the long running operation is in progress, any call to GetWorkerPool\nreturns a WorkerPool in state CREATING."
+                  "description": "Creates a new worker pool with a specified size and configuration.\nReturns a long running operation which contains a worker pool on\ncompletion. While the long running operation is in progress, any call to\n`GetWorkerPool` returns a worker pool in state `CREATING`."
                 },
                 "patch": {
                   "id": "remotebuildexecution.projects.instances.workerpools.patch",
@@ -1799,7 +1801,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "WorkerPool resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.\nname should not be populated when creating a worker pool since it is\nprovided in the pool_id field.",
+                      "description": "WorkerPool resource name formatted as:\n'projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]'.\nname should not be populated when creating a worker pool since it is\nprovided in the `poolId` field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
@@ -1818,7 +1820,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "UpdateWorkerPool updates an existing WorkerPool with a specified size\nand\/or configuration.\nReturns a long running operation which contains a WorkerPool on completion.\nWhile the long running operation is in progress, any call to GetWorkerPool\nreturns a WorkerPool in state UPDATING."
+                  "description": "Updates an existing worker pool with a specified size and\/or configuration.\nReturns a long running operation, which contains a worker pool on\ncompletion. While the long running operation is in progress, any call to\n`GetWorkerPool` returns a worker pool in state `UPDATING`."
                 },
                 "get": {
                   "id": "remotebuildexecution.projects.instances.workerpools.get",
@@ -1827,7 +1829,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "name is the resource name of the WorkerPool to retrieve.\nFormat:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.",
+                      "description": "name is the resource name of the worker pool to retrieve.\nFormat:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
@@ -1843,7 +1845,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "GetWorkerPool returns the specified WorkerPool."
+                  "description": "Returns the specified worker pool."
                 },
                 "delete": {
                   "id": "remotebuildexecution.projects.instances.workerpools.delete",
@@ -1852,7 +1854,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "name is the resource name of the WorkerPool to delete.\nFormat:\n'projects\/{project_id}\/instances\/{instance_id}\/workerpools\/{pool_id}'.",
+                      "description": "Name of the worker pool to delete.\nFormat:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
@@ -1868,7 +1870,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "DeleteWorkerPool deletes the specified WorkerPool.\nReturns a long running operation which contains a google.protobuf.Empty\nresponse on completion.\nWhile the long running operation is in progress, any call to GetWorkerPool\nreturns a WorkerPool in state DELETING."
+                  "description": "Deletes the specified worker pool.\nReturns a long running operation, which contains a `google.protobuf.Empty`\nresponse on completion.\nWhile the long running operation is in progress, any call to\n`GetWorkerPool` returns a worker pool in state `DELETING`."
                 },
                 "list": {
                   "id": "remotebuildexecution.projects.instances.workerpools.list",
@@ -1877,7 +1879,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "parent is the resource name of the Instance whose WorkerPools should be\nlisted.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'",
+                      "description": "Resource name of the instance.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
@@ -1893,7 +1895,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists WorkerPools in an Instance."
+                  "description": "Lists worker pools in an instance."
                 }
               }
             }

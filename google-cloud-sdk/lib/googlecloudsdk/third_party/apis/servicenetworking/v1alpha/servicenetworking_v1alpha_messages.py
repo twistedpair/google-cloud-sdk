@@ -87,7 +87,7 @@ class AuthProvider(_messages.Message):
       example.googleapis.com/google.example.library.v1.LibraryService".
       Example:      audiences: bookstore_android.apps.googleusercontent.com,
       bookstore_web.apps.googleusercontent.com
-    authorizationUrl: Redirect URL if JWT token is required but no present or
+    authorizationUrl: Redirect URL if JWT token is required but not present or
       is expired. Implement authorizationUrl of securityDefinitions in OpenAPI
       spec.
     id: The unique identifier of the auth provider. It will be referred to by
@@ -2004,13 +2004,14 @@ class Status(_messages.Message):
 
 
 class Subnetwork(_messages.Message):
-  r"""Message returning the created service subnetwork.
+  r"""Represents a subnet that was created by a peered service.
 
   Fields:
-    ipCidrRange: Subnetwork CIDR range in "10.x.x.x/y" format.
+    ipCidrRange: Subnetwork CIDR range in `10.x.x.x/y` format.
     name: Subnetwork name. See https://cloud.google.com/compute/docs/vpc/
-    network: Shared VPC host project network peered with consumer network. For
-      example: projects/1234321/global/networks/host-network
+    network: In the Shared VPC host project, the VPC network that's peered
+      with the consumer network. For example:
+      `projects/1234321/global/networks/host-network`
   """
 
   ipCidrRange = _messages.StringField(1)

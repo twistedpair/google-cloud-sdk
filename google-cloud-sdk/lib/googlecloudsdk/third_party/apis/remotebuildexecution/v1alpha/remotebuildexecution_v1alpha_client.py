@@ -51,11 +51,10 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateWorkerPool creates a new WorkerPool with a specified size and.
-configuration.
-Returns a long running operation which contains a WorkerPool on completion.
-While the long running operation is in progress, any call to GetWorkerPool
-returns a WorkerPool in state CREATING.
+      r"""Creates a new worker pool with a specified size and configuration.
+Returns a long running operation which contains a worker pool on
+completion. While the long running operation is in progress, any call to
+`GetWorkerPool` returns a worker pool in state `CREATING`.
 
       Args:
         request: (GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest) input message
@@ -82,11 +81,11 @@ returns a WorkerPool in state CREATING.
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteWorkerPool deletes the specified WorkerPool.
-Returns a long running operation which contains a google.protobuf.Empty
+      r"""Deletes the specified worker pool.
+Returns a long running operation, which contains a `google.protobuf.Empty`
 response on completion.
-While the long running operation is in progress, any call to GetWorkerPool
-returns a WorkerPool in state DELETING.
+While the long running operation is in progress, any call to
+`GetWorkerPool` returns a worker pool in state `DELETING`.
 
       Args:
         request: (RemotebuildexecutionProjectsInstancesWorkerpoolsDeleteRequest) input message
@@ -113,7 +112,7 @@ returns a WorkerPool in state DELETING.
     )
 
     def Get(self, request, global_params=None):
-      r"""GetWorkerPool returns the specified WorkerPool.
+      r"""Returns the specified worker pool.
 
       Args:
         request: (RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest) input message
@@ -140,7 +139,7 @@ returns a WorkerPool in state DELETING.
     )
 
     def List(self, request, global_params=None):
-      r"""Lists WorkerPools in an Instance.
+      r"""Lists worker pools in an instance.
 
       Args:
         request: (RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest) input message
@@ -167,11 +166,10 @@ returns a WorkerPool in state DELETING.
     )
 
     def Patch(self, request, global_params=None):
-      r"""UpdateWorkerPool updates an existing WorkerPool with a specified size.
-and/or configuration.
-Returns a long running operation which contains a WorkerPool on completion.
-While the long running operation is in progress, any call to GetWorkerPool
-returns a WorkerPool in state UPDATING.
+      r"""Updates an existing worker pool with a specified size and/or configuration.
+Returns a long running operation, which contains a worker pool on
+completion. While the long running operation is in progress, any call to
+`GetWorkerPool` returns a worker pool in state `UPDATING`.
 
       Args:
         request: (RemotebuildexecutionProjectsInstancesWorkerpoolsPatchRequest) input message

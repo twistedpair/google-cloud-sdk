@@ -261,6 +261,7 @@ class _Sections(object):
     self.dataproc = _SectionDataproc()
     self.deployment_manager = _SectionDeploymentManager()
     self.devshell = _SectionDevshell()
+    self.diagnostics = _SectionDiagnostics()
     self.emulator = _SectionEmulator()
     self.experimental = _SectionExperimental()
     self.filestore = _SectionFilestore()
@@ -293,6 +294,7 @@ class _Sections(object):
         self.dataproc,
         self.deployment_manager,
         self.devshell,
+        self.diagnostics,
         self.emulator,
         self.experimental,
         self.filestore,
@@ -1408,6 +1410,17 @@ class _SectionDevshell(_Section):
     self.metadata_image = self._Add(
         'metadata_image', hidden=True,
         default=const_lib.METADATA_IMAGE)
+
+
+class _SectionDiagnostics(_Section):
+  """Contains the properties for the 'diagnostics' section."""
+
+  def __init__(self):
+    super(_SectionDiagnostics, self).__init__('diagnostics', hidden=True)
+    self.hidden_property_whitelist = self._Add(
+        'hidden_property_whitelist', internal=True,
+        help_text=('Comma separated list of hidden properties that should be '
+                   'allowed by the hidden properties diagnostic.'))
 
 
 class _SectionApiEndpointOverrides(_Section):

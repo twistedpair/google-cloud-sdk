@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20181126",
+ "revision": "20181205",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -20,7 +20,7 @@
  "basePath": "/toolresults/v1beta3/projects/",
  "rootUrl": "https://www.googleapis.com/",
  "servicePath": "toolresults/v1beta3/projects/",
- "batchPath": "batch",
+ "batchPath": "batch/toolresults/v1beta3",
  "parameters": {
   "alt": {
    "type": "string",

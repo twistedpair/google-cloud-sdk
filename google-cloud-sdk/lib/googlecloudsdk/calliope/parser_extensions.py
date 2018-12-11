@@ -348,8 +348,9 @@ class ArgumentParser(argparse.ArgumentParser):
       _get_values().
   """
 
+  _args = None
+
   def __init__(self, *args, **kwargs):
-    self._args = None
     self._calliope_command = kwargs.pop('calliope_command')
     # Would rather isinstance(self._calliope_command, CommandGroup) here but
     # that would introduce a circular dependency on calliope.backend.
@@ -557,6 +558,7 @@ class ArgumentParser(argparse.ArgumentParser):
     Returns:
       True if the subgroup was specified.
     """
+    # TODO(b/120132521) Replace and eliminate argparse extensions
     also_optional = []  # The optional args in group that were not specified.
     have_optional = []  # The specified optional (not required) args.
     have_required = []  # The specified required args.
@@ -640,7 +642,6 @@ class ArgumentParser(argparse.ArgumentParser):
     """Overrides argparse.ArgumentParser's .parse_known_args method."""
     if args is None:
       args = sys.argv[1:]
-    self._args = args
     if namespace is None:
       namespace = Namespace()
     namespace._SetParser(self)  # pylint: disable=protected-access
@@ -673,8 +674,24 @@ class ArgumentParser(argparse.ArgumentParser):
         self._actions.append(self._remainder_action)
     return (namespace, unknown_args)
 
+  @classmethod
+  def _SaveOriginalArgs(cls, original_args):
+    if original_args:
+      cls._args = original_args[:]
+    else:
+      cls._args = None
+
+  @classmethod
+  def _ClearOriginalArgs(cls):
+    cls._args = None
+
+  @classmethod
+  def _GetOriginalArgs(cls):
+    return cls._args
+
   def parse_args(self, args=None, namespace=None):
     """Overrides argparse.ArgumentParser's .parse_args method."""
+    self._SaveOriginalArgs(args)
     namespace, unknown_args, _ = self._ParseKnownArgs(args, namespace)
 
     # pylint:disable=protected-access
@@ -985,7 +1002,9 @@ class ArgumentParser(argparse.ArgumentParser):
         # pytype: disable=module-attr
         suggestions = None
         if 'Invalid choice' in message:
-          suggestions = suggest_commands.GetCommandSuggestions(self._args)
+          suggestions = suggest_commands.GetCommandSuggestions(
+              self._GetOriginalArgs())
+          self._ClearOriginalArgs()
         if suggestions:
           argparse._sys.stderr.write(
               '\n  '.join(['Maybe you meant:'] + suggestions) + '\n')
