@@ -204,8 +204,11 @@ class RequiredPropertyError(Error):
                  'command with the [{flag}] flag.\n\n')
 
   def __init__(self, prop, flag=None, extra_msg=None):
-    section = (prop.section + '/' if prop.section != VALUES.default_section.name
-               else '')
+    if prop.section != VALUES.default_section.name:
+      section = prop.section + '/'
+    else:
+      section = ''
+
     if flag:
       flag_msg = RequiredPropertyError.FLAG_STRING.format(flag=flag)
     else:
@@ -232,11 +235,60 @@ class _Sections(object):
   """Represents the available sections in the properties file.
 
   Attributes:
+    access_context_manager: Section, The section containing access context
+      manager properties for the Cloud SDK.
+    api_client_overrides: Section, The section containing API client override
+      properties for the Cloud SDK.
+    api_endpoint_overrides: Section, The section containing API endpoint
+      override properties for the Cloud SDK.
+    app: Section, The section containing app properties for the Cloud SDK.
     auth: Section, The section containing auth properties for the Cloud SDK.
-    default_section: Section, The main section of the properties file (core).
-    core: Section, The section containing core properties for the Cloud SDK.
+    billing: Section, The section containing billing properties for the Cloud
+      SDK.
+    builds: Section, The section containing builds properties for the Cloud SDK.
     component_manager: Section, The section containing properties for the
       component_manager.
+    composer: Section, The section containing composer properties for the Cloud
+      SDK.
+    compute: Section, The section containing compute properties for the Cloud
+      SDK.
+    container: Section, The section containing container properties for the
+      Cloud SDK.
+    core: Section, The section containing core properties for the Cloud SDK.
+    dataproc: Section, The section containing dataproc properties for the Cloud
+      SDK.
+    default_section: Section, The main section of the properties file (core).
+    deployment_manager: Section, The section containing deployment_manager
+      properties for the Cloud SDK.
+    devshell: Section, The section containing devshell properties for the Cloud
+      SDK.
+    diagnostics: Section, The section containing diagnostics properties for the
+      Cloud SDK.
+    emulator: Section, The section containing emulator properties for the Cloud
+      SDK.
+    experimental: Section, The section containing experimental properties for
+      the Cloud SDK.
+    filestore: Section, The section containing filestore properties for the
+      Cloud SDK.
+    functions: Section, The section containing functions properties for the
+      Cloud SDK.
+    gcloudignore: Section, The section containing gcloudignore properties for
+      the Cloud SDK.
+    interactive: Section, The section containing interactive properties for the
+      Cloud SDK.
+    metrics: Section, The section containing metrics properties for the Cloud
+      SDK.
+    ml_engine: Section, The section containing ml_engine properties for the
+      Cloud SDK.
+    proxy: Section, The section containing proxy properties for the Cloud SDK.
+    pubsub: Section, The section containing pubsub properties for the Cloud SDK.
+    redis: Section, The section containing redis properties for the Cloud SDK.
+    run: Section, The section containing run properties for the Cloud SDK.
+    spanner: Section, The section containing spanner properties for the Cloud
+      SDK.
+    storage: Section, The section containing storage properties for the Cloud
+      SDK.
+    test: Section, The section containing test properties for the Cloud SDK.
   """
 
   class _ValueFlag(object):
@@ -783,12 +835,23 @@ class _SectionBuilds(_Section):
         hidden=True,
         help_text='If True, validate that the --tag value to builds '
         'submit is in the gcr.io or *.gcr.io namespace.')
+    # TODO(b/118509363): Remove this after its default is True.
     self.use_kaniko = self._AddBool(
         'use_kaniko',
         default=False,
-        hidden=True,
         help_text='If True, kaniko will be used to build images described by '
         'a Dockerfile, instead of `docker build`.')
+    self.kaniko_cache_ttl = self._Add(
+        'kaniko_cache_ttl',
+        default=6,
+        help_text='TTL, in hours, of cached layers when using Kaniko. If zero, '
+        'layer caching is disabled.')
+    self.kaniko_image = self._Add(
+        'kaniko_image',
+        default='gcr.io/kaniko-project/executor:latest',
+        hidden=True,
+        help_text='Kaniko builder image to use when use_kaniko=True. Defaults '
+        'to gcr.io/kaniko-project/executor:latest')
 
 
 class _SectionContainer(_Section):
@@ -1432,6 +1495,7 @@ class _SectionApiEndpointOverrides(_Section):
   def __init__(self):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides', hidden=True)
+    self.remotebuildexecution = self._Add('remotebuildexecution')
     self.accesscontextmanager = self._Add('accesscontextmanager')
     self.apikeys = self._Add('apikeys')
     self.appengine = self._Add('appengine')
@@ -1596,15 +1660,16 @@ class _Property(object):
   Attributes:
     section: str, The name of the section the property appears in in the file.
     name: str, The name of the property.
-    help_test: str, The man page help for what this property does.
-    hidden: bool, True to hide this property from display for users that don't
-      know about them.
-    internal: bool, True to hide this property from display even if it is set.
-      Internal properties are implementation details not meant to be set by
+    help_text: str, The man page help for what this property does.
+    is_hidden: bool, True to hide this property from display for users that
+      don't know about them.
+    is_internal: bool, True to hide this property from display even if it is
+      set. Internal properties are implementation details not meant to be set by
       users.
     callbacks: [func], A list of functions to be called, in order, if no value
       is found elsewhere.  The result of a callback will be shown in when
       listing properties (if the property is not hidden).
+    completer: [func], a completer function
     default: str, A final value to use if no value is found after the callbacks.
       The default value is never shown when listing properties regardless of
       whether the property is hidden or not.
@@ -1614,10 +1679,6 @@ class _Property(object):
       explanation of why it was invalid.
     choices: [str], The allowable values for this property.  This is included
       in the help text and used in tab completion.
-    resource: str, The resource type that this property refers to.  This is
-      used by remote resource completion.
-    resource_command_path: str, An alternate command to user to list the
-      resources for this property.
   """
 
   def __init__(self, section, name, help_text=None, hidden=False,
@@ -2142,8 +2203,8 @@ def _GetIntProperty(prop, properties_file, required):
     return int(value)
   except ValueError:
     raise InvalidValueError(
-        'The property [{section}.{name}] must have an integer value: [{value}]'
-        .format(section=prop.section, name=prop.name, value=value))
+        'The property [{prop}] must have an integer value: [{value}]'
+        .format(prop=prop, value=value))
 
 
 def GetMetricsEnvironment():

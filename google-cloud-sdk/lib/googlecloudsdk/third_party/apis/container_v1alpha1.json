@@ -2106,20 +2106,6 @@
         }
       }
     },
-    "ListNodePoolsResponse": {
-      "id": "ListNodePoolsResponse",
-      "description": "ListNodePoolsResponse is the result of ListNodePoolsRequest.",
-      "type": "object",
-      "properties": {
-        "nodePools": {
-          "description": "A list of node pools for a cluster.",
-          "type": "array",
-          "items": {
-            "$ref": "NodePool"
-          }
-        }
-      }
-    },
     "GetOpenIDConfigResponse": {
       "id": "GetOpenIDConfigResponse",
       "description": "GetOpenIDConfigResponse is an OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.",
@@ -2224,6 +2210,20 @@
         "crv": {
           "description": "NOLINT",
           "type": "string"
+        }
+      }
+    },
+    "ListNodePoolsResponse": {
+      "id": "ListNodePoolsResponse",
+      "description": "ListNodePoolsResponse is the result of ListNodePoolsRequest.",
+      "type": "object",
+      "properties": {
+        "nodePools": {
+          "description": "A list of node pools for a cluster.",
+          "type": "array",
+          "items": {
+            "$ref": "NodePool"
+          }
         }
       }
     },

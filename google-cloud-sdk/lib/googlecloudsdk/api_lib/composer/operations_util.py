@@ -119,6 +119,7 @@ def WaitForOperation(operation, message, release_track=base.ReleaseTrack.GA):
       _OperationPoller(release_track=release_track),
       operation.name,
       message,
+      max_wait_ms=3600 * 1000,
       wait_ceiling_ms=15 * 1000)
 
 

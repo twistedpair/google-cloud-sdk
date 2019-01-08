@@ -66,7 +66,7 @@ class TextRenderer(renderer.Renderer):
       self.Content()
       self._fill = 0
 
-  def _SetIndent(self, level, indent=None, hanging_indent=None):
+  def _SetIndent(self, level, indent=0, hanging_indent=None):
     """Sets the markdown list level and indentations.
 
     Args:
@@ -88,7 +88,7 @@ class TextRenderer(renderer.Renderer):
         if self._level >= len(self._indent):
           self._indent.append(self.Indent())
         self._indent[self._level].indent = (
-            self._indent[prev_level].indent + indent)  # pytype: disable=wrong-arg-types
+            self._indent[prev_level].indent + indent)
         if (self._level > 1 and
             self._indent[prev_level].hanging_indent ==
             self._indent[prev_level].indent):

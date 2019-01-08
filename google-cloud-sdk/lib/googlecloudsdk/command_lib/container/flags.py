@@ -736,8 +736,8 @@ HTTPS. Besides these blocks, the following have access as well:\n
   `--enable-private-nodes` is specified.
   2) Google Compute Engine Public IPs if `--enable-private-nodes` is not
   specified.\n
-When disabled, public internet (0.0.0.0/0) is allowed to connect to Kubernetes
-master through HTTPS.
+Use `--no-enable-master-authorized-networks` to disable. When disabled, public
+internet (0.0.0.0/0) is allowed to connect to Kubernetes master through HTTPS.
 """,
       action='store_true')
   master_flag_group.add_argument(

@@ -711,6 +711,12 @@ class CommandGroup(CommandCommon):
     return usage_text.GetCategoricalUsage(
         self, self._GroupSubElementsByCategory())
 
+  def GetUncategorizedUsage(self):
+    return usage_text.GetUncategorizedUsage(self)
+
+  def GetHelpHint(self):
+    return usage_text.GetHelpHint(self)
+
   def _GroupSubElementsByCategory(self):
     """Returns dictionary mapping each category to its set of subelements."""
     self.LoadAllSubElements()

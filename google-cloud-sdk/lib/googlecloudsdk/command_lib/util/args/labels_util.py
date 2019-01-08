@@ -138,7 +138,7 @@ def GetClearLabelsFlag(labels_name='labels'):
       action='store_true',
       # TODO(b/113682642): Update text to be compliant with the style guide.
       help="""\
-          Removes all labels. If `--update-{labels}` is also specified then
+          Remove all labels. If `--update-{labels}` is also specified then
           `--clear-{labels}` is applied first.
 
           For example, to remove all labels:
@@ -159,7 +159,7 @@ def GetUpdateLabelsFlag(extra_message, labels_name='labels',
   if validate_values:
     format_help.append(VALUE_FORMAT_HELP)
   help_parts = [
-      ('A list of label KEY=VALUE pairs to update. If a label exists its value '
+      ('List of label KEY=VALUE pairs to update. If a label exists its value '
        'is modified, otherwise a new label is created.'),
       ' '.join(format_help)]
   if extra_message:
@@ -181,7 +181,7 @@ def GetRemoveLabelsFlag(extra_message, labels_name='labels'):
       type=arg_parsers.ArgList(),
       action=arg_parsers.UpdateAction,
       help="""\
-      A list of label keys to remove. If a label does not exist it is
+      List of label keys to remove. If a label does not exist it is
       silently ignored.""" + extra_message)
 
 

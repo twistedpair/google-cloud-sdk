@@ -908,7 +908,7 @@ To add an IAM policy binding for the role of '{role}' for the user
 To add an IAM policy binding for the role of '{role}' to the service
 account 'test-proj1@example.domain.com', run:
 
-  $ {{command}} test-proj1@example.domain.com --member='serviceAccount:test-proj1@example.domain.com' --role='{role}'
+  $ {{command}} {example_id} --member='serviceAccount:test-proj1@example.domain.com' --role='{role}'
 
 To add an IAM policy binding for the role of '{role}' for all
 authenticated users on {a} {collection} with identifier
@@ -925,7 +925,7 @@ identifier '{example_id}', run:
 
   $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}' --condition='expression=request.time < timestamp("2019-01-01T00:00:00Z"),title=expires_end_of_2018,description=Expires at midnight on 2018-12-31'
   """.format(
-      collection=collection, example_id=example_id, role='roles/browser', a=a)
+      collection=collection, example_id=example_id, role=role, a=a)
   detailed_help['EXAMPLES'] = '\n'.join([detailed_help['EXAMPLES'], note])
   return detailed_help
 

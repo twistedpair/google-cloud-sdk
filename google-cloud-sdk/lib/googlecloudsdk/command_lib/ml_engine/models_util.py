@@ -122,3 +122,18 @@ def RemoveIamPolicyBinding(models_client, model, member, role):
   policy = models_client.GetIamPolicy(model_ref)
   iam_util.RemoveBindingFromIamPolicy(policy, member, role)
   return models_client.SetIamPolicy(model_ref, policy, 'bindings,etag')
+
+
+def AddIamPolicyBindingWithCondition(models_client, model, member, role,
+                                     condition):
+  """Adds IAM binding with condition to ml engine model's IAM policy."""
+  model_ref = ParseModel(model)
+  policy = models_client.GetIamPolicy(model_ref)
+  iam_util.AddBindingToIamPolicyWithCondition(
+      models_client.messages.GoogleIamV1Binding,
+      models_client.messages.GoogleTypeExpr,
+      policy,
+      member,
+      role,
+      condition)
+  return models_client.SetIamPolicy(model_ref, policy, 'bindings,etag')

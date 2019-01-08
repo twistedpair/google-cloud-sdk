@@ -460,7 +460,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""Lists log entries. Use this method to retrieve log entries from Logging. For ways to export log entries, see Exporting Logs.
+      r"""Lists log entries. Use this method to retrieve log entries that originated from a project/folder/organization/billing account. For ways to export log entries, see Exporting Logs.
 
       Args:
         request: (ListLogEntriesRequest) input message

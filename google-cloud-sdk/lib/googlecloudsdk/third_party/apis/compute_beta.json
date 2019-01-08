@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20181206",
+ "revision": "20181207",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -626,9 +626,11 @@
      "enum": [
       "DNS_RESOLVER",
       "GCE_ENDPOINT",
+      "NAT_AUTO",
       "VPC_PEERING"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       ""
@@ -1488,7 +1490,7 @@
     },
     "deviceName": {
      "type": "string",
-     "description": "Specifies a unique device name of your choice that is reflected into the /dev/disk/by-id/google-* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance.\n\nIf not specified, the server chooses a default device name to apply to this disk, in the form persistent-disks-x, where x is a number assigned by Google Compute Engine. This field is only applicable for persistent disks."
+     "description": "Specifies a unique device name of your choice that is reflected into the /dev/disk/by-id/google-* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance.\n\nIf not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine. This field is only applicable for persistent disks."
     },
     "diskEncryptionKey": {
      "$ref": "CustomerEncryptionKey",
@@ -14585,6 +14587,10 @@
       "",
       ""
      ]
+    },
+    "owner": {
+     "type": "string",
+     "description": "[Output Only] Owning resource. This is the resource on which this quota is applied."
     },
     "usage": {
      "type": "number",

@@ -267,7 +267,7 @@ def GetRegion(args, prompt=False):
     region = REGIONS[idx]
     log.status.Print(
         'To make this the default region, run '
-        '`gcloud config set run/region {}`.'.format(region))
+        '`gcloud config set run/region {}`.\n'.format(region))
     return region
 
 

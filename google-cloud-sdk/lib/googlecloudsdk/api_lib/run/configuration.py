@@ -86,10 +86,22 @@ class Configuration(k8s_object.KubernetesObject):
         location=value)
 
   def _EnsureResources(self):
+    limits_in_map_val_cls = self._messages.ResourceRequirements.LimitsInMapValue
     if self.container.resources is not None:
-      if self.container.resources.limits is None:
-        self.container.resources.limits = k8s_object.InitializedInstance(
-            self._messages.ResourceRequirements.LimitsValue)
+      if self.container.resources.limitsInMap is None:
+        self.container.resources.limitsInMap = k8s_object.InitializedInstance(
+            limits_in_map_val_cls)
+        # If we still have the old field set, move it over to the new.
+        # But if we had both fields, don't bother changing the limits field.
+        # TODO(b/120158326) Translate the other way when the new format is ready
+        if self.container.resources.limits is not None:
+          for item in self.container.resources.limits.additionalProperties:
+            self.container.resources.limitsInMap.additionalProperties.append(
+                limits_in_map_val_cls.AdditionalProperty(
+                    key=item.key,
+                    value=item.value))
+          self.container.resources.limits = None
+
       return
     else:
       self.container.resources = k8s_object.InitializedInstance(
@@ -161,8 +173,8 @@ class Configuration(k8s_object.KubernetesObject):
     """The resource limits as a dictionary { resource name: limit}."""
     self._EnsureResources()
     return k8s_object.ListAsDictionaryWrapper(
-        self.container.resources.limits.additionalProperties,
-        self._messages.ResourceRequirements.LimitsValue.AdditionalProperty,
+        self.container.resources.limitsInMap.additionalProperties,
+        self._messages.ResourceRequirements.LimitsInMapValue.AdditionalProperty,
         key_field='key',
         value_field='value',
     )

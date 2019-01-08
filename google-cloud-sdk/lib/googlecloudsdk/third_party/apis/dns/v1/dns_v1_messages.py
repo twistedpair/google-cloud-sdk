@@ -15,7 +15,9 @@ class Change(_messages.Message):
   r"""An atomic update to a collection of ResourceRecordSets.
 
   Enums:
-    StatusValueValuesEnum: Status of the operation (output only).
+    StatusValueValuesEnum: Status of the operation (output only). A status of
+      "done" means that the request to update the authoritative servers has
+      been sent, but the servers might not be updated yet.
 
   Fields:
     additions: Which ResourceRecordSets to add?
@@ -28,11 +30,15 @@ class Change(_messages.Message):
       "dns#change".
     startTime: The time that this operation was started by the server (output
       only). This is in RFC3339 text format.
-    status: Status of the operation (output only).
+    status: Status of the operation (output only). A status of "done" means
+      that the request to update the authoritative servers has been sent, but
+      the servers might not be updated yet.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""Status of the operation (output only).
+    r"""Status of the operation (output only). A status of "done" means that
+    the request to update the authoritative servers has been sent, but the
+    servers might not be updated yet.
 
     Values:
       done: <no description>
@@ -780,7 +786,9 @@ class Operation(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: Status of the operation. Can be one of the
-      following: "PENDING" or "DONE" (output only).
+      following: "PENDING" or "DONE" (output only). A status of "DONE" means
+      that the request to update the authoritative servers has been sent, but
+      the servers might not be updated yet.
 
   Fields:
     dnsKeyContext: Only populated if the operation targeted a DnsKey (output
@@ -794,7 +802,9 @@ class Operation(_messages.Message):
     startTime: The time that this operation was started by the server. This is
       in RFC3339 text format (output only).
     status: Status of the operation. Can be one of the following: "PENDING" or
-      "DONE" (output only).
+      "DONE" (output only). A status of "DONE" means that the request to
+      update the authoritative servers has been sent, but the servers might
+      not be updated yet.
     type: Type of the operation. Operations include insert, update, and delete
       (output only).
     user: User who requested the operation, for example: user@example.com.
@@ -806,7 +816,9 @@ class Operation(_messages.Message):
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Status of the operation. Can be one of the following: "PENDING" or
-    "DONE" (output only).
+    "DONE" (output only). A status of "DONE" means that the request to update
+    the authoritative servers has been sent, but the servers might not be
+    updated yet.
 
     Values:
       done: <no description>

@@ -660,9 +660,11 @@ class Dataset(_messages.Message):
     Fields:
       domain: [Pick one] A domain to grant access to. Any users signed in with
         the domain specified will be granted the specified access. Example:
-        "example.com".
+        "example.com". Maps to IAM policy member "domain:DOMAIN".
       groupByEmail: [Pick one] An email address of a Google Group to grant
-        access to.
+        access to. Maps to IAM policy member "group:GROUP".
+      iamMember: [Pick one] Some other type of member that appears in the IAM
+        Policy but isn't a user, group, domain, or special group.
       role: [Required] Describes the rights granted to the user specified by
         the other member of the access object. The following string values are
         supported: READER, WRITER, OWNER.
@@ -670,9 +672,10 @@ class Dataset(_messages.Message):
         values include: projectOwners: Owners of the enclosing project.
         projectReaders: Readers of the enclosing project. projectWriters:
         Writers of the enclosing project. allAuthenticatedUsers: All
-        authenticated BigQuery users.
+        authenticated BigQuery users. Maps to similarly-named IAM members.
       userByEmail: [Pick one] An email address of a user to grant access to.
-        For example: fred@example.com.
+        For example: fred@example.com. Maps to IAM policy member "user:EMAIL"
+        or "serviceAccount:EMAIL".
       view: [Pick one] A view from a different dataset to grant access to.
         Queries executed against that view will have read access to tables in
         this dataset. The role field is not required when this field is set.
@@ -682,10 +685,11 @@ class Dataset(_messages.Message):
 
     domain = _messages.StringField(1)
     groupByEmail = _messages.StringField(2)
-    role = _messages.StringField(3)
-    specialGroup = _messages.StringField(4)
-    userByEmail = _messages.StringField(5)
-    view = _messages.MessageField('TableReference', 6)
+    iamMember = _messages.StringField(3)
+    role = _messages.StringField(4)
+    specialGroup = _messages.StringField(5)
+    userByEmail = _messages.StringField(6)
+    view = _messages.MessageField('TableReference', 7)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1686,6 +1690,9 @@ class JobReference(_messages.Message):
 class JobStatistics(_messages.Message):
   r"""A JobStatistics object.
 
+  Messages:
+    ReservationUsageValueListEntry: A ReservationUsageValueListEntry object.
+
   Fields:
     completionRatio: [TrustedTester] [Output-only] Job progress (0.0 -> 1.0)
       for LOAD and EXTRACT jobs.
@@ -1697,12 +1704,28 @@ class JobStatistics(_messages.Message):
     load: [Output-only] Statistics for a load job.
     query: [Output-only] Statistics for a query job.
     quotaDeferments: [Output-only] Quotas which delayed this job's start time.
+    reservationUsage: [Output-only] Job resource usage breakdown by
+      reservation.
     startTime: [Output-only] Start time of this job, in milliseconds since the
       epoch. This field will be present when the job transitions from the
       PENDING state to either RUNNING or DONE.
     totalBytesProcessed: [Output-only] [Deprecated] Use the bytes processed in
       the query statistics instead.
+    totalSlotMs: [Output-only] Slot-milliseconds for the job.
   """
+
+  class ReservationUsageValueListEntry(_messages.Message):
+    r"""A ReservationUsageValueListEntry object.
+
+    Fields:
+      name: [Output-only] Reservation name or "unreserved" for on-demand
+        resources usage.
+      slotMs: [Output-only] Slot-milliseconds the job spent in the given
+        reservation.
+    """
+
+    name = _messages.StringField(1)
+    slotMs = _messages.IntegerField(2)
 
   completionRatio = _messages.FloatField(1)
   creationTime = _messages.IntegerField(2)
@@ -1711,8 +1734,10 @@ class JobStatistics(_messages.Message):
   load = _messages.MessageField('JobStatistics3', 5)
   query = _messages.MessageField('JobStatistics2', 6)
   quotaDeferments = _messages.StringField(7, repeated=True)
-  startTime = _messages.IntegerField(8)
-  totalBytesProcessed = _messages.IntegerField(9)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 8, repeated=True)
+  startTime = _messages.IntegerField(9)
+  totalBytesProcessed = _messages.IntegerField(10)
+  totalSlotMs = _messages.IntegerField(11)
 
 
 class JobStatistics2(_messages.Message):
@@ -1754,16 +1779,17 @@ class JobStatistics2(_messages.Message):
     statementType: The type of query statement, if valid. Possible values (new
       values might be added in the future): "SELECT": SELECT query. "INSERT":
       INSERT query; see https://cloud.google.com/bigquery/docs/reference
-      /standard-sql/data-manipulation-language "UPDATE": UPDATE query; see
+      /standard-sql/data-manipulation-language. "UPDATE": UPDATE query; see
       https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
-      manipulation-language "DELETE": DELETE query; see
+      manipulation-language. "DELETE": DELETE query; see
       https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
-      manipulation-language "MERGE": MERGE query; see
+      manipulation-language. "MERGE": MERGE query; see
       https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
-      manipulation-language "CREATE_TABLE": CREATE [OR REPLACE] TABLE without
+      manipulation-language. "CREATE_TABLE": CREATE [OR REPLACE] TABLE without
       AS SELECT. "CREATE_TABLE_AS_SELECT": CREATE [OR REPLACE] TABLE ... AS
-      SELECT ... "DROP_TABLE": DROP TABLE query. "CREATE_VIEW": CREATE [OR
-      REPLACE] VIEW ... AS SELECT ... "DROP_VIEW": DROP VIEW query.
+      SELECT ... . "DROP_TABLE": DROP TABLE query. "CREATE_VIEW": CREATE [OR
+      REPLACE] VIEW ... AS SELECT ... . "DROP_VIEW": DROP VIEW query.
+      "ALTER_TABLE": ALTER TABLE query. "ALTER_VIEW": ALTER VIEW query.
     timeline: [Output-only] [Beta] Describes a timeline of job execution.
     totalBytesBilled: [Output-only] Total bytes billed for the job.
     totalBytesProcessed: [Output-only] Total bytes processed for the job.
@@ -2731,16 +2757,14 @@ class TimePartitioning(_messages.Message):
       '_PARTITIONDATE' as DATE type. If field is specified, the table is
       instead partitioned by this field. The field must be a top-level
       TIMESTAMP or DATE field. Its mode must be NULLABLE or REQUIRED.
-    requirePartitionFilter: [Beta] [Optional] If set to true, queries over
-      this table require a partition filter that can be used for partition
-      elimination to be specified.
+    requirePartitionFilter: A boolean attribute.
     type: [Required] The only type supported is DAY, which will generate one
       partition per day.
   """
 
   expirationMs = _messages.IntegerField(1)
   field = _messages.StringField(2)
-  requirePartitionFilter = _messages.BooleanField(3, default=False)
+  requirePartitionFilter = _messages.BooleanField(3)
   type = _messages.StringField(4)
 
 

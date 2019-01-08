@@ -119,11 +119,6 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     instance = self.GetInstance(compute_holder.client, instance_ref)
     project = self.GetProject(compute_holder.client, instance_ref.project)
 
-    # Now replace the instance name with the actual IP/hostname
-    if ip_type is ip.IpTypeEnum.INTERNAL:
-      remote.host = ssh_utils.GetInternalIPAddress(instance)
-    else:
-      remote.host = ssh_utils.GetExternalIPAddress(instance)
     if not remote.user:
       remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
     if args.plain:
@@ -142,10 +137,9 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
 
     tunnel_helper = None
     cmd_port = port
-    interface = None
     if hasattr(args, 'tunnel_through_iap') and args.tunnel_through_iap:
-      tunnel_helper, interface = ssh_utils.CreateIapTunnelHelper(
-          args, instance_ref, instance, ip_type, port=port)
+      tunnel_helper = ssh_utils.CreateIapTunnelHelper(args, instance_ref,
+                                                      instance, port=port)
       tunnel_helper.StartListener()
       cmd_port = str(tunnel_helper.GetLocalPort())
       if dst.remote:
@@ -153,6 +147,12 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       else:
         for src in srcs:
           src.remote.host = 'localhost'
+    else:
+      # Now replace the instance name with the actual IP/hostname
+      if ip_type is ip.IpTypeEnum.INTERNAL:
+        remote.host = ssh_utils.GetInternalIPAddress(instance)
+      else:
+        remote.host = ssh_utils.GetExternalIPAddress(instance)
 
     cmd = ssh.SCPCommand(
         srcs, dst, identity_file=identity_file, options=options,
@@ -177,9 +177,8 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     if keys_newly_added:
       poller_tunnel_helper = None
       if tunnel_helper:
-        poller_tunnel_helper, _ = ssh_utils.CreateIapTunnelHelper(
-            args, instance_ref, instance, ip_type, port=port,
-            interface=interface)
+        poller_tunnel_helper = ssh_utils.CreateIapTunnelHelper(
+            args, instance_ref, instance, port=port)
         poller_tunnel_helper.StartListener(accept_multiple_connections=True)
       poller = ssh_utils.CreateSSHPoller(
           remote, identity_file, options, poller_tunnel_helper, port=port)

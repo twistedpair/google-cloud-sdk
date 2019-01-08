@@ -457,7 +457,7 @@ def AddSessionAffinity(parser, target_pools=False, hidden=False):
             'port will go to the same VM in the backend while that VM remains '
             'healthy.'),
     })
-  help_str = 'The type of session affinity to use.'
+  help_str = 'The type of TCP session affinity to use. Not supported for UDP.'
   parser.add_argument(
       '--session-affinity',
       choices=choices,
@@ -529,6 +529,8 @@ def AddPortName(parser):
       this flag, your instance groups must have a service named ``http''
       configured. See also
       `gcloud compute instance-groups set-named-ports --help`.
+      The ``port-name'' parameter cannot be set if the
+      load-balancing-scheme is INTERNAL.
       """)
 
 

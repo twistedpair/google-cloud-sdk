@@ -18,13 +18,28 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from collections import Mapping
+import collections
 
 
-class Conditions(Mapping):
-  """Wraps a repeated ResourceCondition messages field in a dict-like object.
+class Conditions(collections.Mapping):
+  """Represents the status Conditions of a resource in a dict-like way.
 
   Resource means a Cloud Run resource, e.g: Configuration.
+
+  The conditions of a resource describe error, warning, and completion states of
+  the last set of operations on the resource. True is success, False is failure,
+  and "Unknown" is an operation in progress.
+
+  The special "ready condition" describes the overall success state of the
+  (last operation on) the resource.
+
+  Other conditions may be "terminal", in which case they are required to be True
+  for overall success of the operation, and being False indicates failure.
+
+  If a condition has a severity of "info" or "warning" in the API, it's not
+  terminal.
+
+  More info: https://github.com/knative/serving/blob/master/docs/spec/errors.md
 
   Note, status field of conditions is converted to boolean type.
   """
@@ -73,6 +88,13 @@ class Conditions(Mapping):
     for cond_type in self._conditions:
       yield cond_type
 
+  def TerminalSubconditions(self):
+    """Yields keys of the conditions which if all True, Ready should be true."""
+    # TODO(b/120678118): When some conditions are non-terminal, support that.
+    for k in self:
+      if k != self._ready_condition:
+        yield k
+
   def DescriptiveMessage(self):
     """Descriptive message about what's happened to the last user operation."""
     if (self._ready_condition and
@@ -82,7 +104,7 @@ class Conditions(Mapping):
     return None
 
   def IsTerminal(self):
-    """Whether the conditions are terminal.
+    """True if the resource has finished the last operation, for good or ill.
 
     conditions are considered terminal if and only if the ready condition is
     either true or false.
@@ -99,9 +121,14 @@ class Conditions(Mapping):
     return self._conditions[self._ready_condition]['status'] is not None
 
   def IsReady(self):
+    """Return True if the resource has succeeded its current operation."""
     if not self.IsTerminal():
       return False
     return self._conditions[self._ready_condition]['status']
+
+  def IsFailed(self):
+    """"Return True if the resource has failed its current operation."""
+    return self.IsTerminal() and not self.IsReady()
 
   def IsFresh(self):
     return self._fresh

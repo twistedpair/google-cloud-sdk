@@ -79,6 +79,10 @@ class ConnectionInfo(six.with_metaclass(abc.ABCMeta)):
     pass
 
   @abc.abstractproperty
+  def operator(self):
+    pass
+
+  @abc.abstractproperty
   def ns_label(self):
     pass
 
@@ -134,8 +138,12 @@ class _GKEConnectionContext(ConnectionInfo):
     return 'namespace'
 
   @property
+  def operator(self):
+    return 'Cloud Run on GKE'
+
+  @property
   def location_label(self):
-    return ' of cluster [{{{{bold}}}}{}{{{{bold}}}}]'.format(
+    return ' of cluster [{{{{bold}}}}{}{{{{reset}}}}]'.format(
         self.cluster_ref.Name())
 
   @contextlib.contextmanager
@@ -161,8 +169,13 @@ class _RegionalConnectionContext(ConnectionInfo):
     return 'project'
 
   @property
+  def operator(self):
+    return 'Cloud Run'
+
+  @property
   def location_label(self):
-    return ''
+    return ' of region [{{{{bold}}}}{}{{{{reset}}}}]'.format(
+        self.region)
 
   @contextlib.contextmanager
   def Connect(self):

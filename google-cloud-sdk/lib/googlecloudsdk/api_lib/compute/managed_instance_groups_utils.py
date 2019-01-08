@@ -31,6 +31,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute.managed_instance_groups import auto_healing_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -947,6 +948,23 @@ def CreateAutohealingPolicies(messages, health_check, initial_delay):
   return [policy]
 
 
+def ModifyAutohealingPolicies(current_policies, messages, args,
+                              health_check_url):
+  """Modifies existing autohealing policy from args."""
+  if args.clear_autohealing:
+    return [messages.InstanceGroupManagerAutoHealingPolicy()]
+  if not health_check_url and not args.initial_delay:
+    # No modifications of AutoHealingPolicies.
+    return None
+  current_policy = current_policies[0] if current_policies else None
+  policy = current_policy or messages.InstanceGroupManagerAutoHealingPolicy()
+  if health_check_url:
+    policy.healthCheck = health_check_url
+  if args.initial_delay:
+    policy.initialDelaySec = args.initial_delay
+  return [policy]
+
+
 def ValidateAutohealingPolicies(auto_healing_policies):
   """Validates autohealing policies.
 
@@ -1107,10 +1125,10 @@ def _ComputeInstanceGroupSize(items, client, resources):
     yield item
 
 
-def GetHealthCheckUri(resources, args, health_check_parser=None):
+def GetHealthCheckUri(resources, args):
   """Creates health check reference from args."""
   if args.health_check:
-    ref = health_check_parser.ResolveAsResource(args, resources)
+    ref = auto_healing_utils.HEALTH_CHECK_ARG.ResolveAsResource(args, resources)
     return ref.SelfLink()
   if args.http_health_check:
     return resources.Parse(

@@ -230,7 +230,7 @@ class BigquerydatatransferProjectsLocationsTransferConfigsPatchRequest(_messages
       the application.
     name: The resource name of the transfer config. Transfer config names have
       the form of
-      `projects/{project_id}/location/{region}/transferConfigs/{config_id}`.
+      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
       The name is automatically generated based on the config_id specified in
       CreateTransferConfigRequest along with project_id and region. If
       config_id is not provided, usually a uuid, even though it is not
@@ -485,7 +485,7 @@ class BigquerydatatransferProjectsTransferConfigsPatchRequest(_messages.Message)
       the application.
     name: The resource name of the transfer config. Transfer config names have
       the form of
-      `projects/{project_id}/location/{region}/transferConfigs/{config_id}`.
+      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
       The name is automatically generated based on the config_id specified in
       CreateTransferConfigRequest along with project_id and region. If
       config_id is not provided, usually a uuid, even though it is not
@@ -1202,7 +1202,7 @@ class TransferConfig(_messages.Message):
     displayName: User specified display name for the data transfer.
     name: The resource name of the transfer config. Transfer config names have
       the form of
-      `projects/{project_id}/location/{region}/transferConfigs/{config_id}`.
+      `projects/{project_id}/locations/{region}/transferConfigs/{config_id}`.
       The name is automatically generated based on the config_id specified in
       CreateTransferConfigRequest along with project_id and region. If
       config_id is not provided, usually a uuid, even though it is not

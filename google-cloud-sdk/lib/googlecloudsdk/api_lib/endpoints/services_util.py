@@ -343,7 +343,7 @@ def PushMultipleServiceConfigFiles(service_name, config_files, is_async,
   for diagnostic in diagnostics:
     kind = diagnostic.get('kind', '').upper()
     logger = log.error if kind == 'ERROR' else log.warning
-    msg = '{l}: {m}'.format(
+    msg = '{l}: {m}\n'.format(
         l=diagnostic.get('location'), m=diagnostic.get('message'))
     logger(msg)
 
@@ -483,12 +483,12 @@ def ProcessOperationResult(result, is_async=False):
     cmd = OP_WAIT_CMD.format(op.get('name'))
     log.status.Print('Asynchronous operation is in progress... '
                      'Use the following command to wait for its '
-                     'completion:\n {0}'.format(cmd))
+                     'completion:\n {0}\n'.format(cmd))
   else:
     cmd = OP_DESCRIBE_CMD.format(op.get('name'))
     log.status.Print('Operation finished successfully. '
                      'The following command can describe '
-                     'the Operation details:\n {0}'.format(cmd))
+                     'the Operation details:\n {0}\n'.format(cmd))
   return op
 
 

@@ -70,7 +70,7 @@ def ParseQueue(queue, location=None):
     queue_ref = resources.REGISTRY.Parse(queue,
                                          collection=constants.QUEUES_COLLECTION)
   except resources.RequiredFieldOmittedException:
-    app_location = location or app.ResolveAppLocation()
+    app_location = location or app.ResolveAppLocation(ParseProject())
     location_ref = ParseLocation(app_location)
     queue_ref = resources.REGISTRY.Parse(
         queue, params={'projectsId': location_ref.projectsId,

@@ -235,7 +235,7 @@ def WaitFor(poller, operation_ref, message,
 
   Raises:
     AbortWaitError: if ctrl-c was pressed.
-    TimeoutError: if retryer has finished wihout being done.
+    TimeoutError: if retryer has finished without being done.
   """
   aborted_message = 'Aborting wait for operation {0}.\n'.format(operation_ref)
   try:

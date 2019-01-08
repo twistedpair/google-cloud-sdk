@@ -39,6 +39,14 @@ def SetFieldFromRelativeName(api_field):
   return Process
 
 
+def SetFieldFromName(api_field):
+  def Process(ref, args, request):
+    del args  # Unused in Process
+    arg_utils.SetFieldInMessage(request, api_field, ref.Name())
+    return request
+  return Process
+
+
 def SetParentRequestHook(ref, args, request):
   """Declarative request hook to add relative parent to issued requests."""
   del args  # Unused

@@ -125,10 +125,21 @@ apis:
   cloudbuild:
     v1:
       discovery_doc: cloudbuild_v1.json
+      default: true
       # The following stanza is a workaround for b/24867445. It prevents elision
-      # of the CreateBuildRequest (project_id + build) into just a Build object.
+      # of a request containing (project_id + xyz) into just an Xyz object.
       unelidable_request_methods:
       - cloudbuild.projects.builds.create
+    v1alpha1:
+      discovery_doc: cloudbuild_v1alpha1.json
+      resources:
+        projects:
+          path: projects/{projectId}
+      # The following stanza is a workaround for b/24867445. It prevents elision
+      # of a request containing (project_id + xyz) into just an Xyz object.
+      unelidable_request_methods:
+      - cloudbuild.projects.builds.create
+      - cloudbuild.projects.workerPools.patch
   clouddebugger:
     v2:
       discovery_doc: clouddebugger_v2.json
@@ -252,6 +263,10 @@ apis:
       default: true
     v1beta1:
       discovery_doc: containeranalysis_v1beta1.json
+  datacatalog:
+    v1beta1:
+      discovery_doc: datacatalog_v1beta1.json
+      default: true
   dataflow:
     v1b3:
       discovery_doc: dataflow_v1b3.json
@@ -410,10 +425,6 @@ apis:
     v1:
       discovery_doc: redis_v1.json
       default: true
-
-  replicapoolupdater:
-    v1beta1:
-      discovery_doc: replicapoolupdater_v1beta1.json
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
@@ -533,6 +544,10 @@ apis:
   bigquery:
     v2:
       discovery_doc: bigquery_v2.json
+      resources:
+        tabledata:
+          path: projects/{projectId}/datasets/{datasetId}/tables/{tableId}
+          enable_uri_parsing: false
   bigquerydatatransfer:
     v1:
       discovery_doc: bigquerydatatransfer_v1.json

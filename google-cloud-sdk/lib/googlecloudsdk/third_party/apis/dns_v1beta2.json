@@ -4,7 +4,7 @@
  "id": "dns:v1beta2",
  "name": "dns",
  "version": "v1beta2",
- "revision": "20181205",
+ "revision": "20181207",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -122,7 +122,7 @@
     },
     "status": {
      "type": "string",
-     "description": "Status of the operation (output only).",
+     "description": "Status of the operation (output only). A status of \"done\" means that the request to update the authoritative servers has been sent, but the servers might not be updated yet.",
      "enum": [
       "done",
       "pending"
@@ -595,7 +595,7 @@
     },
     "status": {
      "type": "string",
-     "description": "Status of the operation. Can be one of the following: \"PENDING\" or \"DONE\" (output only).",
+     "description": "Status of the operation. Can be one of the following: \"PENDING\" or \"DONE\" (output only). A status of \"DONE\" means that the request to update the authoritative servers has been sent, but the servers might not be updated yet.",
      "enum": [
       "done",
       "pending"

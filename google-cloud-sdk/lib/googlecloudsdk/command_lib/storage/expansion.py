@@ -26,6 +26,7 @@ import re
 
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 import six
@@ -36,11 +37,21 @@ class PathExpander(six.with_metaclass(abc.ABCMeta)):
 
   EXPANSION_CHARS = '[*?[]'
 
+  @classmethod
+  def ForPath(cls, path):
+    if path.startswith('gs://'):
+      return GCSPathExpander()
+    return LocalPathExpander()
+
   def __init__(self, sep):
     self._sep = sep
 
   @abc.abstractmethod
   def AbsPath(self, path):
+    pass
+
+  @abc.abstractmethod
+  def IsFile(self, path):
     pass
 
   @abc.abstractmethod
@@ -59,33 +70,60 @@ class PathExpander(six.with_metaclass(abc.ABCMeta)):
   def Join(self, path1, path2):
     pass
 
-  def ExpandPath(self, path, include_directories=False):
+  @classmethod
+  def HasExpansion(cls, path):
+    return bool(re.search(PathExpander.EXPANSION_CHARS, path))
+
+  def ExpandPath(self, path):
     """Expand the given path that contains wildcard characters.
 
     Args:
       path: str, The path to expand.
-      include_directories: bool, By default, only files that match the wildcard
-        path are returned. If set to True, any directories that matches the
-        wildcard will also be returned.
 
     Returns:
-      {str}, The set of files and directories (if requested) that match the
-      wildcard path. All returned paths are absolute.
+      ({str}, {str}), A tuple of the sets of files and directories that match
+      the wildcard path. All returned paths are absolute.
     """
-    return {p for p in self._Glob(self.AbsPath(path))
-            if (include_directories or not p.endswith(self._sep))}
+    files = set()
+    dirs = set()
+    for p in self._Glob(self.AbsPath(path)):
+      if p.endswith(self._sep):
+        dirs.add(p)
+      else:
+        files.add(p)
+    if self.IsEndRecursive(path):
+      # If the path has /** on the end, it is going to match all files under
+      # each matching root, so there is no need to process any sub-directories
+      # explicitly.
+      dirs.clear()
+    return (files, dirs)
 
-  def _HasExpansion(self, path):
-    return bool(re.search(PathExpander.EXPANSION_CHARS, path))
+  def ExpandPaths(self, paths):
+    files = set()
+    dirs = set()
+    for p in paths:
+      (current_files, current_dirs) = self.ExpandPath(p)
+      if not current_files and not current_dirs:
+        log.warning('[{}] does not match any paths.'.format(p))
+        continue
+      files.update(current_files)
+      dirs.update(current_dirs)
+    return files, dirs
+
+  def IsEndRecursive(self, path):
+    return path.endswith(self._sep + '**')
+
+  def IsDirLike(self, path):
+    return path.endswith(self._sep)
 
   def _Glob(self, path):
-    if not self._HasExpansion(path):
+    if not self.HasExpansion(path):
       if self.Exists(path):
         yield self._FormatPath(path)
       return
 
     dir_path, basename = os.path.split(path)
-    has_basename_expansion = self._HasExpansion(basename)
+    has_basename_expansion = self.HasExpansion(basename)
     for expanded_dir_path in self._Glob(dir_path):
       if not has_basename_expansion:
         path = self.Join(expanded_dir_path, basename)
@@ -123,6 +161,9 @@ class LocalPathExpander(PathExpander):
   def AbsPath(self, path):
     return os.path.abspath(path)
 
+  def IsFile(self, path):
+    return os.path.isfile(path)
+
   def IsDir(self, path):
     return os.path.isdir(path)
 
@@ -148,13 +189,56 @@ class GCSPathExpander(PathExpander):
     self._objects = {}
     self._object_details = {}
 
-  def GetObjectDetails(self, object_paths):
-    return {p: self._object_details.get(p) for p in object_paths}
+  def GetSortedObjectDetails(self, object_paths):
+    """Gets all the details for the given paths and returns them sorted.
+
+    Args:
+      object_paths: [str], A list of gs:// object or directory paths.
+
+    Returns:
+      [{path, data}], A list of dicts with the keys path and data. Path is the
+      gs:// path to the object or directory. Object paths will not end in a '/'
+      and directory paths will. The data is either a storage.Object message (for
+      objects) or a storage_util.ObjectReference for directories. The sort
+      order is alphabetical with all directories first and then all objects.
+    """
+    all_data = []
+    for path in object_paths:
+      is_obj, data = self._GetObjectDetails(path)
+      path = path if is_obj else path + '/'
+      all_data.append((is_obj, {'path': path, 'data': data}))
+
+    all_data = sorted(all_data, key=lambda o: (o[0], o[1]['path']))
+    return [d[1] for d in all_data]
+
+  def _GetObjectDetails(self, object_path):
+    """Gets the actual object data for a given GCS path.
+
+    Args:
+      object_path: str, The gs:// path to an object or directory.
+
+    Returns:
+      (bool, data), Where element 0 is True if the path is an object, False if
+      a directory and where data is either a storage.Object message (for
+      objects) or a storage_util.ObjectReference for directories.
+    """
+    details = self._object_details.get(object_path)
+    if details:
+      return True, details
+    else:
+      # This isn't an object, must be a "directory" so just return the name
+      # data.
+      return False, storage_util.ObjectReference.FromUrl(
+          object_path, allow_empty_object=True)
 
   def AbsPath(self, path):
     if not path.startswith('gs://'):
       raise ValueError('GCS paths must be absolute (starting with gs://)')
     return path
+
+  def IsFile(self, path):
+    exists, is_dir = self._Exists(path)
+    return exists and not is_dir
 
   def IsDir(self, path):
     exists, is_dir = self._Exists(path)
@@ -169,6 +253,7 @@ class GCSPathExpander(PathExpander):
       # Root of the filesystem always exists
       return True, True
 
+    path = path.rstrip('/')
     obj_ref = storage_util.ObjectReference.FromUrl(
         path, allow_empty_object=True)
     self._LoadObjectsIfMissing(obj_ref.bucket_ref)
@@ -194,7 +279,6 @@ class GCSPathExpander(PathExpander):
       # project.
       for b in self._client.ListBuckets(
           project=properties.VALUES.core.project.Get(required=True)):
-        self._objects.setdefault(b.name, set())
         yield b.name
       return
 
@@ -224,9 +308,7 @@ class GCSPathExpander(PathExpander):
 
   def _LoadObjectsIfMissing(self, bucket_ref):
     objects = self._objects.get(bucket_ref.bucket)
-    if not objects:
-      # We may know that the bucket exists but not have listed objects yet, or
-      # we may know nothing about the bucket.
+    if objects is None:
       try:
         objects = self._client.ListBucket(bucket_ref)
         object_names = set()

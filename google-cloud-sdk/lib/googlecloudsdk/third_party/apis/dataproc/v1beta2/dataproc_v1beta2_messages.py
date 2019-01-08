@@ -3334,7 +3334,7 @@ class WorkflowTemplate(_messages.Message):
     createTime: Output only. The time template was created.
     id: Required. The template id.The id must contain only letters (a-z, A-Z),
       numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
-      with underscore or hyphen. Must consist of between 3 and 50 characters.
+      with underscore or hyphen. Must consist of between 3 and 50 characters..
     jobs: Required. The Directed Acyclic Graph of Jobs to submit.
     labels: Optional. The labels to associate with this template. These labels
       will be propagated to all jobs and clusters created by the workflow

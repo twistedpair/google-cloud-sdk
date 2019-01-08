@@ -76,6 +76,14 @@ class MatrixCreator(object):
     self._messages = context['testing_messages']
     self._release_track = release_track
 
+  def _BuildAppReference(self, filename):
+    """Builds either a FileReference or an AppBundle message for a file."""
+    if filename.endswith('.aab'):
+      return None, self._messages.AppBundle(
+          bundleLocation=self._BuildFileReference(filename))
+    else:
+      return self._BuildFileReference(filename), None
+
   def _BuildFileReference(self, filename):
     """Build a FileReference pointing to the GCS copy of a file."""
     return self._messages.FileReference(
@@ -112,8 +120,10 @@ class MatrixCreator(object):
   def _BuildAndroidInstrumentationTestSpec(self):
     """Build a TestSpecification for an AndroidInstrumentationTest."""
     spec = self._BuildGenericTestSpec()
+    app_apk, app_bundle = self._BuildAppReference(self._args.app)
     spec.androidInstrumentationTest = self._messages.AndroidInstrumentationTest(
-        appApk=self._BuildFileReference(self._args.app),
+        appApk=app_apk,
+        appBundle=app_bundle,
         testApk=self._BuildFileReference(self._args.test),
         appPackageId=self._args.app_package,
         testPackageId=self._args.test_package,
@@ -125,8 +135,10 @@ class MatrixCreator(object):
   def _BuildAndroidRoboTestSpec(self):
     """Build a TestSpecification for an AndroidRoboTest."""
     spec = self._BuildGenericTestSpec()
+    app_apk, app_bundle = self._BuildAppReference(self._args.app)
     spec.androidRoboTest = self._messages.AndroidRoboTest(
-        appApk=self._BuildFileReference(self._args.app),
+        appApk=app_apk,
+        appBundle=app_bundle,
         appPackageId=self._args.app_package,
         maxDepth=self._args.max_depth,
         maxSteps=self._args.max_steps,
@@ -140,8 +152,10 @@ class MatrixCreator(object):
   def _BuildAndroidGameLoopTestSpec(self):
     """Build a TestSpecification for an AndroidTestLoop."""
     spec = self._BuildGenericTestSpec()
+    app_apk, app_bundle = self._BuildAppReference(self._args.app)
     spec.androidTestLoop = self._messages.AndroidTestLoop(
-        appApk=self._BuildFileReference(self._args.app),
+        appApk=app_apk,
+        appBundle=app_bundle,
         appPackageId=self._args.app_package)
     if self._args.scenario_numbers:
       spec.androidTestLoop.scenarios = self._args.scenario_numbers

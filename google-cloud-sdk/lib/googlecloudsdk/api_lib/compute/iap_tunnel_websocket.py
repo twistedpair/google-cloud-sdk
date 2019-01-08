@@ -19,8 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from collections import deque
-import logging
+import collections
 import threading
 import time
 
@@ -92,8 +91,8 @@ class IapTunnelWebSocket(object):
     self._total_bytes_confirmed = 0
     self._total_bytes_received = 0
     self._total_bytes_received_and_acked = 0
-    self._unsent_data = deque()
-    self._unconfirmed_data = deque()
+    self._unsent_data = collections.deque()
+    self._unconfirmed_data = collections.deque()
 
   def __del__(self):
     if self._websocket_helper:
@@ -152,9 +151,8 @@ class IapTunnelWebSocket(object):
     while time.time() < end_time:
       if len(self._unsent_data) < MAX_UNSENT_QUEUE_LENGTH:
         self._unsent_data.append(bytes_to_send)
-        if log.GetVerbosity() == logging.DEBUG:
-          log.info('ENQUEUE data_len [%d] bytes_to_send[:20] [%r]',
-                   len(bytes_to_send), bytes_to_send[:20])
+        log.debug('ENQUEUE data_len [%d] bytes_to_send[:20] [%r]',
+                  len(bytes_to_send), bytes_to_send[:20])
         return
       time.sleep(0.01)
     raise ConnectionReconnectTimeout()
@@ -227,8 +225,7 @@ class IapTunnelWebSocket(object):
         if not self._stopping:
           time.sleep(0.01)
     except:  # pylint: disable=bare-except
-      if log.GetVerbosity() == logging.DEBUG:
-        log.info('Error from WebSocket while sending data.', exc_info=True)
+      log.debug('Error from WebSocket while sending data.', exc_info=True)
     self.Close()
 
   def _SendQueuedData(self):
@@ -276,9 +273,8 @@ class IapTunnelWebSocket(object):
       self._HandleSubprotocolConnectSuccessSid(bytes_left)
     elif tag == utils.SUBPROTOCOL_TAG_RECONNECT_SUCCESS_ACK:
       self._HandleSubprotocolReconnectSuccessAck(bytes_left)
-    elif log.GetVerbosity() == logging.DEBUG:
-      # TODO(b/119130796): update debug logging to std log.debug()
-      log.info('Unsupported subprotocol tag [%r], discarding the message', tag)
+    else:
+      log.debug('Unsupported subprotocol tag [%r], discarding the message', tag)
 
   def _HandleSubprotocolAck(self, binary_data):
     """Handle Subprotocol ACK Frame."""
@@ -288,9 +284,9 @@ class IapTunnelWebSocket(object):
 
     bytes_confirmed, bytes_left = utils.ExtractSubprotocolAck(binary_data)
     self._ConfirmData(bytes_confirmed)
-    if bytes_left and log.GetVerbosity() == logging.DEBUG:
-      log.info('Discarding [%d] extra bytes after processing ACK',
-               len(bytes_left))
+    if bytes_left:
+      log.debug('Discarding [%d] extra bytes after processing ACK',
+                len(bytes_left))
 
   def _HandleSubprotocolConnectSuccessSid(self, binary_data):
     """Handle Subprotocol CONNECT_SUCCESS_SID Frame."""
@@ -302,8 +298,8 @@ class IapTunnelWebSocket(object):
     data, bytes_left = utils.ExtractSubprotocolConnectSuccessSid(binary_data)
     self._connection_sid = data
     self._connect_msg_received = True
-    if bytes_left and log.GetVerbosity() == logging.DEBUG:
-      log.info(
+    if bytes_left:
+      log.debug(
           'Discarding [%d] extra bytes after processing CONNECT_SUCCESS_SID',
           len(bytes_left))
 
@@ -322,10 +318,10 @@ class IapTunnelWebSocket(object):
         'Reconnecting: confirming [%d] bytes and resending [%d] messages.',
         bytes_being_confirmed, len(self._unconfirmed_data))
     self._unsent_data.extendleft(reversed(self._unconfirmed_data))
-    self._unconfirmed_data = deque()
+    self._unconfirmed_data = collections.deque()
     self._connect_msg_received = True
-    if bytes_left and log.GetVerbosity() == logging.DEBUG:
-      log.info(
+    if bytes_left:
+      log.debug(
           'Discarding [%d] extra bytes after processing RECONNECT_SUCCESS_ACK',
           len(bytes_left))
 
@@ -342,9 +338,9 @@ class IapTunnelWebSocket(object):
     except:  # pylint: disable=bare-except
       self._StopConnectionAsync()
       raise
-    if bytes_left and log.GetVerbosity() == logging.DEBUG:
-      log.info('Discarding [%d] extra bytes after processing DATA',
-               len(bytes_left))
+    if bytes_left:
+      log.debug('Discarding [%d] extra bytes after processing DATA',
+                len(bytes_left))
 
   def _ConfirmData(self, bytes_confirmed):
     """Discard data that has been confirmed via ACKs received from server."""

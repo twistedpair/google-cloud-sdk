@@ -55,9 +55,9 @@ def _AddBaseArgs(parser):
       help='Disables checking certificates on the WebSocket connection.')
 
 
-def AddConnectionHelperArgs(parser):
+def AddConnectionHelperArgs(parser, tunnel_through_iap_scope):
   _AddBaseArgs(parser)
-  parser.add_argument(
+  tunnel_through_iap_scope.add_argument(
       '--tunnel-through-iap',
       action='store_true',
       help="""\

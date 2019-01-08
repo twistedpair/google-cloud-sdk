@@ -18,10 +18,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.app import appengine_api_client as app_engine_api
 from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.command_lib.tasks import app
+from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.command_lib.app import create_util
+from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import http_encoding
 
 
@@ -30,6 +37,10 @@ _PUBSUB_MESSAGE_URL = 'type.googleapis.com/google.pubsub.v1.PubsubMessage'
 
 def _GetPubsubMessages():
   return apis.GetMessagesModule('pubsub', apis.ResolveVersion('pubsub'))
+
+
+def _GetSchedulerClient():
+  return apis.GetClientInstance('cloudscheduler', 'v1beta1')
 
 
 def _GetSchedulerMessages():
@@ -109,6 +120,10 @@ VALID_REGIONS = [
 ]
 
 
+class RegionResolvingError(exceptions.Error):
+  """Error for when the app's region cannot be ultimately determined."""
+
+
 class AppLocationResolver(object):
   """Callable that resolves and caches the app location for the project.
 
@@ -122,6 +137,56 @@ class AppLocationResolver(object):
 
   def __call__(self):
     if self.location is None:
-      self.location = app.ResolveAppLocation(valid_regions=VALID_REGIONS,
-                                             product='Cloud Scheduler')
+      self.location = self._ResolveAppLocation()
     return self.location
+
+  def _ResolveAppLocation(self):
+    """Determines Cloud Scheduler location for the project or creates an app."""
+    project = properties.VALUES.core.project.GetOrFail()
+    location = self._GetLocation(project) or self._CreateApp(project)
+    if location is not None:
+      return location
+    raise RegionResolvingError(
+        'Could not determine the location for the project. Please try again.')
+
+  def _GetLocation(self, project):
+    """Gets the location from the Cloud Scheduler API."""
+    try:
+      client = _GetSchedulerClient()
+      messages = _GetSchedulerMessages()
+      request = messages.CloudschedulerProjectsLocationsListRequest(
+          name='projects/{}'.format(project))
+      locations = list(list_pager.YieldFromList(
+          client.projects_locations, request, batch_size=2, field='locations',
+          batch_size_attribute='pageSize'))
+
+      if len(locations) > 1:
+        # Projects currently can only use Cloud Scheduler in single region, so
+        # this should never happen for now, but that will change in the future.
+        raise RegionResolvingError('Multiple locations found for this project. '
+                                   'Please specify an exact location.')
+      if len(locations) == 1:
+        return locations[0].labels.additionalProperties[0].value
+      return None
+    except apitools_exceptions.HttpNotFoundError:
+      return None
+
+  def _CreateApp(self, project):
+    """Walks the user through creating an AppEngine app."""
+    if console_io.PromptContinue(
+        message=('There is no App Engine app in project [{}].'.format(project)),
+        prompt_string=('Would you like to create one'),
+        throw_if_unattended=True):
+      try:
+        app_engine_api_client = app_engine_api.GetApiClientForTrack(
+            calliope_base.ReleaseTrack.GA)
+        create_util.CreateAppInteractively(
+            app_engine_api_client, project, regions=VALID_REGIONS,
+            extra_warning=_MORE_REGIONS_AVAILABLE_WARNING)
+      except create_util.AppAlreadyExistsError:
+        raise create_util.AppAlreadyExistsError(
+            'App already exists in project [{}]. This may be due a race '
+            'condition. Please try again.'.format(project))
+      else:
+        return self._GetLocation(project)
+    return None

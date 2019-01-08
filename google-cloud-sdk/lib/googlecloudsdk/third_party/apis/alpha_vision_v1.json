@@ -637,6 +637,10 @@
         "webDetectionParams": {
           "description": "Parameters for web detection.",
           "$ref": "WebDetectionParams"
+        },
+        "textDetectionParams": {
+          "description": "Parameters for document text detection.",
+          "$ref": "TextDetectionParams"
         }
       }
     },
@@ -721,6 +725,80 @@
         "includeGeoResults": {
           "description": "Whether to include results derived from the geo information in the image.",
           "type": "boolean"
+        }
+      }
+    },
+    "TextDetectionParams": {
+      "id": "TextDetectionParams",
+      "description": "Parameters for text detections. This is used to control both TEXT_DETECTION\nand DOCUMENT_TEXT_DETECTION features.",
+      "type": "object",
+      "properties": {
+        "disableOrientationDetection": {
+          "description": "Disables orientation detection such that rotated text will not be detected.\nThis is only supported for DOCUMENT_TEXT_DETECTION.",
+          "type": "boolean"
+        },
+        "disableTextAnnotations": {
+          "description": "Disables the old text_annotations field. Only full_text_annotations will be\nreturned.",
+          "type": "boolean"
+        },
+        "pageFilter": {
+          "description": "Controls what data is returned at the page level in full_text_annotation.\nDefault when unset:\n  All fields are included",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "blockFilter": {
+          "description": "Controls what data is returned at the block level in full_text_annotation.\nDefault when unset:\n  All fields are included except `merged_text`.",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "paragraphFilter": {
+          "description": "Controls what data is returned at the paragraph level in\nfull_text_annotation.\nDefault when unset:\n  All fields are included except `merged_text`",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "wordFilter": {
+          "description": "Controls what data is returned at the word level in full_text_annotation.\nDefault when unset:\n  All fields are included except `merged_text`",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "symbolFilter": {
+          "description": "Controls what data is returned at the symbol level in full_text_annotation.\nDefault when unset:\n  All fields are included except `bounding_box`",
+          "type": "string",
+          "format": "google-fieldmask"
+        },
+        "tableDetectionOptions": {
+          "description": "Controls table detection behavior. Table detection is disabled if this\nfield is not set.",
+          "$ref": "TableDetectionOptions"
+        }
+      }
+    },
+    "TableDetectionOptions": {
+      "id": "TableDetectionOptions",
+      "description": "Options for the table detection.",
+      "type": "object",
+      "properties": {
+        "tableBoundHints": {
+          "description": "Optional table bounding box hints that can be provided for complex\ncases which our algorithm cannot locate the table(s) in.",
+          "type": "array",
+          "items": {
+            "$ref": "TableBoundHint"
+          }
+        }
+      }
+    },
+    "TableBoundHint": {
+      "id": "TableBoundHint",
+      "description": "A hint for a table bounding box on the page for table parsing.",
+      "type": "object",
+      "properties": {
+        "pageNumber": {
+          "description": "Optional page number for multi-paged inputs this hint applies to. If\nnot provided, this hint will apply to all pages by default. This value\nis 1-indexed.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "boundingBox": {
+          "description": "Bounding box hint for a table on this page. The coordinates must be\nnormalized to [0,1] and the bounding box must be an axis-aligned rectangle.",
+          "$ref": "BoundingPoly"
         }
       }
     },
@@ -1415,6 +1493,14 @@
           "description": "Confidence of the OCR results on the block. Range [0, 1].",
           "type": "number",
           "format": "float"
+        },
+        "table": {
+          "description": "Detected table for TABLE block_type. This field is by default not returned\nunless enabled via TextDetectionParams.table_detection_options. The\n`bounding_box` for this Block will be the detected boundaries for this\ntable.",
+          "$ref": "Table"
+        },
+        "mergedText": {
+          "description": "All UTF-8 text detected in this block. This field is by default not\nreturned unless specified in TextDetectionParams.block_filter.",
+          "type": "string"
         }
       }
     },
@@ -1442,6 +1528,10 @@
           "description": "Confidence of the OCR results for the paragraph. Range [0, 1].",
           "type": "number",
           "format": "float"
+        },
+        "mergedText": {
+          "description": "All UTF-8 text detected in this paragraph. This field is by default not\nreturned unless specified in\nTextDetectionParams.paragraph_filter.",
+          "type": "string"
         }
       }
     },
@@ -1469,6 +1559,10 @@
           "description": "Confidence of the OCR results for the word. Range [0, 1].",
           "type": "number",
           "format": "float"
+        },
+        "mergedText": {
+          "description": "All UTF-8 text detected in this word. This field is by default not\nreturned unless specified in TextDetectionParams.word_filter.",
+          "type": "string"
         }
       }
     },
@@ -1493,6 +1587,66 @@
           "description": "Confidence of the OCR results for the symbol. Range [0, 1].",
           "type": "number",
           "format": "float"
+        }
+      }
+    },
+    "Table": {
+      "id": "Table",
+      "description": "A table representation similar to HTML table structure.",
+      "type": "object",
+      "properties": {
+        "headerRows": {
+          "description": "Header rows of the table",
+          "type": "array",
+          "items": {
+            "$ref": "TableRow"
+          }
+        },
+        "bodyRows": {
+          "description": "Body rows of the table",
+          "type": "array",
+          "items": {
+            "$ref": "TableRow"
+          }
+        }
+      }
+    },
+    "TableRow": {
+      "id": "TableRow",
+      "description": "A row of table cells.",
+      "type": "object",
+      "properties": {
+        "cells": {
+          "description": "Cells that make up this row.",
+          "type": "array",
+          "items": {
+            "$ref": "TableCell"
+          }
+        }
+      }
+    },
+    "TableCell": {
+      "id": "TableCell",
+      "description": "A cell representation inside of tables.",
+      "type": "object",
+      "properties": {
+        "rowSpan": {
+          "description": "How many rows this cell spans.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "colSpan": {
+          "description": "How many columns this cell spans.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "structuredText": {
+          "description": "Deeper structural information about the contents of the cell if it\ncontains deeper structures such as inner tables. This field is not set\nfor simple cells with no such structures.",
+          "$ref": "Block"
+        },
+        "mergedText": {
+          "description": "The merged text value of this cell, omitting any deeper structural\ninformation unlike `structured_text`. This is useful for simple cells.",
+          "type": "string"
         }
       }
     },
@@ -1925,6 +2079,153 @@
         }
       }
     },
+    "BatchAnnotateFilesRequest": {
+      "id": "BatchAnnotateFilesRequest",
+      "description": "A list of requests to annotate files using the BatchAnnotateFiles API.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "The list of file annotation requests. Right now we support only one\nAnnotateFileRequest in BatchAnnotateFilesRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateFileRequest"
+          }
+        }
+      }
+    },
+    "AnnotateFileRequest": {
+      "id": "AnnotateFileRequest",
+      "description": "A request to annotate one single file, e.g. a PDF, TIFF or GIF file.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "description": "Required. Information about the input file.",
+          "$ref": "InputConfig"
+        },
+        "features": {
+          "description": "Required. Requested features.",
+          "type": "array",
+          "items": {
+            "$ref": "Feature"
+          }
+        },
+        "imageContext": {
+          "description": "Additional context that may accompany the image(s) in the file.",
+          "$ref": "ImageContext"
+        },
+        "pages": {
+          "description": "Pages of the file to perform image annotation.\n\nPages starts from 1, we assume the first page of the file is page 1.\nAt most 10 pages are supported per request.\nPages should be specified in order, from low to high.\n\nIf the file is GIF instead of PDF or TIFF, page refers to GIF frames.\n\nIf this field is empty, by default the service performs image annotation\nfor the first 10 pages of the file.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "InputConfig": {
+      "id": "InputConfig",
+      "description": "The desired input location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Google Cloud Storage location to read the input from.",
+          "$ref": "GcsSource"
+        },
+        "mimeType": {
+          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported. Wildcards are not supported.",
+          "type": "string"
+        }
+      }
+    },
+    "GcsSource": {
+      "id": "GcsSource",
+      "description": "The Google Cloud Storage location where the input will be read from.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI for the input file. This must only be a\nGoogle Cloud Storage object. Wildcards are not currently supported.",
+          "type": "string"
+        }
+      }
+    },
+    "BatchAnnotateFilesResponse": {
+      "id": "BatchAnnotateFilesResponse",
+      "description": "A list of file annotation responses.",
+      "type": "object",
+      "properties": {
+        "responses": {
+          "description": "The list of file annotation responses, each response corresponding to each\nAnnotateFileRequest in BatchAnnotateFilesRequest.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateFileResponse"
+          }
+        }
+      }
+    },
+    "AnnotateFileResponse": {
+      "id": "AnnotateFileResponse",
+      "description": "Response to a single file annotation request. A file may contain one or more\nimages, which individually have their own responses.",
+      "type": "object",
+      "properties": {
+        "inputConfig": {
+          "description": "Information about the file for which this response is generated.",
+          "$ref": "InputConfig"
+        },
+        "responses": {
+          "description": "Individual responses to images found within the file.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateImageResponse"
+          }
+        }
+      }
+    },
+    "AsyncBatchAnnotateImagesRequest": {
+      "id": "AsyncBatchAnnotateImagesRequest",
+      "description": "Request for async image annotation for a list of images.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "Individual image annotation requests for this batch.",
+          "type": "array",
+          "items": {
+            "$ref": "AnnotateImageRequest"
+          }
+        },
+        "outputConfig": {
+          "description": "Required. The desired output location and metadata (e.g. format).",
+          "$ref": "OutputConfig"
+        }
+      }
+    },
+    "OutputConfig": {
+      "id": "OutputConfig",
+      "description": "The desired output location and metadata.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "The Google Cloud Storage location to write the output(s) to.",
+          "$ref": "GcsDestination"
+        },
+        "batchSize": {
+          "description": "The max number of response protos to put into each output JSON file on\nGoogle Cloud Storage.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The Google Cloud Storage location where the output will be written to.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Google Cloud Storage URI where the results will be stored. Results will\nbe in JSON format and preceded by its corresponding input URI. This field\ncan either represent a single file, or a prefix for multiple outputs.\nPrefixes must end in a `\/`.\n\nExamples:\n\n*    File: gs:\/\/bucket-name\/filename.json\n*    Prefix: gs:\/\/bucket-name\/prefix\/here\/\n*    File: gs:\/\/bucket-name\/prefix\/here\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
+          "type": "string"
+        }
+      }
+    },
     "AsyncBatchAnnotateFilesRequest": {
       "id": "AsyncBatchAnnotateFilesRequest",
       "description": "Multiple async file annotation requests are batched into a single service\ncall.",
@@ -1962,77 +2263,6 @@
         "outputConfig": {
           "description": "Required. The desired output location and metadata (e.g. format).",
           "$ref": "OutputConfig"
-        }
-      }
-    },
-    "InputConfig": {
-      "id": "InputConfig",
-      "description": "The desired input location and metadata.",
-      "type": "object",
-      "properties": {
-        "gcsSource": {
-          "description": "The Google Cloud Storage location to read the input from.",
-          "$ref": "GcsSource"
-        },
-        "mimeType": {
-          "description": "The type of the file. Currently only \"application\/pdf\" and \"image\/tiff\"\nare supported. Wildcards are not supported.",
-          "type": "string"
-        }
-      }
-    },
-    "GcsSource": {
-      "id": "GcsSource",
-      "description": "The Google Cloud Storage location where the input will be read from.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "Google Cloud Storage URI for the input file. This must only be a\nGoogle Cloud Storage object. Wildcards are not currently supported.",
-          "type": "string"
-        }
-      }
-    },
-    "OutputConfig": {
-      "id": "OutputConfig",
-      "description": "The desired output location and metadata.",
-      "type": "object",
-      "properties": {
-        "gcsDestination": {
-          "description": "The Google Cloud Storage location to write the output(s) to.",
-          "$ref": "GcsDestination"
-        },
-        "batchSize": {
-          "description": "The max number of response protos to put into each output JSON file on\nGoogle Cloud Storage.\nThe valid range is [1, 100]. If not specified, the default value is 20.\n\nFor example, for one pdf file with 100 pages, 100 response protos will\nbe generated. If `batch_size` = 20, then 5 json files each\ncontaining 20 response protos will be written under the prefix\n`gcs_destination`.`uri`.\n\nCurrently, batch_size only applies to GcsDestination, with potential future\nsupport for other output configurations.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "GcsDestination": {
-      "id": "GcsDestination",
-      "description": "The Google Cloud Storage location where the output will be written to.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "Google Cloud Storage URI where the results will be stored. Results will\nbe in JSON format and preceded by its corresponding input URI. This field\ncan either represent a single file, or a prefix for multiple outputs.\nPrefixes must end in a `\/`.\n\nExamples:\n\n*    File: gs:\/\/bucket-name\/filename.json\n*    Prefix: gs:\/\/bucket-name\/prefix\/here\/\n*    File: gs:\/\/bucket-name\/prefix\/here\n\nIf multiple outputs, each response is still AnnotateFileResponse, each of\nwhich contains some subset of the full list of AnnotateImageResponse.\nMultiple outputs can happen if, for example, the output JSON is too large\nand overflows into multiple sharded files.",
-          "type": "string"
-        }
-      }
-    },
-    "AnnotateFileResponse": {
-      "id": "AnnotateFileResponse",
-      "description": "Response to a single file annotation request. A file may contain one or more\nimages, which individually have their own responses.",
-      "type": "object",
-      "properties": {
-        "inputConfig": {
-          "description": "Information about the file for which this response is generated.",
-          "$ref": "InputConfig"
-        },
-        "responses": {
-          "description": "Individual responses to images found within the file.",
-          "type": "array",
-          "items": {
-            "$ref": "AnnotateImageResponse"
-          }
         }
       }
     },
@@ -6321,6 +6551,17 @@
           "format": "google-datetime"
         }
       }
+    },
+    "AsyncBatchAnnotateImagesResponse": {
+      "id": "AsyncBatchAnnotateImagesResponse",
+      "description": "Response to an async batch image annotation request.",
+      "type": "object",
+      "properties": {
+        "outputConfig": {
+          "description": "The output location and metadata from AsyncBatchAnnotateImagesRequest.",
+          "$ref": "OutputConfig"
+        }
+      }
     }
   },
   "resources": {
@@ -7100,11 +7341,53 @@
             "https://www.googleapis.com/auth/cloud-vision"
           ],
           "description": "Run image detection and annotation for a batch of images."
+        },
+        "asyncBatchAnnotate": {
+          "id": "alpha_vision.images.asyncBatchAnnotate",
+          "path": "v1/images:asyncBatchAnnotate",
+          "flatPath": "v1/images:asyncBatchAnnotate",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "AsyncBatchAnnotateImagesRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-vision"
+          ],
+          "description": "Run asynchronous image detection and annotation for a list of images.\n\nProgress and results can be retrieved through the\n`google.longrunning.Operations` interface.\n`Operation.metadata` contains `OperationMetadata` (metadata).\n`Operation.response` contains `AsyncBatchAnnotateImagesResponse` (results).\n\nThis service will write image annotation outputs to json files in customer\nGCS bucket, each json file containing BatchAnnotateImagesResponse proto."
         }
       }
     },
     "files": {
       "methods": {
+        "annotate": {
+          "id": "alpha_vision.files.annotate",
+          "path": "v1/files:annotate",
+          "flatPath": "v1/files:annotate",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "BatchAnnotateFilesRequest"
+          },
+          "response": {
+            "$ref": "BatchAnnotateFilesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-vision"
+          ],
+          "description": "Service that performs image detection and annotation for a batch of files.\nNow only \"application\/pdf\", \"image\/tiff\" and \"image\/gif\" are supported.\n\nThis service will extract at most the first 10 frames (gif) or pages\n(pdf or tiff) from each file provided and perform detection and annotation\nfor each image extracted."
+        },
         "asyncBatchAnnotate": {
           "id": "alpha_vision.files.asyncBatchAnnotate",
           "path": "v1/files:asyncBatchAnnotate",

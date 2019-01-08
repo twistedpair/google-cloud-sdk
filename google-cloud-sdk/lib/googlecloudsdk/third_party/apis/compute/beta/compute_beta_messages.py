@@ -675,11 +675,13 @@ class Address(_messages.Message):
     Values:
       DNS_RESOLVER: <no description>
       GCE_ENDPOINT: <no description>
+      NAT_AUTO: <no description>
       VPC_PEERING: <no description>
     """
     DNS_RESOLVER = 0
     GCE_ENDPOINT = 1
-    VPC_PEERING = 2
+    NAT_AUTO = 2
+    VPC_PEERING = 3
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the address, which can be one of
@@ -1710,7 +1712,7 @@ class AttachedDisk(_messages.Message):
       system running within the instance. This name can be used to reference
       the device for mounting, resizing, and so on, from within the instance.
       If not specified, the server chooses a default device name to apply to
-      this disk, in the form persistent-disks-x, where x is a number assigned
+      this disk, in the form persistent-disk-x, where x is a number assigned
       by Google Compute Engine. This field is only applicable for persistent
       disks.
     diskEncryptionKey: Encrypts or decrypts a disk using a customer-supplied
@@ -29685,6 +29687,8 @@ class Quota(_messages.Message):
   Fields:
     limit: [Output Only] Quota limit for this metric.
     metric: [Output Only] Name of the quota metric.
+    owner: [Output Only] Owning resource. This is the resource on which this
+      quota is applied.
     usage: [Output Only] Current usage of this metric.
   """
 
@@ -29828,7 +29832,8 @@ class Quota(_messages.Message):
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
-  usage = _messages.FloatField(3)
+  owner = _messages.StringField(3)
+  usage = _messages.FloatField(4)
 
 
 class Reference(_messages.Message):

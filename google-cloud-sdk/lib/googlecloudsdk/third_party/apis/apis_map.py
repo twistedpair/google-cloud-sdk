@@ -208,6 +208,12 @@ MAP = {
             messages_modulepath='cloudbuild_v1_messages',
             default_version=True
         ),
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudbuild.v1alpha1',
+            client_classpath='cloudbuild_v1alpha1_client.CloudbuildV1alpha1',
+            messages_modulepath='cloudbuild_v1alpha1_messages',
+            default_version=False
+        ),
     },
     'clouddebugger': {
         'v2': APIDef(
@@ -397,6 +403,14 @@ MAP = {
             client_classpath='containeranalysis_v1beta1_client.ContaineranalysisV1beta1',
             messages_modulepath='containeranalysis_v1beta1_messages',
             default_version=False
+        ),
+    },
+    'datacatalog': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.datacatalog.v1beta1',
+            client_classpath='datacatalog_v1beta1_client.DatacatalogV1beta1',
+            messages_modulepath='datacatalog_v1beta1_messages',
+            default_version=True
         ),
     },
     'dataflow': {
@@ -676,14 +690,6 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.remotebuildexecution.v1alpha',
             client_classpath='remotebuildexecution_v1alpha_client.RemotebuildexecutionV1alpha',
             messages_modulepath='remotebuildexecution_v1alpha_messages',
-            default_version=True
-        ),
-    },
-    'replicapoolupdater': {
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.replicapoolupdater.v1beta1',
-            client_classpath='replicapoolupdater_v1beta1_client.ReplicapoolupdaterV1beta1',
-            messages_modulepath='replicapoolupdater_v1beta1_messages',
             default_version=True
         ),
     },

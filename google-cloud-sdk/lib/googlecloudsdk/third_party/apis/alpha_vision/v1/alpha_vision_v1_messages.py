@@ -354,6 +354,28 @@ class AlphaVisionProjectsLocationsProductsReferenceImagesListRequest(_messages.M
   parent = _messages.StringField(3, required=True)
 
 
+class AnnotateFileRequest(_messages.Message):
+  r"""A request to annotate one single file, e.g. a PDF, TIFF or GIF file.
+
+  Fields:
+    features: Required. Requested features.
+    imageContext: Additional context that may accompany the image(s) in the
+      file.
+    inputConfig: Required. Information about the input file.
+    pages: Pages of the file to perform image annotation.  Pages starts from
+      1, we assume the first page of the file is page 1. At most 10 pages are
+      supported per request. Pages should be specified in order, from low to
+      high.  If the file is GIF instead of PDF or TIFF, page refers to GIF
+      frames.  If this field is empty, by default the service performs image
+      annotation for the first 10 pages of the file.
+  """
+
+  features = _messages.MessageField('Feature', 1, repeated=True)
+  imageContext = _messages.MessageField('ImageContext', 2)
+  inputConfig = _messages.MessageField('InputConfig', 3)
+  pages = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.INT32)
+
+
 class AnnotateFileResponse(_messages.Message):
   r"""Response to a single file annotation request. A file may contain one or
   more images, which individually have their own responses.
@@ -492,6 +514,52 @@ class AsyncBatchAnnotateFilesResponse(_messages.Message):
   responses = _messages.MessageField('AsyncAnnotateFileResponse', 1, repeated=True)
 
 
+class AsyncBatchAnnotateImagesRequest(_messages.Message):
+  r"""Request for async image annotation for a list of images.
+
+  Fields:
+    outputConfig: Required. The desired output location and metadata (e.g.
+      format).
+    requests: Individual image annotation requests for this batch.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
+  requests = _messages.MessageField('AnnotateImageRequest', 2, repeated=True)
+
+
+class AsyncBatchAnnotateImagesResponse(_messages.Message):
+  r"""Response to an async batch image annotation request.
+
+  Fields:
+    outputConfig: The output location and metadata from
+      AsyncBatchAnnotateImagesRequest.
+  """
+
+  outputConfig = _messages.MessageField('OutputConfig', 1)
+
+
+class BatchAnnotateFilesRequest(_messages.Message):
+  r"""A list of requests to annotate files using the BatchAnnotateFiles API.
+
+  Fields:
+    requests: The list of file annotation requests. Right now we support only
+      one AnnotateFileRequest in BatchAnnotateFilesRequest.
+  """
+
+  requests = _messages.MessageField('AnnotateFileRequest', 1, repeated=True)
+
+
+class BatchAnnotateFilesResponse(_messages.Message):
+  r"""A list of file annotation responses.
+
+  Fields:
+    responses: The list of file annotation responses, each response
+      corresponding to each AnnotateFileRequest in BatchAnnotateFilesRequest.
+  """
+
+  responses = _messages.MessageField('AnnotateFileResponse', 1, repeated=True)
+
+
 class BatchAnnotateImagesRequest(_messages.Message):
   r"""Multiple image annotation requests are batched into a single service
   call.
@@ -573,9 +641,16 @@ class Block(_messages.Message):
       |    |         1----0    and the vertex order will still be (0, 1, 2,
       3).
     confidence: Confidence of the OCR results on the block. Range [0, 1].
+    mergedText: All UTF-8 text detected in this block. This field is by
+      default not returned unless specified in
+      TextDetectionParams.block_filter.
     paragraphs: List of paragraphs in this block (if this blocks is of type
       text).
     property: Additional information detected for the block.
+    table: Detected table for TABLE block_type. This field is by default not
+      returned unless enabled via TextDetectionParams.table_detection_options.
+      The `bounding_box` for this Block will be the detected boundaries for
+      this table.
   """
 
   class BlockTypeValueValuesEnum(_messages.Enum):
@@ -599,8 +674,10 @@ class Block(_messages.Message):
   blockType = _messages.EnumField('BlockTypeValueValuesEnum', 1)
   boundingBox = _messages.MessageField('BoundingPoly', 2)
   confidence = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-  paragraphs = _messages.MessageField('Paragraph', 4, repeated=True)
-  property = _messages.MessageField('TextProperty', 5)
+  mergedText = _messages.StringField(4)
+  paragraphs = _messages.MessageField('Paragraph', 5, repeated=True)
+  property = _messages.MessageField('TextProperty', 6)
+  table = _messages.MessageField('Table', 7)
 
 
 class BoundingPoly(_messages.Message):
@@ -5116,6 +5193,7 @@ class ImageContext(_messages.Message):
       not one of the [supported languages](/vision/docs/languages).
     latLongRect: Not used.
     productSearchParams: Parameters for product search.
+    textDetectionParams: Parameters for document text detection.
     webDetectionParams: Parameters for web detection.
   """
 
@@ -5123,7 +5201,8 @@ class ImageContext(_messages.Message):
   languageHints = _messages.StringField(2, repeated=True)
   latLongRect = _messages.MessageField('LatLongRect', 3)
   productSearchParams = _messages.MessageField('ProductSearchParams', 4)
-  webDetectionParams = _messages.MessageField('WebDetectionParams', 5)
+  textDetectionParams = _messages.MessageField('TextDetectionParams', 5)
+  webDetectionParams = _messages.MessageField('WebDetectionParams', 6)
 
 
 class ImageProperties(_messages.Message):
@@ -5697,14 +5776,18 @@ class Paragraph(_messages.Message):
       degrees around the top-left corner it becomes:      2----3      |    |
       1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the paragraph. Range [0, 1].
+    mergedText: All UTF-8 text detected in this paragraph. This field is by
+      default not returned unless specified in
+      TextDetectionParams.paragraph_filter.
     property: Additional information detected for the paragraph.
     words: List of words in this paragraph.
   """
 
   boundingBox = _messages.MessageField('BoundingPoly', 1)
   confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  property = _messages.MessageField('TextProperty', 3)
-  words = _messages.MessageField('Word', 4, repeated=True)
+  mergedText = _messages.StringField(3)
+  property = _messages.MessageField('TextProperty', 4)
+  words = _messages.MessageField('Word', 5, repeated=True)
 
 
 class Position(_messages.Message):
@@ -6211,6 +6294,75 @@ class Symbol(_messages.Message):
   text = _messages.StringField(4)
 
 
+class Table(_messages.Message):
+  r"""A table representation similar to HTML table structure.
+
+  Fields:
+    bodyRows: Body rows of the table
+    headerRows: Header rows of the table
+  """
+
+  bodyRows = _messages.MessageField('TableRow', 1, repeated=True)
+  headerRows = _messages.MessageField('TableRow', 2, repeated=True)
+
+
+class TableBoundHint(_messages.Message):
+  r"""A hint for a table bounding box on the page for table parsing.
+
+  Fields:
+    boundingBox: Bounding box hint for a table on this page. The coordinates
+      must be normalized to [0,1] and the bounding box must be an axis-aligned
+      rectangle.
+    pageNumber: Optional page number for multi-paged inputs this hint applies
+      to. If not provided, this hint will apply to all pages by default. This
+      value is 1-indexed.
+  """
+
+  boundingBox = _messages.MessageField('BoundingPoly', 1)
+  pageNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class TableCell(_messages.Message):
+  r"""A cell representation inside of tables.
+
+  Fields:
+    colSpan: How many columns this cell spans.
+    mergedText: The merged text value of this cell, omitting any deeper
+      structural information unlike `structured_text`. This is useful for
+      simple cells.
+    rowSpan: How many rows this cell spans.
+    structuredText: Deeper structural information about the contents of the
+      cell if it contains deeper structures such as inner tables. This field
+      is not set for simple cells with no such structures.
+  """
+
+  colSpan = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  mergedText = _messages.StringField(2)
+  rowSpan = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  structuredText = _messages.MessageField('Block', 4)
+
+
+class TableDetectionOptions(_messages.Message):
+  r"""Options for the table detection.
+
+  Fields:
+    tableBoundHints: Optional table bounding box hints that can be provided
+      for complex cases which our algorithm cannot locate the table(s) in.
+  """
+
+  tableBoundHints = _messages.MessageField('TableBoundHint', 1, repeated=True)
+
+
+class TableRow(_messages.Message):
+  r"""A row of table cells.
+
+  Fields:
+    cells: Cells that make up this row.
+  """
+
+  cells = _messages.MessageField('TableCell', 1, repeated=True)
+
+
 class TextAnnotation(_messages.Message):
   r"""TextAnnotation contains a structured representation of OCR extracted
   text. The hierarchy of an OCR extracted text structure is like this:
@@ -6227,6 +6379,44 @@ class TextAnnotation(_messages.Message):
 
   pages = _messages.MessageField('Page', 1, repeated=True)
   text = _messages.StringField(2)
+
+
+class TextDetectionParams(_messages.Message):
+  r"""Parameters for text detections. This is used to control both
+  TEXT_DETECTION and DOCUMENT_TEXT_DETECTION features.
+
+  Fields:
+    blockFilter: Controls what data is returned at the block level in
+      full_text_annotation. Default when unset:   All fields are included
+      except `merged_text`.
+    disableOrientationDetection: Disables orientation detection such that
+      rotated text will not be detected. This is only supported for
+      DOCUMENT_TEXT_DETECTION.
+    disableTextAnnotations: Disables the old text_annotations field. Only
+      full_text_annotations will be returned.
+    pageFilter: Controls what data is returned at the page level in
+      full_text_annotation. Default when unset:   All fields are included
+    paragraphFilter: Controls what data is returned at the paragraph level in
+      full_text_annotation. Default when unset:   All fields are included
+      except `merged_text`
+    symbolFilter: Controls what data is returned at the symbol level in
+      full_text_annotation. Default when unset:   All fields are included
+      except `bounding_box`
+    tableDetectionOptions: Controls table detection behavior. Table detection
+      is disabled if this field is not set.
+    wordFilter: Controls what data is returned at the word level in
+      full_text_annotation. Default when unset:   All fields are included
+      except `merged_text`
+  """
+
+  blockFilter = _messages.StringField(1)
+  disableOrientationDetection = _messages.BooleanField(2)
+  disableTextAnnotations = _messages.BooleanField(3)
+  pageFilter = _messages.StringField(4)
+  paragraphFilter = _messages.StringField(5)
+  symbolFilter = _messages.StringField(6)
+  tableDetectionOptions = _messages.MessageField('TableDetectionOptions', 7)
+  wordFilter = _messages.StringField(8)
 
 
 class TextProperty(_messages.Message):
@@ -6365,6 +6555,8 @@ class Word(_messages.Message):
       degrees around the top-left corner it becomes:      2----3      |    |
       1----0   and the vertex order will still be (0, 1, 2, 3).
     confidence: Confidence of the OCR results for the word. Range [0, 1].
+    mergedText: All UTF-8 text detected in this word. This field is by default
+      not returned unless specified in TextDetectionParams.word_filter.
     property: Additional information detected for the word.
     symbols: List of symbols in the word. The order of the symbols follows the
       natural reading order.
@@ -6372,8 +6564,9 @@ class Word(_messages.Message):
 
   boundingBox = _messages.MessageField('BoundingPoly', 1)
   confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  property = _messages.MessageField('TextProperty', 3)
-  symbols = _messages.MessageField('Symbol', 4, repeated=True)
+  mergedText = _messages.StringField(3)
+  property = _messages.MessageField('TextProperty', 4)
+  symbols = _messages.MessageField('Symbol', 5, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

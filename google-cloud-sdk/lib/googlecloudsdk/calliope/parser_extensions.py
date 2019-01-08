@@ -1002,12 +1002,16 @@ class ArgumentParser(argparse.ArgumentParser):
         # pytype: disable=module-attr
         suggestions = None
         if 'Invalid choice' in message:
-          suggestions = suggest_commands.GetCommandSuggestions(
+          suggestions, total = suggest_commands.GetCommandSuggestions(
               self._GetOriginalArgs())
           self._ClearOriginalArgs()
         if suggestions:
           argparse._sys.stderr.write(
               '\n  '.join(['Maybe you meant:'] + suggestions) + '\n')
+          if len(suggestions) < total:
+            argparse._sys.stderr.write(
+                '\nShowing {} out of {} suggestions.\n'.format(
+                    len(suggestions), total))
           argparse._sys.stderr.write('\n' + _HELP_SEARCH_HINT + '\n')
           error.error_extra_info = {
               'suggestions': suggestions,
@@ -1015,32 +1019,32 @@ class ArgumentParser(argparse.ArgumentParser):
               'total_unrecognized': 1,
           }
         # Otherwise print out usage string.
-        else:
-          # Determine if we want to display available commands and groups
-          # semantically categorized in case of a missing command name.
-          show_categories = 'Command name argument expected.' == message
-          usage_string = None
-          if show_categories:
-            usage_string = self._calliope_command.GetCategoricalUsage()
-          # The next if clause is executed if show_categories is False or there
-          # were no categories to display.
+        elif 'Command name argument expected.' == message:
+          usage_string = self._calliope_command.GetCategoricalUsage()
+          # The next if clause is executed if there were no categories to
+          # display.
+          uncategorized_usage = False
           if not usage_string:
-            show_categories = False
-            usage_string = self._calliope_command.GetUsage()
-          if show_categories:
+            uncategorized_usage = True
+            usage_string = self._calliope_command.GetUncategorizedUsage()
+          interactive = False
+          if not uncategorized_usage:
             interactive = console_io.IsInteractive(error=True)
-            if interactive:
-              out = io.StringIO()
-              out.write('{message}\n'.format(message=message))
-            else:
-              out = argparse._sys.stderr
-            out.write('\n')
-            render_document.RenderDocument(
-                fin=io.StringIO(usage_string), out=out)
-            if interactive:
-              console_io.More(out.getvalue(), out=argparse._sys.stderr)
+          if interactive:
+            out = io.StringIO()
+            out.write('{message}\n'.format(message=message))
           else:
-            argparse._sys.stderr.write(usage_string)
+            out = argparse._sys.stderr
+          out.write('\n')
+          render_document.RenderDocument(
+              fin=io.StringIO(usage_string), out=out)
+          if uncategorized_usage:
+            out.write(self._calliope_command.GetHelpHint())
+          if interactive:
+            console_io.More(out.getvalue(), out=argparse._sys.stderr)
+        else:
+          usage_string = self._calliope_command.GetUsage()
+          argparse._sys.stderr.write(usage_string)
         # pytype: enable=module-attr
 
     parser.ReportErrorMetrics(error, message)

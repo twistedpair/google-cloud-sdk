@@ -45,16 +45,18 @@ class LinterRenderer(text_renderer.TextRenderer):
     self.example = False
     self.command_name = ''
     self.name_section = ''
-    self.length_of_command_name = 0
+    self.command_name_length = 0
+    self.command_text = ''
+    self.violation_flags = []
 
   def _CaptureOutput(self, heading):
     # check if buffer is full from previous heading
     if self._buffer.getvalue() and self._prev_heading:
       self._Analyze(self._prev_heading, self._buffer.getvalue())
-      ## refresh the StringIO()
+      # refresh the StringIO()
       self._buffer = io.StringIO()
     self._out = self._buffer
-    # save heading so can get it next time
+    # save heading so can get it in next section
     self._prev_heading = self._heading
 
   def _DiscardOutput(self, heading):
@@ -76,12 +78,12 @@ class LinterRenderer(text_renderer.TextRenderer):
       self._Analyze(self._prev_heading, self._buffer.getvalue())
     self._buffer.close()
     self._null_out.close()
-    # This needs to be checked depending on the command's position in cli tree
+    # TODO(b/121258430): only check if it is command level and not group level
     if not self.example:
       self._file_out.write('Refer to the detailed style guide: '
                            'go/cloud-sdk-help-guide#examples\nThis is the '
                            'analysis for EXAMPLES:\nYou have not included an '
-                           'example.\n\n')
+                           'example in the Examples section.\n\n')
 
   def Heading(self, level, heading):
     self._heading = heading
@@ -90,15 +92,47 @@ class LinterRenderer(text_renderer.TextRenderer):
     else:
       self._DiscardOutput(heading)
 
-  def _analyze_name(self, section):
-    self.command_name = section.strip().split(' - ')[0]
-    self.name_section = section.strip().split(' - ')[1].lower()
-    self.length_of_command_name = len(self.command_name)
-    warnings = self.check_for_personal_pronouns(section)
+  def Example(self, line):
+    # ensure this example is in the EXAMPLES section
+    if self._heading == 'EXAMPLES':
+      # if previous line ended in a backslash, it is not the last line of the
+      # command so append new line of command to command_text
+      if self.command_text and self.command_text.endswith('\\'):
+        self.command_text += line.strip()
+      # This is the first line of the command and ignore the `$ ` in it.
+      else:
+        self.command_text = line.replace('$ ', '')
+      # if the current line doesn't end with a `\`, it is the end of the command
+      # so self.command_text is the whole command
+      if not line.endswith('\\'):
+        self.example = True
+        # check that the example starts with the command of the help text
+        if self.command_text.startswith(self.command_name):
+          rest_of_command = self.command_text[self.command_name_length:].split()
+          flag_names = []
+          for word in rest_of_command:
+            word = word.replace('\\--', '--')
+            if word.startswith('--'):
+              flag_names.append(word[2:])
+          # Until b/121254697 is resolved, this line will not be active
+          # self._analyze_example_flags_equals(flag_names)
 
-    # if more than 15 words
+  # TODO(b/121254697): this check shouldn't apply to boolean flags
+  def _analyze_example_flags_equals(self, flags):
+    for flag in flags:
+      if '=' not in flag:
+        self.violation_flags.append(flag)
+
+  def _analyze_name(self, section):
+    warnings = self.check_for_personal_pronouns(section)
+    self.command_name = section.strip().split(' - ')[0]
+    if len(section.strip().split(' - ')) == 1:
+      self.name_section = ''
+      warnings += '\nPlease add an explanation for the command.'
+    self.command_name_length = len(self.command_name)
+    # check that name section is not too long
     if len(section.split()) > self._NAME_WORD_LIMIT:
-      warnings += '\nPlease shorten the NAME section to less than '
+      warnings += '\nPlease shorten the name section to less than '
       warnings += str(self._NAME_WORD_LIMIT) + ' words.'
     if warnings:
       # TODO(b/119550825): remove the go/ link from open source code
@@ -110,8 +144,12 @@ class LinterRenderer(text_renderer.TextRenderer):
       self._file_out.write('There are no errors for the NAME section.\n\n')
 
   def _analyze_examples(self, section):
-    self.example = True
     warnings = self.check_for_personal_pronouns(section)
+    if self.violation_flags:
+      warnings += '\nThere should be a `=` between the flag name and the value.'
+      warnings += '\nThe following flags are not formatted properly:'
+      for flag in self.violation_flags:
+        warnings += '\n' + flag
     if warnings:
       # TODO(b/119550825): remove the go/ link from open source code
       self._file_out.write('Refer to the detailed style guide: '
@@ -133,3 +171,4 @@ class LinterRenderer(text_renderer.TextRenderer):
     else:
       self._file_out.write('There are no errors for the DESCRIPTION '
                            'section.\n\n')
+

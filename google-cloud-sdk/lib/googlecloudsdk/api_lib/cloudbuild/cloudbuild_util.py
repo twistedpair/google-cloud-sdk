@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.protorpclite import messages as proto_messages
 from apitools.base.py import encoding as apitools_encoding
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
@@ -30,6 +31,7 @@ import six
 
 _API_NAME = 'cloudbuild'
 _API_VERSION = 'v1'
+_ALPHA_API_VERSION = 'v1alpha1'
 
 
 def GetMessagesModule():
@@ -42,6 +44,19 @@ def GetClientClass():
 
 def GetClientInstance(use_http=True):
   return apis.GetClientInstance(_API_NAME, _API_VERSION, no_http=(not use_http))
+
+
+def GetMessagesModuleAlpha():
+  return apis.GetMessagesModule(_API_NAME, _ALPHA_API_VERSION)
+
+
+def GetClientClassAlpha():
+  return apis.GetClientClass(_API_NAME, _ALPHA_API_VERSION)
+
+
+def GetClientInstanceAlpha(use_http=True):
+  return apis.GetClientInstance(
+      _API_NAME, _ALPHA_API_VERSION, no_http=(not use_http))
 
 
 def EncodeSubstitutions(substitutions, messages):
@@ -264,3 +279,14 @@ def LoadMessageFromPath(path, msg_type, msg_friendly_name,
   with files.FileReader(path) as f:  # Returns user-friendly error messages
     return LoadMessageFromStream(f, msg_type, msg_friendly_name,
                                  skip_camel_case, path)
+
+
+def GenerateRegionChoiceToEnum():
+  # Return a map of region choice strings (for arguments) to region enum values.
+  msg = GetMessagesModuleAlpha()
+  enums = msg.WorkerPool.RegionsValueListEntryValuesEnum
+  return {
+      arg_utils.EnumNameToChoice(region_val.name): region_val
+      for region_val in enums
+      if region_val != enums.REGION_UNSPECIFIED
+  }

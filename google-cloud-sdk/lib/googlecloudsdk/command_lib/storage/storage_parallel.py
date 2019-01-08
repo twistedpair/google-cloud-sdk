@@ -41,7 +41,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import itertools
+import abc
 
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.core import log
@@ -49,74 +49,189 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import parallel
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import text
-from six.moves import zip
+
+import six
 
 
 # This default value has been chosen after lots of experimentation.
 DEFAULT_NUM_THREADS = 16
 
 
-class FileUploadTask(object):
+class Task(six.with_metaclass(abc.ABCMeta)):
+  """Base clase for a storage tasks that can be parallelized."""
+
+  @abc.abstractmethod
+  def Execute(self, callback=None):
+    pass
+
+
+class FileUploadTask(Task):
   """Self-contained representation of a file to upload and its destination.
 
   Attributes:
-    local_path: str, the path to the file to upload on the local system
+    source_local_path: str, The local filesystem path of the source file to
+      upload.
     dest_obj_ref: storage_util.ObjectReference, The object the file will be
       copied to.
   """
 
-  def __init__(self, local_path, dest_obj_ref):
-    self.local_path = local_path
+  def __init__(self, source_local_path, dest_obj_ref):
+    self.source_local_path = source_local_path
     self.dest_obj_ref = dest_obj_ref
+
+  def __str__(self):
+    return 'Upload: {} --> {}'.format(
+        self.source_local_path, self.dest_obj_ref.ToUrl())
 
   def __repr__(self):
     return (
-        'FileUploadTask(local_path={local_path}, dest_path={dest_path})'.format(
-            local_path=self.local_path, dest_path=self.dest_obj_ref.ToUrl()))
+        'FileUploadTask(source_path={source_path}, dest_path={dest_path})'
+        .format(source_path=self.source_local_path,
+                dest_path=self.dest_obj_ref.ToUrl()))
 
   def __hash__(self):
-    return hash((self.local_path, self.dest_obj_ref))
+    return hash((self.source_local_path, self.dest_obj_ref))
+
+  def Execute(self, callback=None):
+    storage_client = storage_api.StorageClient()
+    retry.Retryer(max_retrials=3).RetryOnException(
+        storage_client.CopyFileToGCS,
+        args=(self.source_local_path, self.dest_obj_ref))
+    if callback:
+      callback()
 
 
-def _UploadFile(value):
-  """Complete one FileUploadTask (safe to run in parallel)."""
-  file_upload_task, callback = value
-  storage_client = storage_api.StorageClient()
-  retry.Retryer(max_retrials=3).RetryOnException(
-      storage_client.CopyFileToGCS,
-      args=(file_upload_task.local_path, file_upload_task.dest_obj_ref))
-  if callback:
-    callback()
+class FileDownloadTask(Task):
+  """Self-contained representation of a file to download and its destination.
+
+  Attributes:
+    source_obj_ref: storage_util.ObjectReference, The object reference of the
+      file to download.
+    dest_local_path: str, The local filesystem path to write the file to.
+  """
+
+  def __init__(self, source_obj_ref, dest_local_path):
+    self.source_obj_ref = source_obj_ref
+    self.dest_local_path = dest_local_path
+
+  def __str__(self):
+    return 'Download: {} --> {}'.format(
+        self.source_obj_ref.ToUrl(), self.dest_local_path)
+
+  def __repr__(self):
+    return (
+        'FileDownloadTask(source_path={source_path}, dest_path={dest_path})'
+        .format(source_path=self.source_obj_ref.ToUrl(),
+                dest_path=self.dest_local_path))
+
+  def __hash__(self):
+    return hash((self.source_obj_ref, self.dest_local_path))
+
+  def Execute(self, callback=None):
+    storage_client = storage_api.StorageClient()
+    retry.Retryer(max_retrials=3).RetryOnException(
+        storage_client.CopyFileFromGCS,
+        args=(self.source_obj_ref, self.dest_local_path))
+    if callback:
+      callback()
 
 
-def _DoParallelOperation(num_threads, tasks, method, label, show_progress_bar):
-  """Perform the given storage operation in parallel.
+class FileRemoteCopyTask(Task):
+  """Self-contained representation of a copy between GCS objects.
+
+  Attributes:
+    source_obj_ref: storage_util.ObjectReference, The object reference of the
+      file to download.
+    dest_obj_ref: storage_util.ObjectReference, The object reference to write
+      the file to.
+  """
+
+  def __init__(self, source_obj_ref, dest_obj_ref):
+    self.source_obj_ref = source_obj_ref
+    self.dest_obj_ref = dest_obj_ref
+
+  def __str__(self):
+    return 'Copy: {} --> {}'.format(
+        self.source_obj_ref.ToUrl(), self.dest_obj_ref.ToUrl())
+
+  def __repr__(self):
+    return (
+        'FileRemoteCopyTask(source_path={source_path}, dest_path={dest_path})'
+        .format(source_path=self.source_obj_ref.ToUrl(),
+                dest_path=self.dest_obj_ref.ToUrl()))
+
+  def __hash__(self):
+    return hash((self.source_obj_ref, self.dest_obj_ref))
+
+  def Execute(self, callback=None):
+    storage_client = storage_api.StorageClient()
+    retry.Retryer(max_retrials=3).RetryOnException(
+        storage_client.Copy,
+        args=(self.source_obj_ref, self.dest_obj_ref))
+    if callback:
+      callback()
+
+
+class ObjectDeleteTask(Task):
+  """Self-contained representation of an object to delete.
+
+  Attributes:
+    obj_ref: storage_util.ObjectReference, The object to delete.
+  """
+
+  def __init__(self, obj_ref):
+    self.obj_ref = obj_ref
+
+  def __str__(self):
+    return 'Delete: {}'.format(self.obj_ref.ToUrl())
+
+  def __repr__(self):
+    return 'ObjectDeleteTask(object={obj}'.format(obj=self.obj_ref.ToUrl())
+
+  def __hash__(self):
+    return hash(self.obj_ref)
+
+  def Execute(self, callback=None):
+    """Complete one ObjectDeleteTask (safe to run in parallel)."""
+    storage_client = storage_api.StorageClient()
+    retry.Retryer(max_retrials=3).RetryOnException(
+        storage_client.DeleteObject, args=(self.obj_ref,))
+    if callback:
+      callback()
+
+
+def ExecuteTasks(tasks, num_threads=DEFAULT_NUM_THREADS,
+                 progress_bar_label=None):
+  """Perform the given storage tasks in parallel.
 
   Factors out common work: logging, setting up parallelism, managing a progress
   bar (if necessary).
 
   Args:
-    num_threads: int, the number of threads to use
-    tasks: list of arguments to be passed to method, one at a time (each zipped
-      up in a tuple with a callback)
-    method: a function that takes in a single-argument: a tuple of a task to do
-      and a zero-argument callback to be done on completion of the task.
-    label: str, the label for the progress bar (if used).
-    show_progress_bar: bool, whether to show a progress bar during the
-      operation.
+    tasks: [Operation], To be executed in parallel.
+    num_threads: int, The number of threads to use
+    progress_bar_label: str, If set, a progress bar will be shown with this
+      label. Otherwise, no progress bar is displayed.
   """
-  log.debug(label)
+  log.debug(progress_bar_label)
   log.debug('Using [%d] threads', num_threads)
 
   pool = parallel.GetPool(num_threads)
-  if show_progress_bar:
-    progress_bar = console_io.TickableProgressBar(len(tasks), label)
+  if progress_bar_label:
+    progress_bar = console_io.TickableProgressBar(
+        len(tasks), progress_bar_label)
     callback = progress_bar.Tick
   else:
     progress_bar = console_io.NoOpProgressBar()
     callback = None
-  with progress_bar, pool:
-    pool.Map(method, list(zip(tasks, itertools.cycle((callback,)))))
+
+  if num_threads == 0:
+    with progress_bar:
+      for t in tasks:
+        t.Execute(callback)
+  else:
+    with progress_bar, pool:
+      pool.Map(lambda task: task.Execute(callback), tasks)
 
 
 def UploadFiles(files_to_upload, num_threads=DEFAULT_NUM_THREADS,
@@ -133,37 +248,12 @@ def UploadFiles(files_to_upload, num_threads=DEFAULT_NUM_THREADS,
       uploading files.
   """
   num_files = len(files_to_upload)
-  label = 'Uploading {} {} to Google Cloud Storage'.format(
-      num_files, text.Pluralize(num_files, 'file'))
-  _DoParallelOperation(num_threads, files_to_upload, _UploadFile, label,
-                       show_progress_bar)
-
-
-class ObjectDeleteTask(object):
-  """Self-contained representation of an object to delete.
-
-  Attributes:
-    obj_ref: storage_util.ObjectReference, The object to delete.
-  """
-
-  def __init__(self, obj_ref):
-    self.obj_ref = obj_ref
-
-  def __repr__(self):
-    return 'ObjectDeleteTask(object={obj}'.format(obj=self.obj_ref.ToUrl())
-
-  def __hash__(self):
-    return hash(self.obj_ref)
-
-
-def _DeleteObject(value):
-  """Complete one ObjectDeleteTask (safe to run in parallel)."""
-  object_delete_task, callback = value
-  storage_client = storage_api.StorageClient()
-  retry.Retryer(max_retrials=3).RetryOnException(
-      storage_client.DeleteObject, args=(object_delete_task.obj_ref,))
-  if callback:
-    callback()
+  if show_progress_bar:
+    label = 'Uploading {} {} to Google Cloud Storage'.format(
+        num_files, text.Pluralize(num_files, 'file'))
+  else:
+    label = None
+  ExecuteTasks(files_to_upload, num_threads, label)
 
 
 def DeleteObjects(objects_to_delete, num_threads=DEFAULT_NUM_THREADS,
@@ -180,7 +270,9 @@ def DeleteObjects(objects_to_delete, num_threads=DEFAULT_NUM_THREADS,
       deleting files.
   """
   num_objects = len(objects_to_delete)
-  label = 'Deleting {} {} from Google Cloud Storage'.format(
-      num_objects, text.Pluralize(num_objects, 'object'))
-  _DoParallelOperation(num_threads, objects_to_delete, _DeleteObject,
-                       label, show_progress_bar)
+  if show_progress_bar:
+    label = 'Deleting {} {} from Google Cloud Storage'.format(
+        num_objects, text.Pluralize(num_objects, 'object'))
+  else:
+    label = None
+  ExecuteTasks(objects_to_delete, num_threads, label)

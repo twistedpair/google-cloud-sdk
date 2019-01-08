@@ -43,14 +43,17 @@ class Credential(object):
   Attributes:
     access_token: str, The current OAuth2 access token.
     token_expiry: str, The expiry time in UTC as an RFC3339 formatted string.
+    id_token: str, The current OAuth2 identity token, if present.
   """
   _EXPIRY_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-  def __init__(self, credential):
-    self.access_token = credential.access_token
-    expiry = getattr(credential, 'token_expiry', None)
+  def __init__(self, cred):
+    self.access_token = cred.access_token
+    expiry = getattr(cred, 'token_expiry', None)
     self.token_expiry = (expiry.strftime(Credential._EXPIRY_FORMAT) if expiry
                          else None)
+    res = cred.token_response if hasattr(cred, 'token_response') else None
+    self.id_token = res.get('id_token', None) if res else None
 
 
 class Configuration(object):

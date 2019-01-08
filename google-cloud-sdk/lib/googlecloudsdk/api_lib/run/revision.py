@@ -23,7 +23,7 @@ from googlecloudsdk.api_lib.run import k8s_object
 
 
 # Label names as to be stored in k8s object metadata
-AUTHOR_LABEL = 'serving.knative.dev/lastModifierEmail'
+AUTHOR_ANNOTATION = 'run.googleapis.com/lastModifierEmail'
 SERVICE_LABEL = 'serving.knative.dev/service'
 
 
@@ -51,7 +51,7 @@ class Revision(k8s_object.KubernetesObject):
 
   @property
   def author(self):
-    return self.labels.get(AUTHOR_LABEL)
+    return self.annotations.get(AUTHOR_ANNOTATION)
 
   @property
   def creation_timestamp(self):

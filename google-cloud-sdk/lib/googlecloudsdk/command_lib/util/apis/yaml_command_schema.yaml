@@ -600,6 +600,10 @@ properties:
           #     return 'name not specified'
           #   return resource_ref.Name()
           display_name_hook: {$ref: "#/definitions/python_hook"}
+          # If true, will disable validating that the resource arg schema matches the
+          # request method schema. This is useful for API's that have multiple services
+          # (and multiple resource collections) that use the same actual resource objects.
+          override_resource_collection: {type: boolean}
       # Enumerates the API fields that need to be set and information
       # about each argument to generate.
       params:

@@ -132,6 +132,13 @@
           "items": {
             "$ref": "Service"
           }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -569,14 +576,28 @@
       "type": "object",
       "properties": {
         "limits": {
-          "description": "Limits describes the maximum amount of compute resources allowed.",
+          "description": "Limits describes the maximum amount of compute resources allowed.\nThis field is deprecated in favor of limits_in_map.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Quantity"
           }
         },
         "requests": {
-          "description": "Requests describes the minimum amount of compute resources required.\nIf Requests is omitted for a container, it defaults to Limits if that is\nexplicitly specified, otherwise to an implementation-defined value.",
+          "description": "Requests describes the minimum amount of compute resources required.\nIf Requests is omitted for a container, it defaults to Limits if that is\nexplicitly specified, otherwise to an implementation-defined value.\nThis field is deprecated in favor of requests_in_map.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Quantity"
+          }
+        },
+        "limitsInMap": {
+          "description": "Limits describes the maximum amount of compute resources allowed.\nThis is a temporary field created to migrate away from the\nmap<string, Quantity> limits field. This is done to become compliant\nwith k8s style API.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Quantity"
+          }
+        },
+        "requestsInMap": {
+          "description": "Requests describes the minimum amount of compute resources required.\nIf Requests is omitted for a container, it defaults to Limits if that is\nexplicitly specified, otherwise to an implementation-defined value.\nThis is a temporary field created to migrate away from the\nmap<string, Quantity> requests field. This is done to become compliant\nwith k8s style API.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Quantity"
@@ -1149,6 +1170,13 @@
           "items": {
             "$ref": "Route"
           }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1287,6 +1315,13 @@
           "items": {
             "$ref": "Configuration"
           }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1394,6 +1429,13 @@
           "type": "array",
           "items": {
             "$ref": "Revision"
+          }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

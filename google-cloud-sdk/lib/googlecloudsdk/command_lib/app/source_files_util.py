@@ -41,7 +41,7 @@ _NODE_GCLOUDIGNORE = '\n'.join([
 _PHP_GCLOUDIGNORE = '\n'.join([
     gcloudignore.DEFAULT_IGNORE_FILE,
     '# PHP Composer dependencies:',
-    'vendor/'
+    '/vendor/'
 ])
 
 _PYTHON_GCLOUDIGNORE = '\n'.join([

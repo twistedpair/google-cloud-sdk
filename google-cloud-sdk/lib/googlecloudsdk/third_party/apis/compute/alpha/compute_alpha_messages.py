@@ -1752,7 +1752,7 @@ class AttachedDisk(_messages.Message):
       system running within the instance. This name can be used to reference
       the device for mounting, resizing, and so on, from within the instance.
       If not specified, the server chooses a default device name to apply to
-      this disk, in the form persistent-disks-x, where x is a number assigned
+      this disk, in the form persistent-disk-x, where x is a number assigned
       by Google Compute Engine. This field is only applicable for persistent
       disks.
     diskEncryptionKey: Encrypts or decrypts a disk using a customer-supplied
@@ -13892,6 +13892,20 @@ class ComputeRegionDisksDeleteRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeRegionDisksGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionDisksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeRegionDisksGetRequest(_messages.Message):
   r"""A ComputeRegionDisksGetRequest object.
 
@@ -14036,6 +14050,23 @@ class ComputeRegionDisksResizeRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
   regionDisksResizeRequest = _messages.MessageField('RegionDisksResizeRequest', 4)
   requestId = _messages.StringField(5)
+
+
+class ComputeRegionDisksSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionDisksSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeRegionDisksSetLabelsRequest(_messages.Message):
@@ -34818,6 +34849,8 @@ class Quota(_messages.Message):
   Fields:
     limit: [Output Only] Quota limit for this metric.
     metric: [Output Only] Name of the quota metric.
+    owner: [Output Only] Owning resource. This is the resource on which this
+      quota is applied.
     usage: [Output Only] Current usage of this metric.
   """
 
@@ -34969,7 +35002,8 @@ class Quota(_messages.Message):
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
-  usage = _messages.FloatField(3)
+  owner = _messages.StringField(3)
+  usage = _messages.FloatField(4)
 
 
 class Reference(_messages.Message):

@@ -25,12 +25,13 @@ from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.resource import resource_projector
 
 
-def GenerateCoverageTree(cli, branch=None):
+def GenerateCoverageTree(cli, branch=None, restrict=None):
   """Generates and returns the static completion CLI tree.
 
   Args:
     cli: The CLI.
     branch: The path of the CLI subtree to generate.
+    restrict: The paths in the tree that we are allowing the tree to walk under.
 
   Returns:
     Returns the serialized static completion CLI tree.
@@ -38,7 +39,7 @@ def GenerateCoverageTree(cli, branch=None):
   with progress_tracker.ProgressTracker(
       'Generating the flag coverage CLI tree.'):
     return resource_projector.MakeSerializable(
-        CoverageTreeGenerator(cli, branch).Walk())
+        CoverageTreeGenerator(cli, branch, restrict=restrict).Walk())
 
 
 class CoverageCommandNode(dict):
@@ -92,9 +93,9 @@ class CoverageCommandNode(dict):
 class CoverageTreeGenerator(walker.Walker):
   """Generates the gcloud static completion CLI tree."""
 
-  def __init__(self, cli=None, branch=None):
+  def __init__(self, cli=None, branch=None, restrict=None):
     """branch is the command path of the CLI subtree to generate."""
-    super(CoverageTreeGenerator, self).__init__(cli=cli)
+    super(CoverageTreeGenerator, self).__init__(cli=cli, restrict=restrict)
     self._branch = branch
 
   def Visit(self, node, parent, is_group):
@@ -111,17 +112,18 @@ class CoverageTreeGenerator(walker.Walker):
     return CoverageCommandNode(node, parent)
 
 
-def OutputCoverageTree(cli, branch=None, out=None):
+def OutputCoverageTree(cli, branch=None, out=None, restrict=None):
   """Lists the flag coverage CLI tree as a Python module file.
 
   Args:
     cli: The CLI.
     branch: The path of the CLI subtree to generate.
     out: The output stream to write to, sys.stdout by default.
+    restrict: The paths in the tree that we are allowing the tree to walk under.
 
   Returns:
     Returns the serialized coverage CLI tree.
   """
-  tree = GenerateCoverageTree(cli=cli, branch=branch)
+  tree = GenerateCoverageTree(cli=cli, branch=branch, restrict=restrict)
   resource_printer.Print(tree, print_format='json', out=out)
   return tree

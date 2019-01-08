@@ -99,7 +99,9 @@ def AddAndroidTestArgs(parser):
       '--app',
       category=base.COMMONLY_USED_FLAGS,
       help='The path to the application binary file. The path may be in the '
-      'local filesystem or in Google Cloud Storage using gs:// notation.')
+      'local filesystem or in Google Cloud Storage using gs:// notation. '
+      'Android App Bundles are specified as .aab, all other files are assumed '
+      'to be APKs.')
   parser.add_argument(
       '--app-package',
       help='The Java package of the application under test (default: extracted '

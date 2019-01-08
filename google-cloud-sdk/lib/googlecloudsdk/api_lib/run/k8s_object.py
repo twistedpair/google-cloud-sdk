@@ -28,7 +28,7 @@ from googlecloudsdk.core.console import console_attr
 import six
 
 
-REGION_ANNOTATION = 'serving.knative.dev/region'
+REGION_LABEL = 'cloud.googleapis.com/location'
 
 
 def InitializedInstance(msg_cls):
@@ -181,7 +181,7 @@ class KubernetesObject(object):
   @property
   def region(self):
     self.AssertFullObject()
-    return self.annotations[REGION_ANNOTATION]
+    return self.labels[REGION_LABEL]
 
   @property
   def generation(self):

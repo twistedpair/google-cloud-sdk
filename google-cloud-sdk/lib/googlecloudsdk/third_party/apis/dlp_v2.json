@@ -2380,7 +2380,7 @@
       "type": "object",
       "properties": {
         "url": {
-          "description": "The Cloud Storage url of the file(s) to scan, in the format\n`gs:\/\/<bucket>\/<path>`. Trailing wildcard in the path is allowed. Exactly\none of `url` or `regex_file_set` must be set.",
+          "description": "The Cloud Storage url of the file(s) to scan, in the format\n`gs:\/\/<bucket>\/<path>`. Trailing wildcard in the path is allowed.\n\nIf the url ends in a trailing slash, the bucket or directory represented\nby the url will be scanned non-recursively (content in sub-directories\nwill not be scanned). This means that `gs:\/\/mybucket\/` is equivalent to\n`gs:\/\/mybucket\/*`, and `gs:\/\/mybucket\/directory\/` is equivalent to\n`gs:\/\/mybucket\/directory\/*`.\n\nExactly one of `url` or `regex_file_set` must be set.",
           "type": "string"
         },
         "regexFileSet": {

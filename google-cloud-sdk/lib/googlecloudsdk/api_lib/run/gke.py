@@ -28,6 +28,7 @@ import tempfile
 import threading
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 import six
@@ -151,6 +152,28 @@ def MonkeypatchAddressChecking(hostname, ip):
 
 
 @contextlib.contextmanager
+def _DisableUserProjectQuota():
+  """Use legacy quota; required for the container surface.
+
+  Causes the http libraries (action at a distance, but there's no better way)
+  not to set the X-Goog-User-Project header.
+
+  Yields:
+    For a block to be executed while the user project quota is disabled.
+  """
+  reset_billing_project = False
+  try:
+    if not properties.VALUES.billing.quota_project.IsExplicitlySet():
+      reset_billing_project = True
+      properties.VALUES.billing.quota_project.Set(
+          properties.VALUES.billing.LEGACY)
+    yield
+  finally:
+    if reset_billing_project:
+      properties.VALUES.billing.quota_project.Set(None)
+
+
+@contextlib.contextmanager
 def ClusterConnectionInfo(cluster_ref):
   """Get the info we need to use to connect to a GKE cluster.
 
@@ -164,8 +187,9 @@ def ClusterConnectionInfo(cluster_ref):
   Raises:
     NoCaCertError: if the cluster is missing certificate authority data.
   """
-  adapter = api_adapter.NewAPIAdapter('v1')
-  cluster = adapter.GetCluster(cluster_ref)
+  with _DisableUserProjectQuota():
+    adapter = api_adapter.NewAPIAdapter('v1')
+    cluster = adapter.GetCluster(cluster_ref)
   auth = cluster.masterAuth
   if auth and auth.clusterCaCertificate:
     ca_data = auth.clusterCaCertificate

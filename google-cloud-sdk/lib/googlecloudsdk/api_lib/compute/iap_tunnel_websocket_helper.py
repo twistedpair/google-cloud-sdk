@@ -94,9 +94,8 @@ class IapTunnelWebSocketHelper(object):
   def Send(self, send_data):
     """Send data on WebSocket connection."""
     try:
-      if log.GetVerbosity() == logging.DEBUG:
-        log.info('SEND data_len [%d] send_data[:20] %r', len(send_data),
-                 send_data[:20])
+      log.debug('SEND data_len [%d] send_data[:20] %r', len(send_data),
+                send_data[:20])
       self._websocket.send(send_data, opcode=websocket.ABNF.OPCODE_BINARY)
     except EnvironmentError:
       self.Close()
@@ -116,8 +115,7 @@ class IapTunnelWebSocketHelper(object):
   def SendClose(self):
     """Send WebSocket Close message."""
     try:
-      if log.GetVerbosity() == logging.DEBUG:
-        log.info('CLOSE')
+      log.debug('CLOSE')
       self._websocket.sock.send_close()
     except (EnvironmentError,
             websocket.WebSocketConnectionClosedException) as e:
@@ -154,9 +152,8 @@ class IapTunnelWebSocketHelper(object):
 
   def _OnData(self, unused_websocket_app, binary_data, opcode, unused_finished):
     """Callback for WebSocket Data messages."""
-    if log.GetVerbosity() == logging.DEBUG:
-      log.info('RECV opcode [%r] data_len [%d] binary_data[:20] [%r]', opcode,
-               len(binary_data), binary_data[:20])
+    log.debug('RECV opcode [%r] data_len [%d] binary_data[:20] [%r]', opcode,
+              len(binary_data), binary_data[:20])
     try:
       # Even though we will only be processing BINARY messages, a bug in the
       # underlying websocket library will report the last opcode in a

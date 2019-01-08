@@ -346,6 +346,19 @@ class Paths(object):
     return os.path.join(self.global_config_dir, '.last_update_check.json')
 
   @property
+  def survey_prompting_cache_path(self):
+    """Gets the path to the file to cache information about survey prompting.
+
+    This is stored in the config directory instead of the installation state
+    because if the SDK is installed as root, it will fail to persist the cache
+    when you are running gcloud as a normal user.
+
+    Returns:
+      str, The path to the file.
+    """
+    return os.path.join(self.global_config_dir, '.last_survey_prompt.yaml')
+
+  @property
   def installation_properties_path(self):
     """Gets the path to the installation-wide properties file.
 

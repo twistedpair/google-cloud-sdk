@@ -1,6 +1,83 @@
 # Google Cloud SDK - Release Notes
 
-Copyright 2014-2018 Google Inc. All rights reserved.
+Copyright 2014-2019 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 229.0.0 (2019-01-08)
+
+### App Engine
+
+
+* Updated the Python SDK to version 1.9.81.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/python/release-notes
+* Updated the Java SDK to version 1.9.71.
+  Please visit the following release notes for details:
+  https://cloud.google.com/appengine/docs/java/release-notes
+
+### BigQuery
+
+* Added `gcloud bq` command group to alpha.
+  * Added initial support for creating and managing datasets, tables and jobs.
+
+### Cloud Build
+
+* Updated `cloud-build-local` to 0.4.3. For details, see <https://github.com/GoogleCloudPlatform/cloud-build-local/releases>.
+
+* Added properties `builds/use_kaniko` and builds/kaniko_cache_ttl` to control
+  use of Kaniko (<https://github.com/GoogleContainerTools/kaniko>) when using
+  `--tag`.
+* Added `--no-cache` flag to disable layer caching when using Kaniko with
+  `--tag`. This is only valid if the `builds/use_kaniko` flag is `True`.
+
+### Cloud Datastore Emulator
+
+* Release Cloud Datastore Emulator version 2.0.3
+  * Fixes bug where read contention errors were being reported as UNKNOWN
+
+### Cloud Firestore
+
+* Added `gcloud beta firestore indexes` which provides index management
+  capability for Cloud Firestore.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.2.2
+  * Add support for Java 10 and Java 11 runtimes
+  * Enable IPv6 support by default
+* Release Cloud Firestore Emulator version 1.2.3
+  *  Fixed bug when setting more than one server timestamp in a commit
+  *  Fixed bug regarding array ordering during writing/reading
+  *  Fixed bug when using query cursors containing document names
+  *  Added the ability to produce rule-coverage reports
+  *  Exposed the v1 service definition
+
+### Cloud Storage
+
+
+* Updated gsutil component to 4.35
+
+### Cloud Tasks
+
+* Use full list of App Engine's supported regions for Cloud Tasks.
+
+### Compute Engine
+
+* Promoted `--tunnel-through-iap` flag of `gcloud compute ssh` and
+  `gcloud compute scp` to beta.
+* Deprecated `--http-health-check` and `--https-health-check` flags in `gcloud
+  beta compute instance-groups managed create`. Use `--health-check` flag
+  instead.
+* Promoted 'gcloud compute interconnects get-diagnostics' to GA.
+* Promoted `--enable-logging` flag of
+  `gcloud compute firewall-rules <create|update>` to GA.
+
+### Firebase Test Lab
+
+* Added support for Android App Bundles to the `--app` flag in `gcloud firebase test android run` commands.
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 

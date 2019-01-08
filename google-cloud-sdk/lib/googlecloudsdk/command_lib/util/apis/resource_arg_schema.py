@@ -56,7 +56,9 @@ class YAMLResourceArgument(YAMLConceptArgument):
             'disable_auto_completers', True),
         arg_name=data.get('arg_name'),
         command_level_fallthroughs=data.get('command_level_fallthroughs', {}),
-        display_name_hook=data.get('display_name_hook')
+        display_name_hook=data.get('display_name_hook'),
+        override_resource_collection=data.get('override_resource_collection',
+                                              False)
     )
 
   @classmethod
@@ -81,7 +83,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
   def __init__(self, data, group_help, is_positional=True, removed_flags=None,
                is_parent_resource=False, disable_auto_completers=True,
                arg_name=None, command_level_fallthroughs=None,
-               display_name_hook=None):
+               display_name_hook=None, override_resource_collection=False):
     self.name = data['name'] if arg_name is None else arg_name
     self.name_override = arg_name
     self.request_id_field = data.get('request_id_field')
@@ -100,6 +102,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     self._plural_name = data.get('plural_name')
     self.display_name_hook = (
         util.Hook.FromPath(display_name_hook) if display_name_hook else None)
+    self.override_resource_collection = override_resource_collection
 
     for removed in self.removed_flags:
       if removed not in self.attribute_names:
@@ -131,7 +134,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
       resource_collection = registry.GetAPICollection(
           parent_collection, api_version=self._api_version)
 
-    if resource_collection:
+    if resource_collection and not self.override_resource_collection:
       # Validate that the expected collection matches what was registered for
       # the resource argument specification.
       if resource_collection.full_name != self._full_collection_name:

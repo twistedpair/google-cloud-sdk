@@ -1,0 +1,346 @@
+{
+  "kind": "discovery#restDescription",
+  "discoveryVersion": "v1",
+  "id": "datacatalog:v1beta1",
+  "name": "datacatalog",
+  "canonicalName": "Cloud DataCatalog",
+  "version": "v1beta1",
+  "revision": "0",
+  "title": "Cloud Datahub API",
+  "description": "Datahub APIs provides features to attach metadata to Google Cloud Platform resources like Bigquery Tables.<br>\nKey critical resources include -<br>\n    - Entries  (Datahub representation of a cloud resource)<br>\n    - Tag Templates (Definition of columns and value types for attaching metadata)<br>\n    - Tags (Values associated with Tag templates and attached to Entries.)<br>\nDatahub also provides rich search functionality to search resources for Entries and tags.\n",
+  "ownerDomain": "google.com",
+  "ownerName": "Google",
+  "icons": {
+    "x16": "http://www.google.com/images/icons/product/search-16.gif",
+    "x32": "http://www.google.com/images/icons/product/search-32.gif"
+   },
+  "documentationLink": "https://cloud.google.com/data-catalog/docs/",
+  "protocol": "rest",
+  "rootUrl": "https://datacatalog.googleapis.com/",
+  "servicePath": "",
+  "baseUrl": "https://datacatalog.googleapis.com/",
+  "batchPath": "batch",
+  "version_module": true,
+  "fullyEncodeReservedExpansion": true,
+  "parameters": {
+    "access_token": {
+      "type": "string",
+      "description": "OAuth access token.",
+      "location": "query"
+    },
+    "alt": {
+      "type": "string",
+      "description": "Data format for response.",
+      "default": "json",
+      "enum": [
+        "json",
+        "media",
+        "proto"
+      ],
+      "enumDescriptions": [
+        "Responses with Content-Type of application/json",
+        "Media download with context-dependent Content-Type",
+        "Responses with Content-Type of application/x-protobuf"
+      ],
+      "location": "query"
+    },
+    "callback": {
+      "type": "string",
+      "description": "JSONP",
+      "location": "query"
+    },
+    "fields": {
+      "type": "string",
+      "description": "Selector specifying which fields to include in a partial response.",
+      "location": "query"
+    },
+    "key": {
+      "type": "string",
+      "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+      "location": "query"
+    },
+    "oauth_token": {
+      "type": "string",
+      "description": "OAuth 2.0 token for the current user.",
+      "location": "query"
+    },
+    "prettyPrint": {
+      "type": "boolean",
+      "description": "Returns response with indentations and line breaks.",
+      "default": "true",
+      "location": "query"
+    },
+    "quotaUser": {
+      "type": "string",
+      "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters.",
+      "location": "query"
+    },
+    "upload_protocol": {
+      "type": "string",
+      "description": "Upload protocol for media (e.g. \"raw\", \"multipart\").",
+      "location": "query"
+    },
+    "uploadType": {
+      "type": "string",
+      "description": "Legacy upload protocol for media (e.g. \"media\", \"multipart\").",
+      "location": "query"
+    },
+    "$.xgafv": {
+      "type": "string",
+      "description": "V1 error format.",
+      "enum": [
+        "1",
+        "2"
+      ],
+      "enumDescriptions": [
+        "v1 error format",
+        "v2 error format"
+      ],
+      "location": "query"
+    }
+  },
+  "auth": {
+    "oauth2": {
+      "scopes": {
+        "https://www.googleapis.com/auth/cloud-platform": {
+          "description": "View and manage your data across Google Cloud Platform services"
+        }
+      }
+    }
+  },
+  "schemas": {
+    "GoogleCloudDatacatalogV1beta1SearchCatalogResponse": {
+      "id": "GoogleCloudDatacatalogV1beta1SearchCatalogResponse",
+      "description": "Response to a search request.",
+      "type": "object",
+      "properties": {
+        "results": {
+          "description": "Search results in descending order of relevance.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1beta1SearchCatalogResult"
+          }
+        },
+        "nextPageToken": {
+          "description": "The token that can be used to retrieve the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1beta1SearchCatalogResult": {
+      "id": "GoogleCloudDatacatalogV1beta1SearchCatalogResult",
+      "description": "A result that appears in the response of a search request. Each result\ncaptures details of one entry that matches the search.",
+      "type": "object",
+      "properties": {
+        "entryType": {
+          "description": "Type of the entry.",
+          "enumDescriptions": [
+            "Default unknown type",
+            "The type of entry that has a GoogleSQL schema, including logical views."
+          ],
+          "type": "string",
+          "enum": [
+            "ENTRY_TYPE_UNSPECIFIED",
+            "TABLE"
+          ]
+        },
+        "tableSourceType": {
+          "description": "Table source type.",
+          "enumDescriptions": [
+            "Default unknown type.",
+            "Table view.",
+            "BigQuery native table."
+          ],
+          "type": "string",
+          "enum": [
+            "TABLE_SOURCE_TYPE_UNSPECIFIED",
+            "BIGQUERY_VIEW",
+            "BIGQUERY_TABLE"
+          ]
+        },
+        "fullResourceName": {
+          "description": "The full name of the cloud resource the entry belongs to. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name\nExample:\n\"\/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1beta1Entry": {
+      "id": "GoogleCloudDatacatalogV1beta1Entry",
+      "description": "Entry Metadata.",
+      "type": "object",
+      "properties": {
+        "fullResourceName": {
+          "description": "The full name of the cloud resource the entry belongs to. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name\nExample:\n\"\/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId\".",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of entry.",
+          "enumDescriptions": [
+            "Default unknown type",
+            "The type of entry that has a GoogleSQL schema, including logical views."
+          ],
+          "type": "string",
+          "enum": [
+            "ENTRY_TYPE_UNSPECIFIED",
+            "TABLE"
+          ]
+        },
+        "displayName": {
+          "description": "Display information such as title and description.\nA short name to identify the entry, for example,\n\"Analytics Data - Jan 2011\".",
+          "type": "string"
+        },
+        "description": {
+          "description": "Entry description, which can consist of several sentences or paragraphs\nthat describe entry contents.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1beta1ListEntriesResponse": {
+      "id": "GoogleCloudDatacatalogV1beta1ListEntriesResponse",
+      "description": "Response to request to list entries in a dataset.",
+      "type": "object",
+      "properties": {
+        "entries": {
+          "description": "Entry details.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1beta1Entry"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results. It is set to empty if no items\nremain in results.",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "resources": {
+    "catalog": {
+      "methods": {
+        "search": {
+          "id": "datacatalog.catalog.search",
+          "path": "v1beta1/catalog:search",
+          "flatPath": "v1beta1/catalog:search",
+          "httpMethod": "GET",
+          "parameters": {
+            "query": {
+              "description": "Required. The query string in search query syntax. The query must be\nnon-empty.\nQuery strings can be simple as \"x\" or more qualified as:\n* name:x\n* column:x\n* desc:x OR description:y\n* column_desc:x OR column_description:x",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Number of results in the search page. If <=0 then defaults to 10.\nMax limit for page_size is 1000. Throws an invalid argument for page_size >\n1000.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "Token that specifies which page is requested. If empty then the first page\nis returned.",
+              "location": "query",
+              "type": "string"
+            },
+            "orderBy": {
+              "description": "Specifies the ordering of results following syntax at\nhttps:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order. We only\nsupport ordering by a single metrics field and currently supported choices\nare :\n * 'relevance'\n * 'last_access_timestamp'\n * 'last_modified_timestamp' and\n * 'title'.",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "GoogleCloudDatacatalogV1beta1SearchCatalogResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Searches for Data Catalog for multiple resources like entries, tags that\nmatch a query.\nThis API is a custom method\n(https:\/\/cloud.google.com\/apis\/design\/custom_methods), and does not return\nthe complete resource, only the resource identifier and high level\nfields. Clients can subsequentally call Get APIs."
+        }
+      }
+    },
+    "entries": {
+      "methods": {
+        "lookup": {
+          "id": "datacatalog.entries.lookup",
+          "path": "v1beta1/entries:lookup",
+          "flatPath": "v1beta1/entries:lookup",
+          "httpMethod": "GET",
+          "parameters": {
+            "fullResourceName": {
+              "description": "Required. The full name of the cloud resource the entry belongs to. See:\nhttps:\/\/cloud.google.com\/apis\/design\/resource_names#full_resource_name\nExample:\n\"\/\/bigquery.googleapis.com\/projects\/projectId\/datasets\/datasetId\/tables\/tableId\".",
+              "location": "query",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "GoogleCloudDatacatalogV1beta1Entry"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get an entry by Resource name."
+        }
+      }
+    },
+    "projects": {
+      "resources": {
+        "datasets": {
+          "resources": {
+            "entries": {
+              "methods": {
+                "list": {
+                  "id": "datacatalog.projects.datasets.entries.list",
+                  "path": "v1beta1/{+parent}/entries",
+                  "flatPath": "v1beta1/projects/{projectsId}/datasets/{datasetsId}/entries",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The dataset name that contains the entries, which can be provided\nin URL format, for example, \"projects\/a\/datasets\/b\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/datasets\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of items to return. Default is 10. Max limit\nis 1000. Throws an invalid argument for page_size > 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Token that specifies which page is requested. If empty, the\nfirst page is returned.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1beta1ListEntriesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists entries."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "basePath": ""
+}

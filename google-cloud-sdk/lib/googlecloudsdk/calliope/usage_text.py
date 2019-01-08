@@ -772,10 +772,10 @@ def GetUsage(command, argument_interceptor):
   group_helps = command.GetSubGroupHelps()
   command_helps = command.GetSubCommandHelps()
 
-  groups = sorted([name for (name, help_info) in six.iteritems(group_helps)
-                   if command.IsHidden() or not help_info.is_hidden])
-  commands = sorted([name for (name, help_info) in six.iteritems(command_helps)
-                     if command.IsHidden() or not help_info.is_hidden])
+  groups = sorted(name for (name, help_info) in six.iteritems(group_helps)
+                  if command.IsHidden() or not help_info.is_hidden)
+  commands = sorted(name for (name, help_info) in six.iteritems(command_helps)
+                    if command.IsHidden() or not help_info.is_hidden)
 
   all_subtypes = []
   if groups:
@@ -804,10 +804,7 @@ def GetUsage(command, argument_interceptor):
     WrapWithPrefix('optional flags may be', ' | '.join(optional_flags),
                    HELP_INDENT, LINE_WIDTH, spacing='  ', writer=buf)
 
-  buf.write("""
-For detailed information on this command and its flags, run:
-  {command_path} --help
-""".format(command_path=' '.join(command.GetPath())))
+  buf.write('\n' + GetHelpHint(command))
 
   return buf.getvalue()
 
@@ -818,7 +815,7 @@ def GetCategoricalUsage(command, categories):
   The string is formatted as a series of tables, one for each category. Each
   subcommand and subgroup of the parent command is printed in its corresponding
   table together with a short summary describing its functionality. If there are
-  no categories to display, then an emptry string is returned.
+  no categories to display, then an empty string is returned.
 
   Args:
     command: calliope._CommandCommon, The command object that we're helping.
@@ -847,6 +844,61 @@ def GetCategoricalUsage(command, categories):
       buf.write('{name} | {description}\n'.format(
           name=element.name.replace('_', '-'), description=short_help))
   return buf.getvalue()
+
+
+def _WriteUncategorizedTable(command, elements, element_type, writer):
+  """Helper method to GetUncategorizedUsage().
+
+  The elements are written to a markdown table with a special heading. Element
+  names are printed in the first column, and help snippet text is printed in the
+  second. No categorization is performed.
+
+  Args:
+    command: calliope._CommandCommon, The command object that we're helping.
+    elements: an iterable over backend.CommandCommon, The sub-elements that
+      we're printing to the table.
+    element_type: str, The type of elements we are dealing with. Usually
+      'groups' or 'commands'.
+    writer: file-like, Receiver of the written output.
+  """
+  writer.write('# Available {element_type} for {group}:\n'.format(
+      element_type=element_type, group=' '.join(command.GetPath())))
+  writer.write('---------------------- | ---\n')
+  for element in sorted(elements, key=lambda e: e.name):
+    writer.write('{name} | {description}\n'.format(
+        name=element.name.replace('_', '-'), description=element.short_help))
+
+
+def GetUncategorizedUsage(command):
+  """Constructs a Usage markdown string for uncategorized command groups.
+
+  The string is formatted as two tables, one for the subgroups and one for the
+  subcommands. Each sub-element is printed in its corresponding table together
+  with a short summary describing its functionality.
+
+  Args:
+    command: calliope._CommandCommon, the command object that we're helping.
+
+  Returns:
+    str, The command Usage markdown string as described above.
+  """
+  buf = io.StringIO()
+  if command.groups:
+    _WriteUncategorizedTable(command, command.groups.values(), 'groups', buf)
+
+  if command.commands:
+    buf.write('\n')
+    _WriteUncategorizedTable(
+        command, command.commands.values(), 'commands', buf)
+
+  return buf.getvalue()
+
+
+def GetHelpHint(command):
+  return """\
+For detailed information on this command and its flags, run:
+  {command_path} --help
+""".format(command_path=' '.join(command.GetPath()))
 
 
 def ExtractHelpStrings(docstring):
