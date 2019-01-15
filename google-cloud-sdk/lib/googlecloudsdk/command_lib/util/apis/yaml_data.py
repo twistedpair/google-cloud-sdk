@@ -26,7 +26,7 @@ from googlecloudsdk.core.util import pkg_resources
 
 _RESOURCE_FILE_NAME = 'resources.yaml'
 _RESOURCE_FILE_PREFIX = 'googlecloudsdk.command_lib.'
-_RESOURCE_PATH_PATTERN = r'^(?P<surface_name>\w+)\.(?P<resource_name>\w+)$'
+_RESOURCE_PATH_PATTERN = r'^(?P<surface_name>\S+)\.(?P<resource_name>\w+)$'
 
 
 class Error(exceptions.Error):

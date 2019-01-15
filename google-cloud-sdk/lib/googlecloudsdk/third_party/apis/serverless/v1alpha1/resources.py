@@ -41,6 +41,16 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  NAMESPACES_DOMAINMAPPINGS = (
+      'namespaces.domainmappings',
+      '{+name}',
+      {
+          '':
+              'namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+      },
+      [u'name'],
+      True
+  )
   NAMESPACES_REVISIONS = (
       'namespaces.revisions',
       '{+name}',
@@ -92,6 +102,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/configurations/'
               '{configurationsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DOMAINMAPPINGS = (
+      'projects.locations.domainmappings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/domainmappings/'
+              '{domainmappingsId}',
       },
       [u'name'],
       True

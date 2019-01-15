@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2018 Google Inc. All Rights Reserved.
+# Copyright 2019 Google Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import string
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.run import build_template
 from googlecloudsdk.api_lib.run import configuration
+from googlecloudsdk.api_lib.run import domain_mapping
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import metrics
 from googlecloudsdk.api_lib.run import revision
@@ -48,14 +49,13 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
 
-
 DEFAULT_ENDPOINT_VERSION = 'v1'
 
 
 _NONCE_LENGTH = 10
 # Used to force a new revision, and also to tie a particular request for changes
 # to a particular created revision.
-NONCE_LABEL = 'cloud.google.com/nonce'
+NONCE_LABEL = 'client.knative.dev/nonce'
 
 # Wait 11 mins for each deployment. This is longer than the server timeout,
 # making it more likely to get a useful error message from the server.
@@ -844,6 +844,13 @@ class ServerlessOperations(object):
             in error_payload.field_violations):
           exceptions.reraise(serverless_exceptions.BadImageError(e))
       exceptions.reraise(e)
+    except api_exceptions.HttpNotFoundError as e:
+      # TODO(b/118339293): List available regions to check whether provided
+      # region is invalid or not.
+      raise serverless_exceptions.DeploymentFailedError(
+          'Deployment endpoint was not found. Perhaps the provided '
+          'region was invalid. Set the `run/region` property to a valid '
+          'region and retry. Ex: `gcloud config set run/region us-central1`')
 
   def ReleaseService(self, service_ref, config_changes, asyn=False):
     """Change the given service in prod using the given config_changes.
@@ -885,3 +892,20 @@ class ServerlessOperations(object):
     with metrics.record_duration(metrics.LIST_REVISIONS):
       response = self._client.namespaces_revisions.List(request)
     return [revision.Revision(item, messages) for item in response.items]
+
+  def ListDomainMappings(self, namespace_ref):
+    """List all domain mappings.
+
+    Args:
+      namespace_ref: Resource, namespace to list domain mappings in.
+
+    Returns:
+      A list of domain mappings.
+    """
+    messages = self._messages_module
+    request = messages.ServerlessNamespacesDomainmappingsListRequest(
+        parent=namespace_ref.RelativeName())
+    with metrics.record_duration(metrics.LIST_DOMAIN_MAPPINGS):
+      response = self._client.namespaces_domainmappings.List(request)
+    return [domain_mapping.DomainMapping(item, messages)
+            for item in response.items]

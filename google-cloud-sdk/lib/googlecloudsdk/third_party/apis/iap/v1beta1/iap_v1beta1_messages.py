@@ -69,8 +69,8 @@ class GetIamPolicyRequest(_messages.Message):
   r"""Request message for `GetIamPolicy` method."""
 
 
-class IapProjectsIapTunnelGetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelGetIamPolicyRequest object.
+class IapGetIamPolicyRequest(_messages.Message):
+  r"""A IapGetIamPolicyRequest object.
 
   Fields:
     getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
@@ -84,8 +84,8 @@ class IapProjectsIapTunnelGetIamPolicyRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
 
 
-class IapProjectsIapTunnelSetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelSetIamPolicyRequest object.
+class IapSetIamPolicyRequest(_messages.Message):
+  r"""A IapSetIamPolicyRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy is being specified.
@@ -99,233 +99,8 @@ class IapProjectsIapTunnelSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
-class IapProjectsIapTunnelTestIamPermissionsRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class IapProjectsIapTunnelZonesGetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelZonesGetIamPolicyRequest object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class IapProjectsIapTunnelZonesInstancesGetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelZonesInstancesGetIamPolicyRequest object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class IapProjectsIapTunnelZonesInstancesSetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelZonesInstancesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class IapProjectsIapTunnelZonesInstancesTestIamPermissionsRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelZonesInstancesTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class IapProjectsIapTunnelZonesSetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelZonesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class IapProjectsIapTunnelZonesTestIamPermissionsRequest(_messages.Message):
-  r"""A IapProjectsIapTunnelZonesTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class IapProjectsIapWebGetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapWebGetIamPolicyRequest object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class IapProjectsIapWebServicesGetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapWebServicesGetIamPolicyRequest object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class IapProjectsIapWebServicesSetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapWebServicesSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class IapProjectsIapWebServicesTestIamPermissionsRequest(_messages.Message):
-  r"""A IapProjectsIapWebServicesTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class IapProjectsIapWebServicesVersionsGetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapWebServicesVersionsGetIamPolicyRequest object.
-
-  Fields:
-    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class IapProjectsIapWebServicesVersionsSetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapWebServicesVersionsSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class IapProjectsIapWebServicesVersionsTestIamPermissionsRequest(_messages.Message):
-  r"""A IapProjectsIapWebServicesVersionsTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class IapProjectsIapWebSetIamPolicyRequest(_messages.Message):
-  r"""A IapProjectsIapWebSetIamPolicyRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class IapProjectsIapWebTestIamPermissionsRequest(_messages.Message):
-  r"""A IapProjectsIapWebTestIamPermissionsRequest object.
+class IapTestIamPermissionsRequest(_messages.Message):
+  r"""A IapTestIamPermissionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being

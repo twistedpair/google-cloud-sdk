@@ -113,7 +113,10 @@ apis:
           path: organizations/{organizationId}
   cloudasset:
     v1beta1:
+      default: true
       discovery_doc: cloudasset_v1beta1.json
+    v1:
+      discovery_doc: cloudasset_v1.json
   cloudbilling:
     v1:
       discovery_doc: cloudbilling_v1.json

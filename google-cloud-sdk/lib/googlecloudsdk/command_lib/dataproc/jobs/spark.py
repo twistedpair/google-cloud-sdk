@@ -65,11 +65,7 @@ class SparkBase(job_base.JobBase):
         help='List of key value pairs to configure Spark. For a list of '
              'available properties, see: '
              'https://spark.apache.org/docs/latest/'
-             'configuration.html#available-properties. Alternatively, to '
-             'see examples of how to use the properties flag, see: '
-             'https://cloud.google.com/dataproc/docs/concepts/'
-             'configuring-clusters/cluster-properties'
-             '#how_the_properties_flag_works')
+             'configuration.html#available-properties.')
     parser.add_argument(
         '--driver-log-levels',
         type=arg_parsers.ArgDict(),

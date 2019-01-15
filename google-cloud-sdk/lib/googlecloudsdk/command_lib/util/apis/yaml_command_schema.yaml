@@ -331,17 +331,17 @@ properties:
   # looks something like this (brief and description are required):
   # help_text:
   #   brief: Delete a Compute Engine virtual machine.
-  #   DESCRIPTION: |
+  #   description: |
   #     This command stops, and deletes the given virtual machine instance. Any
   #     boot disks associated with this instance are also deleted.
-  #   EXAMPLES: |
+  #   examples: |
   #     To delete an instance:
   #
   #       $ {command} INSTANCE_NAME --zone ZONE
   help_text:
     type: object
     additionalProperties: false
-    required: [brief, DESCRIPTION]
+    required: [brief, description]
     patternProperties:
       brief: {type: string}
       description: {type: string}

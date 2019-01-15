@@ -158,6 +158,22 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsImageVersionsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of image_versions to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: List ImageVersions in the given project and location, in the form:
+      "projects/{projectId}/locations/{locationId}"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ComposerProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A ComposerProjectsLocationsOperationsCancelRequest object.
 
@@ -338,6 +354,22 @@ class EnvironmentConfig(_messages.Message):
   softwareConfig = _messages.MessageField('SoftwareConfig', 6)
 
 
+class ImageVersion(_messages.Message):
+  r"""Image Version information
+
+  Fields:
+    imageVersionId: The string identifier of the ImageVersion, in the form:
+      "composer-x.y.z-airflow-a.b(.c)"
+    isDefault: Whether this is the default ImageVersion used by Composer
+      during environment creation if no input ImageVersion is specified.
+    supportedPythonVersions: supported python versions
+  """
+
+  imageVersionId = _messages.StringField(1)
+  isDefault = _messages.BooleanField(2)
+  supportedPythonVersions = _messages.StringField(3, repeated=True)
+
+
 class ListEnvironmentsResponse(_messages.Message):
   r"""The environments in a project and location.
 
@@ -349,6 +381,19 @@ class ListEnvironmentsResponse(_messages.Message):
   """
 
   environments = _messages.MessageField('Environment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListImageVersionsResponse(_messages.Message):
+  r"""The ImageVersions in a project and location.
+
+  Fields:
+    imageVersions: The list of supported ImageVersions in a location.
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+  """
+
+  imageVersions = _messages.MessageField('ImageVersion', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

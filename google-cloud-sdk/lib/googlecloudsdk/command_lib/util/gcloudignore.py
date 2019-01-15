@@ -78,6 +78,10 @@ class BadIncludedFileError(exceptions.Error):
   """Error indicating that a provided file was invalid."""
 
 
+class SymlinkLoopError(exceptions.Error):
+  """Error indicating that there is a symlink loop."""
+
+
 class Match(enum.Enum):
   """Indicates whether an ignore pattern matches or explicitly includes a path.
 
@@ -160,7 +164,7 @@ class FileChooser(object):
     """Returns whether the given file/directory should be included.
 
     This is determined according to the rules at
-    https://git-scm.com/docs/gitignore.
+    https://git-scm.com/docs/gitignore except that symlinks are followed.
 
     In particular:
     - the method goes through pattern-by-pattern in-order
@@ -170,7 +174,7 @@ class FileChooser(object):
 
     Args:
       path: str, the path (relative to the root upload directory) to test.
-      is_dir: bool, whether the path is a directory (not a file or symlink).
+      is_dir: bool, whether the path is a directory (or symlink to a directory).
 
     Returns:
       bool, whether the file should be uploaded
@@ -188,6 +192,29 @@ class FileChooser(object):
         return False
     return True
 
+  def _RaiseOnSymlinkLoop(self, full_path):
+    """Raise SymlinkLoopError if the given path is a symlink loop."""
+    if not os.path.islink(full_path):
+      return
+
+    # Does it refer to itself somehow?
+    p = os.readlink(full_path)
+    targets = set()
+    while os.path.islink(p):
+      if p in targets:
+        raise SymlinkLoopError(
+            'The symlink [{}] refers to itself.'.format(full_path))
+      targets.add(p)
+      p = os.readlink(p)
+    # Does it refer to its containing directory?
+    p = os.path.dirname(full_path)
+    while p and os.path.basename(p):
+      if os.path.samefile(p, full_path):
+        raise SymlinkLoopError(
+            'The symlink [{}] refers to its own containing directory.'.format(
+                full_path))
+      p = os.path.dirname(p)
+
   def GetIncludedFiles(self, upload_directory, include_dirs=True):
     """Yields the files in the given directory that this FileChooser includes.
 
@@ -197,21 +224,26 @@ class FileChooser(object):
 
     Yields:
       str, the files and directories that should be uploaded.
+    Raises:
+      SymlinkLoopError: if there is a symlink referring to its own containing
+      dir or itself.
     """
-    for dirpath, dirnames, filenames in os.walk(upload_directory):
+    for dirpath, dirnames, filenames in os.walk(
+        upload_directory, followlinks=True):
       if dirpath == upload_directory:
         relpath = ''
       else:
         relpath = os.path.relpath(dirpath, upload_directory)
       for filename in filenames:
         file_relpath = os.path.join(relpath, filename)
+        self._RaiseOnSymlinkLoop(os.path.join(dirpath, filename))
         if self.IsIncluded(file_relpath):
           yield file_relpath
       for dirname in dirnames[:]:  # make a copy since we modify the original
         file_relpath = os.path.join(relpath, dirname)
-        # Don't treat symlinks as directories, even though os.walk does.
-        is_dir = not os.path.islink(os.path.join(dirpath, dirname))
-        if self.IsIncluded(file_relpath, is_dir=is_dir):
+        full_path = os.path.join(dirpath, dirname)
+        if self.IsIncluded(file_relpath, is_dir=True):
+          self._RaiseOnSymlinkLoop(full_path)
           if include_dirs:
             yield file_relpath
         else:

@@ -35,21 +35,15 @@ class IapV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_iap_tunnel_zones_instances = self.ProjectsIapTunnelZonesInstancesService(self)
-    self.projects_iap_tunnel_zones = self.ProjectsIapTunnelZonesService(self)
-    self.projects_iap_tunnel = self.ProjectsIapTunnelService(self)
-    self.projects_iap_web_services_versions = self.ProjectsIapWebServicesVersionsService(self)
-    self.projects_iap_web_services = self.ProjectsIapWebServicesService(self)
-    self.projects_iap_web = self.ProjectsIapWebService(self)
-    self.projects = self.ProjectsService(self)
+    self.v1beta1 = self.V1beta1Service(self)
 
-  class ProjectsIapTunnelZonesInstancesService(base_api.BaseApiService):
-    """Service class for the projects_iap_tunnel_zones_instances resource."""
+  class V1beta1Service(base_api.BaseApiService):
+    """Service class for the v1beta1 resource."""
 
-    _NAME = u'projects_iap_tunnel_zones_instances'
+    _NAME = u'v1beta1'
 
     def __init__(self, client):
-      super(IapV1beta1.ProjectsIapTunnelZonesInstancesService, self).__init__(client)
+      super(IapV1beta1.V1beta1Service, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -60,7 +54,7 @@ More information about managing access via IAP can be found at:
 https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
 
       Args:
-        request: (IapProjectsIapTunnelZonesInstancesGetIamPolicyRequest) input message
+        request: (IapGetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Policy) The response message.
@@ -70,15 +64,15 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel/zones/{zonesId}/instances/{instancesId}:getIamPolicy',
+        flat_path=u'v1beta1/{v1beta1Id}:getIamPolicy',
         http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.zones.instances.getIamPolicy',
+        method_id=u'iap.getIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
         query_params=[],
         relative_path=u'v1beta1/{+resource}:getIamPolicy',
         request_field=u'getIamPolicyRequest',
-        request_type_name=u'IapProjectsIapTunnelZonesInstancesGetIamPolicyRequest',
+        request_type_name=u'IapGetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
     )
@@ -90,7 +84,7 @@ More information about managing access via IAP can be found at:
 https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
 
       Args:
-        request: (IapProjectsIapTunnelZonesInstancesSetIamPolicyRequest) input message
+        request: (IapSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Policy) The response message.
@@ -100,15 +94,15 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel/zones/{zonesId}/instances/{instancesId}:setIamPolicy',
+        flat_path=u'v1beta1/{v1beta1Id}:setIamPolicy',
         http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.zones.instances.setIamPolicy',
+        method_id=u'iap.setIamPolicy',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
         query_params=[],
         relative_path=u'v1beta1/{+resource}:setIamPolicy',
         request_field=u'setIamPolicyRequest',
-        request_type_name=u'IapProjectsIapTunnelZonesInstancesSetIamPolicyRequest',
+        request_type_name=u'IapSetIamPolicyRequest',
         response_type_name=u'Policy',
         supports_download=False,
     )
@@ -122,7 +116,7 @@ More information about managing access via IAP can be found at:
 https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
 
       Args:
-        request: (IapProjectsIapTunnelZonesInstancesTestIamPermissionsRequest) input message
+        request: (IapTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (TestIamPermissionsResponse) The response message.
@@ -132,535 +126,15 @@ https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel/zones/{zonesId}/instances/{instancesId}:testIamPermissions',
+        flat_path=u'v1beta1/{v1beta1Id}:testIamPermissions',
         http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.zones.instances.testIamPermissions',
+        method_id=u'iap.testIamPermissions',
         ordered_params=[u'resource'],
         path_params=[u'resource'],
         query_params=[],
         relative_path=u'v1beta1/{+resource}:testIamPermissions',
         request_field=u'testIamPermissionsRequest',
-        request_type_name=u'IapProjectsIapTunnelZonesInstancesTestIamPermissionsRequest',
+        request_type_name=u'IapTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
-
-  class ProjectsIapTunnelZonesService(base_api.BaseApiService):
-    """Service class for the projects_iap_tunnel_zones resource."""
-
-    _NAME = u'projects_iap_tunnel_zones'
-
-    def __init__(self, client):
-      super(IapV1beta1.ProjectsIapTunnelZonesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an Identity-Aware Proxy protected.
-resource.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapTunnelZonesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel/zones/{zonesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.zones.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'IapProjectsIapTunnelZonesGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for an Identity-Aware Proxy protected.
-resource. Replaces any existing policy.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapTunnelZonesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel/zones/{zonesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.zones.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'IapProjectsIapTunnelZonesSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected.
-resource. If the resource does not exist or the caller does not have
-Identity-Aware Proxy permissions a [google.rpc.Code.PERMISSION_DENIED]
-will be returned.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapTunnelZonesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel/zones/{zonesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.zones.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'IapProjectsIapTunnelZonesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsIapTunnelService(base_api.BaseApiService):
-    """Service class for the projects_iap_tunnel resource."""
-
-    _NAME = u'projects_iap_tunnel'
-
-    def __init__(self, client):
-      super(IapV1beta1.ProjectsIapTunnelService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an Identity-Aware Proxy protected.
-resource.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapTunnelGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'IapProjectsIapTunnelGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for an Identity-Aware Proxy protected.
-resource. Replaces any existing policy.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapTunnelSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'IapProjectsIapTunnelSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected.
-resource. If the resource does not exist or the caller does not have
-Identity-Aware Proxy permissions a [google.rpc.Code.PERMISSION_DENIED]
-will be returned.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapTunnelTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_tunnel:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_tunnel.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'IapProjectsIapTunnelTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsIapWebServicesVersionsService(base_api.BaseApiService):
-    """Service class for the projects_iap_web_services_versions resource."""
-
-    _NAME = u'projects_iap_web_services_versions'
-
-    def __init__(self, client):
-      super(IapV1beta1.ProjectsIapWebServicesVersionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an Identity-Aware Proxy protected.
-resource.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebServicesVersionsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}/services/{servicesId}/versions/{versionsId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.services.versions.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'IapProjectsIapWebServicesVersionsGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for an Identity-Aware Proxy protected.
-resource. Replaces any existing policy.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebServicesVersionsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}/services/{servicesId}/versions/{versionsId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.services.versions.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'IapProjectsIapWebServicesVersionsSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected.
-resource. If the resource does not exist or the caller does not have
-Identity-Aware Proxy permissions a [google.rpc.Code.PERMISSION_DENIED]
-will be returned.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebServicesVersionsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}/services/{servicesId}/versions/{versionsId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.services.versions.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'IapProjectsIapWebServicesVersionsTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsIapWebServicesService(base_api.BaseApiService):
-    """Service class for the projects_iap_web_services resource."""
-
-    _NAME = u'projects_iap_web_services'
-
-    def __init__(self, client):
-      super(IapV1beta1.ProjectsIapWebServicesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an Identity-Aware Proxy protected.
-resource.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebServicesGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}/services/{servicesId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.services.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'IapProjectsIapWebServicesGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for an Identity-Aware Proxy protected.
-resource. Replaces any existing policy.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebServicesSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}/services/{servicesId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.services.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'IapProjectsIapWebServicesSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected.
-resource. If the resource does not exist or the caller does not have
-Identity-Aware Proxy permissions a [google.rpc.Code.PERMISSION_DENIED]
-will be returned.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebServicesTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}/services/{servicesId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.services.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'IapProjectsIapWebServicesTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsIapWebService(base_api.BaseApiService):
-    """Service class for the projects_iap_web resource."""
-
-    _NAME = u'projects_iap_web'
-
-    def __init__(self, client):
-      super(IapV1beta1.ProjectsIapWebService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for an Identity-Aware Proxy protected.
-resource.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}:getIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.getIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:getIamPolicy',
-        request_field=u'getIamPolicyRequest',
-        request_type_name=u'IapProjectsIapWebGetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy for an Identity-Aware Proxy protected.
-resource. Replaces any existing policy.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}:setIamPolicy',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.setIamPolicy',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:setIamPolicy',
-        request_field=u'setIamPolicyRequest',
-        request_type_name=u'IapProjectsIapWebSetIamPolicyRequest',
-        response_type_name=u'Policy',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the Identity-Aware Proxy protected.
-resource. If the resource does not exist or the caller does not have
-Identity-Aware Proxy permissions a [google.rpc.Code.PERMISSION_DENIED]
-will be returned.
-More information about managing access via IAP can be found at:
-https://cloud.google.com/iap/docs/managing-access#managing_access_via_the_api
-
-      Args:
-        request: (IapProjectsIapWebTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1beta1/projects/{projectsId}/iap_web/{iap_webId}:testIamPermissions',
-        http_method=u'POST',
-        method_id=u'iap.projects.iap_web.testIamPermissions',
-        ordered_params=[u'resource'],
-        path_params=[u'resource'],
-        query_params=[],
-        relative_path=u'v1beta1/{+resource}:testIamPermissions',
-        request_field=u'testIamPermissionsRequest',
-        request_type_name=u'IapProjectsIapWebTestIamPermissionsRequest',
-        response_type_name=u'TestIamPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsService(base_api.BaseApiService):
-    """Service class for the projects resource."""
-
-    _NAME = u'projects'
-
-    def __init__(self, client):
-      super(IapV1beta1.ProjectsService, self).__init__(client)
-      self._upload_configs = {
-          }

@@ -45,8 +45,7 @@
   memegen-robo-args:
     type: robo
     app: path/to/memegen.apk
-    max-depth: 30
-    max-steps: 2000
+    robo-script: crawl_init.json
     include: [common-args, matrix-quick]
     timeout: 5m
 

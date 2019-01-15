@@ -460,8 +460,13 @@ def RenderDocumentAction(command, default_style=None):
       md = io.StringIO(markdown.Markdown(command))
       out = (io.StringIO() if console_io.IsInteractive(output=True)
              else None)
+
+      if style == 'linter':
+        meta_data = GetCommandMetaData(command)
+      else:
+        meta_data = None
       render_document.RenderDocument(style, md, out=out or log.out, notes=notes,
-                                     title=title)
+                                     title=title, command_metadata=meta_data)
       metrics.Ran()
       if out:
         console_io.More(out.getvalue())
@@ -469,6 +474,18 @@ def RenderDocumentAction(command, default_style=None):
       sys.exit(0)
 
   return Action
+
+
+def GetCommandMetaData(command):
+  command_metadata = render_document.CommandMetaData()
+  for arg in command.GetAllAvailableFlags():
+    for arg_name in arg.option_strings:
+      command_metadata.flags.append(arg_name)
+      if (isinstance(arg, argparse._StoreTrueAction) or
+          isinstance(arg, argparse._StoreFalseAction)):
+        command_metadata.bool_flags.append(arg_name)
+  command_metadata.is_group = command.is_group
+  return command_metadata
 
 
 def _PreActionHook(action, func, additional_help=None):

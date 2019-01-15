@@ -140,9 +140,6 @@ class MatrixCreator(object):
         appApk=app_apk,
         appBundle=app_bundle,
         appPackageId=self._args.app_package,
-        maxDepth=self._args.max_depth,
-        maxSteps=self._args.max_steps,
-        appInitialActivity=self._args.app_initial_activity,
         roboDirectives=self._BuildRoboDirectives(self._args.robo_directives))
     if getattr(self._args, 'robo_script', None):
       spec.androidRoboTest.roboScript = self._BuildFileReference(

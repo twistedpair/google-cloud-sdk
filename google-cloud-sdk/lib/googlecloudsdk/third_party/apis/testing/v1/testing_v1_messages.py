@@ -1215,6 +1215,10 @@ class TestMatrix(_messages.Message):
   Fields:
     clientInfo: Information about the client which invoked the test. Optional
     environmentMatrix: How the host machine(s) are configured. Required
+    flakyTestAttempts: The number of times a TestExecution should be re-
+      attempted if one or more of its test cases fail for any reason. The
+      maximum number of reruns allowed is 10.  Default is 0, which implies no
+      reruns.
     invalidMatrixDetails: Describes why the matrix is considered invalid. Only
       useful for matrices in the INVALID state. @OutputOnly
     projectId: The cloud project that owns the test matrix. @OutputOnly
@@ -1372,14 +1376,15 @@ class TestMatrix(_messages.Message):
 
   clientInfo = _messages.MessageField('ClientInfo', 1)
   environmentMatrix = _messages.MessageField('EnvironmentMatrix', 2)
-  invalidMatrixDetails = _messages.EnumField('InvalidMatrixDetailsValueValuesEnum', 3)
-  projectId = _messages.StringField(4)
-  resultStorage = _messages.MessageField('ResultStorage', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  testExecutions = _messages.MessageField('TestExecution', 7, repeated=True)
-  testMatrixId = _messages.StringField(8)
-  testSpecification = _messages.MessageField('TestSpecification', 9)
-  timestamp = _messages.StringField(10)
+  flakyTestAttempts = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  invalidMatrixDetails = _messages.EnumField('InvalidMatrixDetailsValueValuesEnum', 4)
+  projectId = _messages.StringField(5)
+  resultStorage = _messages.MessageField('ResultStorage', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  testExecutions = _messages.MessageField('TestExecution', 8, repeated=True)
+  testMatrixId = _messages.StringField(9)
+  testSpecification = _messages.MessageField('TestSpecification', 10)
+  timestamp = _messages.StringField(11)
 
 
 class TestSetup(_messages.Message):

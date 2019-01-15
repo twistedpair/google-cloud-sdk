@@ -5,6 +5,71 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 230.0.0 (2019-01-15)
+
+### Breaking Changes
+
+*   **(App Engine)** 
+*   **(App Engine)** Fixed a bug where symlinked directories were skipped on source upload.
+  Second Generation runtimes and source directories using .gcloudignore now
+  upload the contents of symlinked directories, matching the behavior of First
+  Generation runtimes. To explicitly skip a symlinked directory, add it to
+  .gcloudignore.
+*   **(Cloud Functions)** 
+*   **(Cloud Functions)** Fixed a bug where symlinked directories were skipped on source upload.
+  To explicitly skip a symlinked directory, add it to .gcloudignore.
+*   **(Cloud SQL)** Made the flags `--region`, `--gce-zone`, and `--zone` mutually exclusive
+  for the command `gcloud sql instances create`.
+*   **(Cloud SQL)** Deprecated the creation of First Generation Cloud SQL instances, adding a
+  warning and confirmation prompt to `gcloud sql instances create`.
+
+
+### Cloud Build
+
+*   Released `cloud-build-local` v0.5.0; see
+    [release notes](https://github.com/GoogleCloudPlatform/cloud-build-local/releases/tag/v0.5.0).
+
+### Cloud SQL
+
+* Added the flag `--zone` to `gcloud sql instances create` as an alternative to
+  `--gce-zone`, which is now deprecated.
+* Deprecated First Generation Cloud SQL instances, adding warnings to
+  `gcloud sql instances <describe|patch>`.
+
+### Cloud Scheduler
+
+* Added support for all of App Engine's regions to Cloud Scheduler.
+
+### Compute Engine
+
+* Promoted `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to GA
+  in the following command groups:
+    * `gcloud compute instances`
+    * `gcloud compute sole-tenancy node-templates`
+    * `gcloud compute sole-tenancy node-groups`
+* Promoted `--boot` flag of `gcloud compute instances attach-disk` to GA.
+* Deprecated `--auto-create-routes` flag of `gcloud alpha compute networks
+  peerings create` in Beta.
+* Promoted `gcloud compute networks peerings update` command to Beta.
+* Promoted `import-custom-routes` and `export-custom-routes` flags to Beta
+  in `gcloud compute networks peerings create` command.
+* Deprecated and renamed the following `--shielded-vm-*` flags:
+    * `--shielded-vm-secure-boot` as `--shielded-secure-boot`
+    * `--shielded-vm-vtpm` as `--shielded-vtpm`
+    * `--shielded-vm-integrity-monitoring` as `--shielded-integrity-monitoring`
+    * `--shielded-vm-learn-integrity-policy` as `--shielded-learn-integrity-policy`
+
+
+### Firebase Test Lab
+
+* Deprecated the `--app-package` and `--test-package` flags in `gcloud firebase test android run` commands; the application and test package names will be parsed from the APK manifest by default.
+* Removed three robo test args that were deprecated 6+ months ago: `--max-steps`, `--max-depth`, and `--app-initial-activity`.
+
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 229.0.0 (2019-01-08)
 
 ### App Engine

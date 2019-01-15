@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import io
 import os
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import markdown
@@ -256,6 +257,11 @@ class DocumentGenerator(walker.Walker):
     Returns:
       The parent value, ignored here.
     """
+
+    if self._style == 'linter':
+      meta_data = actions.GetCommandMetaData(node)
+    else:
+      meta_data = None
     command = node.GetPath()
     path = os.path.join(self._directory, '_'.join(command)) + self._suffix
     with files.FileWriter(path) as f:
@@ -263,7 +269,8 @@ class DocumentGenerator(walker.Walker):
       render_document.RenderDocument(style=self._style,
                                      title=' '.join(command),
                                      fin=io.StringIO(md),
-                                     out=f)
+                                     out=f,
+                                     command_metadata=meta_data)
     return parent
 
 
@@ -401,11 +408,7 @@ class ManPageGenerator(DocumentGenerator):
 
 
 class LinterGenerator(DocumentGenerator):
-  """Generates linter files with suffix .txt in an output directory.
-
-  The output directory will contain a man1 subdirectory containing all of the
-  linter files.
-  """
+  """Generates linter files with suffix .txt in an output directory."""
 
   def __init__(self, cli, directory, hidden=False, progress_callback=None,
                restrict=None):

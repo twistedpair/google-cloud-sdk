@@ -132,13 +132,6 @@ def _ValidateDuration(arg_internal_name, arg_value):
   raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
 
 
-def _ValidateInteger(arg_internal_name, arg_value):
-  """Validates an argument which should have any integer value."""
-  if isinstance(arg_value, int):
-    return arg_value
-  raise test_exceptions.InvalidArgException(arg_internal_name, arg_value)
-
-
 def _ValidatePositiveInteger(arg_internal_name, arg_value):
   """Validates an argument which should be an integer > 0."""
   try:
@@ -259,14 +252,9 @@ _FILE_ARG_VALIDATORS = {
     'device_ids': ValidateStringList,
     'directories_to_pull': ValidateStringList,
     'environment_variables': _ValidateKeyValueStringPairs,
-    'event_count': _ValidatePositiveInteger,
-    'event_delay': _ValidateNonNegativeInteger,
     'locales': ValidateStringList,
     'orientations': _ValidateOrientationList,
     'obb_files': _ValidateObbFileList,
-    'random_seed': _ValidateInteger,
-    'max_steps': _ValidateNonNegativeInteger,
-    'max_depth': _ValidatePositiveInteger,
     'os_version_ids': ValidateStringList,
     'other_files': _ValidateKeyValueStringPairs,
     'performance_metrics': _ValidateBool,

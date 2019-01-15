@@ -104,6 +104,11 @@ def AddAndroidTestArgs(parser):
       'to be APKs.')
   parser.add_argument(
       '--app-package',
+      action=actions.DeprecationAction(
+          '--app-package',
+          warn=('The `--app-package` flag is deprecated and should no longer '
+                'be used. By default, the correct application package name is '
+                'parsed from the APK manifest.')),
       help='The Java package of the application under test (default: extracted '
       'from the APK manifest).')
   parser.add_argument(
@@ -147,7 +152,7 @@ def AddAndroidTestArgs(parser):
       results when using Android Test Orchestrator (`--use-orchestrator`):
 
       ```
-      --environment-variables clearPackageData,coverage=true,coverageFile=/sdcard/coverage.ec
+      --environment-variables clearPackageData=true,coverage=true,coverageFile=/sdcard/coverage.ec
       ```
 
       Enable code coverage and provide a file path to store the coverage
@@ -199,6 +204,11 @@ def AddAndroidTestArgs(parser):
       'using a URL beginning with `gs://`.')
   parser.add_argument(
       '--test-package',
+      action=actions.DeprecationAction(
+          '--test-package',
+          warn=('The `--test-package` flag is deprecated and should no longer '
+                'be used. By default, the correct test package name is '
+                'parsed from the APK manifest.')),
       category=ANDROID_INSTRUMENTATION_TEST,
       help='The Java package name of the instrumentation test (default: '
       'extracted from the APK manifest).')
@@ -242,40 +252,6 @@ def AddAndroidTestArgs(parser):
 
   # The following args are specific to Android Robo tests.
 
-  parser.add_argument(
-      '--max-steps',
-      action=actions.DeprecationAction(
-          '--max-steps',
-          warn=('The `--max-steps` flag is deprecated and no longer has any '
-                'effect on the Robo crawler. The `--timeout` flag may be '
-                'optionally used to limit the maximum length of a Robo test.')),
-      metavar='int',
-      category=ANDROID_ROBO_TEST,
-      type=arg_validate.NONNEGATIVE_INT_PARSER,
-      help='The maximum number of steps/actions a Robo test can execute '
-      '(default: no limit).')
-  parser.add_argument(
-      '--max-depth',
-      action=actions.DeprecationAction(
-          '--max-depth',
-          warn=('The `--max-depth` flag is deprecated and no longer has any '
-                'effect on the actions of the Robo crawler.')),
-      metavar='int',
-      category=ANDROID_ROBO_TEST,
-      type=arg_validate.POSITIVE_INT_PARSER,
-      help='The maximum depth of the traversal stack a Robo test can explore. '
-      'Needs to be at least 2 to make Robo explore the app beyond the first '
-      'activity (default: 50).')
-  parser.add_argument(
-      '--app-initial-activity',
-      action=actions.DeprecationAction(
-          '--app-initial-activity',
-          warn=('The `--app-initial-activity` flag is deprecated and no longer '
-                'has any effect on the Robo crawler. Alternatively, the '
-                '`--robo-script` flag (in beta) can be used to guide Robo to a '
-                'specific part of your app before the Robo test begins.')),
-      category=ANDROID_ROBO_TEST,
-      help='The initial activity used to start the app during a Robo test.')
   parser.add_argument(
       '--robo-directives',
       metavar='TYPE:RESOURCE_NAME=INPUT',

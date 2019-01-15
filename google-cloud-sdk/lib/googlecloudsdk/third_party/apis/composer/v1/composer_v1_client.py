@@ -36,6 +36,7 @@ class ComposerV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_environments = self.ProjectsLocationsEnvironmentsService(self)
+    self.projects_locations_imageVersions = self.ProjectsLocationsImageVersionsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -182,6 +183,43 @@ class ComposerV1(base_api.BaseApiClient):
         request_field=u'environment',
         request_type_name=u'ComposerProjectsLocationsEnvironmentsPatchRequest',
         response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsImageVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_imageVersions resource."""
+
+    _NAME = u'projects_locations_imageVersions'
+
+    def __init__(self, client):
+      super(ComposerV1.ProjectsLocationsImageVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List ImageVersions for provided location.
+
+      Args:
+        request: (ComposerProjectsLocationsImageVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListImageVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/imageVersions',
+        http_method=u'GET',
+        method_id=u'composer.projects.locations.imageVersions.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/imageVersions',
+        request_field='',
+        request_type_name=u'ComposerProjectsLocationsImageVersionsListRequest',
+        response_type_name=u'ListImageVersionsResponse',
         supports_download=False,
     )
 

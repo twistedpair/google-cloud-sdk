@@ -941,7 +941,12 @@ class CommandBuilder(object):
     if self.spec.release_tracks:
       command = base.ReleaseTracks(*self.spec.release_tracks)(command)
     if not hasattr(command, 'detailed_help'):
-      command.detailed_help = self.spec.help_text
+      key_map = {
+          'description': 'DESCRIPTION',
+          'examples': 'EXAMPLES',
+      }
+      command.detailed_help = {
+          key_map.get(k, k): v for k, v in self.spec.help_text.items()}
     command.detailed_help['API REFERENCE'] = (
         'This command uses the *{}/{}* API. The full documentation for this '
         'API can be found at: {}'.format(

@@ -370,6 +370,90 @@ class ContainerPort(_messages.Message):
   protocol = _messages.StringField(5)
 
 
+class DomainMapping(_messages.Message):
+  r"""A DomainMapping object.
+
+  Fields:
+    apiVersion: The API version for this call such as "v1alpha1".
+    kind: The kind of resource, in this case "DomainMapping".
+    metadata: Metadata associated with this BuildTemplate.
+    spec: The spec for this DomainMapping.
+    status: The current status of the DomainMapping.
+  """
+
+  apiVersion = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  metadata = _messages.MessageField('ObjectMeta', 3)
+  spec = _messages.MessageField('DomainMappingSpec', 4)
+  status = _messages.MessageField('DomainMappingStatus', 5)
+
+
+class DomainMappingCondition(_messages.Message):
+  r"""DomainMappingCondition contains state information for a DomainMapping.
+
+  Fields:
+    internalMessage: Human readable message that contains additional details
+      not shared with external users.
+    message: Human readable message indicating details about the current
+      status. +optional
+    reason: One-word CamelCase reason for the condition's current status.
+      +optional
+    status: Status of the condition, one of True, False, Unknown.
+    type: Type of domain mapping condition.
+  """
+
+  internalMessage = _messages.StringField(1)
+  message = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  status = _messages.StringField(4)
+  type = _messages.StringField(5)
+
+
+class DomainMappingSpec(_messages.Message):
+  r"""The desired state of the Domain Mapping.
+
+  Enums:
+    CertificateModeValueValuesEnum: The mode of the certificate.
+
+  Fields:
+    certificateMode: The mode of the certificate.
+    overrideBefore: If set, the mapping will override any mapping set before
+      this time. It is recommended that the user leaves this emptyg to receive
+      an error warning about a potential conflict and only set it once the
+      respective UI has given such a warning.
+    routeName: The name of the Knative Route that this DomainMapping applies
+      to. The route must exist.
+  """
+
+  class CertificateModeValueValuesEnum(_messages.Enum):
+    r"""The mode of the certificate.
+
+    Values:
+      CERTIFICATE_MODE_UNSPECIFIED: <no description>
+      AUTOMATIC: <no description>
+    """
+    CERTIFICATE_MODE_UNSPECIFIED = 0
+    AUTOMATIC = 1
+
+  certificateMode = _messages.EnumField('CertificateModeValueValuesEnum', 1)
+  overrideBefore = _messages.StringField(2)
+  routeName = _messages.StringField(3)
+
+
+class DomainMappingStatus(_messages.Message):
+  r"""The current state of the Domain Mapping.
+
+  Fields:
+    conditions: Array of observed DomainMappingConditions, indicating the
+      current state of the DomainMapping.
+    observedGeneration: ObservedGeneration is the 'Generation' of the
+      DomainMapping that was last processed by the controller.
+  """
+
+  conditions = _messages.MessageField('DomainMappingCondition', 1, repeated=True)
+  observedGeneration = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -638,6 +722,22 @@ class ListConfigurationsResponse(_messages.Message):
   kind = _messages.StringField(3)
   metadata = _messages.MessageField('ListMeta', 4)
   unreachable = _messages.StringField(5, repeated=True)
+
+
+class ListDomainMappingsResponse(_messages.Message):
+  r"""ListDomainMappingsResponse is a list of DomainMapping resources.
+
+  Fields:
+    apiVersion: The API version for this call such as "v1alpha1".
+    items: List of DomainMappings.
+    kind: The kind of this resource, in this case "DomainMappingList".
+    metadata: Metadata associated with this DomainMapping list.
+  """
+
+  apiVersion = _messages.StringField(1)
+  items = _messages.MessageField('DomainMapping', 2, repeated=True)
+  kind = _messages.StringField(3)
+  metadata = _messages.MessageField('ListMeta', 4)
 
 
 class ListMeta(_messages.Message):
@@ -1615,6 +1715,88 @@ class ServerlessNamespacesConfigurationsListRequest(_messages.Message):
   watch = _messages.BooleanField(8)
 
 
+class ServerlessNamespacesDomainmappingsCreateRequest(_messages.Message):
+  r"""A ServerlessNamespacesDomainmappingsCreateRequest object.
+
+  Fields:
+    domainMapping: A DomainMapping resource to be passed as the request body.
+    parent: The project ID or project number in which this domain mapping
+      should be created.
+  """
+
+  domainMapping = _messages.MessageField('DomainMapping', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ServerlessNamespacesDomainmappingsDeleteRequest(_messages.Message):
+  r"""A ServerlessNamespacesDomainmappingsDeleteRequest object.
+
+  Fields:
+    name: The name of the domain mapping being deleted.
+    orphanDependents: Kubernetes-compatible attribute that specifies the
+      cascade behavior on delete. Cloud Run only supports cascading behavior,
+      so this must be false. This attribute is deprecated, and might be
+      replaced with PropagationPolicy See
+      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+  """
+
+  name = _messages.StringField(1, required=True)
+  orphanDependents = _messages.BooleanField(2)
+
+
+class ServerlessNamespacesDomainmappingsGetRequest(_messages.Message):
+  r"""A ServerlessNamespacesDomainmappingsGetRequest object.
+
+  Fields:
+    name: The name of the domain mapping being retrieved.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServerlessNamespacesDomainmappingsListRequest(_messages.Message):
+  r"""A ServerlessNamespacesDomainmappingsListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. k8s will send this in a query string format. i.e.
+      'metadata.name%3Dlorem'
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the domain mappings
+      should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start.
+    watch: Flag that indicates that kubectl expects to watch this resource as
+      well.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class ServerlessNamespacesDomainmappingsReplaceDomainMappingRequest(_messages.Message):
+  r"""A ServerlessNamespacesDomainmappingsReplaceDomainMappingRequest object.
+
+  Fields:
+    domainMapping: A DomainMapping resource to be passed as the request body.
+    name: The name of the domain mapping being retrieved.
+  """
+
+  domainMapping = _messages.MessageField('DomainMapping', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ServerlessNamespacesKubeSystemServicesListRequest(_messages.Message):
   r"""A ServerlessNamespacesKubeSystemServicesListRequest object.
 
@@ -1858,6 +2040,89 @@ class ServerlessProjectsLocationsConfigurationsListRequest(_messages.Message):
   parent = _messages.StringField(6, required=True)
   resourceVersion = _messages.StringField(7)
   watch = _messages.BooleanField(8)
+
+
+class ServerlessProjectsLocationsDomainmappingsCreateRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsDomainmappingsCreateRequest object.
+
+  Fields:
+    domainMapping: A DomainMapping resource to be passed as the request body.
+    parent: The project ID or project number in which this domain mapping
+      should be created.
+  """
+
+  domainMapping = _messages.MessageField('DomainMapping', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ServerlessProjectsLocationsDomainmappingsDeleteRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsDomainmappingsDeleteRequest object.
+
+  Fields:
+    name: The name of the domain mapping being deleted.
+    orphanDependents: Kubernetes-compatible attribute that specifies the
+      cascade behavior on delete. Cloud Run only supports cascading behavior,
+      so this must be false. This attribute is deprecated, and might be
+      replaced with PropagationPolicy See
+      https://github.com/kubernetes/kubernetes/issues/46659 for more info.
+  """
+
+  name = _messages.StringField(1, required=True)
+  orphanDependents = _messages.BooleanField(2)
+
+
+class ServerlessProjectsLocationsDomainmappingsGetRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsDomainmappingsGetRequest object.
+
+  Fields:
+    name: The name of the domain mapping being retrieved.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ServerlessProjectsLocationsDomainmappingsListRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsDomainmappingsListRequest object.
+
+  Fields:
+    continue_: Optional encoded string to continue paging.
+    fieldSelector: Allows to filter resources based on a specific value for a
+      field name. k8s will send this in a query string format. i.e.
+      'metadata.name%3Dlorem'
+    includeUninitialized: Kubernetes-compatible parameter. Not used by Cloud
+      Run.
+    labelSelector: Allows to filter resources based on a label. Supported
+      operations are =, !=, exists, in, and notIn.
+    limit: The maximum number of records that should be returned.
+    parent: The project ID or project number from which the domain mappings
+      should be listed.
+    resourceVersion: The baseline resource version from which the list or
+      watch operation should start.
+    watch: Flag that indicates that kubectl expects to watch this resource as
+      well.
+  """
+
+  continue_ = _messages.StringField(1)
+  fieldSelector = _messages.StringField(2)
+  includeUninitialized = _messages.BooleanField(3)
+  labelSelector = _messages.StringField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  parent = _messages.StringField(6, required=True)
+  resourceVersion = _messages.StringField(7)
+  watch = _messages.BooleanField(8)
+
+
+class ServerlessProjectsLocationsDomainmappingsReplaceDomainMappingRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsDomainmappingsReplaceDomainMappingRequest
+  object.
+
+  Fields:
+    domainMapping: A DomainMapping resource to be passed as the request body.
+    name: The name of the domain mapping being retrieved.
+  """
+
+  domainMapping = _messages.MessageField('DomainMapping', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ServerlessProjectsLocationsRevisionsDeleteRequest(_messages.Message):

@@ -70,6 +70,10 @@ def ConnectToInstance(cmd_args, sql_user):
     log.Print(info_holder.InfoHolder())
 
 
+def _GetZone(args):
+  return args.zone or args.gce_zone
+
+
 def _IsAlpha(release_track):
   return release_track == base.ReleaseTrack.ALPHA
 
@@ -82,6 +86,18 @@ def _ParseActivationPolicy(policy):
   return policy.replace('-', '_').upper() if policy else None
 
 
+# TODO(b/122660263): Remove when V1 instances are no longer supported.
+def ShowV1DeprecationWarning(plural=False):
+  message = (
+      'Upgrade your First Generation instance{} to Second Generation before we '
+      'auto-upgrade {} on March 4, 2020, ahead of the full decommission of '
+      'First Generation on March 25, 2020.')
+  if plural:
+    log.warning(message.format('s', 'them'))
+  else:
+    log.warning(message.format('', 'it'))
+
+
 def ShowZoneDeprecationWarnings(args):
   """Show warnings if both region and zone are specified or neither is.
 
@@ -91,16 +107,12 @@ def ShowZoneDeprecationWarnings(args):
   """
 
   region_specified = args.IsSpecified('region')
-  zone_specified = args.IsSpecified('gce_zone')
+  zone_specified = args.IsSpecified('gce_zone') or args.IsSpecified('zone')
 
+  # TODO(b/73362371): Remove this check; user must specify a location flag.
   if not (region_specified or zone_specified):
-    log.warning('Starting with release 218.0.0, you will need to specify '
+    log.warning('Starting with release 233.0.0, you will need to specify '
                 'either a region or a zone to create an instance.')
-
-  # TODO(b/73362466): Remove this check; these flags will be mutually exclusive.
-  if region_specified and zone_specified:
-    log.warning('Zone will override region. Starting with release 204.0.0, '
-                'region and zone will become mutually exclusive arguments.')
 
 
 class _BaseInstances(object):
@@ -154,9 +166,9 @@ class _BaseInstances(object):
       if args.require_ssl is not None:
         settings.ipConfiguration.requireSsl = args.require_ssl
 
-    if any([args.follow_gae_app, args.gce_zone]):
+    if any([args.follow_gae_app, _GetZone(args)]):
       settings.locationPreference = sql_messages.LocationPreference(
-          followGaeApplication=args.follow_gae_app, zone=args.gce_zone)
+          followGaeApplication=args.follow_gae_app, zone=_GetZone(args))
 
     if args.storage_size:
       settings.dataDiskSizeGb = int(args.storage_size / constants.BYTES_TO_GB)
@@ -254,9 +266,9 @@ class _BaseInstances(object):
     if args.clear_gae_apps:
       settings.authorizedGaeApplications = []
 
-    if any([args.follow_gae_app, args.gce_zone]):
+    if any([args.follow_gae_app, _GetZone(args)]):
       settings.locationPreference = sql_messages.LocationPreference(
-          followGaeApplication=args.follow_gae_app, zone=args.gce_zone)
+          followGaeApplication=args.follow_gae_app, zone=_GetZone(args))
 
     if args.clear_authorized_networks:
       if not settings.ipConfiguration:
@@ -345,7 +357,7 @@ class _BaseInstances(object):
     instance_resource = cls._ConstructBaseInstanceFromArgs(
         sql_messages, args, original, instance_ref)
 
-    instance_resource.region = reducers.Region(args.region, args.gce_zone)
+    instance_resource.region = reducers.Region(args.region, _GetZone(args))
     instance_resource.databaseVersion = args.database_version
     instance_resource.masterInstanceName = args.master_instance_name
 

@@ -312,22 +312,34 @@ class StorageClient(object):
           or is otherwise not able to be created.
     """
     project = project or properties.VALUES.core.project.Get(required=True)
+
+    # Previous iterations of this code always attempted to Insert the bucket
+    # and interpreted conflict errors to mean the bucket already existed; this
+    # avoids a race condition, but meant that checking bucket existence was
+    # subject to a lower-QPS rate limit for bucket creation/deletion. Instead,
+    # we do a racy Get-then-Insert which is subject to a higher rate limit, and
+    # still have to handle conflict errors in case of a race.
     try:
-      self.client.buckets.Insert(
-          self.messages.StorageBucketsInsertRequest(
-              project=project,
-              bucket=self.messages.Bucket(
-                  name=bucket,
-                  location=location,
-              )))
-    except api_exceptions.HttpConflictError:
-      # It's ok if the error was 409, which means the resource already exists.
-      # Make sure we have access to the bucket.  Storage returns a 409 whether
-      # the already-existing bucket is owned by you or by someone else, so we
-      # do a quick test to figure out which it was.
       self.client.buckets.Get(self.messages.StorageBucketsGetRequest(
           bucket=bucket,
       ))
+    except api_exceptions.HttpNotFoundError:
+      # Bucket doesn't exist, we'll try to create it.
+      try:
+        self.client.buckets.Insert(
+            self.messages.StorageBucketsInsertRequest(
+                project=project,
+                bucket=self.messages.Bucket(
+                    name=bucket,
+                    location=location,
+                )))
+      except api_exceptions.HttpConflictError:
+        # We lost a race with another process creating the bucket. At least we
+        # know the bucket exists. But we must check again whether the
+        # newly-created bucket is accessible to us, so we Get it again.
+        self.client.buckets.Get(self.messages.StorageBucketsGetRequest(
+            bucket=bucket,
+        ))
 
   def GetBucketLocationForFile(self, object_path):
     """Returns the location of the bucket for a file.

@@ -247,6 +247,11 @@
             "INVALID_INPUT_APK",
             "INVALID_APK_PREVIEW_SDK"
           ]
+        },
+        "flakyTestAttempts": {
+          "description": "The number of times a TestExecution should be re-attempted if one or more\nof its test cases fail for any reason.\nThe maximum number of reruns allowed is 10.\n\nDefault is 0, which implies no reruns.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

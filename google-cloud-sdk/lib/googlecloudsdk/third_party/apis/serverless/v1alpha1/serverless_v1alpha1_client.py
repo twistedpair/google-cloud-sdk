@@ -44,6 +44,7 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
     self.extensions_k8s = self.ExtensionsK8sService(self)
     self.extensions = self.ExtensionsService(self)
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
+    self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
     self.namespaces_kube_system_services = self.NamespacesKubeSystemServicesService(self)
     self.namespaces_kube_system = self.NamespacesKubeSystemService(self)
     self.namespaces_revisions = self.NamespacesRevisionsService(self)
@@ -51,6 +52,7 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
     self.namespaces_services = self.NamespacesServicesService(self)
     self.namespaces = self.NamespacesService(self)
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
+    self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
     self.projects_locations_routes = self.ProjectsLocationsRoutesService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
@@ -303,6 +305,156 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'ServerlessNamespacesConfigurationsListRequest',
         response_type_name=u'ListConfigurationsResponse',
+        supports_download=False,
+    )
+
+  class NamespacesDomainmappingsService(base_api.BaseApiService):
+    """Service class for the namespaces_domainmappings resource."""
+
+    _NAME = u'namespaces_domainmappings'
+
+    def __init__(self, client):
+      super(ServerlessV1alpha1.NamespacesDomainmappingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new domain mapping.
+
+      Args:
+        request: (ServerlessNamespacesDomainmappingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainMapping) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings',
+        http_method=u'POST',
+        method_id=u'serverless.namespaces.domainmappings.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings',
+        request_field=u'domainMapping',
+        request_type_name=u'ServerlessNamespacesDomainmappingsCreateRequest',
+        response_type_name=u'DomainMapping',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a domain mapping.
+
+      Args:
+        request: (ServerlessNamespacesDomainmappingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        http_method=u'DELETE',
+        method_id=u'serverless.namespaces.domainmappings.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'orphanDependents'],
+        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'ServerlessNamespacesDomainmappingsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a domain mapping.
+
+      Args:
+        request: (ServerlessNamespacesDomainmappingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainMapping) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        http_method=u'GET',
+        method_id=u'serverless.namespaces.domainmappings.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'ServerlessNamespacesDomainmappingsGetRequest',
+        response_type_name=u'DomainMapping',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list domain mappings..
+
+      Args:
+        request: (ServerlessNamespacesDomainmappingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDomainMappingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings',
+        http_method=u'GET',
+        method_id=u'serverless.namespaces.domainmappings.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings',
+        request_field='',
+        request_type_name=u'ServerlessNamespacesDomainmappingsListRequest',
+        response_type_name=u'ListDomainMappingsResponse',
+        supports_download=False,
+    )
+
+    def ReplaceDomainMapping(self, request, global_params=None):
+      r"""Rpc to replace a domain mapping.
+Only the metadata and spec are modifiable but after the Replace request,
+Cloud Run will work to make the DomainMappingStatus match the
+requested DomainMappingSpec.
+May use metadata.resourceVersion to enforce update from last read for
+concurrency control.
+
+      Args:
+        request: (ServerlessNamespacesDomainmappingsReplaceDomainMappingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainMapping) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceDomainMapping')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceDomainMapping.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}',
+        http_method=u'PUT',
+        method_id=u'serverless.namespaces.domainmappings.replaceDomainMapping',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+name}',
+        request_field=u'domainMapping',
+        request_type_name=u'ServerlessNamespacesDomainmappingsReplaceDomainMappingRequest',
+        response_type_name=u'DomainMapping',
         supports_download=False,
     )
 
@@ -762,6 +914,156 @@ concurrency control.
         request_field='',
         request_type_name=u'ServerlessProjectsLocationsConfigurationsListRequest',
         response_type_name=u'ListConfigurationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDomainmappingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_domainmappings resource."""
+
+    _NAME = u'projects_locations_domainmappings'
+
+    def __init__(self, client):
+      super(ServerlessV1alpha1.ProjectsLocationsDomainmappingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new domain mapping.
+
+      Args:
+        request: (ServerlessProjectsLocationsDomainmappingsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainMapping) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings',
+        http_method=u'POST',
+        method_id=u'serverless.projects.locations.domainmappings.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+parent}/domainmappings',
+        request_field=u'domainMapping',
+        request_type_name=u'ServerlessProjectsLocationsDomainmappingsCreateRequest',
+        response_type_name=u'DomainMapping',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Rpc to delete a domain mapping.
+
+      Args:
+        request: (ServerlessProjectsLocationsDomainmappingsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}',
+        http_method=u'DELETE',
+        method_id=u'serverless.projects.locations.domainmappings.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'orphanDependents'],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'ServerlessProjectsLocationsDomainmappingsDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Rpc to get information about a domain mapping.
+
+      Args:
+        request: (ServerlessProjectsLocationsDomainmappingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainMapping) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}',
+        http_method=u'GET',
+        method_id=u'serverless.projects.locations.domainmappings.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field='',
+        request_type_name=u'ServerlessProjectsLocationsDomainmappingsGetRequest',
+        response_type_name=u'DomainMapping',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Rpc to list domain mappings..
+
+      Args:
+        request: (ServerlessProjectsLocationsDomainmappingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDomainMappingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings',
+        http_method=u'GET',
+        method_id=u'serverless.projects.locations.domainmappings.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'continue_', u'fieldSelector', u'includeUninitialized', u'labelSelector', u'limit', u'resourceVersion', u'watch'],
+        relative_path=u'v1alpha1/{+parent}/domainmappings',
+        request_field='',
+        request_type_name=u'ServerlessProjectsLocationsDomainmappingsListRequest',
+        response_type_name=u'ListDomainMappingsResponse',
+        supports_download=False,
+    )
+
+    def ReplaceDomainMapping(self, request, global_params=None):
+      r"""Rpc to replace a domain mapping.
+Only the metadata and spec are modifiable but after the Replace request,
+Cloud Run will work to make the DomainMappingStatus match the
+requested DomainMappingSpec.
+May use metadata.resourceVersion to enforce update from last read for
+concurrency control.
+
+      Args:
+        request: (ServerlessProjectsLocationsDomainmappingsReplaceDomainMappingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DomainMapping) The response message.
+      """
+      config = self.GetMethodConfig('ReplaceDomainMapping')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReplaceDomainMapping.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}',
+        http_method=u'PUT',
+        method_id=u'serverless.projects.locations.domainmappings.replaceDomainMapping',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+name}',
+        request_field=u'domainMapping',
+        request_type_name=u'ServerlessProjectsLocationsDomainmappingsReplaceDomainMappingRequest',
+        response_type_name=u'DomainMapping',
         supports_download=False,
     )
 

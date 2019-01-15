@@ -25,6 +25,7 @@ import re
 
 import googlecloudsdk
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import command_release_tracks
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import pkg_resources
 
@@ -549,7 +550,7 @@ def _ImplementationsFromYaml(path, data, yaml_command_translator):
   implementations = [
       (lambda i=i: yaml_command_translator.Translate(path, i),
        {base.ReleaseTrack.FromId(t) for t in i.get('release_tracks', [])})
-      for i in data]
+      for i in command_release_tracks.SeparateDeclarativeCommandTracks(data)]
   return implementations
 
 

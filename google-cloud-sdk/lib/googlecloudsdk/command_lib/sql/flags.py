@@ -474,6 +474,42 @@ def AddStorageSize(parser):
             '10GB.'))
 
 
+def AddTier(parser, is_patch=False):
+  """Adds the '--tier' flag to the parser."""
+  help_text = ('The tier for this instance. For Second Generation instances, '
+               'TIER is the instance\'s machine type (e.g., db-n1-standard-1). '
+               'For PostgreSQL instances, only shared-core machine types '
+               '(e.g., db-f1-micro) apply. A complete list of tiers is '
+               'available here: https://cloud.google.com/sql/pricing.')
+  if is_patch:
+    help_text += ' WARNING: Instance will be restarted.'
+  # TODO(b/122660263): Remove when V1 instances are no longer supported.
+  # V1 deprecation notice.
+  help_text += ('\n\nIMPORTANT: First Generation instances are deprecated. '
+                'If you\'re considering any First Generation tiers, we '
+                'recommend using Second Generation instead.')
+
+  parser.add_argument('--tier', '-t', required=False, help=help_text)
+
+
+def AddZone(parser, help_text):
+  """Adds the mutually exclusive `--gce-zone` and `--zone` to the parser."""
+  zone_group = parser.add_mutually_exclusive_group()
+  zone_group.add_argument(
+      '--gce-zone',
+      required=False,
+      action=actions.DeprecationAction(
+          '--gce-zone',
+          removed=False,
+          warn=('Flag `{flag_name}` is deprecated and will be removed by '
+                'release 255.0.0. Use `--zone` instead.')),
+      help=help_text)
+  zone_group.add_argument(
+      '--zone',
+      required=False,
+      help=help_text)
+
+
 # Database specific flags
 
 

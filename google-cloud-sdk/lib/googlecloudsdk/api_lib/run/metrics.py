@@ -27,26 +27,29 @@ from googlecloudsdk.core import metrics
 # Reserved CSI metric prefix for serverless
 _SERVERLESS_PREFIX = 'serverless_'
 
-# "Start" suffix
-START = '_start'
+# Time to create a configuration
+CREATE_CONFIGURATION = _SERVERLESS_PREFIX + 'create_configuration'
 
-# Time to list services
-LIST_SERVICES = _SERVERLESS_PREFIX + 'list_services'
+# Time to create a route
+CREATE_ROUTE = _SERVERLESS_PREFIX + 'create_route'
 
-# Time to list revisions
-LIST_REVISIONS = _SERVERLESS_PREFIX + 'list_revisions'
-
-# Time to list services
-LIST_CONFIGURATIONS = _SERVERLESS_PREFIX + 'list_configurations'
-
-# Time to list services
-LIST_ROUTES = _SERVERLESS_PREFIX + 'list_routes'
-
-# Time to get a revision
-GET_REVISION = _SERVERLESS_PREFIX + 'get_revision'
+# Time to create a service
+CREATE_SERVICE = _SERVERLESS_PREFIX + 'create_service'
 
 # Time to delete a revision
 DELETE_REVISION = _SERVERLESS_PREFIX + 'delete_revision'
+
+# Time to delete a service
+DELETE_SERVICE = _SERVERLESS_PREFIX + 'delete_service'
+
+# Time to get a configuration
+GET_CONFIGURATION = _SERVERLESS_PREFIX + 'get_configuration'
+
+# Time to list domain mappings
+LIST_DOMAIN_MAPPINGS = _SERVERLESS_PREFIX + 'list_domain_mappings'
+
+# Time to get a revision
+GET_REVISION = _SERVERLESS_PREFIX + 'get_revision'
 
 # Time to get a route
 GET_ROUTE = _SERVERLESS_PREFIX + 'get_route'
@@ -54,23 +57,20 @@ GET_ROUTE = _SERVERLESS_PREFIX + 'get_route'
 # Time to get a service
 GET_SERVICE = _SERVERLESS_PREFIX + 'get_service'
 
-# Time to delete a service
-DELETE_SERVICE = _SERVERLESS_PREFIX + 'delete_service'
+# Time to list configurations
+LIST_CONFIGURATIONS = _SERVERLESS_PREFIX + 'list_configurations'
 
-# Time to create a route
-CREATE_ROUTE = _SERVERLESS_PREFIX + 'create_route'
+# Time to list revisions
+LIST_REVISIONS = _SERVERLESS_PREFIX + 'list_revisions'
 
-# Time to get a configuration
-GET_CONFIGURATION = _SERVERLESS_PREFIX + 'get_configuration'
+# Time to list routes
+LIST_ROUTES = _SERVERLESS_PREFIX + 'list_routes'
 
-# Time to create a configuration
-CREATE_CONFIGURATION = _SERVERLESS_PREFIX + 'create_configuration'
+# Time to list services
+LIST_SERVICES = _SERVERLESS_PREFIX + 'list_services'
 
 # Time to update a configuration
 UPDATE_CONFIGURATION = _SERVERLESS_PREFIX + 'update_configuration'
-
-# Time to create a service
-CREATE_SERVICE = _SERVERLESS_PREFIX + 'create_service'
 
 # Time to update a service
 UPDATE_SERVICE = _SERVERLESS_PREFIX + 'update_service'
@@ -89,6 +89,6 @@ def record_duration(method_name):
   Yields:
     None
   """
-  metrics.CustomTimedEvent(method_name + START)
+  metrics.CustomTimedEvent(method_name + '_start')
   yield
   metrics.CustomTimedEvent(method_name)

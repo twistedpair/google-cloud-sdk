@@ -130,16 +130,19 @@ class MarkdownRenderer(object):
     _paragraph: True if the last line was ``+'' paragraph at current indent.
     _next_paragraph: The next line starts a new paragraph at same indentation.
     _renderer: The document_renderer.Renderer subclass.
+    command_metadata: Optional metadata of command.
   """
   _EMPHASIS = {'*': renderer.BOLD, '_': renderer.ITALIC, '`': renderer.CODE}
 
-  def __init__(self, style_renderer, fin=sys.stdin, notes=None):
+  def __init__(self, style_renderer, fin=sys.stdin, notes=None,
+               command_metadata=None):
     """Initializes the renderer.
 
     Args:
       style_renderer: The document_renderer.Renderer subclass.
       fin: The markdown input stream.
       notes: Optional sentences for the NOTES section.
+      command_metadata: Optional metadata of command.
     """
     self._renderer = style_renderer
     self._buf = ''
@@ -155,6 +158,7 @@ class MarkdownRenderer(object):
     self._peek = None
     self._next_paragraph = False
     self._line = None
+    self.command_metadata = command_metadata
 
   def _AnchorStyle1(self, buf, i):
     """Checks for link:target[text] hyperlink anchor markdown.
@@ -874,7 +878,7 @@ class MarkdownRenderer(object):
 
 
 def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
-                   title=None):
+                   title=None, command_metadata=None):
   """Renders markdown to a selected document style.
 
   Args:
@@ -884,6 +888,7 @@ def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
     width: The page width in characters.
     notes: Optional sentences inserted in the NOTES section.
     title: The document title.
+    command_metadata: Optional metadata of command, including available flags.
 
   Raises:
     DocumentStyleError: The markdown style was unknown.
@@ -891,8 +896,18 @@ def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
   if style not in STYLES:
     raise DocumentStyleError(style)
   style_renderer = STYLES[style](out=out or sys.stdout, title=title,
-                                 width=width)
-  MarkdownRenderer(style_renderer, fin=fin or sys.stdin, notes=notes).Run()
+                                 width=width, command_metadata=command_metadata)
+  MarkdownRenderer(style_renderer, fin=fin or sys.stdin, notes=notes,
+                   command_metadata=command_metadata).Run()
+
+
+class CommandMetaData(object):
+  """Object containing metadata of command to be passed into linter renderer."""
+
+  def __init__(self, flags=None, bool_flags=None, is_group=True):
+    self.flags = flags if flags else []
+    self.bool_flags = bool_flags if bool_flags else []
+    self.is_group = is_group
 
 
 def main(argv):
@@ -922,7 +937,8 @@ def main(argv):
 
   args = parser.parse_args(argv[1:])
 
-  RenderDocument(args.style, notes=args.notes, title=args.title)
+  RenderDocument(args.style, notes=args.notes, title=args.title,
+                 command_metadata=None)
 
 
 if __name__ == '__main__':

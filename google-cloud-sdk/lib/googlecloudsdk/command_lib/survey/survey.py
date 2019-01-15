@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
+import enum
 
 from googlecloudsdk.command_lib.survey import question
 from googlecloudsdk.core import exceptions
@@ -68,6 +69,16 @@ class Survey(object):
     welcome: str, welcome message when entering the survey.
   """
 
+  @enum.unique
+  class ControlOperation(enum.Enum):
+    EXIT_SURVEY = 'x'
+    SKIP_QUESTION = 's'
+
+  INSTRUCTION_MESSAGE = (
+      'To skip this question, type {}; to exit the survey, '
+      'type {}.').format(ControlOperation.SKIP_QUESTION.value,
+                         ControlOperation.EXIT_SURVEY.value)
+
   def __init__(self, name):
     self.name = name
     self._survey_content = self._LoadSurveyContent()
@@ -109,3 +120,8 @@ class Survey(object):
 
   def PrintWelcomeMsg(self):
     log.err.Print(self.welcome)
+
+  @classmethod
+  def PrintInstruction(cls):
+    log.err.Print(cls.INSTRUCTION_MESSAGE)
+

@@ -1677,14 +1677,11 @@ def AddShieldedVMConfigArgs(parser, use_default_value=True, for_update=False):
     for_update: Bool, if True, flags are intended for an update operation.
   """
   if use_default_value:
-    kwargs = {
-        'action': 'store_true',
-        'default': None
-    }
+    default_action = 'store_true'
+    action_kwargs = {'default': None}
   else:
-    kwargs = {
-        'action': arg_parsers.StoreTrueFalseAction
-    }
+    default_action = arg_parsers.StoreTrueFalseAction
+    action_kwargs = {}
 
   # --shielded-vm-secure-boot
   secure_boot_help = """\
@@ -1695,10 +1692,26 @@ def AddShieldedVMConfigArgs(parser, use_default_value=True, for_update=False):
       Changes to this setting (via the update command) will only take effect
       after stopping and starting the instance.
       """
-  parser.add_argument(
+  # TODO(b/120429236): remove shielded-vm flags after migration to
+  # shielded flags is complete.
+  # Use nested group to group the deprecated arg with the new one.
+  secure_boot_parser = parser.add_mutually_exclusive_group(
+      'Shielded Instance Secure Boot.')
+  secure_boot_parser.add_argument(
       '--shielded-vm-secure-boot',
       help=secure_boot_help,
-      **kwargs)
+      action=actions.DeprecationAction(
+          '--shielded-vm-secure-boot',
+          warn='The {flag_name} flag is now deprecated. Please use '
+          '`--shielded-secure-boot` instead.',
+          action=default_action),
+      **action_kwargs)
+  secure_boot_parser.add_argument(
+      '--shielded-secure-boot',
+      help=secure_boot_help,
+      dest='shielded_vm_secure_boot',
+      action=default_action,
+      **action_kwargs)
 
   # --shielded-vm-vtpm
   vtpm_help = """\
@@ -1711,10 +1724,24 @@ def AddShieldedVMConfigArgs(parser, use_default_value=True, for_update=False):
       Changes to this setting (via the update command) will only take effect
       after stopping and starting the instance.
       """
-  parser.add_argument(
+  # TODO(b/120429236): remove shielded-vm flags after migration to
+  # shielded flags is complete.
+  vtpm_parser = parser.add_mutually_exclusive_group('Shielded Instance vTPM.')
+  vtpm_parser.add_argument(
       '--shielded-vm-vtpm',
       help=vtpm_help,
-      **kwargs)
+      action=actions.DeprecationAction(
+          '--shielded-vm-vtpm',
+          warn='The {flag_name} flag is now deprecated. Please use '
+          '`--shielded-vtpm` instead.',
+          action=default_action),
+      **action_kwargs)
+  vtpm_parser.add_argument(
+      '--shielded-vtpm',
+      dest='shielded_vm_vtpm',
+      help=vtpm_help,
+      action=default_action,
+      **action_kwargs)
 
   # --shielded-vm-integrity-monitoring
   integrity_monitoring_help = """\
@@ -1729,24 +1756,55 @@ def AddShieldedVMConfigArgs(parser, use_default_value=True, for_update=False):
       Changes to this setting (via the update command) will only take effect
       after stopping and starting the instance.
       """
-  parser.add_argument(
+  # TODO(b/120429236): remove shielded-vm flags after migration to
+  # shielded flags is complete.
+  integrity_monitoring_parser = parser.add_mutually_exclusive_group(
+      'Shielded Instance Integrity Monitoring.')
+  integrity_monitoring_parser.add_argument(
       '--shielded-vm-integrity-monitoring',
       help=integrity_monitoring_help,
-      **kwargs)
+      action=actions.DeprecationAction(
+          '--shielded-vm-integrity-monitoring',
+          warn='The {flag_name} flag is now deprecated. Please use '
+          '`--shielded-integrity-monitoring` instead.',
+          action=default_action),
+      **action_kwargs)
+  integrity_monitoring_parser.add_argument(
+      '--shielded-integrity-monitoring',
+      help=integrity_monitoring_help,
+      dest='shielded_vm_integrity_monitoring',
+      action=default_action,
+      **action_kwargs)
 
 
 def AddShieldedVMIntegrityPolicyArgs(parser):
   """Adds flags for shielded VM integrity policy settings."""
+  help_text = """\
+  Causes the instance to re-learn the integrity policy baseline using
+  the current instance configuration. Use this flag after any planned
+  boot-specific changes in the instance configuration, like kernel
+  updates or kernel driver installation.
+  """
+  default_action = 'store_true'
+  parser = parser.add_mutually_exclusive_group(
+      'Shielded Instance Learn Integrity Policy.')
+  # TODO(b/120429236): remove shielded-vm flag after migration to
+  # shielded flags is complete.
   parser.add_argument(
       '--shielded-vm-learn-integrity-policy',
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--shielded-vm-learn-integrity-policy',
+          warn='The {flag_name} flag is now deprecated. Please use '
+          '`--shielded-learn-integrity-policy` instead.',
+          action=default_action),
       default=None,
-      help="""\
-      Causes the instance to re-learn the integrity policy baseline using
-      the current instance configuration. Use this flag after any planned
-      boot-specific changes in the instance configuration, like kernel
-      updates or kernel driver installation.
-      """)
+      help=help_text)
+  parser.add_argument(
+      '--shielded-learn-integrity-policy',
+      dest='shielded_vm_learn_integrity_policy',
+      action=default_action,
+      default=None,
+      help=help_text)
 
 
 def AddHostnameArg(parser):

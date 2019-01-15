@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.app import appengine_api_client as app_engine_api
-from googlecloudsdk.api_lib.app import region_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
@@ -103,23 +102,6 @@ def ParseAttributes(attributes):
   }
 
 
-_MORE_REGIONS_AVAILABLE_WARNING = """\
-The regions listed here are only those in which the Cloud Scheduler API is
-available. To see full list of App Engine regions available,
-create an app using the following command:
-
-    $ gcloud app create
-"""
-
-
-VALID_REGIONS = [
-    region_util.Region('us-central', True, True),
-    region_util.Region('europe-west', True, True),
-    region_util.Region('asia-northeast1', True, True),
-    region_util.Region('us-east1', True, True),
-]
-
-
 class RegionResolvingError(exceptions.Error):
   """Error for when the app's region cannot be ultimately determined."""
 
@@ -180,9 +162,7 @@ class AppLocationResolver(object):
       try:
         app_engine_api_client = app_engine_api.GetApiClientForTrack(
             calliope_base.ReleaseTrack.GA)
-        create_util.CreateAppInteractively(
-            app_engine_api_client, project, regions=VALID_REGIONS,
-            extra_warning=_MORE_REGIONS_AVAILABLE_WARNING)
+        create_util.CreateAppInteractively(app_engine_api_client, project)
       except create_util.AppAlreadyExistsError:
         raise create_util.AppAlreadyExistsError(
             'App already exists in project [{}]. This may be due a race '

@@ -405,6 +405,46 @@
         }
       }
     },
+    "ListImageVersionsResponse": {
+      "id": "ListImageVersionsResponse",
+      "description": "The ImageVersions in a project and location.",
+      "type": "object",
+      "properties": {
+        "imageVersions": {
+          "description": "The list of supported ImageVersions in a location.",
+          "type": "array",
+          "items": {
+            "$ref": "ImageVersion"
+          }
+        },
+        "nextPageToken": {
+          "description": "The page token used to query for the next page if one exists.",
+          "type": "string"
+        }
+      }
+    },
+    "ImageVersion": {
+      "id": "ImageVersion",
+      "description": "Image Version information",
+      "type": "object",
+      "properties": {
+        "imageVersionId": {
+          "description": "The string identifier of the ImageVersion, in the form:\n\"composer-x.y.z-airflow-a.b(.c)\"",
+          "type": "string"
+        },
+        "isDefault": {
+          "description": "Whether this is the default ImageVersion used by Composer during\nenvironment creation if no input ImageVersion is specified.",
+          "type": "boolean"
+        },
+        "supportedPythonVersions": {
+          "description": "supported python versions",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "OperationMetadata": {
       "id": "OperationMetadata",
       "description": "Metadata describing an operation.",
@@ -744,6 +784,46 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete an environment."
+                }
+              }
+            },
+            "imageVersions": {
+              "methods": {
+                "list": {
+                  "id": "composer.projects.locations.imageVersions.list",
+                  "path": "v1alpha2/{+parent}/imageVersions",
+                  "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/imageVersions",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "List ImageVersions in the given project and location, in the form:\n\"projects\/{projectId}\/locations\/{locationId}\"",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of image_versions to return.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListImageVersionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List ImageVersions for provided location."
                 }
               }
             }

@@ -46,19 +46,13 @@ def TypedArgRules():
       },
       'robo': {
           'required': [],
-          'optional': [
-              'app_initial_activity', 'max_depth', 'max_steps',
-              'robo_directives', 'robo_script'
-          ],
-          'defaults': {
-              'max_depth': 50,
-              'max_steps': -1,  # interpreted as 'no limit'
-          },
+          'optional': ['robo_directives', 'robo_script'],
+          'defaults': {}
       },
       'game-loop': {
           'required': [],
           'optional': ['scenario_numbers', 'scenario_labels'],
-          'defaults': {},
+          'defaults': {}
       },
   }
 

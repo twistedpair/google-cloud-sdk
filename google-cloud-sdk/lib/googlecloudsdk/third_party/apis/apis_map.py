@@ -186,6 +186,12 @@ MAP = {
         ),
     },
     'cloudasset': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.cloudasset.v1',
+            client_classpath='cloudasset_v1_client.CloudassetV1',
+            messages_modulepath='cloudasset_v1_messages',
+            default_version=False
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.cloudasset.v1beta1',
             client_classpath='cloudasset_v1beta1_client.CloudassetV1beta1',

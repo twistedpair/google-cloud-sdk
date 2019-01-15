@@ -125,9 +125,10 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
     _out: The output stream.
     _title: The document title.
     _width: The output width in characters.
+    command_metadata: Optional metadata of command.
   """
 
-  def __init__(self, out=None, title=None, width=80):
+  def __init__(self, out=None, title=None, width=80, command_metadata=None):
     self._blank = True
     self._command = ['gcloud']  # use command[0] instead of literal 'gcloud'
     self._font = 0
@@ -137,6 +138,7 @@ class Renderer(object):  # pytype: disable=ignored-abstractmethod
     self._out = out or log.out
     self._title = title
     self._width = width
+    self.command_metadata = command_metadata
 
   @property
   def command(self):
