@@ -1605,7 +1605,7 @@ class Table(_messages.Message):
     GranularityValueValuesEnum: (`CreationOnly`) The granularity (i.e.
       `MILLIS`) at which timestamps are stored in this table. Timestamps not
       matching the granularity will be rejected. If unspecified at creation
-      time, the value will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`
+      time, the value will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
 
   Messages:
     ClusterStatesValue: (`OutputOnly`) Map from cluster ID to per-cluster
@@ -1627,7 +1627,7 @@ class Table(_messages.Message):
     granularity: (`CreationOnly`) The granularity (i.e. `MILLIS`) at which
       timestamps are stored in this table. Timestamps not matching the
       granularity will be rejected. If unspecified at creation time, the value
-      will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`
+      will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
     name: (`OutputOnly`) The unique name of the table. Values are of the form
       `projects/<project>/instances/<instance>/tables/_a-zA-Z0-9*`. Views:
       `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
@@ -1637,7 +1637,7 @@ class Table(_messages.Message):
     r"""(`CreationOnly`) The granularity (i.e. `MILLIS`) at which timestamps
     are stored in this table. Timestamps not matching the granularity will be
     rejected. If unspecified at creation time, the value will be set to
-    `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`
+    `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
 
     Values:
       TIMESTAMP_GRANULARITY_UNSPECIFIED: The user did not specify a

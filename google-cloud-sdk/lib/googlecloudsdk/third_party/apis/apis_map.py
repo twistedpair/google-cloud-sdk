@@ -81,14 +81,6 @@ MAP = {
             default_version=True
         ),
     },
-    'alpha_vision': {
-        'v1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.alpha_vision.v1',
-            client_classpath='alpha_vision_v1_client.AlphaVisionV1',
-            messages_modulepath='alpha_vision_v1_messages',
-            default_version=True
-        ),
-    },
     'apikeys': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.apikeys.v1',
@@ -168,20 +160,6 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.bio.v1',
             client_classpath='bio_v1_client.BioV1',
             messages_modulepath='bio_v1_messages',
-            default_version=True
-        ),
-    },
-    'categorymanager': {
-        'v1alpha1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.categorymanager.v1alpha1',
-            client_classpath='categorymanager_v1alpha1_client.CategorymanagerV1alpha1',
-            messages_modulepath='categorymanager_v1alpha1_messages',
-            default_version=False
-        ),
-        'v1alpha2': APIDef(
-            class_path='googlecloudsdk.third_party.apis.categorymanager.v1alpha2',
-            client_classpath='categorymanager_v1alpha2_client.CategorymanagerV1alpha2',
-            messages_modulepath='categorymanager_v1alpha2_messages',
             default_version=True
         ),
     },
@@ -412,10 +390,10 @@ MAP = {
         ),
     },
     'datacatalog': {
-        'v1beta1': APIDef(
-            class_path='googlecloudsdk.third_party.apis.datacatalog.v1beta1',
-            client_classpath='datacatalog_v1beta1_client.DatacatalogV1beta1',
-            messages_modulepath='datacatalog_v1beta1_messages',
+        'v1alpha3': APIDef(
+            class_path='googlecloudsdk.third_party.apis.datacatalog.v1alpha3',
+            client_classpath='datacatalog_v1alpha3_client.DatacatalogV1alpha3',
+            messages_modulepath='datacatalog_v1alpha3_messages',
             default_version=True
         ),
     },
@@ -573,6 +551,14 @@ MAP = {
             default_version=False
         ),
     },
+    'gkehub': {
+        'v1beta1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.gkehub.v1beta1',
+            client_classpath='gkehub_v1beta1_client.GkehubV1beta1',
+            messages_modulepath='gkehub_v1beta1_messages',
+            default_version=True
+        ),
+    },
     'iam': {
         'v1': APIDef(
             class_path='googlecloudsdk.third_party.apis.iam.v1',
@@ -724,12 +710,6 @@ MAP = {
         ),
     },
     'servicenetworking': {
-        'v1alpha': APIDef(
-            class_path='googlecloudsdk.third_party.apis.servicenetworking.v1alpha',
-            client_classpath='servicenetworking_v1alpha_client.ServicenetworkingV1alpha',
-            messages_modulepath='servicenetworking_v1alpha_messages',
-            default_version=False
-        ),
         'v1beta': APIDef(
             class_path='googlecloudsdk.third_party.apis.servicenetworking.v1beta',
             client_classpath='servicenetworking_v1beta_client.ServicenetworkingV1beta',

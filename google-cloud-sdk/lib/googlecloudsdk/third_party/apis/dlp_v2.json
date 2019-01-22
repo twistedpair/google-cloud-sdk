@@ -933,6 +933,13 @@
         },
         "bigQueryKey": {
           "$ref": "GooglePrivacyDlpV2BigQueryKey"
+        },
+        "idValues": {
+          "description": "Values of identifying columns in the given row. Order of values matches\nthe order of field identifiers specified in the scanning request.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1624,7 +1631,7 @@
     },
     "GooglePrivacyDlpV2CryptoHashConfig": {
       "id": "GooglePrivacyDlpV2CryptoHashConfig",
-      "description": "Pseudonymization method that generates surrogates via cryptographic hashing.\nUses SHA-256.\nThe key size must be either 32 or 64 bytes.\nOutputs a base64 encoded representation of the hashed output\n(for example, L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=).\nCurrently, only string and integer values can be hashed.",
+      "description": "Pseudonymization method that generates surrogates via cryptographic hashing.\nUses SHA-256.\nThe key size must be either 32 or 64 bytes.\nOutputs a base64 encoded representation of the hashed output\n(for example, L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=).\nCurrently, only string and integer values can be hashed.\nSee https:\/\/cloud.google.com\/dlp\/docs\/pseudonymization to learn more.",
       "type": "object",
       "properties": {
         "cryptoKey": {

@@ -657,3 +657,6 @@ properties:
       # True when the update command requires an extra get api call.
       # False by default.
       read_modify_update: {type: boolean}
+      # Disable the field mask auto generation in the update commands.
+      # False by default.
+      disable_auto_field_mask: {type: boolean}

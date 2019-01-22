@@ -244,7 +244,7 @@
           "format": "int32"
         },
         "enableSeparateRecognitionPerChannel": {
-          "description": "This needs to be set to \u2018true\u2019 explicitly and `audio_channel_count` > 1\nto get each channel recognized separately. The recognition result will\ncontain a `channel_tag` field to state which channel that result belongs\nto. If this is not true, we will only recognize the first channel. The\nrequest is billed cumulatively for all channels recognized:\n`audio_channel_count` multiplied by the length of the audio.",
+          "description": "This needs to be set to `true` explicitly and `audio_channel_count` > 1\nto get each channel recognized separately. The recognition result will\ncontain a `channel_tag` field to state which channel that result belongs\nto. If this is not true, we will only recognize the first channel. The\nrequest is billed cumulatively for all channels recognized:\n`audio_channel_count` multiplied by the length of the audio.",
           "type": "boolean"
         },
         "languageCode": {
@@ -1020,54 +1020,80 @@
         }
       }
     },
-    "speech": {
-      "methods": {
-        "recognize": {
-          "id": "speech.speech.recognize",
-          "path": "v1p1beta1/speech:recognize",
-          "flatPath": "v1p1beta1/speech:recognize",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "RecognizeRequest"
-          },
-          "response": {
-            "$ref": "RecognizeResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Performs synchronous speech recognition: receive results after all audio\nhas been sent and processed."
-        },
-        "longrunningrecognize": {
-          "id": "speech.speech.longrunningrecognize",
-          "path": "v1p1beta1/speech:longrunningrecognize",
-          "flatPath": "v1p1beta1/speech:longrunningrecognize",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "LongRunningRecognizeRequest"
-          },
-          "response": {
-            "$ref": "Operation"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Performs asynchronous speech recognition: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `LongRunningRecognizeResponse` message."
-        }
-      }
-    },
     "projects": {
       "resources": {
         "locations": {
           "resources": {
+            "operations": {
+              "methods": {
+                "list": {
+                  "id": "speech.projects.locations.operations.list",
+                  "path": "v1p1beta1/{+name}/operations",
+                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/operations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation's parent resource.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The standard list filter.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The standard list page size.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The standard list page token.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListOperationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists operations that match the specified filter in the request. If the\nserver doesn't support this method, it returns `UNIMPLEMENTED`.\n\nNOTE: the `name` binding allows API services to override the binding\nto use different resource name schemes, such as `users\/*\/operations`. To\noverride the binding, API services can add a binding such as\n`\"\/v1\/{name=users\/*}\/operations\"` to their service configuration.\nFor backwards compatibility, the default name includes the operations\ncollection id, however overriding users must ensure the name binding\nis the parent resource, without the operations collection id."
+                },
+                "get": {
+                  "id": "speech.projects.locations.operations.get",
+                  "path": "v1p1beta1/{+name}",
+                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                }
+              }
+            },
             "log_data_stats": {
               "methods": {
                 "list": {
@@ -1230,6 +1256,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Get the dataset associated with the dataset resource."
+                },
+                "delete": {
+                  "id": "speech.projects.locations.datasets.delete",
+                  "path": "v1p1beta1/{+name}",
+                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Resource name of the dataset. Has the format :-\n'projects\/{project_number}\/locations\/{location_id}\/datasets\/{dataset_id}'",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes the named automl dataset. Returns an Empty response."
                 }
               }
             },
@@ -1267,6 +1318,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Creates a new custom model. Metadata type is SpeechOperationMetadata.\nResponse type is Model."
+                },
+                "delete": {
+                  "id": "speech.projects.locations.models.delete",
+                  "path": "v1p1beta1/{+name}",
+                  "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Resource name of the model. Has the format :-\n'projects\/{project_id}\/locations\/{location_id}\/models\/{model_id}'",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes the named automl model. Returns an Empty response."
                 },
                 "list": {
                   "id": "speech.projects.locations.models.list",
@@ -1368,6 +1444,83 @@
               }
             }
           }
+        },
+        "operations": {
+          "resources": {
+            "manualRecognitionTasks": {
+              "methods": {
+                "get": {
+                  "id": "speech.projects.operations.manualRecognitionTasks.get",
+                  "path": "v1p1beta1/{+name}",
+                  "flatPath": "v1p1beta1/projects/{projectsId}/operations/manualRecognitionTasks/{manualRecognitionTasksId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/operations\/manualRecognitionTasks\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "speech": {
+      "methods": {
+        "recognize": {
+          "id": "speech.speech.recognize",
+          "path": "v1p1beta1/speech:recognize",
+          "flatPath": "v1p1beta1/speech:recognize",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "RecognizeRequest"
+          },
+          "response": {
+            "$ref": "RecognizeResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Performs synchronous speech recognition: receive results after all audio\nhas been sent and processed."
+        },
+        "longrunningrecognize": {
+          "id": "speech.speech.longrunningrecognize",
+          "path": "v1p1beta1/speech:longrunningrecognize",
+          "flatPath": "v1p1beta1/speech:longrunningrecognize",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "LongRunningRecognizeRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Performs asynchronous speech recognition: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `LongRunningRecognizeResponse` message."
         }
       }
     }

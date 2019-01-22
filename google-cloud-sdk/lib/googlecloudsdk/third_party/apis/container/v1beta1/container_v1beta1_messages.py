@@ -183,6 +183,7 @@ class Cluster(_messages.Message):
       instead. The current version of the node software components. If they
       are currently at multiple versions because they're in the process of
       being upgraded, this reflects the minimum version of all nodes.
+    databaseEncryption: Configuration of etcd encryption.
     defaultMaxPodsConstraint: The default constraint on the maximum number of
       pods that can be run simultaneously on a node in the node pool of this
       cluster. Only honored if cluster created with IP Alias support.
@@ -369,46 +370,47 @@ class Cluster(_messages.Message):
   currentMasterVersion = _messages.StringField(7)
   currentNodeCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   currentNodeVersion = _messages.StringField(9)
-  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 10)
-  description = _messages.StringField(11)
-  enableKubernetesAlpha = _messages.BooleanField(12)
-  enableTpu = _messages.BooleanField(13)
-  endpoint = _messages.StringField(14)
-  expireTime = _messages.StringField(15)
-  initialClusterVersion = _messages.StringField(16)
-  initialNodeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  instanceGroupUrls = _messages.StringField(18, repeated=True)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 19)
-  labelFingerprint = _messages.StringField(20)
-  legacyAbac = _messages.MessageField('LegacyAbac', 21)
-  location = _messages.StringField(22)
-  locations = _messages.StringField(23, repeated=True)
-  loggingService = _messages.StringField(24)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 25)
-  masterAuth = _messages.MessageField('MasterAuth', 26)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 27)
-  masterIpv4CidrBlock = _messages.StringField(28)
-  monitoringService = _messages.StringField(29)
-  name = _messages.StringField(30)
-  network = _messages.StringField(31)
-  networkConfig = _messages.MessageField('NetworkConfig', 32)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 33)
-  nodeConfig = _messages.MessageField('NodeConfig', 34)
-  nodeIpv4CidrSize = _messages.IntegerField(35, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 36, repeated=True)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 37)
-  privateCluster = _messages.BooleanField(38)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 39)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 40)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 41)
-  selfLink = _messages.StringField(42)
-  servicesIpv4Cidr = _messages.StringField(43)
-  status = _messages.EnumField('StatusValueValuesEnum', 44)
-  statusMessage = _messages.StringField(45)
-  subnetwork = _messages.StringField(46)
-  tpuIpv4CidrBlock = _messages.StringField(47)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 48)
-  zone = _messages.StringField(49)
+  databaseEncryption = _messages.MessageField('DatabaseEncryption', 10)
+  defaultMaxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 11)
+  description = _messages.StringField(12)
+  enableKubernetesAlpha = _messages.BooleanField(13)
+  enableTpu = _messages.BooleanField(14)
+  endpoint = _messages.StringField(15)
+  expireTime = _messages.StringField(16)
+  initialClusterVersion = _messages.StringField(17)
+  initialNodeCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  instanceGroupUrls = _messages.StringField(19, repeated=True)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 20)
+  labelFingerprint = _messages.StringField(21)
+  legacyAbac = _messages.MessageField('LegacyAbac', 22)
+  location = _messages.StringField(23)
+  locations = _messages.StringField(24, repeated=True)
+  loggingService = _messages.StringField(25)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 26)
+  masterAuth = _messages.MessageField('MasterAuth', 27)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 28)
+  masterIpv4CidrBlock = _messages.StringField(29)
+  monitoringService = _messages.StringField(30)
+  name = _messages.StringField(31)
+  network = _messages.StringField(32)
+  networkConfig = _messages.MessageField('NetworkConfig', 33)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 34)
+  nodeConfig = _messages.MessageField('NodeConfig', 35)
+  nodeIpv4CidrSize = _messages.IntegerField(36, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 37, repeated=True)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 38)
+  privateCluster = _messages.BooleanField(39)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 40)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 41)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 42)
+  selfLink = _messages.StringField(43)
+  servicesIpv4Cidr = _messages.StringField(44)
+  status = _messages.EnumField('StatusValueValuesEnum', 45)
+  statusMessage = _messages.StringField(46)
+  subnetwork = _messages.StringField(47)
+  tpuIpv4CidrBlock = _messages.StringField(48)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 49)
+  zone = _messages.StringField(50)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -587,6 +589,17 @@ class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
   zone = _messages.StringField(4)
 
 
+class ContainerProjectsLocationsClustersGetJwksRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersGetJwksRequest object.
+
+  Fields:
+    parent: The cluster (project, location, cluster id) to get keys for.
+      Specified in the format 'projects/*/locations/*/clusters/*'.
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class ContainerProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A ContainerProjectsLocationsClustersGetRequest object.
 
@@ -706,6 +719,20 @@ class ContainerProjectsLocationsClustersNodePoolsListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
   projectId = _messages.StringField(3)
   zone = _messages.StringField(4)
+
+
+class ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest(_messages.Message):
+  r"""A
+  ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest
+  object.
+
+  Fields:
+    parent: The cluster (project, location, cluster id) to get the discovery
+      document for. Specified in the format
+      'projects/*/locations/*/clusters/*'.
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
@@ -1063,6 +1090,36 @@ class DailyMaintenanceWindow(_messages.Message):
   startTime = _messages.StringField(2)
 
 
+class DatabaseEncryption(_messages.Message):
+  r"""Configuration of etcd encryption.
+
+  Enums:
+    StateValueValuesEnum: Denotes the state of etcd encryption.
+
+  Fields:
+    keyName: Name of CloudKMS key to use for the encryption of secrets in
+      etcd. Ex. projects/my-project/locations/global/keyRings/my-
+      ring/cryptoKeys/my-key
+    state: Denotes the state of etcd encryption.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Denotes the state of etcd encryption.
+
+    Values:
+      UNKNOWN: Should never be set
+      ENCRYPTED: Secrets in etcd are encrypted.
+      DECRYPTED: Secrets in etcd are stored in plain text (at etcd level) -
+        this is unrelated to GCE level full disk encryption.
+    """
+    UNKNOWN = 0
+    ENCRYPTED = 1
+    DECRYPTED = 2
+
+  keyName = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1071,6 +1128,41 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class GetJSONWebKeysResponse(_messages.Message):
+  r"""GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc
+  7517
+
+  Fields:
+    keys: The public component of the keys used by the cluster to sign token
+      requests.
+  """
+
+  keys = _messages.MessageField('Jwk', 1, repeated=True)
+
+
+class GetOpenIDConfigResponse(_messages.Message):
+  r"""GetOpenIDConfigResponse is an OIDC discovery document for the cluster.
+  See the OpenID Connect Discovery 1.0 specification for details.
+
+  Fields:
+    claims_supported: NOLINT
+    grant_types: NOLINT
+    id_token_signing_alg_values_supported: NOLINT
+    issuer: NOLINT
+    jwks_uri: NOLINT
+    response_types_supported: NOLINT
+    subject_types_supported: NOLINT
+  """
+
+  claims_supported = _messages.StringField(1, repeated=True)
+  grant_types = _messages.StringField(2, repeated=True)
+  id_token_signing_alg_values_supported = _messages.StringField(3, repeated=True)
+  issuer = _messages.StringField(4)
+  jwks_uri = _messages.StringField(5)
+  response_types_supported = _messages.StringField(6, repeated=True)
+  subject_types_supported = _messages.StringField(7, repeated=True)
 
 
 class HorizontalPodAutoscaling(_messages.Message):
@@ -1210,6 +1302,32 @@ class IstioConfig(_messages.Message):
 
   auth = _messages.EnumField('AuthValueValuesEnum', 1)
   disabled = _messages.BooleanField(2)
+
+
+class Jwk(_messages.Message):
+  r"""Jwk is a JSON Web Key as specified in RFC 7517
+
+  Fields:
+    alg: NOLINT
+    crv: NOLINT
+    e: NOLINT
+    kid: NOLINT
+    kty: NOLINT
+    n: Fields for RSA keys. NOLINT
+    use: NOLINT
+    x: Fields for ECDSA keys. NOLINT
+    y: NOLINT
+  """
+
+  alg = _messages.StringField(1)
+  crv = _messages.StringField(2)
+  e = _messages.StringField(3)
+  kid = _messages.StringField(4)
+  kty = _messages.StringField(5)
+  n = _messages.StringField(6)
+  use = _messages.StringField(7)
+  x = _messages.StringField(8)
+  y = _messages.StringField(9)
 
 
 class KubernetesDashboard(_messages.Message):

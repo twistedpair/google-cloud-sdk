@@ -136,7 +136,8 @@ class MatrixCreator(object):
         testSpecification=spec,
         environmentMatrix=environment_matrix,
         clientInfo=client_info,
-        resultStorage=results)
+        resultStorage=results,
+        flakyTestAttempts=self._args.num_flaky_test_attempts or 0)
 
   def _BuildIosDevice(self, device_map):
     return self._messages.IosDevice(

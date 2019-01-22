@@ -39,7 +39,7 @@ from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core.util import files
 
 try:
-  import httplib2
+  from googlecloudsdk.core import http
 except ImportError:
   # Do nothing if we can't import the lib.
   sys.exit(0)
@@ -59,11 +59,15 @@ def ReportMetrics(metrics_file_path):
     metrics = pickle.load(metrics_file)
   os.remove(metrics_file_path)
 
-  http = httplib2.Http(timeout=TIMEOUT_IN_SEC,
-                       proxy_info=http_proxy.GetHttpProxyInfo())
+  http_client = http.HttpClient(timeout=TIMEOUT_IN_SEC,
+                                proxy_info=http_proxy.GetHttpProxyInfo())
 
   for metric in metrics:
-    http.request(metric[0], method=metric[1], body=metric[2], headers=metric[3])
+    http_client.request(
+        metric[0],
+        method=metric[1],
+        body=metric[2],
+        headers=metric[3])
 
 if __name__ == '__main__':
   try:

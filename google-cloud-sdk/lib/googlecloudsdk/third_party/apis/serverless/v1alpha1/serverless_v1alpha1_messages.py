@@ -98,6 +98,120 @@ class ApiVersions(_messages.Message):
   versions = _messages.StringField(2, repeated=True)
 
 
+class AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted.  Example Policy with
+  multiple AuditConfigs:      {       "audit_configs": [         {
+  "service": "allServices"           "audit_log_configs": [             {
+  "log_type": "DATA_READ",               "exempted_members": [
+  "user:foo@gmail.com"               ]             },             {
+  "log_type": "DATA_WRITE",             },             {
+  "log_type": "ADMIN_READ",             }           ]         },         {
+  "service": "fooservice.googleapis.com"           "audit_log_configs": [
+  {               "log_type": "DATA_READ",             },             {
+  "log_type": "DATA_WRITE",               "exempted_members": [
+  "user:bar@gmail.com"               ]             }           ]         }
+  ]     }  For fooservice, this policy enables DATA_READ, DATA_WRITE and
+  ADMIN_READ logging. It also exempts foo@gmail.com from DATA_READ logging,
+  and bar@gmail.com from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example:
+  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
+  "exempted_members": [             "user:foo@gmail.com"           ]
+  },         {           "log_type": "DATA_WRITE",         }       ]     }
+  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
+  foo@gmail.com from DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AuthorizedDomain(_messages.Message):
+  r"""A domain that a user has been authorized to administer. To authorize use
+  of a domain, verify ownership via [Webmaster
+  Central](https://www.google.com/webmasters/verification/home).
+
+  Fields:
+    id: Relative name of the domain authorized for use. Example:
+      `example.com`.
+    name: Read only. Full path to the `AuthorizedDomain` resource in the API.
+      Example: `apps/myapp/authorizedDomains/example.com`.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class Binding(_messages.Message):
+  r"""Associates `members` with a `role`.
+
+  Fields:
+    condition: Unimplemented. The condition that is associated with this
+      binding. NOTE: an unsatisfied condition will not allow user access via
+      current binding. Different bindings, including their conditions, are
+      examined independently.
+    members: Specifies the identities requesting access for a Cloud Platform
+      resource. `members` can have the following values:  * `allUsers`: A
+      special identifier that represents anyone who is    on the internet;
+      with or without a Google account.  * `allAuthenticatedUsers`: A special
+      identifier that represents anyone    who is authenticated with a Google
+      account or a service account.  * `user:{emailid}`: An email address that
+      represents a specific Google    account. For example, `alice@gmail.com`
+      .   * `serviceAccount:{emailid}`: An email address that represents a
+      service    account. For example, `my-other-
+      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
+      that represents a Google group.    For example, `admins@example.com`.
+      * `domain:{domain}`: A Google Apps domain name that represents all the
+      users of that domain. For example, `google.com` or `example.com`.
+    role: Role that is assigned to `members`. For example, `roles/viewer`,
+      `roles/editor`, or `roles/owner`.
+  """
+
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
+
+
 class Capabilities(_messages.Message):
   r"""Adds and removes POSIX capabilities from running containers.
 
@@ -245,7 +359,7 @@ class Container(_messages.Message):
       https://kubernetes.io/docs/tasks/inject-data-application/define-command-
       argument-container/#running-a-command-in-a-shell +optional
     env: List of environment variables to set in the container. Cannot be
-      updated. +optional +patchMergeKey=name +patchStrategy=merge
+      updated. +optional
     envFrom: List of sources to populate environment variables in the
       container. The keys defined within a source must be a C_IDENTIFIER. All
       invalid keys will be reported as an event when the container is
@@ -265,15 +379,14 @@ class Container(_messages.Message):
       restarted if the probe fails. Cannot be updated. More info:
       https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle
       #container-probes +optional
-    name: Name of the container specified as a DNS_LABEL. Each container in a
-      pod must have a unique name (DNS_LABEL). Cannot be updated.
+    name: Name of the container specified as a DNS_LABEL. Each container must
+      have a unique name (DNS_LABEL). Cannot be updated.
     ports: List of ports to expose from the container. Exposing a port here
       gives the system additional information about the network connections a
       container uses, but is primarily informational. Not specifying a port
       here DOES NOT prevent that port from being exposed. Any port which is
       listening on the default "0.0.0.0" address inside a container will be
       accessible from the network. Cannot be updated. +optional
-      +patchMergeKey=containerPort +patchStrategy=merge
     readinessProbe: Periodic probe of container service readiness. Container
       will be removed from service endpoints if the probe fails. Cannot be
       updated. More info: https://kubernetes.io/docs/concepts/workloads/pods
@@ -315,9 +428,9 @@ class Container(_messages.Message):
       requires 'stdin' to be true. Default is false. +optional
     volumeDevices: volumeDevices is the list of block devices to be used by
       the container. This is an alpha feature and may change in the future.
-      +patchMergeKey=devicePath +patchStrategy=merge +optional
+      +optional
     volumeMounts: Pod volumes to mount into the container's filesystem. Cannot
-      be updated. +optional +patchMergeKey=mountPath +patchStrategy=merge
+      be updated. +optional
     workingDir: Container's working directory. If not specified, the container
       runtime's default will be used, which might be configured in the
       container image. Cannot be updated. +optional
@@ -371,7 +484,7 @@ class ContainerPort(_messages.Message):
 
 
 class DomainMapping(_messages.Message):
-  r"""A DomainMapping object.
+  r"""Resource to hold the state and status of a user's domain mapping.
 
   Fields:
     apiVersion: The API version for this call such as "v1alpha1".
@@ -512,6 +625,30 @@ class ExecAction(_messages.Message):
   command = _messages.StringField(1)
 
 
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example:      title: "User account
+  presence"     description: "Determines whether the request has a user
+  account"     expression: "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.  The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class GroupVersionForDiscovery(_messages.Message):
   r"""Group information for the discovery API.
 
@@ -598,9 +735,9 @@ class HttpBody(_messages.Message):
     ExtensionsValueListEntry: A ExtensionsValueListEntry object.
 
   Fields:
-    contentType: The HTTP Content-Type string representing the content type of
-      the body.
-    data: HTTP body binary data.
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
     extensions: Application specific response metadata. Must be set in the
       first response for streaming APIs.
   """
@@ -704,6 +841,18 @@ class Lifecycle(_messages.Message):
 
   postStart = _messages.MessageField('Handler', 1)
   preStop = _messages.MessageField('Handler', 2)
+
+
+class ListAuthorizedDomainsResponse(_messages.Message):
+  r"""A list of Authorized Domains.
+
+  Fields:
+    domains: The authorized domains belonging to the user.
+    nextPageToken: Continuation token for fetching the next page of results.
+  """
+
+  domains = _messages.MessageField('AuthorizedDomain', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListConfigurationsResponse(_messages.Message):
@@ -1060,6 +1209,48 @@ class OwnerReference(_messages.Message):
   uid = _messages.StringField(6)
 
 
+class Policy(_messages.Message):
+  r"""Defines an Identity and Access Management (IAM) policy. It is used to
+  specify access control policies for Cloud Platform resources.   A `Policy`
+  consists of a list of `bindings`. A `binding` binds a list of `members` to a
+  `role`, where the members can be user accounts, Google groups, Google
+  domains, and service accounts. A `role` is a named list of permissions
+  defined by IAM.  **JSON Example**      {       "bindings": [         {
+  "role": "roles/owner",           "members": [
+  "user:mike@example.com",             "group:admins@example.com",
+  "domain:google.com",             "serviceAccount:my-other-
+  app@appspot.gserviceaccount.com"           ]         },         {
+  "role": "roles/viewer",           "members": ["user:sean@example.com"]
+  }       ]     }  **YAML Example**      bindings:     - members:       -
+  user:mike@example.com       - group:admins@example.com       -
+  domain:google.com       - serviceAccount:my-other-
+  app@appspot.gserviceaccount.com       role: roles/owner     - members:
+  - user:sean@example.com       role: roles/viewer   For a description of IAM
+  and its features, see the [IAM developer's
+  guide](https://cloud.google.com/iam/docs).
+
+  Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members` to a `role`. `bindings` with no
+      members will result in an error.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy.  If no `etag` is provided in the call to `setIamPolicy`, then
+      the existing policy is overwritten blindly.
+    version: Deprecated.
+  """
+
+  auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class Probe(_messages.Message):
   r"""Probe describes a health check to be performed against a container to
   determine whether it is alive or ready to receive traffic.
@@ -1109,39 +1300,48 @@ class ResourceRequirements(_messages.Message):
 
   Messages:
     LimitsValue: Limits describes the maximum amount of compute resources
-      allowed. This field is deprecated in favor of limits_in_map.
+      allowed. The values of the map is string form of the 'quantity' k8s
+      type: https://github.com/kubernetes/kubernetes/blob/master/staging/src/k
+      8s.io/apimachinery/pkg/api/resource/quantity.go
     LimitsInMapValue: Limits describes the maximum amount of compute resources
       allowed. This is a temporary field created to migrate away from the
       map<string, Quantity> limits field. This is done to become compliant
-      with k8s style API.
+      with k8s style API. This field is deprecated in favor of limits field.
     RequestsValue: Requests describes the minimum amount of compute resources
       required. If Requests is omitted for a container, it defaults to Limits
       if that is explicitly specified, otherwise to an implementation-defined
-      value. This field is deprecated in favor of requests_in_map.
+      value. The values of the map is string form of the 'quantity' k8s type:
+      https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/
+      apimachinery/pkg/api/resource/quantity.go
     RequestsInMapValue: Requests describes the minimum amount of compute
       resources required. If Requests is omitted for a container, it defaults
       to Limits if that is explicitly specified, otherwise to an
       implementation-defined value. This is a temporary field created to
       migrate away from the map<string, Quantity> requests field. This is done
-      to become compliant with k8s style API.
+      to become compliant with k8s style API. This field is deprecated in
+      favor of requests field.
 
   Fields:
     limits: Limits describes the maximum amount of compute resources allowed.
-      This field is deprecated in favor of limits_in_map.
+      The values of the map is string form of the 'quantity' k8s type: https:/
+      /github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimach
+      inery/pkg/api/resource/quantity.go
     limitsInMap: Limits describes the maximum amount of compute resources
       allowed. This is a temporary field created to migrate away from the
       map<string, Quantity> limits field. This is done to become compliant
-      with k8s style API.
+      with k8s style API. This field is deprecated in favor of limits field.
     requests: Requests describes the minimum amount of compute resources
       required. If Requests is omitted for a container, it defaults to Limits
       if that is explicitly specified, otherwise to an implementation-defined
-      value. This field is deprecated in favor of requests_in_map.
+      value. The values of the map is string form of the 'quantity' k8s type:
+      https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/
+      apimachinery/pkg/api/resource/quantity.go
     requestsInMap: Requests describes the minimum amount of compute resources
       required. If Requests is omitted for a container, it defaults to Limits
       if that is explicitly specified, otherwise to an implementation-defined
       value. This is a temporary field created to migrate away from the
       map<string, Quantity> requests field. This is done to become compliant
-      with k8s style API.
+      with k8s style API. This field is deprecated in favor of requests field.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1149,7 +1349,7 @@ class ResourceRequirements(_messages.Message):
     r"""Limits describes the maximum amount of compute resources allowed. This
     is a temporary field created to migrate away from the map<string,
     Quantity> limits field. This is done to become compliant with k8s style
-    API.
+    API. This field is deprecated in favor of limits field.
 
     Messages:
       AdditionalProperty: An additional property for a LimitsInMapValue
@@ -1174,8 +1374,10 @@ class ResourceRequirements(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LimitsValue(_messages.Message):
-    r"""Limits describes the maximum amount of compute resources allowed. This
-    field is deprecated in favor of limits_in_map.
+    r"""Limits describes the maximum amount of compute resources allowed. The
+    values of the map is string form of the 'quantity' k8s type: https://githu
+    b.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pk
+    g/api/resource/quantity.go
 
     Messages:
       AdditionalProperty: An additional property for a LimitsValue object.
@@ -1189,11 +1391,11 @@ class ResourceRequirements(_messages.Message):
 
       Fields:
         key: Name of the additional property.
-        value: A Quantity attribute.
+        value: A string attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('Quantity', 2)
+      value = _messages.StringField(2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -1204,7 +1406,7 @@ class ResourceRequirements(_messages.Message):
     explicitly specified, otherwise to an implementation-defined value. This
     is a temporary field created to migrate away from the map<string,
     Quantity> requests field. This is done to become compliant with k8s style
-    API.
+    API. This field is deprecated in favor of requests field.
 
     Messages:
       AdditionalProperty: An additional property for a RequestsInMapValue
@@ -1231,8 +1433,10 @@ class ResourceRequirements(_messages.Message):
   class RequestsValue(_messages.Message):
     r"""Requests describes the minimum amount of compute resources required.
     If Requests is omitted for a container, it defaults to Limits if that is
-    explicitly specified, otherwise to an implementation-defined value. This
-    field is deprecated in favor of requests_in_map.
+    explicitly specified, otherwise to an implementation-defined value. The
+    values of the map is string form of the 'quantity' k8s type: https://githu
+    b.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pk
+    g/api/resource/quantity.go
 
     Messages:
       AdditionalProperty: An additional property for a RequestsValue object.
@@ -1246,11 +1450,11 @@ class ResourceRequirements(_messages.Message):
 
       Fields:
         key: Name of the additional property.
-        value: A Quantity attribute.
+        value: A string attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.MessageField('Quantity', 2)
+      value = _messages.StringField(2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -1291,7 +1495,7 @@ class RevisionCondition(_messages.Message):
       to another. +optional
     message: Human readable message indicating details about the current
       status. +optional
-    reason: One-word CamelCase reason for the condition's last transition
+    reason: One-word CamelCase reason for the condition's last transition.
       +optional
     status: Status of the condition, one of True, False, Unknown.
     type: RevisionConditionType is used to communicate the status of the
@@ -1326,7 +1530,9 @@ class RevisionSpec(_messages.Message):
       favor of ContainerConcurrency. +optional
     container: Container defines the unit of execution for this Revision. In
       the context of a Revision, we disallow a number of the fields of this
-      Container, including: name, resources, ports, and volumeMounts.
+      Container, including: name, resources, ports, and volumeMounts. The
+      runtime contract is documented here:
+      https://github.com/knative/serving/blob/master/docs/runtime-contract.md
     containerConcurrency: ContainerConcurrency specifies the maximum allowed
       in-flight (concurrent) requests per container of the Revision. Values
       are: - `0` thread-safe, the system should manage the max concurrency.
@@ -1398,7 +1604,9 @@ class RevisionStatus(_messages.Message):
       of Revision. This field holds the digest value regardless of whether a
       tag or digest was originally specified in the Container object. It may
       be empty if the image comes from a registry listed to skip resolution.
-    logUrl: URL to access logs generated by this revision.
+    logUrl: Specifies the generated logging url for this particular revision
+      based on the revision url template specified in the controller's config.
+      +optional
     observedGeneration: ObservedGeneration is the 'Generation' of the
       Configuration that was last processed by the controller. The observed
       generation is updated even if the controller failed to process the spec
@@ -1674,6 +1882,20 @@ class ServerlessListRequest(_messages.Message):
   timeout = _messages.StringField(2)
 
 
+class ServerlessNamespacesAuthorizeddomainsListRequest(_messages.Message):
+  r"""A ServerlessNamespacesAuthorizeddomainsListRequest object.
+
+  Fields:
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Name of the parent Application resource. Example: `apps/myapp`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ServerlessNamespacesConfigurationsGetRequest(_messages.Message):
   r"""A ServerlessNamespacesConfigurationsGetRequest object.
 
@@ -1702,7 +1924,7 @@ class ServerlessNamespacesConfigurationsListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud run.
   """
 
   continue_ = _messages.StringField(1)
@@ -1772,7 +1994,7 @@ class ServerlessNamespacesDomainmappingsListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -1853,7 +2075,7 @@ class ServerlessNamespacesRevisionsListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud run.
   """
 
   continue_ = _messages.StringField(1)
@@ -1894,7 +2116,7 @@ class ServerlessNamespacesRoutesListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -1964,7 +2186,7 @@ class ServerlessNamespacesServicesListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2001,6 +2223,20 @@ class ServerlessNamespacesServicesReplaceServiceRequest(_messages.Message):
   service = _messages.MessageField('Service', 2)
 
 
+class ServerlessProjectsLocationsAuthorizeddomainsListRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsAuthorizeddomainsListRequest object.
+
+  Fields:
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Name of the parent Application resource. Example: `apps/myapp`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ServerlessProjectsLocationsConfigurationsGetRequest(_messages.Message):
   r"""A ServerlessProjectsLocationsConfigurationsGetRequest object.
 
@@ -2029,7 +2265,7 @@ class ServerlessProjectsLocationsConfigurationsListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2099,7 +2335,7 @@ class ServerlessProjectsLocationsDomainmappingsListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2169,7 +2405,7 @@ class ServerlessProjectsLocationsRevisionsListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2210,7 +2446,7 @@ class ServerlessProjectsLocationsRoutesListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2252,6 +2488,18 @@ class ServerlessProjectsLocationsServicesDeleteRequest(_messages.Message):
   orphanDependents = _messages.BooleanField(2)
 
 
+class ServerlessProjectsLocationsServicesGetIamPolicyRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsServicesGetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
 class ServerlessProjectsLocationsServicesGetRequest(_messages.Message):
   r"""A ServerlessProjectsLocationsServicesGetRequest object.
 
@@ -2280,7 +2528,7 @@ class ServerlessProjectsLocationsServicesListRequest(_messages.Message):
     resourceVersion: The baseline resource version from which the list or
       watch operation should start.
     watch: Flag that indicates that kubectl expects to watch this resource as
-      well.
+      well. Not supported by Cloud Run.
   """
 
   continue_ = _messages.StringField(1)
@@ -2315,6 +2563,36 @@ class ServerlessProjectsLocationsServicesReplaceServiceRequest(_messages.Message
 
   name = _messages.StringField(1, required=True)
   service = _messages.MessageField('Service', 2)
+
+
+class ServerlessProjectsLocationsServicesSetIamPolicyRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsServicesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ServerlessProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
+  r"""A ServerlessProjectsLocationsServicesTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class Service(_messages.Message):
@@ -2373,8 +2651,9 @@ class ServiceSpec(_messages.Message):
   which is used to manipulate the underlying Route and Configuration(s).
 
   Fields:
-    generation: For open Knative: metadata.generation does not work yet, this
-      is a stopgap way of specifying generation IGNORED BY GSE. +optional
+    generation: For open-source Knative metadata.generation does not work yet,
+      this is a stopgap way of specifying generation Ignored by Cloud Run.
+      +optional
     pinned: Pins this service to a specific revision name. The revision must
       be owned by the configuration provided. +optional
     runLatest: RunLatest defines a simple Service. It will automatically
@@ -2445,6 +2724,24 @@ class ServiceStatus(_messages.Message):
   latestReadyRevisionName = _messages.StringField(5)
   observedGeneration = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   traffic = _messages.MessageField('TrafficTarget', 7, repeated=True)
+
+
+class SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Cloud Platform services (such as Projects)
+      might reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, the following default mask is used: paths: "bindings, etag"
+      This field is only used by Cloud IAM.
+  """
+
+  policy = _messages.MessageField('Policy', 1)
+  updateMask = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2521,6 +2818,30 @@ class TCPSocketAction(_messages.Message):
 
   host = _messages.StringField(1)
   port = _messages.MessageField('IntOrString', 2)
+
+
+class TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as '*' or 'storage.*') are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class TrafficTarget(_messages.Message):

@@ -173,43 +173,43 @@
     },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest",
-      "description": "The request used for CreateInstance.",
+      "description": "The request used for `CreateInstance`.",
       "type": "object",
       "properties": {
         "parent": {
-          "description": "parent is the resource name of the project containing the instance.\nFormat: 'projects\/{project_id}'",
+          "description": "Resource name of the project containing the instance.\nFormat: `projects\/[PROJECT_ID]`.",
           "type": "string"
         },
         "instanceId": {
-          "description": "ID of the created instance.\nA valid instance_id must:\nbe 6-50 characters long,\ncontains only lowercase letters, digits, hyphens and underscores,\nstart with a lowercase letter, and\nend with a lowercase letter or a digit.",
+          "description": "ID of the created instance.\nA valid `instance_id` must:\nbe 6-50 characters long,\ncontains only lowercase letters, digits, hyphens and underscores,\nstart with a lowercase letter, and\nend with a lowercase letter or a digit.",
           "type": "string"
         },
         "instance": {
-          "description": "Instance specifies the instance to create.\nThe name in the instance, if specified in the Instance, is ignored.",
+          "description": "Specifies the instance to create.\nThe name in the instance, if specified in the instance, is ignored.",
           "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance"
         }
       }
     },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance",
-      "description": "Instance conceptually encapsulates all RBE resources for remote builds.\nAn Instance consists of storage and compute resources (e.g.\nContentAddressableStorage, ActionCache, WorkerPools) used for running remote\nbuilds.\nAll RBE API calls are scoped to an instance.",
+      "description": "Instance conceptually encapsulates all Remote Build Execution resources\nfor remote builds.\nAn instance consists of storage and compute resources (for example,\n`ContentAddressableStorage`, `ActionCache`, `WorkerPools`) used for\nrunning remote builds.\nAll Remote Build Execution API calls are scoped to an instance.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Instance resource name formatted as:\n'projects\/{project_id}\/instances\/{instance_id}'\nname should not be populated when creating an instance since it is provided\nin the instance_id field.",
+          "description": "Output only. Instance resource name formatted as:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.\nName should not be populated when creating an instance since it is provided\nin the `instance_id` field.",
           "type": "string"
         },
         "location": {
-          "description": "The location is a GCP region (e.g. \"us-central1\").",
+          "description": "The location is a GCP region. Currently only `us-central1` is supported.",
           "type": "string"
         },
         "state": {
-          "description": "Output only. state of the Instance.",
+          "description": "Output only. State of the instance.",
           "enumDescriptions": [
             "Not a valid state, but the default value of the enum.",
-            "The Instance is in state CREATING once CreateInstance is called and\nbefore the Instance is ready for use.",
-            "The Instance is in state RUNNING when it is ready for use.",
-            "An INACTIVE instance indicates that there is a problem that needs to be\nfixed. Such instances cannot be used for execution and instances that\nremain in this state for a significant period of time will be removed\npermanently."
+            "The instance is in state `CREATING` once `CreateInstance` is called and\nbefore the instance is ready for use.",
+            "The instance is in state `RUNNING` when it is ready for use.",
+            "An `INACTIVE` instance indicates that there is a problem that needs to be\nfixed. Such instances cannot be used for execution and instances that\nremain in this state for a significant period of time will be removed\npermanently."
           ],
           "type": "string",
           "enum": [
@@ -218,6 +218,10 @@
             "RUNNING",
             "INACTIVE"
           ]
+        },
+        "loggingEnabled": {
+          "description": "Output only. Whether stack driver logging is enabled for the instance.",
+          "type": "boolean"
         }
       }
     },
@@ -226,7 +230,7 @@
       "type": "object",
       "properties": {
         "instances": {
-          "description": "The list of Instances in a given project.",
+          "description": "The list of instances in a given project.",
           "type": "array",
           "items": {
             "$ref": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance"
@@ -240,7 +244,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Resource name of the instance in which to create the new worker pool.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`",
+          "description": "Resource name of the instance in which to create the new worker pool.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
           "type": "string"
         },
         "poolId": {
@@ -259,7 +263,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "WorkerPool resource name formatted as:\n'projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]'.\nname should not be populated when creating a worker pool since it is\nprovided in the `poolId` field.",
+          "description": "WorkerPool resource name formatted as:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.\nname should not be populated when creating a worker pool since it is\nprovided in the `poolId` field.",
           "type": "string"
         },
         "workerConfig": {
@@ -316,7 +320,7 @@
           "format": "int64"
         },
         "reserved": {
-          "description": "Output only. `reserved=true` means the worker is reserved and won't be\npreempted.",
+          "description": "Determines whether the worker is reserved (and therefore won't be\npreempted).\nSee [Preemptible VMs](https:\/\/cloud.google.com\/preemptible-vms\/) for more\ndetails.",
           "type": "boolean"
         }
       }
@@ -376,7 +380,7 @@
     },
     "BuildBazelRemoteExecutionV2Digest": {
       "id": "BuildBazelRemoteExecutionV2Digest",
-      "description": "A content digest. A digest for a given blob consists of the size of the blob\nand its hash. The hash algorithm to use is defined by the server, but servers\nSHOULD use SHA-256.\n\nThe size is considered to be an integral part of the digest and cannot be\nseparated. That is, even if the `hash` field is correctly specified but\n`size_bytes` is not, the server MUST reject the request.\n\nThe reason for including the size in the digest is as follows: in a great\nmany cases, the server needs to know the size of the blob it is about to work\nwith prior to starting an operation with it, such as flattening Merkle tree\nstructures or streaming it to a worker. Technically, the server could\nimplement a separate metadata store, but this results in a significantly more\ncomplicated implementation as opposed to having the client specify the size\nup-front (or storing the size along with the digest in every message where\ndigests are embedded). This does mean that the API leaks some implementation\ndetails of (what we consider to be) a reasonable server implementation, but\nwe consider this to be a worthwhile tradeoff.\n\nWhen a `Digest` is used to refer to a proto message, it always refers to the\nmessage in binary encoded form. To ensure consistent hashing, clients and\nservers MUST ensure that they serialize messages according to the following\nrules, even if there are alternate valid encodings for the same message.\n- Fields are serialized in tag order.\n- There are no unknown fields.\n- There are no duplicate fields.\n- Fields are serialized according to the default semantics for their type.\n\nMost protocol buffer implementations will always follow these rules when\nserializing, but care should be taken to avoid shortcuts. For instance,\nconcatenating two messages to merge them may produce duplicate fields.",
+      "description": "A content digest. A digest for a given blob consists of the size of the blob\nand its hash. The hash algorithm to use is defined by the server, but servers\nSHOULD use SHA-256.\n\nThe size is considered to be an integral part of the digest and cannot be\nseparated. That is, even if the `hash` field is correctly specified but\n`size_bytes` is not, the server MUST reject the request.\n\nThe reason for including the size in the digest is as follows: in a great\nmany cases, the server needs to know the size of the blob it is about to work\nwith prior to starting an operation with it, such as flattening Merkle tree\nstructures or streaming it to a worker. Technically, the server could\nimplement a separate metadata store, but this results in a significantly more\ncomplicated implementation as opposed to having the client specify the size\nup-front (or storing the size along with the digest in every message where\ndigests are embedded). This does mean that the API leaks some implementation\ndetails of (what we consider to be) a reasonable server implementation, but\nwe consider this to be a worthwhile tradeoff.\n\nWhen a `Digest` is used to refer to a proto message, it always refers to the\nmessage in binary encoded form. To ensure consistent hashing, clients and\nservers MUST ensure that they serialize messages according to the following\nrules, even if there are alternate valid encodings for the same message:\n\n* Fields are serialized in tag order.\n* There are no unknown fields.\n* There are no duplicate fields.\n* Fields are serialized according to the default semantics for their type.\n\nMost protocol buffer implementations will always follow these rules when\nserializing, but care should be taken to avoid shortcuts. For instance,\nconcatenating two messages to merge them may produce duplicate fields.",
       "type": "object",
       "properties": {
         "hash": {
@@ -403,21 +407,21 @@
           }
         },
         "environmentVariables": {
-          "description": "The environment variables to set when running the program. The worker may\nprovide its own default environment variables; these defaults can be\noverridden using this field. Additional variables can also be specified.\n\nIn order to ensure that equivalent `Command`s always hash to the same\nvalue, the environment variables MUST be lexicographically sorted by name.\nSorting of strings is done by code point, equivalently, by the UTF-8 bytes.",
+          "description": "The environment variables to set when running the program. The worker may\nprovide its own default environment variables; these defaults can be\noverridden using this field. Additional variables can also be specified.\n\nIn order to ensure that equivalent\nCommands always hash to the same\nvalue, the environment variables MUST be lexicographically sorted by name.\nSorting of strings is done by code point, equivalently, by the UTF-8 bytes.",
           "type": "array",
           "items": {
             "$ref": "BuildBazelRemoteExecutionV2CommandEnvironmentVariable"
           }
         },
         "outputFiles": {
-          "description": "A list of the output files that the client expects to retrieve from the\naction. Only the listed files, as well as directories listed in\n`output_directories`, will be returned to the client as output.\nOther files that may be created during command execution are discarded.\n\nThe paths are relative to the working directory of the action execution.\nThe paths are specified using a single forward slash (`\/`) as a path\nseparator, even if the execution platform natively uses a different\nseparator. The path MUST NOT include a trailing slash, nor a leading slash,\nbeing a relative path.\n\nIn order to ensure consistent hashing of the same Action, the output paths\nMUST be sorted lexicographically by code point (or, equivalently, by UTF-8\nbytes).\n\nAn output file cannot be duplicated, be a parent of another output file, be\na child of a listed output directory, or have the same path as any of the\nlisted output directories.",
+          "description": "A list of the output files that the client expects to retrieve from the\naction. Only the listed files, as well as directories listed in\n`output_directories`, will be returned to the client as output.\nOther files or directories that may be created during command execution\nare discarded.\n\nThe paths are relative to the working directory of the action execution.\nThe paths are specified using a single forward slash (`\/`) as a path\nseparator, even if the execution platform natively uses a different\nseparator. The path MUST NOT include a trailing slash, nor a leading slash,\nbeing a relative path.\n\nIn order to ensure consistent hashing of the same Action, the output paths\nMUST be sorted lexicographically by code point (or, equivalently, by UTF-8\nbytes).\n\nAn output file cannot be duplicated, be a parent of another output file, or\nhave the same path as any of the listed output directories.\n\nDirectories leading up to the output files are created by the worker prior\nto execution, even if they are not explicitly part of the input root.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "outputDirectories": {
-          "description": "A list of the output directories that the client expects to retrieve from\nthe action. Only the contents of the indicated directories (recursively\nincluding the contents of their subdirectories) will be\nreturned, as well as files listed in `output_files`. Other files that may\nbe created during command execution are discarded.\n\nThe paths are relative to the working directory of the action execution.\nThe paths are specified using a single forward slash (`\/`) as a path\nseparator, even if the execution platform natively uses a different\nseparator. The path MUST NOT include a trailing slash, nor a leading slash,\nbeing a relative path. The special value of empty string is allowed,\nalthough not recommended, and can be used to capture the entire working\ndirectory tree, including inputs.\n\nIn order to ensure consistent hashing of the same Action, the output paths\nMUST be sorted lexicographically by code point (or, equivalently, by UTF-8\nbytes).\n\nAn output directory cannot be duplicated, be a parent of another output\ndirectory, be a parent of a listed output file, or have the same path as\nany of the listed output files.",
+          "description": "A list of the output directories that the client expects to retrieve from\nthe action. Only the listed directories will be returned (an entire\ndirectory structure will be returned as a\nTree message digest, see\nOutputDirectory), as\nwell as files listed in `output_files`. Other files or directories that\nmay be created during command execution are discarded.\n\nThe paths are relative to the working directory of the action execution.\nThe paths are specified using a single forward slash (`\/`) as a path\nseparator, even if the execution platform natively uses a different\nseparator. The path MUST NOT include a trailing slash, nor a leading slash,\nbeing a relative path. The special value of empty string is allowed,\nalthough not recommended, and can be used to capture the entire working\ndirectory tree, including inputs.\n\nIn order to ensure consistent hashing of the same Action, the output paths\nMUST be sorted lexicographically by code point (or, equivalently, by UTF-8\nbytes).\n\nAn output directory cannot be duplicated or have the same path as any of\nthe listed output files.\n\nDirectories leading up to the output directories (but not the output\ndirectories themselves) are created by the worker prior to execution, even\nif they are not explicitly part of the input root.",
           "type": "array",
           "items": {
             "type": "string"
@@ -500,6 +504,10 @@
           "additionalProperties": {
             "$ref": "BuildBazelRemoteExecutionV2LogFile"
           }
+        },
+        "message": {
+          "description": "Freeform informational message with details on the execution of the action\nthat may be displayed to the user upon failure or when requested explicitly.",
+          "type": "string"
         }
       }
     },
@@ -723,7 +731,7 @@
     },
     "BuildBazelRemoteExecutionV2RequestMetadata": {
       "id": "BuildBazelRemoteExecutionV2RequestMetadata",
-      "description": "An optional Metadata to attach to any RPC request to tell the server about an\nexternal context of the request. The server may use this for logging or other\npurposes. To use it, the client attaches the header to the call using the\ncanonical proto serialization:\nname: build.bazel.remote.execution.v2.requestmetadata-bin\ncontents: the base64 encoded binary RequestMetadata message.",
+      "description": "An optional Metadata to attach to any RPC request to tell the server about an\nexternal context of the request. The server may use this for logging or other\npurposes. To use it, the client attaches the header to the call using the\ncanonical proto serialization:\n\n* name: `build.bazel.remote.execution.v2.requestmetadata-bin`\n* contents: the base64 encoded binary `RequestMetadata` message.",
       "type": "object",
       "properties": {
         "toolDetails": {
@@ -779,7 +787,7 @@
     },
     "BuildBazelRemoteExecutionV2Directory": {
       "id": "BuildBazelRemoteExecutionV2Directory",
-      "description": "A `Directory` represents a directory node in a file tree, containing zero or\nmore children FileNodes,\nDirectoryNodes and\nSymlinkNodes.\nEach `Node` contains its name in the directory, either the digest of its\ncontent (either a file blob or a `Directory` proto) or a symlink target, as\nwell as possibly some metadata about the file or directory.\n\nIn order to ensure that two equivalent directory trees hash to the same\nvalue, the following restrictions MUST be obeyed when constructing a\na `Directory`:\n  - Every child in the directory must have a path of exactly one segment.\n    Multiple levels of directory hierarchy may not be collapsed.\n  - Each child in the directory must have a unique path segment (file name).\n  - The files, directories and symlinks in the directory must each be sorted\n    in lexicographical order by path. The path strings must be sorted by code\n    point, equivalently, by UTF-8 bytes.\n\nA `Directory` that obeys the restrictions is said to be in canonical form.\n\nAs an example, the following could be used for a file named `bar` and a\ndirectory named `foo` with an executable file named `baz` (hashes shortened\nfor readability):\n\n```json\n\/\/ (Directory proto)\n{\n  files: [\n    {\n      name: \"bar\",\n      digest: {\n        hash: \"4a73bc9d03...\",\n        size: 65534\n      }\n    }\n  ],\n  directories: [\n    {\n      name: \"foo\",\n      digest: {\n        hash: \"4cf2eda940...\",\n        size: 43\n      }\n    }\n  ]\n}\n\n\/\/ (Directory proto with hash \"4cf2eda940...\" and size 43)\n{\n  files: [\n    {\n      name: \"baz\",\n      digest: {\n        hash: \"b2c941073e...\",\n        size: 1294,\n      },\n      is_executable: true\n    }\n  ]\n}\n```",
+      "description": "A `Directory` represents a directory node in a file tree, containing zero or\nmore children FileNodes,\nDirectoryNodes and\nSymlinkNodes.\nEach `Node` contains its name in the directory, either the digest of its\ncontent (either a file blob or a `Directory` proto) or a symlink target, as\nwell as possibly some metadata about the file or directory.\n\nIn order to ensure that two equivalent directory trees hash to the same\nvalue, the following restrictions MUST be obeyed when constructing a\na `Directory`:\n\n* Every child in the directory must have a path of exactly one segment.\n  Multiple levels of directory hierarchy may not be collapsed.\n* Each child in the directory must have a unique path segment (file name).\n* The files, directories and symlinks in the directory must each be sorted\n  in lexicographical order by path. The path strings must be sorted by code\n  point, equivalently, by UTF-8 bytes.\n\nA `Directory` that obeys the restrictions is said to be in canonical form.\n\nAs an example, the following could be used for a file named `bar` and a\ndirectory named `foo` with an executable file named `baz` (hashes shortened\nfor readability):\n\n```json\n\/\/ (Directory proto)\n{\n  files: [\n    {\n      name: \"bar\",\n      digest: {\n        hash: \"4a73bc9d03...\",\n        size: 65534\n      }\n    }\n  ],\n  directories: [\n    {\n      name: \"foo\",\n      digest: {\n        hash: \"4cf2eda940...\",\n        size: 43\n      }\n    }\n  ]\n}\n\n\/\/ (Directory proto with hash \"4cf2eda940...\" and size 43)\n{\n  files: [\n    {\n      name: \"baz\",\n      digest: {\n        hash: \"b2c941073e...\",\n        size: 1294,\n      },\n      is_executable: true\n    }\n  ]\n}\n```",
       "type": "object",
       "properties": {
         "files": {
@@ -919,22 +927,22 @@
     },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetInstanceRequest": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetInstanceRequest",
-      "description": "The request used for GetInstance.",
+      "description": "The request used for `GetInstance`.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the Instance to retrieve.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'.",
+          "description": "Name of the instance to retrieve.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
           "type": "string"
         }
       }
     },
     "GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteInstanceRequest": {
       "id": "GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteInstanceRequest",
-      "description": "The request used for DeleteInstance.",
+      "description": "The request used for `DeleteInstance`.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the Instance to delete.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'.",
+          "description": "Name of the instance to delete.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
           "type": "string"
         }
       }
@@ -944,7 +952,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "parent is the resource name of the project whose instances are listed.\nFormat: 'projects\/{project_id}'",
+          "description": "Resource name of the project.\nFormat: `projects\/[PROJECT_ID]`.",
           "type": "string"
         }
       }
@@ -955,7 +963,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name is the resource name of the worker pool to retrieve.\nFormat:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
+          "description": "Name of the worker pool to retrieve.\nFormat:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
           "type": "string"
         }
       }
@@ -976,7 +984,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Resource name of the instance.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`",
+          "description": "Resource name of the instance.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
           "type": "string"
         }
       }
@@ -1517,8 +1525,8 @@
           "type": "string",
           "format": "google-duration"
         },
-        "statistics": {
-          "description": "Implementation-dependent statistics about the task. Both servers and bots\nmay define messages which can be encoded here; bots are free to provide\nstatistics in multiple formats, and servers are free to choose one or more\nof the values to process and ignore others. In particular, it is *not*\nconsidered an error for the bot to provide the server with a field that it\ndoesn't know about.",
+        "metadata": {
+          "description": "Implementation-dependent metadata about the task. Both servers and bots\nmay define messages which can be encoded here; bots are free to provide\nmetadata in multiple formats, and servers are free to choose one or more\nof the values to process and ignore others. In particular, it is *not*\nconsidered an error for the bot to provide the server with a field that it\ndoesn't know about.",
           "type": "array",
           "items": {
             "type": "object",
@@ -1665,7 +1673,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "parent is the resource name of the project containing the instance.\nFormat: 'projects\/{project_id}'",
+                  "description": "Resource name of the project containing the instance.\nFormat: `projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1684,7 +1692,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "CreateInstance creates a new Instance in the specified region.\nReturns a long running operation which contains an Instance on completion.\nWhile the long running operation is in progress, any call to GetInstance\nreturns an Instance in state CREATING."
+              "description": "Creates a new instance in the specified region.\nReturns a long running operation which contains an instance on completion.\nWhile the long running operation is in progress, any call to `GetInstance`\nreturns an instance in state `CREATING`."
             },
             "get": {
               "id": "remotebuildexecution.projects.instances.get",
@@ -1693,7 +1701,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "name is the resource name of the Instance to retrieve.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'.",
+                  "description": "Name of the instance to retrieve.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
@@ -1709,7 +1717,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "GetInstance returns the specified Instance."
+              "description": "Returns the specified instance."
             },
             "delete": {
               "id": "remotebuildexecution.projects.instances.delete",
@@ -1718,7 +1726,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "name is the resource name of the Instance to delete.\nFormat: 'projects\/{project_id}\/instances\/{instance_id}'.",
+                  "description": "Name of the instance to delete.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
@@ -1734,7 +1742,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "DeleteInstance deletes the specified Instance.\nReturns a long running operation which contains a google.protobuf.Empty\nresponse on completion.\nDeleting an instance with pools in it will delete these pools."
+              "description": "Deletes the specified instance.\nReturns a long running operation which contains a `google.protobuf.Empty`\nresponse on completion.\nDeleting an instance with worker pools in it will delete these worker\npools."
             },
             "list": {
               "id": "remotebuildexecution.projects.instances.list",
@@ -1743,7 +1751,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "parent is the resource name of the project whose instances are listed.\nFormat: 'projects\/{project_id}'",
+                  "description": "Resource name of the project.\nFormat: `projects\/[PROJECT_ID]`.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -1759,7 +1767,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "ListInstances returns all instances in a project."
+              "description": "Lists instances in a project."
             }
           }
           ,
@@ -1773,7 +1781,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Resource name of the instance in which to create the new worker pool.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`",
+                      "description": "Resource name of the instance in which to create the new worker pool.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",
@@ -1801,7 +1809,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "WorkerPool resource name formatted as:\n'projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]'.\nname should not be populated when creating a worker pool since it is\nprovided in the `poolId` field.",
+                      "description": "WorkerPool resource name formatted as:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.\nname should not be populated when creating a worker pool since it is\nprovided in the `poolId` field.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
@@ -1829,7 +1837,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "name is the resource name of the worker pool to retrieve.\nFormat:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
+                      "description": "Name of the worker pool to retrieve.\nFormat:\n`projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]\/workerpools\/[POOL_ID]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+\/workerpools\/[^\/]+$",
@@ -1879,7 +1887,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Resource name of the instance.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`",
+                      "description": "Resource name of the instance.\nFormat: `projects\/[PROJECT_ID]\/instances\/[INSTANCE_ID]`.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/instances\/[^\/]+$",

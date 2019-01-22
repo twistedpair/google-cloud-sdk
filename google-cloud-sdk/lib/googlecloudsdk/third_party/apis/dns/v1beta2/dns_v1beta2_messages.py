@@ -12,7 +12,13 @@ package = 'dns'
 
 
 class Change(_messages.Message):
-  r"""An atomic update to a collection of ResourceRecordSets.
+  r"""A Change represents a set of ResourceRecordSet additions and deletions
+  applied atomically to a ManagedZone. ResourceRecordSets within a ManagedZone
+  are modified by creating a new Change element in the Changes collection. In
+  turn the Changes collection also records the past modifications to the
+  ResourceRecordSets in a ManagedZone. The current state of the ManagedZone is
+  the sum effect of applying all Change elements in the Changes collection in
+  sequence.
 
   Enums:
     StatusValueValuesEnum: Status of the operation (output only). A status of
@@ -1254,8 +1260,8 @@ class ResourceRecordSet(_messages.Message):
     signatureRrdatas: As defined in RFC 4034 (section 3.2).
     ttl: Number of seconds that this ResourceRecordSet can be cached by
       resolvers.
-    type: The identifier of a supported record type, for example, A, AAAA, MX,
-      TXT, and so on.
+    type: The identifier of a supported record type. See the list of Supported
+      DNS record types.
   """
 
   kind = _messages.StringField(1, default=u'dns#resourceRecordSet')

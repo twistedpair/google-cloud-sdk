@@ -44,6 +44,7 @@ from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.command_lib.static_completion import generate as generate_static
 from googlecloudsdk.command_lib.static_completion import lookup
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
@@ -52,7 +53,6 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import text as text_utils
 from googlecloudsdk.core.util import typing  # pylint: disable=unused-import
 
-import httplib2
 import six
 from six.moves import range
 
@@ -906,7 +906,7 @@ class _ManUrlCollector(_ManPageCollector):
   def _GetRawManPageText(self):
     """Returns the raw man page text."""
     url = 'http://man7.org/linux/man-pages/man1/{}.1.html'.format(self.command)
-    response, content = httplib2.Http().request(url)
+    response, content = http.HttpClient().request(url)
     if response.status != 200:
       raise NoManPageTextForCommand(
           'Cannot get URL man page text for [{}].'.format(self.command))

@@ -66,6 +66,21 @@ class AllocationAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class AutoscalingConfig(_messages.Message):
+  r"""Autoscaling Policy config associated with the cluster.
+
+  Fields:
+    policyUri: Optional. The autoscaling policy used by the cluster.Only
+      resource names including projectid and location (region) are valid.
+      Examples: https://www.googleapis.com/compute/v1/projects/[project_id]/lo
+      cations/[dataproc_region]/autoscalingPolicies/[policy_id] projects/[proj
+      ect_id]/locations/[dataproc_region]/autoscalingPolicies/[policy_id]Note
+      that the policy must be in the same project and Cloud Dataproc region.
+  """
+
+  policyUri = _messages.StringField(1)
+
+
 class Binding(_messages.Message):
   r"""Associates members with a role.
 
@@ -177,6 +192,8 @@ class ClusterConfig(_messages.Message):
   r"""The cluster config.
 
   Fields:
+    autoscalingConfig: Optional. Autoscaling config for the policy associated
+      with the cluster. Cluster does not autoscale if this field is unset.
     configBucket: Optional. A Cloud Storage staging bucket used for sharing
       generated SSH keys and config. If you do not specify a staging bucket,
       Cloud Dataproc will determine an appropriate Cloud Storage location (US,
@@ -206,15 +223,16 @@ class ClusterConfig(_messages.Message):
       instances in a cluster.
   """
 
-  configBucket = _messages.StringField(1)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 3)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 4, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 5)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 6)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 7)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 8)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 9)
+  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
+  configBucket = _messages.StringField(2)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 4)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 5, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 6)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 7)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 8)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 10)
 
 
 class ClusterMetrics(_messages.Message):

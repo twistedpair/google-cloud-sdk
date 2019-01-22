@@ -841,6 +841,60 @@ and returns it.
         supports_download=False,
     )
 
+    def Disable(self, request, global_params=None):
+      r"""Disables a ServiceAccount.
+
+      Args:
+        request: (IamProjectsServiceAccountsDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:disable',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.disable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:disable',
+        request_field=u'disableServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsDisableRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Enable(self, request, global_params=None):
+      r"""Enables a ServiceAccount.
+
+      Args:
+        request: (IamProjectsServiceAccountsEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:enable',
+        http_method=u'POST',
+        method_id=u'iam.projects.serviceAccounts.enable',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}:enable',
+        request_field=u'enableServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsEnableRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a ServiceAccount.
 
@@ -920,6 +974,41 @@ ServiceAccount.
         request_field='',
         request_type_name=u'IamProjectsServiceAccountsListRequest',
         response_type_name=u'ListServiceAccountsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches a ServiceAccount.
+
+Currently, only the following fields are updatable:
+`display_name` and `description`.
+
+Only fields specified in the request are garaunteed to be returned in
+the response. Other fields in the response may be empty.
+
+Note: The field mask is required.
+
+      Args:
+        request: (IamProjectsServiceAccountsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccount) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}',
+        http_method=u'PATCH',
+        method_id=u'iam.projects.serviceAccounts.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field=u'patchServiceAccountRequest',
+        request_type_name=u'IamProjectsServiceAccountsPatchRequest',
+        response_type_name=u'ServiceAccount',
         supports_download=False,
     )
 

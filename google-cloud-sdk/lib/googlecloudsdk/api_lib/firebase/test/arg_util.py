@@ -88,6 +88,19 @@ def AddCommonTestRunArgs(parser):
       '- *--timeout 100* is 100 seconds')
 
 
+def AddCommonBetaTestRunArgs(parser):
+  parser.add_argument(
+      '--num-flaky-test-attempts',
+      metavar='int',
+      type=arg_validate.NONNEGATIVE_INT_PARSER,
+      help="""\
+      Specifies the number of times a test execution should be reattempted if
+      one or more of its test cases fail for any reason.\n
+      The maximum number of reruns allowed is 10. (Default: 0, which implies
+      no reruns.) All additional attempts are executed in parallel.
+      """)
+
+
 def AddAndroidTestArgs(parser):
   """Register args which are specific to Android test commands.
 
@@ -389,7 +402,7 @@ def AddGaArgs(parser):
   del parser  # Unused by AddGaArgs
 
 
-def AddBetaArgs(parser):
+def AddAndroidBetaArgs(parser):
   """Register args which are only available in the beta run command.
 
   Args:

@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import functools
+import select
 import socket
 import threading
 
@@ -236,6 +237,15 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
 
   def _AcceptNewConnection(self):
     """Accept a new socket connection and start a new WebSocket tunnel."""
+    # Python socket accept() on Windows does not get interrupted by ctrl-C
+    # To work around that, use select() with a timeout before the accept()
+    # which allows for the ctrl-C to be noticed and abort the process as
+    # expected.
+    ready_sockets = [()]
+    while not ready_sockets[0]:
+      # 0.2 second timeout
+      ready_sockets = select.select((self._server_socket,), (), (), 0.2)
+
     conn, socket_address = self._server_socket.accept()
     log.info('New connection from [%r]', socket_address)
     new_thread = threading.Thread(target=self._HandleNewConnection,

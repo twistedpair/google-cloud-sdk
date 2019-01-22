@@ -1591,6 +1591,8 @@ class Operation(_messages.Message):
       this field as part of the HTTP request URL. It is not settable as a
       field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
+    selfLinkWithId: [Output Only] Server-defined URL for this resource with
+      the resource id.
     startTime: [Output Only] The time that this operation was started by the
       server. This value is in RFC3339 text format.
     status: [Output Only] The status of the operation, which can be one of the
@@ -1692,14 +1694,15 @@ class Operation(_messages.Message):
   progress = _messages.IntegerField(13, variant=_messages.Variant.INT32)
   region = _messages.StringField(14)
   selfLink = _messages.StringField(15)
-  startTime = _messages.StringField(16)
-  status = _messages.StringField(17)
-  statusMessage = _messages.StringField(18)
-  targetId = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(20)
-  user = _messages.StringField(21)
-  warnings = _messages.MessageField('WarningsValueListEntry', 22, repeated=True)
-  zone = _messages.StringField(23)
+  selfLinkWithId = _messages.StringField(16)
+  startTime = _messages.StringField(17)
+  status = _messages.StringField(18)
+  statusMessage = _messages.StringField(19)
+  targetId = _messages.IntegerField(20, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(21)
+  user = _messages.StringField(22)
+  warnings = _messages.MessageField('WarningsValueListEntry', 23, repeated=True)
+  zone = _messages.StringField(24)
 
 
 class OperationsListResponse(_messages.Message):

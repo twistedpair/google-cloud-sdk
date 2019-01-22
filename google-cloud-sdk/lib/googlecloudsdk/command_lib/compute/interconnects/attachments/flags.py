@@ -137,7 +137,7 @@ def AddAdminEnabled(parser, default_behavior=True, update=False):
 def AddBandwidth(parser, required):
   """Adds bandwidth flag to the argparse.ArgumentParser."""
   help_text = """\
-      Provisioned capacity of the attachment in bits/s.
+      Provisioned capacity of the attachment.
       """
   base.ChoiceArgument(
       '--bandwidth',

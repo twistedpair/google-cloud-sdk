@@ -258,7 +258,8 @@ class MatrixCreator(object):
                 self._messages.ClientInfoDetail(
                     key='Release Track', value=self._release_track)
             ]),
-        resultStorage=results)
+        resultStorage=results,
+        flakyTestAttempts=self._args.num_flaky_test_attempts or 0)
 
   def _BuildAndroidDevice(self, device_map):
     return self._messages.AndroidDevice(

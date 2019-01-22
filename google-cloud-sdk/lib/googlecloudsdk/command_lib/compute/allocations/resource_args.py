@@ -32,13 +32,13 @@ class RegionCommitmentsCompleter(compute_completers.ListCommandCompleter):
         **kwargs)
 
 
-def GetCommitmentResourceArg():
+def GetCommitmentResourceArg(required=True):
   return compute_flags.ResourceArgument(
       name='--commitment',
       resource_name='regional commitment',
       completer=RegionCommitmentsCompleter,
       plural=False,
-      required=True,
+      required=required,
       regional_collection='compute.regionCommitments',
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 

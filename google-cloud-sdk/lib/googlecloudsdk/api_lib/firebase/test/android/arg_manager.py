@@ -80,6 +80,7 @@ def SharedArgRules():
           'environment_variables',
           'locales',
           'network_profile',
+          'num_flaky_test_attempts',
           'obb_files',
           'orientations',
           'os_version_ids',
@@ -94,6 +95,7 @@ def SharedArgRules():
       'defaults': {
           'async': False,
           'auto_google_login': True,
+          'num_flaky_test_attempts': 0,
           'performance_metrics': True,
           'record_video': True,
           'timeout': 900,  # 15 minutes

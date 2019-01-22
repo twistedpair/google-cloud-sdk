@@ -603,7 +603,7 @@ OPERATION_FORMAT = """
     operationType:label=TYPE,
     startTime.iso():label=START,
     endTime.iso():label=END,
-    error[0].code.yesno(no="-"):label=ERROR,
+    error.errors[0].code.yesno(no="-"):label=ERROR,
     state:label=STATUS
   )
 """
@@ -614,7 +614,7 @@ OPERATION_FORMAT_BETA = """
     operationType:label=TYPE,
     startTime.iso():label=START,
     endTime.iso():label=END,
-    error[0].code.yesno(no="-"):label=ERROR,
+    error.errors[0].code.yesno(no="-"):label=ERROR,
     status:label=STATUS
   )
 """

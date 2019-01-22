@@ -931,6 +931,10 @@
         "encryptionConfig": {
           "description": "Optional. Encryption settings for the cluster.",
           "$ref": "EncryptionConfig"
+        },
+        "autoscalingConfig": {
+          "description": "Optional. Autoscaling config for the policy associated with the cluster. Cluster does not autoscale if this field is unset.",
+          "$ref": "AutoscalingConfig"
         }
       }
     },
@@ -1214,6 +1218,17 @@
       "properties": {
         "gcePdKmsKeyName": {
           "description": "Optional. The Cloud KMS key name to use for PD disk encryption for all instances in the cluster.",
+          "type": "string"
+        }
+      }
+    },
+    "AutoscalingConfig": {
+      "id": "AutoscalingConfig",
+      "description": "Autoscaling Policy config associated with the cluster.",
+      "type": "object",
+      "properties": {
+        "policyUri": {
+          "description": "Optional. The autoscaling policy used by the cluster.Only resource names including projectid and location (region) are valid. Examples:\nhttps:\/\/www.googleapis.com\/compute\/v1\/projects\/[project_id]\/locations\/[dataproc_region]\/autoscalingPolicies\/[policy_id]\nprojects\/[project_id]\/locations\/[dataproc_region]\/autoscalingPolicies\/[policy_id]Note that the policy must be in the same project and Cloud Dataproc region.",
           "type": "string"
         }
       }

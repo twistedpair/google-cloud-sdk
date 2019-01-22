@@ -220,6 +220,13 @@ class RecognitionConfig(_messages.Message):
       hypotheses. Note: This is currently offered as an experimental service,
       complimentary to all users. In the future this may be exclusively
       available as a premium feature.
+    enableSeparateRecognitionPerChannel: This needs to be set to `true`
+      explicitly and `audio_channel_count` > 1 to get each channel recognized
+      separately. The recognition result will contain a `channel_tag` field to
+      state which channel that result belongs to. If this is not true, we will
+      only recognize the first channel. The request is billed cumulatively for
+      all channels recognized: `audio_channel_count` multiplied by the length
+      of the audio.
     enableWordTimeOffsets: *Optional* If `true`, the top result includes a
       list of words and the start and end time offsets (timestamps) for those
       words. If `false`, no word-level time offset information is returned.
@@ -327,15 +334,16 @@ class RecognitionConfig(_messages.Message):
     SPEEX_WITH_HEADER_BYTE = 7
 
   enableAutomaticPunctuation = _messages.BooleanField(1)
-  enableWordTimeOffsets = _messages.BooleanField(2)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 3)
-  languageCode = _messages.StringField(4)
-  maxAlternatives = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  model = _messages.StringField(6)
-  profanityFilter = _messages.BooleanField(7)
-  sampleRateHertz = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 9, repeated=True)
-  useEnhanced = _messages.BooleanField(10)
+  enableSeparateRecognitionPerChannel = _messages.BooleanField(2)
+  enableWordTimeOffsets = _messages.BooleanField(3)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 4)
+  languageCode = _messages.StringField(5)
+  maxAlternatives = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  model = _messages.StringField(7)
+  profanityFilter = _messages.BooleanField(8)
+  sampleRateHertz = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 10, repeated=True)
+  useEnhanced = _messages.BooleanField(11)
 
 
 class RecognizeRequest(_messages.Message):
@@ -406,6 +414,42 @@ class SpeechOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class SpeechProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class SpeechProjectsOperationsManualRecognitionTasksGetRequest(_messages.Message):
+  r"""A SpeechProjectsOperationsManualRecognitionTasksGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SpeechRecognitionAlternative(_messages.Message):
   r"""Alternative hypotheses (a.k.a. n-best list).
 
@@ -437,9 +481,14 @@ class SpeechRecognitionResult(_messages.Message):
       (up to the maximum specified in `max_alternatives`). These alternatives
       are ordered in terms of accuracy, with the top (first) alternative being
       the most probable, as ranked by the recognizer.
+    channelTag: For multi-channel audio, this is the channel number
+      corresponding to the recognized result for the audio from that channel.
+      For audio_channel_count = N, its output values can range from '1' to
+      'N'.
   """
 
   alternatives = _messages.MessageField('SpeechRecognitionAlternative', 1, repeated=True)
+  channelTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -2040,7 +2040,7 @@ class AutoscalingPolicyLoadBalancingUtilization(_messages.Message):
 
   Fields:
     utilizationTarget: Fraction of backend capacity utilization (set in
-      HTTP(s) load balancing configuration) that autoscaler should maintain.
+      HTTP(S) load balancing configuration) that autoscaler should maintain.
       Must be a positive float value. If not defined, the default is 0.8.
   """
 
@@ -14738,14 +14738,16 @@ class Disk(_messages.Message):
 
     Values:
       CREATING: <no description>
+      DELETING: <no description>
       FAILED: <no description>
       READY: <no description>
       RESTORING: <no description>
     """
     CREATING = 0
-    FAILED = 1
-    READY = 2
-    RESTORING = 3
+    DELETING = 1
+    FAILED = 2
+    READY = 3
+    RESTORING = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -16090,6 +16092,28 @@ class FirewallLogConfig(_messages.Message):
   enable = _messages.BooleanField(1)
 
 
+class FixedOrPercent(_messages.Message):
+  r"""Encapsulates numeric value that can be either absolute or relative.
+
+  Fields:
+    calculated: [Output Only] Absolute value of VM instances calculated based
+      on the specific mode.    - If the value is fixed, then the caculated
+      value is equal to the fixed value.  - If the value is a percent, then
+      the calculated value is percent/100 * targetSize. For example, the
+      calculated value of a 80% of a managed instance group with 150 instances
+      would be (80/100 * 150) = 120 VM instances. If there is a remainder, the
+      number is rounded up.
+    fixed: Specifies a fixed number of VM instances. This must be a positive
+      integer.
+    percent: Specifies a percentage of instances between 0 to 100%, inclusive.
+      For example, specify 80 for 80%.
+  """
+
+  calculated = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  fixed = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  percent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class ForwardingRule(_messages.Message):
   r"""A ForwardingRule resource. A ForwardingRule resource specifies which
   pool of target virtual machines to forward a packet to if it matches the
@@ -16210,6 +16234,18 @@ class ForwardingRule(_messages.Message):
       must specify this field as part of the HTTP request URL. It is not
       settable as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
+    serviceLabel: An optional prefix to the service name for this Forwarding
+      Rule. If specified, will be the first label of the fully qualified
+      service name.  The label must be 1-63 characters long, and comply with
+      RFC1035. Specifically, the label must be 1-63 characters long and match
+      the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
+      first character must be a lowercase letter, and all following characters
+      must be a dash, lowercase letter, or digit, except the last character,
+      which cannot be a dash.  This field is only used for internal load
+      balancing.
+    serviceName: [Output Only] The internal fully qualified service name for
+      this Forwarding Rule.  This field is only used for internal load
+      balancing.
     subnetwork: This field is only used for INTERNAL load balancing.  For
       internal load balancing, this field identifies the subnetwork that the
       load balanced IP should belong to for this Forwarding Rule.  If the
@@ -16308,8 +16344,10 @@ class ForwardingRule(_messages.Message):
   ports = _messages.StringField(14, repeated=True)
   region = _messages.StringField(15)
   selfLink = _messages.StringField(16)
-  subnetwork = _messages.StringField(17)
-  target = _messages.StringField(18)
+  serviceLabel = _messages.StringField(17)
+  serviceName = _messages.StringField(18)
+  subnetwork = _messages.StringField(19)
+  target = _messages.StringField(20)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -17655,13 +17693,15 @@ class Image(_messages.Message):
     FAILED, PENDING, or READY.
 
     Values:
+      DELETING: <no description>
       FAILED: <no description>
       PENDING: <no description>
       READY: <no description>
     """
-    FAILED = 0
-    PENDING = 1
-    READY = 2
+    DELETING = 0
+    FAILED = 1
+    PENDING = 2
+    READY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -17906,6 +17946,7 @@ class Instance(_messages.Message):
       be created before you can assign them.
     guestAccelerators: A list of the type and count of accelerator cards
       attached to the instance.
+    hostname: A string attribute.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#instance for
@@ -18026,23 +18067,24 @@ class Instance(_messages.Message):
   description = _messages.StringField(5)
   disks = _messages.MessageField('AttachedDisk', 6, repeated=True)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default=u'compute#instance')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  machineType = _messages.StringField(12)
-  metadata = _messages.MessageField('Metadata', 13)
-  minCpuPlatform = _messages.StringField(14)
-  name = _messages.StringField(15)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 16, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 17)
-  selfLink = _messages.StringField(18)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 19, repeated=True)
-  startRestricted = _messages.BooleanField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  statusMessage = _messages.StringField(22)
-  tags = _messages.MessageField('Tags', 23)
-  zone = _messages.StringField(24)
+  hostname = _messages.StringField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default=u'compute#instance')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  machineType = _messages.StringField(13)
+  metadata = _messages.MessageField('Metadata', 14)
+  minCpuPlatform = _messages.StringField(15)
+  name = _messages.StringField(16)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 17, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 18)
+  selfLink = _messages.StringField(19)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 20, repeated=True)
+  startRestricted = _messages.BooleanField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  statusMessage = _messages.StringField(23)
+  tags = _messages.MessageField('Tags', 24)
+  zone = _messages.StringField(25)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -18533,6 +18575,8 @@ class InstanceGroupManager(_messages.Message):
   v1.regionInstanceGroupManagers ==)
 
   Fields:
+    autoHealingPolicies: The autohealing policy for this managed instance
+      group. You can specify only one value.
     baseInstanceName: The base instance name to use for instances in this
       group. The value must be 1-58 characters long. Instances are named by
       appending a hyphen and a random four-character string to the base
@@ -18568,33 +18612,47 @@ class InstanceGroupManager(_messages.Message):
       group resides (for regional resources).
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
+    status: [Output Only] The status of this managed instance group.
     targetPools: The URLs for all TargetPool resources to which instances in
       the instanceGroup field are added. The target pools automatically apply
       to all of the instances in the managed instance group.
     targetSize: The target number of running instances for this managed
       instance group. Deleting or abandoning instances reduces this number.
       Resizing the group changes this number.
+    updatePolicy: The update policy for this managed instance group.
+    versions: Specifies the instance templates used by this managed instance
+      group to create instances.  Each version is defined by an
+      instanceTemplate. Every template can appear at most once per instance
+      group. This field overrides the top-level instanceTemplate field. Read
+      more about the relationships between these fields. Exactly one version
+      must leave the targetSize field unset. That version will be applied to
+      all remaining instances. For more information, read about canary
+      updates.
     zone: [Output Only] The URL of the zone where the managed instance group
       is located (for zonal resources).
   """
 
-  baseInstanceName = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 3)
-  description = _messages.StringField(4)
-  distributionPolicy = _messages.MessageField('DistributionPolicy', 5)
-  fingerprint = _messages.BytesField(6)
-  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  instanceGroup = _messages.StringField(8)
-  instanceTemplate = _messages.StringField(9)
-  kind = _messages.StringField(10, default=u'compute#instanceGroupManager')
-  name = _messages.StringField(11)
-  namedPorts = _messages.MessageField('NamedPort', 12, repeated=True)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  targetPools = _messages.StringField(15, repeated=True)
-  targetSize = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  zone = _messages.StringField(17)
+  autoHealingPolicies = _messages.MessageField('InstanceGroupManagerAutoHealingPolicy', 1, repeated=True)
+  baseInstanceName = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  currentActions = _messages.MessageField('InstanceGroupManagerActionsSummary', 4)
+  description = _messages.StringField(5)
+  distributionPolicy = _messages.MessageField('DistributionPolicy', 6)
+  fingerprint = _messages.BytesField(7)
+  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  instanceGroup = _messages.StringField(9)
+  instanceTemplate = _messages.StringField(10)
+  kind = _messages.StringField(11, default=u'compute#instanceGroupManager')
+  name = _messages.StringField(12)
+  namedPorts = _messages.MessageField('NamedPort', 13, repeated=True)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 16)
+  targetPools = _messages.StringField(17, repeated=True)
+  targetSize = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 19)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 20, repeated=True)
+  zone = _messages.StringField(21)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -18798,6 +18856,24 @@ class InstanceGroupManagerAggregatedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class InstanceGroupManagerAutoHealingPolicy(_messages.Message):
+  r"""InstanceGroupManagerAutoHealingPolicy message type.
+
+  Fields:
+    healthCheck: The URL for the health check that signals autohealing.
+    initialDelaySec: The number of seconds that the managed instance group
+      waits before it applies autohealing policies to new instances or
+      recently recreated instances. This initial delay allows instances to
+      initialize and run their startup scripts before the instance group
+      determines that they are UNHEALTHY. This prevents the managed instance
+      group from recreating its instances prematurely. This value must be from
+      range [0, 3600].
+  """
+
+  healthCheck = _messages.StringField(1)
+  initialDelaySec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class InstanceGroupManagerList(_messages.Message):
   r"""[Output Only] A list of managed instance groups.
 
@@ -18921,6 +18997,117 @@ class InstanceGroupManagerList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class InstanceGroupManagerStatus(_messages.Message):
+  r"""A InstanceGroupManagerStatus object.
+
+  Fields:
+    isStable: [Output Only] A bit indicating whether the managed instance
+      group is in a stable state. A stable state means that: none of the
+      instances in the managed instance group is currently undergoing any type
+      of change (for example, creation, restart, or deletion); no future
+      changes are scheduled for instances in the managed instance group; and
+      the managed instance group itself is not being modified.
+  """
+
+  isStable = _messages.BooleanField(1)
+
+
+class InstanceGroupManagerUpdatePolicy(_messages.Message):
+  r"""A InstanceGroupManagerUpdatePolicy object.
+
+  Enums:
+    MinimalActionValueValuesEnum: Minimal action to be taken on an instance.
+      You can specify either RESTART to restart existing instances or REPLACE
+      to delete and create new instances from the target template. If you
+      specify a RESTART, the Updater will attempt to perform that action only.
+      However, if the Updater determines that the minimal action you specify
+      is not enough to perform the update, it might perform a more disruptive
+      action.
+    TypeValueValuesEnum:
+
+  Fields:
+    maxSurge: The maximum number of instances that can be created above the
+      specified targetSize during the update process. By default, a fixed
+      value of 1 is used. This value can be either a fixed number or a
+      percentage if the instance group has 10 or more instances. If you set a
+      percentage, the number of instances will be rounded up if necessary.  At
+      least one of either maxSurge or maxUnavailable must be greater than 0.
+      Learn more about maxSurge.
+    maxUnavailable: The maximum number of instances that can be unavailable
+      during the update process. An instance is considered available if all of
+      the following conditions are satisfied:    - The instance's status is
+      RUNNING.  - If there is a health check on the instance group, the
+      instance's liveness health check result must be HEALTHY at least once.
+      If there is no health check on the group, then the instance only needs
+      to have a status of RUNNING to be considered available.  By default, a
+      fixed value of 1 is used. This value can be either a fixed number or a
+      percentage if the instance group has 10 or more instances. If you set a
+      percentage, the number of instances will be rounded up if necessary.  At
+      least one of either maxSurge or maxUnavailable must be greater than 0.
+      Learn more about maxUnavailable.
+    minimalAction: Minimal action to be taken on an instance. You can specify
+      either RESTART to restart existing instances or REPLACE to delete and
+      create new instances from the target template. If you specify a RESTART,
+      the Updater will attempt to perform that action only. However, if the
+      Updater determines that the minimal action you specify is not enough to
+      perform the update, it might perform a more disruptive action.
+    type: A TypeValueValuesEnum attribute.
+  """
+
+  class MinimalActionValueValuesEnum(_messages.Enum):
+    r"""Minimal action to be taken on an instance. You can specify either
+    RESTART to restart existing instances or REPLACE to delete and create new
+    instances from the target template. If you specify a RESTART, the Updater
+    will attempt to perform that action only. However, if the Updater
+    determines that the minimal action you specify is not enough to perform
+    the update, it might perform a more disruptive action.
+
+    Values:
+      REPLACE: <no description>
+      RESTART: <no description>
+    """
+    REPLACE = 0
+    RESTART = 1
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""TypeValueValuesEnum enum type.
+
+    Values:
+      OPPORTUNISTIC: <no description>
+      PROACTIVE: <no description>
+    """
+    OPPORTUNISTIC = 0
+    PROACTIVE = 1
+
+  maxSurge = _messages.MessageField('FixedOrPercent', 1)
+  maxUnavailable = _messages.MessageField('FixedOrPercent', 2)
+  minimalAction = _messages.EnumField('MinimalActionValueValuesEnum', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
+class InstanceGroupManagerVersion(_messages.Message):
+  r"""A InstanceGroupManagerVersion object.
+
+  Fields:
+    instanceTemplate: A string attribute.
+    name: Name of the version. Unique among all versions in the scope of this
+      managed instance group.
+    targetSize: Specifies the intended number of instances to be created from
+      the instanceTemplate. The final number of instances created from the
+      template will be equal to:   - If expressed as a fixed number, the
+      minimum of either targetSize.fixed or instanceGroupManager.targetSize is
+      used.  - if expressed as a percent, the targetSize would be
+      (targetSize.percent/100 * InstanceGroupManager.targetSize) If there is a
+      remainder, the number is rounded up.  If unset, this version will update
+      any remaining instances not updated by another version. Read Starting a
+      canary update for more information.
+  """
+
+  instanceTemplate = _messages.StringField(1)
+  name = _messages.StringField(2)
+  targetSize = _messages.MessageField('FixedOrPercent', 3)
 
 
 class InstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -20222,9 +20409,7 @@ class Interconnect(_messages.Message):
     InterconnectTypeValueValuesEnum: Type of interconnect. Note that
       "IT_PRIVATE" has been deprecated in favor of "DEDICATED"
     LinkTypeValueValuesEnum: Type of link requested. This field indicates
-      speed of each of the links in the bundle, not the entire bundle. Only
-      10G per link is allowed for a dedicated interconnect. Options:
-      Ethernet_10G_LR
+      speed of each of the links in the bundle, not the entire bundle.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this Interconnect is functional.
     StateValueValuesEnum: [Output Only] The current state of whether or not
@@ -20259,8 +20444,7 @@ class Interconnect(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#interconnect for
       interconnects.
     linkType: Type of link requested. This field indicates speed of each of
-      the links in the bundle, not the entire bundle. Only 10G per link is
-      allowed for a dedicated interconnect. Options: Ethernet_10G_LR
+      the links in the bundle, not the entire bundle.
     location: URL of the InterconnectLocation object that represents where
       this connection is to be provisioned.
     name: Name of the resource. Provided by the client when the resource is
@@ -20304,8 +20488,7 @@ class Interconnect(_messages.Message):
 
   class LinkTypeValueValuesEnum(_messages.Enum):
     r"""Type of link requested. This field indicates speed of each of the
-    links in the bundle, not the entire bundle. Only 10G per link is allowed
-    for a dedicated interconnect. Options: Ethernet_10G_LR
+    links in the bundle, not the entire bundle.
 
     Values:
       LINK_TYPE_ETHERNET_10G_LR: <no description>
@@ -21084,18 +21267,37 @@ class InterconnectDiagnosticsLinkOpticalPower(_messages.Message):
   r"""A InterconnectDiagnosticsLinkOpticalPower object.
 
   Enums:
-    StateValueValuesEnum:
+    StateValueValuesEnum: The status of the current value when compared to the
+      warning and alarm levels for the receiving or transmitting transceiver.
+      Possible states include:   - OK: The value has not crossed a warning
+      threshold.  - LOW_WARNING: The value has crossed below the low warning
+      threshold.  - HIGH_WARNING: The value has crossed above the high warning
+      threshold.  - LOW_ALARM: The value has crossed below the low alarm
+      threshold.  - HIGH_ALARM: The value has crossed above the high alarm
+      threshold.
 
   Fields:
-    state: A StateValueValuesEnum attribute.
-    value: Value of the current optical power, read in dBm. Take a known good
-      optical value, give it a 10% margin and trigger warnings relative to
-      that value. In general, a -7dBm warning and a -11dBm alarm are good
-      optical value estimates for most links.
+    state: The status of the current value when compared to the warning and
+      alarm levels for the receiving or transmitting transceiver. Possible
+      states include:   - OK: The value has not crossed a warning threshold.
+      - LOW_WARNING: The value has crossed below the low warning threshold.  -
+      HIGH_WARNING: The value has crossed above the high warning threshold.  -
+      LOW_ALARM: The value has crossed below the low alarm threshold.  -
+      HIGH_ALARM: The value has crossed above the high alarm threshold.
+    value: Value of the current receiving or transmitting optical power, read
+      in dBm. Take a known good optical value, give it a 10% margin and
+      trigger warnings relative to that value. In general, a -7dBm warning and
+      a -11dBm alarm are good optical value estimates for most links.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""StateValueValuesEnum enum type.
+    r"""The status of the current value when compared to the warning and alarm
+    levels for the receiving or transmitting transceiver. Possible states
+    include:   - OK: The value has not crossed a warning threshold.  -
+    LOW_WARNING: The value has crossed below the low warning threshold.  -
+    HIGH_WARNING: The value has crossed above the high warning threshold.  -
+    LOW_ALARM: The value has crossed below the low alarm threshold.  -
+    HIGH_ALARM: The value has crossed above the high alarm threshold.
 
     Values:
       HIGH_ALARM: <no description>
@@ -21125,10 +21327,11 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
     googleDemarc: The Demarc address assigned by Google and provided in the
       LoA.
     lacpStatus: A InterconnectDiagnosticsLinkLACPStatus attribute.
-    receivingOpticalPower: A InterconnectDiagnosticsLinkOpticalPower
-      attribute.
-    transmittingOpticalPower: A InterconnectDiagnosticsLinkOpticalPower
-      attribute.
+    receivingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower object,
+      describing the current value and status of the received light level.
+    transmittingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower
+      object, describing the current value and status of the transmitted light
+      level.
   """
 
   arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
@@ -22889,10 +23092,16 @@ class NetworkPeering(_messages.Message):
     StateValueValuesEnum: [Output Only] State for the peering.
 
   Fields:
-    autoCreateRoutes: Indicates whether full mesh connectivity is created and
+    autoCreateRoutes: This field will be deprecated soon. Prefer using
+      exchange_subnet_routes instead. Indicates whether full mesh connectivity
+      is created and managed automatically. When it is set to true, Google
+      Compute Engine will automatically create and manage the routes between
+      two networks when the state is ACTIVE. Otherwise, user needs to create
+      routes manually to route packets to peer network.
+    exchangeSubnetRoutes: Whether full mesh connectivity is created and
       managed automatically. When it is set to true, Google Compute Engine
       will automatically create and manage the routes between two networks
-      when the state is ACTIVE. Otherwise, user needs to create routes
+      when the peering state is ACTIVE. Otherwise, user needs to create routes
       manually to route packets to peer network.
     name: Name of this peering. Provided by the client when the peering is
       created. The name must comply with RFC1035. Specifically, the name must
@@ -22921,10 +23130,11 @@ class NetworkPeering(_messages.Message):
     INACTIVE = 1
 
   autoCreateRoutes = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  network = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  stateDetails = _messages.StringField(5)
+  exchangeSubnetRoutes = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  network = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  stateDetails = _messages.StringField(6)
 
 
 class NetworkRoutingConfig(_messages.Message):
@@ -22968,9 +23178,15 @@ class NetworksAddPeeringRequest(_messages.Message):
   r"""A NetworksAddPeeringRequest object.
 
   Fields:
-    autoCreateRoutes: Whether Google Compute Engine manages the routes
-      automatically.
+    autoCreateRoutes: This field will be deprecated soon. Prefer using
+      exchange_subnet_routes in network_peering instead. Whether Google
+      Compute Engine manages the routes automatically.
     name: Name of the peering, which should conform to RFC1035.
+    networkPeering: Network peering parameters. In order to specify route
+      policies for peering using import/export custom routes, you will have to
+      fill all peering related parameters (name, peer network,
+      exchange_subnet_routes) in network_peeringfield. Corresponding fields in
+      NetworksAddPeeringRequest will be deprecated soon.
     peerNetwork: URL of the peer network. It can be either full URL or partial
       URL. The peer network may belong to a different project. If the partial
       URL does not contain project, it is assumed that the peer network is in
@@ -22979,7 +23195,8 @@ class NetworksAddPeeringRequest(_messages.Message):
 
   autoCreateRoutes = _messages.BooleanField(1)
   name = _messages.StringField(2)
-  peerNetwork = _messages.StringField(3)
+  networkPeering = _messages.MessageField('NetworkPeering', 3)
+  peerNetwork = _messages.StringField(4)
 
 
 class NetworksRemovePeeringRequest(_messages.Message):
@@ -25204,13 +25421,16 @@ class PathMatcher(_messages.Message):
       to a BackendService resource:   - https://www.googleapis.com/compute/v1/
       projects/project/global/backendServices/backendService  -
       compute/v1/projects/project/global/backendServices/backendService  -
-      global/backendServices/backendService   Use defaultService instead of
-      defaultRouteAction when simple routing to a backend service is desired
-      and other advanced capabilities like traffic splitting and URL rewrites
-      are not required. Only one of defaultService, defaultRouteAction or
-      defaultUrlRedirect must be set. Authorization requires one or more of
-      the following Google IAM permissions on the specified resource
-      default_service:   - compute.backendBuckets.use  -
+      global/backendServices/backendService  If defaultRouteAction is
+      additionally specified, advanced routing actions like URL Rewrites, etc.
+      take effect prior to sending the request to the backend. However, if
+      defaultService is specified, defaultRouteAction cannot contain any
+      weightedBackendServices. Conversely, if defaultRouteAction specifies any
+      weightedBackendServices, defaultService must not be specified. Only one
+      of defaultService, defaultUrlRedirect  or
+      defaultRouteAction.weightedBackendService must be set. Authorization
+      requires one or more of the following Google IAM permissions on the
+      specified resource default_service:   - compute.backendBuckets.use  -
       compute.backendServices.use
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -25239,11 +25459,14 @@ class PathRule(_messages.Message):
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
       those chars are not allowed here.
-    service: The URL of the backend service resource if this rule is matched.
-      Use service instead of routeAction when simple routing to a backend
-      service is desired and other advanced capabilities like traffic
-      splitting and rewrites are not required. Only one of service,
-      routeAction or urlRedirect should must be set.
+    service: The full or partial URL of the backend service resource to which
+      traffic is directed if this rule is matched. If routeAction is
+      additionally specified, advanced routing actions like URL Rewrites, etc.
+      take effect prior to sending the request to the backend. However, if
+      service is specified, routeAction cannot contain any
+      weightedBackendService s. Conversely, if routeAction specifies any
+      weightedBackendServices, service must not be specified. Only one of
+      urlRedirect, service or routeAction.weightedBackendService must be set.
   """
 
   paths = _messages.StringField(1, repeated=True)
@@ -25497,6 +25720,7 @@ class Quota(_messages.Message):
       INTERNAL_ADDRESSES: <no description>
       IN_USE_ADDRESSES: <no description>
       IN_USE_BACKUP_SCHEDULES: <no description>
+      IN_USE_SNAPSHOT_SCHEDULES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
       NVIDIA_K80_GPUS: <no description>
@@ -25563,48 +25787,49 @@ class Quota(_messages.Message):
     INTERNAL_ADDRESSES = 20
     IN_USE_ADDRESSES = 21
     IN_USE_BACKUP_SCHEDULES = 22
-    LOCAL_SSD_TOTAL_GB = 23
-    NETWORKS = 24
-    NVIDIA_K80_GPUS = 25
-    NVIDIA_P100_GPUS = 26
-    NVIDIA_P100_VWS_GPUS = 27
-    NVIDIA_P4_GPUS = 28
-    NVIDIA_P4_VWS_GPUS = 29
-    NVIDIA_T4_GPUS = 30
-    NVIDIA_T4_VWS_GPUS = 31
-    NVIDIA_V100_GPUS = 32
-    PREEMPTIBLE_CPUS = 33
-    PREEMPTIBLE_LOCAL_SSD_GB = 34
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 35
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 36
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 37
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 38
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 39
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 40
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 41
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 42
-    REGIONAL_AUTOSCALERS = 43
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 44
-    RESOURCE_POLICIES = 45
-    ROUTERS = 46
-    ROUTES = 47
-    SECURITY_POLICIES = 48
-    SECURITY_POLICY_RULES = 49
-    SNAPSHOTS = 50
-    SSD_TOTAL_GB = 51
-    SSL_CERTIFICATES = 52
-    STATIC_ADDRESSES = 53
-    SUBNETWORKS = 54
-    TARGET_HTTPS_PROXIES = 55
-    TARGET_HTTP_PROXIES = 56
-    TARGET_INSTANCES = 57
-    TARGET_POOLS = 58
-    TARGET_SSL_PROXIES = 59
-    TARGET_TCP_PROXIES = 60
-    TARGET_VPN_GATEWAYS = 61
-    URL_MAPS = 62
-    VPN_GATEWAYS = 63
-    VPN_TUNNELS = 64
+    IN_USE_SNAPSHOT_SCHEDULES = 23
+    LOCAL_SSD_TOTAL_GB = 24
+    NETWORKS = 25
+    NVIDIA_K80_GPUS = 26
+    NVIDIA_P100_GPUS = 27
+    NVIDIA_P100_VWS_GPUS = 28
+    NVIDIA_P4_GPUS = 29
+    NVIDIA_P4_VWS_GPUS = 30
+    NVIDIA_T4_GPUS = 31
+    NVIDIA_T4_VWS_GPUS = 32
+    NVIDIA_V100_GPUS = 33
+    PREEMPTIBLE_CPUS = 34
+    PREEMPTIBLE_LOCAL_SSD_GB = 35
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 36
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 37
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 38
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 39
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 40
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 41
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 42
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 43
+    REGIONAL_AUTOSCALERS = 44
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 45
+    RESOURCE_POLICIES = 46
+    ROUTERS = 47
+    ROUTES = 48
+    SECURITY_POLICIES = 49
+    SECURITY_POLICY_RULES = 50
+    SNAPSHOTS = 51
+    SSD_TOTAL_GB = 52
+    SSL_CERTIFICATES = 53
+    STATIC_ADDRESSES = 54
+    SUBNETWORKS = 55
+    TARGET_HTTPS_PROXIES = 56
+    TARGET_HTTP_PROXIES = 57
+    TARGET_INSTANCES = 58
+    TARGET_POOLS = 59
+    TARGET_SSL_PROXIES = 60
+    TARGET_TCP_PROXIES = 61
+    TARGET_VPN_GATEWAYS = 62
+    URL_MAPS = 63
+    VPN_GATEWAYS = 64
+    VPN_TUNNELS = 65
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -32099,12 +32324,15 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    defaultService: The URL of the backendService resource if none of the
-      hostRules match. Use defaultService instead of defaultRouteAction when
-      simple routing to a backendService is desired and other advanced
-      capabilities like traffic splitting and rewrites are not required. Only
-      one of defaultService, defaultRouteAction or defaultUrlRedirect should
-      must be set.
+    defaultService: The full or partial URL of the defaultService resource to
+      which traffic is directed if none of the hostRules match. If
+      defaultRouteAction is additionally specified, advanced routing actions
+      like URL Rewrites, etc. take effect prior to sending the request to the
+      backend. However, if defaultService is specified, defaultRouteAction
+      cannot contain any weightedBackendServices. Conversely, if routeAction
+      specifies any weightedBackendServices, service must not be specified.
+      Only one of defaultService, defaultUrlRedirect  or
+      defaultRouteAction.weightedBackendService must be set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored

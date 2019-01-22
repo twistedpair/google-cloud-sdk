@@ -596,10 +596,16 @@ class CommandBuilder(object):
           base.ASYNC_FLAG.AddToParser(parser)
 
       def Run(self_, args):
-        # Check if mask is required for an update request.
+        # Check if mask is required for an update request, if required, return
+        # the dotted path, e.g updateRequest.fieldMask.
         mask_path = update.GetMaskFieldPath(self.method)
         if mask_path:
-          mask_string = update.GetMaskString(args, self.spec, mask_path)
+          # If user sets to disable the auto-generated field mask, set the value
+          # to the empty string instead so that custom hooks can be used.
+          if self.spec.update and self.spec.update.disable_auto_field_mask:
+            mask_string = ''
+          else:
+            mask_string = update.GetMaskString(args, self.spec, mask_path)
           self.spec.request.static_fields[mask_path] = mask_string
 
         # Check if the update is full-update, which requires a get request.

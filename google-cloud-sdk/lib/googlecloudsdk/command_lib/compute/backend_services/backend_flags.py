@@ -248,7 +248,7 @@ def AddCapacityScalar(parser):
       value to `0.0` (0%) drains the backend service. Note that draining a
       backend service only prevents new connections to instances in the group.
       All existing connections are allowed to continue until they close by
-      normal means.""")
+      normal means. This cannot be used for internal load balancing.""")
 
 
 def AddFailover(parser, default):

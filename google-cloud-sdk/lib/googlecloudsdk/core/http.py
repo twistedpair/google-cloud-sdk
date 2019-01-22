@@ -84,6 +84,37 @@ def Http(timeout='unset', response_encoding=None, ca_certs=None):
   return http_client
 
 
+# TODO(b/120951866) Can this be the same as Http?
+def HttpClient(
+    timeout=None,
+    proxy_info=httplib2.proxy_info_from_environment,
+    ca_certs=httplib2.CA_CERTS,
+    disable_ssl_certificate_validation=False):
+  """Returns a httplib2.Http subclass.
+
+  Args:
+    timeout: float, Request timeout, in seconds.
+    proxy_info: httplib2.ProxyInfo object or callable
+    ca_certs: str, absolute filename of a ca_certs file
+    disable_ssl_certificate_validation: bool, If true, disable ssl certificate
+        validation.
+
+  Returns: A httplib2.Http subclass
+
+  """
+  if properties.VALUES.proxy.use_urllib3_via_shim.GetBool():
+    import httplib2shim  # pylint:disable=g-import-not-at-top
+    http_class = httplib2shim.Http
+  else:
+    http_class = httplib2.Http
+
+  return http_class(
+      timeout=timeout,
+      proxy_info=proxy_info,
+      ca_certs=ca_certs,
+      disable_ssl_certificate_validation=disable_ssl_certificate_validation)
+
+
 def _CreateRawHttpClient(timeout='unset', ca_certs=None):
   """Create an HTTP client matching the appropriate gcloud properties."""
   # Compared with setting the default timeout in the function signature (i.e.
@@ -97,10 +128,10 @@ def _CreateRawHttpClient(timeout='unset', ca_certs=None):
     ca_certs = ca_certs_property
   if no_validate:
     ca_certs = None
-  return httplib2.Http(timeout=effective_timeout,
-                       proxy_info=http_proxy.GetHttpProxyInfo(),
-                       ca_certs=ca_certs,
-                       disable_ssl_certificate_validation=no_validate)
+  return HttpClient(timeout=effective_timeout,
+                    proxy_info=http_proxy.GetHttpProxyInfo(),
+                    ca_certs=ca_certs,
+                    disable_ssl_certificate_validation=no_validate)
 
 
 def MakeUserAgentString(cmd_path=None):

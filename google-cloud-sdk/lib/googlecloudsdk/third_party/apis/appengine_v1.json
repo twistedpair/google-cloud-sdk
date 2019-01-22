@@ -545,6 +545,10 @@
           "description": "The version of the API in the given runtime environment. Please see the app.yaml reference for valid values at https:\/\/cloud.google.com\/appengine\/docs\/standard\/<language>\/config\/appref",
           "type": "string"
         },
+        "runtimeMainExecutablePath": {
+          "description": "The path or name of the app's main executable.",
+          "type": "string"
+        },
         "handlers": {
           "description": "An ordered list of URL-matching patterns that should be applied to incoming requests. The first matching URL handles the request and other request handlers are not attempted.Only returned in GET requests if view=FULL is set.",
           "type": "array",

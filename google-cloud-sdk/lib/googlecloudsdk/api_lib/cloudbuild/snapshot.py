@@ -88,6 +88,12 @@ class Snapshot(object):
         self.any_files_ignored = True
         continue
       for fname in filenames:
+        path = os.path.join(relpath, fname)
+        if os.path.islink(path) and not os.path.exists(path):
+          # The file is a broken symlink; ignore it.
+          log.info('Ignoring [{}] which is a symlink to non-existent path',
+                   path)
+          continue
         # Join file paths with Linux path separators, avoiding ./ prefix.
         # GCB workers are Linux VMs so os.path.join produces incorrect output.
         fpath = '/'.join([relpath, fname]) if relpath != '.' else fname

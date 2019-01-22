@@ -338,6 +338,10 @@ class CreateServiceAccountRequest(_messages.Message):
   serviceAccount = _messages.MessageField('ServiceAccount', 2)
 
 
+class DisableServiceAccountRequest(_messages.Message):
+  r"""The service account disable request."""
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -346,6 +350,10 @@ class Empty(_messages.Message):
   JSON representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EnableServiceAccountRequest(_messages.Message):
+  r"""The service account enable request."""
 
 
 class Expr(_messages.Message):
@@ -639,6 +647,39 @@ class IamProjectsServiceAccountsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class IamProjectsServiceAccountsDisableRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsDisableRequest object.
+
+  Fields:
+    disableServiceAccountRequest: A DisableServiceAccountRequest resource to
+      be passed as the request body.
+    name: The resource name of the service account in the following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
+      wildcard for the `PROJECT_ID` will infer the project from the account.
+      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
+      service account.
+  """
+
+  disableServiceAccountRequest = _messages.MessageField('DisableServiceAccountRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class IamProjectsServiceAccountsEnableRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsEnableRequest object.
+
+  Fields:
+    enableServiceAccountRequest: A EnableServiceAccountRequest resource to be
+      passed as the request body.
+    name: The resource name of the service account in the following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT_UNIQUE_ID}'. Using `-`
+      as a wildcard for the `PROJECT_ID` will infer the project from the
+      account.
+  """
+
+  enableServiceAccountRequest = _messages.MessageField('EnableServiceAccountRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class IamProjectsServiceAccountsGetIamPolicyRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsGetIamPolicyRequest object.
 
@@ -843,6 +884,25 @@ class IamProjectsServiceAccountsListRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
+
+
+class IamProjectsServiceAccountsPatchRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsPatchRequest object.
+
+  Fields:
+    name: The resource name of the service account in the following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.  Requests using `-`
+      as a wildcard for the `PROJECT_ID` will infer the project from the
+      `account` and the `ACCOUNT` value can be the `email` address or the
+      `unique_id` of the service account.  In responses the resource name will
+      always be in the format
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`.
+    patchServiceAccountRequest: A PatchServiceAccountRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  patchServiceAccountRequest = _messages.MessageField('PatchServiceAccountRequest', 2)
 
 
 class IamProjectsServiceAccountsSetIamPolicyRequest(_messages.Message):
@@ -1177,6 +1237,18 @@ class ListServiceAccountsResponse(_messages.Message):
 
   accounts = _messages.MessageField('ServiceAccount', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class PatchServiceAccountRequest(_messages.Message):
+  r"""The patch service account request.
+
+  Fields:
+    serviceAccount: A ServiceAccount attribute.
+    updateMask: A string attribute.
+  """
+
+  serviceAccount = _messages.MessageField('ServiceAccount', 1)
+  updateMask = _messages.StringField(2)
 
 
 class Permission(_messages.Message):

@@ -149,7 +149,7 @@
           "type": "string"
         },
         "destination": {
-          "description": "Required. The export destination:\n\"storage.googleapis.com\/[GCS_BUCKET]\"\n\"bigquery.googleapis.com\/projects\/[PROJECT_ID]\/datasets\/[DATASET]\"\n\"pubsub.googleapis.com\/projects\/[PROJECT_ID]\/topics\/[TOPIC_ID]\"\nThe sink's writer_identity, set when the sink is created, must have permission to write to the destination or else the log entries are not exported. For more information, see Exporting Logs With Sinks.",
+          "description": "Required. The export destination:\n\"storage.googleapis.com\/[GCS_BUCKET]\"\n\"bigquery.googleapis.com\/projects\/[PROJECT_ID]\/datasets\/[DATASET]\"\n\"pubsub.googleapis.com\/projects\/[PROJECT_ID]\/topics\/[TOPIC_ID]\"\nThe sink's writer_identity, set when the sink is created, must have permission to write to the destination or else the log entries are not exported. For more information, see Exporting Logs with Sinks.",
           "type": "string"
         },
         "filter": {
@@ -171,12 +171,22 @@
           ]
         },
         "writerIdentity": {
-          "description": "Output only. An IAM identity&mdash;a service account or group&mdash;under which Logging writes the exported log entries to the sink's destination. This field is set by sinks.create and sinks.update, based on the setting of unique_writer_identity in those methods.Until you grant this identity write-access to the destination, log entry exports from this sink will fail. For more information, see Granting access for a resource. Consult the destination service's documentation to determine the appropriate IAM roles to assign to the identity.",
+          "description": "Output only. An IAM identity&mdash;a service account or group&mdash;under which Logging writes the exported log entries to the sink's destination. This field is set by sinks.create and sinks.update based on the value of unique_writer_identity in those methods.Until you grant this identity write-access to the destination, log entry exports from this sink will fail. For more information, see Granting Access for a Resource. Consult the destination service's documentation to determine the appropriate IAM roles to assign to the identity.",
           "type": "string"
         },
         "includeChildren": {
           "description": "Optional. This field applies only to sinks owned by organizations and folders. If the field is false, the default, only the logs owned by the sink's parent resource are available for export. If the field is true, then logs from all the projects, folders, and billing accounts contained in the sink's parent resource are also available for export. Whether a particular log entry from the children is exported depends on the sink's filter expression. For example, if this field is true, then the filter resource.type=gce_instance would export all Compute Engine VM instance log entries from all projects in the sink's parent. To only export entries from certain child projects, filter on the project part of the log name:\nlogName:(\"projects\/test-project1\/\" OR \"projects\/test-project2\/\") AND\nresource.type=gce_instance\n",
           "type": "boolean"
+        },
+        "createTime": {
+          "description": "Output only. The creation timestamp of the sink.This field may not be present for older sinks.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last update timestamp of the sink.This field may not be present for older sinks.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -223,8 +233,18 @@
           "type": "string"
         },
         "disabled": {
-          "description": "Optional. If set to True, then this exclusion is disabled and it does not exclude any log entries. You can use exclusions.patch to change the value of this field.",
+          "description": "Optional. If set to True, then this exclusion is disabled and it does not exclude any log entries. You can update an exclusion to change the value of this field.",
           "type": "boolean"
+        },
+        "createTime": {
+          "description": "Output only. The creation timestamp of the exclusion.This field may not be present for older exclusions.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last update timestamp of the exclusion.This field may not be present for older exclusions.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -289,11 +309,11 @@
       "type": "object",
       "properties": {
         "logName": {
-          "description": "Required. The resource name of the log to which this log entry belongs:\n\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\"\n\"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\"\nA project number may optionally be used in place of PROJECT_ID. The  project number is translated to its corresponding PROJECT_ID internally  and the log_name field will contain PROJECT_ID in queries and exports.[LOG_ID] must be URL-encoded within log_name. Example: \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". [LOG_ID] must be less than 512 characters long and can only include the following characters: upper and lower case alphanumeric characters, forward-slash, underscore, hyphen, and period.For backward compatibility, if log_name begins with a forward-slash, such as \/projects\/..., then the log entry is ingested as usual but the forward-slash is removed. Listing the log entry will not show the leading slash and filtering for a log name with a leading slash will never return any results.",
+          "description": "Required. The resource name of the log to which this log entry belongs:\n\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\"\n\"organizations\/[ORGANIZATION_ID]\/logs\/[LOG_ID]\"\n\"billingAccounts\/[BILLING_ACCOUNT_ID]\/logs\/[LOG_ID]\"\n\"folders\/[FOLDER_ID]\/logs\/[LOG_ID]\"\nA project number may optionally be used in place of PROJECT_ID. The project number is translated to its corresponding PROJECT_ID internally and the log_name field will contain PROJECT_ID in queries and exports.[LOG_ID] must be URL-encoded within log_name. Example: \"organizations\/1234567890\/logs\/cloudresourcemanager.googleapis.com%2Factivity\". [LOG_ID] must be less than 512 characters long and can only include the following characters: upper and lower case alphanumeric characters, forward-slash, underscore, hyphen, and period.For backward compatibility, if log_name begins with a forward-slash, such as \/projects\/..., then the log entry is ingested as usual but the forward-slash is removed. Listing the log entry will not show the leading slash and filtering for a log name with a leading slash will never return any results.",
           "type": "string"
         },
         "resource": {
-          "description": "Required. The primary monitored resource associated with this log entry. Example: a log entry that reports a database error would be associated with the monitored resource designating the particular database that reported the error.",
+          "description": "Required. The primary monitored resource associated with this log entry.Example: a log entry that reports a database error would be associated with the monitored resource designating the particular database that reported the error.",
           "$ref": "MonitoredResource"
         },
         "protoPayload": {
@@ -368,7 +388,7 @@
           }
         },
         "metadata": {
-          "description": "Output only. Additional metadata about the monitored resource. Only k8s_container, k8s_pod, and k8s_node MonitoredResources have this field populated.",
+          "description": "Output only. Additional metadata about the monitored resource.Only k8s_container, k8s_pod, and k8s_node MonitoredResources have this field populated.",
           "$ref": "MonitoredResourceMetadata"
         },
         "operation": {
@@ -380,11 +400,11 @@
           "type": "string"
         },
         "spanId": {
-          "description": "Optional. The span ID within the trace associated with the log entry. For Trace spans, this is the same format that the Trace API v2 uses: a 16-character hexadecimal encoding of an 8-byte array, such as <code>\"000000000000004a\"<\/code>.",
+          "description": "Optional. The span ID within the trace associated with the log entry.For Trace spans, this is the same format that the Trace API v2 uses: a 16-character hexadecimal encoding of an 8-byte array, such as <code>\"000000000000004a\"<\/code>.",
           "type": "string"
         },
         "traceSampled": {
-          "description": "Optional. The sampling decision of the trace associated with the log entry. True means that the trace resource name in the trace field was sampled for storage in a trace backend. False means that the trace was not sampled for storage when this log entry was written, or the sampling decision was unknown at the time. A non-sampled trace value is still useful as a request correlation identifier. The default is False.",
+          "description": "Optional. The sampling decision of the trace associated with the log entry.True means that the trace resource name in the trace field was sampled for storage in a trace backend. False means that the trace was not sampled for storage when this log entry was written, or the sampling decision was unknown at the time. A non-sampled trace value is still useful as a request correlation identifier. The default is False.",
           "type": "boolean"
         },
         "sourceLocation": {
@@ -741,6 +761,16 @@
         "bucketOptions": {
           "description": "Optional. The bucket_options are required when the logs-based metric is using a DISTRIBUTION value type and it describes the bucket boundaries used to create a histogram of the extracted values.",
           "$ref": "BucketOptions"
+        },
+        "createTime": {
+          "description": "Output only. The creation timestamp of the metric.This field may not be present for older metrics.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last update timestamp of the metric.This field may not be present for older metrics.",
+          "type": "string",
+          "format": "google-datetime"
         },
         "version": {
           "description": "Deprecated. The API version that created or updated this metric. The v2 format is used by default and cannot be changed.",
@@ -1325,7 +1355,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
           ],
-          "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+          "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
         },
         "delete": {
           "id": "logging.sinks.delete",
@@ -1498,7 +1528,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "patch": {
               "id": "logging.projects.sinks.patch",
@@ -1538,7 +1568,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "delete": {
               "id": "logging.projects.sinks.delete",
@@ -2101,7 +2131,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "patch": {
               "id": "logging.organizations.sinks.patch",
@@ -2141,7 +2171,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "delete": {
               "id": "logging.organizations.sinks.delete",
@@ -2546,7 +2576,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "patch": {
               "id": "logging.folders.sinks.patch",
@@ -2586,7 +2616,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "delete": {
               "id": "logging.folders.sinks.delete",
@@ -2991,7 +3021,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "patch": {
               "id": "logging.billingAccounts.sinks.patch",
@@ -3031,7 +3061,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter. The updated sink might also have a new writer_identity; see the unique_writer_identity field."
+              "description": "Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field."
             },
             "delete": {
               "id": "logging.billingAccounts.sinks.delete",

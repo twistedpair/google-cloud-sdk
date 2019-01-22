@@ -715,6 +715,10 @@
         "cloudRunConfig": {
           "description": "Configuration for the Cloud Run addon. The `IstioConfig` addon must be\nenabled in order to enable Cloud Run. This option can only be enabled at\ncluster creation time.",
           "$ref": "CloudRunConfig"
+        },
+        "dnsCacheConfig": {
+          "description": "Configuration for NodeLocalDNS, a dns cache running on cluster nodes",
+          "$ref": "DnsCacheConfig"
         }
       }
     },
@@ -782,6 +786,10 @@
             "AUTH_NONE",
             "AUTH_MUTUAL_TLS"
           ]
+        },
+        "csmMeshName": {
+          "description": "If specified, denotes the Cloud Service Management service mesh to join.",
+          "type": "string"
         }
       }
     },
@@ -803,6 +811,17 @@
       "properties": {
         "disabled": {
           "description": "Whether Cloud Run is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "DnsCacheConfig": {
+      "id": "DnsCacheConfig",
+      "description": "Configuration for NodeLocal DNSCache",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether NodeLocal DNSCache is enabled for this cluster.",
           "type": "boolean"
         }
       }
@@ -1348,6 +1367,10 @@
         "publicEndpoint": {
           "description": "Output only. The external IP address of this cluster's endpoint.",
           "type": "string"
+        },
+        "enablePeeringRouteSharing": {
+          "description": "Whether to enable route sharing over the network peering.",
+          "type": "boolean"
         }
       }
     },
@@ -1712,6 +1735,10 @@
         "desiredPrivateIpv6Access": {
           "description": "The desired status of Private IPv6 access for this cluster.",
           "$ref": "PrivateIPv6Status"
+        },
+        "desiredPrivateClusterConfig": {
+          "description": "The desired private cluster configuration.",
+          "$ref": "PrivateClusterConfig"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to.\n\nUsers may specify either explicit versions offered by\nKubernetes Engine or version aliases, which have the following behavior:\n\n- \"latest\": picks the highest valid Kubernetes version\n- \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version\n- \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version\n- \"1.X.Y-gke.N\": picks an explicit Kubernetes version\n- \"-\": picks the default Kubernetes version",
@@ -3184,7 +3211,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "The parent (project, location, cluster id) where the node pools will be\nlisted. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "description": "The cluster (project, location, cluster id) to get keys for. Specified in\nthe format 'projects\/*\/locations\/*\/clusters\/*'.",
                       "location": "path",
                       "required": true,
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
@@ -3200,7 +3227,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format."
+                  "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters."
                 },
                 "setResourceLabels": {
                   "id": "container.projects.locations.clusters.setResourceLabels",
@@ -3684,7 +3711,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "The parent (project, location, cluster id) where the node pools will be\nlisted. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "description": "The cluster (project, location, cluster id) to get the discovery document\nfor. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
                           "location": "path",
                           "required": true,
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
@@ -3700,7 +3727,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "GetOpenIDConfig gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html"
+                      "description": "GetOpenIDConfig gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html\nThis API is not yet intended for general use, and is not available for all\nclusters."
                     }
                   }
                 }

@@ -1447,7 +1447,8 @@ class GooglePrivacyDlpV2CryptoHashConfig(_messages.Message):
   hashing. Uses SHA-256. The key size must be either 32 or 64 bytes. Outputs a
   base64 encoded representation of the hashed output (for example,
   L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=). Currently, only string and
-  integer values can be hashed.
+  integer values can be hashed. See
+  https://cloud.google.com/dlp/docs/pseudonymization to learn more.
 
   Fields:
     cryptoKey: The key used by the hash function.
@@ -3452,10 +3453,14 @@ class GooglePrivacyDlpV2RecordKey(_messages.Message):
   Fields:
     bigQueryKey: A GooglePrivacyDlpV2BigQueryKey attribute.
     datastoreKey: A GooglePrivacyDlpV2DatastoreKey attribute.
+    idValues: Values of identifying columns in the given row. Order of values
+      matches the order of field identifiers specified in the scanning
+      request.
   """
 
   bigQueryKey = _messages.MessageField('GooglePrivacyDlpV2BigQueryKey', 1)
   datastoreKey = _messages.MessageField('GooglePrivacyDlpV2DatastoreKey', 2)
+  idValues = _messages.StringField(3, repeated=True)
 
 
 class GooglePrivacyDlpV2RecordLocation(_messages.Message):

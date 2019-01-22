@@ -179,8 +179,7 @@ class Instance(_messages.Message):
         of updates may cause the instance to become unusable while the update
         is in progress.
       DELETING: Redis instance is being deleted.
-      REPAIRING: Redis instance is being repaired and may be unusable. Details
-        can be found in the `status_message` field.
+      REPAIRING: Redis instance is being repaired and may be unusable.
       MAINTENANCE: Maintenance is being performed on this Redis instance.
     """
     STATE_UNSPECIFIED = 0

@@ -43,6 +43,7 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
     self.extensions_k8s_groups = self.ExtensionsK8sGroupsService(self)
     self.extensions_k8s = self.ExtensionsK8sService(self)
     self.extensions = self.ExtensionsService(self)
+    self.namespaces_authorizeddomains = self.NamespacesAuthorizeddomainsService(self)
     self.namespaces_configurations = self.NamespacesConfigurationsService(self)
     self.namespaces_domainmappings = self.NamespacesDomainmappingsService(self)
     self.namespaces_kube_system_services = self.NamespacesKubeSystemServicesService(self)
@@ -51,6 +52,7 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
     self.namespaces_routes = self.NamespacesRoutesService(self)
     self.namespaces_services = self.NamespacesServicesService(self)
     self.namespaces = self.NamespacesService(self)
+    self.projects_locations_authorizeddomains = self.ProjectsLocationsAuthorizeddomainsService(self)
     self.projects_locations_configurations = self.ProjectsLocationsConfigurationsService(self)
     self.projects_locations_domainmappings = self.ProjectsLocationsDomainmappingsService(self)
     self.projects_locations_revisions = self.ProjectsLocationsRevisionsService(self)
@@ -243,6 +245,43 @@ class ServerlessV1alpha1(base_api.BaseApiClient):
       super(ServerlessV1alpha1.ExtensionsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class NamespacesAuthorizeddomainsService(base_api.BaseApiService):
+    """Service class for the namespaces_authorizeddomains resource."""
+
+    _NAME = u'namespaces_authorizeddomains'
+
+    def __init__(self, client):
+      super(ServerlessV1alpha1.NamespacesAuthorizeddomainsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""RPC to list authorized domains.
+
+      Args:
+        request: (ServerlessNamespacesAuthorizeddomainsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAuthorizedDomainsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/authorizeddomains',
+        http_method=u'GET',
+        method_id=u'serverless.namespaces.authorizeddomains.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'apis/domains.cloudrun.dev/v1alpha1/{+parent}/authorizeddomains',
+        request_field='',
+        request_type_name=u'ServerlessNamespacesAuthorizeddomainsListRequest',
+        response_type_name=u'ListAuthorizedDomainsResponse',
+        supports_download=False,
+    )
 
   class NamespacesConfigurationsService(base_api.BaseApiService):
     """Service class for the namespaces_configurations resource."""
@@ -853,6 +892,43 @@ concurrency control.
       self._upload_configs = {
           }
 
+  class ProjectsLocationsAuthorizeddomainsService(base_api.BaseApiService):
+    """Service class for the projects_locations_authorizeddomains resource."""
+
+    _NAME = u'projects_locations_authorizeddomains'
+
+    def __init__(self, client):
+      super(ServerlessV1alpha1.ProjectsLocationsAuthorizeddomainsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""RPC to list authorized domains.
+
+      Args:
+        request: (ServerlessProjectsLocationsAuthorizeddomainsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAuthorizedDomainsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/authorizeddomains',
+        http_method=u'GET',
+        method_id=u'serverless.projects.locations.authorizeddomains.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha1/{+parent}/authorizeddomains',
+        request_field='',
+        request_type_name=u'ServerlessProjectsLocationsAuthorizeddomainsListRequest',
+        response_type_name=u'ListAuthorizedDomainsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsConfigurationsService(base_api.BaseApiService):
     """Service class for the projects_locations_configurations resource."""
 
@@ -1315,6 +1391,34 @@ child entities like Routes, Configurations and Revisions.
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Get the IAM Access Control policy currently in effect for the given.
+Cloud Run service. This result does not include any inherited policies.
+
+      Args:
+        request: (ServerlessProjectsLocationsServicesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:getIamPolicy',
+        http_method=u'GET',
+        method_id=u'serverless.projects.locations.services.getIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name=u'ServerlessProjectsLocationsServicesGetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Rpc to list services.
 
@@ -1403,6 +1507,63 @@ concurrency control.
         request_field=u'service',
         request_type_name=u'ServerlessProjectsLocationsServicesReplaceServiceRequest',
         response_type_name=u'Service',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM Access control policy for the specified Service. Overwrites.
+any existing policy.
+
+      Args:
+        request: (ServerlessProjectsLocationsServicesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:setIamPolicy',
+        http_method=u'POST',
+        method_id=u'serverless.projects.locations.services.setIamPolicy',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:setIamPolicy',
+        request_field=u'setIamPolicyRequest',
+        request_type_name=u'ServerlessProjectsLocationsServicesSetIamPolicyRequest',
+        response_type_name=u'Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified Project.
+
+There are no permissions required for making this API call.
+
+      Args:
+        request: (ServerlessProjectsLocationsServicesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:testIamPermissions',
+        http_method=u'POST',
+        method_id=u'serverless.projects.locations.services.testIamPermissions',
+        ordered_params=[u'resource'],
+        path_params=[u'resource'],
+        query_params=[],
+        relative_path=u'v1alpha1/{+resource}:testIamPermissions',
+        request_field=u'testIamPermissionsRequest',
+        request_type_name=u'ServerlessProjectsLocationsServicesTestIamPermissionsRequest',
+        response_type_name=u'TestIamPermissionsResponse',
         supports_download=False,
     )
 

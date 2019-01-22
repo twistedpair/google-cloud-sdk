@@ -70,7 +70,9 @@ class LinterRenderer(text_renderer.TextRenderer):
     warnings = []
     for pronoun in self._PERSONAL_PRONOUNS:
       if pronoun in section:
-        warnings.append('\nPlease remove personal pronouns.')
+        warnings = ['# ' + self._heading + '_PRONOUN_CHECK FAILED'
+                    '\nPlease remove personal pronouns in the '
+                    + self._heading + ' section.']
         break
     return warnings
 
@@ -83,7 +85,8 @@ class LinterRenderer(text_renderer.TextRenderer):
         not self.example):
       self._file_out.write('Refer to the detailed style guide: '
                            'go/cloud-sdk-help-guide#examples\nThis is the '
-                           'analysis for EXAMPLES:\nYou have not included an '
+                           'analysis for EXAMPLES:\n# EXAMPLE_PRESENT_CHECK '
+                           'FAILED\nYou have not included an '
                            'example in the Examples section.\n\n')
 
   def Heading(self, level, heading):
@@ -111,6 +114,7 @@ class LinterRenderer(text_renderer.TextRenderer):
         # check that the example starts with the command of the help text
         if self.command_text.startswith(self.command_name):
           self.example = True
+          self._file_out.write('# EXAMPLE_PRESENT_CHECK SUCCESS\n')
           rest_of_command = self.command_text[self.command_name_length:].split()
           flag_names = []
           for word in rest_of_command:
@@ -133,16 +137,28 @@ class LinterRenderer(text_renderer.TextRenderer):
         self.equals_violation_flags.append(flag)
 
   def _analyze_name(self, section):
+    successful_linters = []
     warnings = self.check_for_personal_pronouns(section)
+    if not warnings:
+      successful_linters.append('# NAME_PRONOUN_CHECK SUCCESS')
     self.command_name = section.strip().split(' -')[0]
     if len(section.strip().split(' - ')) == 1:
       self.name_section = ''
+      warnings.append('# NAME_DESCRIPTION_CHECK FAILED')
       warnings.append('Please add an explanation for the command.')
+    else:
+      successful_linters.append('# NAME_DESCRIPTION_CHECK SUCCESS')
     self.command_name_length = len(self.command_name)
     # check that name section is not too long
     if len(section.split()) > self._NAME_WORD_LIMIT:
+      warnings.append('# NAME_LENGTH_CHECK FAILED')
       warnings.append('Please shorten the name section to less than ' +
                       str(self._NAME_WORD_LIMIT) + ' words.')
+    else:
+      successful_linters.append('# NAME_LENGTH_CHECK SUCCESS')
+    if successful_linters:
+      self._file_out.write('\n'.join(successful_linters))
+      self._file_out.write('\n')
     if warnings:
       # TODO(b/119550825): remove the go/ link from open source code
       self._file_out.write('Refer to the detailed style guide: '
@@ -154,29 +170,48 @@ class LinterRenderer(text_renderer.TextRenderer):
       self._file_out.write('There are no errors for the NAME section.\n\n')
 
   def _analyze_examples(self, section):
-    warnings = self.check_for_personal_pronouns(section)
-    if self.equals_violation_flags:
-      warnings.append('There should be a `=` between the flag name and the '
-                      'value.')
-      warnings.append('The following flags are not formatted properly:')
-      for flag in self.equals_violation_flags:
-        warnings.append(flag)
-    if self.nonexistent_violation_flags:
-      warnings.append('The following flags are not valid for the command:')
-      for flag in self.nonexistent_violation_flags:
-        warnings.append(flag)
-    if warnings:
-      # TODO(b/119550825): remove the go/ link from open source code
-      self._file_out.write('Refer to the detailed style guide: '
-                           'go/cloud-sdk-help-guide#examples\n'
-                           'This is the analysis for EXAMPLES:\n')
-      self._file_out.write('\n'.join(warnings))
-    else:
-      self._file_out.write('There are no errors for the EXAMPLES '
-                           'section.\n\n')
+    successful_linters = []
+    if not self.command_metadata.is_group:
+      warnings = self.check_for_personal_pronouns(section)
+      if not warnings:
+        successful_linters.append('# EXAMPLES_PRONOUN_CHECK SUCCESS')
+      if self.equals_violation_flags:
+        warnings.append('# EXAMPLE_FLAG_EQUALS_CHECK FAILED')
+        warnings.append('There should be an `=` between the flag name and the '
+                        'value.')
+        warnings.append('The following flags are not formatted properly:')
+        for flag in self.equals_violation_flags:
+          warnings.append(flag)
+      else:
+        successful_linters.append('# EXAMPLE_FLAG_EQUALS_CHECK SUCCESS')
+      if self.nonexistent_violation_flags:
+        warnings.append('# EXAMPLE_NONEXISTENT_FLAG_CHECK FAILED')
+        warnings.append('The following flags are not valid for the command:')
+        for flag in self.nonexistent_violation_flags:
+          warnings.append(flag)
+      else:
+        successful_linters.append('# EXAMPLE_NONEXISTENT_FLAG_CHECK SUCCESS')
+      if successful_linters:
+        self._file_out.write('\n'.join(successful_linters))
+        self._file_out.write('\n')
+      if warnings:
+        # TODO(b/119550825): remove the go/ link from open source code
+        self._file_out.write('Refer to the detailed style guide: '
+                             'go/cloud-sdk-help-guide#examples\n'
+                             'This is the analysis for EXAMPLES:\n')
+        self._file_out.write('\n'.join(warnings))
+      else:
+        self._file_out.write('There are no errors for the EXAMPLES '
+                             'section.\n\n')
 
   def _analyze_description(self, section):
+    successful_linters = []
     warnings = self.check_for_personal_pronouns(section)
+    if not warnings:
+      successful_linters.append('# DESCRIPTION_PRONOUN_CHECK SUCCESS')
+    if successful_linters:
+      self._file_out.write('\n'.join(successful_linters))
+      self._file_out.write('\n')
     if warnings:
       # TODO(b/119550825): remove the go/ link from open source code
       self._file_out.write('Refer to the detailed style guide: '

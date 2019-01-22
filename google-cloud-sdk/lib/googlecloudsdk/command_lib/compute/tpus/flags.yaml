@@ -85,3 +85,16 @@ service_networking:
     creating the TPU.
 
     For more information on Service Networking see https://cloud.google.com/service-infrastructure/docs/service-networking/getting-started.
+
+reserved:
+  api_field: node.schedulingConfig.reserved
+  arg_name: reserved
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    When specified, will attempt to create the TPU node under reservations made in the current
+    project. The reservations can be made separately but used in aggregated form. i.e., the user can
+    make a reservation of 128 V2 TPUs and later on make another reservation of 128 V2 TPUs then
+    creates a v2-256 TPU instance. If there exists no reservation or not sufficient amount of
+    reserved cores under the project, the request will fail due to lack of capacity.

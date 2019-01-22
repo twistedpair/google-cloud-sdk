@@ -36,9 +36,9 @@ class GoogleApiHttpBody(_messages.Message):
     ExtensionsValueListEntry: A ExtensionsValueListEntry object.
 
   Fields:
-    contentType: The HTTP Content-Type string representing the content type of
-      the body.
-    data: HTTP body binary data.
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
     extensions: Application specific response metadata. Must be set in the
       first response for streaming APIs.
   """
@@ -322,8 +322,8 @@ class GoogleCloudMlV1HyperparameterSpec(_messages.Message):
     unspecified.
 
     Values:
-      ALGORITHM_UNSPECIFIED: The default algorithm used by hyperparameter
-        tuning service.
+      ALGORITHM_UNSPECIFIED: The default algorithm used by the hyperparameter
+        tuning service. This is a Bayesian optimization algorithm.
       GRID_SEARCH: Simple grid search within the feasible space. To use grid
         search, all parameters must be `INTEGER`, `CATEGORICAL`, or
         `DISCRETE`.
@@ -794,7 +794,7 @@ class GoogleCloudMlV1PredictRequest(_messages.Message):
 
 
 class GoogleCloudMlV1PredictionInput(_messages.Message):
-  r"""Represents input parameters for a prediction job. Next field: 20
+  r"""Represents input parameters for a prediction job.
 
   Enums:
     DataFormatValueValuesEnum: Required. The format of the input data files.
@@ -987,19 +987,15 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       </dd>   <dt>complex_model_m_p100</dt>   <dd>   A machine equivalent to
       <i>complex_model_m</i> that also includes   four NVIDIA Tesla P100 GPUs.
       </dd>   <dt>standard_v100</dt>   <dd>   A machine equivalent to
-      <i>standard</i> that   also includes a single NVIDIA Tesla V100 GPU. The
-      availability of these   GPUs is in the <i>Beta</i> launch stage.   </dd>
-      <dt>large_model_v100</dt>   <dd>   A machine equivalent to
+      <i>standard</i> that   also includes a single NVIDIA Tesla V100 GPU.
+      </dd>   <dt>large_model_v100</dt>   <dd>   A machine equivalent to
       <i>large_model</i> that   also includes a single NVIDIA Tesla V100 GPU.
-      The availability of these   GPUs is in the <i>Beta</i> launch stage.
       </dd>   <dt>complex_model_m_v100</dt>   <dd>   A machine equivalent to
       <i>complex_model_m</i> that   also includes four NVIDIA Tesla V100 GPUs.
-      The availability of these   GPUs is in the <i>Beta</i> launch stage.
       </dd>   <dt>complex_model_l_v100</dt>   <dd>   A machine equivalent to
       <i>complex_model_l</i> that   also includes eight NVIDIA Tesla V100
-      GPUs. The availability of these   GPUs is in the <i>Beta</i> launch
-      stage.   </dd>   <dt>cloud_tpu</dt>   <dd>   A TPU VM including one
-      Cloud TPU. See more about   <a href="/ml-engine/docs/tensorflow/using-
+      GPUs.   </dd>   <dt>cloud_tpu</dt>   <dd>   A TPU VM including one Cloud
+      TPU. See more about   <a href="/ml-engine/docs/tensorflow/using-
       tpus">using TPUs to train   your model</a>.   </dd> </dl>  You must set
       this value when `scaleTier` is set to `CUSTOM`.
     packageUris: Required. The Google Cloud Storage location of the packages
@@ -1012,7 +1008,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       use for the training job. Each replica in the cluster will be of the
       type specified in `parameter_server_type`.  This value can only be used
       when `scale_tier` is set to `CUSTOM`.If you set this value, you must
-      also set `parameter_server_type`.
+      also set `parameter_server_type`.  The default value is zero.
     parameterServerType: Optional. Specifies the type of virtual machine to
       use for your training job's parameter server.  The supported values are
       the same as those described in the entry for `master_type`.  This value
@@ -1042,6 +1038,7 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
       training job. Each replica in the cluster will be of the type specified
       in `worker_type`.  This value can only be used when `scale_tier` is set
       to `CUSTOM`. If you set this value, you must also set `worker_type`.
+      The default value is zero.
     workerType: Optional. Specifies the type of virtual machine to use for
       your training job's worker nodes.  The supported values are the same as
       those described in the entry for `masterType`.  This value must be
@@ -1181,6 +1178,8 @@ class GoogleCloudMlV1Version(_messages.Message):
       Engine will analyze files in the deployment_uri to determine a
       framework. If you choose `SCIKIT_LEARN` or `XGBOOST`, you must also set
       the runtime version of the model to 1.4 or greater.
+    imageUri: Optional. The docker image to run for custom serving container.
+      This image must be in Google Container Registry.
     isDefault: Output only. If true, this version will be used to handle
       prediction requests that do not specify a version.  You can change the
       default version by calling [projects.methods.versions.setDefault](/ml-
@@ -1204,31 +1203,33 @@ class GoogleCloudMlV1Version(_messages.Message):
       predictable billing. Beware that latency and error rates will increase
       if the traffic exceeds that capability of the system to serve it based
       on the selected number of nodes.
-    modelClass: class Model(object):   " " "A Model performs predictions on a
-      given list of instances.    The input instances are the raw values sent
-      by the user. It is the   responsibility of a Model to translate these
-      instances into   actual predictions.    The input instances and the
-      output use python data types. The input   instances have been decoded
-      prior to being passed to the predict   method. The output, which should
-      use python data types is   encoded after being returned from the predict
-      method.   " " "    def predict(self, instances, **kwargs):     " "
-      "Returns predictions for the provided instances.      Instances are the
-      decoded values from the request. Clients need not     worry about
-      decoding json nor base64 decoding.      Args:       instances: A list of
-      instances, as described in the API.       **kwargs: Additional keyword
-      arguments, will be passed into the           client's predict method.
-      Returns:       A list of outputs containing the prediction results.
-      " " "    @classmethod   def from_path(cls, model_path):     " " "Creates
-      a model using the given model path.      Path is useful, e.g., to load
-      files from the exported directory     containing the model.      Args:
-      model_path: The local directory that contains the exported model
-      file along with any additional files uploaded when creating the
-      version resource.      Returns:       An instance implementing this
-      Model class.     " " "
+    modelClass: A string attribute.
     name: Required.The name specified for the version when it was created.
       The version name must be unique within the model it is created in.
     packageUris: Optional. The Google Cloud Storage location of the packages
       for custom prediction and any additional dependencies.
+    predictionClass: class PredictionClass(object):   " " "A Model performs
+      predictions on a given list of instances.    The input instances are the
+      raw values sent by the user. It is the   responsibility of a Model to
+      translate these instances into   actual predictions.    The input
+      instances and the output use python data types. The input   instances
+      have been decoded prior to being passed to the predict   method. The
+      output, which should use python data types is   encoded after being
+      returned from the predict method.   " " "    def predict(self,
+      instances, **kwargs):     " " "Returns predictions for the provided
+      instances.      Instances are the decoded values from the request.
+      Clients need not     worry about decoding json nor base64 decoding.
+      Args:       instances: A list of instances, as described in the API.
+      **kwargs: Additional keyword arguments, will be passed into the
+      client's predict method.      Returns:       A list of outputs
+      containing the prediction results.     " " "    @classmethod   def
+      from_path(cls, model_path):     " " "Creates a model using the given
+      model path.      Path is useful, e.g., to load files from the exported
+      directory     containing the model.      Args:       model_path: The
+      local directory that contains the exported model           file along
+      with any additional files uploaded when creating the           version
+      resource.      Returns:       An instance implementing this Model class.
+      " " "
     pythonVersion: Optional. The version of Python used in prediction. If not
       set, the default version is '2.7'. Python '3.5' is available when
       `runtime_version` is set to '1.4' and above. Python '2.7' works with all
@@ -1252,7 +1253,8 @@ class GoogleCloudMlV1Version(_messages.Message):
     model to 1.4 or greater.
 
     Values:
-      FRAMEWORK_UNSPECIFIED: Unspecified framework. Defaults to TensorFlow.
+      FRAMEWORK_UNSPECIFIED: Unspecified framework. Assigns a value based on
+        the file suffix.
       TENSORFLOW: Tensorflow framework.
       SCIKIT_LEARN: Scikit-learn framework.
       XGBOOST: XGBoost framework.
@@ -1323,18 +1325,20 @@ class GoogleCloudMlV1Version(_messages.Message):
   errorMessage = _messages.StringField(6)
   etag = _messages.BytesField(7)
   framework = _messages.EnumField('FrameworkValueValuesEnum', 8)
-  isDefault = _messages.BooleanField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  lastUseTime = _messages.StringField(11)
-  machineType = _messages.StringField(12)
-  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 13)
-  modelClass = _messages.StringField(14)
-  name = _messages.StringField(15)
-  packageUris = _messages.StringField(16, repeated=True)
-  pythonVersion = _messages.StringField(17)
-  runtimeVersion = _messages.StringField(18)
-  serviceAccount = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
+  imageUri = _messages.StringField(9)
+  isDefault = _messages.BooleanField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  lastUseTime = _messages.StringField(12)
+  machineType = _messages.StringField(13)
+  manualScaling = _messages.MessageField('GoogleCloudMlV1ManualScaling', 14)
+  modelClass = _messages.StringField(15)
+  name = _messages.StringField(16)
+  packageUris = _messages.StringField(17, repeated=True)
+  predictionClass = _messages.StringField(18)
+  pythonVersion = _messages.StringField(19)
+  runtimeVersion = _messages.StringField(20)
+  serviceAccount = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):

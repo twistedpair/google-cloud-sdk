@@ -153,10 +153,10 @@ class Instance(_messages.Message):
       specific zone (or collection of zones for cross-zone instances) an
       instance should be provisioned in. Refer to [location_id] and
       [alternative_location_id] fields for more details.
-    persistenceIamIdentity: Output only. IAM identity used by import / export
-      operations to transfer data to/from GCS.  Format is
-      "serviceAccount:<service_account_email>".  The value may change over
-      time for a given instance so should be checked before each import/export
+    persistenceIamIdentity: Output only. Cloud IAM identity used by import /
+      export operations to transfer data to/from Cloud Storage. Format is
+      "serviceAccount:<service_account_email>". The value may change over time
+      for a given instance so should be checked before each import/export
       operation.
     port: Output only. The port number of the exposed Redis endpoint.
     redisConfigs: Optional. Redis configuration parameters, according to
@@ -188,8 +188,7 @@ class Instance(_messages.Message):
         of updates may cause the instance to become unusable while the update
         is in progress.
       DELETING: Redis instance is being deleted.
-      REPAIRING: Redis instance is being repaired and may be unusable. Details
-        can be found in the `status_message` field.
+      REPAIRING: Redis instance is being repaired and may be unusable.
       MAINTENANCE: Maintenance is being performed on this Redis instance.
       IMPORTING: Redis instance is importing data (availability may be
         affected).

@@ -206,10 +206,10 @@ completion. While the long running operation is in progress, any call to
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateInstance creates a new Instance in the specified region.
-Returns a long running operation which contains an Instance on completion.
-While the long running operation is in progress, any call to GetInstance
-returns an Instance in state CREATING.
+      r"""Creates a new instance in the specified region.
+Returns a long running operation which contains an instance on completion.
+While the long running operation is in progress, any call to `GetInstance`
+returns an instance in state `CREATING`.
 
       Args:
         request: (GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest) input message
@@ -236,10 +236,11 @@ returns an Instance in state CREATING.
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteInstance deletes the specified Instance.
-Returns a long running operation which contains a google.protobuf.Empty
+      r"""Deletes the specified instance.
+Returns a long running operation which contains a `google.protobuf.Empty`
 response on completion.
-Deleting an instance with pools in it will delete these pools.
+Deleting an instance with worker pools in it will delete these worker
+pools.
 
       Args:
         request: (RemotebuildexecutionProjectsInstancesDeleteRequest) input message
@@ -266,7 +267,7 @@ Deleting an instance with pools in it will delete these pools.
     )
 
     def Get(self, request, global_params=None):
-      r"""GetInstance returns the specified Instance.
+      r"""Returns the specified instance.
 
       Args:
         request: (RemotebuildexecutionProjectsInstancesGetRequest) input message
@@ -293,7 +294,7 @@ Deleting an instance with pools in it will delete these pools.
     )
 
     def List(self, request, global_params=None):
-      r"""ListInstances returns all instances in a project.
+      r"""Lists instances in a project.
 
       Args:
         request: (RemotebuildexecutionProjectsInstancesListRequest) input message

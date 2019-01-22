@@ -48,7 +48,7 @@ class VersionsClient(object):
   _ALLOWED_YAML_FIELDS = set(['autoScaling', 'description', 'deploymentUri',
                               'runtimeVersion', 'manualScaling', 'labels',
                               'machineType', 'framework', 'pythonVersion',
-                              'modelClass', 'packageUris'])
+                              'modelClass', 'packageUris', 'serviceAccount'])
 
   def __init__(self, client=None, messages=None):
     self.client = client or GetClientInstance()
@@ -142,7 +142,8 @@ class VersionsClient(object):
                    python_version=None,
                    model_class=None,
                    package_uris=None,
-                   accelerator_config=None):
+                   accelerator_config=None,
+                   service_account=None):
     """Create a Version object.
 
     The object is based on an optional YAML configuration file and the
@@ -169,6 +170,8 @@ class VersionsClient(object):
       package_uris: list of str, Cloud Storage URIs containing user-supplied
         Python code to use.
       accelerator_config: an accelerator config message object.
+      service_account: Specifies the service account for resource access
+        control.
 
 
     Returns:
@@ -213,7 +216,8 @@ class VersionsClient(object):
         'pythonVersion': python_version,
         'modelClass': model_class,
         'packageUris': package_uris,
-        'acceleratorConfig': accelerator_config
+        'acceleratorConfig': accelerator_config,
+        'serviceAccount': service_account
     }
     for field_name, value in additional_fields.items():
       if value is not None:

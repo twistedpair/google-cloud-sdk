@@ -182,7 +182,12 @@ class OperationsV1Beta4(_BaseOperations):
       # have to catch all exceptions here and return them.
       return e
     if op.error and op.error.errors:
-      return exceptions.OperationError(op.error.errors[0].code)
+      error_object = op.error.errors[0]
+      # If there's an error message to show, show it in addition to the code.
+      error = '[{}]'.format(error_object.code)
+      if error_object.message:
+        error += ' ' + error_object.message
+      return exceptions.OperationError(error)
     if op.status == 'UNKNOWN':
       return exceptions.OperationError(op.status)
     if op.status == 'DONE':

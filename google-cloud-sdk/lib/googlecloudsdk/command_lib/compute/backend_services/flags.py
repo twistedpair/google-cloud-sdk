@@ -592,6 +592,33 @@ def AddFailoverRatio(parser):
       """)
 
 
+def AddEnableLogging(parser, default):
+  """Adds the enable logging argument to the argparse."""
+  parser.add_argument(
+      '--enable-logging',
+      action='store_true',
+      default=default,
+      help="""\
+      The logging options for the load balancer traffic served by this backend
+      service. If logging is enabled, logs will be exported to Stackdriver.
+      Enabled by default.
+      """)
+
+
+def AddLoggingSampleRate(parser):
+  """Adds the logging sample rate argument to the argparse."""
+  parser.add_argument(
+      '--logging-sample-rate',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=1.0),
+      help="""\
+      This field can only be specified if logging is enabled for the backend
+      service. The value of the field must be a float in the range [0, 1]. This
+      configures the sampling rate of requests to the load balancer where 1.0
+      means all logged requests are reported and 0.0 means no logged requests
+      are reported. The default value is 1.0.
+      """)
+
+
 def AddInstanceGroupAndNetworkEndpointGroupArgs(parser, verb):
   backend_group = parser.add_group(required=True, mutex=True)
   instance_group = backend_group.add_group('Instance Group')

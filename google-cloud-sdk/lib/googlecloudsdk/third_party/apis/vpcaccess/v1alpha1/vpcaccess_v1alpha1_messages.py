@@ -37,15 +37,17 @@ class Connector(_messages.Message):
     Values:
       STATUS_UNSPECIFIED: Invalid state.
       READY: Connector is deployed and ready to receive traffic.
-      CREATING: An Insert operation is in progress. Transient condition.
-      DELETING: A Delete operation is in progress. Transient condition.
+      CREATING: An Insert operation is in progress.
+      DELETING: A Delete operation is in progress.
       ERROR: Connector is in a bad state, manual deletion recommended.
+      UPDATING: The connector is being updated.
     """
     STATUS_UNSPECIFIED = 0
     READY = 1
     CREATING = 2
     DELETING = 3
     ERROR = 4
+    UPDATING = 5
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of the VPC access connector.

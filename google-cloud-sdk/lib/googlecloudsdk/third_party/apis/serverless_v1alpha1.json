@@ -345,7 +345,7 @@
           "$ref": "ServiceSpecPinnedType"
         },
         "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIGNORED BY GSE.\n+optional",
+          "description": "For open-source Knative metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIgnored by Cloud Run.\n+optional",
           "type": "integer",
           "format": "int32"
         }
@@ -399,7 +399,7 @@
       "type": "object",
       "properties": {
         "container": {
-          "description": "Container defines the unit of execution for this Revision.\nIn the context of a Revision, we disallow a number of the fields of\nthis Container, including: name, resources, ports, and volumeMounts.",
+          "description": "Container defines the unit of execution for this Revision.\nIn the context of a Revision, we disallow a number of the fields of\nthis Container, including: name, resources, ports, and volumeMounts.\nThe runtime contract is documented here:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/runtime-contract.md",
           "$ref": "Container"
         },
         "concurrencyModel": {
@@ -449,7 +449,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the container specified as a DNS_LABEL.\nEach container in a pod must have a unique name (DNS_LABEL).\nCannot be updated.",
+          "description": "Name of the container specified as a DNS_LABEL.\nEach container must have a unique name (DNS_LABEL).\nCannot be updated.",
           "type": "string"
         },
         "image": {
@@ -471,7 +471,7 @@
           }
         },
         "env": {
-          "description": "List of environment variables to set in the container.\nCannot be updated.\n+optional\n+patchMergeKey=name\n+patchStrategy=merge",
+          "description": "List of environment variables to set in the container.\nCannot be updated.\n+optional",
           "type": "array",
           "items": {
             "$ref": "EnvVar"
@@ -486,7 +486,7 @@
           "type": "string"
         },
         "ports": {
-          "description": "List of ports to expose from the container. Exposing a port here gives\nthe system additional information about the network connections a\ncontainer uses, but is primarily informational. Not specifying a port here\nDOES NOT prevent that port from being exposed. Any port which is\nlistening on the default \"0.0.0.0\" address inside a container will be\naccessible from the network.\nCannot be updated.\n+optional\n+patchMergeKey=containerPort\n+patchStrategy=merge",
+          "description": "List of ports to expose from the container. Exposing a port here gives\nthe system additional information about the network connections a\ncontainer uses, but is primarily informational. Not specifying a port here\nDOES NOT prevent that port from being exposed. Any port which is\nlistening on the default \"0.0.0.0\" address inside a container will be\naccessible from the network.\nCannot be updated.\n+optional",
           "type": "array",
           "items": {
             "$ref": "ContainerPort"
@@ -500,14 +500,14 @@
           }
         },
         "volumeMounts": {
-          "description": "Pod volumes to mount into the container's filesystem.\nCannot be updated.\n+optional\n+patchMergeKey=mountPath\n+patchStrategy=merge",
+          "description": "Pod volumes to mount into the container's filesystem.\nCannot be updated.\n+optional",
           "type": "array",
           "items": {
             "$ref": "VolumeMount"
           }
         },
         "volumeDevices": {
-          "description": "volumeDevices is the list of block devices to be used by the container.\nThis is an alpha feature and may change in the future.\n+patchMergeKey=devicePath\n+patchStrategy=merge\n+optional",
+          "description": "volumeDevices is the list of block devices to be used by the container.\nThis is an alpha feature and may change in the future.\n+optional",
           "type": "array",
           "items": {
             "$ref": "VolumeDevice"
@@ -576,28 +576,28 @@
       "type": "object",
       "properties": {
         "limits": {
-          "description": "Limits describes the maximum amount of compute resources allowed.\nThis field is deprecated in favor of limits_in_map.",
+          "description": "Limits describes the maximum amount of compute resources allowed.\nThe values of the map is string form of the 'quantity' k8s type:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/api\/resource\/quantity.go",
           "type": "object",
           "additionalProperties": {
-            "$ref": "Quantity"
+            "type": "string"
           }
         },
         "requests": {
-          "description": "Requests describes the minimum amount of compute resources required.\nIf Requests is omitted for a container, it defaults to Limits if that is\nexplicitly specified, otherwise to an implementation-defined value.\nThis field is deprecated in favor of requests_in_map.",
+          "description": "Requests describes the minimum amount of compute resources required.\nIf Requests is omitted for a container, it defaults to Limits if that is\nexplicitly specified, otherwise to an implementation-defined value.\nThe values of the map is string form of the 'quantity' k8s type:\nhttps:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/api\/resource\/quantity.go",
           "type": "object",
           "additionalProperties": {
-            "$ref": "Quantity"
+            "type": "string"
           }
         },
         "limitsInMap": {
-          "description": "Limits describes the maximum amount of compute resources allowed.\nThis is a temporary field created to migrate away from the\nmap<string, Quantity> limits field. This is done to become compliant\nwith k8s style API.",
+          "description": "Limits describes the maximum amount of compute resources allowed.\nThis is a temporary field created to migrate away from the\nmap<string, Quantity> limits field. This is done to become compliant\nwith k8s style API.\nThis field is deprecated in favor of limits field.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Quantity"
           }
         },
         "requestsInMap": {
-          "description": "Requests describes the minimum amount of compute resources required.\nIf Requests is omitted for a container, it defaults to Limits if that is\nexplicitly specified, otherwise to an implementation-defined value.\nThis is a temporary field created to migrate away from the\nmap<string, Quantity> requests field. This is done to become compliant\nwith k8s style API.",
+          "description": "Requests describes the minimum amount of compute resources required.\nIf Requests is omitted for a container, it defaults to Limits if that is\nexplicitly specified, otherwise to an implementation-defined value.\nThis is a temporary field created to migrate away from the\nmap<string, Quantity> requests field. This is done to become compliant\nwith k8s style API.\nThis field is deprecated in favor of requests field.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Quantity"
@@ -1126,11 +1126,11 @@
       "type": "object",
       "properties": {
         "contentType": {
-          "description": "The HTTP Content-Type string representing the content type of the body.",
+          "description": "The HTTP Content-Type header value specifying the content type of the body.",
           "type": "string"
         },
         "data": {
-          "description": "HTTP body binary data.",
+          "description": "The HTTP request\/response body as raw binary.",
           "type": "string",
           "format": "byte"
         },
@@ -1143,6 +1143,174 @@
               "type": "any",
               "description": "Properties of the object. Contains field @type with type URL."
             }
+          }
+        }
+      }
+    },
+    "Policy": {
+      "id": "Policy",
+      "description": "Defines an Identity and Access Management (IAM) policy. It is used to\nspecify access control policies for Cloud Platform resources.\n\n\nA `Policy` consists of a list of `bindings`. A `binding` binds a list of\n`members` to a `role`, where the members can be user accounts, Google groups,\nGoogle domains, and service accounts. A `role` is a named list of permissions\ndefined by IAM.\n\n**JSON Example**\n\n    {\n      \"bindings\": [\n        {\n          \"role\": \"roles\/owner\",\n          \"members\": [\n            \"user:mike@example.com\",\n            \"group:admins@example.com\",\n            \"domain:google.com\",\n            \"serviceAccount:my-other-app@appspot.gserviceaccount.com\"\n          ]\n        },\n        {\n          \"role\": \"roles\/viewer\",\n          \"members\": [\"user:sean@example.com\"]\n        }\n      ]\n    }\n\n**YAML Example**\n\n    bindings:\n    - members:\n      - user:mike@example.com\n      - group:admins@example.com\n      - domain:google.com\n      - serviceAccount:my-other-app@appspot.gserviceaccount.com\n      role: roles\/owner\n    - members:\n      - user:sean@example.com\n      role: roles\/viewer\n\n\nFor a description of IAM and its features, see the\n[IAM developer's guide](https:\/\/cloud.google.com\/iam\/docs).",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Deprecated.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "bindings": {
+          "description": "Associates a list of `members` to a `role`.\n`bindings` with no members will result in an error.",
+          "type": "array",
+          "items": {
+            "$ref": "Binding"
+          }
+        },
+        "auditConfigs": {
+          "description": "Specifies cloud audit logging configuration for this policy.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditConfig"
+          }
+        },
+        "etag": {
+          "description": "`etag` is used for optimistic concurrency control as a way to help\nprevent simultaneous updates of a policy from overwriting each other.\nIt is strongly suggested that systems make use of the `etag` in the\nread-modify-write cycle to perform policy updates in order to avoid race\nconditions: An `etag` is returned in the response to `getIamPolicy`, and\nsystems are expected to put that etag in the request to `setIamPolicy` to\nensure that their change will be applied to the same version of the policy.\n\nIf no `etag` is provided in the call to `setIamPolicy`, then the existing\npolicy is overwritten blindly.",
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "Binding": {
+      "id": "Binding",
+      "description": "Associates `members` with a `role`.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "description": "Role that is assigned to `members`.\nFor example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "type": "string"
+        },
+        "members": {
+          "description": "Specifies the identities requesting access for a Cloud Platform resource.\n`members` can have the following values:\n\n* `allUsers`: A special identifier that represents anyone who is\n   on the internet; with or without a Google account.\n\n* `allAuthenticatedUsers`: A special identifier that represents anyone\n   who is authenticated with a Google account or a service account.\n\n* `user:{emailid}`: An email address that represents a specific Google\n   account. For example, `alice@gmail.com` .\n\n\n* `serviceAccount:{emailid}`: An email address that represents a service\n   account. For example, `my-other-app@appspot.gserviceaccount.com`.\n\n* `group:{emailid}`: An email address that represents a Google group.\n   For example, `admins@example.com`.\n\n\n* `domain:{domain}`: A Google Apps domain name that represents all the\n   users of that domain. For example, `google.com` or `example.com`.\n\n",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "condition": {
+          "description": "Unimplemented. The condition that is associated with this binding.\nNOTE: an unsatisfied condition will not allow user access via current\nbinding. Different bindings, including their conditions, are examined\nindependently.",
+          "$ref": "Expr"
+        }
+      }
+    },
+    "Expr": {
+      "id": "Expr",
+      "description": "Represents an expression text. Example:\n\n    title: \"User account presence\"\n    description: \"Determines whether the request has a user account\"\n    expression: \"size(request.user) > 0\"",
+      "type": "object",
+      "properties": {
+        "expression": {
+          "description": "Textual representation of an expression in\nCommon Expression Language syntax.\n\nThe application context of the containing message determines which\nwell-known feature set of CEL is supported.",
+          "type": "string"
+        },
+        "title": {
+          "description": "An optional title for the expression, i.e. a short string describing\nits purpose. This can be used e.g. in UIs which allow to enter the\nexpression.",
+          "type": "string"
+        },
+        "description": {
+          "description": "An optional description of the expression. This is a longer text which\ndescribes the expression, e.g. when hovered over it in a UI.",
+          "type": "string"
+        },
+        "location": {
+          "description": "An optional string indicating the location of the expression for error\nreporting, e.g. a file name and a position in the file.",
+          "type": "string"
+        }
+      }
+    },
+    "AuditConfig": {
+      "id": "AuditConfig",
+      "description": "Specifies the audit configuration for a service.\nThe configuration determines which permission types are logged, and what\nidentities, if any, are exempted from logging.\nAn AuditConfig must have one or more AuditLogConfigs.\n\nIf there are AuditConfigs for both `allServices` and a specific service,\nthe union of the two AuditConfigs is used for that service: the log_types\nspecified in each AuditConfig are enabled, and the exempted_members in each\nAuditLogConfig are exempted.\n\nExample Policy with multiple AuditConfigs:\n\n    {\n      \"audit_configs\": [\n        {\n          \"service\": \"allServices\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n              \"exempted_members\": [\n                \"user:foo@gmail.com\"\n              ]\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n            },\n            {\n              \"log_type\": \"ADMIN_READ\",\n            }\n          ]\n        },\n        {\n          \"service\": \"fooservice.googleapis.com\"\n          \"audit_log_configs\": [\n            {\n              \"log_type\": \"DATA_READ\",\n            },\n            {\n              \"log_type\": \"DATA_WRITE\",\n              \"exempted_members\": [\n                \"user:bar@gmail.com\"\n              ]\n            }\n          ]\n        }\n      ]\n    }\n\nFor fooservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ\nlogging. It also exempts foo@gmail.com from DATA_READ logging, and\nbar@gmail.com from DATA_WRITE logging.",
+      "type": "object",
+      "properties": {
+        "service": {
+          "description": "Specifies a service that will be enabled for audit logging.\nFor example, `storage.googleapis.com`, `cloudsql.googleapis.com`.\n`allServices` is a special value that covers all services.",
+          "type": "string"
+        },
+        "auditLogConfigs": {
+          "description": "The configuration for logging of each type of permission.",
+          "type": "array",
+          "items": {
+            "$ref": "AuditLogConfig"
+          }
+        }
+      }
+    },
+    "AuditLogConfig": {
+      "id": "AuditLogConfig",
+      "description": "Provides the configuration for logging a type of permissions.\nExample:\n\n    {\n      \"audit_log_configs\": [\n        {\n          \"log_type\": \"DATA_READ\",\n          \"exempted_members\": [\n            \"user:foo@gmail.com\"\n          ]\n        },\n        {\n          \"log_type\": \"DATA_WRITE\",\n        }\n      ]\n    }\n\nThis enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting\nfoo@gmail.com from DATA_READ logging.",
+      "type": "object",
+      "properties": {
+        "logType": {
+          "description": "The log type that this config enables.",
+          "enumDescriptions": [
+            "Default case. Should never be this.",
+            "Admin reads. Example: CloudIAM getIamPolicy",
+            "Data writes. Example: CloudSQL Users create",
+            "Data reads. Example: CloudSQL Users list"
+          ],
+          "type": "string",
+          "enum": [
+            "LOG_TYPE_UNSPECIFIED",
+            "ADMIN_READ",
+            "DATA_WRITE",
+            "DATA_READ"
+          ]
+        },
+        "exemptedMembers": {
+          "description": "Specifies the identities that do not cause logging for this type of\npermission.\nFollows the same format of Binding.members.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SetIamPolicyRequest": {
+      "id": "SetIamPolicyRequest",
+      "description": "Request message for `SetIamPolicy` method.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "description": "REQUIRED: The complete policy to be applied to the `resource`. The size of\nthe policy is limited to a few 10s of KB. An empty policy is a\nvalid policy but certain Cloud Platform services (such as Projects)\nmight reject them.",
+          "$ref": "Policy"
+        },
+        "updateMask": {
+          "description": "OPTIONAL: A FieldMask specifying which fields of the policy to modify. Only\nthe fields in the mask will be modified. If no mask is provided, the\nfollowing default mask is used:\npaths: \"bindings, etag\"\nThis field is only used by Cloud IAM.",
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
+    "TestIamPermissionsRequest": {
+      "id": "TestIamPermissionsRequest",
+      "description": "Request message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "The set of permissions to check for the `resource`. Permissions with\nwildcards (such as '*' or 'storage.*') are not allowed. For more\ninformation see\n[IAM Overview](https:\/\/cloud.google.com\/iam\/docs\/overview#permissions).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "TestIamPermissionsResponse": {
+      "id": "TestIamPermissionsResponse",
+      "description": "Response message for `TestIamPermissions` method.",
+      "type": "object",
+      "properties": {
+        "permissions": {
+          "description": "A subset of `TestPermissionsRequest.permissions` that the caller is\nallowed.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -1473,7 +1641,7 @@
       "type": "object",
       "properties": {
         "logUrl": {
-          "description": "URL to access logs generated by this revision.",
+          "description": "Specifies the generated logging url for this particular revision\nbased on the revision url template specified in the controller's config.\n+optional",
           "type": "string"
         },
         "conditions": {
@@ -1512,7 +1680,7 @@
           "type": "string"
         },
         "reason": {
-          "description": "One-word CamelCase reason for the condition's last transition\n+optional",
+          "description": "One-word CamelCase reason for the condition's last transition.\n+optional",
           "type": "string"
         },
         "message": {
@@ -1665,8 +1833,42 @@
         }
       }
     },
+    "ListAuthorizedDomainsResponse": {
+      "id": "ListAuthorizedDomainsResponse",
+      "description": "A list of Authorized Domains.",
+      "type": "object",
+      "properties": {
+        "domains": {
+          "description": "The authorized domains belonging to the user.",
+          "type": "array",
+          "items": {
+            "$ref": "AuthorizedDomain"
+          }
+        },
+        "nextPageToken": {
+          "description": "Continuation token for fetching the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "AuthorizedDomain": {
+      "id": "AuthorizedDomain",
+      "description": "A domain that a user has been authorized to administer. To authorize use\nof a domain, verify ownership via\n[Webmaster Central](https:\/\/www.google.com\/webmasters\/verification\/home).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Read only. Full path to the `AuthorizedDomain` resource in the API.\nExample: `apps\/myapp\/authorizedDomains\/example.com`.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Relative name of the domain authorized for use. Example: `example.com`.",
+          "type": "string"
+        }
+      }
+    },
     "DomainMapping": {
       "id": "DomainMapping",
+      "description": "Resource to hold the state and status of a user's domain mapping.",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -1839,7 +2041,7 @@
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -1998,6 +2200,87 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Rpc to update a service.\nOnly the metadata and spec are modifiable but after the Update request,\nCloud Run will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+                },
+                "getIamPolicy": {
+                  "id": "serverless.projects.locations.services.getIamPolicy",
+                  "path": "v1alpha1/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Get the IAM Access Control policy currently in effect for the given\nCloud Run service. This result does not include any inherited policies."
+                },
+                "setIamPolicy": {
+                  "id": "serverless.projects.locations.services.setIamPolicy",
+                  "path": "v1alpha1/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the IAM Access control policy for the specified Service. Overwrites\nany existing policy."
+                },
+                "testIamPermissions": {
+                  "id": "serverless.projects.locations.services.testIamPermissions",
+                  "path": "v1alpha1/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested.\nSee the operation documentation for the appropriate value for this field.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified Project.\n\nThere are no permissions required for making this API call."
                 }
               }
             },
@@ -2043,7 +2326,7 @@
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2133,7 +2416,7 @@
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2223,7 +2506,7 @@
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2301,6 +2584,46 @@
                 }
               }
             },
+            "authorizeddomains": {
+              "methods": {
+                "list": {
+                  "id": "serverless.projects.locations.authorizeddomains.list",
+                  "path": "v1alpha1/{+parent}/authorizeddomains",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/authorizeddomains",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum results to return per page.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Continuation token for fetching the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAuthorizedDomainsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "RPC to list authorized domains."
+                }
+              }
+            },
             "domainmappings": {
               "methods": {
                 "create": {
@@ -2371,7 +2694,7 @@
                       "type": "string"
                     },
                     "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
                       "location": "query",
                       "type": "boolean"
                     },
@@ -2525,7 +2848,7 @@
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2729,7 +3052,7 @@
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2819,7 +3142,7 @@
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -2909,7 +3232,7 @@
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
                   "location": "query",
                   "type": "boolean"
                 },
@@ -3020,6 +3343,46 @@
             }
           }
         },
+        "authorizeddomains": {
+          "methods": {
+            "list": {
+              "id": "serverless.namespaces.authorizeddomains.list",
+              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/authorizeddomains",
+              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/authorizeddomains",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Maximum results to return per page.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Continuation token for fetching the next page of results.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListAuthorizedDomainsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "RPC to list authorized domains."
+            }
+          }
+        },
         "domainmappings": {
           "methods": {
             "create": {
@@ -3090,7 +3453,7 @@
                   "type": "string"
                 },
                 "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.",
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
                   "location": "query",
                   "type": "boolean"
                 },

@@ -238,7 +238,7 @@
     },
     "AccessLevel": {
       "id": "AccessLevel",
-      "description": "An `AccessLevel` is a label that can be applied to requests to GCP services,\nalong with a list of requirements necessary for the label to be applied.\n`AccessLevels` can be referenced in `AccessZones` and in the `Cloud Org\nPolicy` API.",
+      "description": "An `AccessLevel` is a label that can be applied to requests to GCP services,\nalong with a list of requirements necessary for the label to be applied.",
       "type": "object",
       "properties": {
         "name": {

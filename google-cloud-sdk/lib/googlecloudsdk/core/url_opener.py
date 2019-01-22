@@ -64,6 +64,7 @@ class HttplibConnectionHandler(urllib.request.HTTPHandler,
     return self.do_open(build, req)
 
 
+# TODO(b/120992538) Use urllib3 when PROXY/USE_URLLIB3_VIA_SHIM
 def urlopen(req, data=None, timeout=60):
   """Helper function that mimics urllib2.urlopen, but adds proxy information."""
 

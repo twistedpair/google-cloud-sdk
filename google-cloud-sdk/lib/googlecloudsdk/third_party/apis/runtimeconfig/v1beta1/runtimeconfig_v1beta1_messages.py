@@ -1264,7 +1264,9 @@ class Variable(_messages.Message):
       will be UTC timestamp.
     value: The binary value of the variable. The length of the value must be
       less than 4096 bytes. Empty values are also accepted. The value must be
-      base64 encoded. Only one of `value` or `text` can be set.
+      base64 encoded, and must comply with IETF RFC4648
+      (https://www.ietf.org/rfc/rfc4648.txt). Only one of `value` or `text`
+      can be set.
   """
 
   class StateValueValuesEnum(_messages.Enum):

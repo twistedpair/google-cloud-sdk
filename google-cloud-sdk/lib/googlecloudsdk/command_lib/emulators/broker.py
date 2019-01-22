@@ -31,6 +31,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.emulators import util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
+from googlecloudsdk.core import http
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
 import httplib2
@@ -408,7 +409,7 @@ class Broker(object):
       RequestError: The request errored out in some other way.
     """
     uri = 'http://{0}{1}'.format(self._address, path)
-    http_client = httplib2.Http(timeout=timeout_secs)
+    http_client = http.HttpClient(timeout=timeout_secs)
     try:
       http_response, body = http_client.request(
           uri=uri,

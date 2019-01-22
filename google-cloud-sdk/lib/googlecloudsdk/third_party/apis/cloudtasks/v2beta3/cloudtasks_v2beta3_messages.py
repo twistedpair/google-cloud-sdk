@@ -295,7 +295,7 @@ class Attempt(_messages.Message):
   Fields:
     dispatchTime: Output only. The time that this attempt was dispatched.
       `dispatch_time` will be truncated to the nearest microsecond.
-    responseStatus: Output only. The response from the target for this
+    responseStatus: Output only. The response from the worker for this
       attempt.  If `response_time` is unset, then the task has not been
       attempted or is currently running and the `response_status` field is
       meaningless.
@@ -986,8 +986,8 @@ class Queue(_messages.Message):
       . UpdateQueue cannot be used to change `state`.
 
   Fields:
-    appEngineHttpQueue: App Engine HTTP queue.  An App Engine queue is a queue
-      that has an AppEngineHttpQueue type.
+    appEngineHttpQueue: AppEngineHttpQueue settings apply only to AppEngine
+      tasks in this queue.
     name: Caller-specified and required in CreateQueue, after which it becomes
       output only.  The queue name.  The queue name must have the following
       format: `projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID`  *
@@ -1008,13 +1008,18 @@ class Queue(_messages.Message):
       will be truncated to the nearest microsecond. Purge time will be unset
       if the queue has never been purged.
     rateLimits: Rate limits for task dispatches.  rate_limits and retry_config
-      are related because they both control task attempts however they control
-      how tasks are attempted in different ways:  * rate_limits controls the
+      are related because they both control task attempts. However they
+      control task attempts in different ways:  * rate_limits controls the
       total rate of   dispatches from a queue (i.e. all traffic dispatched
       from the   queue, regardless of whether the dispatch is from a first
       attempt or a retry). * retry_config controls what happens to
       particular a task after its first attempt fails. That is,   retry_config
-      controls task retries (the   second attempt, third attempt, etc).
+      controls task retries (the   second attempt, third attempt, etc).  The
+      queue's actual dispatch rate is the result of:  * Number of tasks in the
+      queue * User-specified throttling: rate limits   retry configuration,
+      and the   queue's state. * System throttling due to `429` (Too Many
+      Requests) or `503` (Service   Unavailable) responses from the worker,
+      high error rates, or to smooth   sudden large traffic spikes.
     retryConfig: Settings that determine the retry behavior.  * For tasks
       created using Cloud Tasks: the queue-level retry settings   apply to all
       tasks in the queue that were created using Cloud Tasks.   Retry settings
@@ -1390,9 +1395,9 @@ class Task(_messages.Message):
       Task has been returned.
 
   Fields:
-    appEngineHttpRequest: App Engine HTTP request that is sent to the task's
-      target. Can be set only if app_engine_http_queue is set on the queue.
-      An App Engine task is a task that has AppEngineHttpRequest set.
+    appEngineHttpRequest: HTTP request that is sent to the App Engine app
+      handler.  An App Engine task is a task that has AppEngineHttpRequest
+      set.
     createTime: Output only. The time that the task was created.
       `create_time` will be truncated to the nearest second.
     dispatchCount: Output only. The number of attempts dispatched.  This count

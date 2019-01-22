@@ -1007,6 +1007,30 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class ScheduleOptions(_messages.Message):
+  r"""Options customizing the data transfer schedule.
+
+  Fields:
+    disableAutoScheduling: If true, automatic scheduling of data transfer runs
+      for this configuration will be disabled. The runs can be started on ad-
+      hoc basis using StartManualTransferRuns API. When automatic scheduling
+      is disabled, the TransferConfig.schedule field will be ignored.
+    endTime: Defines time to stop scheduling transfer runs. A transfer run
+      cannot be scheduled at or after the end time. The end time can be
+      changed at any moment. The time when a data transfer can be trigerred
+      manually is not limited by this option.
+    startTime: Specifies time to start scheduling transfer runs. The first run
+      will be scheduled at or after the start time according to a recurrence
+      pattern defined in the schedule string. The start time can be changed at
+      any moment. The time when a data transfer can be trigerred manually is
+      not limited by this option.
+  """
+
+  disableAutoScheduling = _messages.BooleanField(1)
+  endTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+
+
 class ScheduleTransferRunsRequest(_messages.Message):
   r"""A request to schedule transfer runs for a time range.
 
@@ -1218,14 +1242,12 @@ class TransferConfig(_messages.Message):
       https://cloud.google.com/appengine/docs/flexible/python/scheduling-jobs-
       with-cron-yaml#the_schedule_format NOTE: the granularity should be at
       least 8 hours, or less frequent.
+    scheduleOptions: Options customizing the data transfer schedule.
     state: Output only. State of the most recently updated transfer run.
     updateTime: Output only. Data transfer modification time. Ignored by
       server on input.
-    userId: Output only. Unique ID of the user on whose behalf transfer is
-      done. Applicable only to data sources that do not support service
-      accounts. When set to 0, the data source service account credentials are
-      used. May be negative. Note, that this identifier is not stable. It may
-      change over time even for the same user.
+    userId: Deprecated. Unique ID of the user on whose behalf transfer is
+      done.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1281,9 +1303,10 @@ class TransferConfig(_messages.Message):
   nextRunTime = _messages.StringField(8)
   params = _messages.MessageField('ParamsValue', 9)
   schedule = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  userId = _messages.IntegerField(13)
+  scheduleOptions = _messages.MessageField('ScheduleOptions', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
+  userId = _messages.IntegerField(14)
 
 
 class TransferMessage(_messages.Message):
@@ -1349,11 +1372,8 @@ class TransferRun(_messages.Message):
     state: Data transfer run state. Ignored for input requests.
     updateTime: Output only. Last time the data transfer run state was
       updated.
-    userId: Output only. Unique ID of the user on whose behalf transfer is
-      done. Applicable only to data sources that do not support service
-      accounts. When set to 0, the data source service account credentials are
-      used. May be negative. Note, that this identifier is not stable. It may
-      change over time even for the same user.
+    userId: Deprecated. Unique ID of the user on whose behalf transfer is
+      done.
   """
 
   class StateValueValuesEnum(_messages.Enum):

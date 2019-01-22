@@ -34,6 +34,8 @@ class AddonsConfig(_messages.Message):
     cloudRunConfig: Configuration for the Cloud Run addon. The `IstioConfig`
       addon must be enabled in order to enable Cloud Run. This option can only
       be enabled at cluster creation time.
+    dnsCacheConfig: Configuration for NodeLocalDNS, a dns cache running on
+      cluster nodes
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -51,12 +53,13 @@ class AddonsConfig(_messages.Message):
   """
 
   cloudRunConfig = _messages.MessageField('CloudRunConfig', 1)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 2)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 3)
-  istioConfig = _messages.MessageField('IstioConfig', 4)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 5)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 6)
-  serverlessConfig = _messages.MessageField('ServerlessConfig', 7)
+  dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 2)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 3)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 4)
+  istioConfig = _messages.MessageField('IstioConfig', 5)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 6)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 7)
+  serverlessConfig = _messages.MessageField('ServerlessConfig', 8)
 
 
 class AuthenticatorGroupsConfig(_messages.Message):
@@ -562,6 +565,7 @@ class ClusterUpdate(_messages.Message):
       picks the Kubernetes master version
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
+    desiredPrivateClusterConfig: The desired private cluster configuration.
     desiredPrivateIpv6Access: The desired status of Private IPv6 access for
       this cluster.
     desiredResourceUsageExportConfig: The desired configuration for exporting
@@ -589,10 +593,11 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolId = _messages.StringField(16)
   desiredNodeVersion = _messages.StringField(17)
   desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 18)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 19)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 20)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 21)
-  securityProfile = _messages.MessageField('SecurityProfile', 22)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 19)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 20)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 21)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 22)
+  securityProfile = _messages.MessageField('SecurityProfile', 23)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -686,9 +691,8 @@ class ContainerProjectsLocationsClustersGetJwksRequest(_messages.Message):
   r"""A ContainerProjectsLocationsClustersGetJwksRequest object.
 
   Fields:
-    parent: The parent (project, location, cluster id) where the node pools
-      will be listed. Specified in the format
-      'projects/*/locations/*/clusters/*'.
+    parent: The cluster (project, location, cluster id) to get keys for.
+      Specified in the format 'projects/*/locations/*/clusters/*'.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -821,8 +825,8 @@ class ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest(_
   object.
 
   Fields:
-    parent: The parent (project, location, cluster id) where the node pools
-      will be listed. Specified in the format
+    parent: The cluster (project, location, cluster id) to get the discovery
+      document for. Specified in the format
       'projects/*/locations/*/clusters/*'.
   """
 
@@ -1234,6 +1238,16 @@ class DatabaseEncryption(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
+class DnsCacheConfig(_messages.Message):
+  r"""Configuration for NodeLocal DNSCache
+
+  Fields:
+    enabled: Whether NodeLocal DNSCache is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1542,6 +1556,8 @@ class IstioConfig(_messages.Message):
 
   Fields:
     auth: The specified Istio auth mode, either none, or mutual TLS.
+    csmMeshName: If specified, denotes the Cloud Service Management service
+      mesh to join.
     disabled: Whether Istio is enabled for this cluster.
   """
 
@@ -1556,7 +1572,8 @@ class IstioConfig(_messages.Message):
     AUTH_MUTUAL_TLS = 1
 
   auth = _messages.EnumField('AuthValueValuesEnum', 1)
-  disabled = _messages.BooleanField(2)
+  csmMeshName = _messages.StringField(2)
+  disabled = _messages.BooleanField(3)
 
 
 class Jwk(_messages.Message):
@@ -2386,6 +2403,8 @@ class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private clusters.
 
   Fields:
+    enablePeeringRouteSharing: Whether to enable route sharing over the
+      network peering.
     enablePrivateEndpoint: Whether the master's internal IP address is used as
       the cluster endpoint.
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
@@ -2402,11 +2421,12 @@ class PrivateClusterConfig(_messages.Message):
       endpoint.
   """
 
-  enablePrivateEndpoint = _messages.BooleanField(1)
-  enablePrivateNodes = _messages.BooleanField(2)
-  masterIpv4CidrBlock = _messages.StringField(3)
-  privateEndpoint = _messages.StringField(4)
-  publicEndpoint = _messages.StringField(5)
+  enablePeeringRouteSharing = _messages.BooleanField(1)
+  enablePrivateEndpoint = _messages.BooleanField(2)
+  enablePrivateNodes = _messages.BooleanField(3)
+  masterIpv4CidrBlock = _messages.StringField(4)
+  privateEndpoint = _messages.StringField(5)
+  publicEndpoint = _messages.StringField(6)
 
 
 class PrivateIPv6Status(_messages.Message):

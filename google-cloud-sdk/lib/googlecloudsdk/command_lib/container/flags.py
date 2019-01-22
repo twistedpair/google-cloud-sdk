@@ -816,7 +816,7 @@ instead, create or update your cluster with the option
       help=help_text)
 
 
-def AddAuthenticatorSecurityGroupFlags(parser, hidden=True):
+def AddAuthenticatorSecurityGroupFlags(parser, hidden=False):
   """Adds --security-group to parser."""
   help_text = """\
 The name of the RBAC security group for use with Google security groups

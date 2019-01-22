@@ -38,6 +38,7 @@ class ContainerV1beta1(base_api.BaseApiClient):
     self.projects_aggregated_usableSubnetworks = self.ProjectsAggregatedUsableSubnetworksService(self)
     self.projects_aggregated = self.ProjectsAggregatedService(self)
     self.projects_locations_clusters_nodePools = self.ProjectsLocationsClustersNodePoolsService(self)
+    self.projects_locations_clusters_well_known = self.ProjectsLocationsClustersWellKnownService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -348,6 +349,47 @@ This will be an no-op if the last upgrade successfully completed.
         supports_download=False,
     )
 
+  class ProjectsLocationsClustersWellKnownService(base_api.BaseApiService):
+    """Service class for the projects_locations_clusters_well_known resource."""
+
+    _NAME = u'projects_locations_clusters_well_known'
+
+    def __init__(self, client):
+      super(ContainerV1beta1.ProjectsLocationsClustersWellKnownService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetOpenid_configuration(self, request, global_params=None):
+      r"""GetOpenIDConfig gets the OIDC discovery document for the cluster.
+See the OpenID Connect Discovery 1.0 specification for details.
+https://openid.net/specs/openid-connect-discovery-1_0.html
+This API is not yet intended for general use, and is not available for all
+clusters.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetOpenIDConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetOpenid_configuration')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetOpenid_configuration.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/.well-known/openid-configuration',
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.well-known.getOpenid-configuration',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}/.well-known/openid-configuration',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest',
+        response_type_name=u'GetOpenIDConfigResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters resource."""
 
@@ -483,6 +525,36 @@ at the initial create time.
         request_field='',
         request_type_name=u'ContainerProjectsLocationsClustersGetRequest',
         response_type_name=u'Cluster',
+        supports_download=False,
+    )
+
+    def GetJwks(self, request, global_params=None):
+      r"""GetJSONWebKeys gets the public component of the cluster signing keys in.
+JSON Web Key format.
+This API is not yet intended for general use, and is not available for all
+clusters.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersGetJwksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GetJSONWebKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetJwks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetJwks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/jwks',
+        http_method=u'GET',
+        method_id=u'container.projects.locations.clusters.getJwks',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}/jwks',
+        request_field='',
+        request_type_name=u'ContainerProjectsLocationsClustersGetJwksRequest',
+        response_type_name=u'GetJSONWebKeysResponse',
         supports_download=False,
     )
 

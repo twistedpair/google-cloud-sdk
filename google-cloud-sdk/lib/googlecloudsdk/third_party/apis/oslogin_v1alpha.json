@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/compute/docs/oslogin/rest/",
+  "documentationLink": "https://cloud.google.com/compute/docs/oslogin/",
   "protocol": "rest",
   "rootUrl": "https://oslogin.googleapis.com/",
   "servicePath": "",

@@ -255,6 +255,7 @@ _FILE_ARG_VALIDATORS = {
     'locales': ValidateStringList,
     'orientations': _ValidateOrientationList,
     'obb_files': _ValidateObbFileList,
+    'num_flaky_test_attempts': _ValidateNonNegativeInteger,
     'os_version_ids': ValidateStringList,
     'other_files': _ValidateKeyValueStringPairs,
     'performance_metrics': _ValidateBool,

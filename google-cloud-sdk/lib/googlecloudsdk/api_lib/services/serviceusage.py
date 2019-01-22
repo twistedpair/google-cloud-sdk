@@ -22,6 +22,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import retry
 
@@ -119,6 +120,10 @@ def DisableApiCall(project, service, force=False):
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(e,
                             exceptions.EnableServicePermissionDeniedException)
+  except apitools_exceptions.HttpBadRequestError as e:
+    log.status.Print('Provide the --force flag if you wish to disable '
+                     'dependent services.')
+    exceptions.ReraiseError(e, exceptions.Error)
 
 
 def ListServices(project, enabled, page_size, limit):

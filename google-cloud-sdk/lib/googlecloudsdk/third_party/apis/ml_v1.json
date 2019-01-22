@@ -217,7 +217,7 @@
           ]
         },
         "masterType": {
-          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <i>complex_model_s<\/i>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <i>complex_model_m<\/i>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla K80 GPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-gpus\">using GPUs to\n  train your model<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that also includes\n  four NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>complex_model_l_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_l<\/i> that also includes\n  eight NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>standard_p100<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla P100 GPU.\n  <\/dd>\n  <dt>complex_model_m_p100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that also includes\n  four NVIDIA Tesla P100 GPUs.\n  <\/dd>\n  <dt>standard_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla V100 GPU. The availability of these\n  GPUs is in the <i>Beta<\/i> launch stage.\n  <\/dd>\n  <dt>large_model_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>large_model<\/i> that\n  also includes a single NVIDIA Tesla V100 GPU. The availability of these\n  GPUs is in the <i>Beta<\/i> launch stage.\n  <\/dd>\n  <dt>complex_model_m_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that\n  also includes four NVIDIA Tesla V100 GPUs. The availability of these\n  GPUs is in the <i>Beta<\/i> launch stage.\n  <\/dd>\n  <dt>complex_model_l_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_l<\/i> that\n  also includes eight NVIDIA Tesla V100 GPUs. The availability of these\n  GPUs is in the <i>Beta<\/i> launch stage.\n  <\/dd>\n  <dt>cloud_tpu<\/dt>\n  <dd>\n  A TPU VM including one Cloud TPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-tpus\">using TPUs to train\n  your model<\/a>.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
+          "description": "Optional. Specifies the type of virtual machine to use for your training\njob's master worker.\n\nThe following types are supported:\n\n<dl>\n  <dt>standard<\/dt>\n  <dd>\n  A basic machine configuration suitable for training simple models with\n  small to moderate datasets.\n  <\/dd>\n  <dt>large_model<\/dt>\n  <dd>\n  A machine with a lot of memory, specially suited for parameter servers\n  when your model is large (having many hidden layers or layers with very\n  large numbers of nodes).\n  <\/dd>\n  <dt>complex_model_s<\/dt>\n  <dd>\n  A machine suitable for the master and workers of the cluster when your\n  model requires more computation than the standard machine can handle\n  satisfactorily.\n  <\/dd>\n  <dt>complex_model_m<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <i>complex_model_s<\/i>.\n  <\/dd>\n  <dt>complex_model_l<\/dt>\n  <dd>\n  A machine with roughly twice the number of cores and roughly double the\n  memory of <i>complex_model_m<\/i>.\n  <\/dd>\n  <dt>standard_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla K80 GPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-gpus\">using GPUs to\n  train your model<\/a>.\n  <\/dd>\n  <dt>complex_model_m_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that also includes\n  four NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>complex_model_l_gpu<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_l<\/i> that also includes\n  eight NVIDIA Tesla K80 GPUs.\n  <\/dd>\n  <dt>standard_p100<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla P100 GPU.\n  <\/dd>\n  <dt>complex_model_m_p100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that also includes\n  four NVIDIA Tesla P100 GPUs.\n  <\/dd>\n  <dt>standard_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>standard<\/i> that\n  also includes a single NVIDIA Tesla V100 GPU.\n  <\/dd>\n  <dt>large_model_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>large_model<\/i> that\n  also includes a single NVIDIA Tesla V100 GPU.\n  <\/dd>\n  <dt>complex_model_m_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_m<\/i> that\n  also includes four NVIDIA Tesla V100 GPUs.\n  <\/dd>\n  <dt>complex_model_l_v100<\/dt>\n  <dd>\n  A machine equivalent to <i>complex_model_l<\/i> that\n  also includes eight NVIDIA Tesla V100 GPUs.\n  <\/dd>\n  <dt>cloud_tpu<\/dt>\n  <dd>\n  A TPU VM including one Cloud TPU. See more about\n  <a href=\"\/ml-engine\/docs\/tensorflow\/using-tpus\">using TPUs to train\n  your model<\/a>.\n  <\/dd>\n<\/dl>\n\nYou must set this value when `scaleTier` is set to `CUSTOM`.",
           "type": "string"
         },
         "masterConfig": {
@@ -241,12 +241,12 @@
           "$ref": "GoogleCloudMlV1__ReplicaConfig"
         },
         "workerCount": {
-          "description": "Optional. The number of worker replicas to use for the training job. Each\nreplica in the cluster will be of the type specified in `worker_type`.\n\nThis value can only be used when `scale_tier` is set to `CUSTOM`. If you\nset this value, you must also set `worker_type`.",
+          "description": "Optional. The number of worker replicas to use for the training job. Each\nreplica in the cluster will be of the type specified in `worker_type`.\n\nThis value can only be used when `scale_tier` is set to `CUSTOM`. If you\nset this value, you must also set `worker_type`.\n\nThe default value is zero.",
           "type": "string",
           "format": "int64"
         },
         "parameterServerCount": {
-          "description": "Optional. The number of parameter server replicas to use for the training\njob. Each replica in the cluster will be of the type specified in\n`parameter_server_type`.\n\nThis value can only be used when `scale_tier` is set to `CUSTOM`.If you\nset this value, you must also set `parameter_server_type`.",
+          "description": "Optional. The number of parameter server replicas to use for the training\njob. Each replica in the cluster will be of the type specified in\n`parameter_server_type`.\n\nThis value can only be used when `scale_tier` is set to `CUSTOM`.If you\nset this value, you must also set `parameter_server_type`.\n\nThe default value is zero.",
           "type": "string",
           "format": "int64"
         },
@@ -387,7 +387,7 @@
         "algorithm": {
           "description": "Optional. The search algorithm specified for the hyperparameter\ntuning job.\nUses the default CloudML Engine hyperparameter tuning\nalgorithm if unspecified.",
           "enumDescriptions": [
-            "The default algorithm used by hyperparameter tuning service.",
+            "The default algorithm used by the hyperparameter tuning service. This is\na Bayesian optimization algorithm.",
             "Simple grid search within the feasible space. To use grid search,\nall parameters must be `INTEGER`, `CATEGORICAL`, or `DISCRETE`.",
             "Simple random search within the feasible space."
           ],
@@ -472,7 +472,7 @@
     },
     "GoogleCloudMlV1__PredictionInput": {
       "id": "GoogleCloudMlV1__PredictionInput",
-      "description": "Represents input parameters for a prediction job. Next field: 20",
+      "description": "Represents input parameters for a prediction job.",
       "type": "object",
       "properties": {
         "modelName": {
@@ -977,7 +977,10 @@
           "type": "string"
         },
         "modelClass": {
-          "description": "class Model(object):\n  \"\"\"A Model performs predictions on a given list of instances.\n\n  The input instances are the raw values sent by the user. It is the\n  responsibility of a Model to translate these instances into\n  actual predictions.\n\n  The input instances and the output use python data types. The input\n  instances have been decoded prior to being passed to the predict\n  method. The output, which should use python data types is\n  encoded after being returned from the predict method.\n  \"\"\"\n\n  def predict(self, instances, **kwargs):\n    \"\"\"Returns predictions for the provided instances.\n\n    Instances are the decoded values from the request. Clients need not\n    worry about decoding json nor base64 decoding.\n\n    Args:\n      instances: A list of instances, as described in the API.\n      **kwargs: Additional keyword arguments, will be passed into the\n          client's predict method.\n\n    Returns:\n      A list of outputs containing the prediction results.\n    \"\"\"\n\n  @classmethod\n  def from_path(cls, model_path):\n    \"\"\"Creates a model using the given model path.\n\n    Path is useful, e.g., to load files from the exported directory\n    containing the model.\n\n    Args:\n      model_path: The local directory that contains the exported model\n          file along with any additional files uploaded when creating the\n          version resource.\n\n    Returns:\n      An instance implementing this Model class.\n    \"\"\"",
+          "type": "string"
+        },
+        "predictionClass": {
+          "description": "class PredictionClass(object):\n  \"\"\"A Model performs predictions on a given list of instances.\n\n  The input instances are the raw values sent by the user. It is the\n  responsibility of a Model to translate these instances into\n  actual predictions.\n\n  The input instances and the output use python data types. The input\n  instances have been decoded prior to being passed to the predict\n  method. The output, which should use python data types is\n  encoded after being returned from the predict method.\n  \"\"\"\n\n  def predict(self, instances, **kwargs):\n    \"\"\"Returns predictions for the provided instances.\n\n    Instances are the decoded values from the request. Clients need not\n    worry about decoding json nor base64 decoding.\n\n    Args:\n      instances: A list of instances, as described in the API.\n      **kwargs: Additional keyword arguments, will be passed into the\n          client's predict method.\n\n    Returns:\n      A list of outputs containing the prediction results.\n    \"\"\"\n\n  @classmethod\n  def from_path(cls, model_path):\n    \"\"\"Creates a model using the given model path.\n\n    Path is useful, e.g., to load files from the exported directory\n    containing the model.\n\n    Args:\n      model_path: The local directory that contains the exported model\n          file along with any additional files uploaded when creating the\n          version resource.\n\n    Returns:\n      An instance implementing this Model class.\n    \"\"\"",
           "type": "string"
         },
         "packageUris": {
@@ -1002,7 +1005,7 @@
         "framework": {
           "description": "Optional. The machine learning framework Cloud ML Engine uses to train\nthis version of the model. Valid values are `TENSORFLOW`, `SCIKIT_LEARN`,\n`XGBOOST`. If you do not specify a framework, Cloud ML Engine\nwill analyze files in the deployment_uri to determine a framework. If you\nchoose `SCIKIT_LEARN` or `XGBOOST`, you must also set the runtime version\nof the model to 1.4 or greater.",
           "enumDescriptions": [
-            "Unspecified framework. Defaults to TensorFlow.",
+            "Unspecified framework. Assigns a value based on the file suffix.",
             "Tensorflow framework.",
             "Scikit-learn framework.",
             "XGBoost framework."
@@ -1025,6 +1028,10 @@
         },
         "serviceAccount": {
           "description": "Optional. Specifies the service account for resource access control.",
+          "type": "string"
+        },
+        "imageUri": {
+          "description": "Optional. The docker image to run for custom serving container. This image\nmust be in Google Container Registry.",
           "type": "string"
         }
       }
@@ -1113,11 +1120,11 @@
       "type": "object",
       "properties": {
         "contentType": {
-          "description": "The HTTP Content-Type string representing the content type of the body.",
+          "description": "The HTTP Content-Type header value specifying the content type of the body.",
           "type": "string"
         },
         "data": {
-          "description": "HTTP body binary data.",
+          "description": "The HTTP request\/response body as raw binary.",
           "type": "string",
           "format": "byte"
         },

@@ -178,9 +178,37 @@
         }
       }
     },
+    "PatchServiceAccountRequest": {
+      "id": "PatchServiceAccountRequest",
+      "description": "The patch service account request.",
+      "type": "object",
+      "properties": {
+        "serviceAccount": {
+          "$ref": "ServiceAccount"
+        },
+        "updateMask": {
+          "type": "string",
+          "format": "google-fieldmask"
+        }
+      }
+    },
     "Empty": {
       "id": "Empty",
       "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "EnableServiceAccountRequest": {
+      "id": "EnableServiceAccountRequest",
+      "description": "The service account enable request.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "DisableServiceAccountRequest": {
+      "id": "DisableServiceAccountRequest",
+      "description": "The service account disable request.",
       "type": "object",
       "properties": {
       }
@@ -1176,6 +1204,34 @@
               ],
               "description": "Updates a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` .\nThe `etag` is mandatory."
             },
+            "patch": {
+              "id": "iam.projects.serviceAccounts.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nRequests using `-` as a wildcard for the `PROJECT_ID` will infer the\nproject from the `account` and the `ACCOUNT` value can be the `email`\naddress or the `unique_id` of the service account.\n\nIn responses the resource name will always be in the format\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PatchServiceAccountRequest"
+              },
+              "response": {
+                "$ref": "ServiceAccount"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Patches a ServiceAccount.\n\nCurrently, only the following fields are updatable:\n`display_name` and `description`.\n\nOnly fields specified in the request are garaunteed to be returned in\nthe response. Other fields in the response may be empty.\n\nNote: The field mask is required."
+            },
             "delete": {
               "id": "iam.projects.serviceAccounts.delete",
               "path": "v1/{+name}",
@@ -1200,6 +1256,62 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a ServiceAccount."
+            },
+            "enable": {
+              "id": "iam.projects.serviceAccounts.enable",
+              "path": "v1/{+name}:enable",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:enable",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_UNIQUE_ID}'.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "EnableServiceAccountRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Enables a ServiceAccount."
+            },
+            "disable": {
+              "id": "iam.projects.serviceAccounts.disable",
+              "path": "v1/{+name}:disable",
+              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:disable",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "DisableServiceAccountRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Disables a ServiceAccount."
             },
             "signBlob": {
               "id": "iam.projects.serviceAccounts.signBlob",

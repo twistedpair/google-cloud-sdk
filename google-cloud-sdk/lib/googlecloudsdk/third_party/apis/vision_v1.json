@@ -220,7 +220,7 @@
           "type": "string"
         },
         "indexTime": {
-          "description": "Output only. The time at which this ProductSet was last indexed. Query\nresults will reflect all updates before this time. If this ProductSet has\nnever been indexed, this field is 0.\n\nThis field is ignored when creating a ProductSet.",
+          "description": "Output only. The time at which this ProductSet was last indexed. Query\nresults will reflect all updates before this time. If this ProductSet has\nnever been indexed, this timestamp is the default value\n\"1970-01-01T00:00:00Z\".\n\nThis field is ignored when creating a ProductSet.",
           "type": "string",
           "format": "google-datetime"
         },
@@ -816,7 +816,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon around the face. The coordinates of the bounding box\nare in the original image's scale, as returned in `ImageParams`.\nThe bounding box is computed to \"frame\" the face in accordance with human\nexpectations. It is based on the landmarker results.\nNote that one or more x and\/or y coordinates may not be generated in the\n`BoundingPoly` (the polygon will be unbounded) if only a partial face\nappears in the image to be annotated.",
+          "description": "The bounding polygon around the face. The coordinates of the bounding box\nare in the original image's scale.\nThe bounding box is computed to \"frame\" the face in accordance with human\nexpectations. It is based on the landmarker results.\nNote that one or more x and\/or y coordinates may not be generated in the\n`BoundingPoly` (the polygon will be unbounded) if only a partial face\nappears in the image to be annotated.",
           "$ref": "BoundingPoly"
         },
         "fdBoundingPoly": {
@@ -1660,7 +1660,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon for the crop region. The coordinates of the bounding\nbox are in the original image's scale, as returned in `ImageParams`.",
+          "description": "The bounding polygon for the crop region. The coordinates of the bounding\nbox are in the original image's scale.",
           "$ref": "BoundingPoly"
         },
         "confidence": {
@@ -2247,7 +2247,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon around the face. The coordinates of the bounding box\nare in the original image's scale, as returned in `ImageParams`.\nThe bounding box is computed to \"frame\" the face in accordance with human\nexpectations. It is based on the landmarker results.\nNote that one or more x and\/or y coordinates may not be generated in the\n`BoundingPoly` (the polygon will be unbounded) if only a partial face\nappears in the image to be annotated.",
+          "description": "The bounding polygon around the face. The coordinates of the bounding box\nare in the original image's scale.\nThe bounding box is computed to \"frame\" the face in accordance with human\nexpectations. It is based on the landmarker results.\nNote that one or more x and\/or y coordinates may not be generated in the\n`BoundingPoly` (the polygon will be unbounded) if only a partial face\nappears in the image to be annotated.",
           "$ref": "GoogleCloudVisionV1p1beta1BoundingPoly"
         },
         "fdBoundingPoly": {
@@ -3119,7 +3119,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon for the crop region. The coordinates of the bounding\nbox are in the original image's scale, as returned in `ImageParams`.",
+          "description": "The bounding polygon for the crop region. The coordinates of the bounding\nbox are in the original image's scale.",
           "$ref": "GoogleCloudVisionV1p1beta1BoundingPoly"
         },
         "confidence": {
@@ -3611,7 +3611,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon around the face. The coordinates of the bounding box\nare in the original image's scale, as returned in `ImageParams`.\nThe bounding box is computed to \"frame\" the face in accordance with human\nexpectations. It is based on the landmarker results.\nNote that one or more x and\/or y coordinates may not be generated in the\n`BoundingPoly` (the polygon will be unbounded) if only a partial face\nappears in the image to be annotated.",
+          "description": "The bounding polygon around the face. The coordinates of the bounding box\nare in the original image's scale.\nThe bounding box is computed to \"frame\" the face in accordance with human\nexpectations. It is based on the landmarker results.\nNote that one or more x and\/or y coordinates may not be generated in the\n`BoundingPoly` (the polygon will be unbounded) if only a partial face\nappears in the image to be annotated.",
           "$ref": "GoogleCloudVisionV1p2beta1BoundingPoly"
         },
         "fdBoundingPoly": {
@@ -4483,7 +4483,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon for the crop region. The coordinates of the bounding\nbox are in the original image's scale, as returned in `ImageParams`.",
+          "description": "The bounding polygon for the crop region. The coordinates of the bounding\nbox are in the original image's scale.",
           "$ref": "GoogleCloudVisionV1p2beta1BoundingPoly"
         },
         "confidence": {
@@ -5108,7 +5108,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon around the face. The coordinates of the bounding box\nare in the original image's scale, as returned in `ImageParams`.\nThe bounding box is computed to \"frame\" the face in accordance with human\nexpectations. It is based on the landmarker results.\nNote that one or more x and\/or y coordinates may not be generated in the\n`BoundingPoly` (the polygon will be unbounded) if only a partial face\nappears in the image to be annotated.",
+          "description": "The bounding polygon around the face. The coordinates of the bounding box\nare in the original image's scale.\nThe bounding box is computed to \"frame\" the face in accordance with human\nexpectations. It is based on the landmarker results.\nNote that one or more x and\/or y coordinates may not be generated in the\n`BoundingPoly` (the polygon will be unbounded) if only a partial face\nappears in the image to be annotated.",
           "$ref": "GoogleCloudVisionV1p3beta1BoundingPoly"
         },
         "fdBoundingPoly": {
@@ -5925,7 +5925,7 @@
       "type": "object",
       "properties": {
         "boundingPoly": {
-          "description": "The bounding polygon for the crop region. The coordinates of the bounding\nbox are in the original image's scale, as returned in `ImageParams`.",
+          "description": "The bounding polygon for the crop region. The coordinates of the bounding\nbox are in the original image's scale.",
           "$ref": "GoogleCloudVisionV1p3beta1BoundingPoly"
         },
         "confidence": {

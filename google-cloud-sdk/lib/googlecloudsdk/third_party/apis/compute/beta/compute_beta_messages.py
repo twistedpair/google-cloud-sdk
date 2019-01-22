@@ -1571,6 +1571,17 @@ class AllocationSpecificSKUAllocationAllocatedInstancePropertiesAllocatedDisk(_m
   interface = _messages.EnumField('InterfaceValueValuesEnum', 2)
 
 
+class AllocationsResizeRequest(_messages.Message):
+  r"""A AllocationsResizeRequest object.
+
+  Fields:
+    specificSkuCount: Number of allocated resources can be resized with
+      minimum = 1 and maximum = 1000.
+  """
+
+  specificSkuCount = _messages.IntegerField(1)
+
+
 class AllocationsScopedList(_messages.Message):
   r"""A AllocationsScopedList object.
 
@@ -2653,7 +2664,7 @@ class AutoscalingPolicyLoadBalancingUtilization(_messages.Message):
 
   Fields:
     utilizationTarget: Fraction of backend capacity utilization (set in
-      HTTP(s) load balancing configuration) that autoscaler should maintain.
+      HTTP(S) load balancing configuration) that autoscaler should maintain.
       Must be a positive float value. If not defined, the default is 0.8.
   """
 
@@ -4612,6 +4623,34 @@ class ComputeAllocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeAllocationsResizeRequest(_messages.Message):
+  r"""A ComputeAllocationsResizeRequest object.
+
+  Fields:
+    allocation: Name of the allocation to update.
+    allocationsResizeRequest: A AllocationsResizeRequest resource to be passed
+      as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    zone: Name of the zone for this request.
+  """
+
+  allocation = _messages.StringField(1, required=True)
+  allocationsResizeRequest = _messages.MessageField('AllocationsResizeRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeAllocationsSetIamPolicyRequest(_messages.Message):
@@ -9902,6 +9941,18 @@ class ComputeLicensesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
+class ComputeLicensesGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeLicensesGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+
+
 class ComputeLicensesGetRequest(_messages.Message):
   r"""A ComputeLicensesGetRequest object.
 
@@ -12368,6 +12419,20 @@ class ComputeRegionDisksDeleteRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeRegionDisksGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionDisksGetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeRegionDisksGetRequest(_messages.Message):
   r"""A ComputeRegionDisksGetRequest object.
 
@@ -12512,6 +12577,23 @@ class ComputeRegionDisksResizeRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
   regionDisksResizeRequest = _messages.MessageField('RegionDisksResizeRequest', 4)
   requestId = _messages.StringField(5)
+
+
+class ComputeRegionDisksSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeRegionDisksSetIamPolicyRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
+      the request body.
+    resource: Name or id of the resource for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
+  resource = _messages.StringField(4, required=True)
 
 
 class ComputeRegionDisksSetLabelsRequest(_messages.Message):
@@ -17324,14 +17406,16 @@ class Disk(_messages.Message):
 
     Values:
       CREATING: <no description>
+      DELETING: <no description>
       FAILED: <no description>
       READY: <no description>
       RESTORING: <no description>
     """
     CREATING = 0
-    FAILED = 1
-    READY = 2
-    RESTORING = 3
+    DELETING = 1
+    FAILED = 2
+    READY = 3
+    RESTORING = 4
 
   class StorageTypeValueValuesEnum(_messages.Enum):
     r"""[Deprecated] Storage type of the persistent disk.
@@ -20787,13 +20871,15 @@ class Image(_messages.Message):
     FAILED, PENDING, or READY.
 
     Values:
+      DELETING: <no description>
       FAILED: <no description>
       PENDING: <no description>
       READY: <no description>
     """
-    FAILED = 0
-    PENDING = 1
-    READY = 2
+    DELETING = 0
+    FAILED = 1
+    PENDING = 2
+    READY = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -23101,6 +23187,8 @@ class InstanceProperties(_messages.Message):
       created from this instance template.
     disks: An array of disks that are associated with the instances that are
       created from this template.
+    displayDevice: Display Device properties to enable support for remote
+      display products like: Teradici, VNC and TeamViewer
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from the instance template.
     labels: Labels to apply to instances that are created from this template.
@@ -23159,16 +23247,17 @@ class InstanceProperties(_messages.Message):
   canIpForward = _messages.BooleanField(2)
   description = _messages.StringField(3)
   disks = _messages.MessageField('AttachedDisk', 4, repeated=True)
-  guestAccelerators = _messages.MessageField('AcceleratorConfig', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  machineType = _messages.StringField(7)
-  metadata = _messages.MessageField('Metadata', 8)
-  minCpuPlatform = _messages.StringField(9)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 11)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 12, repeated=True)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 13)
-  tags = _messages.MessageField('Tags', 14)
+  displayDevice = _messages.MessageField('DisplayDevice', 5)
+  guestAccelerators = _messages.MessageField('AcceleratorConfig', 6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  machineType = _messages.StringField(8)
+  metadata = _messages.MessageField('Metadata', 9)
+  minCpuPlatform = _messages.StringField(10)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 12)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 14)
+  tags = _messages.MessageField('Tags', 15)
 
 
 class InstanceReference(_messages.Message):
@@ -23633,9 +23722,7 @@ class Interconnect(_messages.Message):
     InterconnectTypeValueValuesEnum: Type of interconnect. Note that
       "IT_PRIVATE" has been deprecated in favor of "DEDICATED"
     LinkTypeValueValuesEnum: Type of link requested. This field indicates
-      speed of each of the links in the bundle, not the entire bundle. Only
-      10G per link is allowed for a dedicated interconnect. Options:
-      Ethernet_10G_LR
+      speed of each of the links in the bundle, not the entire bundle.
     OperationalStatusValueValuesEnum: [Output Only] The current status of
       whether or not this Interconnect is functional.
     StateValueValuesEnum: [Output Only] The current state of whether or not
@@ -23686,8 +23773,7 @@ class Interconnect(_messages.Message):
       modified by the setLabels method. Each label key/value must comply with
       RFC1035. Label values may be empty.
     linkType: Type of link requested. This field indicates speed of each of
-      the links in the bundle, not the entire bundle. Only 10G per link is
-      allowed for a dedicated interconnect. Options: Ethernet_10G_LR
+      the links in the bundle, not the entire bundle.
     location: URL of the InterconnectLocation object that represents where
       this connection is to be provisioned.
     name: Name of the resource. Provided by the client when the resource is
@@ -23731,8 +23817,7 @@ class Interconnect(_messages.Message):
 
   class LinkTypeValueValuesEnum(_messages.Enum):
     r"""Type of link requested. This field indicates speed of each of the
-    links in the bundle, not the entire bundle. Only 10G per link is allowed
-    for a dedicated interconnect. Options: Ethernet_10G_LR
+    links in the bundle, not the entire bundle.
 
     Values:
       LINK_TYPE_ETHERNET_10G_LR: <no description>
@@ -27074,11 +27159,12 @@ class NetworkPeering(_messages.Message):
     StateValueValuesEnum: [Output Only] State for the peering.
 
   Fields:
-    autoCreateRoutes: Indicates whether full mesh connectivity is created and
-      managed automatically. When it is set to true, Google Compute Engine
-      will automatically create and manage the routes between two networks
-      when the state is ACTIVE. Otherwise, user needs to create routes
-      manually to route packets to peer network.
+    autoCreateRoutes: This field will be deprecated soon. Prefer using
+      exchange_subnet_routes instead. Indicates whether full mesh connectivity
+      is created and managed automatically. When it is set to true, Google
+      Compute Engine will automatically create and manage the routes between
+      two networks when the state is ACTIVE. Otherwise, user needs to create
+      routes manually to route packets to peer network.
     exchangeSubnetRoutes: Whether full mesh connectivity is created and
       managed automatically. When it is set to true, Google Compute Engine
       will automatically create and manage the routes between two networks
@@ -27163,8 +27249,9 @@ class NetworksAddPeeringRequest(_messages.Message):
   r"""A NetworksAddPeeringRequest object.
 
   Fields:
-    autoCreateRoutes: Whether Google Compute Engine manages the routes
-      automatically.
+    autoCreateRoutes: This field will be deprecated soon. Prefer using
+      exchange_subnet_routes in network_peering instead. Whether Google
+      Compute Engine manages the routes automatically.
     name: Name of the peering, which should conform to RFC1035.
     networkPeering: Network peering parameters. In order to specify route
       policies for peering using import/export custom routes, you will have to
@@ -29415,13 +29502,16 @@ class PathMatcher(_messages.Message):
       to a BackendService resource:   - https://www.googleapis.com/compute/v1/
       projects/project/global/backendServices/backendService  -
       compute/v1/projects/project/global/backendServices/backendService  -
-      global/backendServices/backendService   Use defaultService instead of
-      defaultRouteAction when simple routing to a backend service is desired
-      and other advanced capabilities like traffic splitting and URL rewrites
-      are not required. Only one of defaultService, defaultRouteAction or
-      defaultUrlRedirect must be set. Authorization requires one or more of
-      the following Google IAM permissions on the specified resource
-      default_service:   - compute.backendBuckets.use  -
+      global/backendServices/backendService  If defaultRouteAction is
+      additionally specified, advanced routing actions like URL Rewrites, etc.
+      take effect prior to sending the request to the backend. However, if
+      defaultService is specified, defaultRouteAction cannot contain any
+      weightedBackendServices. Conversely, if defaultRouteAction specifies any
+      weightedBackendServices, defaultService must not be specified. Only one
+      of defaultService, defaultUrlRedirect  or
+      defaultRouteAction.weightedBackendService must be set. Authorization
+      requires one or more of the following Google IAM permissions on the
+      specified resource default_service:   - compute.backendBuckets.use  -
       compute.backendServices.use
     description: An optional description of this resource. Provide this
       property when you create the resource.
@@ -29450,11 +29540,14 @@ class PathRule(_messages.Message):
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
       those chars are not allowed here.
-    service: The URL of the backend service resource if this rule is matched.
-      Use service instead of routeAction when simple routing to a backend
-      service is desired and other advanced capabilities like traffic
-      splitting and rewrites are not required. Only one of service,
-      routeAction or urlRedirect should must be set.
+    service: The full or partial URL of the backend service resource to which
+      traffic is directed if this rule is matched. If routeAction is
+      additionally specified, advanced routing actions like URL Rewrites, etc.
+      take effect prior to sending the request to the backend. However, if
+      service is specified, routeAction cannot contain any
+      weightedBackendService s. Conversely, if routeAction specifies any
+      weightedBackendServices, service must not be specified. Only one of
+      urlRedirect, service or routeAction.weightedBackendService must be set.
   """
 
   paths = _messages.StringField(1, repeated=True)
@@ -29719,6 +29812,7 @@ class Quota(_messages.Message):
       INTERNAL_ADDRESSES: <no description>
       IN_USE_ADDRESSES: <no description>
       IN_USE_BACKUP_SCHEDULES: <no description>
+      IN_USE_SNAPSHOT_SCHEDULES: <no description>
       LOCAL_SSD_TOTAL_GB: <no description>
       NETWORKS: <no description>
       NETWORK_ENDPOINT_GROUPS: <no description>
@@ -29786,49 +29880,50 @@ class Quota(_messages.Message):
     INTERNAL_ADDRESSES = 20
     IN_USE_ADDRESSES = 21
     IN_USE_BACKUP_SCHEDULES = 22
-    LOCAL_SSD_TOTAL_GB = 23
-    NETWORKS = 24
-    NETWORK_ENDPOINT_GROUPS = 25
-    NVIDIA_K80_GPUS = 26
-    NVIDIA_P100_GPUS = 27
-    NVIDIA_P100_VWS_GPUS = 28
-    NVIDIA_P4_GPUS = 29
-    NVIDIA_P4_VWS_GPUS = 30
-    NVIDIA_T4_GPUS = 31
-    NVIDIA_T4_VWS_GPUS = 32
-    NVIDIA_V100_GPUS = 33
-    PREEMPTIBLE_CPUS = 34
-    PREEMPTIBLE_LOCAL_SSD_GB = 35
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 36
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 37
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 38
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 39
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 40
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 41
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 42
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 43
-    REGIONAL_AUTOSCALERS = 44
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 45
-    RESOURCE_POLICIES = 46
-    ROUTERS = 47
-    ROUTES = 48
-    SECURITY_POLICIES = 49
-    SECURITY_POLICY_RULES = 50
-    SNAPSHOTS = 51
-    SSD_TOTAL_GB = 52
-    SSL_CERTIFICATES = 53
-    STATIC_ADDRESSES = 54
-    SUBNETWORKS = 55
-    TARGET_HTTPS_PROXIES = 56
-    TARGET_HTTP_PROXIES = 57
-    TARGET_INSTANCES = 58
-    TARGET_POOLS = 59
-    TARGET_SSL_PROXIES = 60
-    TARGET_TCP_PROXIES = 61
-    TARGET_VPN_GATEWAYS = 62
-    URL_MAPS = 63
-    VPN_GATEWAYS = 64
-    VPN_TUNNELS = 65
+    IN_USE_SNAPSHOT_SCHEDULES = 23
+    LOCAL_SSD_TOTAL_GB = 24
+    NETWORKS = 25
+    NETWORK_ENDPOINT_GROUPS = 26
+    NVIDIA_K80_GPUS = 27
+    NVIDIA_P100_GPUS = 28
+    NVIDIA_P100_VWS_GPUS = 29
+    NVIDIA_P4_GPUS = 30
+    NVIDIA_P4_VWS_GPUS = 31
+    NVIDIA_T4_GPUS = 32
+    NVIDIA_T4_VWS_GPUS = 33
+    NVIDIA_V100_GPUS = 34
+    PREEMPTIBLE_CPUS = 35
+    PREEMPTIBLE_LOCAL_SSD_GB = 36
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 37
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 38
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 39
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 40
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 41
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 42
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 43
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 44
+    REGIONAL_AUTOSCALERS = 45
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 46
+    RESOURCE_POLICIES = 47
+    ROUTERS = 48
+    ROUTES = 49
+    SECURITY_POLICIES = 50
+    SECURITY_POLICY_RULES = 51
+    SNAPSHOTS = 52
+    SSD_TOTAL_GB = 53
+    SSL_CERTIFICATES = 54
+    STATIC_ADDRESSES = 55
+    SUBNETWORKS = 56
+    TARGET_HTTPS_PROXIES = 57
+    TARGET_HTTP_PROXIES = 58
+    TARGET_INSTANCES = 59
+    TARGET_POOLS = 60
+    TARGET_SSL_PROXIES = 61
+    TARGET_TCP_PROXIES = 62
+    TARGET_VPN_GATEWAYS = 63
+    URL_MAPS = 64
+    VPN_GATEWAYS = 65
+    VPN_TUNNELS = 66
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -31042,8 +31137,6 @@ class ResourcePolicy(_messages.Message):
   r"""A ResourcePolicy object.
 
   Fields:
-    backupSchedulePolicy: Resource policy for persistent disks for creating
-      snapshots.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: A string attribute.
@@ -31061,16 +31154,18 @@ class ResourcePolicy(_messages.Message):
     region: A string attribute.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
+    snapshotSchedulePolicy: Resource policy for persistent disks for creating
+      snapshots.
   """
 
-  backupSchedulePolicy = _messages.MessageField('ResourcePolicyBackupSchedulePolicy', 1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default=u'compute#resourcePolicy')
-  name = _messages.StringField(6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
+  creationTimestamp = _messages.StringField(1)
+  description = _messages.StringField(2)
+  id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(4, default=u'compute#resourcePolicy')
+  name = _messages.StringField(5)
+  region = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  snapshotSchedulePolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicy', 8)
 
 
 class ResourcePolicyAggregatedList(_messages.Message):
@@ -31223,113 +31318,6 @@ class ResourcePolicyAggregatedList(_messages.Message):
   nextPageToken = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   warning = _messages.MessageField('WarningValue', 7)
-
-
-class ResourcePolicyBackupSchedulePolicy(_messages.Message):
-  r"""A backup schedule policy specifies when and how frequently snapshots are
-  to be created for the target disk. Also specifies how many and how long
-  these scheduled snapshots should be retained.
-
-  Fields:
-    retentionPolicy: Retention policy applied to snapshots created by this
-      resource policy.
-    schedule: A Vm Maintenance Policy specifies what kind of infrastructure
-      maintenance we are allowed to perform on this VM and when. Schedule that
-      is applied to disks covered by this policy.
-    snapshotProperties: Properties with which snapshots are created such as
-      labels, encryption keys.
-  """
-
-  retentionPolicy = _messages.MessageField('ResourcePolicyBackupSchedulePolicyRetentionPolicy', 1)
-  schedule = _messages.MessageField('ResourcePolicyBackupSchedulePolicySchedule', 2)
-  snapshotProperties = _messages.MessageField('ResourcePolicyBackupSchedulePolicySnapshotProperties', 3)
-
-
-class ResourcePolicyBackupSchedulePolicyRetentionPolicy(_messages.Message):
-  r"""Policy for retention of scheduled snapshots.
-
-  Enums:
-    OnSourceDiskDeleteValueValuesEnum: Specifies the behavior to apply to
-      scheduled snapshots when the source disk is deleted.
-
-  Fields:
-    maxRetentionDays: Maximum age of the snapshot that is allowed to be kept.
-    onSourceDiskDelete: Specifies the behavior to apply to scheduled snapshots
-      when the source disk is deleted.
-  """
-
-  class OnSourceDiskDeleteValueValuesEnum(_messages.Enum):
-    r"""Specifies the behavior to apply to scheduled snapshots when the source
-    disk is deleted.
-
-    Values:
-      APPLY_RETENTION_POLICY: <no description>
-      KEEP_AUTO_SNAPSHOTS: <no description>
-      UNSPECIFIED_ON_SOURCE_DISK_DELETE: <no description>
-    """
-    APPLY_RETENTION_POLICY = 0
-    KEEP_AUTO_SNAPSHOTS = 1
-    UNSPECIFIED_ON_SOURCE_DISK_DELETE = 2
-
-  maxRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  onSourceDiskDelete = _messages.EnumField('OnSourceDiskDeleteValueValuesEnum', 2)
-
-
-class ResourcePolicyBackupSchedulePolicySchedule(_messages.Message):
-  r"""A schedule for disks where the schedueled operations are performed.
-
-  Fields:
-    dailySchedule: A ResourcePolicyDailyCycle attribute.
-    hourlySchedule: A ResourcePolicyHourlyCycle attribute.
-    weeklySchedule: A ResourcePolicyWeeklyCycle attribute.
-  """
-
-  dailySchedule = _messages.MessageField('ResourcePolicyDailyCycle', 1)
-  hourlySchedule = _messages.MessageField('ResourcePolicyHourlyCycle', 2)
-  weeklySchedule = _messages.MessageField('ResourcePolicyWeeklyCycle', 3)
-
-
-class ResourcePolicyBackupSchedulePolicySnapshotProperties(_messages.Message):
-  r"""Specified snapshot properties for scheduled snapshots created by this
-  policy.
-
-  Messages:
-    LabelsValue: Labels to apply to scheduled snapshots. These can be later
-      modified by the setLabels method. Label values may be empty.
-
-  Fields:
-    guestFlush: Indication to perform a ?guest aware? snapshot.
-    labels: Labels to apply to scheduled snapshots. These can be later
-      modified by the setLabels method. Label values may be empty.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels to apply to scheduled snapshots. These can be later modified by
-    the setLabels method. Label values may be empty.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  guestFlush = _messages.BooleanField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
 
 
 class ResourcePolicyDailyCycle(_messages.Message):
@@ -31490,6 +31478,116 @@ class ResourcePolicyList(_messages.Message):
   nextPageToken = _messages.StringField(5)
   selfLink = _messages.StringField(6)
   warning = _messages.MessageField('WarningValue', 7)
+
+
+class ResourcePolicySnapshotSchedulePolicy(_messages.Message):
+  r"""A snapshot schedule policy specifies when and how frequently snapshots
+  are to be created for the target disk. Also specifies how many and how long
+  these scheduled snapshots should be retained.
+
+  Fields:
+    retentionPolicy: Retention policy applied to snapshots created by this
+      resource policy.
+    schedule: A Vm Maintenance Policy specifies what kind of infrastructure
+      maintenance we are allowed to perform on this VM and when. Schedule that
+      is applied to disks covered by this policy.
+    snapshotProperties: Properties with which snapshots are created such as
+      labels, encryption keys.
+  """
+
+  retentionPolicy = _messages.MessageField('ResourcePolicySnapshotSchedulePolicyRetentionPolicy', 1)
+  schedule = _messages.MessageField('ResourcePolicySnapshotSchedulePolicySchedule', 2)
+  snapshotProperties = _messages.MessageField('ResourcePolicySnapshotSchedulePolicySnapshotProperties', 3)
+
+
+class ResourcePolicySnapshotSchedulePolicyRetentionPolicy(_messages.Message):
+  r"""Policy for retention of scheduled snapshots.
+
+  Enums:
+    OnSourceDiskDeleteValueValuesEnum: Specifies the behavior to apply to
+      scheduled snapshots when the source disk is deleted.
+
+  Fields:
+    maxRetentionDays: Maximum age of the snapshot that is allowed to be kept.
+    onSourceDiskDelete: Specifies the behavior to apply to scheduled snapshots
+      when the source disk is deleted.
+  """
+
+  class OnSourceDiskDeleteValueValuesEnum(_messages.Enum):
+    r"""Specifies the behavior to apply to scheduled snapshots when the source
+    disk is deleted.
+
+    Values:
+      APPLY_RETENTION_POLICY: <no description>
+      KEEP_AUTO_SNAPSHOTS: <no description>
+      UNSPECIFIED_ON_SOURCE_DISK_DELETE: <no description>
+    """
+    APPLY_RETENTION_POLICY = 0
+    KEEP_AUTO_SNAPSHOTS = 1
+    UNSPECIFIED_ON_SOURCE_DISK_DELETE = 2
+
+  maxRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  onSourceDiskDelete = _messages.EnumField('OnSourceDiskDeleteValueValuesEnum', 2)
+
+
+class ResourcePolicySnapshotSchedulePolicySchedule(_messages.Message):
+  r"""A schedule for disks where the schedueled operations are performed.
+
+  Fields:
+    dailySchedule: A ResourcePolicyDailyCycle attribute.
+    hourlySchedule: A ResourcePolicyHourlyCycle attribute.
+    weeklySchedule: A ResourcePolicyWeeklyCycle attribute.
+  """
+
+  dailySchedule = _messages.MessageField('ResourcePolicyDailyCycle', 1)
+  hourlySchedule = _messages.MessageField('ResourcePolicyHourlyCycle', 2)
+  weeklySchedule = _messages.MessageField('ResourcePolicyWeeklyCycle', 3)
+
+
+class ResourcePolicySnapshotSchedulePolicySnapshotProperties(_messages.Message):
+  r"""Specified snapshot properties for scheduled snapshots created by this
+  policy.
+
+  Messages:
+    LabelsValue: Labels to apply to scheduled snapshots. These can be later
+      modified by the setLabels method. Label values may be empty.
+
+  Fields:
+    guestFlush: Indication to perform a ?guest aware? snapshot.
+    labels: Labels to apply to scheduled snapshots. These can be later
+      modified by the setLabels method. Label values may be empty.
+    storageLocations: GCS bucket storage location of the auto snapshot
+      (regional or multi-regional).
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels to apply to scheduled snapshots. These can be later modified by
+    the setLabels method. Label values may be empty.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  guestFlush = _messages.BooleanField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  storageLocations = _messages.StringField(3, repeated=True)
 
 
 class ResourcePolicyWeeklyCycle(_messages.Message):
@@ -32414,6 +32512,7 @@ class RouterNat(_messages.Message):
   Fields:
     icmpIdleTimeoutSec: Timeout (in seconds) for ICMP connections. Defaults to
       30s if not set.
+    logConfig: Configure logging on this NAT.
     minPortsPerVm: Minimum number of ports allocated to a VM from this NAT
       config. If not set, a default number of ports is allocated to a VM. This
       gets rounded up to the nearest power of 2. Eg. if the value of this
@@ -32467,15 +32566,47 @@ class RouterNat(_messages.Message):
     LIST_OF_SUBNETWORKS = 2
 
   icmpIdleTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minPortsPerVm = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  name = _messages.StringField(3)
-  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 4)
-  natIps = _messages.StringField(5, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 6)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 7, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('RouterNatLogConfig', 2)
+  minPortsPerVm = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 5)
+  natIps = _messages.StringField(6, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 7)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 8, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+
+
+class RouterNatLogConfig(_messages.Message):
+  r"""Configuration of logging on a NAT.
+
+  Enums:
+    FilterValueValuesEnum: Specifies the desired filtering of logs on this
+      NAT. If unspecified, logs are exported for all connections handled by
+      this NAT.
+
+  Fields:
+    enable: Indicates whether or not to export logs. This is false by default.
+    filter: Specifies the desired filtering of logs on this NAT. If
+      unspecified, logs are exported for all connections handled by this NAT.
+  """
+
+  class FilterValueValuesEnum(_messages.Enum):
+    r"""Specifies the desired filtering of logs on this NAT. If unspecified,
+    logs are exported for all connections handled by this NAT.
+
+    Values:
+      ALL: <no description>
+      ERRORS_ONLY: <no description>
+      TRANSLATIONS_ONLY: <no description>
+    """
+    ALL = 0
+    ERRORS_ONLY = 1
+    TRANSLATIONS_ONLY = 2
+
+  enable = _messages.BooleanField(1)
+  filter = _messages.EnumField('FilterValueValuesEnum', 2)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):
@@ -33330,7 +33461,7 @@ class ShieldedVmIdentity(_messages.Message):
 
 
 class ShieldedVmIdentityEntry(_messages.Message):
-  r"""A Shielded VM Identity Entry.
+  r"""A Shielded Instance Identity Entry.
 
   Fields:
     ekCert: A PEM-encoded X.509 certificate. This field can be empty.
@@ -37383,12 +37514,15 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
-    defaultService: The URL of the backendService resource if none of the
-      hostRules match. Use defaultService instead of defaultRouteAction when
-      simple routing to a backendService is desired and other advanced
-      capabilities like traffic splitting and rewrites are not required. Only
-      one of defaultService, defaultRouteAction or defaultUrlRedirect should
-      must be set.
+    defaultService: The full or partial URL of the defaultService resource to
+      which traffic is directed if none of the hostRules match. If
+      defaultRouteAction is additionally specified, advanced routing actions
+      like URL Rewrites, etc. take effect prior to sending the request to the
+      backend. However, if defaultService is specified, defaultRouteAction
+      cannot contain any weightedBackendServices. Conversely, if routeAction
+      specifies any weightedBackendServices, service must not be specified.
+      Only one of defaultService, defaultUrlRedirect  or
+      defaultRouteAction.weightedBackendService must be set.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored

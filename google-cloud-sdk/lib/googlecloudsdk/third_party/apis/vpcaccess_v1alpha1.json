@@ -267,9 +267,10 @@
           "enumDescriptions": [
             "Invalid state.",
             "Connector is deployed and ready to receive traffic.",
-            "An Insert operation is in progress. Transient condition.",
-            "A Delete operation is in progress. Transient condition.",
-            "Connector is in a bad state, manual deletion recommended."
+            "An Insert operation is in progress.",
+            "A Delete operation is in progress.",
+            "Connector is in a bad state, manual deletion recommended.",
+            "The connector is being updated."
           ],
           "type": "string",
           "enum": [
@@ -277,7 +278,8 @@
             "READY",
             "CREATING",
             "DELETING",
-            "ERROR"
+            "ERROR",
+            "UPDATING"
           ]
         },
         "type": {

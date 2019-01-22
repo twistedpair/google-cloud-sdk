@@ -4,7 +4,7 @@
  "id": "dns:v1",
  "name": "dns",
  "version": "v1",
- "revision": "20181207",
+ "revision": "20190111",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -87,7 +87,7 @@
   "Change": {
    "id": "Change",
    "type": "object",
-   "description": "An atomic update to a collection of ResourceRecordSets.",
+   "description": "A Change represents a set of ResourceRecordSet additions and deletions applied atomically to a ManagedZone. ResourceRecordSets within a ManagedZone are modified by creating a new Change element in the Changes collection. In turn the Changes collection also records the past modifications to the ResourceRecordSets in a ManagedZone. The current state of the ManagedZone is the sum effect of applying all Change elements in the Changes collection in sequence.",
    "properties": {
     "additions": {
      "type": "array",
@@ -675,7 +675,7 @@
     },
     "type": {
      "type": "string",
-     "description": "The identifier of a supported record type, for example, A, AAAA, MX, TXT, and so on."
+     "description": "The identifier of a supported record type. See the list of Supported DNS record types."
     }
    }
   },

@@ -158,7 +158,7 @@ class DeploymentmanagerV2beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a composite type. This method supports patch semantics.
+      r"""Patches a composite type.
 
       Args:
         request: (DeploymentmanagerCompositeTypesPatchRequest) input message

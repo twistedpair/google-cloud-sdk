@@ -429,3 +429,4 @@ class UpdateData(object):
   def __init__(self, data):
     self.mask_field = data.get('mask_field', None)
     self.read_modify_update = data.get('read_modify_update', False)
+    self.disable_auto_field_mask = data.get('disable_auto_field_mask', False)

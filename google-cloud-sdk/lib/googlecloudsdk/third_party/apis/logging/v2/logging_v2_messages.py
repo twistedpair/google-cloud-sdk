@@ -365,8 +365,8 @@ class LogEntry(_messages.Message):
       "organizations/[ORGANIZATION_ID]/logs/[LOG_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/logs/[LOG_ID]"
       "folders/[FOLDER_ID]/logs/[LOG_ID]" A project number may optionally be
-      used in place of PROJECT_ID. The  project number is translated to its
-      corresponding PROJECT_ID internally  and the log_name field will contain
+      used in place of PROJECT_ID. The project number is translated to its
+      corresponding PROJECT_ID internally and the log_name field will contain
       PROJECT_ID in queries and exports.[LOG_ID] must be URL-encoded within
       log_name. Example: "organizations/1234567890/logs/cloudresourcemanager.g
       oogleapis.com%2Factivity". [LOG_ID] must be less than 512 characters
@@ -377,9 +377,9 @@ class LogEntry(_messages.Message):
       but the forward-slash is removed. Listing the log entry will not show
       the leading slash and filtering for a log name with a leading slash will
       never return any results.
-    metadata: Output only. Additional metadata about the monitored resource.
-      Only k8s_container, k8s_pod, and k8s_node MonitoredResources have this
-      field populated.
+    metadata: Output only. Additional metadata about the monitored
+      resource.Only k8s_container, k8s_pod, and k8s_node MonitoredResources
+      have this field populated.
     operation: Optional. Information about an operation associated with the
       log entry, if applicable.
     protoPayload: The log entry payload, represented as a protocol buffer.
@@ -388,7 +388,7 @@ class LogEntry(_messages.Message):
     receiveTimestamp: Output only. The time the log entry was received by
       Logging.
     resource: Required. The primary monitored resource associated with this
-      log entry. Example: a log entry that reports a database error would be
+      log entry.Example: a log entry that reports a database error would be
       associated with the monitored resource designating the particular
       database that reported the error.
     severity: Optional. The severity of the log entry. The default value is
@@ -396,7 +396,7 @@ class LogEntry(_messages.Message):
     sourceLocation: Optional. Source code location information associated with
       the log entry, if any.
     spanId: Optional. The span ID within the trace associated with the log
-      entry. For Trace spans, this is the same format that the Trace API v2
+      entry.For Trace spans, this is the same format that the Trace API v2
       uses: a 16-character hexadecimal encoding of an 8-byte array, such as
       <code>"000000000000004a"</code>.
     textPayload: The log entry payload, represented as a Unicode string
@@ -416,12 +416,11 @@ class LogEntry(_messages.Message):
       be relative to //tracing.googleapis.com. Example: projects/my-
       projectid/traces/06796866738c859f2f19b7cfb3214824
     traceSampled: Optional. The sampling decision of the trace associated with
-      the log entry. True means that the trace resource name in the trace
-      field was sampled for storage in a trace backend. False means that the
-      trace was not sampled for storage when this log entry was written, or
-      the sampling decision was unknown at the time. A non-sampled trace value
-      is still useful as a request correlation identifier. The default is
-      False.
+      the log entry.True means that the trace resource name in the trace field
+      was sampled for storage in a trace backend. False means that the trace
+      was not sampled for storage when this log entry was written, or the
+      sampling decision was unknown at the time. A non-sampled trace value is
+      still useful as a request correlation identifier. The default is False.
   """
 
   class SeverityValueValuesEnum(_messages.Enum):
@@ -599,9 +598,11 @@ class LogExclusion(_messages.Message):
   entries and log entries from Amazon Web Services are never excluded.
 
   Fields:
+    createTime: Output only. The creation timestamp of the exclusion.This
+      field may not be present for older exclusions.
     description: Optional. A description of this exclusion.
     disabled: Optional. If set to True, then this exclusion is disabled and it
-      does not exclude any log entries. You can use exclusions.patch to change
+      does not exclude any log entries. You can update an exclusion to change
       the value of this field.
     filter: Required. An advanced logs filter that matches the log entries to
       be excluded. By using the sample function, you can exclude less than
@@ -612,12 +613,16 @@ class LogExclusion(_messages.Message):
     name: Required. A client-assigned identifier, such as "load-balancer-
       exclusion". Identifiers are limited to 100 characters and can include
       only letters, digits, underscores, hyphens, and periods.
+    updateTime: Output only. The last update timestamp of the exclusion.This
+      field may not be present for older exclusions.
   """
 
-  description = _messages.StringField(1)
-  disabled = _messages.BooleanField(2)
-  filter = _messages.StringField(3)
-  name = _messages.StringField(4)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  disabled = _messages.BooleanField(3)
+  filter = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class LogLine(_messages.Message):
@@ -695,6 +700,8 @@ class LogMetric(_messages.Message):
     bucketOptions: Optional. The bucket_options are required when the logs-
       based metric is using a DISTRIBUTION value type and it describes the
       bucket boundaries used to create a histogram of the extracted values.
+    createTime: Output only. The creation timestamp of the metric.This field
+      may not be present for older metrics.
     description: Optional. A description of this metric, which is used in
       documentation. The maximum length of the description is 8000 characters.
     filter: Required. An advanced logs filter which is used to match log
@@ -737,6 +744,8 @@ class LogMetric(_messages.Message):
       when the metric identifier appears as the [METRIC_ID] part of a
       metric_name API parameter, then the metric identifier must be URL-
       encoded. Example: "projects/my-project/metrics/nginx%2Frequests".
+    updateTime: Output only. The last update timestamp of the metric.This
+      field may not be present for older metrics.
     valueExtractor: Optional. A value_extractor is required when using a
       distribution logs-based metric to extract the values to record from a
       log entry. Two functions are supported for value extraction:
@@ -803,13 +812,15 @@ class LogMetric(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bucketOptions = _messages.MessageField('BucketOptions', 1)
-  description = _messages.StringField(2)
-  filter = _messages.StringField(3)
-  labelExtractors = _messages.MessageField('LabelExtractorsValue', 4)
-  metricDescriptor = _messages.MessageField('MetricDescriptor', 5)
-  name = _messages.StringField(6)
-  valueExtractor = _messages.StringField(7)
-  version = _messages.EnumField('VersionValueValuesEnum', 8)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  filter = _messages.StringField(4)
+  labelExtractors = _messages.MessageField('LabelExtractorsValue', 5)
+  metricDescriptor = _messages.MessageField('MetricDescriptor', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  valueExtractor = _messages.StringField(9)
+  version = _messages.EnumField('VersionValueValuesEnum', 10)
 
 
 class LogSink(_messages.Message):
@@ -825,13 +836,15 @@ class LogSink(_messages.Message):
       default and cannot be changed.
 
   Fields:
+    createTime: Output only. The creation timestamp of the sink.This field may
+      not be present for older sinks.
     destination: Required. The export destination:
       "storage.googleapis.com/[GCS_BUCKET]"
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
       "pubsub.googleapis.com/projects/[PROJECT_ID]/topics/[TOPIC_ID]" The
       sink's writer_identity, set when the sink is created, must have
       permission to write to the destination or else the log entries are not
-      exported. For more information, see Exporting Logs With Sinks.
+      exported. For more information, see Exporting Logs with Sinks.
     filter: Optional. An advanced logs filter. The only exported log entries
       are those that are in the resource owning the sink and that match the
       filter. For example: logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND
@@ -856,14 +869,16 @@ class LogSink(_messages.Message):
     outputVersionFormat: Deprecated. The log entry format to use for this
       sink's exported log entries. The v2 format is used by default and cannot
       be changed.
+    updateTime: Output only. The last update timestamp of the sink.This field
+      may not be present for older sinks.
     writerIdentity: Output only. An IAM identity&mdash;a service account or
       group&mdash;under which Logging writes the exported log entries to the
-      sink's destination. This field is set by sinks.create and sinks.update,
-      based on the setting of unique_writer_identity in those methods.Until
-      you grant this identity write-access to the destination, log entry
-      exports from this sink will fail. For more information, see Granting
-      access for a resource. Consult the destination service's documentation
-      to determine the appropriate IAM roles to assign to the identity.
+      sink's destination. This field is set by sinks.create and sinks.update
+      based on the value of unique_writer_identity in those methods.Until you
+      grant this identity write-access to the destination, log entry exports
+      from this sink will fail. For more information, see Granting Access for
+      a Resource. Consult the destination service's documentation to determine
+      the appropriate IAM roles to assign to the identity.
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):
@@ -880,12 +895,14 @@ class LogSink(_messages.Message):
     V2 = 1
     V1 = 2
 
-  destination = _messages.StringField(1)
-  filter = _messages.StringField(2)
-  includeChildren = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 5)
-  writerIdentity = _messages.StringField(6)
+  createTime = _messages.StringField(1)
+  destination = _messages.StringField(2)
+  filter = _messages.StringField(3)
+  includeChildren = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+  writerIdentity = _messages.StringField(8)
 
 
 class LoggingBillingAccountsExclusionsCreateRequest(_messages.Message):

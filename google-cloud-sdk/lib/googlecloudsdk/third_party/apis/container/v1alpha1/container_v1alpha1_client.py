@@ -363,6 +363,8 @@ This will be an no-op if the last upgrade successfully completed.
       r"""GetOpenIDConfig gets the OIDC discovery document for the cluster.
 See the OpenID Connect Discovery 1.0 specification for details.
 https://openid.net/specs/openid-connect-discovery-1_0.html
+This API is not yet intended for general use, and is not available for all
+clusters.
 
       Args:
         request: (ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest) input message
@@ -529,6 +531,8 @@ at the initial create time.
     def GetJwks(self, request, global_params=None):
       r"""GetJSONWebKeys gets the public component of the cluster signing keys in.
 JSON Web Key format.
+This API is not yet intended for general use, and is not available for all
+clusters.
 
       Args:
         request: (ContainerProjectsLocationsClustersGetJwksRequest) input message

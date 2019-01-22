@@ -375,8 +375,7 @@ class CropHint(_messages.Message):
 
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
-      the bounding box are in the original image's scale, as returned in
-      `ImageParams`.
+      the bounding box are in the original image's scale.
     confidence: Confidence of this being a salient region.  Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
@@ -539,12 +538,12 @@ class FaceAnnotation(_messages.Message):
     angerLikelihood: Anger likelihood.
     blurredLikelihood: Blurred likelihood.
     boundingPoly: The bounding polygon around the face. The coordinates of the
-      bounding box are in the original image's scale, as returned in
-      `ImageParams`. The bounding box is computed to "frame" the face in
-      accordance with human expectations. It is based on the landmarker
-      results. Note that one or more x and/or y coordinates may not be
-      generated in the `BoundingPoly` (the polygon will be unbounded) if only
-      a partial face appears in the image to be annotated.
+      bounding box are in the original image's scale. The bounding box is
+      computed to "frame" the face in accordance with human expectations. It
+      is based on the landmarker results. Note that one or more x and/or y
+      coordinates may not be generated in the `BoundingPoly` (the polygon will
+      be unbounded) if only a partial face appears in the image to be
+      annotated.
     detectionConfidence: Detection confidence. Range [0, 1].
     fdBoundingPoly: The `fd_bounding_poly` bounding polygon is tighter than
       the `boundingPoly`, and encloses only the skin part of the face.
@@ -997,8 +996,7 @@ class GoogleCloudVisionV1p1beta1CropHint(_messages.Message):
 
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
-      the bounding box are in the original image's scale, as returned in
-      `ImageParams`.
+      the bounding box are in the original image's scale.
     confidence: Confidence of this being a salient region.  Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
@@ -1088,12 +1086,12 @@ class GoogleCloudVisionV1p1beta1FaceAnnotation(_messages.Message):
     angerLikelihood: Anger likelihood.
     blurredLikelihood: Blurred likelihood.
     boundingPoly: The bounding polygon around the face. The coordinates of the
-      bounding box are in the original image's scale, as returned in
-      `ImageParams`. The bounding box is computed to "frame" the face in
-      accordance with human expectations. It is based on the landmarker
-      results. Note that one or more x and/or y coordinates may not be
-      generated in the `BoundingPoly` (the polygon will be unbounded) if only
-      a partial face appears in the image to be annotated.
+      bounding box are in the original image's scale. The bounding box is
+      computed to "frame" the face in accordance with human expectations. It
+      is based on the landmarker results. Note that one or more x and/or y
+      coordinates may not be generated in the `BoundingPoly` (the polygon will
+      be unbounded) if only a partial face appears in the image to be
+      annotated.
     detectionConfidence: Detection confidence. Range [0, 1].
     fdBoundingPoly: The `fd_bounding_poly` bounding polygon is tighter than
       the `boundingPoly`, and encloses only the skin part of the face.
@@ -2259,8 +2257,7 @@ class GoogleCloudVisionV1p2beta1CropHint(_messages.Message):
 
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
-      the bounding box are in the original image's scale, as returned in
-      `ImageParams`.
+      the bounding box are in the original image's scale.
     confidence: Confidence of this being a salient region.  Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
@@ -2350,12 +2347,12 @@ class GoogleCloudVisionV1p2beta1FaceAnnotation(_messages.Message):
     angerLikelihood: Anger likelihood.
     blurredLikelihood: Blurred likelihood.
     boundingPoly: The bounding polygon around the face. The coordinates of the
-      bounding box are in the original image's scale, as returned in
-      `ImageParams`. The bounding box is computed to "frame" the face in
-      accordance with human expectations. It is based on the landmarker
-      results. Note that one or more x and/or y coordinates may not be
-      generated in the `BoundingPoly` (the polygon will be unbounded) if only
-      a partial face appears in the image to be annotated.
+      bounding box are in the original image's scale. The bounding box is
+      computed to "frame" the face in accordance with human expectations. It
+      is based on the landmarker results. Note that one or more x and/or y
+      coordinates may not be generated in the `BoundingPoly` (the polygon will
+      be unbounded) if only a partial face appears in the image to be
+      annotated.
     detectionConfidence: Detection confidence. Range [0, 1].
     fdBoundingPoly: The `fd_bounding_poly` bounding polygon is tighter than
       the `boundingPoly`, and encloses only the skin part of the face.
@@ -3561,8 +3558,7 @@ class GoogleCloudVisionV1p3beta1CropHint(_messages.Message):
 
   Fields:
     boundingPoly: The bounding polygon for the crop region. The coordinates of
-      the bounding box are in the original image's scale, as returned in
-      `ImageParams`.
+      the bounding box are in the original image's scale.
     confidence: Confidence of this being a salient region.  Range [0, 1].
     importanceFraction: Fraction of importance of this salient region with
       respect to the original image.
@@ -3652,12 +3648,12 @@ class GoogleCloudVisionV1p3beta1FaceAnnotation(_messages.Message):
     angerLikelihood: Anger likelihood.
     blurredLikelihood: Blurred likelihood.
     boundingPoly: The bounding polygon around the face. The coordinates of the
-      bounding box are in the original image's scale, as returned in
-      `ImageParams`. The bounding box is computed to "frame" the face in
-      accordance with human expectations. It is based on the landmarker
-      results. Note that one or more x and/or y coordinates may not be
-      generated in the `BoundingPoly` (the polygon will be unbounded) if only
-      a partial face appears in the image to be annotated.
+      bounding box are in the original image's scale. The bounding box is
+      computed to "frame" the face in accordance with human expectations. It
+      is based on the landmarker results. Note that one or more x and/or y
+      coordinates may not be generated in the `BoundingPoly` (the polygon will
+      be unbounded) if only a partial face appears in the image to be
+      annotated.
     detectionConfidence: Detection confidence. Range [0, 1].
     fdBoundingPoly: The `fd_bounding_poly` bounding polygon is tighter than
       the `boundingPoly`, and encloses only the skin part of the face.
@@ -5452,8 +5448,9 @@ class ProductSet(_messages.Message):
       ProductSet.
     indexTime: Output only. The time at which this ProductSet was last
       indexed. Query results will reflect all updates before this time. If
-      this ProductSet has never been indexed, this field is 0.  This field is
-      ignored when creating a ProductSet.
+      this ProductSet has never been indexed, this timestamp is the default
+      value "1970-01-01T00:00:00Z".  This field is ignored when creating a
+      ProductSet.
     name: The resource name of the ProductSet.  Format is:
       `projects/PROJECT_ID/locations/LOC_ID/productSets/PRODUCT_SET_ID`.  This
       field is ignored when creating a ProductSet.

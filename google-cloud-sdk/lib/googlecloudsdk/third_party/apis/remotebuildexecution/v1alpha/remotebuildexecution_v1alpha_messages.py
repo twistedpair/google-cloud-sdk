@@ -168,41 +168,45 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
     environmentVariables: The environment variables to set when running the
       program. The worker may provide its own default environment variables;
       these defaults can be overridden using this field. Additional variables
-      can also be specified.  In order to ensure that equivalent `Command`s
+      can also be specified.  In order to ensure that equivalent Commands
       always hash to the same value, the environment variables MUST be
       lexicographically sorted by name. Sorting of strings is done by code
       point, equivalently, by the UTF-8 bytes.
     outputDirectories: A list of the output directories that the client
-      expects to retrieve from the action. Only the contents of the indicated
-      directories (recursively including the contents of their subdirectories)
-      will be returned, as well as files listed in `output_files`. Other files
-      that may be created during command execution are discarded.  The paths
-      are relative to the working directory of the action execution. The paths
-      are specified using a single forward slash (`/`) as a path separator,
-      even if the execution platform natively uses a different separator. The
-      path MUST NOT include a trailing slash, nor a leading slash, being a
-      relative path. The special value of empty string is allowed, although
-      not recommended, and can be used to capture the entire working directory
-      tree, including inputs.  In order to ensure consistent hashing of the
-      same Action, the output paths MUST be sorted lexicographically by code
-      point (or, equivalently, by UTF-8 bytes).  An output directory cannot be
-      duplicated, be a parent of another output directory, be a parent of a
-      listed output file, or have the same path as any of the listed output
-      files.
+      expects to retrieve from the action. Only the listed directories will be
+      returned (an entire directory structure will be returned as a Tree
+      message digest, see OutputDirectory), as well as files listed in
+      `output_files`. Other files or directories that may be created during
+      command execution are discarded.  The paths are relative to the working
+      directory of the action execution. The paths are specified using a
+      single forward slash (`/`) as a path separator, even if the execution
+      platform natively uses a different separator. The path MUST NOT include
+      a trailing slash, nor a leading slash, being a relative path. The
+      special value of empty string is allowed, although not recommended, and
+      can be used to capture the entire working directory tree, including
+      inputs.  In order to ensure consistent hashing of the same Action, the
+      output paths MUST be sorted lexicographically by code point (or,
+      equivalently, by UTF-8 bytes).  An output directory cannot be duplicated
+      or have the same path as any of the listed output files.  Directories
+      leading up to the output directories (but not the output directories
+      themselves) are created by the worker prior to execution, even if they
+      are not explicitly part of the input root.
     outputFiles: A list of the output files that the client expects to
       retrieve from the action. Only the listed files, as well as directories
       listed in `output_directories`, will be returned to the client as
-      output. Other files that may be created during command execution are
-      discarded.  The paths are relative to the working directory of the
-      action execution. The paths are specified using a single forward slash
-      (`/`) as a path separator, even if the execution platform natively uses
-      a different separator. The path MUST NOT include a trailing slash, nor a
-      leading slash, being a relative path.  In order to ensure consistent
-      hashing of the same Action, the output paths MUST be sorted
-      lexicographically by code point (or, equivalently, by UTF-8 bytes).  An
-      output file cannot be duplicated, be a parent of another output file, be
-      a child of a listed output directory, or have the same path as any of
-      the listed output directories.
+      output. Other files or directories that may be created during command
+      execution are discarded.  The paths are relative to the working
+      directory of the action execution. The paths are specified using a
+      single forward slash (`/`) as a path separator, even if the execution
+      platform natively uses a different separator. The path MUST NOT include
+      a trailing slash, nor a leading slash, being a relative path.  In order
+      to ensure consistent hashing of the same Action, the output paths MUST
+      be sorted lexicographically by code point (or, equivalently, by UTF-8
+      bytes).  An output file cannot be duplicated, be a parent of another
+      output file, or have the same path as any of the listed output
+      directories.  Directories leading up to the output files are created by
+      the worker prior to execution, even if they are not explicitly part of
+      the input root.
     platform: The platform requirements for the execution environment. The
       server MAY choose to execute the action on any worker satisfying the
       requirements, so the client SHOULD ensure that running the action on any
@@ -252,9 +256,9 @@ class BuildBazelRemoteExecutionV2Digest(_messages.Message):
   When a `Digest` is used to refer to a proto message, it always refers to the
   message in binary encoded form. To ensure consistent hashing, clients and
   servers MUST ensure that they serialize messages according to the following
-  rules, even if there are alternate valid encodings for the same message. -
-  Fields are serialized in tag order. - There are no unknown fields. - There
-  are no duplicate fields. - Fields are serialized according to the default
+  rules, even if there are alternate valid encodings for the same message:  *
+  Fields are serialized in tag order. * There are no unknown fields. * There
+  are no duplicate fields. * Fields are serialized according to the default
   semantics for their type.  Most protocol buffer implementations will always
   follow these rules when serializing, but care should be taken to avoid
   shortcuts. For instance, concatenating two messages to merge them may
@@ -277,11 +281,11 @@ class BuildBazelRemoteExecutionV2Directory(_messages.Message):
   (either a file blob or a `Directory` proto) or a symlink target, as well as
   possibly some metadata about the file or directory.  In order to ensure that
   two equivalent directory trees hash to the same value, the following
-  restrictions MUST be obeyed when constructing a a `Directory`:   - Every
-  child in the directory must have a path of exactly one segment.     Multiple
-  levels of directory hierarchy may not be collapsed.   - Each child in the
-  directory must have a unique path segment (file name).   - The files,
-  directories and symlinks in the directory must each be sorted     in
+  restrictions MUST be obeyed when constructing a a `Directory`:  * Every
+  child in the directory must have a path of exactly one segment.   Multiple
+  levels of directory hierarchy may not be collapsed. * Each child in the
+  directory must have a unique path segment (file name). * The files,
+  directories and symlinks in the directory must each be sorted   in
   lexicographical order by path. The path strings must be sorted by code
   point, equivalently, by UTF-8 bytes.  A `Directory` that obeys the
   restrictions is said to be in canonical form.  As an example, the following
@@ -374,6 +378,9 @@ class BuildBazelRemoteExecutionV2ExecuteResponse(_messages.Message):
   Fields:
     cachedResult: True if the result was served from cache, false if it was
       executed.
+    message: Freeform informational message with details on the execution of
+      the action that may be displayed to the user upon failure or when
+      requested explicitly.
     result: The result of the action.
     serverLogs: An optional list of additional log outputs the server wishes
       to provide. A server can use this to return execution-specific logs
@@ -424,9 +431,10 @@ class BuildBazelRemoteExecutionV2ExecuteResponse(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   cachedResult = _messages.BooleanField(1)
-  result = _messages.MessageField('BuildBazelRemoteExecutionV2ActionResult', 2)
-  serverLogs = _messages.MessageField('ServerLogsValue', 3)
-  status = _messages.MessageField('GoogleRpcStatus', 4)
+  message = _messages.StringField(2)
+  result = _messages.MessageField('BuildBazelRemoteExecutionV2ActionResult', 3)
+  serverLogs = _messages.MessageField('ServerLogsValue', 4)
+  status = _messages.MessageField('GoogleRpcStatus', 5)
 
 
 class BuildBazelRemoteExecutionV2ExecutedActionMetadata(_messages.Message):
@@ -593,9 +601,9 @@ class BuildBazelRemoteExecutionV2RequestMetadata(_messages.Message):
   r"""An optional Metadata to attach to any RPC request to tell the server
   about an external context of the request. The server may use this for
   logging or other purposes. To use it, the client attaches the header to the
-  call using the canonical proto serialization: name:
-  build.bazel.remote.execution.v2.requestmetadata-bin contents: the base64
-  encoded binary RequestMetadata message.
+  call using the canonical proto serialization:  * name:
+  `build.bazel.remote.execution.v2.requestmetadata-bin` * contents: the base64
+  encoded binary `RequestMetadata` message.
 
   Fields:
     actionId: An identifier that ties multiple requests to the same action.
@@ -704,17 +712,17 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messages.Message):
-  r"""The request used for CreateInstance.
+  r"""The request used for `CreateInstance`.
 
   Fields:
-    instance: Instance specifies the instance to create. The name in the
-      instance, if specified in the Instance, is ignored.
-    instanceId: ID of the created instance. A valid instance_id must: be 6-50
-      characters long, contains only lowercase letters, digits, hyphens and
-      underscores, start with a lowercase letter, and end with a lowercase
+    instance: Specifies the instance to create. The name in the instance, if
+      specified in the instance, is ignored.
+    instanceId: ID of the created instance. A valid `instance_id` must: be
+      6-50 characters long, contains only lowercase letters, digits, hyphens
+      and underscores, start with a lowercase letter, and end with a lowercase
       letter or a digit.
-    parent: parent is the resource name of the project containing the
-      instance. Format: 'projects/{project_id}'
+    parent: Resource name of the project containing the instance. Format:
+      `projects/[PROJECT_ID]`.
   """
 
   instance = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 1)
@@ -727,7 +735,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest(_mes
 
   Fields:
     parent: Resource name of the instance in which to create the new worker
-      pool. Format: `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`
+      pool. Format: `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
     poolId: ID of the created worker pool. A valid pool ID must: be 6-50
       characters long, contain only lowercase letters, digits, hyphens and
       underscores, start with a lowercase letter, and end with a lowercase
@@ -742,11 +750,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest(_mes
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteInstanceRequest(_messages.Message):
-  r"""The request used for DeleteInstance.
+  r"""The request used for `DeleteInstance`.
 
   Fields:
-    name: name is the resource name of the Instance to delete. Format:
-      'projects/{project_id}/instances/{instance_id}'.
+    name: Name of the instance to delete. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
   name = _messages.StringField(1)
@@ -764,11 +772,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteWorkerPoolRequest(_mes
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetInstanceRequest(_messages.Message):
-  r"""The request used for GetInstance.
+  r"""The request used for `GetInstance`.
 
   Fields:
-    name: name is the resource name of the Instance to retrieve. Format:
-      'projects/{project_id}/instances/{instance_id}'.
+    name: Name of the instance to retrieve. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
   name = _messages.StringField(1)
@@ -778,7 +786,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetWorkerPoolRequest(_messag
   r"""The request used for GetWorkerPool.
 
   Fields:
-    name: name is the resource name of the worker pool to retrieve. Format:
+    name: Name of the worker pool to retrieve. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
   """
 
@@ -786,32 +794,36 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaGetWorkerPoolRequest(_messag
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
-  r"""Instance conceptually encapsulates all RBE resources for remote builds.
-  An Instance consists of storage and compute resources (e.g.
-  ContentAddressableStorage, ActionCache, WorkerPools) used for running remote
-  builds. All RBE API calls are scoped to an instance.
+  r"""Instance conceptually encapsulates all Remote Build Execution resources
+  for remote builds. An instance consists of storage and compute resources
+  (for example, `ContentAddressableStorage`, `ActionCache`, `WorkerPools`)
+  used for running remote builds. All Remote Build Execution API calls are
+  scoped to an instance.
 
   Enums:
-    StateValueValuesEnum: Output only. state of the Instance.
+    StateValueValuesEnum: Output only. State of the instance.
 
   Fields:
-    location: The location is a GCP region (e.g. "us-central1").
+    location: The location is a GCP region. Currently only `us-central1` is
+      supported.
+    loggingEnabled: Output only. Whether stack driver logging is enabled for
+      the instance.
     name: Output only. Instance resource name formatted as:
-      'projects/{project_id}/instances/{instance_id}' name should not be
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`. Name should not be
       populated when creating an instance since it is provided in the
-      instance_id field.
-    state: Output only. state of the Instance.
+      `instance_id` field.
+    state: Output only. State of the instance.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. state of the Instance.
+    r"""Output only. State of the instance.
 
     Values:
       STATE_UNSPECIFIED: Not a valid state, but the default value of the enum.
-      CREATING: The Instance is in state CREATING once CreateInstance is
-        called and before the Instance is ready for use.
-      RUNNING: The Instance is in state RUNNING when it is ready for use.
-      INACTIVE: An INACTIVE instance indicates that there is a problem that
+      CREATING: The instance is in state `CREATING` once `CreateInstance` is
+        called and before the instance is ready for use.
+      RUNNING: The instance is in state `RUNNING` when it is ready for use.
+      INACTIVE: An `INACTIVE` instance indicates that there is a problem that
         needs to be fixed. Such instances cannot be used for execution and
         instances that remain in this state for a significant period of time
         will be removed permanently.
@@ -822,8 +834,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     INACTIVE = 3
 
   location = _messages.StringField(1)
-  name = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  loggingEnabled = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):
@@ -831,8 +844,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messag
   object.
 
   Fields:
-    parent: parent is the resource name of the project whose instances are
-      listed. Format: 'projects/{project_id}'
+    parent: Resource name of the project. Format: `projects/[PROJECT_ID]`.
   """
 
   parent = _messages.StringField(1)
@@ -843,7 +855,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesResponse(_messa
   object.
 
   Fields:
-    instances: The list of Instances in a given project.
+    instances: The list of instances in a given project.
   """
 
   instances = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance', 1, repeated=True)
@@ -855,7 +867,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListWorkerPoolsRequest(_mess
 
   Fields:
     parent: Resource name of the instance. Format:
-      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
   parent = _messages.StringField(1)
@@ -905,8 +917,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       supported machine types.
     minCpuPlatform: Minimum CPU platform to use when creating the worker. See
       [CPU Platforms](https://cloud.google.com/compute/docs/cpu-platforms).
-    reserved: Output only. `reserved=true` means the worker is reserved and
-      won't be preempted.
+    reserved: Determines whether the worker is reserved (and therefore won't
+      be preempted). See [Preemptible VMs](https://cloud.google.com
+      /preemptible-vms/) for more details.
   """
 
   diskSizeGb = _messages.IntegerField(1)
@@ -924,7 +937,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message
 
   Fields:
     name: WorkerPool resource name formatted as:
-      'projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]'.
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
       name should not be populated when creating a worker pool since it is
       provided in the `poolId` field.
     state: Output only. State of the worker pool.
@@ -1485,7 +1498,7 @@ class GoogleDevtoolsRemoteworkersV1test2CommandResult(_messages.Message):
   as the Bots interface's `Lease.result` field.
 
   Messages:
-    StatisticsValueListEntry: A StatisticsValueListEntry object.
+    MetadataValueListEntry: A MetadataValueListEntry object.
 
   Fields:
     duration: The elapsed time between calling Accept and Complete. The server
@@ -1493,18 +1506,18 @@ class GoogleDevtoolsRemoteworkersV1test2CommandResult(_messages.Message):
       the overhead of the RPCs and the bot response time.
     exitCode: The exit code of the process. An exit code of "0" should only be
       trusted if `status` has a code of OK (otherwise it may simply be unset).
+    metadata: Implementation-dependent metadata about the task. Both servers
+      and bots may define messages which can be encoded here; bots are free to
+      provide metadata in multiple formats, and servers are free to choose one
+      or more of the values to process and ignore others. In particular, it is
+      *not* considered an error for the bot to provide the server with a field
+      that it doesn't know about.
     outputs: The output files. The blob referenced by the digest should
       contain one of the following (implementation-dependent):    * A
       marshalled DirectoryMetadata of the returned filesystem    * A LUCI-
       style .isolated file
     overhead: The amount of time *not* spent executing the command (ie
       uploading/downloading files).
-    statistics: Implementation-dependent statistics about the task. Both
-      servers and bots may define messages which can be encoded here; bots are
-      free to provide statistics in multiple formats, and servers are free to
-      choose one or more of the values to process and ignore others. In
-      particular, it is *not* considered an error for the bot to provide the
-      server with a field that it doesn't know about.
     status: An overall status for the command. For example, if the command
       timed out, this might have a code of DEADLINE_EXCEEDED; if it was killed
       by the OS for memory exhaustion, it might have a code of
@@ -1512,12 +1525,12 @@ class GoogleDevtoolsRemoteworkersV1test2CommandResult(_messages.Message):
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class StatisticsValueListEntry(_messages.Message):
-    r"""A StatisticsValueListEntry object.
+  class MetadataValueListEntry(_messages.Message):
+    r"""A MetadataValueListEntry object.
 
     Messages:
-      AdditionalProperty: An additional property for a
-        StatisticsValueListEntry object.
+      AdditionalProperty: An additional property for a MetadataValueListEntry
+        object.
 
     Fields:
       additionalProperties: Properties of the object. Contains field @type
@@ -1525,7 +1538,7 @@ class GoogleDevtoolsRemoteworkersV1test2CommandResult(_messages.Message):
     """
 
     class AdditionalProperty(_messages.Message):
-      r"""An additional property for a StatisticsValueListEntry object.
+      r"""An additional property for a MetadataValueListEntry object.
 
       Fields:
         key: Name of the additional property.
@@ -1539,9 +1552,9 @@ class GoogleDevtoolsRemoteworkersV1test2CommandResult(_messages.Message):
 
   duration = _messages.StringField(1)
   exitCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  outputs = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2Digest', 3)
-  overhead = _messages.StringField(4)
-  statistics = _messages.MessageField('StatisticsValueListEntry', 5, repeated=True)
+  metadata = _messages.MessageField('MetadataValueListEntry', 3, repeated=True)
+  outputs = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2Digest', 4)
+  overhead = _messages.StringField(5)
   status = _messages.MessageField('GoogleRpcStatus', 6)
 
 
@@ -1918,8 +1931,8 @@ class RemotebuildexecutionProjectsInstancesDeleteRequest(_messages.Message):
   r"""A RemotebuildexecutionProjectsInstancesDeleteRequest object.
 
   Fields:
-    name: name is the resource name of the Instance to delete. Format:
-      'projects/{project_id}/instances/{instance_id}'.
+    name: Name of the instance to delete. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1929,8 +1942,8 @@ class RemotebuildexecutionProjectsInstancesGetRequest(_messages.Message):
   r"""A RemotebuildexecutionProjectsInstancesGetRequest object.
 
   Fields:
-    name: name is the resource name of the Instance to retrieve. Format:
-      'projects/{project_id}/instances/{instance_id}'.
+    name: Name of the instance to retrieve. Format:
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1940,8 +1953,7 @@ class RemotebuildexecutionProjectsInstancesListRequest(_messages.Message):
   r"""A RemotebuildexecutionProjectsInstancesListRequest object.
 
   Fields:
-    parent: parent is the resource name of the project whose instances are
-      listed. Format: 'projects/{project_id}'
+    parent: Resource name of the project. Format: `projects/[PROJECT_ID]`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1962,7 +1974,7 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest(_messages.Messa
   r"""A RemotebuildexecutionProjectsInstancesWorkerpoolsGetRequest object.
 
   Fields:
-    name: name is the resource name of the worker pool to retrieve. Format:
+    name: Name of the worker pool to retrieve. Format:
       `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
   """
 
@@ -1974,7 +1986,7 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsListRequest(_messages.Mess
 
   Fields:
     parent: Resource name of the instance. Format:
-      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1988,7 +2000,7 @@ class RemotebuildexecutionProjectsInstancesWorkerpoolsPatchRequest(_messages.Mes
       GoogleDevtoolsRemotebuildexecutionAdminV1alphaUpdateWorkerPoolRequest
       resource to be passed as the request body.
     name: WorkerPool resource name formatted as:
-      'projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]'.
+      `projects/[PROJECT_ID]/instances/[INSTANCE_ID]/workerpools/[POOL_ID]`.
       name should not be populated when creating a worker pool since it is
       provided in the `poolId` field.
   """

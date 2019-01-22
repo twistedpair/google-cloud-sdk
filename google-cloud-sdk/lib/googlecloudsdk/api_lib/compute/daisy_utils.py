@@ -141,11 +141,13 @@ def AddCommonDaisyArgs(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
-def CheckIamPermissions(project_id):
+def _CheckIamPermissions(project_id, service_account_roles):
   """Check for needed IAM permissions and prompt to add if missing.
 
   Args:
     project_id: A string with the name of the project.
+    service_account_roles: roles to be used by service account in addition to
+      compute.admin.
   """
   project = projects_api.Get(project_id)
   # If the user's project doesn't have cloudbuild enabled yet, then the service
@@ -172,8 +174,11 @@ def CheckIamPermissions(project_id):
   # Now that we're sure the service account exists, actually check permissions.
   service_account = 'serviceAccount:{0}@cloudbuild.gserviceaccount.com'.format(
       project.projectNumber)
-  expected_permissions = {'roles/compute.admin': service_account,
-                          'roles/iam.serviceAccountActor': service_account}
+  expected_permissions = {'roles/compute.admin': service_account}
+  if service_account_roles:
+    for role in service_account_roles:
+      expected_permissions[role] = service_account
+
   permissions = projects_api.GetIamPolicy(project_id)
   for binding in permissions.bindings:
     if expected_permissions.get(binding.role) in binding.members:
@@ -316,7 +321,8 @@ def ExtractNetworkAndSubnetDaisyVariables(args, operation):
 
 
 def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
-                  user_zone=None, output_filter=None):
+                  user_zone=None, output_filter=None,
+                  service_account_roles=None):
   """Run a build with Daisy on Google Cloud Builder.
 
   Args:
@@ -332,6 +338,8 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
     output_filter: A list of strings indicating what lines from the log should
       be output. Only lines that start with one of the strings in output_filter
       will be displayed.
+    service_account_roles: roles to be used by service account in addition to
+      compute.admin.
 
   Returns:
     A build object that either streams the output or is displayed as a
@@ -345,7 +353,8 @@ def RunDaisyBuild(args, workflow, variables, daisy_bucket=None, tags=None,
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
-  CheckIamPermissions(project_id)
+  _CheckIamPermissions(
+      project_id, service_account_roles or ['roles/iam.serviceAccountActor'])
 
   # Make Daisy time out before gcloud by shaving off 2% from the timeout time,
   # up to a max of 5m (300s).

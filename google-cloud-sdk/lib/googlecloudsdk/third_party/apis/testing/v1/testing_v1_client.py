@@ -51,7 +51,7 @@ class TestingV1(base_api.BaseApiClient):
           }
 
     def GetApkDetails(self, request, global_params=None):
-      r"""Request the details of an Android application APK.
+      r"""Gets the details of an Android application APK.
 
       Args:
         request: (FileReference) input message
@@ -121,7 +121,7 @@ May return any of the following canonical error codes:
     )
 
     def Create(self, request, global_params=None):
-      r"""Request to run a matrix of tests according to the given specifications.
+      r"""Creates and runs a matrix of tests according to the given specifications.
 Unsupported environments will be returned in the state UNSUPPORTED.
 Matrices are limited to at most 200 supported executions.
 
@@ -155,7 +155,7 @@ May return any of the following canonical error codes:
     )
 
     def Get(self, request, global_params=None):
-      r"""Check the status of a test matrix.
+      r"""Checks the status of a test matrix.
 
 May return any of the following canonical error codes:
 
@@ -207,7 +207,7 @@ May return any of the following canonical error codes:
           }
 
     def Get(self, request, global_params=None):
-      r"""Get the catalog of supported test environments.
+      r"""Gets the catalog of supported test environments.
 
 May return any of the following canonical error codes:
 

@@ -394,6 +394,47 @@ def ApplyFailoverPolicyArgs(messages, args, backend_service):
           not args.connection_drain_on_failover)
     if args.drop_traffic_if_unhealthy is not None:
       failover_policy.dropTrafficIfUnhealthy = args.drop_traffic_if_unhealthy
-    if args.failover_ratio:
+    if args.failover_ratio is not None:
       failover_policy.failoverRatio = args.failover_ratio
     backend_service.failoverPolicy = failover_policy
+
+
+def ApplyLogConfigArgs(messages, args, backend_service):
+  """Applies the LogConfig arguments to the specified backend service.
+
+  If there are no arguments related to LogConfig, the backend service
+  remains unmodified.
+
+  Args:
+    messages: The avalible API proto messages.
+    args: The arguments passed to the gcloud command.
+    backend_service: The backend service proto message object.
+  """
+  if ((args.enable_logging is not None or args.logging_sample_rate is not None)
+      and backend_service.loadBalancingScheme is not None and
+      backend_service.loadBalancingScheme !=
+      messages.BackendService.LoadBalancingSchemeValueValuesEnum.EXTERNAL):
+    raise exceptions.InvalidArgumentException(
+        '--load-balancing-scheme',
+        'can only specify --enable-logging or --logging-sample-rate if the '
+        'load balancing scheme is EXTERNAL.')
+  if ((args.enable_logging is not None or
+       args.logging_sample_rate is not None) and backend_service.protocol !=
+      messages.BackendService.ProtocolValueValuesEnum.HTTP and
+      backend_service.protocol !=
+      messages.BackendService.ProtocolValueValuesEnum.HTTPS):
+    raise exceptions.InvalidArgumentException(
+        '--protocol',
+        'can only specify --enable-logging or --logging-sample-rate if the '
+        'protocol is HTTP/HTTPS.')
+
+  if args.enable_logging is not None or args.logging_sample_rate is not None:
+    if backend_service.logConfig:
+      log_config = backend_service.logConfig
+    else:
+      log_config = messages.BackendServiceLogConfig()
+    if args.enable_logging is not None:
+      log_config.enable = args.enable_logging
+    if args.logging_sample_rate is not None:
+      log_config.sampleRate = args.logging_sample_rate
+    backend_service.logConfig = log_config

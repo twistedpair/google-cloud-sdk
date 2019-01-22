@@ -34,6 +34,42 @@ class Collections(enum.Enum):
       [u'name'],
       True
   )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      [u'projectsId', u'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
+      },
+      [u'name'],
+      True
+  )
+  PROJECTS_OPERATIONS = (
+      'projects.operations',
+      'projects/{projectsId}',
+      {},
+      [u'projectsId'],
+      True
+  )
+  PROJECTS_OPERATIONS_MANUALRECOGNITIONTASKS = (
+      'projects.operations.manualRecognitionTasks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/operations/manualRecognitionTasks/'
+              '{manualRecognitionTasksId}',
+      },
+      [u'name'],
+      True
+  )
   SPEECH = (
       'speech',
       'speech',

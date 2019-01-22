@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager Alpha",
  "version": "alpha",
- "revision": "20181207",
+ "revision": "20190111",
  "title": "Google Cloud Deployment Manager Alpha API",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -883,6 +883,10 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "selfLinkWithId": {
+     "type": "string",
+     "description": "[Output Only] Server-defined URL for this resource with the resource id."
     },
     "startTime": {
      "type": "string",
@@ -1828,7 +1832,7 @@
      "id": "deploymentmanager.compositeTypes.patch",
      "path": "{project}/global/compositeTypes/{compositeType}",
      "httpMethod": "PATCH",
-     "description": "Updates a composite type. This method supports patch semantics.",
+     "description": "Patches a composite type.",
      "parameters": {
       "compositeType": {
        "type": "string",

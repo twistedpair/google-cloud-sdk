@@ -246,6 +246,12 @@ online prediction. Currently supported machine_types are:
 """)
 
 
+SERVICE_ACCOUNT = base.Argument(
+    '--service-account',
+    required=False,
+    help='Specifies the service account for resource access control.')
+
+
 def GetModuleNameFlag(required=True):
   return base.Argument(
       '--module-name',

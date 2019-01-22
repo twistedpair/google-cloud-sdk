@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://oslogin.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/compute/docs/oslogin/rest/'
+DOCS_URL = 'https://cloud.google.com/compute/docs/oslogin/'
 
 
 class Collections(enum.Enum):

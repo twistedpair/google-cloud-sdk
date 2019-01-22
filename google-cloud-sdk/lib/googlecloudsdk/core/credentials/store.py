@@ -630,16 +630,8 @@ def AcquireFromGCE(account=None):
       be reached.
     TokenRefreshError: If the credentials fail to refresh.
     TokenRefreshReauthError: If the credentials fail to refresh due to reauth.
-    Error: If a non-default service account is used.
   """
-  default_account = c_gce.Metadata().DefaultAccount()
-  if account is None:
-    account = default_account
-  if account != default_account:
-    raise Error('Unable to use non-default GCE service accounts.')
-  # Metadata server does not yet provide multiple service accounts.
-
-  credentials = oauth2client_gce.AppAssertionCredentials()
+  credentials = oauth2client_gce.AppAssertionCredentials(email=account)
   Refresh(credentials)
   return credentials
 

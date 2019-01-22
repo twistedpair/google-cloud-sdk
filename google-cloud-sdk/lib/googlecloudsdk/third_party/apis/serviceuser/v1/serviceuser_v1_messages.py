@@ -211,24 +211,66 @@ class Backend(_messages.Message):
 class BackendRule(_messages.Message):
   r"""A backend rule provides configuration for an individual API element.
 
+  Enums:
+    PathTranslationValueValuesEnum:
+
   Fields:
     address: The address of the API backend.
     deadline: The number of seconds to wait for a response from a request.
       The default deadline for gRPC is infinite (no deadline) and HTTP
       requests is 5 seconds.
+    jwtAudience: The JWT audience is used when generating a JWT id token for
+      the backend.
     minDeadline: Minimum deadline in seconds needed for this method. Calls
       having deadline value lower than this will be rejected.
     operationDeadline: The number of seconds to wait for the completion of a
       long running operation. The default is no deadline.
+    pathTranslation: A PathTranslationValueValuesEnum attribute.
     selector: Selects the methods to which this rule applies.  Refer to
       selector for syntax details.
   """
 
+  class PathTranslationValueValuesEnum(_messages.Enum):
+    r"""PathTranslationValueValuesEnum enum type.
+
+    Values:
+      PATH_TRANSLATION_UNSPECIFIED: <no description>
+      CONSTANT_ADDRESS: Use the backend address as-is, with no modification to
+        the path. If the URL pattern contains variables, the variable names
+        and values will be appended to the query string. If a query string
+        parameter and a URL pattern variable have the same name, this may
+        result in duplicate keys in the query string.  # Examples  Given the
+        following operation config:      Method path:
+        /api/company/{cid}/user/{uid}     Backend address:
+        https://example.cloudfunctions.net/getUser  Requests to the following
+        request paths will call the backend at the translated path:
+        Request path: /api/company/widgetworks/user/johndoe     Translated:
+        https://example.cloudfunctions.net/getUser?cid=widgetworks&uid=johndoe
+        Request path: /api/company/widgetworks/user/johndoe?timezone=EST
+        Translated:   https://example.cloudfunctions.net/getUser?timezone=EST&
+        cid=widgetworks&uid=johndoe
+      APPEND_PATH_TO_ADDRESS: The request path will be appended to the backend
+        address.  # Examples  Given the following operation config:
+        Method path:        /api/company/{cid}/user/{uid}     Backend address:
+        https://example.appspot.com  Requests to the following request paths
+        will call the backend at the translated path:      Request path:
+        /api/company/widgetworks/user/johndoe     Translated:
+        https://example.appspot.com/api/company/widgetworks/user/johndoe
+        Request path: /api/company/widgetworks/user/johndoe?timezone=EST
+        Translated:   https://example.appspot.com/api/company/widgetworks/user
+        /johndoe?timezone=EST
+    """
+    PATH_TRANSLATION_UNSPECIFIED = 0
+    CONSTANT_ADDRESS = 1
+    APPEND_PATH_TO_ADDRESS = 2
+
   address = _messages.StringField(1)
   deadline = _messages.FloatField(2)
-  minDeadline = _messages.FloatField(3)
-  operationDeadline = _messages.FloatField(4)
-  selector = _messages.StringField(5)
+  jwtAudience = _messages.StringField(3)
+  minDeadline = _messages.FloatField(4)
+  operationDeadline = _messages.FloatField(5)
+  pathTranslation = _messages.EnumField('PathTranslationValueValuesEnum', 6)
+  selector = _messages.StringField(7)
 
 
 class Billing(_messages.Message):
@@ -1351,13 +1393,17 @@ class Monitoring(_messages.Message):
 
   Fields:
     consumerDestinations: Monitoring configurations for sending metrics to the
-      consumer project. There can be multiple consumer destinations, each one
-      must have a different monitored resource type. A metric can be used in
-      at most one consumer destination.
+      consumer project. There can be multiple consumer destinations. A
+      monitored resouce type may appear in multiple monitoring destinations if
+      different aggregations are needed for different sets of metrics
+      associated with that monitored resource type. A monitored resource and
+      metric pair may only be used once in the Monitoring configuration.
     producerDestinations: Monitoring configurations for sending metrics to the
-      producer project. There can be multiple producer destinations, each one
-      must have a different monitored resource type. A metric can be used in
-      at most one producer destination.
+      producer project. There can be multiple producer destinations. A
+      monitored resouce type may appear in multiple monitoring destinations if
+      different aggregations are needed for different sets of metrics
+      associated with that monitored resource type. A monitored resource and
+      metric pair may only be used once in the Monitoring configuration.
   """
 
   consumerDestinations = _messages.MessageField('MonitoringDestination', 1, repeated=True)
@@ -1369,8 +1415,8 @@ class MonitoringDestination(_messages.Message):
   or the consumer project).
 
   Fields:
-    metrics: Names of the metrics to report to this monitoring destination.
-      Each name must be defined in Service.metrics section.
+    metrics: Types of the metrics to report to this monitoring destination.
+      Each type must be defined in Service.metrics section.
     monitoredResource: The monitored resource type. The type must be defined
       in Service.monitored_resources section.
   """
@@ -1828,8 +1874,10 @@ class Service(_messages.Message):
       This is required by the Service.monitoring and Service.logging
       configurations.
     monitoring: Monitoring configuration.
-    name: The DNS address at which this service is available, e.g.
-      `calendar.googleapis.com`.
+    name: The service name, which is a DNS-like logical identifier for the
+      service, such as `calendar.googleapis.com`. The service name typically
+      goes through DNS verification to make sure the owner of the service also
+      owns the DNS name.
     producerProjectId: The Google project that owns this service.
     quota: Quota configuration.
     sourceInfo: Output only. The source information for this configuration if

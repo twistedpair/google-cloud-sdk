@@ -31,7 +31,6 @@ from googlecloudsdk.core.util import files
 import six
 
 
-# TODO(b/35395811): Remove subprocess monkeypatch.
 class FakeSubprocessModule(object):
 
   def Popen(self, args, **kwargs):

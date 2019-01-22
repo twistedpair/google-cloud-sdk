@@ -531,7 +531,7 @@ class RecognitionConfig(_messages.Message):
       hypotheses. Note: This is currently offered as an experimental service,
       complimentary to all users. In the future this may be exclusively
       available as a premium feature.
-    enableSeparateRecognitionPerChannel: This needs to be set to 'true'
+    enableSeparateRecognitionPerChannel: This needs to be set to `true`
       explicitly and `audio_channel_count` > 1 to get each channel recognized
       separately. The recognition result will contain a `channel_tag` field to
       state which channel that result belongs to. If this is not true, we will
@@ -956,6 +956,18 @@ class SpeechProjectsLocationsDatasetsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class SpeechProjectsLocationsDatasetsDeleteRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsDatasetsDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the dataset. Has the format :-
+      'projects/{project_number}/locations/{location_id}/datasets/{dataset_id}
+      '
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SpeechProjectsLocationsDatasetsGetRequest(_messages.Message):
   r"""A SpeechProjectsLocationsDatasetsGetRequest object.
 
@@ -1034,6 +1046,17 @@ class SpeechProjectsLocationsModelsCreateRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class SpeechProjectsLocationsModelsDeleteRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsModelsDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the model. Has the format :-
+      'projects/{project_id}/locations/{location_id}/models/{model_id}'
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class SpeechProjectsLocationsModelsDeployRequest(_messages.Message):
   r"""A SpeechProjectsLocationsModelsDeployRequest object.
 
@@ -1079,6 +1102,42 @@ class SpeechProjectsLocationsModelsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class SpeechProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpeechProjectsLocationsOperationsListRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class SpeechProjectsOperationsManualRecognitionTasksGetRequest(_messages.Message):
+  r"""A SpeechProjectsOperationsManualRecognitionTasksGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SpeechRecognitionAlternative(_messages.Message):

@@ -1461,6 +1461,12 @@ class _SectionProxy(_Section):
         validator=ProxyTypeValidator,
         choices=valid_proxy_types)
 
+    self.use_urllib3_via_shim = self._AddBool(
+        'use_urllib3_via_shim',
+        default=False,
+        hidden=True,
+        help_text='If True, use `urllib3` to make requests via `httplib2shim`.')
+
 
 class _SectionDevshell(_Section):
   """Contains the properties for the 'devshell' section."""

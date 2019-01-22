@@ -165,7 +165,10 @@ def AddStageBucketFlag(parser):
       '--stage-bucket',
       help=('When deploying a function from a local directory, this flag\'s '
             'value is the name of the Google Cloud Storage bucket in which '
-            'source code will be stored.'),
+            'source code will be stored. Note that to use this flag '
+            'successfully, the account in use must have permissions to write '
+            'to this bucket. For help granting access, refer to this guide: '
+            'https://cloud.google.com/storage/docs/access-control/'),
       type=api_util.ValidateAndStandarizeBucketUriOrRaise)
 
 

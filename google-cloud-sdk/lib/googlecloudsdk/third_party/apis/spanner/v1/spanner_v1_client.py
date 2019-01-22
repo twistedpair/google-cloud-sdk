@@ -36,7 +36,9 @@ class SpannerV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_instanceConfigs = self.ProjectsInstanceConfigsService(self)
+    self.projects_instances_backupOperations = self.ProjectsInstancesBackupOperationsService(self)
     self.projects_instances_backups = self.ProjectsInstancesBackupsService(self)
+    self.projects_instances_databaseOperations = self.ProjectsInstancesDatabaseOperationsService(self)
     self.projects_instances_databases_operations = self.ProjectsInstancesDatabasesOperationsService(self)
     self.projects_instances_databases_sessions = self.ProjectsInstancesDatabasesSessionsService(self)
     self.projects_instances_databases = self.ProjectsInstancesDatabasesService(self)
@@ -105,6 +107,43 @@ class SpannerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name=u'SpannerProjectsInstanceConfigsListRequest',
         response_type_name=u'ListInstanceConfigsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesBackupOperationsService(base_api.BaseApiService):
+    """Service class for the projects_instances_backupOperations resource."""
+
+    _NAME = u'projects_instances_backupOperations'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstancesBackupOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List method for the projects_instances_backupOperations service.
+
+      Args:
+        request: (SpannerProjectsInstancesBackupOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/backupOperations',
+        http_method=u'GET',
+        method_id=u'spanner.projects.instances.backupOperations.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/backupOperations',
+        request_field='',
+        request_type_name=u'SpannerProjectsInstancesBackupOperationsListRequest',
+        response_type_name=u'ListBackupOperationsResponse',
         supports_download=False,
     )
 
@@ -331,6 +370,43 @@ class SpannerV1(base_api.BaseApiClient):
         request_field=u'testIamPermissionsRequest',
         request_type_name=u'SpannerProjectsInstancesBackupsTestIamPermissionsRequest',
         response_type_name=u'TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesDatabaseOperationsService(base_api.BaseApiService):
+    """Service class for the projects_instances_databaseOperations resource."""
+
+    _NAME = u'projects_instances_databaseOperations'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstancesDatabaseOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List method for the projects_instances_databaseOperations service.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabaseOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDatabaseOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databaseOperations',
+        http_method=u'GET',
+        method_id=u'spanner.projects.instances.databaseOperations.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/databaseOperations',
+        request_field='',
+        request_type_name=u'SpannerProjectsInstancesDatabaseOperationsListRequest',
+        response_type_name=u'ListDatabaseOperationsResponse',
         supports_download=False,
     )
 
@@ -595,7 +671,9 @@ periodically, e.g., `"SELECT 1"`.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Ends a session, releasing server resources associated with it.
+      r"""Ends a session, releasing server resources associated with it. This will.
+asynchronously trigger cancellation of any operations that are running with
+this session.
 
       Args:
         request: (SpannerProjectsInstancesDatabasesSessionsDeleteRequest) input message
@@ -1014,33 +1092,6 @@ Database, if successful.
         supports_download=False,
     )
 
-    def CreateFromBackup(self, request, global_params=None):
-      r"""CreateFromBackup method for the projects_instances_databases service.
-
-      Args:
-        request: (SpannerProjectsInstancesDatabasesCreateFromBackupRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('CreateFromBackup')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    CreateFromBackup.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases:createFromBackup',
-        http_method=u'POST',
-        method_id=u'spanner.projects.instances.databases.createFromBackup',
-        ordered_params=[u'parent'],
-        path_params=[u'parent'],
-        query_params=[],
-        relative_path=u'v1/{+parent}/databases:createFromBackup',
-        request_field=u'createDatabaseFromBackupRequest',
-        request_type_name=u'SpannerProjectsInstancesDatabasesCreateFromBackupRequest',
-        response_type_name=u'Operation',
-        supports_download=False,
-    )
-
     def DropDatabase(self, request, global_params=None):
       r"""Drops (aka deletes) a Cloud Spanner database.
 
@@ -1180,6 +1231,33 @@ resource.
         request_field='',
         request_type_name=u'SpannerProjectsInstancesDatabasesListRequest',
         response_type_name=u'ListDatabasesResponse',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restore method for the projects_instances_databases service.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/instances/{instancesId}/databases:restore',
+        http_method=u'POST',
+        method_id=u'spanner.projects.instances.databases.restore',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1/{+parent}/databases:restore',
+        request_field=u'restoreDatabaseRequest',
+        request_type_name=u'SpannerProjectsInstancesDatabasesRestoreRequest',
+        response_type_name=u'Operation',
         supports_download=False,
     )
 
@@ -1609,33 +1687,6 @@ resource.
         request_field='',
         request_type_name=u'SpannerProjectsInstancesListRequest',
         response_type_name=u'ListInstancesResponse',
-        supports_download=False,
-    )
-
-    def ListCreateDatabaseFromBackupMetadata(self, request, global_params=None):
-      r"""ListCreateDatabaseFromBackupMetadata method for the projects_instances service.
-
-      Args:
-        request: (SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListCreateDatabaseFromBackupMetadataResponse) The response message.
-      """
-      config = self.GetMethodConfig('ListCreateDatabaseFromBackupMetadata')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ListCreateDatabaseFromBackupMetadata.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/instances/{instanceId}:ListCreateDatabaseFromBackupMetadata',
-        http_method=u'GET',
-        method_id=u'spanner.projects.instances.listCreateDatabaseFromBackupMetadata',
-        ordered_params=[u'parent', u'instanceId'],
-        path_params=[u'instanceId', u'parent'],
-        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
-        relative_path=u'v1/{+parent}/instances/{instanceId}:ListCreateDatabaseFromBackupMetadata',
-        request_field='',
-        request_type_name=u'SpannerProjectsInstancesListCreateDatabaseFromBackupMetadataRequest',
-        response_type_name=u'ListCreateDatabaseFromBackupMetadataResponse',
         supports_download=False,
     )
 

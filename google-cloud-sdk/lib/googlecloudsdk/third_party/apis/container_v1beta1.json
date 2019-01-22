@@ -360,6 +360,10 @@
           "description": "[Output only] The IP address range of the Cloud TPUs in this cluster, in\n[CIDR](http:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing)\nnotation (e.g. `1.2.3.4\/29`).",
           "type": "string"
         },
+        "databaseEncryption": {
+          "description": "Configuration of etcd encryption.",
+          "$ref": "DatabaseEncryption"
+        },
         "conditions": {
           "description": "Which conditions caused the current cluster state.",
           "type": "array",
@@ -1181,6 +1185,31 @@
         }
       }
     },
+    "DatabaseEncryption": {
+      "id": "DatabaseEncryption",
+      "description": "Configuration of etcd encryption.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Denotes the state of etcd encryption.",
+          "enumDescriptions": [
+            "Should never be set",
+            "Secrets in etcd are encrypted.",
+            "Secrets in etcd are stored in plain text (at etcd level) - this is\nunrelated to GCE level full disk encryption."
+          ],
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "ENCRYPTED",
+            "DECRYPTED"
+          ]
+        },
+        "keyName": {
+          "description": "Name of CloudKMS key to use for the encryption of secrets in etcd.\nEx. projects\/my-project\/locations\/global\/keyRings\/my-ring\/cryptoKeys\/my-key",
+          "type": "string"
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -1851,6 +1880,113 @@
           "items": {
             "$ref": "NodePool"
           }
+        }
+      }
+    },
+    "GetOpenIDConfigResponse": {
+      "id": "GetOpenIDConfigResponse",
+      "description": "GetOpenIDConfigResponse is an OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.",
+      "type": "object",
+      "properties": {
+        "issuer": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "jwks_uri": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "response_types_supported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "subject_types_supported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id_token_signing_alg_values_supported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "claims_supported": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "grant_types": {
+          "description": "NOLINT",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GetJSONWebKeysResponse": {
+      "id": "GetJSONWebKeysResponse",
+      "description": "GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc 7517",
+      "type": "object",
+      "properties": {
+        "keys": {
+          "description": "The public component of the keys used by the cluster to sign token\nrequests.",
+          "type": "array",
+          "items": {
+            "$ref": "Jwk"
+          }
+        }
+      }
+    },
+    "Jwk": {
+      "id": "Jwk",
+      "description": "Jwk is a JSON Web Key as specified in RFC 7517",
+      "type": "object",
+      "properties": {
+        "kty": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "alg": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "use": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "kid": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "n": {
+          "description": "Fields for RSA keys.\nNOLINT",
+          "type": "string"
+        },
+        "e": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "x": {
+          "description": "Fields for ECDSA keys.\nNOLINT",
+          "type": "string"
+        },
+        "y": {
+          "description": "NOLINT",
+          "type": "string"
+        },
+        "crv": {
+          "description": "NOLINT",
+          "type": "string"
         }
       }
     },
@@ -2674,6 +2810,31 @@
                   ],
                   "description": "Deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster\n(e.g. load balancer resources) will not be deleted if they weren't present\nat the initial create time."
                 },
+                "getJwks": {
+                  "id": "container.projects.locations.clusters.getJwks",
+                  "path": "v1beta1/{+parent}/jwks",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/jwks",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The cluster (project, location, cluster id) to get keys for. Specified in\nthe format 'projects\/*\/locations\/*\/clusters\/*'.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GetJSONWebKeysResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters."
+                },
                 "setResourceLabels": {
                   "id": "container.projects.locations.clusters.setResourceLabels",
                   "path": "v1beta1/{+name}:setResourceLabels",
@@ -3144,6 +3305,35 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Sets the size for a specific node pool."
+                    }
+                  }
+                },
+                "well-known": {
+                  "methods": {
+                    "getOpenid-configuration": {
+                      "id": "container.projects.locations.clusters.well-known.getOpenid-configuration",
+                      "path": "v1beta1/{+parent}/.well-known/openid-configuration",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/.well-known/openid-configuration",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "The cluster (project, location, cluster id) to get the discovery document\nfor. Specified in the format 'projects\/*\/locations\/*\/clusters\/*'.",
+                          "location": "path",
+                          "required": true,
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GetOpenIDConfigResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "GetOpenIDConfig gets the OIDC discovery document for the cluster.\nSee the OpenID Connect Discovery 1.0 specification for details.\nhttps:\/\/openid.net\/specs\/openid-connect-discovery-1_0.html\nThis API is not yet intended for general use, and is not available for all\nclusters."
                     }
                   }
                 }
