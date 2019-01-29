@@ -1018,6 +1018,20 @@ class SpeechProjectsLocationsDatasetsRefreshDataRequest(_messages.Message):
   refreshDataRequest = _messages.MessageField('RefreshDataRequest', 2)
 
 
+class SpeechProjectsLocationsLogDataRequest(_messages.Message):
+  r"""A SpeechProjectsLocationsLogDataRequest object.
+
+  Fields:
+    bucketName: Optional. Bucket name to delete all logs from. If empty, all
+      logs are deleted.
+    parent: Required. Resource name of the parent. Has the format :-
+      "projects/{project_id}/locations/{location_id}"
+  """
+
+  bucketName = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+
+
 class SpeechProjectsLocationsLogDataStatsListRequest(_messages.Message):
   r"""A SpeechProjectsLocationsLogDataStatsListRequest object.
 

@@ -3643,7 +3643,7 @@
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "An expression for specifying the sort order of the results of the request.\nThe string value should follow SQL syntax: comma separated list of fields\nin Backup. Fields supported are:\n   * name\n   * database\n   * expire_time\n   * create_time\n   * size_bytes\n   * state\n\nFor example, \"create_time,name\". The default sorting order is ascending.\nTo specify descending order for a field, a suffix \" desc\" should\nbe appended to the field name. For example, \"create_time desc,name\".\nRedundant space characters in the syntax are insigificant.\n\"create_time desc, name\" and \" create_time desc , name\" are\nequivalent.\n\nIf order_by is empty, results will be sorted by `create_time` in descending\norder starting from the most recently created backup.",
+                      "description": "An expression for specifying the sort order of the results of the request.\nThe string value should specify only one field in Backup. Fields\nsupported are:\n   * name\n   * database\n   * expire_time\n   * create_time\n   * size_bytes\n   * state\n\nFor example, \"create_time\". The default sorting order is ascending.\nTo specify descending order for the field, a suffix \" desc\" should\nbe appended to the field name. For example, \"create_time desc\".\nRedundant space characters in the syntax are insigificant.\n\nIf order_by is empty, results will be sorted by `create_time` in descending\norder starting from the most recently created backup.",
                       "location": "query",
                       "type": "string"
                     },

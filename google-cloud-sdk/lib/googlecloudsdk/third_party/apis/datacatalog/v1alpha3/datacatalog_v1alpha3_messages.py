@@ -12,9 +12,38 @@ tags.
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'datacatalog'
+
+
+class DatacatalogProjectsCrawlersCrawlerRunsGetRequest(_messages.Message):
+  r"""A DatacatalogProjectsCrawlersCrawlerRunsGetRequest object.
+
+  Fields:
+    name: Required. Resource name of the crawler run to retrieve. For example,
+      "projects/project1/crawlers/crawler1/crawlerRuns/run1".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DatacatalogProjectsCrawlersCrawlerRunsListRequest(_messages.Message):
+  r"""A DatacatalogProjectsCrawlersCrawlerRunsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return. The default value for
+      this field is 10. The maximum value for this field is 1000.
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: Required. Resource name of the parent crawler resource. For
+      example, "projects/project1/crawlers/crawler1".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class DatacatalogProjectsCrawlersCreateRequest(_messages.Message):
@@ -24,17 +53,12 @@ class DatacatalogProjectsCrawlersCreateRequest(_messages.Message):
     googleCloudDatacatalogV1alpha3Crawler: A
       GoogleCloudDatacatalogV1alpha3Crawler resource to be passed as the
       request body.
-    grantMetadataReadPermission: Required. If this field is set to true, it
-      will automatically grant crawler service account storage.objectViewer
-      role on the crawl buckets or storage.admin role on the crawl project or
-      organization.
     parent: Required. The name of the project this crawler is in. Example:
       "projects/foo".
   """
 
   googleCloudDatacatalogV1alpha3Crawler = _messages.MessageField('GoogleCloudDatacatalogV1alpha3Crawler', 1)
-  grantMetadataReadPermission = _messages.BooleanField(2)
-  parent = _messages.StringField(3, required=True)
+  parent = _messages.StringField(2, required=True)
 
 
 class DatacatalogProjectsCrawlersDeleteRequest(_messages.Message):
@@ -67,7 +91,7 @@ class DatacatalogProjectsCrawlersListRequest(_messages.Message):
       this field is 10. The maximum value for this field is 1000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
-    parent: Required. The parent resource name.
+    parent: Required. The parent resource name. Example: "projects/foo".
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -92,6 +116,21 @@ class DatacatalogProjectsCrawlersPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class DatacatalogProjectsCrawlersRunRequest(_messages.Message):
+  r"""A DatacatalogProjectsCrawlersRunRequest object.
+
+  Fields:
+    googleCloudDatacatalogV1alpha3RunCrawlerRequest: A
+      GoogleCloudDatacatalogV1alpha3RunCrawlerRequest resource to be passed as
+      the request body.
+    name: Required. Resource name of the crawler resource. For example,
+      "projects/project1/crawlers/crawler1".
+  """
+
+  googleCloudDatacatalogV1alpha3RunCrawlerRequest = _messages.MessageField('GoogleCloudDatacatalogV1alpha3RunCrawlerRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -102,11 +141,15 @@ class Empty(_messages.Message):
 
 
 
+class GoogleCloudDatacatalogV1alpha3AdhocRun(_messages.Message):
+  r"""Configuration for ad-hoc runs."""
+
+
 class GoogleCloudDatacatalogV1alpha3BucketScope(_messages.Message):
   r"""Configuration to scope a crawler to the provided list of buckets.
 
   Fields:
-    buckets: A GoogleCloudDatacatalogV1alpha3BucketSpec attribute.
+    buckets: The maximum number of buckets allowed is 1000.
   """
 
   buckets = _messages.MessageField('GoogleCloudDatacatalogV1alpha3BucketSpec', 1, repeated=True)
@@ -140,21 +183,44 @@ class GoogleCloudDatacatalogV1alpha3Crawler(_messages.Message):
 
 
 class GoogleCloudDatacatalogV1alpha3CrawlerConfig(_messages.Message):
-  r"""Information about the crawler configuration.
+  r"""Crawler configuration.
+
+  Fields:
+    adHocRun: Ad-hoc option. User can choose this option for ad-hoc runs.
+    bucketScope: Bucket scope. Directs the crawler to crawl specific buckets
+      within the project that owns the crawler.
+    bundleSpecs: The bundling specifications. Directs the crawler to bundle
+      files into filesets based on the bundling specifications.
+    organizationScope: Organization scope. Directs the crawler to crawl the
+      buckets of the projects in the organization that owns the crawler.
+    projectScope: Project scope. Directs the crawler to crawl the buckets of
+      the project that owns the crawler.
+    scheduledRun: Scheduled option. User can choose this option for scheduled
+      runs.
+  """
+
+  adHocRun = _messages.MessageField('GoogleCloudDatacatalogV1alpha3AdhocRun', 1)
+  bucketScope = _messages.MessageField('GoogleCloudDatacatalogV1alpha3BucketScope', 2)
+  bundleSpecs = _messages.StringField(3, repeated=True)
+  organizationScope = _messages.MessageField('GoogleCloudDatacatalogV1alpha3ParentOrganizationScope', 4)
+  projectScope = _messages.MessageField('GoogleCloudDatacatalogV1alpha3ParentProjectScope', 5)
+  scheduledRun = _messages.MessageField('GoogleCloudDatacatalogV1alpha3ScheduledRun', 6)
+
+
+class GoogleCloudDatacatalogV1alpha3CrawlerRun(_messages.Message):
+  r"""A run of the crawler.
 
   Enums:
     RunOptionValueValuesEnum:
-    ScheduledRunOptionValueValuesEnum:
+    StateValueValuesEnum: Output only. The state of the crawler run.
 
   Fields:
-    bucketScope: Bucket scope. Crawl buckets within the project that owns the
-      crawler.
-    bundleSpecs: The bundling specifications.
-    organizationScope: Organization scope. Crawl the organization that owns
-      the crawler.
-    projectScope: Project scope. Crawl the project that owns the crawler.
+    error: Output only. The error status of the crawler run. This field will
+      be populated only if the crawler run state is FAILED.
+    name: Output only. The name of the crawler run. For example,
+      "projects/project1/crawlers/crawler1/crawlerRuns/042423713e9a"
     runOption: A RunOptionValueValuesEnum attribute.
-    scheduledRunOption: A ScheduledRunOptionValueValuesEnum attribute.
+    state: Output only. The state of the crawler run.
   """
 
   class RunOptionValueValuesEnum(_messages.Enum):
@@ -162,31 +228,47 @@ class GoogleCloudDatacatalogV1alpha3CrawlerConfig(_messages.Message):
 
     Values:
       RUN_OPTION_UNSPECIFIED: Unspecified run option.
-      MANUAL: Manual run option.
+      AD_HOC: Ad-hoc run option.
       SCHEDULED: Scheduled run option.
     """
     RUN_OPTION_UNSPECIFIED = 0
-    MANUAL = 1
+    AD_HOC = 1
     SCHEDULED = 2
 
-  class ScheduledRunOptionValueValuesEnum(_messages.Enum):
-    r"""ScheduledRunOptionValueValuesEnum enum type.
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the crawler run.
 
     Values:
-      SCHEDULED_RUN_OPTION_UNSPECIFIED: Unspecified scheduled run option.
-      DAILY: Daily scheduled run option.
-      WEEKLY: Weekly scheduled run option.
+      STATE_UNSPECIFIED: Unspecified crawler run state.
+      PENDING: This crawler run is waiting on resources to be ready.
+      RUNNING: This crawler run is running.
+      FAILED: This crawler run failed.
+      SUCCEEDED: This crawler run succeeded.
     """
-    SCHEDULED_RUN_OPTION_UNSPECIFIED = 0
-    DAILY = 1
-    WEEKLY = 2
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    FAILED = 3
+    SUCCEEDED = 4
 
-  bucketScope = _messages.MessageField('GoogleCloudDatacatalogV1alpha3BucketScope', 1)
-  bundleSpecs = _messages.StringField(2, repeated=True)
-  organizationScope = _messages.MessageField('GoogleCloudDatacatalogV1alpha3ParentOrganizationScope', 3)
-  projectScope = _messages.MessageField('GoogleCloudDatacatalogV1alpha3ParentProjectScope', 4)
-  runOption = _messages.EnumField('RunOptionValueValuesEnum', 5)
-  scheduledRunOption = _messages.EnumField('ScheduledRunOptionValueValuesEnum', 6)
+  error = _messages.MessageField('Status', 1)
+  name = _messages.StringField(2)
+  runOption = _messages.EnumField('RunOptionValueValuesEnum', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class GoogleCloudDatacatalogV1alpha3ListCrawlerRunsResponse(_messages.Message):
+  r"""Response to listing the runs from a crawler.
+
+  Fields:
+    crawlerRuns: The crawler runs from this crawler, it includes both
+      currently running and completed runs.
+    nextPageToken: Token to retrieve the next page of results or empty if
+      there are no more results in the list.
+  """
+
+  crawlerRuns = _messages.MessageField('GoogleCloudDatacatalogV1alpha3CrawlerRun', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudDatacatalogV1alpha3ListCrawlersResponse(_messages.Message):
@@ -208,6 +290,36 @@ class GoogleCloudDatacatalogV1alpha3ParentOrganizationScope(_messages.Message):
 
 class GoogleCloudDatacatalogV1alpha3ParentProjectScope(_messages.Message):
   r"""Configuration to scope a crawler to the parent project."""
+
+
+class GoogleCloudDatacatalogV1alpha3RunCrawlerRequest(_messages.Message):
+  r"""Request to run a crawler manually."""
+
+
+class GoogleCloudDatacatalogV1alpha3ScheduledRun(_messages.Message):
+  r"""Configuration for scheduled runs.
+
+  Enums:
+    ScheduledRunOptionValueValuesEnum: Required. The scheduled run option of
+      the crawler.
+
+  Fields:
+    scheduledRunOption: Required. The scheduled run option of the crawler.
+  """
+
+  class ScheduledRunOptionValueValuesEnum(_messages.Enum):
+    r"""Required. The scheduled run option of the crawler.
+
+    Values:
+      SCHEDULED_RUN_OPTION_UNSPECIFIED: Unspecified scheduled run option.
+      DAILY: Daily scheduled run option.
+      WEEKLY: Weekly scheduled run option.
+    """
+    SCHEDULED_RUN_OPTION_UNSPECIFIED = 0
+    DAILY = 1
+    WEEKLY = 2
+
+  scheduledRunOption = _messages.EnumField('ScheduledRunOptionValueValuesEnum', 1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -271,6 +383,84 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). The error model is designed to be:
+  - Simple to use and understand for most users - Flexible enough to meet
+  unexpected needs  # Overview  The `Status` message contains three pieces of
+  data: error code, error message, and error details. The error code should be
+  an enum value of google.rpc.Code, but it may accept additional error codes
+  if needed.  The error message should be a developer-facing English message
+  that helps developers *understand* and *resolve* the error. If a localized
+  user-facing error message is needed, put the localized message in the error
+  details or localize it in the client. The optional error details may contain
+  arbitrary information about the error. There is a predefined set of error
+  detail types in the package `google.rpc` that can be used for common error
+  conditions.  # Language mapping  The `Status` message is the logical
+  representation of the error model, but it is not necessarily the actual wire
+  format. When the `Status` message is exposed in different client libraries
+  and different wire protocols, it can be mapped differently. For example, it
+  will likely be mapped to some exceptions in Java, but more likely mapped to
+  some error codes in C.  # Other uses  The error model and the `Status`
+  message can be used in a variety of environments, either with or without
+  APIs, to provide a consistent developer experience across different
+  environments.  Example uses of this error model include:  - Partial errors.
+  If a service needs to return partial errors to the client,     it may embed
+  the `Status` in the normal response to indicate the partial     errors.  -
+  Workflow errors. A typical workflow has multiple steps. Each step may
+  have a `Status` message for error reporting.  - Batch operations. If a
+  client uses batch request and batch response, the     `Status` message
+  should be used directly inside batch response, one for     each error sub-
+  response.  - Asynchronous operations. If an API call embeds asynchronous
+  operation     results in its response, the status of those operations should
+  be     represented directly using the `Status` message.  - Logging. If some
+  API errors are stored in logs, the message `Status` could     be used
+  directly after any stripping needed for security/privacy reasons.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details.  There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

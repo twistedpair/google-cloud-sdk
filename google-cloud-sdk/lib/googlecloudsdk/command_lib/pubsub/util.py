@@ -124,7 +124,7 @@ def ParsePushConfig(push_endpoint, client=None):
 
 
 def FormatSeekTime(time):
-  return times.FormatDateTime(time, fmt=SEEK_TIME_FORMAT)
+  return times.FormatDateTime(time, fmt=SEEK_TIME_FORMAT, tzinfo=times.UTC)
 
 
 def FormatDuration(duration):

@@ -75,8 +75,7 @@ class ResourceChanges(ConfigChanger):
   def AdjustConfiguration(self, config, metadata):
     """Mutates the given config's resource limits to match what's desired."""
     del metadata  # Unused, but requred by ConfigChanger's signature.
-    quantity = config.MessagesModule().Quantity(string=self._memory)
-    config.resource_limits['memory'] = quantity
+    config.resource_limits['memory'] = self._memory
 
 
 class ConcurrencyChanges(ConfigChanger):

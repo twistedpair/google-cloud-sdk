@@ -39,6 +39,10 @@ class NoFieldsSpecifiedError(exceptions.Error):
   """Error for when calling an update method with no fields specified."""
 
 
+class FullTaskUnspecifiedError(exceptions.Error):
+  """Error parsing task without specifing the queue or full path."""
+
+
 def ParseProject():
   return resources.REGISTRY.Parse(
       _PROJECT(),
@@ -82,10 +86,13 @@ def ParseQueue(queue, location=None):
 def ParseTask(task, queue_ref=None):
   """Parses an id or uri for a task."""
   params = queue_ref.AsDict() if queue_ref else None
-  task_ref = resources.REGISTRY.Parse(task,
-                                      collection=constants.TASKS_COLLECTION,
-                                      params=params)
-  return task_ref
+  try:
+    return resources.REGISTRY.Parse(task,
+                                    collection=constants.TASKS_COLLECTION,
+                                    params=params)
+  except resources.RequiredFieldOmittedException:
+    raise FullTaskUnspecifiedError(
+        'Must specify either the fully qualified task path or the queue flag.')
 
 
 def ExtractLocationRefFromQueueRef(queue_ref):

@@ -201,6 +201,7 @@ class ClusterConfig(_messages.Message):
       Compute Engine zone where your cluster is deployed, and then it will
       create and manage this project-level, per-location bucket for you.
     encryptionConfig: Optional. Encryption settings for the cluster.
+    endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Required. The shared Compute Engine config settings for
       all instances in a cluster.
     initializationActions: Optional. Commands to execute on each node after
@@ -217,6 +218,7 @@ class ClusterConfig(_messages.Message):
       instance in a cluster.
     secondaryWorkerConfig: Optional. The Compute Engine config settings for
       additional worker instances in a cluster.
+    securityConfig: Optional. Security related configuration.
     softwareConfig: Optional. The config settings for software inside the
       cluster.
     workerConfig: Optional. The Compute Engine config settings for worker
@@ -226,13 +228,15 @@ class ClusterConfig(_messages.Message):
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
   configBucket = _messages.StringField(2)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 4)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 5, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 6)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 7)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 8)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 9)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 10)
+  endpointConfig = _messages.MessageField('EndpointConfig', 4)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 5)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 6, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 7)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 8)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 9)
+  securityConfig = _messages.MessageField('SecurityConfig', 10)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 11)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 12)
 
 
 class ClusterMetrics(_messages.Message):
@@ -1362,6 +1366,49 @@ class EncryptionConfig(_messages.Message):
   gcePdKmsKeyName = _messages.StringField(1)
 
 
+class EndpointConfig(_messages.Message):
+  r"""Endpoint config for this cluster
+
+  Messages:
+    HttpPortsValue: Output only. The map of port descriptions to URLs. Will
+      only be populated if enable_http_port_access is true.
+
+  Fields:
+    enableHttpPortAccess: Optional. If true, enable http access to specific
+      ports on the cluster from external sources. Defaults to false.
+    httpPorts: Output only. The map of port descriptions to URLs. Will only be
+      populated if enable_http_port_access is true.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class HttpPortsValue(_messages.Message):
+    r"""Output only. The map of port descriptions to URLs. Will only be
+    populated if enable_http_port_access is true.
+
+    Messages:
+      AdditionalProperty: An additional property for a HttpPortsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type HttpPortsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a HttpPortsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  enableHttpPortAccess = _messages.BooleanField(1)
+  httpPorts = _messages.MessageField('HttpPortsValue', 2)
+
+
 class Expr(_messages.Message):
   r"""Represents an expression text. Example: title: "User account presence"
   description: "Determines whether the request has a user account" expression:
@@ -1981,6 +2028,56 @@ class JobStatus(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 2)
   stateStartTime = _messages.StringField(3)
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
+
+
+class KerberosConfig(_messages.Message):
+  r"""Specifies Kerberos related configuration.
+
+  Fields:
+    crossRealmSharedKeyUri: Optional. The GCS uri of a KMS encrypted file
+      containing the shared password between the on-cluster Kerberos realm and
+      the remote trusted realm, in a cross realm trust relationship.
+    crossRealmTrustAdminServer: Optional. The admin server (IP or hostname)
+      for the remote trusted realm in a cross realm trust relationship.
+    crossRealmTrustKdc: Optional. The KDC (IP or hostname) for the remote
+      trusted realm in a cross realm trust relationship.
+    crossRealmTrustRealm: Optional. The remote realm the Dataproc on-cluster
+      KDC will trust, should the user enable cross realm trust.
+    enableKerberos: Optional. Flag to indicate whether to Kerberize the
+      cluster.
+    keyPasswordUri: Optional. The GCS uri of a KMS encrypted file containing
+      the password to the user provided key. For the self-signed certificate,
+      this password is generated by Dataproc.
+    keystorePasswordUri: Optional. The GCS uri of a KMS encrypted file
+      containing the password to the user provided keystore. For the self-
+      signed certificate, this password is generated by Dataproc.
+    keystoreUri: Optional. The GCS uri of the keystore file used for SSL
+      encryption. If not provided, Dataproc will provide a self-signed
+      certificate.
+    kmsKeyUri: Required. The uri of the KMS key used to encrypt various
+      sensitive files.
+    rootPrincipalPasswordUri: Required. The GCS uri of a KMS encrypted file
+      containing the root principal password.
+    truststorePasswordUri: Optional. The GCS uri of a KMS encrypted file
+      containing the password to the user provided truststore. For the self-
+      signed certificate, this password is generated by Dataproc.
+    truststoreUri: Optional. The GCS uri of the truststore file used for SSL
+      encryption. If not provided, Dataproc will provide a self-signed
+      certificate.
+  """
+
+  crossRealmSharedKeyUri = _messages.StringField(1)
+  crossRealmTrustAdminServer = _messages.StringField(2)
+  crossRealmTrustKdc = _messages.StringField(3)
+  crossRealmTrustRealm = _messages.StringField(4)
+  enableKerberos = _messages.BooleanField(5)
+  keyPasswordUri = _messages.StringField(6)
+  keystorePasswordUri = _messages.StringField(7)
+  keystoreUri = _messages.StringField(8)
+  kmsKeyUri = _messages.StringField(9)
+  rootPrincipalPasswordUri = _messages.StringField(10)
+  truststorePasswordUri = _messages.StringField(11)
+  truststoreUri = _messages.StringField(12)
 
 
 class LifecycleConfig(_messages.Message):
@@ -2648,6 +2745,16 @@ class RegexValidation(_messages.Message):
   """
 
   regexes = _messages.StringField(1, repeated=True)
+
+
+class SecurityConfig(_messages.Message):
+  r"""Security related configuration, including encryption, Kerberos, etc.
+
+  Fields:
+    kerberosConfig: Kerberos related configuration.
+  """
+
+  kerberosConfig = _messages.MessageField('KerberosConfig', 1)
 
 
 class SetIamPolicyRequest(_messages.Message):

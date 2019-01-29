@@ -16256,7 +16256,7 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For INTERNAL_SELF_MANAGED" load
+      appropriate to the target object. For INTERNAL_SELF_MANAGED load
       balancing, only HTTP and HTTPS targets are valid.
   """
 
@@ -22857,9 +22857,10 @@ class Network(_messages.Message):
   resource_for beta.networks ==)
 
   Fields:
-    IPv4Range: The range of internal addresses that are legal on this network.
-      This range is a CIDR specification, for example: 192.168.0.0/16.
-      Provided by the client when the network is created.
+    IPv4Range: Deprecated in favor of subnet mode networks. The range of
+      internal addresses that are legal on this network. This range is a CIDR
+      specification, for example: 192.168.0.0/16. Provided by the client when
+      the network is created.
     autoCreateSubnetworks: When set to true, the VPC network is created in
       "auto" mode. When set to false, the VPC network is created in "custom"
       mode.  An auto mode VPC network starts with one subnet per region. Each

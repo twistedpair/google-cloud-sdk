@@ -710,24 +710,21 @@ def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None):
     parser: A given parser.
     enable_group_for_update: An optional group of mutually exclusive flag
         options to which an --enable-master-authorized-networks flag is added
-        in an update command. If given, the flag will default to None instead
-        of False.
+        in an update command.
   """
   if enable_group_for_update is None:
     # Flags are being added to the same group.
     master_flag_group = parser.add_argument_group('Master Authorized Networks')
     enable_flag_group = master_flag_group
-    enable_default = False
   else:
     # Flags are being added to different groups, so the new one should have no
     # help text (has only one arg).
     master_flag_group = parser.add_argument_group('')
     enable_flag_group = enable_group_for_update
-    enable_default = None
 
   enable_flag_group.add_argument(
       '--enable-master-authorized-networks',
-      default=enable_default,
+      default=None,
       help="""\
 Allow only specified set of CIDR blocks (specified by the
 `--master-authorized-networks` flag) to connect to Kubernetes master through
@@ -1116,12 +1113,10 @@ def AddMaxPodsPerNodeFlag(parser, for_node_pool=False, hidden=False):
                    False if it's applied to a cluster.
     hidden: Whether or not to hide the help text.
   """
-
-  if for_node_pool:
-    parser.add_argument(
-        '--max-pods-per-node',
-        default=None,
-        help="""\
+  parser.add_argument(
+      '--max-pods-per-node',
+      default=None,
+      help="""\
 The max number of pods per node for this node pool.
 
 This flag sets the maximum number of pods that can be run at the same time on a
@@ -1130,9 +1125,9 @@ set at the cluster level.
 
 Must be used in conjunction with '--enable-ip-alias'.
 """,
-        hidden=hidden,
-        type=int)
-  else:
+      hidden=hidden,
+      type=int)
+  if not for_node_pool:
     parser.add_argument(
         '--default-max-pods-per-node',
         default=None,
@@ -1702,6 +1697,17 @@ def WarnForUnspecifiedIpAllocationPolicy(args):
         'In the future, this will become the default mode and can be disabled '
         'using `--no-enable-ip-alias` flag. Use `--[no-]enable-ip-alias` flag '
         'to suppress this warning.')
+
+
+def WarnForNodeModification(args, enable_autorepair):
+  if (args.image_type or '').lower() != 'ubuntu':
+    return
+  if enable_autorepair or args.enable_autoupgrade:
+    log.warning('Modifications on the boot disks of node VMs do not persist '
+                'across node recreations. Nodes are recreated during '
+                'manual-upgrade, auto-upgrade, auto-repair, and auto-scaling. '
+                'To preserve modifications across node recreation, use a '
+                'DaemonSet.')
 
 
 def AddMachineTypeFlag(parser):

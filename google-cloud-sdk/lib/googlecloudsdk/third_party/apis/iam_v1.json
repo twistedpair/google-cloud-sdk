@@ -199,20 +199,6 @@
       "properties": {
       }
     },
-    "EnableServiceAccountRequest": {
-      "id": "EnableServiceAccountRequest",
-      "description": "The service account enable request.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "DisableServiceAccountRequest": {
-      "id": "DisableServiceAccountRequest",
-      "description": "The service account disable request.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "ListServiceAccountKeysResponse": {
       "id": "ListServiceAccountKeysResponse",
       "description": "The service account keys list response.",
@@ -1256,62 +1242,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a ServiceAccount."
-            },
-            "enable": {
-              "id": "iam.projects.serviceAccounts.enable",
-              "path": "v1/{+name}:enable",
-              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:enable",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_UNIQUE_ID}'.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "EnableServiceAccountRequest"
-              },
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Enables a ServiceAccount."
-            },
-            "disable": {
-              "id": "iam.projects.serviceAccounts.disable",
-              "path": "v1/{+name}:disable",
-              "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:disable",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\nUsing `-` as a wildcard for the `PROJECT_ID` will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "DisableServiceAccountRequest"
-              },
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Disables a ServiceAccount."
             },
             "signBlob": {
               "id": "iam.projects.serviceAccounts.signBlob",

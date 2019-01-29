@@ -865,6 +865,8 @@ def _WriteUncategorizedTable(command, elements, element_type, writer):
       element_type=element_type, group=' '.join(command.GetPath())))
   writer.write('---------------------- | ---\n')
   for element in sorted(elements, key=lambda e: e.name):
+    if element.IsHidden():
+      continue
     writer.write('{name} | {description}\n'.format(
         name=element.name.replace('_', '-'), description=element.short_help))
 

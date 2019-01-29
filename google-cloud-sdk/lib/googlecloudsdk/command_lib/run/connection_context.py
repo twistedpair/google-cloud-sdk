@@ -174,7 +174,7 @@ class _RegionalConnectionContext(ConnectionInfo):
 
   @property
   def location_label(self):
-    return ' of region [{{{{bold}}}}{}{{{{reset}}}}]'.format(
+    return ' region [{{{{bold}}}}{}{{{{reset}}}}]'.format(
         self.region)
 
   @contextlib.contextmanager

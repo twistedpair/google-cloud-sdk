@@ -473,7 +473,7 @@
           "httpMethod": "POST",
           "parameters": {
             "parent": {
-              "description": "Required. The relative name of the root asset. This can only be an organization\nnumber (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\"), or a project number (such as \"projects\/12345\").",
+              "description": "Required. The relative name of the root asset. This can only be an\norganization number (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\"), a project number (such as \"projects\/12345\"), or\na folder number (such as \"folders\/123\").",
               "location": "path",
               "required": true,
               "pattern": "^projects\/[^\/]+$",
@@ -581,6 +581,70 @@
         }
       }
     },
+    "folders": {
+      "methods": {
+        "exportAssets": {
+          "id": "cloudasset.folders.exportAssets",
+          "path": "v1beta1/{+parent}:exportAssets",
+          "flatPath": "v1beta1/folders/{foldersId}:exportAssets",
+          "httpMethod": "POST",
+          "parameters": {
+            "parent": {
+              "description": "Required. The relative name of the root asset. This can only be an\norganization number (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\"), a project number (such as \"projects\/12345\"), or\na folder number (such as \"folders\/123\").",
+              "location": "path",
+              "required": true,
+              "pattern": "^folders\/[^\/]+$",
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "request": {
+            "$ref": "ExportAssetsRequest"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Exports assets with time and resource types to a given Cloud Storage\nlocation. The output format is newline-delimited JSON.\nThis API implements the google.longrunning.Operation API allowing you\nto keep track of the export."
+        }
+      }
+      ,
+      "resources": {
+        "operations": {
+          "methods": {
+            "get": {
+              "id": "cloudasset.folders.operations.get",
+              "path": "v1beta1/{+name}",
+              "flatPath": "v1beta1/folders/{foldersId}/operations/{operationsId}/{operationsId1}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the operation resource.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^folders\/[^\/]+\/operations\/[^\/]+\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+            }
+          }
+        }
+      }
+    },
     "organizations": {
       "methods": {
         "exportAssets": {
@@ -590,7 +654,7 @@
           "httpMethod": "POST",
           "parameters": {
             "parent": {
-              "description": "Required. The relative name of the root asset. This can only be an organization\nnumber (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\"), or a project number (such as \"projects\/12345\").",
+              "description": "Required. The relative name of the root asset. This can only be an\norganization number (such as \"organizations\/123\"), a project ID (such as\n\"projects\/my-project-id\"), a project number (such as \"projects\/12345\"), or\na folder number (such as \"folders\/123\").",
               "location": "path",
               "required": true,
               "pattern": "^organizations\/[^\/]+$",

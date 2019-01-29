@@ -80,6 +80,13 @@ class Collections(enum.Enum):
       [u'project', u'zone', u'disk'],
       True
   )
+  EXTERNALVPNGATEWAYS = (
+      'externalVpnGateways',
+      'projects/{project}/global/externalVpnGateways/{externalVpnGateway}',
+      {},
+      [u'project', u'externalVpnGateway'],
+      True
+  )
   FIREWALLS = (
       'firewalls',
       'projects/{project}/global/firewalls/{firewall}',

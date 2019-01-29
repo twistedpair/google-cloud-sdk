@@ -759,15 +759,18 @@ class GooglePrivacyDlpV2Action(_messages.Message):
   https://cloud.google.com/dlp/docs/concepts-actions to learn more.
 
   Fields:
+    jobNotificationEmails: Enable email notification to project owners and
+      editors on job's completion/failure.
     pubSub: Publish a notification to a pubsub topic.
     publishSummaryToCscc: Publish summary to Cloud Security Command Center
       (Alpha).
     saveFindings: Save resulting findings in a provided location.
   """
 
-  pubSub = _messages.MessageField('GooglePrivacyDlpV2PublishToPubSub', 1)
-  publishSummaryToCscc = _messages.MessageField('GooglePrivacyDlpV2PublishSummaryToCscc', 2)
-  saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 3)
+  jobNotificationEmails = _messages.MessageField('GooglePrivacyDlpV2JobNotificationEmails', 1)
+  pubSub = _messages.MessageField('GooglePrivacyDlpV2PublishToPubSub', 2)
+  publishSummaryToCscc = _messages.MessageField('GooglePrivacyDlpV2PublishSummaryToCscc', 3)
+  saveFindings = _messages.MessageField('GooglePrivacyDlpV2SaveFindings', 4)
 
 
 class GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails(_messages.Message):
@@ -2652,6 +2655,13 @@ class GooglePrivacyDlpV2InspectionRuleSet(_messages.Message):
 
   infoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1, repeated=True)
   rules = _messages.MessageField('GooglePrivacyDlpV2InspectionRule', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2JobNotificationEmails(_messages.Message):
+  r"""Enable email notification to project owners and editors on jobs's
+  completion/failure.
+  """
+
 
 
 class GooglePrivacyDlpV2JobTrigger(_messages.Message):

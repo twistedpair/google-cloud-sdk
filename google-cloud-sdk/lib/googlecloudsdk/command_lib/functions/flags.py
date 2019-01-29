@@ -184,6 +184,7 @@ def AddRuntimeFlag(parser):
           - `nodejs6`: Node.js 6
           - `nodejs8`: Node.js 8
           - `python37`: Python 3.7
+          - `go111`: Go 1.11
           """)
 
 

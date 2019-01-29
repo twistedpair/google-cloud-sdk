@@ -6,7 +6,7 @@
   "canonicalName": "Speech",
   "version": "v1",
   "revision": "0",
-  "title": "Cloud Speech API",
+  "title": "Cloud Speech-to-Text API",
   "description": "Converts audio to text by applying powerful neural network models.",
   "ownerDomain": "google.com",
   "ownerName": "Google",

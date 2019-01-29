@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://gkehub.googleapis.com/v1beta1/'
-DOCS_URL = 'https://cloud.google.com/'
+DOCS_URL = 'https://cloud.google.com/gke-on-prem/docs/latest/how-to/connect/registering-a-user-cluster'
 
 
 class Collections(enum.Enum):

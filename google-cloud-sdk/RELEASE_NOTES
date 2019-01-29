@@ -5,7 +5,46 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
-## 231.0.0 (2019-01-22)
+## 232.0.0 (2019-01-29)
+
+### Breaking Changes
+
+*   **(Kubernetes Engine)** Added a warning on cluster and node-pool creation to notify users that
+  modifications on the boot disks of node VMs do not persist across node
+  recreations and must be done using a DaemonSet.
+
+### Cloud SQL
+
+* Rolled back fix to `gcloud sql connect` that seems to be causing additional
+  issues connecting.
+
+### Compute Engine
+
+* Promoted `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to GA
+  in the following command groups:
+    * `gcloud compute disks`
+    * `gcloud compute images`
+    * `gcloud compute instance-templates`
+    * `gcloud compute snapshots`
+* Added '--enable-display-device' to `gcloud beta compute instances
+  <create|update>`
+* Deprecated `gcloud compute instance-groups managed set-autohealing` command.
+  Use `gcloud compute instance-groups managed update` instead.
+
+### Kubernetes Engine
+
+* Promoted the `--database-encryption-key` flag of `gcloud container clusters
+create` to beta. The flag enables support for encryption of Kubernetes Secrets.
+* Modified the `--enable-stackdriver-kubernetes` flag to be a hard requirement
+for `--addons=CloudRun`. The CloudRun-on-GKE add-on depends on Stackdriver
+Kubernetes Monitoring to enrich Kubernetes metadata for logs and metrics.
+* Add `--max-pods-per-node` for `gcloud beta container clusters create`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 231.0.0 (2019-01-23)
 
 ### Breaking Changes
 
@@ -57,13 +96,11 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Breaking Changes
 
-*   **(App Engine)** 
 *   **(App Engine)** Fixed a bug where symlinked directories were skipped on source upload.
   Second Generation runtimes and source directories using .gcloudignore now
   upload the contents of symlinked directories, matching the behavior of First
   Generation runtimes. To explicitly skip a symlinked directory, add it to
   .gcloudignore.
-*   **(Cloud Functions)** 
 *   **(Cloud Functions)** Fixed a bug where symlinked directories were skipped on source upload.
   To explicitly skip a symlinked directory, add it to .gcloudignore.
 *   **(Cloud SQL)** Made the flags `--region`, `--gce-zone`, and `--zone` mutually exclusive
@@ -75,7 +112,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 ### Cloud Build
 
 *   Released `cloud-build-local` v0.5.0; see
-    [release notes](https://github.com/GoogleCloudPlatform/cloud-build-local/releases/tag/v0.5.0).
+    release notes: <https://github.com/GoogleCloudPlatform/cloud-build-local/releases/tag/v0.5.0>.
 
 ### Cloud SQL
 
@@ -125,10 +162,10 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Updated the Python SDK to version 1.9.81.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/python/release-notes
+  <https://cloud.google.com/appengine/docs/python/release-notes>
 * Updated the Java SDK to version 1.9.71.
   Please visit the following release notes for details:
-  https://cloud.google.com/appengine/docs/java/release-notes
+  <https://cloud.google.com/appengine/docs/java/release-notes>
 
 ### BigQuery
 
@@ -311,7 +348,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Promoted `--log-level` flag of `gcloud iot <devices|registries>` to GA.
 * Promoted `gcloud iot devices gateways` command group to beta.
 
-### Cloud PubSub
+### Cloud Pub/Sub
 
 * Added support for defining an expiration period for a subscription to
   `gcloud beta pubsub subscriptions`.

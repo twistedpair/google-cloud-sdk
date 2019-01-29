@@ -841,60 +841,6 @@ and returns it.
         supports_download=False,
     )
 
-    def Disable(self, request, global_params=None):
-      r"""Disables a ServiceAccount.
-
-      Args:
-        request: (IamProjectsServiceAccountsDisableRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Disable')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Disable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:disable',
-        http_method=u'POST',
-        method_id=u'iam.projects.serviceAccounts.disable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}:disable',
-        request_field=u'disableServiceAccountRequest',
-        request_type_name=u'IamProjectsServiceAccountsDisableRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
-    def Enable(self, request, global_params=None):
-      r"""Enables a ServiceAccount.
-
-      Args:
-        request: (IamProjectsServiceAccountsEnableRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Enable')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Enable.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path=u'v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}:enable',
-        http_method=u'POST',
-        method_id=u'iam.projects.serviceAccounts.enable',
-        ordered_params=[u'name'],
-        path_params=[u'name'],
-        query_params=[],
-        relative_path=u'v1/{+name}:enable',
-        request_field=u'enableServiceAccountRequest',
-        request_type_name=u'IamProjectsServiceAccountsEnableRequest',
-        response_type_name=u'Empty',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets a ServiceAccount.
 

@@ -117,8 +117,16 @@ CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG = """\
 Flag --enable-stackdriver-kubernetes requires Cloud Logging and Cloud Monitoring enabled with --enable-cloud-logging and --enable-cloud-monitoring.
 """
 
+CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
+The CloudRun-on-GKE addon (--addons=CloudRun) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
+"""
+
 DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
 Cannot use --default-max-pods-per-node without --enable-ip-alias.
+"""
+
+MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
+Cannot use --max-pods-per-node without --enable-ip-alias.
 """
 
 NOTHING_TO_UPDATE_ERROR_MSG = """\
@@ -378,6 +386,7 @@ class CreateClusterOptions(object):
                enable_tpu=None,
                enable_tpu_service_networking=None,
                default_max_pods_per_node=None,
+               max_pods_per_node=None,
                enable_managed_pod_identity=None,
                federating_service_account=None,
                resource_usage_bigquery_dataset=None,
@@ -455,6 +464,7 @@ class CreateClusterOptions(object):
     self.enable_tpu = enable_tpu
     self.issue_client_certificate = issue_client_certificate
     self.default_max_pods_per_node = default_max_pods_per_node
+    self.max_pods_per_node = max_pods_per_node
     self.enable_managed_pod_identity = enable_managed_pod_identity
     self.federating_service_account = federating_service_account
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
@@ -992,20 +1002,23 @@ class APIAdapter(object):
     to_add = options.num_nodes
     for name in pool_names:
       nodes = per_pool if (to_add > per_pool) else to_add
-      autoscaling = None
+      pool = self.messages.NodePool(
+          name=name,
+          initialNodeCount=nodes,
+          config=node_config,
+          version=options.node_version,
+          management=self._GetNodeManagement(options))
       if options.enable_autoscaling:
-        autoscaling = self.messages.NodePoolAutoscaling(
+        pool.autoscaling = self.messages.NodePoolAutoscaling(
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
             maxNodeCount=options.max_nodes)
-      pools.append(
-          self.messages.NodePool(
-              name=name,
-              initialNodeCount=nodes,
-              config=node_config,
-              autoscaling=autoscaling,
-              version=options.node_version,
-              management=self._GetNodeManagement(options)))
+      if options.max_pods_per_node:
+        if not options.enable_ip_alias:
+          raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
+        pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
+            maxPodsPerNode=options.max_pods_per_node)
+      pools.append(pool)
       to_add -= nodes
     return pools
 
@@ -1153,18 +1166,25 @@ class APIAdapter(object):
 
   def ParseMasterAuthorizedNetworkOptions(self, options, cluster):
     """Parses the options for master authorized networks."""
-    if options.enable_master_authorized_networks:
+    if (options.master_authorized_networks and not
+        options.enable_master_authorized_networks):
+      # Raise error if use --master-authorized-networks without
+      # --enable-master-authorized-networks.
+      raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
+    elif options.enable_master_authorized_networks is None:
+      cluster.masterAuthorizedNetworksConfig = None
+    elif not options.enable_master_authorized_networks:
+      authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
+          enabled=False)
+      cluster.masterAuthorizedNetworksConfig = authorized_networks
+    else:
       authorized_networks = self.messages.MasterAuthorizedNetworksConfig(
           enabled=options.enable_master_authorized_networks)
       if options.master_authorized_networks:
         for network in options.master_authorized_networks:
-          authorized_networks.cidrBlocks.append(self.messages.CidrBlock(
-              cidrBlock=network))
+          authorized_networks.cidrBlocks.append(
+              self.messages.CidrBlock(cidrBlock=network))
       cluster.masterAuthorizedNetworksConfig = authorized_networks
-    elif options.master_authorized_networks:
-      # Raise error if use --master-authorized-networks without
-      # --enable-master-authorized-networks.
-      raise util.Error(MISMATCH_AUTHORIZED_NETWORKS_ERROR_MSG)
 
   def CreateCluster(self, cluster_ref, options):
     cluster = self.CreateClusterCommon(cluster_ref, options)
@@ -1871,6 +1891,8 @@ class V1Beta1Adapter(V1Adapter):
     if options.addons:
       # CloudRun is disabled by default.
       if CLOUDRUN in options.addons:
+        if not options.enable_stackdriver_kubernetes:
+          raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if ISTIO not in options.addons:
           # Istio is a dependency of CloudRun. We auto-enable Istio in no
           # auth mode if not specified by the user.
@@ -2062,6 +2084,8 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.addons:
       # CloudRun is disabled by default. CloudRun is the new name of Serverless.
       if CLOUDRUN in options.addons:
+        if not options.enable_stackdriver_kubernetes:
+          raise util.Error(CLOUDRUN_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         if ISTIO not in options.addons:
           # Istio is a dependency of CloudRun. We auto-enable Istio in no
           # auth mode if not specified by the user.
@@ -2186,20 +2210,23 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     to_add = options.num_nodes
     for name in pool_names:
       nodes = nodes_per_pool if (to_add > nodes_per_pool) else to_add
-      autoscaling = None
+      pool = self.messages.NodePool(
+          name=name,
+          initialNodeCount=nodes,
+          config=node_config,
+          version=options.node_version,
+          management=self._GetNodeManagement(options))
       if options.enable_autoscaling:
-        autoscaling = self.messages.NodePoolAutoscaling(
+        pool.autoscaling = self.messages.NodePoolAutoscaling(
             enabled=options.enable_autoscaling,
             minNodeCount=options.min_nodes,
             maxNodeCount=options.max_nodes)
-      pools.append(
-          self.messages.NodePool(
-              name=name,
-              initialNodeCount=nodes,
-              config=node_config,
-              autoscaling=autoscaling,
-              version=options.node_version,
-              management=self._GetNodeManagement(options)))
+      if options.max_pods_per_node:
+        if not options.enable_ip_alias:
+          raise util.Error(MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG)
+        pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
+            maxPodsPerNode=options.max_pods_per_node)
+      pools.append(pool)
       to_add -= nodes
     return pools
 

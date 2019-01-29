@@ -35,10 +35,91 @@ class CloudassetV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_operations = self.FoldersOperationsService(self)
+    self.folders = self.FoldersService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersOperationsService(base_api.BaseApiService):
+    """Service class for the folders_operations resource."""
+
+    _NAME = u'folders_operations'
+
+    def __init__(self, client):
+      super(CloudassetV1beta1.FoldersOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.  Clients can use this.
+method to poll the operation result at intervals as recommended by the API
+service.
+
+      Args:
+        request: (CloudassetFoldersOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/folders/{foldersId}/operations/{operationsId}/{operationsId1}',
+        http_method=u'GET',
+        method_id=u'cloudasset.folders.operations.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta1/{+name}',
+        request_field='',
+        request_type_name=u'CloudassetFoldersOperationsGetRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = u'folders'
+
+    def __init__(self, client):
+      super(CloudassetV1beta1.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ExportAssets(self, request, global_params=None):
+      r"""Exports assets with time and resource types to a given Cloud Storage.
+location. The output format is newline-delimited JSON.
+This API implements the google.longrunning.Operation API allowing you
+to keep track of the export.
+
+      Args:
+        request: (CloudassetFoldersExportAssetsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportAssets')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportAssets.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta1/folders/{foldersId}:exportAssets',
+        http_method=u'POST',
+        method_id=u'cloudasset.folders.exportAssets',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta1/{+parent}:exportAssets',
+        request_field=u'exportAssetsRequest',
+        request_type_name=u'CloudassetFoldersExportAssetsRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class OrganizationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_operations resource."""

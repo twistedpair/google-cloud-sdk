@@ -681,16 +681,16 @@ class ClusterState(_messages.Message):
   r"""The state of a table's data in a particular cluster.
 
   Enums:
-    ReplicationStateValueValuesEnum: (`OutputOnly`) The state of replication
-      for the table in this cluster.
+    ReplicationStateValueValuesEnum: Output only. The state of replication for
+      the table in this cluster.
 
   Fields:
-    replicationState: (`OutputOnly`) The state of replication for the table in
+    replicationState: Output only. The state of replication for the table in
       this cluster.
   """
 
   class ReplicationStateValueValuesEnum(_messages.Enum):
-    r"""(`OutputOnly`) The state of replication for the table in this cluster.
+    r"""Output only. The state of replication for the table in this cluster.
 
     Values:
       STATE_NOT_KNOWN: The replication state of the table is unknown in this
@@ -1608,16 +1608,16 @@ class Table(_messages.Message):
       time, the value will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
 
   Messages:
-    ClusterStatesValue: (`OutputOnly`) Map from cluster ID to per-cluster
-      table state. If it could not be determined whether or not the table has
-      data in a particular cluster (for example, if its zone is unavailable),
-      then there will be an entry for the cluster with UNKNOWN
+    ClusterStatesValue: Output only. Map from cluster ID to per-cluster table
+      state. If it could not be determined whether or not the table has data
+      in a particular cluster (for example, if its zone is unavailable), then
+      there will be an entry for the cluster with UNKNOWN
       `replication_status`. Views: `REPLICATION_VIEW`, `FULL`
     ColumnFamiliesValue: (`CreationOnly`) The column families configured for
       this table, mapped by column family ID. Views: `SCHEMA_VIEW`, `FULL`
 
   Fields:
-    clusterStates: (`OutputOnly`) Map from cluster ID to per-cluster table
+    clusterStates: Output only. Map from cluster ID to per-cluster table
       state. If it could not be determined whether or not the table has data
       in a particular cluster (for example, if its zone is unavailable), then
       there will be an entry for the cluster with UNKNOWN
@@ -1628,7 +1628,7 @@ class Table(_messages.Message):
       timestamps are stored in this table. Timestamps not matching the
       granularity will be rejected. If unspecified at creation time, the value
       will be set to `MILLIS`. Views: `SCHEMA_VIEW`, `FULL`.
-    name: (`OutputOnly`) The unique name of the table. Values are of the form
+    name: Output only. The unique name of the table. Values are of the form
       `projects/<project>/instances/<instance>/tables/_a-zA-Z0-9*`. Views:
       `NAME_ONLY`, `SCHEMA_VIEW`, `REPLICATION_VIEW`, `FULL`
   """
@@ -1650,7 +1650,7 @@ class Table(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ClusterStatesValue(_messages.Message):
-    r"""(`OutputOnly`) Map from cluster ID to per-cluster table state. If it
+    r"""Output only. Map from cluster ID to per-cluster table state. If it
     could not be determined whether or not the table has data in a particular
     cluster (for example, if its zone is unavailable), then there will be an
     entry for the cluster with UNKNOWN `replication_status`. Views:

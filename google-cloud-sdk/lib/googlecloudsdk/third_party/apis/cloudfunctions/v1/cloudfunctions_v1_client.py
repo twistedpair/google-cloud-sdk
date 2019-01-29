@@ -314,8 +314,8 @@ When making a HTTP PUT request, these two headers need to be specified:
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource.
-Returns an empty policy if the resource exists and does not have a policy
+      r"""Gets the IAM access control policy for a function.
+Returns an empty policy if the function exists and does not have a policy
 set.
 
       Args:
@@ -397,8 +397,8 @@ set.
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any.
-existing policy.
+      r"""Sets the IAM access control policy on the specified function.
+Replaces any existing policy.
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest) input message
@@ -425,13 +425,10 @@ existing policy.
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-If the resource does not exist, this will return an empty set of
+      r"""Tests the specified permissions against the IAM access control policy.
+for a function.
+If the function does not exist, this will return an empty set of
 permissions, not a NOT_FOUND error.
-
-Note: This operation is designed to be used for building permission-aware
-UIs and command-line tools, not for authorization checking. This operation
-may "fail open" without warning.
 
       Args:
         request: (CloudfunctionsProjectsLocationsFunctionsTestIamPermissionsRequest) input message

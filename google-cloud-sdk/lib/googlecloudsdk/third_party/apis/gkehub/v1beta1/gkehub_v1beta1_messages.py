@@ -91,8 +91,7 @@ class GkehubProjectsLocationsGlobalMembershipsListRequest(_messages.Message):
       /foo-proj/locations/global/membership/bar  - Filter by labels:   -
       Resources that have a key called `foo`     labels.foo:*   - Resources
       that have a key called `foo` whose value is `bar`     labels.foo = bar
-      - Filter by status:    - Members in CREATING status.      status =
-      CREATING
+      - Filter by state:    - Members in CREATING state.      state = CREATING
     orderBy: Field to use to sort the list.
     pageSize: When requesting a 'page' of resources, `page_size` specifies
       number of resources to return. If unspecified or set to 0, all resources
@@ -412,7 +411,7 @@ class Membership(_messages.Message):
       alphanumeric characters or `-`   3. It must start and end with an
       alphanumeric character I.e. `membership_id` must match the regex:
       `[a-z0-9]([-a-z0-9]*[a-z0-9])?` with at most 63 characters.
-    status: Output only. Status of the Membership resource.
+    state: Output only. State of the Membership resource.
     updateTime: Output only. Timestamp for when the Membership was last
       updated.
   """
@@ -447,7 +446,7 @@ class Membership(_messages.Message):
   endpoint = _messages.MessageField('MembershipEndpoint', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  status = _messages.MessageField('MembershipStatus', 7)
+  state = _messages.MessageField('MembershipState', 7)
   updateTime = _messages.StringField(8)
 
 
@@ -461,8 +460,7 @@ class MembershipEndpoint(_messages.Message):
       and time) to be provided by the user at creation time. While a self_link
       is optional for endpoints that may not be on GCP, all membership
       endpoints must provide a unique resource_id string. It is not mutable
-      after creation. See go/membership-uid for more details. It can be at the
-      most 1000 characters in length.
+      after creation. It can be at the most 1000 characters in length.
     selfLink: If this API server is also a Google service provide its
       OnePlatform 'name'. For example, the FQDN to a GKE Cluster that backs
       this Membership: https://container.googleapis.com/v1/projects/x/zones
@@ -474,25 +472,20 @@ class MembershipEndpoint(_messages.Message):
   selfLink = _messages.StringField(3)
 
 
-class MembershipStatus(_messages.Message):
-  r"""Status of the Membership resource.
+class MembershipState(_messages.Message):
+  r"""State of the Membership resource.
 
   Enums:
-    CodeValueValuesEnum: Code indicating the status of the Membership
-      resource.
-
-  Messages:
-    DetailsValue: Structured information about the problem.
+    CodeValueValuesEnum: Code indicating the state of the Membership resource.
 
   Fields:
-    code: Code indicating the status of the Membership resource.
+    code: Code indicating the state of the Membership resource.
     description: Human readable description of the issue.
-    details: Structured information about the problem.
-    updateTime: The last update time of this status by the controllers
+    updateTime: The last update time of this state by the controllers
   """
 
   class CodeValueValuesEnum(_messages.Enum):
-    r"""Code indicating the status of the Membership resource.
+    r"""Code indicating the state of the Membership resource.
 
     Values:
       CODE_UNSPECIFIED: Not set.
@@ -508,35 +501,9 @@ class MembershipStatus(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DetailsValue(_messages.Message):
-    r"""Structured information about the problem.
-
-    Messages:
-      AdditionalProperty: An additional property for a DetailsValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DetailsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   description = _messages.StringField(2)
-  details = _messages.MessageField('DetailsValue', 3)
-  updateTime = _messages.StringField(4)
+  updateTime = _messages.StringField(3)
 
 
 class OidcConfig(_messages.Message):

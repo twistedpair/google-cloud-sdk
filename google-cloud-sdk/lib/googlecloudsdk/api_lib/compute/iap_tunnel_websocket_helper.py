@@ -72,7 +72,7 @@ class IapTunnelWebSocketHelper(object):
     self._is_closed = False
     self._websocket = websocket.WebSocketApp(
         url, header=headers, on_close=self._OnClose, on_data=self._OnData,
-        on_error=self._OnError)
+        on_error=self._OnError, subprotocols=[utils.SUBPROTOCOL_NAME])
 
   def __del__(self):
     self.Close()

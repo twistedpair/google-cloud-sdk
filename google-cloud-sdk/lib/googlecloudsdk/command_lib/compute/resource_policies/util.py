@@ -64,7 +64,7 @@ def MakeVmMaintenancePolicy(policy_ref, args, messages):
       vmMaintenancePolicy=vm_policy)
 
 
-def MakeDiskBackupSchedulePolicy(policy_ref, args, messages):
+def MakeDiskSnapshotSchedulePolicy(policy_ref, args, messages):
   """Creates a Disk Snapshot Schedule Resource Policy message from args."""
   hourly_cycle, daily_cycle, weekly_cycle = _ParseCycleFrequencyArgs(
       args, messages, supports_hourly=True, supports_weekly=True)
@@ -72,22 +72,23 @@ def MakeDiskBackupSchedulePolicy(policy_ref, args, messages):
   snapshot_properties = None
   snapshot_labels = labels_util.ParseCreateArgs(
       args,
-      messages.ResourcePolicyBackupSchedulePolicySnapshotProperties.LabelsValue,
+      messages.ResourcePolicySnapshotSchedulePolicySnapshotProperties
+      .LabelsValue,
       labels_dest='snapshot_labels')
   storage_location = [args.storage_location] if args.storage_location else []
   if args.IsSpecified('guest_flush') or snapshot_labels or storage_location:
     snapshot_properties = (
-        messages.ResourcePolicyBackupSchedulePolicySnapshotProperties(
+        messages.ResourcePolicySnapshotSchedulePolicySnapshotProperties(
             guestFlush=args.guest_flush,
             labels=snapshot_labels,
             storageLocations=storage_location))
-  backup_policy = messages.ResourcePolicyBackupSchedulePolicy(
+  snapshot_policy = messages.ResourcePolicySnapshotSchedulePolicy(
       retentionPolicy=messages
-      .ResourcePolicyBackupSchedulePolicyRetentionPolicy(
+      .ResourcePolicySnapshotSchedulePolicyRetentionPolicy(
           maxRetentionDays=args.max_retention_days,
-          onSourceDiskDelete=flags.GetOnSourceDiskDeleteFlagMapper(messages)
-          .GetEnumForChoice(args.on_source_disk_delete)),
-      schedule=messages.ResourcePolicyBackupSchedulePolicySchedule(
+          onSourceDiskDelete=flags.GetOnSourceDiskDeleteFlagMapper(
+              messages).GetEnumForChoice(args.on_source_disk_delete)),
+      schedule=messages.ResourcePolicySnapshotSchedulePolicySchedule(
           hourlySchedule=hourly_cycle,
           dailySchedule=daily_cycle,
           weeklySchedule=weekly_cycle),
@@ -96,7 +97,7 @@ def MakeDiskBackupSchedulePolicy(policy_ref, args, messages):
       name=policy_ref.Name(),
       description=args.description,
       region=policy_ref.region,
-      backupSchedulePolicy=backup_policy)
+      snapshotSchedulePolicy=snapshot_policy)
 
 
 def _ParseCycleFrequencyArgs(args, messages, supports_hourly=False,

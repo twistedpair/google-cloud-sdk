@@ -1363,7 +1363,8 @@
             "Table block.",
             "Image block.",
             "Horizontal\/vertical line box.",
-            "Barcode block."
+            "Barcode block.",
+            "A key-value pair block."
           ],
           "type": "string",
           "enum": [
@@ -1372,7 +1373,8 @@
             "TABLE",
             "PICTURE",
             "RULER",
-            "BARCODE"
+            "BARCODE",
+            "KEY_VALUE_PAIR"
           ]
         },
         "confidence": {
@@ -2849,7 +2851,8 @@
             "Table block.",
             "Image block.",
             "Horizontal\/vertical line box.",
-            "Barcode block."
+            "Barcode block.",
+            "A key-value pair block."
           ],
           "type": "string",
           "enum": [
@@ -2858,7 +2861,8 @@
             "TABLE",
             "PICTURE",
             "RULER",
-            "BARCODE"
+            "BARCODE",
+            "KEY_VALUE_PAIR"
           ]
         },
         "confidence": {
@@ -4213,7 +4217,8 @@
             "Table block.",
             "Image block.",
             "Horizontal\/vertical line box.",
-            "Barcode block."
+            "Barcode block.",
+            "A key-value pair block."
           ],
           "type": "string",
           "enum": [
@@ -4222,7 +4227,8 @@
             "TABLE",
             "PICTURE",
             "RULER",
-            "BARCODE"
+            "BARCODE",
+            "KEY_VALUE_PAIR"
           ]
         },
         "confidence": {
@@ -5655,7 +5661,8 @@
             "Table block.",
             "Image block.",
             "Horizontal\/vertical line box.",
-            "Barcode block."
+            "Barcode block.",
+            "A key-value pair block."
           ],
           "type": "string",
           "enum": [
@@ -5664,7 +5671,8 @@
             "TABLE",
             "PICTURE",
             "RULER",
-            "BARCODE"
+            "BARCODE",
+            "KEY_VALUE_PAIR"
           ]
         },
         "confidence": {

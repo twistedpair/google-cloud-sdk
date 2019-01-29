@@ -1855,6 +1855,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       projects/project/zones/zone/diskTypes/diskType  -
       zones/zone/diskTypes/diskType  Note that for InstanceTemplate, this is
       the name of the disk type, not URL.
+    guestOsFeatures: A list of features to enable on the guest operating
+      system. Applicable only for bootable images. Read  Enabling guest
+      operating system features to see a list of available options.  Guest OS
+      features are applied by merging initializeParams.guestOsFeatures and
+      disks.guestOsFeatures
     labels: Labels to apply to this disk. These can be later modified by the
       disks.setLabels method. This field is only applicable for persistent
       disks.
@@ -1910,9 +1915,10 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskName = _messages.StringField(2)
   diskSizeGb = _messages.IntegerField(3)
   diskType = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  sourceImage = _messages.StringField(6)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  sourceImage = _messages.StringField(7)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
 
 
 class AuditConfig(_messages.Message):
@@ -3012,6 +3018,9 @@ class BackendService(_messages.Message):
       with internal or external load balancing. A backend service created for
       one type of load balancing cannot be used with the other. Possible
       values are INTERNAL and EXTERNAL.
+    logConfig: This field denotes the logging options for the load balancer
+      traffic served by this backend service. If logging is enabled, logs will
+      be exported to Stackdriver.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -3116,15 +3125,16 @@ class BackendService(_messages.Message):
   id = _messages.IntegerField(12, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(13, default=u'compute#backendService')
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 14)
-  name = _messages.StringField(15)
-  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(17)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 18)
-  region = _messages.StringField(19)
-  securityPolicy = _messages.StringField(20)
-  selfLink = _messages.StringField(21)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 22)
-  timeoutSec = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 15)
+  name = _messages.StringField(16)
+  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(18)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 19)
+  region = _messages.StringField(20)
+  securityPolicy = _messages.StringField(21)
+  selfLink = _messages.StringField(22)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 23)
+  timeoutSec = _messages.IntegerField(24, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -3454,6 +3464,24 @@ class BackendServiceList(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class BackendServiceLogConfig(_messages.Message):
+  r"""The available logging options for the load balancer traffic served by
+  this backend service.
+
+  Fields:
+    enable: This field denotes whether to enable logging for the load balancer
+      traffic served by this backend service.
+    sampleRate: This field can only be specified if logging is enabled for
+      this backend service. The value of the field must be in [0, 1]. This
+      configures the sampling rate of requests to the load balancer where 1.0
+      means all logged requests are reported and 0.0 means no logged requests
+      are reported. The default value is 1.0.
+  """
+
+  enable = _messages.BooleanField(1)
+  sampleRate = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class BackendServiceReference(_messages.Message):
@@ -8668,6 +8696,20 @@ class ComputeInstancesGetSerialPortOutputRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesGetShieldedInstanceIdentityRequest(_messages.Message):
+  r"""A ComputeInstancesGetShieldedInstanceIdentityRequest object.
+
+  Fields:
+    instance: Name or id of the instance scoping this request.
+    project: Project ID for this request.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  zone = _messages.StringField(3, required=True)
+
+
 class ComputeInstancesGetShieldedVmIdentityRequest(_messages.Message):
   r"""A ComputeInstancesGetShieldedVmIdentityRequest object.
 
@@ -9136,6 +9178,34 @@ class ComputeInstancesSetServiceAccountRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest(_messages.Message):
+  r"""A ComputeInstancesSetShieldedInstanceIntegrityPolicyRequest object.
+
+  Fields:
+    instance: Name or id of the instance scoping this request.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    shieldedInstanceIntegrityPolicy: A ShieldedInstanceIntegrityPolicy
+      resource to be passed as the request body.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstancesSetShieldedVmIntegrityPolicyRequest(_messages.Message):
   r"""A ComputeInstancesSetShieldedVmIntegrityPolicyRequest object.
 
@@ -9414,6 +9484,34 @@ class ComputeInstancesUpdateNetworkInterfaceRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
   zone = _messages.StringField(6, required=True)
+
+
+class ComputeInstancesUpdateShieldedInstanceConfigRequest(_messages.Message):
+  r"""A ComputeInstancesUpdateShieldedInstanceConfigRequest object.
+
+  Fields:
+    instance: Name or id of the instance scoping this request.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    shieldedInstanceConfig: A ShieldedInstanceConfig resource to be passed as
+      the request body.
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesUpdateShieldedVmConfigRequest(_messages.Message):
@@ -12274,6 +12372,36 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
+
+
+class ComputeRegionCommitmentsUpdateAllocationsRequest(_messages.Message):
+  r"""A ComputeRegionCommitmentsUpdateAllocationsRequest object.
+
+  Fields:
+    commitment: Name of the commitment of which the allocation's capacities
+      are being updated.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    regionCommitmentsUpdateAllocationsRequest: A
+      RegionCommitmentsUpdateAllocationsRequest resource to be passed as the
+      request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  commitment = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionCommitmentsUpdateAllocationsRequest = _messages.MessageField('RegionCommitmentsUpdateAllocationsRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionDiskTypesGetRequest(_messages.Message):
@@ -19151,7 +19279,7 @@ class ForwardingRule(_messages.Message):
       regional forwarding rules, this target must live in the same region as
       the forwarding rule. For global forwarding rules, this target must be a
       global load balancing resource. The forwarded traffic must be of a type
-      appropriate to the target object. For INTERNAL_SELF_MANAGED" load
+      appropriate to the target object. For INTERNAL_SELF_MANAGED load
       balancing, only HTTP and HTTPS targets are valid.
   """
 
@@ -21175,6 +21303,9 @@ class Instance(_messages.Message):
       is supported.  Service accounts generate access tokens that can be
       accessed through the metadata server and used to authenticate
       applications on the instance. See Service Accounts for more information.
+    shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
+    shieldedInstanceIntegrityPolicy: A ShieldedInstanceIntegrityPolicy
+      attribute.
     shieldedVmConfig: A ShieldedVmConfig attribute.
     shieldedVmIntegrityPolicy: A ShieldedVmIntegrityPolicy attribute.
     startRestricted: [Output Only] Whether a VM has been restricted for start
@@ -21265,13 +21396,15 @@ class Instance(_messages.Message):
   scheduling = _messages.MessageField('Scheduling', 20)
   selfLink = _messages.StringField(21)
   serviceAccounts = _messages.MessageField('ServiceAccount', 22, repeated=True)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 23)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 24)
-  startRestricted = _messages.BooleanField(25)
-  status = _messages.EnumField('StatusValueValuesEnum', 26)
-  statusMessage = _messages.StringField(27)
-  tags = _messages.MessageField('Tags', 28)
-  zone = _messages.StringField(29)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 23)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 24)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 25)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 26)
+  startRestricted = _messages.BooleanField(27)
+  status = _messages.EnumField('StatusValueValuesEnum', 28)
+  statusMessage = _messages.StringField(29)
+  tags = _messages.MessageField('Tags', 30)
+  zone = _messages.StringField(31)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -23211,6 +23344,7 @@ class InstanceProperties(_messages.Message):
       tokens for these service accounts are available to the instances that
       are created from this template. Use metadata queries to obtain the
       access tokens for these instances.
+    shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
     shieldedVmConfig: Specifies the Shielded VM options for the instances that
       are created from this template.
     tags: A list of tags to apply to the instances that are created from this
@@ -23256,8 +23390,9 @@ class InstanceProperties(_messages.Message):
   networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
   scheduling = _messages.MessageField('Scheduling', 12)
   serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 14)
-  tags = _messages.MessageField('Tags', 15)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 14)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 15)
+  tags = _messages.MessageField('Tags', 16)
 
 
 class InstanceReference(_messages.Message):
@@ -24668,18 +24803,37 @@ class InterconnectDiagnosticsLinkOpticalPower(_messages.Message):
   r"""A InterconnectDiagnosticsLinkOpticalPower object.
 
   Enums:
-    StateValueValuesEnum:
+    StateValueValuesEnum: The status of the current value when compared to the
+      warning and alarm levels for the receiving or transmitting transceiver.
+      Possible states include:   - OK: The value has not crossed a warning
+      threshold.  - LOW_WARNING: The value has crossed below the low warning
+      threshold.  - HIGH_WARNING: The value has crossed above the high warning
+      threshold.  - LOW_ALARM: The value has crossed below the low alarm
+      threshold.  - HIGH_ALARM: The value has crossed above the high alarm
+      threshold.
 
   Fields:
-    state: A StateValueValuesEnum attribute.
-    value: Value of the current optical power, read in dBm. Take a known good
-      optical value, give it a 10% margin and trigger warnings relative to
-      that value. In general, a -7dBm warning and a -11dBm alarm are good
-      optical value estimates for most links.
+    state: The status of the current value when compared to the warning and
+      alarm levels for the receiving or transmitting transceiver. Possible
+      states include:   - OK: The value has not crossed a warning threshold.
+      - LOW_WARNING: The value has crossed below the low warning threshold.  -
+      HIGH_WARNING: The value has crossed above the high warning threshold.  -
+      LOW_ALARM: The value has crossed below the low alarm threshold.  -
+      HIGH_ALARM: The value has crossed above the high alarm threshold.
+    value: Value of the current receiving or transmitting optical power, read
+      in dBm. Take a known good optical value, give it a 10% margin and
+      trigger warnings relative to that value. In general, a -7dBm warning and
+      a -11dBm alarm are good optical value estimates for most links.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""StateValueValuesEnum enum type.
+    r"""The status of the current value when compared to the warning and alarm
+    levels for the receiving or transmitting transceiver. Possible states
+    include:   - OK: The value has not crossed a warning threshold.  -
+    LOW_WARNING: The value has crossed below the low warning threshold.  -
+    HIGH_WARNING: The value has crossed above the high warning threshold.  -
+    LOW_ALARM: The value has crossed below the low alarm threshold.  -
+    HIGH_ALARM: The value has crossed above the high alarm threshold.
 
     Values:
       HIGH_ALARM: <no description>
@@ -24709,10 +24863,11 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
     googleDemarc: The Demarc address assigned by Google and provided in the
       LoA.
     lacpStatus: A InterconnectDiagnosticsLinkLACPStatus attribute.
-    receivingOpticalPower: A InterconnectDiagnosticsLinkOpticalPower
-      attribute.
-    transmittingOpticalPower: A InterconnectDiagnosticsLinkOpticalPower
-      attribute.
+    receivingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower object,
+      describing the current value and status of the received light level.
+    transmittingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower
+      object, describing the current value and status of the transmitted light
+      level.
   """
 
   arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
@@ -26236,9 +26391,10 @@ class Network(_messages.Message):
   resource_for beta.networks ==)
 
   Fields:
-    IPv4Range: The range of internal addresses that are legal on this network.
-      This range is a CIDR specification, for example: 192.168.0.0/16.
-      Provided by the client when the network is created.
+    IPv4Range: Deprecated in favor of subnet mode networks. The range of
+      internal addresses that are legal on this network. This range is a CIDR
+      specification, for example: 192.168.0.0/16. Provided by the client when
+      the network is created.
     autoCreateSubnetworks: When set to true, the VPC network is created in
       "auto" mode. When set to false, the VPC network is created in "custom"
       mode.  An auto mode VPC network starts with one subnet per region. Each
@@ -30121,6 +30277,17 @@ class RegionAutoscalerList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RegionCommitmentsUpdateAllocationsRequest(_messages.Message):
+  r"""A RegionCommitmentsUpdateAllocationsRequest object.
+
+  Fields:
+    allocations: List of allocations for the capacity move of VMs with
+      accelerators and local ssds.
+  """
+
+  allocations = _messages.MessageField('Allocation', 1, repeated=True)
+
+
 class RegionDiskTypeList(_messages.Message):
   r"""A RegionDiskTypeList object.
 
@@ -30983,6 +31150,8 @@ class ResourceCommitment(_messages.Message):
       Possible values are VCPU and MEMORY
 
   Fields:
+    acceleratorType: Name of the accelerator type resource. Applicable only
+      when the type is ACCELERATOR.
     amount: The amount of the resource purchased (in a type-dependent unit,
       such as bytes). For vCPUs, this can just be an integer. For memory, this
       must be provided in MB. Memory must be a multiple of 256 MB, with up to
@@ -30996,16 +31165,21 @@ class ResourceCommitment(_messages.Message):
     are VCPU and MEMORY
 
     Values:
+      ACCELERATOR: <no description>
+      LOCAL_SSD: <no description>
       MEMORY: <no description>
       UNSPECIFIED: <no description>
       VCPU: <no description>
     """
-    MEMORY = 0
-    UNSPECIFIED = 1
-    VCPU = 2
+    ACCELERATOR = 0
+    LOCAL_SSD = 1
+    MEMORY = 2
+    UNSPECIFIED = 3
+    VCPU = 4
 
-  amount = _messages.IntegerField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  acceleratorType = _messages.StringField(1)
+  amount = _messages.IntegerField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class ResourceGroupReference(_messages.Message):
@@ -33428,6 +33602,62 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scopes = _messages.StringField(2, repeated=True)
+
+
+class ShieldedInstanceConfig(_messages.Message):
+  r"""A set of Shielded Instance options.
+
+  Fields:
+    enableIntegrityMonitoring: Defines whether the instance has integrity
+      monitoring enabled.
+    enableSecureBoot: Defines whether the instance has Secure Boot enabled.
+    enableVtpm: Defines whether the instance has the vTPM enabled.
+  """
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableSecureBoot = _messages.BooleanField(2)
+  enableVtpm = _messages.BooleanField(3)
+
+
+class ShieldedInstanceIdentity(_messages.Message):
+  r"""A shielded Instance identity entry.
+
+  Fields:
+    encryptionKey: An Endorsement Key (EK) issued to the Shielded Instance's
+      vTPM.
+    kind: [Output Only] Type of the resource. Always
+      compute#shieldedInstanceIdentity for shielded Instance identity entry.
+    signingKey: An Attestation Key (AK) issued to the Shielded Instance's
+      vTPM.
+  """
+
+  encryptionKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 1)
+  kind = _messages.StringField(2, default=u'compute#shieldedInstanceIdentity')
+  signingKey = _messages.MessageField('ShieldedInstanceIdentityEntry', 3)
+
+
+class ShieldedInstanceIdentityEntry(_messages.Message):
+  r"""A Shielded Instance Identity Entry.
+
+  Fields:
+    ekCert: A PEM-encoded X.509 certificate. This field can be empty.
+    ekPub: A PEM-encoded public key.
+  """
+
+  ekCert = _messages.StringField(1)
+  ekPub = _messages.StringField(2)
+
+
+class ShieldedInstanceIntegrityPolicy(_messages.Message):
+  r"""The policy describes the baseline against which Instance boot integrity
+  is measured.
+
+  Fields:
+    updateAutoLearnPolicy: Updates the integrity policy baseline using the
+      measurements from the VM instance's most recent boot.
+  """
+
+  updateAutoLearnPolicy = _messages.BooleanField(1)
 
 
 class ShieldedVmConfig(_messages.Message):

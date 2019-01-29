@@ -1926,7 +1926,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name (project and location) of the server config to get\nSpecified in the format 'projects\/*\/locations\/*'.",
+                  "description": "The name (project and location) of the server config to get,\nspecified in the format 'projects\/*\/locations\/*'.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -2957,7 +2957,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "description": "The name (project and location) of the server config to get\nSpecified in the format 'projects\/*\/locations\/*'.",
+                  "description": "The name (project and location) of the server config to get,\nspecified in the format 'projects\/*\/locations\/*'.",
                   "location": "query",
                   "type": "string"
                 }

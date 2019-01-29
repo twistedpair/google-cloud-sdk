@@ -261,6 +261,10 @@
           "description": "Configuration for exporting resource usages. Resource usage export is\ndisabled when this config unspecified.",
           "$ref": "ResourceUsageExportConfig"
         },
+        "authenticatorGroupsConfig": {
+          "description": "Configuration controlling RBAC group membership information.",
+          "$ref": "AuthenticatorGroupsConfig"
+        },
         "privateClusterConfig": {
           "description": "Configuration for private cluster.",
           "$ref": "PrivateClusterConfig"
@@ -1143,6 +1147,21 @@
       "properties": {
         "datasetId": {
           "description": "The ID of a BigQuery Dataset.",
+          "type": "string"
+        }
+      }
+    },
+    "AuthenticatorGroupsConfig": {
+      "id": "AuthenticatorGroupsConfig",
+      "description": "Configuration for returning group information from authenticators.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether this cluster should return group membership lookups\nduring authentication using a group of security groups.",
+          "type": "boolean"
+        },
+        "securityGroup": {
+          "description": "The name of the security group-of-groups to be used. Only relevant\nif enabled = true.",
           "type": "string"
         }
       }
@@ -2413,7 +2432,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "The name (project and location) of the server config to get\nSpecified in the format 'projects\/*\/locations\/*'.",
+                  "description": "The name (project and location) of the server config to get,\nspecified in the format 'projects\/*\/locations\/*'.",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
@@ -3469,7 +3488,7 @@
                   "type": "string"
                 },
                 "name": {
-                  "description": "The name (project and location) of the server config to get\nSpecified in the format 'projects\/*\/locations\/*'.",
+                  "description": "The name (project and location) of the server config to get,\nspecified in the format 'projects\/*\/locations\/*'.",
                   "location": "query",
                   "type": "string"
                 }

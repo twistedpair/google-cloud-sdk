@@ -168,9 +168,7 @@ class IapTunnelWebSocket(object):
 
   def _StartNewWebSocket(self):
     """Start a new WebSocket and thread to listen for incoming data."""
-    headers = [
-        'User-Agent: ' + http.MakeUserAgentString(),
-        'Sec-WebSocket-Protocol: ' + utils.SUBPROTOCOL_NAME]
+    headers = ['User-Agent: ' + http.MakeUserAgentString()]
     if self._get_access_token_callback:
       headers += ['Authorization: Bearer ' + self._get_access_token_callback()]
 

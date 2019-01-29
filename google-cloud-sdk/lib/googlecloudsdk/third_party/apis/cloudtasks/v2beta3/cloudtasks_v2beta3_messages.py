@@ -173,6 +173,8 @@ class AppEngineHttpRequest(_messages.Message):
       HEAD: HTTP HEAD
       PUT: HTTP PUT
       DELETE: HTTP DELETE
+      PATCH: HTTP PATCH
+      OPTIONS: HTTP OPTIONS
     """
     HTTP_METHOD_UNSPECIFIED = 0
     POST = 1
@@ -180,6 +182,8 @@ class AppEngineHttpRequest(_messages.Message):
     HEAD = 3
     PUT = 4
     DELETE = 5
+    PATCH = 6
+    OPTIONS = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class HeadersValue(_messages.Message):
@@ -1403,6 +1407,28 @@ class Task(_messages.Message):
     dispatchCount: Output only. The number of attempts dispatched.  This count
       includes tasks which have been dispatched but haven't received a
       response.
+    dispatchDeadline: The deadline for requests sent to the worker. If the
+      worker does not respond by this deadline then the request is cancelled
+      and the attempt is marked as a `DEADLINE_EXCEEDED` failure. Cloud Tasks
+      will retry the task according to the RetryConfig.  Note that when the
+      request is cancelled, Cloud Tasks will stop listing for the response,
+      but whether the worker stops processing depends on the worker. For
+      example, if the worker is stuck, it may not react to cancelled requests.
+      The default and maximum values depend on the type of request:   * For
+      App Engine tasks, 0 indicates that the   request has the default
+      deadline. The default deadline depends on the   [scaling
+      type](https://cloud.google.com/appengine/docs/standard/go/how-instances-
+      are-managed#instance_scaling)   of the service: 10 minutes for standard
+      apps with automatic scaling, 24   hours for standard apps with manual
+      and basic scaling, and 60 minutes for   flex apps. If the request
+      deadline is set, it must be in the interval [15   seconds, 24 hours 15
+      seconds]. Regardless of the task's   `dispatch_deadline`, the app
+      handler will not run for longer than than   the service's timeout. We
+      recommend setting the `dispatch_deadline` to   at most a few seconds
+      more than the app handler's timeout. For more   information see
+      [Timeouts](https://cloud.google.com/tasks/docs/creating-appengine-
+      handlers#timeouts).  `dispatch_deadline` will be truncated to the
+      nearest millisecond. The deadline is an approximate deadline.
     firstAttempt: Output only. The status of the task's first attempt.  Only
       dispatch_time will be set. The other Attempt information is not retained
       by Cloud Tasks.
@@ -1452,12 +1478,13 @@ class Task(_messages.Message):
   appEngineHttpRequest = _messages.MessageField('AppEngineHttpRequest', 1)
   createTime = _messages.StringField(2)
   dispatchCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  firstAttempt = _messages.MessageField('Attempt', 4)
-  lastAttempt = _messages.MessageField('Attempt', 5)
-  name = _messages.StringField(6)
-  responseCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  scheduleTime = _messages.StringField(8)
-  view = _messages.EnumField('ViewValueValuesEnum', 9)
+  dispatchDeadline = _messages.StringField(4)
+  firstAttempt = _messages.MessageField('Attempt', 5)
+  lastAttempt = _messages.MessageField('Attempt', 6)
+  name = _messages.StringField(7)
+  responseCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  scheduleTime = _messages.StringField(9)
+  view = _messages.EnumField('ViewValueValuesEnum', 10)
 
 
 class TestIamPermissionsRequest(_messages.Message):

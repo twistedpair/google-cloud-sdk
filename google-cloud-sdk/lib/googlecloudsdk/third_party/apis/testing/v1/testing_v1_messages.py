@@ -1227,6 +1227,8 @@ class TestMatrix(_messages.Message):
       MALFORMED_TEST_APK: The input test APK could not be parsed.
       NO_MANIFEST: The AndroidManifest.xml could not be found.
       NO_PACKAGE_NAME: The APK manifest does not declare a package name.
+      INVALID_PACKAGE_NAME: The APK package name is invalid. See also
+        https://developer.android.com/studio/build/application-id
       TEST_SAME_AS_APP: The test package and app package are the same.
       NO_INSTRUMENTATION: The test apk does not declare an instrumentation.
       NO_SIGNATURE: The input app apk does not have a signature.
@@ -1288,30 +1290,31 @@ class TestMatrix(_messages.Message):
     MALFORMED_TEST_APK = 3
     NO_MANIFEST = 4
     NO_PACKAGE_NAME = 5
-    TEST_SAME_AS_APP = 6
-    NO_INSTRUMENTATION = 7
-    NO_SIGNATURE = 8
-    INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE = 9
-    NO_TEST_RUNNER_CLASS = 10
-    NO_LAUNCHER_ACTIVITY = 11
-    FORBIDDEN_PERMISSIONS = 12
-    INVALID_ROBO_DIRECTIVES = 13
-    TEST_LOOP_INTENT_FILTER_NOT_FOUND = 14
-    SCENARIO_LABEL_NOT_DECLARED = 15
-    SCENARIO_LABEL_MALFORMED = 16
-    SCENARIO_NOT_DECLARED = 17
-    DEVICE_ADMIN_RECEIVER = 18
-    MALFORMED_XC_TEST_ZIP = 19
-    BUILT_FOR_IOS_SIMULATOR = 20
-    NO_TESTS_IN_XC_TEST_ZIP = 21
-    USE_DESTINATION_ARTIFACTS = 22
-    TEST_NOT_APP_HOSTED = 23
-    PLIST_CANNOT_BE_PARSED = 24
-    TEST_ONLY_APK = 25
-    MALFORMED_IPA = 26
-    NO_CODE_APK = 27
-    INVALID_INPUT_APK = 28
-    INVALID_APK_PREVIEW_SDK = 29
+    INVALID_PACKAGE_NAME = 6
+    TEST_SAME_AS_APP = 7
+    NO_INSTRUMENTATION = 8
+    NO_SIGNATURE = 9
+    INSTRUMENTATION_ORCHESTRATOR_INCOMPATIBLE = 10
+    NO_TEST_RUNNER_CLASS = 11
+    NO_LAUNCHER_ACTIVITY = 12
+    FORBIDDEN_PERMISSIONS = 13
+    INVALID_ROBO_DIRECTIVES = 14
+    TEST_LOOP_INTENT_FILTER_NOT_FOUND = 15
+    SCENARIO_LABEL_NOT_DECLARED = 16
+    SCENARIO_LABEL_MALFORMED = 17
+    SCENARIO_NOT_DECLARED = 18
+    DEVICE_ADMIN_RECEIVER = 19
+    MALFORMED_XC_TEST_ZIP = 20
+    BUILT_FOR_IOS_SIMULATOR = 21
+    NO_TESTS_IN_XC_TEST_ZIP = 22
+    USE_DESTINATION_ARTIFACTS = 23
+    TEST_NOT_APP_HOSTED = 24
+    PLIST_CANNOT_BE_PARSED = 25
+    TEST_ONLY_APK = 26
+    MALFORMED_IPA = 27
+    NO_CODE_APK = 28
+    INVALID_INPUT_APK = 29
+    INVALID_APK_PREVIEW_SDK = 30
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Indicates the current progress of the test matrix (e.g.,

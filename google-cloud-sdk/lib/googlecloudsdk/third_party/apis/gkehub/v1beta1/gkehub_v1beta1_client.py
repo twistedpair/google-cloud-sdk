@@ -53,8 +53,6 @@ class GkehubV1beta1(base_api.BaseApiClient):
 
     def Create(self, request, global_params=None):
       r"""Adds a new Membership.
-because we are hardcoding
-`locations/global` in to the URL schema.
 
       Args:
         request: (GkehubProjectsLocationsGlobalMembershipsCreateRequest) input message
@@ -136,8 +134,6 @@ because we are hardcoding
 
     def List(self, request, global_params=None):
       r"""Lists Memberships in a given project and location.
-because we are hardcoding
-`locations/global` in to the URL schema.
 
       Args:
         request: (GkehubProjectsLocationsGlobalMembershipsListRequest) input message

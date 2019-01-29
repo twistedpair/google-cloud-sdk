@@ -35,8 +35,74 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_crawlers_crawlerRuns = self.ProjectsCrawlersCrawlerRunsService(self)
     self.projects_crawlers = self.ProjectsCrawlersService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsCrawlersCrawlerRunsService(base_api.BaseApiService):
+    """Service class for the projects_crawlers_crawlerRuns resource."""
+
+    _NAME = u'projects_crawlers_crawlerRuns'
+
+    def __init__(self, client):
+      super(DatacatalogV1alpha3.ProjectsCrawlersCrawlerRunsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a particular run of the crawler.
+
+      Args:
+        request: (DatacatalogProjectsCrawlersCrawlerRunsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1alpha3CrawlerRun) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns/{crawlerRunsId}',
+        http_method=u'GET',
+        method_id=u'datacatalog.projects.crawlers.crawlerRuns.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha3/{+name}',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsCrawlersCrawlerRunsGetRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1alpha3CrawlerRun',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists crawler runs. This includes the currently running, pending and.
+completed crawler runs.
+
+      Args:
+        request: (DatacatalogProjectsCrawlersCrawlerRunsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1alpha3ListCrawlerRunsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns',
+        http_method=u'GET',
+        method_id=u'datacatalog.projects.crawlers.crawlerRuns.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1alpha3/{+parent}/crawlerRuns',
+        request_field='',
+        request_type_name=u'DatacatalogProjectsCrawlersCrawlerRunsListRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1alpha3ListCrawlerRunsResponse',
+        supports_download=False,
+    )
 
   class ProjectsCrawlersService(base_api.BaseApiService):
     """Service class for the projects_crawlers resource."""
@@ -49,9 +115,8 @@ class DatacatalogV1alpha3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create a new crawler in a project. The request fails if the user does not.
-have permission to grant crawler service account on the designated data
-source or the crawler (`parent`, crawlerId) exists.
+      r"""Creates a new crawler in a project. The request fails if the crawler.
+(`parent`, crawlerId) exists.
 
       Args:
         request: (DatacatalogProjectsCrawlersCreateRequest) input message
@@ -69,7 +134,7 @@ source or the crawler (`parent`, crawlerId) exists.
         method_id=u'datacatalog.projects.crawlers.create',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'grantMetadataReadPermission'],
+        query_params=[],
         relative_path=u'v1alpha3/{+parent}/crawlers',
         request_field=u'googleCloudDatacatalogV1alpha3Crawler',
         request_type_name=u'DatacatalogProjectsCrawlersCreateRequest',
@@ -183,6 +248,34 @@ not exist.
         request_field=u'googleCloudDatacatalogV1alpha3Crawler',
         request_type_name=u'DatacatalogProjectsCrawlersPatchRequest',
         response_type_name=u'GoogleCloudDatacatalogV1alpha3Crawler',
+        supports_download=False,
+    )
+
+    def Run(self, request, global_params=None):
+      r"""Runs a crawler will create and execute an ad-hoc crawler run.
+The request fails if the crawler is already running.
+
+      Args:
+        request: (DatacatalogProjectsCrawlersRunRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDatacatalogV1alpha3CrawlerRun) The response message.
+      """
+      config = self.GetMethodConfig('Run')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Run.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1alpha3/projects/{projectsId}/crawlers/{crawlersId}:run',
+        http_method=u'POST',
+        method_id=u'datacatalog.projects.crawlers.run',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1alpha3/{+name}:run',
+        request_field=u'googleCloudDatacatalogV1alpha3RunCrawlerRequest',
+        request_type_name=u'DatacatalogProjectsCrawlersRunRequest',
+        response_type_name=u'GoogleCloudDatacatalogV1alpha3CrawlerRun',
         supports_download=False,
     )
 

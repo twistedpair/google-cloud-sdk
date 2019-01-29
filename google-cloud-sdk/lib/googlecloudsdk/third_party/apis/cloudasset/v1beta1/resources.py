@@ -24,6 +24,23 @@ DOCS_URL = 'https://console.cloud.google.com/apis/api/cloudasset.googleapis.com/
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  FOLDERS = (
+      'folders',
+      'folders/{foldersId}',
+      {},
+      [u'foldersId'],
+      True
+  )
+  FOLDERS_OPERATIONS = (
+      'folders.operations',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/operations/{operationsId}/{operationsId1}',
+      },
+      [u'name'],
+      True
+  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',

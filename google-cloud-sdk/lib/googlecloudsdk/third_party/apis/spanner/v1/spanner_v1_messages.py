@@ -2566,16 +2566,15 @@ class SpannerProjectsInstancesBackupsListRequest(_messages.Message):
       before 2018-03-28T14:50:00Z.   * `size_bytes > 10000000000` --> The
       backup's size is greater than 10GB
     orderBy: An expression for specifying the sort order of the results of the
-      request. The string value should follow SQL syntax: comma separated list
-      of fields in Backup. Fields supported are:    * name    * database    *
-      expire_time    * create_time    * size_bytes    * state  For example,
-      "create_time,name". The default sorting order is ascending. To specify
-      descending order for a field, a suffix " desc" should be appended to the
-      field name. For example, "create_time desc,name". Redundant space
-      characters in the syntax are insigificant. "create_time desc, name" and
-      " create_time desc , name" are equivalent.  If order_by is empty,
-      results will be sorted by `create_time` in descending order starting
-      from the most recently created backup.
+      request. The string value should specify only one field in Backup.
+      Fields supported are:    * name    * database    * expire_time    *
+      create_time    * size_bytes    * state  For example, "create_time". The
+      default sorting order is ascending. To specify descending order for the
+      field, a suffix " desc" should be appended to the field name. For
+      example, "create_time desc". Redundant space characters in the syntax
+      are insigificant.  If order_by is empty, results will be sorted by
+      `create_time` in descending order starting from the most recently
+      created backup.
     pageSize: Number of backups to be returned in the response. If 0 or less,
       defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token

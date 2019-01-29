@@ -142,6 +142,32 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CloudassetFoldersExportAssetsRequest(_messages.Message):
+  r"""A CloudassetFoldersExportAssetsRequest object.
+
+  Fields:
+    exportAssetsRequest: A ExportAssetsRequest resource to be passed as the
+      request body.
+    parent: Required. The relative name of the root asset. This can only be an
+      organization number (such as "organizations/123"), a project ID (such as
+      "projects/my-project-id"), a project number (such as "projects/12345"),
+      or a folder number (such as "folders/123").
+  """
+
+  exportAssetsRequest = _messages.MessageField('ExportAssetsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudassetFoldersOperationsGetRequest(_messages.Message):
+  r"""A CloudassetFoldersOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudassetOrganizationsBatchGetAssetsHistoryRequest(_messages.Message):
   r"""A CloudassetOrganizationsBatchGetAssetsHistoryRequest object.
 
@@ -192,8 +218,8 @@ class CloudassetOrganizationsExportAssetsRequest(_messages.Message):
       request body.
     parent: Required. The relative name of the root asset. This can only be an
       organization number (such as "organizations/123"), a project ID (such as
-      "projects/my-project-id"), or a project number (such as
-      "projects/12345").
+      "projects/my-project-id"), a project number (such as "projects/12345"),
+      or a folder number (such as "folders/123").
   """
 
   exportAssetsRequest = _messages.MessageField('ExportAssetsRequest', 1)
@@ -260,8 +286,8 @@ class CloudassetProjectsExportAssetsRequest(_messages.Message):
       request body.
     parent: Required. The relative name of the root asset. This can only be an
       organization number (such as "organizations/123"), a project ID (such as
-      "projects/my-project-id"), or a project number (such as
-      "projects/12345").
+      "projects/my-project-id"), a project number (such as "projects/12345"),
+      or a folder number (such as "folders/123").
   """
 
   exportAssetsRequest = _messages.MessageField('ExportAssetsRequest', 1)

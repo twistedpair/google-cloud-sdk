@@ -56,6 +56,7 @@ import subprocess
 import six
 
 
+COSHELL_ENV = 'COSHELL'
 COSHELL_VERSION = '1.1'
 
 
@@ -637,8 +638,16 @@ class _UnixCoshell(_UnixCoshellBase):
     os.dup2(w, self.SHELL_STATUS_FD)
     os.close(w)
 
+    # Check for an alternate coshell command.
+
+    coshell_command_line = os.environ.get(COSHELL_ENV)
+    if coshell_command_line:
+      shell_command = coshell_command_line.split(' ')
+    else:
+      shell_command = [self.SHELL_PATH]
+
     self._shell = subprocess.Popen(
-        [self.SHELL_PATH],
+        shell_command,
         env=os.environ,  # NOTE: Needed to pass mocked environ to children.
         stdin=subprocess.PIPE,
         stdout=stdout,

@@ -45,6 +45,7 @@ GUEST_OS_FEATURES_ALPHA = ['MULTI_IP_SUBNET',
                            'UEFI_COMPATIBLE',
                            'VIRTIO_SCSI_MULTIQUEUE',
                            'WINDOWS',
+                           'GVNIC'
                           ]
 
 

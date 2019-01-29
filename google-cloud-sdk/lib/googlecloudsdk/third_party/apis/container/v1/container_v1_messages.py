@@ -600,8 +600,8 @@ class ContainerProjectsLocationsGetServerConfigRequest(_messages.Message):
   r"""A ContainerProjectsLocationsGetServerConfigRequest object.
 
   Fields:
-    name: The name (project and location) of the server config to get
-      Specified in the format 'projects/*/locations/*'.
+    name: The name (project and location) of the server config to get,
+      specified in the format 'projects/*/locations/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
@@ -805,8 +805,8 @@ class ContainerProjectsZonesGetServerconfigRequest(_messages.Message):
   r"""A ContainerProjectsZonesGetServerconfigRequest object.
 
   Fields:
-    name: The name (project and location) of the server config to get
-      Specified in the format 'projects/*/locations/*'.
+    name: The name (project and location) of the server config to get,
+      specified in the format 'projects/*/locations/*'.
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.

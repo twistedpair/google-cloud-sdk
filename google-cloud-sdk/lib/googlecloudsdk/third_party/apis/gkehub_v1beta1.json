@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/",
+  "documentationLink": "https://cloud.google.com/gke-on-prem/docs/latest/how-to/connect/registering-a-user-cluster",
   "protocol": "rest",
   "rootUrl": "https://gkehub.googleapis.com/",
   "servicePath": "",
@@ -245,9 +245,9 @@
           "description": "Endpoint information to reach this member.",
           "$ref": "MembershipEndpoint"
         },
-        "status": {
-          "description": "Output only. Status of the Membership resource.",
-          "$ref": "MembershipStatus"
+        "state": {
+          "description": "Output only. State of the Membership resource.",
+          "$ref": "MembershipState"
         },
         "createTime": {
           "description": "Output only. Timestamp for when the Membership was created.",
@@ -276,7 +276,7 @@
           "type": "string"
         },
         "resourceId": {
-          "description": "Unique per-project identification for this endpoint (in space and time) to\nbe provided by the user at creation time. While a self_link is optional for\nendpoints that may not be on GCP, all membership endpoints must provide a\nunique resource_id string. It is not mutable after creation. See\ngo\/membership-uid for more details.\nIt can be at the most 1000 characters in length.",
+          "description": "Unique per-project identification for this endpoint (in space and time) to\nbe provided by the user at creation time. While a self_link is optional for\nendpoints that may not be on GCP, all membership endpoints must provide a\nunique resource_id string. It is not mutable after creation. It can be at\nthe most 1000 characters in length.",
           "type": "string"
         },
         "oidcConfig": {
@@ -334,13 +334,13 @@
         }
       }
     },
-    "MembershipStatus": {
-      "id": "MembershipStatus",
-      "description": "Status of the Membership resource.",
+    "MembershipState": {
+      "id": "MembershipState",
+      "description": "State of the Membership resource.",
       "type": "object",
       "properties": {
         "code": {
-          "description": "Code indicating the status of the Membership resource.",
+          "description": "Code indicating the state of the Membership resource.",
           "enumDescriptions": [
             "Not set.",
             "CREATING indicates the cluster is being registered.",
@@ -361,16 +361,8 @@
           "description": "Human readable description of the issue.",
           "type": "string"
         },
-        "details": {
-          "description": "Structured information about the problem.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
         "updateTime": {
-          "description": "The last update time of this status by the controllers",
+          "description": "The last update time of this state by the controllers",
           "type": "string",
           "format": "google-datetime"
         }
@@ -655,7 +647,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `<field> <operator> <value>` where operators: `<`, `>`, `<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by status:\n   - Members in CREATING status.\n     status = CREATING",
+                          "description": "Lists the Memberships that match the filter expression. A filter expression\nfilters the resources listed in the response. The expression must be of\nthe form `<field> <operator> <value>` where operators: `<`, `>`, `<=`,\n`>=`,\n`!=`, `=`, `:` are supported (colon `:` represents a HAS operator which is\nroughly synonymous with equality). <field> can refer to a proto or JSON\nfield, or a synthetic field. Field names can be camelCase or snake_case.\n\nExamples:\n- Filter by name:\n  name = \"projects\/foo-proj\/locations\/global\/membership\/bar\n\n- Filter by labels:\n  - Resources that have a key called `foo`\n    labels.foo:*\n  - Resources that have a key called `foo` whose value is `bar`\n    labels.foo = bar\n\n - Filter by state:\n   - Members in CREATING state.\n     state = CREATING",
                           "location": "query",
                           "type": "string"
                         },
@@ -674,7 +666,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists Memberships in a given project and location.\nbecause we are hardcoding\n`locations\/global` in to the URL schema."
+                      "description": "Lists Memberships in a given project and location."
                     },
                     "get": {
                       "id": "gkehub.projects.locations.global.memberships.get",
@@ -732,7 +724,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Adds a new Membership.\nbecause we are hardcoding\n`locations\/global` in to the URL schema."
+                      "description": "Adds a new Membership."
                     },
                     "delete": {
                       "id": "gkehub.projects.locations.global.memberships.delete",

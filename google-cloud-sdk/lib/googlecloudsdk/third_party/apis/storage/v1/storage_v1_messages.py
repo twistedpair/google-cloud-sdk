@@ -151,14 +151,14 @@ class Bucket(_messages.Message):
     r"""The bucket's IAM configuration.
 
     Messages:
-      BucketPolicyOnlyValue: A BucketPolicyOnlyValue object.
+      BucketPolicyOnlyValue: The bucket's Bucket Policy Only configuration.
 
     Fields:
-      bucketPolicyOnly: A BucketPolicyOnlyValue attribute.
+      bucketPolicyOnly: The bucket's Bucket Policy Only configuration.
     """
 
     class BucketPolicyOnlyValue(_messages.Message):
-      r"""A BucketPolicyOnlyValue object.
+      r"""The bucket's Bucket Policy Only configuration.
 
       Fields:
         enabled: If set, access checks only use bucket-level IAM policies or
@@ -608,6 +608,33 @@ class ComposeRequest(_messages.Message):
   sourceObjects = _messages.MessageField('SourceObjectsValueListEntry', 3, repeated=True)
 
 
+class Expr(_messages.Message):
+  r"""Represents an expression text. Example: title: "User account presence"
+  description: "Determines whether the request has a user account" expression:
+  "size(request.user) > 0"
+
+  Fields:
+    description: An optional description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax. The application context of the containing message
+      determines which well-known feature set of CEL is supported.
+    kind: The kind of item this is. For storage, this is always storage#expr.
+      This field is ignored on input.
+    location: An optional string indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: An optional title for the expression, i.e. a short string
+      describing its purpose. This can be used e.g. in UIs which allow to
+      enter the expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  kind = _messages.StringField(3, default=u'storage#expr')
+  location = _messages.StringField(4)
+  title = _messages.StringField(5)
+
+
 class Notification(_messages.Message):
   r"""A subscription to receive Google PubSub notifications.
 
@@ -964,7 +991,10 @@ class Policy(_messages.Message):
     r"""A BindingsValueListEntry object.
 
     Fields:
-      condition: A extra_types.JsonValue attribute.
+      condition: The condition that is associated with this binding. NOTE: an
+        unsatisfied condition will not allow user access via current binding.
+        Different bindings, including their conditions, are examined
+        independently.
       members: A collection of identifiers for members who may assume the
         provided role. Recognized identifiers are as follows:   - allUsers - A
         special identifier that represents anyone on the internet; with or
@@ -1008,7 +1038,7 @@ class Policy(_messages.Message):
         entry on a bucket with the OWNER role.
     """
 
-    condition = _messages.MessageField('extra_types.JsonValue', 1)
+    condition = _messages.MessageField('Expr', 1)
     members = _messages.StringField(2, repeated=True)
     role = _messages.StringField(3)
 

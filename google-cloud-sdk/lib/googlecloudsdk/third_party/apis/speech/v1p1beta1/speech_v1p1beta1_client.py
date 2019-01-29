@@ -278,7 +278,7 @@ is SpeechOperationMetadata. Response type is Empty.
           }
 
     def List(self, request, global_params=None):
-      r"""List all log data stats associated with this consumer project.
+      r"""Lists all log data stats associated with requested project.
 
       Args:
         request: (SpeechProjectsLocationsLogDataStatsListRequest) input message
@@ -540,6 +540,38 @@ is the parent resource, without the operations collection id.
       super(SpeechV1p1beta1.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def LogData(self, request, global_params=None):
+      r"""Purges all log data associated with requested project. Operation response.
+type is google.protobuf.Empty.
+
+Since logs are stored by asynchronous writer process, buffered log data
+might still end up in storage, even after this call. To ensure all data is
+purged, call this method 3 days after last recognition call.
+
+      Args:
+        request: (SpeechProjectsLocationsLogDataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('LogData')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LogData.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data',
+        http_method=u'DELETE',
+        method_id=u'speech.projects.locations.log_data',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'bucketName'],
+        relative_path=u'v1p1beta1/{+parent}/log_data',
+        request_field='',
+        request_type_name=u'SpeechProjectsLocationsLogDataRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class ProjectsOperationsManualRecognitionTasksService(base_api.BaseApiService):
     """Service class for the projects_operations_manualRecognitionTasks resource."""

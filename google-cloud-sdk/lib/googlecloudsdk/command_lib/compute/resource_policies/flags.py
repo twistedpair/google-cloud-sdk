@@ -101,7 +101,7 @@ def AddCommonArgs(parser):
 def GetOnSourceDiskDeleteFlagMapper(messages):
   return arg_utils.ChoiceEnumMapper(
       '--on-source-disk-delete',
-      messages.ResourcePolicyBackupSchedulePolicyRetentionPolicy
+      messages.ResourcePolicySnapshotSchedulePolicyRetentionPolicy
       .OnSourceDiskDeleteValueValuesEnum,
       custom_mappings={
           'KEEP_AUTO_SNAPSHOTS': (
@@ -114,13 +114,12 @@ def GetOnSourceDiskDeleteFlagMapper(messages):
               'snapshots when the source disk is deleted.')
       },
       default=None,
-      help_str=
-      'Retention behavior of automatic snapshots in the event of source disk '
-      'deletion.')
+      help_str='Retention behavior of automatic snapshots in the event of '
+      'source disk deletion.')
 
 
-def AddBackupScheduleArgs(parser, messages):
-  """Adds flags specific to backup schedule resource policies."""
+def AddSnapshotScheduleArgs(parser, messages):
+  """Adds flags specific to snapshot schedule resource policies."""
   parser.add_argument(
       '--max-retention-days',
       required=True,

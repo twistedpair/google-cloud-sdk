@@ -765,8 +765,8 @@ class SourceProvenance(_messages.Message):
 
   Messages:
     FileHashesValue: Output only. Hash(es) of the build source, which can be
-      used to verify that the originalsource integrity was maintained in the
-      build. Note that `FileHashes` willonly be populated if `BuildOptions`
+      used to verify that the original source integrity was maintained in the
+      build. Note that `FileHashes` will only be populated if `BuildOptions`
       has requested a `SourceProvenanceHash`.  The keys to this map are file
       paths used as build source and the values contain the hash values for
       those files.  If the build source came in a single package such as a
@@ -775,13 +775,13 @@ class SourceProvenance(_messages.Message):
 
   Fields:
     fileHashes: Output only. Hash(es) of the build source, which can be used
-      to verify that the originalsource integrity was maintained in the build.
-      Note that `FileHashes` willonly be populated if `BuildOptions` has
-      requested a `SourceProvenanceHash`.  The keys to this map are file paths
-      used as build source and the values contain the hash values for those
-      files.  If the build source came in a single package such as a gzipped
-      tarfile (`.tar.gz`), the `FileHash` will be for the single path to that
-      file.
+      to verify that the original source integrity was maintained in the
+      build. Note that `FileHashes` will only be populated if `BuildOptions`
+      has requested a `SourceProvenanceHash`.  The keys to this map are file
+      paths used as build source and the values contain the hash values for
+      those files.  If the build source came in a single package such as a
+      gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path
+      to that file.
     resolvedRepoSource: A copy of the build's `source.repo_source`, if exists,
       with any revisions resolved.
     resolvedStorageSource: A copy of the build's `source.storage_source`, if
@@ -791,8 +791,8 @@ class SourceProvenance(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FileHashesValue(_messages.Message):
     r"""Output only. Hash(es) of the build source, which can be used to verify
-    that the originalsource integrity was maintained in the build. Note that
-    `FileHashes` willonly be populated if `BuildOptions` has requested a
+    that the original source integrity was maintained in the build. Note that
+    `FileHashes` will only be populated if `BuildOptions` has requested a
     `SourceProvenanceHash`.  The keys to this map are file paths used as build
     source and the values contain the hash values for those files.  If the
     build source came in a single package such as a gzipped tarfile

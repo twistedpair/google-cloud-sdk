@@ -6,7 +6,7 @@
   "canonicalName": "Speech",
   "version": "v1p1beta1",
   "revision": "0",
-  "title": "Cloud Speech API",
+  "title": "Cloud Speech-to-Text API",
   "description": "Converts audio to text by applying powerful neural network models.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -1022,7 +1022,73 @@
     },
     "projects": {
       "resources": {
+        "operations": {
+          "resources": {
+            "manualRecognitionTasks": {
+              "methods": {
+                "get": {
+                  "id": "speech.projects.operations.manualRecognitionTasks.get",
+                  "path": "v1p1beta1/{+name}",
+                  "flatPath": "v1p1beta1/projects/{projectsId}/operations/manualRecognitionTasks/{manualRecognitionTasksId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/operations\/manualRecognitionTasks\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
+                }
+              }
+            }
+          }
+        },
         "locations": {
+          "methods": {
+            "log_data": {
+              "id": "speech.projects.locations.log_data",
+              "path": "v1p1beta1/{+parent}/log_data",
+              "flatPath": "v1p1beta1/projects/{projectsId}/locations/{locationsId}/log_data",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "parent": {
+                  "description": "Required. Resource name of the parent. Has the format :-\n\"projects\/{project_id}\/locations\/{location_id}\"",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "type": "string"
+                },
+                "bucketName": {
+                  "description": "Optional. Bucket name to delete all logs from. If empty, all logs are\ndeleted.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "Operation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Purges all log data associated with requested project. Operation response\ntype is google.protobuf.Empty.\n\nSince logs are stored by asynchronous writer process, buffered log data\nmight still end up in storage, even after this call. To ensure all data is\npurged, call this method 3 days after last recognition call."
+            }
+          }
+          ,
           "resources": {
             "operations": {
               "methods": {
@@ -1119,7 +1185,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "List all log data stats associated with this consumer project."
+                  "description": "Lists all log data stats associated with requested project."
                 }
               }
             },
@@ -1440,39 +1506,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Performs asynchronous evaluation of the model: receive results\nvia the google.longrunning.Operations interface. After the operation is\ncompleted this returns either an `Operation.error` in case of error or\na `EvaluateModelResponse` with the evaluation results."
-                }
-              }
-            }
-          }
-        },
-        "operations": {
-          "resources": {
-            "manualRecognitionTasks": {
-              "methods": {
-                "get": {
-                  "id": "speech.projects.operations.manualRecognitionTasks.get",
-                  "path": "v1p1beta1/{+name}",
-                  "flatPath": "v1p1beta1/projects/{projectsId}/operations/manualRecognitionTasks/{manualRecognitionTasksId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation resource.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/operations\/manualRecognitionTasks\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the latest state of a long-running operation.  Clients can use this\nmethod to poll the operation result at intervals as recommended by the API\nservice."
                 }
               }
             }

@@ -134,49 +134,31 @@
     },
     "GoogleCloudDatacatalogV1alpha3CrawlerConfig": {
       "id": "GoogleCloudDatacatalogV1alpha3CrawlerConfig",
-      "description": "Information about the crawler configuration.",
+      "description": "Crawler configuration.",
       "type": "object",
       "properties": {
         "bucketScope": {
-          "description": "Bucket scope. Crawl buckets within the project that owns the crawler.",
+          "description": "Bucket scope. Directs the crawler to crawl specific buckets within the\nproject that owns the crawler.",
           "$ref": "GoogleCloudDatacatalogV1alpha3BucketScope"
         },
         "projectScope": {
-          "description": "Project scope. Crawl the project that owns the crawler.",
+          "description": "Project scope. Directs the crawler to crawl the buckets of the project\nthat owns the crawler.",
           "$ref": "GoogleCloudDatacatalogV1alpha3ParentProjectScope"
         },
         "organizationScope": {
-          "description": "Organization scope. Crawl the organization that owns the crawler.",
+          "description": "Organization scope. Directs the crawler to crawl the buckets of the\nprojects in the organization that owns the crawler.",
           "$ref": "GoogleCloudDatacatalogV1alpha3ParentOrganizationScope"
         },
-        "runOption": {
-          "enumDescriptions": [
-            "Unspecified run option.",
-            "Manual run option.",
-            "Scheduled run option."
-          ],
-          "type": "string",
-          "enum": [
-            "RUN_OPTION_UNSPECIFIED",
-            "MANUAL",
-            "SCHEDULED"
-          ]
+        "adHocRun": {
+          "description": "Ad-hoc option. User can choose this option for ad-hoc runs.",
+          "$ref": "GoogleCloudDatacatalogV1alpha3AdhocRun"
         },
-        "scheduledRunOption": {
-          "enumDescriptions": [
-            "Unspecified scheduled run option.",
-            "Daily scheduled run option.",
-            "Weekly scheduled run option."
-          ],
-          "type": "string",
-          "enum": [
-            "SCHEDULED_RUN_OPTION_UNSPECIFIED",
-            "DAILY",
-            "WEEKLY"
-          ]
+        "scheduledRun": {
+          "description": "Scheduled option. User can choose this option for scheduled runs.",
+          "$ref": "GoogleCloudDatacatalogV1alpha3ScheduledRun"
         },
         "bundleSpecs": {
-          "description": "The bundling specifications.",
+          "description": "The bundling specifications. Directs the crawler to bundle files into\nfilesets based on the bundling specifications.",
           "type": "array",
           "items": {
             "type": "string"
@@ -190,6 +172,7 @@
       "type": "object",
       "properties": {
         "buckets": {
+          "description": "The maximum number of buckets allowed is 1000.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDatacatalogV1alpha3BucketSpec"
@@ -222,6 +205,34 @@
       "properties": {
       }
     },
+    "GoogleCloudDatacatalogV1alpha3AdhocRun": {
+      "id": "GoogleCloudDatacatalogV1alpha3AdhocRun",
+      "description": "Configuration for ad-hoc runs.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3ScheduledRun": {
+      "id": "GoogleCloudDatacatalogV1alpha3ScheduledRun",
+      "description": "Configuration for scheduled runs.",
+      "type": "object",
+      "properties": {
+        "scheduledRunOption": {
+          "description": "Required. The scheduled run option of the crawler.",
+          "enumDescriptions": [
+            "Unspecified scheduled run option.",
+            "Daily scheduled run option.",
+            "Weekly scheduled run option."
+          ],
+          "type": "string",
+          "enum": [
+            "SCHEDULED_RUN_OPTION_UNSPECIFIED",
+            "DAILY",
+            "WEEKLY"
+          ]
+        }
+      }
+    },
     "GoogleCloudDatacatalogV1alpha3ListCrawlersResponse": {
       "id": "GoogleCloudDatacatalogV1alpha3ListCrawlersResponse",
       "description": "Response message for `ListCrawlers` API.",
@@ -246,6 +257,104 @@
       "type": "object",
       "properties": {
       }
+    },
+    "GoogleCloudDatacatalogV1alpha3RunCrawlerRequest": {
+      "id": "GoogleCloudDatacatalogV1alpha3RunCrawlerRequest",
+      "description": "Request to run a crawler manually.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3CrawlerRun": {
+      "id": "GoogleCloudDatacatalogV1alpha3CrawlerRun",
+      "description": "A run of the crawler.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The name of the crawler run.\nFor example, \"projects\/project1\/crawlers\/crawler1\/crawlerRuns\/042423713e9a\"",
+          "type": "string"
+        },
+        "runOption": {
+          "enumDescriptions": [
+            "Unspecified run option.",
+            "Ad-hoc run option.",
+            "Scheduled run option."
+          ],
+          "type": "string",
+          "enum": [
+            "RUN_OPTION_UNSPECIFIED",
+            "AD_HOC",
+            "SCHEDULED"
+          ]
+        },
+        "state": {
+          "description": "Output only. The state of the crawler run.",
+          "enumDescriptions": [
+            "Unspecified crawler run state.",
+            "This crawler run is waiting on resources to be ready.",
+            "This crawler run is running.",
+            "This crawler run failed.",
+            "This crawler run succeeded."
+          ],
+          "type": "string",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "RUNNING",
+            "FAILED",
+            "SUCCEEDED"
+          ]
+        },
+        "error": {
+          "description": "Output only. The error status of the crawler run. This field will be\npopulated only if the crawler run state is FAILED.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "The `Status` type defines a logical error model that is suitable for different\nprogramming environments, including REST APIs and RPC APIs. It is used by\n[gRPC](https:\/\/github.com\/grpc). The error model is designed to be:\n\n- Simple to use and understand for most users\n- Flexible enough to meet unexpected needs\n\n# Overview\n\nThe `Status` message contains three pieces of data: error code, error message,\nand error details. The error code should be an enum value of\ngoogle.rpc.Code, but it may accept additional error codes if needed.  The\nerror message should be a developer-facing English message that helps\ndevelopers *understand* and *resolve* the error. If a localized user-facing\nerror message is needed, put the localized message in the error details or\nlocalize it in the client. The optional error details may contain arbitrary\ninformation about the error. There is a predefined set of error detail types\nin the package `google.rpc` that can be used for common error conditions.\n\n# Language mapping\n\nThe `Status` message is the logical representation of the error model, but it\nis not necessarily the actual wire format. When the `Status` message is\nexposed in different client libraries and different wire protocols, it can be\nmapped differently. For example, it will likely be mapped to some exceptions\nin Java, but more likely mapped to some error codes in C.\n\n# Other uses\n\nThe error model and the `Status` message can be used in a variety of\nenvironments, either with or without APIs, to provide a\nconsistent developer experience across different environments.\n\nExample uses of this error model include:\n\n- Partial errors. If a service needs to return partial errors to the client,\n    it may embed the `Status` in the normal response to indicate the partial\n    errors.\n\n- Workflow errors. A typical workflow has multiple steps. Each step may\n    have a `Status` message for error reporting.\n\n- Batch operations. If a client uses batch request and batch response, the\n    `Status` message should be used directly inside batch response, one for\n    each error sub-response.\n\n- Asynchronous operations. If an API call embeds asynchronous operation\n    results in its response, the status of those operations should be\n    represented directly using the `Status` message.\n\n- Logging. If some API errors are stored in logs, the message `Status` could\n    be used directly after any stripping needed for security\/privacy reasons.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\ngoogle.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1alpha3ListCrawlerRunsResponse": {
+      "id": "GoogleCloudDatacatalogV1alpha3ListCrawlerRunsResponse",
+      "description": "Response to listing the runs from a crawler.",
+      "type": "object",
+      "properties": {
+        "crawlerRuns": {
+          "description": "The crawler runs from this crawler, it includes both currently running and\ncompleted runs.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDatacatalogV1alpha3CrawlerRun"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no\nmore results in the list.",
+          "type": "string"
+        }
+      }
     }
   },
   "resources": {
@@ -265,11 +374,6 @@
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
                   "type": "string"
-                },
-                "grantMetadataReadPermission": {
-                  "description": "Required. If this field is set to true, it will automatically grant\ncrawler service account storage.objectViewer role on the crawl buckets\nor storage.admin role on the crawl project or organization.",
-                  "location": "query",
-                  "type": "boolean"
                 }
               },
               "parameterOrder": [
@@ -284,7 +388,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Create a new crawler in a project. The request fails if the user does not\nhave permission to grant crawler service account on the designated data\nsource or the crawler (`parent`, crawlerId) exists."
+              "description": "Creates a new crawler in a project. The request fails if the crawler\n(`parent`, crawlerId) exists."
             },
             "get": {
               "id": "datacatalog.projects.crawlers.get",
@@ -318,7 +422,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource name.",
+                  "description": "Required. The parent resource name. Example: \"projects\/foo\".",
                   "location": "path",
                   "required": true,
                   "pattern": "^projects\/[^\/]+$",
@@ -405,6 +509,102 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Deletes a crawler in a project. The request fails if the crawler does\nnot exist."
+            },
+            "run": {
+              "id": "datacatalog.projects.crawlers.run",
+              "path": "v1alpha3/{+name}:run",
+              "flatPath": "v1alpha3/projects/{projectsId}/crawlers/{crawlersId}:run",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "Required. Resource name of the crawler resource.\nFor example, \"projects\/project1\/crawlers\/crawler1\".",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3RunCrawlerRequest"
+              },
+              "response": {
+                "$ref": "GoogleCloudDatacatalogV1alpha3CrawlerRun"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Runs a crawler will create and execute an ad-hoc crawler run.\nThe request fails if the crawler is already running."
+            }
+          }
+          ,
+          "resources": {
+            "crawlerRuns": {
+              "methods": {
+                "get": {
+                  "id": "datacatalog.projects.crawlers.crawlerRuns.get",
+                  "path": "v1alpha3/{+name}",
+                  "flatPath": "v1alpha3/projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns/{crawlerRunsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Resource name of the crawler run to retrieve.\nFor example, \"projects\/project1\/crawlers\/crawler1\/crawlerRuns\/run1\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+\/crawlerRuns\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1alpha3CrawlerRun"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets a particular run of the crawler."
+                },
+                "list": {
+                  "id": "datacatalog.projects.crawlers.crawlerRuns.list",
+                  "path": "v1alpha3/{+parent}/crawlerRuns",
+                  "flatPath": "v1alpha3/projects/{projectsId}/crawlers/{crawlersId}/crawlerRuns",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. Resource name of the parent crawler resource.\nFor example, \"projects\/project1\/crawlers\/crawler1\".",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/crawlers\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return. The default value for this field\nis 10. The maximum value for this field is 1000.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous list request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudDatacatalogV1alpha3ListCrawlerRunsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists crawler runs. This includes the currently running, pending and\ncompleted crawler runs."
+                }
+              }
             }
           }
         }

@@ -2510,6 +2510,10 @@
         "publishSummaryToCscc": {
           "description": "Publish summary to Cloud Security Command Center (Alpha).",
           "$ref": "GooglePrivacyDlpV2PublishSummaryToCscc"
+        },
+        "jobNotificationEmails": {
+          "description": "Enable email notification to project owners and editors on job\u2018s\ncompletion\/failure.",
+          "$ref": "GooglePrivacyDlpV2JobNotificationEmails"
         }
       }
     },
@@ -2568,6 +2572,13 @@
     "GooglePrivacyDlpV2PublishSummaryToCscc": {
       "id": "GooglePrivacyDlpV2PublishSummaryToCscc",
       "description": "Publish the result summary of a DlpJob to the Cloud Security\nCommand Center (CSCC Alpha).\nThis action is only available for projects which are parts of\nan organization and whitelisted for the alpha Cloud Security Command\nCenter.\nThe action will publish count of finding instances and their info types.\nThe summary of findings will be persisted in CSCC and are governed by CSCC\nservice-specific policy, see https:\/\/cloud.google.com\/terms\/service-terms\nOnly a single instance of this action can be specified.\nCompatible with: Inspect",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GooglePrivacyDlpV2JobNotificationEmails": {
+      "id": "GooglePrivacyDlpV2JobNotificationEmails",
+      "description": "Enable email notification to project owners and editors on jobs's\ncompletion\/failure.",
       "type": "object",
       "properties": {
       }

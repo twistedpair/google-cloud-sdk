@@ -249,6 +249,7 @@ class Block(_messages.Message):
       PICTURE: Image block.
       RULER: Horizontal/vertical line box.
       BARCODE: Barcode block.
+      KEY_VALUE_PAIR: A key-value pair block.
     """
     UNKNOWN = 0
     TEXT = 1
@@ -256,6 +257,7 @@ class Block(_messages.Message):
     PICTURE = 3
     RULER = 4
     BARCODE = 5
+    KEY_VALUE_PAIR = 6
 
   blockType = _messages.EnumField('BlockTypeValueValuesEnum', 1)
   boundingBox = _messages.MessageField('BoundingPoly', 2)
@@ -947,6 +949,7 @@ class GoogleCloudVisionV1p1beta1Block(_messages.Message):
       PICTURE: Image block.
       RULER: Horizontal/vertical line box.
       BARCODE: Barcode block.
+      KEY_VALUE_PAIR: A key-value pair block.
     """
     UNKNOWN = 0
     TEXT = 1
@@ -954,6 +957,7 @@ class GoogleCloudVisionV1p1beta1Block(_messages.Message):
     PICTURE = 3
     RULER = 4
     BARCODE = 5
+    KEY_VALUE_PAIR = 6
 
   blockType = _messages.EnumField('BlockTypeValueValuesEnum', 1)
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p1beta1BoundingPoly', 2)
@@ -2208,6 +2212,7 @@ class GoogleCloudVisionV1p2beta1Block(_messages.Message):
       PICTURE: Image block.
       RULER: Horizontal/vertical line box.
       BARCODE: Barcode block.
+      KEY_VALUE_PAIR: A key-value pair block.
     """
     UNKNOWN = 0
     TEXT = 1
@@ -2215,6 +2220,7 @@ class GoogleCloudVisionV1p2beta1Block(_messages.Message):
     PICTURE = 3
     RULER = 4
     BARCODE = 5
+    KEY_VALUE_PAIR = 6
 
   blockType = _messages.EnumField('BlockTypeValueValuesEnum', 1)
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p2beta1BoundingPoly', 2)
@@ -3509,6 +3515,7 @@ class GoogleCloudVisionV1p3beta1Block(_messages.Message):
       PICTURE: Image block.
       RULER: Horizontal/vertical line box.
       BARCODE: Barcode block.
+      KEY_VALUE_PAIR: A key-value pair block.
     """
     UNKNOWN = 0
     TEXT = 1
@@ -3516,6 +3523,7 @@ class GoogleCloudVisionV1p3beta1Block(_messages.Message):
     PICTURE = 3
     RULER = 4
     BARCODE = 5
+    KEY_VALUE_PAIR = 6
 
   blockType = _messages.EnumField('BlockTypeValueValuesEnum', 1)
   boundingBox = _messages.MessageField('GoogleCloudVisionV1p3beta1BoundingPoly', 2)
