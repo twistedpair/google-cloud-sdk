@@ -22,7 +22,6 @@ import itertools
 
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import exceptions
-from googlecloudsdk.api_lib.compute import filter_operands
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import actions
@@ -594,33 +593,6 @@ def _TranslateZonesFlag(args, resources, message=None):
   return filter_expr, scope_set
 
 
-def _TranslateZonesFilters(args, resources):
-  """Translates simple zone:( ... ) filters into scope set.
-
-  Args:
-    args: The argument namespace of BaseLister.
-    resources: resources.Registry, The resource registry
-
-  Returns:
-    A scope set for the request.
-  """
-  _, zones = filter_operands.GetFilterOperands().Rewrite(
-      args.filter, keys={'zone', 'zones'})
-  if zones:
-    return ZoneSet([
-        resources.Parse(
-            z,
-            params={'project': properties.VALUES.core.project.GetOrFail},
-            collection='compute.zones') for z in zones
-    ])
-  return AllScopes(
-      [resources.Parse(
-          properties.VALUES.core.project.GetOrFail(),
-          collection='compute.projects')],
-      zonal=True,
-      regional=False)
-
-
 def ParseZonalFlags(args, resources, message=None):
   """Make Frontend suitable for ZonalLister argument namespace.
 
@@ -641,7 +613,14 @@ def ParseZonalFlags(args, resources, message=None):
     filter_expr, scope_set = _TranslateZonesFlag(
         args, resources, message=message)
   else:
-    scope_set = _TranslateZonesFilters(args, resources)
+    scope_set = AllScopes(
+        [
+            resources.Parse(
+                properties.VALUES.core.project.GetOrFail(),
+                collection='compute.projects')
+        ],
+        zonal=True,
+        regional=False)
   return _Frontend(filter_expr, frontend.max_results, scope_set)
 
 

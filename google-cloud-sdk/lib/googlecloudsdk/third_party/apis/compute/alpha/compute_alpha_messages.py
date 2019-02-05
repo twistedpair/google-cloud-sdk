@@ -2068,6 +2068,80 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthenticationPolicy(_messages.Message):
+  r"""The authentication settings for the backend service.
+
+  Enums:
+    PrincipalBindingValueValuesEnum: Define whether peer or origin identity
+      should be used for principal. Default value is USE_PEER. If peer (or
+      origin) identity is not available, either because peer/origin
+      authentication is not defined, or failed, principal will be left unset.
+      In other words, binding rule does not affect the decision to accept or
+      reject request. This field can be set to one of the following: USE_PEER:
+      Principal will be set to the identity from peer authentication.
+      USE_ORIGIN: Principal will be set to the identity from origin
+      authentication.
+
+  Fields:
+    origins: List of authentication methods that can be used for origin
+      authentication. Similar to peers, these will be evaluated in order; the
+      first valid one will be used to set origin identity. If none of these
+      methods pass, the request will be rejected with authentication failed
+      error (401). Leave the list empty if origin authentication is not
+      required.
+    peers: List of authentication methods that can be used for peer
+      authentication. They will be evaluated in order; the first valid one
+      will be used to set peer identity. If none of these methods pass, the
+      request will be rejected with authentication failed error (401). Leave
+      the list empty if peer authentication is not required.
+    principalBinding: Define whether peer or origin identity should be used
+      for principal. Default value is USE_PEER. If peer (or origin) identity
+      is not available, either because peer/origin authentication is not
+      defined, or failed, principal will be left unset. In other words,
+      binding rule does not affect the decision to accept or reject request.
+      This field can be set to one of the following: USE_PEER: Principal will
+      be set to the identity from peer authentication. USE_ORIGIN: Principal
+      will be set to the identity from origin authentication.
+    serverTlsContext: Configures the mechanism to obtain server-side security
+      certificates and identity information.
+  """
+
+  class PrincipalBindingValueValuesEnum(_messages.Enum):
+    r"""Define whether peer or origin identity should be used for principal.
+    Default value is USE_PEER. If peer (or origin) identity is not available,
+    either because peer/origin authentication is not defined, or failed,
+    principal will be left unset. In other words, binding rule does not affect
+    the decision to accept or reject request. This field can be set to one of
+    the following: USE_PEER: Principal will be set to the identity from peer
+    authentication. USE_ORIGIN: Principal will be set to the identity from
+    origin authentication.
+
+    Values:
+      INVALID: <no description>
+      USE_ORIGIN: <no description>
+      USE_PEER: <no description>
+    """
+    INVALID = 0
+    USE_ORIGIN = 1
+    USE_PEER = 2
+
+  origins = _messages.MessageField('OriginAuthenticationMethod', 1, repeated=True)
+  peers = _messages.MessageField('PeerAuthenticationMethod', 2, repeated=True)
+  principalBinding = _messages.EnumField('PrincipalBindingValueValuesEnum', 3)
+  serverTlsContext = _messages.MessageField('TlsContext', 4)
+
+
+class AuthorizationConfig(_messages.Message):
+  r"""Authorization configuration provides service-level and method-level
+  access control for a service.
+
+  Fields:
+    policies: List of RbacPolicies.
+  """
+
+  policies = _messages.MessageField('RbacPolicy', 1, repeated=True)
+
+
 class AuthorizationLoggingOptions(_messages.Message):
   r"""Authorization-related information used by Cloud Audit Logging.
 
@@ -3128,6 +3202,27 @@ class BackendService(_messages.Message):
       will be used with internal or external load balancing. A backend service
       created for one type of load balancing cannot be used with the other.
       Possible values are INTERNAL and EXTERNAL.
+    LocalityLbPolicyValueValuesEnum: The load balancing algorithm used within
+      the scope of the locality. The possible values are:   - ROUND_ROBIN:
+      This is a simple policy in which each healthy backend is selected in
+      round robin order. This is the default.  - LEAST_REQUEST: An O(1)
+      algorithm which selects two random healthy hosts and picks the host
+      which has fewer active requests.  - RING_HASH: The ring/modulo hash load
+      balancer implements consistent hashing to backends. The algorithm has
+      the property that the addition/removal of a host from a set of N hosts
+      only affects 1/N of the requests.  - RANDOM: The load balancer selects a
+      random healthy host.  - ORIGINAL_DESTINATION: Backend host is selected
+      based on the client connection metadata, i.e., connections are opened to
+      the same address as the destination address of the incoming connection
+      before the connection was redirected to the load balancer.  - MAGLEV:
+      used as a drop in replacement for the ring hash load balancer. Maglev is
+      not as stable as ring hash but has faster table lookup build times and
+      host selection times. For more information about Maglev, refer to
+      https://ai.google/research/pubs/pub44824   This field is applicable to
+      either:   - A regional backend service with the service_protocol set to
+      HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
+      INTERNAL_MANAGED.  - A global backend service with the
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends.  Possible values are HTTP, HTTPS, TCP, and
       SSL. The default is HTTP.  For internal load balancing, the possible
@@ -3148,9 +3243,25 @@ class BackendService(_messages.Message):
       cloudFunctionBackend and backends[] must be empty if this is set.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService.
+    circuitBreakers: Settings controlling the volume of connections to a
+      backend service.  This field is applicable to either:   - A regional
+      backend service with the service_protocol set to HTTP, HTTPS, or HTTP2,
+      and load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
+      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     cloudFunctionBackend: Directs request to a cloud function.
       appEngineBackend and backends[] must be empty if this is set.
     connectionDraining: A ConnectionDraining attribute.
+    consistentHash: Consistent Hash-based load balancing can be used to
+      provide soft session affinity based on HTTP headers, cookies or other
+      properties. This load balancing policy is applicable only for HTTP
+      connections. The affinity to a particular destination host will be lost
+      when one or more hosts are added/removed from the destination service.
+      This field specifies parameters that control consistent hashing. This
+      field is only applicable when localityLbPolicy is set to MAGLEV or
+      RING_HASH.  This field is applicable to either:   - A regional backend
+      service with the service_protocol set to HTTP, HTTPS, or HTTP2, and
+      load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
+      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customRequestHeaders: Headers that the HTTP/S load balancer should add to
@@ -3182,6 +3293,27 @@ class BackendService(_messages.Message):
       with internal or external load balancing. A backend service created for
       one type of load balancing cannot be used with the other. Possible
       values are INTERNAL and EXTERNAL.
+    localityLbPolicy: The load balancing algorithm used within the scope of
+      the locality. The possible values are:   - ROUND_ROBIN: This is a simple
+      policy in which each healthy backend is selected in round robin order.
+      This is the default.  - LEAST_REQUEST: An O(1) algorithm which selects
+      two random healthy hosts and picks the host which has fewer active
+      requests.  - RING_HASH: The ring/modulo hash load balancer implements
+      consistent hashing to backends. The algorithm has the property that the
+      addition/removal of a host from a set of N hosts only affects 1/N of the
+      requests.  - RANDOM: The load balancer selects a random healthy host.  -
+      ORIGINAL_DESTINATION: Backend host is selected based on the client
+      connection metadata, i.e., connections are opened to the same address as
+      the destination address of the incoming connection before the connection
+      was redirected to the load balancer.  - MAGLEV: used as a drop in
+      replacement for the ring hash load balancer. Maglev is not as stable as
+      ring hash but has faster table lookup build times and host selection
+      times. For more information about Maglev, refer to
+      https://ai.google/research/pubs/pub44824   This field is applicable to
+      either:   - A regional backend service with the service_protocol set to
+      HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
+      INTERNAL_MANAGED.  - A global backend service with the
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     logConfig: This field denotes the logging options for the load balancer
       traffic served by this backend service. If logging is enabled, logs will
       be exported to Stackdriver.
@@ -3192,6 +3324,12 @@ class BackendService(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    outlierDetection: Settings controlling eviction of unhealthy hosts from
+      the load balancing pool. This field is applicable to either:   - A
+      regional backend service with the service_protocol set to HTTP, HTTPS,
+      or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.  - A global
+      backend service with the load_balancing_scheme set to
+      INTERNAL_SELF_MANAGED.
     port: Deprecated in favor of portName. The TCP port to connect on the
       backend. The default value is 80.  This cannot be used for internal load
       balancing.
@@ -3209,6 +3347,11 @@ class BackendService(_messages.Message):
       settable as a field in the request body.
     securityPolicy: [Output Only] The resource URL for the security policy
       associated with this backend service.
+    securitySettings: This field specifies the security policy that applies to
+      this backend service. This field is applicable to either:   - A regional
+      backend service with the service_protocol set to HTTP, HTTPS, or HTTP2,
+      and load_balancing_scheme set to INTERNAL_MANAGED.  - A global backend
+      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
@@ -3239,6 +3382,46 @@ class BackendService(_messages.Message):
     INTERNAL_MANAGED = 2
     INTERNAL_SELF_MANAGED = 3
     INVALID_LOAD_BALANCING_SCHEME = 4
+
+  class LocalityLbPolicyValueValuesEnum(_messages.Enum):
+    r"""The load balancing algorithm used within the scope of the locality.
+    The possible values are:   - ROUND_ROBIN: This is a simple policy in which
+    each healthy backend is selected in round robin order. This is the
+    default.  - LEAST_REQUEST: An O(1) algorithm which selects two random
+    healthy hosts and picks the host which has fewer active requests.  -
+    RING_HASH: The ring/modulo hash load balancer implements consistent
+    hashing to backends. The algorithm has the property that the
+    addition/removal of a host from a set of N hosts only affects 1/N of the
+    requests.  - RANDOM: The load balancer selects a random healthy host.  -
+    ORIGINAL_DESTINATION: Backend host is selected based on the client
+    connection metadata, i.e., connections are opened to the same address as
+    the destination address of the incoming connection before the connection
+    was redirected to the load balancer.  - MAGLEV: used as a drop in
+    replacement for the ring hash load balancer. Maglev is not as stable as
+    ring hash but has faster table lookup build times and host selection
+    times. For more information about Maglev, refer to
+    https://ai.google/research/pubs/pub44824   This field is applicable to
+    either:   - A regional backend service with the service_protocol set to
+    HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.
+    - A global backend service with the load_balancing_scheme set to
+    INTERNAL_SELF_MANAGED.
+
+    Values:
+      INVALID_LB_POLICY: <no description>
+      LEAST_REQUEST: <no description>
+      MAGLEV: <no description>
+      ORINGINAL_DESTINATION: <no description>
+      RANDOM: <no description>
+      RING_HASH: <no description>
+      ROUND_ROBIN: <no description>
+    """
+    INVALID_LB_POLICY = 0
+    LEAST_REQUEST = 1
+    MAGLEV = 2
+    ORINGINAL_DESTINATION = 3
+    RANDOM = 4
+    RING_HASH = 5
+    ROUND_ROBIN = 6
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""The protocol this BackendService uses to communicate with backends.
@@ -3273,42 +3456,51 @@ class BackendService(_messages.Message):
       CLIENT_IP_PORT_PROTO: <no description>
       CLIENT_IP_PROTO: <no description>
       GENERATED_COOKIE: <no description>
+      HEADER_FIELD: <no description>
+      HTTP_COOKIE: <no description>
       NONE: <no description>
     """
     CLIENT_IP = 0
     CLIENT_IP_PORT_PROTO = 1
     CLIENT_IP_PROTO = 2
     GENERATED_COOKIE = 3
-    NONE = 4
+    HEADER_FIELD = 4
+    HTTP_COOKIE = 5
+    NONE = 6
 
   affinityCookieTtlSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   appEngineBackend = _messages.MessageField('BackendServiceAppEngineBackend', 2)
   backends = _messages.MessageField('Backend', 3, repeated=True)
   cdnPolicy = _messages.MessageField('BackendServiceCdnPolicy', 4)
-  cloudFunctionBackend = _messages.MessageField('BackendServiceCloudFunctionBackend', 5)
-  connectionDraining = _messages.MessageField('ConnectionDraining', 6)
-  creationTimestamp = _messages.StringField(7)
-  customRequestHeaders = _messages.StringField(8, repeated=True)
-  description = _messages.StringField(9)
-  enableCDN = _messages.BooleanField(10)
-  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 11)
-  fingerprint = _messages.BytesField(12)
-  healthChecks = _messages.StringField(13, repeated=True)
-  iap = _messages.MessageField('BackendServiceIAP', 14)
-  id = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(16, default=u'compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 17)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 18)
-  name = _messages.StringField(19)
-  port = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(21)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 22)
-  region = _messages.StringField(23)
-  securityPolicy = _messages.StringField(24)
-  selfLink = _messages.StringField(25)
-  selfLinkWithId = _messages.StringField(26)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 27)
-  timeoutSec = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  circuitBreakers = _messages.MessageField('CircuitBreakers', 5)
+  cloudFunctionBackend = _messages.MessageField('BackendServiceCloudFunctionBackend', 6)
+  connectionDraining = _messages.MessageField('ConnectionDraining', 7)
+  consistentHash = _messages.MessageField('ConsistentHashLoadBalancerSettings', 8)
+  creationTimestamp = _messages.StringField(9)
+  customRequestHeaders = _messages.StringField(10, repeated=True)
+  description = _messages.StringField(11)
+  enableCDN = _messages.BooleanField(12)
+  failoverPolicy = _messages.MessageField('BackendServiceFailoverPolicy', 13)
+  fingerprint = _messages.BytesField(14)
+  healthChecks = _messages.StringField(15, repeated=True)
+  iap = _messages.MessageField('BackendServiceIAP', 16)
+  id = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(18, default=u'compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 19)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 20)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 21)
+  name = _messages.StringField(22)
+  outlierDetection = _messages.MessageField('OutlierDetection', 23)
+  port = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(25)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 26)
+  region = _messages.StringField(27)
+  securityPolicy = _messages.StringField(28)
+  securitySettings = _messages.MessageField('SecuritySettings', 29)
+  selfLink = _messages.StringField(30)
+  selfLinkWithId = _messages.StringField(31)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 32)
+  timeoutSec = _messages.IntegerField(33, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -3965,6 +4157,175 @@ class CacheKeyPolicy(_messages.Message):
   includeQueryString = _messages.BooleanField(3)
   queryStringBlacklist = _messages.StringField(4, repeated=True)
   queryStringWhitelist = _messages.StringField(5, repeated=True)
+
+
+class CallCredentials(_messages.Message):
+  r"""gRPC call credentials to access the SDS server.
+
+  Enums:
+    CallCredentialTypeValueValuesEnum: The type of call credentials to use for
+      GRPC requests to the SDS server. This field can be set to one of the
+      following: ACCESS_TOKEN: An access token is used as call credentials for
+      the SDS server. GCE_VM: The local GCE VM service account credentials are
+      used to access the SDS server. JWT_SERVICE_TOKEN: The user provisioned
+      service account credentials are used to access the SDS server.
+
+  Fields:
+    accessToken: The access token that is used as call credential for the SDS
+      server. This field is used only if callCredentialType is ACCESS_TOKEN.
+    callCredentialType: The type of call credentials to use for GRPC requests
+      to the SDS server. This field can be set to one of the following:
+      ACCESS_TOKEN: An access token is used as call credentials for the SDS
+      server. GCE_VM: The local GCE VM service account credentials are used to
+      access the SDS server. JWT_SERVICE_TOKEN: The user provisioned service
+      account credentials are used to access the SDS server.
+    fromPlugin: Custom authenticator credentials.
+    jwtServiceAccount: This service account credentials are used as call
+      credentials for the SDS server. This field is used only if
+      callCredentialType is JWT_SERVICE_ACCOUNT.
+  """
+
+  class CallCredentialTypeValueValuesEnum(_messages.Enum):
+    r"""The type of call credentials to use for GRPC requests to the SDS
+    server. This field can be set to one of the following: ACCESS_TOKEN: An
+    access token is used as call credentials for the SDS server. GCE_VM: The
+    local GCE VM service account credentials are used to access the SDS
+    server. JWT_SERVICE_TOKEN: The user provisioned service account
+    credentials are used to access the SDS server.
+
+    Values:
+      ACCESS_TOKEN: <no description>
+      GCE_VM: <no description>
+      INVALID: <no description>
+      JWT_SERVICE_ACCOUNT: <no description>
+    """
+    ACCESS_TOKEN = 0
+    GCE_VM = 1
+    INVALID = 2
+    JWT_SERVICE_ACCOUNT = 3
+
+  accessToken = _messages.StringField(1)
+  callCredentialType = _messages.EnumField('CallCredentialTypeValueValuesEnum', 2)
+  fromPlugin = _messages.MessageField('MetadataCredentialsFromPlugin', 3)
+  jwtServiceAccount = _messages.MessageField('ServiceAccountJwtAccessCredentials', 4)
+
+
+class ChannelCredentials(_messages.Message):
+  r"""gRPC channel credentials to access the SDS server.
+
+  Enums:
+    ChannelCredentialTypeValueValuesEnum: The channel credentials to access
+      the SDS server. This field can be set to one of the following:
+      CERTIFICATES: Use TLS certificates to access the SDS server. GCE_VM: Use
+      local GCE VM credentials to access the SDS server.
+
+  Fields:
+    certificates: The call credentials to access the SDS server.
+    channelCredentialType: The channel credentials to access the SDS server.
+      This field can be set to one of the following: CERTIFICATES: Use TLS
+      certificates to access the SDS server. GCE_VM: Use local GCE VM
+      credentials to access the SDS server.
+  """
+
+  class ChannelCredentialTypeValueValuesEnum(_messages.Enum):
+    r"""The channel credentials to access the SDS server. This field can be
+    set to one of the following: CERTIFICATES: Use TLS certificates to access
+    the SDS server. GCE_VM: Use local GCE VM credentials to access the SDS
+    server.
+
+    Values:
+      CERTIFICATES: <no description>
+      GCE_VM: <no description>
+      INVALID: <no description>
+    """
+    CERTIFICATES = 0
+    GCE_VM = 1
+    INVALID = 2
+
+  certificates = _messages.MessageField('TlsCertificatePaths', 1)
+  channelCredentialType = _messages.EnumField('ChannelCredentialTypeValueValuesEnum', 2)
+
+
+class CircuitBreakers(_messages.Message):
+  r"""Settings controlling the volume of connections to a backend service.
+
+  Fields:
+    connectTimeout: The timeout for new network connections to hosts.
+    maxConnections: The maximum number of connections to the backend cluster.
+      If not specified, the default is 1024.
+    maxPendingRequests: The maximum number of pending requests allowed to the
+      backend cluster. If not specified, the default is 1024.
+    maxRequests: The maximum number of parallel requests that allowed to the
+      backend cluster. If not specified, the default is 1024.
+    maxRequestsPerConnection: Maximum requests for a single backend
+      connection. This parameter is respected by both the HTTP/1.1 and HTTP/2
+      implementations. If not specified, there is no limit. Setting this
+      parameter to 1 will effectively disable keep alive.
+    maxRetries: The maximum number of parallel retries allowed to the backend
+      cluster. If not specified, the default is 3.
+  """
+
+  connectTimeout = _messages.MessageField('Duration', 1)
+  maxConnections = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxPendingRequests = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxRequests = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxRequestsPerConnection = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maxRetries = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
+class ClientTlsSettings(_messages.Message):
+  r"""The client side authentication settings for connection originating from
+  the backend service.
+
+  Enums:
+    ModeValueValuesEnum: Indicates whether connections to this port should be
+      secured using TLS. The value of this field determines how TLS is
+      enforced. This can be set to one of the following values: DISABLE: Do
+      not setup a TLS connection to the backends. SIMPLE: Originate a TLS
+      connection to the backends. MUTUAL: Secure connections to the backends
+      using mutual TLS by presenting client certificates for authentication.
+
+  Fields:
+    clientTlsContext: Configures the mechanism to obtain client-side security
+      certificates and identity information. This field is only applicable
+      when mode is set to MUTUAL.
+    mode: Indicates whether connections to this port should be secured using
+      TLS. The value of this field determines how TLS is enforced. This can be
+      set to one of the following values: DISABLE: Do not setup a TLS
+      connection to the backends. SIMPLE: Originate a TLS connection to the
+      backends. MUTUAL: Secure connections to the backends using mutual TLS by
+      presenting client certificates for authentication.
+    sni: SNI string to present to the server during TLS handshake. This field
+      is applicable only when mode is SIMPLE or MUTUAL.
+    subjectAltNames: A list of alternate names to verify the subject identity
+      in the certificate.If specified, the proxy will verify that the server
+      certificate's subject alt name matches one of the specified values. This
+      field is applicable only when mode is SIMPLE or MUTUAL.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Indicates whether connections to this port should be secured using
+    TLS. The value of this field determines how TLS is enforced. This can be
+    set to one of the following values: DISABLE: Do not setup a TLS connection
+    to the backends. SIMPLE: Originate a TLS connection to the backends.
+    MUTUAL: Secure connections to the backends using mutual TLS by presenting
+    client certificates for authentication.
+
+    Values:
+      DISABLE: <no description>
+      INVALID: <no description>
+      MUTUAL: <no description>
+      SIMPLE: <no description>
+    """
+    DISABLE = 0
+    INVALID = 1
+    MUTUAL = 2
+    SIMPLE = 3
+
+  clientTlsContext = _messages.MessageField('TlsContext', 1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  sni = _messages.StringField(3)
+  subjectAltNames = _messages.StringField(4, repeated=True)
 
 
 class Commitment(_messages.Message):
@@ -20478,6 +20839,43 @@ class ConnectionDraining(_messages.Message):
   drainingTimeoutSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class ConsistentHashLoadBalancerSettings(_messages.Message):
+  r"""This message defines settings for a consistent hash style load balancer.
+
+  Fields:
+    httpCookie: Hash is based on HTTP Cookie. This field describes a HTTP
+      cookie that will be used as the hash key for the consistent hash load
+      balancer. If the cookie is not present, it will be generated. This field
+      is applicable if the sessionAffinity is set to HTTP_COOKIE.
+    httpHeaderName: The hash based on the value of the specified header field.
+      This field is applicable if the sessionAffinity is set to HEADER_FIELD.
+    minimumRingSize: The minimum number of virtual nodes to use for the hash
+      ring. Defaults to 1024. Larger ring sizes result in more granular load
+      distributions. If the number of hosts in the load balancing pool is
+      larger than the ring size, each host will be assigned a single virtual
+      node.
+  """
+
+  httpCookie = _messages.MessageField('ConsistentHashLoadBalancerSettingsHttpCookie', 1)
+  httpHeaderName = _messages.StringField(2)
+  minimumRingSize = _messages.IntegerField(3)
+
+
+class ConsistentHashLoadBalancerSettingsHttpCookie(_messages.Message):
+  r"""The information about the HTTP Cookie on which the hash function is
+  based for load balancing policies that use a consistent hash.
+
+  Fields:
+    name: Name of the cookie.
+    path: Path to set for the cookie.
+    ttl: Lifetime of the cookie.
+  """
+
+  name = _messages.StringField(1)
+  path = _messages.StringField(2)
+  ttl = _messages.MessageField('Duration', 3)
+
+
 class CorsPolicy(_messages.Message):
   r"""The specification for allowing client side cross-origin requests. Please
   see W3C Recommendation for Cross Origin Resource Sharing
@@ -23415,6 +23813,20 @@ class GlobalSetPolicyRequest(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   policy = _messages.MessageField('Policy', 3)
+
+
+class GrpcServiceConfig(_messages.Message):
+  r"""gRPC config to access the SDS server.
+
+  Fields:
+    callCredentials: The call credentials to access the SDS server.
+    channelCredentials: The channel credentials to access the SDS server.
+    targetUri: The target URI of the SDS server.
+  """
+
+  callCredentials = _messages.MessageField('CallCredentials', 1)
+  channelCredentials = _messages.MessageField('ChannelCredentials', 2)
+  targetUri = _messages.StringField(3)
 
 
 class GuestAttributes(_messages.Message):
@@ -30272,6 +30684,55 @@ class IpOwnerList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class Jwt(_messages.Message):
+  r"""JWT configuration for origin authentication.
+
+  Fields:
+    audiences: A JWT containing any of these audiences will be accepted. The
+      service name will be accepted if audiences is empty. Examples:
+      bookstore_android.apps.googleusercontent.com,
+      bookstore_web.apps.googleusercontent.com
+    issuer: Identifies the issuer that issued the JWT, which is usually a URL
+      or an email address. Examples: https://securetoken.google.com,
+      1234567-compute@developer.gserviceaccount.com
+    jwksPublicKeys: The provider?s public key set to validate the signature of
+      the JWT.
+    jwtHeaders: jwt_headers and jwt_params define where to extract the JWT
+      from an HTTP request. If no explicit location is specified, the
+      following default locations are tried in order:  1. The Authorization
+      header using the Bearer schema. See `here `_. Example:  Authorization:
+      Bearer .  2. `access_token` query parameter. See `this `_  Multiple JWTs
+      can be verified for a request. Each JWT has to be extracted from the
+      locations its issuer specified or from the default locations.  This
+      field is set if JWT is sent in a request header. This field specifies
+      the header name. For example, if `header=x-goog-iap-jwt-assertion`, the
+      header format will be x-goog-iap-jwt-assertion: .
+    jwtParams: This field is set if JWT is sent in a query parameter. This
+      field specifies the query parameter name. For example, if jwt_params[0]
+      is jwt_token, the JWT format in the query parameter is /path?jwt_token=.
+  """
+
+  audiences = _messages.StringField(1, repeated=True)
+  issuer = _messages.StringField(2)
+  jwksPublicKeys = _messages.StringField(3)
+  jwtHeaders = _messages.MessageField('JwtHeader', 4, repeated=True)
+  jwtParams = _messages.StringField(5, repeated=True)
+
+
+class JwtHeader(_messages.Message):
+  r"""This message specifies a header location to extract JWT token.
+
+  Fields:
+    name: The HTTP header name.
+    valuePrefix: The value prefix. The value format is "value_prefix" For
+      example, for "Authorization: Bearer ", value_prefix="Bearer " with a
+      space at the end.
+  """
+
+  name = _messages.StringField(1)
+  valuePrefix = _messages.StringField(2)
+
+
 class License(_messages.Message):
   r"""A license resource.
 
@@ -31637,6 +32098,19 @@ class Metadata(_messages.Message):
   kind = _messages.StringField(3, default=u'compute#metadata')
 
 
+class MetadataCredentialsFromPlugin(_messages.Message):
+  r"""Custom authenticator credentials.
+
+  Fields:
+    name: Plugin name.
+    structConfig: A text proto that conforms to a Struct type definition
+      interpreted by the plugin.
+  """
+
+  name = _messages.StringField(1)
+  structConfig = _messages.StringField(2)
+
+
 class MetadataFilter(_messages.Message):
   r"""Opaque filter criteria used by loadbalancers to restrict routing
   configuration to a limited set of loadbalancing proxies. Proxies and
@@ -31707,6 +32181,42 @@ class MetadataFilterLabelMatch(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class MutualTls(_messages.Message):
+  r"""Configuration for the mutual Tls mode for peer authentication.
+
+  Enums:
+    ModeValueValuesEnum: Specifies if the server TLS is configured to be
+      strict or permissive. This field can be set to one of the following:
+      STRICT: Client certificate must be presented, connection is in TLS.
+      PERMISSIVE: Client certificate can be omitted, connection can be either
+      plaintext or TLS.
+
+  Fields:
+    mode: Specifies if the server TLS is configured to be strict or
+      permissive. This field can be set to one of the following: STRICT:
+      Client certificate must be presented, connection is in TLS. PERMISSIVE:
+      Client certificate can be omitted, connection can be either plaintext or
+      TLS.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Specifies if the server TLS is configured to be strict or permissive.
+    This field can be set to one of the following: STRICT: Client certificate
+    must be presented, connection is in TLS. PERMISSIVE: Client certificate
+    can be omitted, connection can be either plaintext or TLS.
+
+    Values:
+      INVALID: <no description>
+      PERMISSIVE: <no description>
+      STRICT: <no description>
+    """
+    INVALID = 0
+    PERMISSIVE = 1
+    STRICT = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
 
 
 class NamedPort(_messages.Message):
@@ -35148,6 +35658,79 @@ class OperationsScopedList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 2)
 
 
+class OriginAuthenticationMethod(_messages.Message):
+  r"""Configuration for the origin authentication method.
+
+  Fields:
+    jwt: A Jwt attribute.
+  """
+
+  jwt = _messages.MessageField('Jwt', 1)
+
+
+class OutlierDetection(_messages.Message):
+  r"""Settings controlling eviction of unhealthy hosts from the load balancing
+  pool.
+
+  Fields:
+    baseEjectionTime: The base time that a host is ejected for. The real time
+      is equal to the base time multiplied by the number of times the host has
+      been ejected. Defaults to 30000ms or 30s.
+    consecutiveErrors: Number of errors before a host is ejected from the
+      connection pool. When the backend host is accessed over HTTP, a 5xx
+      return code qualifies as an error. Defaults to 5.
+    consecutiveGatewayFailure: The number of consecutive gateway failures
+      (502, 503, 504 status or connection errors that are mapped to one of
+      those status codes) before a consecutive gateway failure ejection
+      occurs. Defaults to 5.
+    enforcingConsecutiveErrors: The percentage chance that a host will be
+      actually ejected when an outlier status is detected through consecutive
+      5xx. This setting can be used to disable ejection or to ramp it up
+      slowly. Defaults to 100.
+    enforcingConsecutiveGatewayFailure: The percentage chance that a host will
+      be actually ejected when an outlier status is detected through
+      consecutive gateway failures. This setting can be used to disable
+      ejection or to ramp it up slowly. Defaults to 0.
+    enforcingSuccessRate: The percentage chance that a host will be actually
+      ejected when an outlier status is detected through success rate
+      statistics. This setting can be used to disable ejection or to ramp it
+      up slowly. Defaults to 100.
+    interval: Time interval between ejection sweep analysis. This can result
+      in both new ejections as well as hosts being returned to service.
+      Defaults to 10 seconds.
+    maxEjectionPercent: Maximum percentage of hosts in the load balancing pool
+      for the backend service that can be ejected. Defaults to 10%.
+    successRateMinimumHosts: The number of hosts in a cluster that must have
+      enough request volume to detect success rate outliers. If the number of
+      hosts is less than this setting, outlier detection via success rate
+      statistics is not performed for any host in the cluster. Defaults to 5.
+    successRateRequestVolume: The minimum number of total requests that must
+      be collected in one interval (as defined by the interval duration above)
+      to include this host in success rate based outlier detection. If the
+      volume is lower than this setting, outlier detection via success rate
+      statistics is not performed for that host. Defaults to 100.
+    successRateStdevFactor: This factor is used to determine the ejection
+      threshold for success rate outlier ejection. The ejection threshold is
+      the difference between the mean success rate, and the product of this
+      factor and the standard deviation of the mean success rate: mean -
+      (stdev * success_rate_stdev_factor). This factor is divided by a
+      thousand to get a double. That is, if the desired factor is 1.9, the
+      runtime value should be 1900. Defaults to 1900.
+  """
+
+  baseEjectionTime = _messages.MessageField('Duration', 1)
+  consecutiveErrors = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  consecutiveGatewayFailure = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  enforcingConsecutiveErrors = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  enforcingConsecutiveGatewayFailure = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  enforcingSuccessRate = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  interval = _messages.MessageField('Duration', 7)
+  maxEjectionPercent = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  successRateMinimumHosts = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  successRateRequestVolume = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  successRateStdevFactor = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+
+
 class PathMatcher(_messages.Message):
   r"""A matcher for the path portion of the URL. The BackendService from the
   longest-matched rule will serve the URL. If no rule was matched, the default
@@ -35249,6 +35832,16 @@ class PathRule(_messages.Message):
   urlRedirect = _messages.MessageField('HttpRedirectAction', 4)
 
 
+class PeerAuthenticationMethod(_messages.Message):
+  r"""Configuration for the peer authentication method.
+
+  Fields:
+    mtls: Set if mTLS is used for peer authentication.
+  """
+
+  mtls = _messages.MessageField('MutualTls', 1)
+
+
 class PerInstanceConfig(_messages.Message):
   r"""A PerInstanceConfig object.
 
@@ -35278,6 +35871,48 @@ class PerInstanceConfig(_messages.Message):
   name = _messages.StringField(3)
   override = _messages.MessageField('ManagedInstanceOverride', 4)
   preservedState = _messages.MessageField('PreservedState', 5)
+
+
+class Permission(_messages.Message):
+  r"""All fields defined in a permission are ANDed.
+
+  Fields:
+    constraints: Extra custom constraints. The constraints are ANDed together.
+    hosts: Used in Ingress or Egress Gateway cases to specify hosts that the
+      policy applies to. Exact match, prefix match, and suffix match are
+      supported.
+    methods: HTTP method.
+    notHosts: Negate of hosts. Specifies exclusions.
+    notMethods: Negate of methods. Specifies exclusions.
+    notPaths: Negate of paths. Specifies exclusions.
+    notPorts: Negate of ports. Specifies exclusions.
+    paths: HTTP request paths or gRPC methods. Exact match, prefix match, and
+      suffix match are supported.
+    ports: Port names or numbers.
+  """
+
+  constraints = _messages.MessageField('PermissionConstraint', 1, repeated=True)
+  hosts = _messages.StringField(2, repeated=True)
+  methods = _messages.StringField(3, repeated=True)
+  notHosts = _messages.StringField(4, repeated=True)
+  notMethods = _messages.StringField(5, repeated=True)
+  notPaths = _messages.StringField(6, repeated=True)
+  notPorts = _messages.StringField(7, repeated=True)
+  paths = _messages.StringField(8, repeated=True)
+  ports = _messages.StringField(9, repeated=True)
+
+
+class PermissionConstraint(_messages.Message):
+  r"""Custom constraint that specifies a key and a list of allowed values for
+  Istio attributes.
+
+  Fields:
+    key: Key of the constraint.
+    values: A list of allowed values.
+  """
+
+  key = _messages.StringField(1)
+  values = _messages.StringField(2, repeated=True)
 
 
 class Policy(_messages.Message):
@@ -35461,6 +36096,70 @@ class PreservedStatePreservedDisk(_messages.Message):
   autoDelete = _messages.EnumField('AutoDeleteValueValuesEnum', 1)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
   source = _messages.StringField(3)
+
+
+class Principal(_messages.Message):
+  r"""All fields defined in a principal are ANDed.
+
+  Messages:
+    PropertiesValue: A map of Istio attribute to expected values. Exact match,
+      prefix match, and suffix match are supported for values. For example,
+      `request.headers[version]: ?v1?`. The properties are ANDed together.
+
+  Fields:
+    condition: An expression to specify custom condition.
+    groups: The groups the principal belongs to. Exact match, prefix match,
+      and suffix match are supported.
+    ips: IPv4 or IPv6 address or range (In CIDR format)
+    namespaces: The namespaces. Exact match, prefix match, and suffix match
+      are supported.
+    notGroups: Negate of groups. Specifies exclusions.
+    notIps: Negate of IPs. Specifies exclusions.
+    notNamespaces: Negate of namespaces. Specifies exclusions.
+    notUsers: Negate of users. Specifies exclusions.
+    properties: A map of Istio attribute to expected values. Exact match,
+      prefix match, and suffix match are supported for values. For example,
+      `request.headers[version]: ?v1?`. The properties are ANDed together.
+    users: The user names/IDs or service accounts. Exact match, prefix match,
+      and suffix match are supported.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""A map of Istio attribute to expected values. Exact match, prefix
+    match, and suffix match are supported for values. For example,
+    `request.headers[version]: ?v1?`. The properties are ANDed together.
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  condition = _messages.StringField(1)
+  groups = _messages.StringField(2, repeated=True)
+  ips = _messages.StringField(3, repeated=True)
+  namespaces = _messages.StringField(4, repeated=True)
+  notGroups = _messages.StringField(5, repeated=True)
+  notIps = _messages.StringField(6, repeated=True)
+  notNamespaces = _messages.StringField(7, repeated=True)
+  notUsers = _messages.StringField(8, repeated=True)
+  properties = _messages.MessageField('PropertiesValue', 9)
+  users = _messages.StringField(10, repeated=True)
 
 
 class Project(_messages.Message):
@@ -35817,6 +36516,20 @@ class Quota(_messages.Message):
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
   owner = _messages.StringField(3)
   usage = _messages.FloatField(4)
+
+
+class RbacPolicy(_messages.Message):
+  r"""A RbacPolicy object.
+
+  Fields:
+    name: Name of the RbacPolicy.
+    permissions: The list of permissions.
+    principals: The list of principals.
+  """
+
+  name = _messages.StringField(1)
+  permissions = _messages.MessageField('Permission', 2, repeated=True)
+  principals = _messages.MessageField('Principal', 3, repeated=True)
 
 
 class Reference(_messages.Message):
@@ -39496,6 +40209,16 @@ class SchedulingNodeAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class SdsConfig(_messages.Message):
+  r"""The configuration to access the SDS server.
+
+  Fields:
+    grpcServiceConfig: The configuration to access the SDS server over GRPC.
+  """
+
+  grpcServiceConfig = _messages.MessageField('GrpcServiceConfig', 1)
+
+
 class SecurityPoliciesListPreconfiguredExpressionSetsResponse(_messages.Message):
   r"""A SecurityPoliciesListPreconfiguredExpressionSetsResponse object.
 
@@ -39912,6 +40635,26 @@ class SecurityPolicyRuleMatcherConfigDestinationPort(_messages.Message):
   ports = _messages.StringField(2, repeated=True)
 
 
+class SecuritySettings(_messages.Message):
+  r"""The authentication and authorization settings for a BackendService.
+
+  Fields:
+    authenticationPolicy: Authentication policy defines what authentication
+      methods can be accepted on backends, and if authenticated, which
+      method/certificate will set the request principal.
+    authorizationConfig: Authorization config defines the Role Based Access
+      Control (RBAC) config.
+    clientTlsSettings: TLS Settings for the backend service.
+    serverSettingsSelector: The listener config of the XDS client is generated
+      if the selector matches the client.
+  """
+
+  authenticationPolicy = _messages.MessageField('AuthenticationPolicy', 1)
+  authorizationConfig = _messages.MessageField('AuthorizationConfig', 2)
+  clientTlsSettings = _messages.MessageField('ClientTlsSettings', 3)
+  serverSettingsSelector = _messages.MessageField('ServerSecuritySettingsSelector', 4)
+
+
 class SerialPortOutput(_messages.Message):
   r"""An instance's serial console output.
 
@@ -39961,6 +40704,64 @@ class ServerBinding(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
+class ServerSecuritySettingsSelector(_messages.Message):
+  r"""A selector associated with the SecuritySettings. If the labels and port
+  in this selector match the Envoy's label and port, the server side
+  authentication and authorization settings are applied to the Envoy.
+
+  Fields:
+    labelMatches: The labels associated with the XDS client.
+    port: The listener port of the XDS client.
+  """
+
+  labelMatches = _messages.MessageField('MetadataFilterLabelMatch', 1, repeated=True)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class ServerTlsSettings(_messages.Message):
+  r"""The TLS settings for the server.
+
+  Enums:
+    TlsModeValueValuesEnum: Indicates whether connections should be secured
+      using TLS. The value of this field determines how TLS is enforced. This
+      field can be set to one of the following:   - SIMPLE Secure connections
+      with standard TLS semantics.   - MUTUAL Secure connections to the
+      backends using mutual TLS by presenting client certificates for
+      authentication.
+
+  Fields:
+    proxyTlsContext: Configures the mechanism to obtain security certificates
+      and identity information.
+    subjectAltNames: A list of alternate names to verify the subject identity
+      in the certificate presented by the client.
+    tlsMode: Indicates whether connections should be secured using TLS. The
+      value of this field determines how TLS is enforced. This field can be
+      set to one of the following:   - SIMPLE Secure connections with standard
+      TLS semantics.   - MUTUAL Secure connections to the backends using
+      mutual TLS by presenting client certificates for authentication.
+  """
+
+  class TlsModeValueValuesEnum(_messages.Enum):
+    r"""Indicates whether connections should be secured using TLS. The value
+    of this field determines how TLS is enforced. This field can be set to one
+    of the following:   - SIMPLE Secure connections with standard TLS
+    semantics.   - MUTUAL Secure connections to the backends using mutual TLS
+    by presenting client certificates for authentication.
+
+    Values:
+      INVALID: <no description>
+      MUTUAL: <no description>
+      SIMPLE: <no description>
+    """
+    INVALID = 0
+    MUTUAL = 1
+    SIMPLE = 2
+
+  proxyTlsContext = _messages.MessageField('TlsContext', 1)
+  subjectAltNames = _messages.StringField(2, repeated=True)
+  tlsMode = _messages.EnumField('TlsModeValueValuesEnum', 3)
+
+
 class ServiceAccount(_messages.Message):
   r"""A service account.
 
@@ -39971,6 +40772,18 @@ class ServiceAccount(_messages.Message):
 
   email = _messages.StringField(1)
   scopes = _messages.StringField(2, repeated=True)
+
+
+class ServiceAccountJwtAccessCredentials(_messages.Message):
+  r"""JWT credentials for a service account.
+
+  Fields:
+    jsonKey: Service account key.
+    tokenLifetimeSeconds: The token lifetime seconds.
+  """
+
+  jsonKey = _messages.StringField(1)
+  tokenLifetimeSeconds = _messages.IntegerField(2)
 
 
 class ShieldedInstanceConfig(_messages.Message):
@@ -41256,6 +42069,9 @@ class SslPolicy(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    tlsSettings: Security settings for the proxy. This field is only
+      applicable to a global backend service with the loadBalancingScheme set
+      to INTERNAL_SELF_MANAGED.
     warnings: [Output Only] If potential misconfigurations are detected for
       this SSL policy, this field will be populated with warning messages.
   """
@@ -41399,7 +42215,8 @@ class SslPolicy(_messages.Message):
   profile = _messages.EnumField('ProfileValueValuesEnum', 10)
   selfLink = _messages.StringField(11)
   selfLinkWithId = _messages.StringField(12)
-  warnings = _messages.MessageField('WarningsValueListEntry', 13, repeated=True)
+  tlsSettings = _messages.MessageField('ServerTlsSettings', 13)
+  warnings = _messages.MessageField('WarningsValueListEntry', 14, repeated=True)
 
 
 class SslPolicyReference(_messages.Message):
@@ -42565,6 +43382,9 @@ class TargetHttpProxy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    proxyBind: This field only applies when the loadBalancingScheme is
+      INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP
+      address specified by the forwarding rule. Default is false.
     region: [Output Only] URL of the region where the regional Target HTTP
       Proxy resides. This field is not applicable to global Target HTTP
       Proxies.
@@ -42580,10 +43400,11 @@ class TargetHttpProxy(_messages.Message):
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(4, default=u'compute#targetHttpProxy')
   name = _messages.StringField(5)
-  region = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  selfLinkWithId = _messages.StringField(8)
-  urlMap = _messages.StringField(9)
+  proxyBind = _messages.BooleanField(6)
+  region = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  selfLinkWithId = _messages.StringField(9)
+  urlMap = _messages.StringField(10)
 
 
 class TargetHttpProxyAggregatedList(_messages.Message):
@@ -43045,6 +43866,9 @@ class TargetHttpsProxy(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    proxyBind: This field only applies when the loadBalancingScheme is
+      INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP
+      address specified by the forwarding rule. Default is false.
     quicOverride: Specifies the QUIC override policy for this TargetHttpsProxy
       resource. This determines whether the load balancer will attempt to
       negotiate QUIC with clients or not. Can specify one of NONE, ENABLE, or
@@ -43095,13 +43919,14 @@ class TargetHttpsProxy(_messages.Message):
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(4, default=u'compute#targetHttpsProxy')
   name = _messages.StringField(5)
-  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 6)
-  region = _messages.StringField(7)
-  selfLink = _messages.StringField(8)
-  selfLinkWithId = _messages.StringField(9)
-  sslCertificates = _messages.StringField(10, repeated=True)
-  sslPolicy = _messages.StringField(11)
-  urlMap = _messages.StringField(12)
+  proxyBind = _messages.BooleanField(6)
+  quicOverride = _messages.EnumField('QuicOverrideValueValuesEnum', 7)
+  region = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  selfLinkWithId = _messages.StringField(10)
+  sslCertificates = _messages.StringField(11, repeated=True)
+  sslPolicy = _messages.StringField(12)
+  urlMap = _messages.StringField(13)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):
@@ -43918,13 +44743,17 @@ class TargetPool(_messages.Message):
       CLIENT_IP_PORT_PROTO: <no description>
       CLIENT_IP_PROTO: <no description>
       GENERATED_COOKIE: <no description>
+      HEADER_FIELD: <no description>
+      HTTP_COOKIE: <no description>
       NONE: <no description>
     """
     CLIENT_IP = 0
     CLIENT_IP_PORT_PROTO = 1
     CLIENT_IP_PROTO = 2
     GENERATED_COOKIE = 3
-    NONE = 4
+    HEADER_FIELD = 4
+    HTTP_COOKIE = 5
+    NONE = 6
 
   backupPool = _messages.StringField(1)
   creationTimestamp = _messages.StringField(2)
@@ -45390,6 +46219,100 @@ class TestPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class TlsCertificateContext(_messages.Message):
+  r"""Defines the mechanism to obtain the client or server certificate.
+
+  Enums:
+    CertificateSourceValueValuesEnum: Defines how TLS certificates are
+      obtained.
+
+  Fields:
+    certificatePaths: Specifies the certificate and private key paths. This
+      field is applicable only if tlsCertificateSource is set to USE_PATH.
+    certificateSource: Defines how TLS certificates are obtained.
+    sdsConfig: Specifies the config to retrieve certificates through SDS. This
+      field is applicable only if tlsCertificateSource is set to USE_SDS.
+  """
+
+  class CertificateSourceValueValuesEnum(_messages.Enum):
+    r"""Defines how TLS certificates are obtained.
+
+    Values:
+      INVALID: <no description>
+      USE_PATH: <no description>
+      USE_SDS: <no description>
+    """
+    INVALID = 0
+    USE_PATH = 1
+    USE_SDS = 2
+
+  certificatePaths = _messages.MessageField('TlsCertificatePaths', 1)
+  certificateSource = _messages.EnumField('CertificateSourceValueValuesEnum', 2)
+  sdsConfig = _messages.MessageField('SdsConfig', 3)
+
+
+class TlsCertificatePaths(_messages.Message):
+  r"""The paths to the mounted TLS Certificates and private key.
+
+  Fields:
+    certificatePath: The path to the file holding the client or server TLS
+      certificate to use.
+    privateKeyPath: The path to the file holding the client or server private
+      key.
+  """
+
+  certificatePath = _messages.StringField(1)
+  privateKeyPath = _messages.StringField(2)
+
+
+class TlsContext(_messages.Message):
+  r"""The TLS settings for the client or server.
+
+  Fields:
+    certificateContext: Defines the mechanism to obtain the client or server
+      certificate.
+    validationContext: Defines the mechanism to obtain the Certificate
+      Authority certificate to validate the client/server certificate. If
+      omitted, the proxy will not validate the server or client certificate.
+  """
+
+  certificateContext = _messages.MessageField('TlsCertificateContext', 1)
+  validationContext = _messages.MessageField('TlsValidationContext', 2)
+
+
+class TlsValidationContext(_messages.Message):
+  r"""Defines the mechanism to obtain the Certificate Authority certificate to
+  validate the client/server certificate.
+
+  Enums:
+    ValidationSourceValueValuesEnum: Defines how TLS certificates are
+      obtained.
+
+  Fields:
+    certificatePath: The path to the file holding the CA certificate to
+      validate the client or server certificate.
+    sdsConfig: Specifies the config to retrieve certificates through SDS. This
+      field is applicable only if tlsCertificateSource is set to USE_SDS.
+    validationSource: Defines how TLS certificates are obtained.
+  """
+
+  class ValidationSourceValueValuesEnum(_messages.Enum):
+    r"""Defines how TLS certificates are obtained.
+
+    Values:
+      INVALID: <no description>
+      USE_PATH: <no description>
+      USE_SDS: <no description>
+    """
+    INVALID = 0
+    USE_PATH = 1
+    USE_SDS = 2
+
+  certificatePath = _messages.StringField(1)
+  sdsConfig = _messages.MessageField('SdsConfig', 2)
+  validationSource = _messages.EnumField('ValidationSourceValueValuesEnum', 3)
+
+
 class UDPHealthCheck(_messages.Message):
   r"""A UDPHealthCheck object.
 
@@ -46841,6 +47764,18 @@ class VpnTunnel(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    peerExternalGateway: URL of the peer side external VPN gateway to which
+      this VPN tunnel is connected. Provided by the client when the VPN tunnel
+      is created. This field is exclusive with the field peerGcpGateway.
+    peerExternalGatewayInterface: The interface ID of the external VPN gateway
+      to which this VPN tunnel is connected. Provided by the client when the
+      VPN tunnel is created.
+    peerGcpGateway: URL of the peer side HA GCP VPN gateway to which this VPN
+      tunnel is connected. Provided by the client when the VPN tunnel is
+      created. This field can be used when creating highly available VPN from
+      VPC network to VPC network, the field is exclusive with the field
+      peerExternalGateway. If provided, the VPN tunnel will automatically use
+      the same vpnGatewayInterface ID in the peer GCP VPN gateway.
     peerIp: IP address of the peer VPN gateway. Only IPv4 is supported.
     region: [Output Only] URL of the region where the VPN tunnel resides. You
       must specify this field as part of the HTTP request URL. It is not
@@ -46931,17 +47866,20 @@ class VpnTunnel(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   localTrafficSelector = _messages.StringField(9, repeated=True)
   name = _messages.StringField(10)
-  peerIp = _messages.StringField(11)
-  region = _messages.StringField(12)
-  remoteTrafficSelector = _messages.StringField(13, repeated=True)
-  router = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  sharedSecret = _messages.StringField(16)
-  sharedSecretHash = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  targetVpnGateway = _messages.StringField(19)
-  vpnGateway = _messages.StringField(20)
-  vpnGatewayInterface = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  peerExternalGateway = _messages.StringField(11)
+  peerExternalGatewayInterface = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  peerGcpGateway = _messages.StringField(13)
+  peerIp = _messages.StringField(14)
+  region = _messages.StringField(15)
+  remoteTrafficSelector = _messages.StringField(16, repeated=True)
+  router = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  sharedSecret = _messages.StringField(19)
+  sharedSecretHash = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  targetVpnGateway = _messages.StringField(22)
+  vpnGateway = _messages.StringField(23)
+  vpnGatewayInterface = _messages.IntegerField(24, variant=_messages.Variant.INT32)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

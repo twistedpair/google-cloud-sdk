@@ -1921,6 +1921,10 @@ class V1Beta1Adapter(V1Adapter):
         cluster.monitoringService = 'monitoring.googleapis.com/kubernetes'
       else:
         raise util.Error(CLOUD_LOGGING_OR_MONITORING_DISABLED_ERROR_MSG)
+    if options.database_encryption:
+      cluster.databaseEncryption = self.messages.DatabaseEncryption(
+          keyName=options.database_encryption,
+          state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)

@@ -4,7 +4,7 @@
  "id": "compute:alpha",
  "name": "compute",
  "version": "alpha",
- "revision": "20190123",
+ "revision": "20190125",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1755,6 +1755,59 @@
     }
    }
   },
+  "AuthenticationPolicy": {
+   "id": "AuthenticationPolicy",
+   "type": "object",
+   "description": "The authentication settings for the backend service.",
+   "properties": {
+    "origins": {
+     "type": "array",
+     "description": "List of authentication methods that can be used for origin authentication. Similar to peers, these will be evaluated in order; the first valid one will be used to set origin identity. If none of these methods pass, the request will be rejected with authentication failed error (401). Leave the list empty if origin authentication is not required.",
+     "items": {
+      "$ref": "OriginAuthenticationMethod"
+     }
+    },
+    "peers": {
+     "type": "array",
+     "description": "List of authentication methods that can be used for peer authentication. They will be evaluated in order; the first valid one will be used to set peer identity. If none of these methods pass, the request will be rejected with authentication failed error (401). Leave the list empty if peer authentication is not required.",
+     "items": {
+      "$ref": "PeerAuthenticationMethod"
+     }
+    },
+    "principalBinding": {
+     "type": "string",
+     "description": "Define whether peer or origin identity should be used for principal. Default value is USE_PEER. If peer (or origin) identity is not available, either because peer/origin authentication is not defined, or failed, principal will be left unset. In other words, binding rule does not affect the decision to accept or reject request. This field can be set to one of the following: USE_PEER: Principal will be set to the identity from peer authentication. USE_ORIGIN: Principal will be set to the identity from origin authentication.",
+     "enum": [
+      "INVALID",
+      "USE_ORIGIN",
+      "USE_PEER"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "serverTlsContext": {
+     "$ref": "TlsContext",
+     "description": "Configures the mechanism to obtain server-side security certificates and identity information."
+    }
+   }
+  },
+  "AuthorizationConfig": {
+   "id": "AuthorizationConfig",
+   "type": "object",
+   "description": "Authorization configuration provides service-level and method-level access control for a service.",
+   "properties": {
+    "policies": {
+     "type": "array",
+     "description": "List of RbacPolicies.",
+     "items": {
+      "$ref": "RbacPolicy"
+     }
+    }
+   }
+  },
   "AuthorizationLoggingOptions": {
    "id": "AuthorizationLoggingOptions",
    "type": "object",
@@ -2668,12 +2721,20 @@
      "$ref": "BackendServiceCdnPolicy",
      "description": "Cloud CDN configuration for this BackendService."
     },
+    "circuitBreakers": {
+     "$ref": "CircuitBreakers",
+     "description": "Settings controlling the volume of connections to a backend service.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
+    },
     "cloudFunctionBackend": {
      "$ref": "BackendServiceCloudFunctionBackend",
      "description": "Directs request to a cloud function. appEngineBackend and backends[] must be empty if this is set."
     },
     "connectionDraining": {
      "$ref": "ConnectionDraining"
+    },
+    "consistentHash": {
+     "$ref": "ConsistentHashLoadBalancerSettings",
+     "description": "Consistent Hash-based load balancing can be used to provide soft session affinity based on HTTP headers, cookies or other properties. This load balancing policy is applicable only for HTTP connections. The affinity to a particular destination host will be lost when one or more hosts are added/removed from the destination service. This field specifies parameters that control consistent hashing. This field is only applicable when localityLbPolicy is set to MAGLEV or RING_HASH.\n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
     },
     "creationTimestamp": {
      "type": "string",
@@ -2740,6 +2801,28 @@
       ""
      ]
     },
+    "localityLbPolicy": {
+     "type": "string",
+     "description": "The load balancing algorithm used within the scope of the locality. The possible values are:  \n- ROUND_ROBIN: This is a simple policy in which each healthy backend is selected in round robin order. This is the default. \n- LEAST_REQUEST: An O(1) algorithm which selects two random healthy hosts and picks the host which has fewer active requests. \n- RING_HASH: The ring/modulo hash load balancer implements consistent hashing to backends. The algorithm has the property that the addition/removal of a host from a set of N hosts only affects 1/N of the requests. \n- RANDOM: The load balancer selects a random healthy host. \n- ORIGINAL_DESTINATION: Backend host is selected based on the client connection metadata, i.e., connections are opened to the same address as the destination address of the incoming connection before the connection was redirected to the load balancer. \n- MAGLEV: used as a drop in replacement for the ring hash load balancer. Maglev is not as stable as ring hash but has faster table lookup build times and host selection times. For more information about Maglev, refer to https://ai.google/research/pubs/pub44824 \n\nThis field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.",
+     "enum": [
+      "INVALID_LB_POLICY",
+      "LEAST_REQUEST",
+      "MAGLEV",
+      "ORINGINAL_DESTINATION",
+      "RANDOM",
+      "RING_HASH",
+      "ROUND_ROBIN"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
     "logConfig": {
      "$ref": "BackendServiceLogConfig",
      "description": "This field denotes the logging options for the load balancer traffic served by this backend service. If logging is enabled, logs will be exported to Stackdriver."
@@ -2748,6 +2831,10 @@
      "type": "string",
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "outlierDetection": {
+     "$ref": "OutlierDetection",
+     "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool. This field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
     },
     "port": {
      "type": "integer",
@@ -2786,6 +2873,10 @@
      "type": "string",
      "description": "[Output Only] The resource URL for the security policy associated with this backend service."
     },
+    "securitySettings": {
+     "$ref": "SecuritySettings",
+     "description": "This field specifies the security policy that applies to this backend service. This field is applicable to either:  \n- A regional backend service with the service_protocol set to HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED. \n- A global backend service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED."
+    },
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
@@ -2802,9 +2893,13 @@
       "CLIENT_IP_PORT_PROTO",
       "CLIENT_IP_PROTO",
       "GENERATED_COOKIE",
+      "HEADER_FIELD",
+      "HTTP_COOKIE",
       "NONE"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -3374,6 +3469,140 @@
     }
    }
   },
+  "CallCredentials": {
+   "id": "CallCredentials",
+   "type": "object",
+   "description": "gRPC call credentials to access the SDS server.",
+   "properties": {
+    "accessToken": {
+     "type": "string",
+     "description": "The access token that is used as call credential for the SDS server. This field is used only if callCredentialType is ACCESS_TOKEN."
+    },
+    "callCredentialType": {
+     "type": "string",
+     "description": "The type of call credentials to use for GRPC requests to the SDS server. This field can be set to one of the following: ACCESS_TOKEN: An access token is used as call credentials for the SDS server. GCE_VM: The local GCE VM service account credentials are used to access the SDS server. JWT_SERVICE_TOKEN: The user provisioned service account credentials are used to access the SDS server.",
+     "enum": [
+      "ACCESS_TOKEN",
+      "GCE_VM",
+      "INVALID",
+      "JWT_SERVICE_ACCOUNT"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "fromPlugin": {
+     "$ref": "MetadataCredentialsFromPlugin",
+     "description": "Custom authenticator credentials."
+    },
+    "jwtServiceAccount": {
+     "$ref": "ServiceAccountJwtAccessCredentials",
+     "description": "This service account credentials are used as call credentials for the SDS server. This field is used only if callCredentialType is JWT_SERVICE_ACCOUNT."
+    }
+   }
+  },
+  "ChannelCredentials": {
+   "id": "ChannelCredentials",
+   "type": "object",
+   "description": "gRPC channel credentials to access the SDS server.",
+   "properties": {
+    "certificates": {
+     "$ref": "TlsCertificatePaths",
+     "description": "The call credentials to access the SDS server."
+    },
+    "channelCredentialType": {
+     "type": "string",
+     "description": "The channel credentials to access the SDS server. This field can be set to one of the following: CERTIFICATES: Use TLS certificates to access the SDS server. GCE_VM: Use local GCE VM credentials to access the SDS server.",
+     "enum": [
+      "CERTIFICATES",
+      "GCE_VM",
+      "INVALID"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
+  "CircuitBreakers": {
+   "id": "CircuitBreakers",
+   "type": "object",
+   "description": "Settings controlling the volume of connections to a backend service.",
+   "properties": {
+    "connectTimeout": {
+     "$ref": "Duration",
+     "description": "The timeout for new network connections to hosts."
+    },
+    "maxConnections": {
+     "type": "integer",
+     "description": "The maximum number of connections to the backend cluster. If not specified, the default is 1024.",
+     "format": "int32"
+    },
+    "maxPendingRequests": {
+     "type": "integer",
+     "description": "The maximum number of pending requests allowed to the backend cluster. If not specified, the default is 1024.",
+     "format": "int32"
+    },
+    "maxRequests": {
+     "type": "integer",
+     "description": "The maximum number of parallel requests that allowed to the backend cluster. If not specified, the default is 1024.",
+     "format": "int32"
+    },
+    "maxRequestsPerConnection": {
+     "type": "integer",
+     "description": "Maximum requests for a single backend connection. This parameter is respected by both the HTTP/1.1 and HTTP/2 implementations. If not specified, there is no limit. Setting this parameter to 1 will effectively disable keep alive.",
+     "format": "int32"
+    },
+    "maxRetries": {
+     "type": "integer",
+     "description": "The maximum number of parallel retries allowed to the backend cluster. If not specified, the default is 3.",
+     "format": "int32"
+    }
+   }
+  },
+  "ClientTlsSettings": {
+   "id": "ClientTlsSettings",
+   "type": "object",
+   "description": "The client side authentication settings for connection originating from the backend service.",
+   "properties": {
+    "clientTlsContext": {
+     "$ref": "TlsContext",
+     "description": "Configures the mechanism to obtain client-side security certificates and identity information. This field is only applicable when mode is set to MUTUAL."
+    },
+    "mode": {
+     "type": "string",
+     "description": "Indicates whether connections to this port should be secured using TLS. The value of this field determines how TLS is enforced. This can be set to one of the following values: DISABLE: Do not setup a TLS connection to the backends. SIMPLE: Originate a TLS connection to the backends. MUTUAL: Secure connections to the backends using mutual TLS by presenting client certificates for authentication.",
+     "enum": [
+      "DISABLE",
+      "INVALID",
+      "MUTUAL",
+      "SIMPLE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      "",
+      ""
+     ]
+    },
+    "sni": {
+     "type": "string",
+     "description": "SNI string to present to the server during TLS handshake. This field is applicable only when mode is SIMPLE or MUTUAL."
+    },
+    "subjectAltNames": {
+     "type": "array",
+     "description": "A list of alternate names to verify the subject identity in the certificate.If specified, the proxy will verify that the server certificate's subject alt name matches one of the specified values. This field is applicable only when mode is SIMPLE or MUTUAL.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
   "Commitment": {
    "id": "Commitment",
    "type": "object",
@@ -3895,6 +4124,45 @@
      "type": "integer",
      "description": "Time for which instance will be drained (not accept new connections, but still work to finish started).",
      "format": "int32"
+    }
+   }
+  },
+  "ConsistentHashLoadBalancerSettings": {
+   "id": "ConsistentHashLoadBalancerSettings",
+   "type": "object",
+   "description": "This message defines settings for a consistent hash style load balancer.",
+   "properties": {
+    "httpCookie": {
+     "$ref": "ConsistentHashLoadBalancerSettingsHttpCookie",
+     "description": "Hash is based on HTTP Cookie. This field describes a HTTP cookie that will be used as the hash key for the consistent hash load balancer. If the cookie is not present, it will be generated. This field is applicable if the sessionAffinity is set to HTTP_COOKIE."
+    },
+    "httpHeaderName": {
+     "type": "string",
+     "description": "The hash based on the value of the specified header field. This field is applicable if the sessionAffinity is set to HEADER_FIELD."
+    },
+    "minimumRingSize": {
+     "type": "string",
+     "description": "The minimum number of virtual nodes to use for the hash ring. Defaults to 1024. Larger ring sizes result in more granular load distributions. If the number of hosts in the load balancing pool is larger than the ring size, each host will be assigned a single virtual node.",
+     "format": "int64"
+    }
+   }
+  },
+  "ConsistentHashLoadBalancerSettingsHttpCookie": {
+   "id": "ConsistentHashLoadBalancerSettingsHttpCookie",
+   "type": "object",
+   "description": "The information about the HTTP Cookie on which the hash function is based for load balancing policies that use a consistent hash.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "Name of the cookie."
+    },
+    "path": {
+     "type": "string",
+     "description": "Path to set for the cookie."
+    },
+    "ttl": {
+     "$ref": "Duration",
+     "description": "Lifetime of the cookie."
     }
    }
   },
@@ -6291,6 +6559,25 @@
     "policy": {
      "$ref": "Policy",
      "description": "REQUIRED: The complete policy to be applied to the 'resource'. The size of the policy is limited to a few 10s of KB. An empty policy is in general a valid policy but certain services (like Projects) might reject them."
+    }
+   }
+  },
+  "GrpcServiceConfig": {
+   "id": "GrpcServiceConfig",
+   "type": "object",
+   "description": "gRPC config to access the SDS server.",
+   "properties": {
+    "callCredentials": {
+     "$ref": "CallCredentials",
+     "description": "The call credentials to access the SDS server."
+    },
+    "channelCredentials": {
+     "$ref": "ChannelCredentials",
+     "description": "The channel credentials to access the SDS server."
+    },
+    "targetUri": {
+     "type": "string",
+     "description": "The target URI of the SDS server."
     }
    }
   },
@@ -12334,6 +12621,57 @@
     }
    }
   },
+  "Jwt": {
+   "id": "Jwt",
+   "type": "object",
+   "description": "JWT configuration for origin authentication.",
+   "properties": {
+    "audiences": {
+     "type": "array",
+     "description": "A JWT containing any of these audiences will be accepted. The service name will be accepted if audiences is empty. Examples: bookstore_android.apps.googleusercontent.com, bookstore_web.apps.googleusercontent.com",
+     "items": {
+      "type": "string"
+     }
+    },
+    "issuer": {
+     "type": "string",
+     "description": "Identifies the issuer that issued the JWT, which is usually a URL or an email address. Examples: https://securetoken.google.com, 1234567-compute@developer.gserviceaccount.com"
+    },
+    "jwksPublicKeys": {
+     "type": "string",
+     "description": "The provider?s public key set to validate the signature of the JWT."
+    },
+    "jwtHeaders": {
+     "type": "array",
+     "description": "jwt_headers and jwt_params define where to extract the JWT from an HTTP request. If no explicit location is specified, the following default locations are tried in order:\n\n1. The Authorization header using the Bearer schema. See `here `_. Example:\n\nAuthorization: Bearer .\n\n2. `access_token` query parameter. See `this `_\n\nMultiple JWTs can be verified for a request. Each JWT has to be extracted from the locations its issuer specified or from the default locations.\n\nThis field is set if JWT is sent in a request header. This field specifies the header name. For example, if `header=x-goog-iap-jwt-assertion`, the header format will be x-goog-iap-jwt-assertion: .",
+     "items": {
+      "$ref": "JwtHeader"
+     }
+    },
+    "jwtParams": {
+     "type": "array",
+     "description": "This field is set if JWT is sent in a query parameter. This field specifies the query parameter name. For example, if jwt_params[0] is jwt_token, the JWT format in the query parameter is /path?jwt_token=.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "JwtHeader": {
+   "id": "JwtHeader",
+   "type": "object",
+   "description": "This message specifies a header location to extract JWT token.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "The HTTP header name."
+    },
+    "valuePrefix": {
+     "type": "string",
+     "description": "The value prefix. The value format is \"value_prefix\" For example, for \"Authorization: Bearer \", value_prefix=\"Bearer \" with a space at the end."
+    }
+   }
+  },
   "License": {
    "id": "License",
    "type": "object",
@@ -13574,6 +13912,21 @@
     }
    }
   },
+  "MetadataCredentialsFromPlugin": {
+   "id": "MetadataCredentialsFromPlugin",
+   "type": "object",
+   "description": "Custom authenticator credentials.",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "Plugin name."
+    },
+    "structConfig": {
+     "type": "string",
+     "description": "A text proto that conforms to a Struct type definition interpreted by the plugin."
+    }
+   }
+  },
   "MetadataFilter": {
    "id": "MetadataFilter",
    "type": "object",
@@ -13614,6 +13967,27 @@
     "value": {
      "type": "string",
      "description": "The value of the label must match the specified value.\nvalue can have a maximum length of 1024 characters."
+    }
+   }
+  },
+  "MutualTls": {
+   "id": "MutualTls",
+   "type": "object",
+   "description": "Configuration for the mutual Tls mode for peer authentication.",
+   "properties": {
+    "mode": {
+     "type": "string",
+     "description": "Specifies if the server TLS is configured to be strict or permissive. This field can be set to one of the following: STRICT: Client certificate must be presented, connection is in TLS. PERMISSIVE: Client certificate can be omitted, connection can be either plaintext or TLS.",
+     "enum": [
+      "INVALID",
+      "PERMISSIVE",
+      "STRICT"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -16571,6 +16945,76 @@
     }
    }
   },
+  "OriginAuthenticationMethod": {
+   "id": "OriginAuthenticationMethod",
+   "type": "object",
+   "description": "Configuration for the origin authentication method.",
+   "properties": {
+    "jwt": {
+     "$ref": "Jwt"
+    }
+   }
+  },
+  "OutlierDetection": {
+   "id": "OutlierDetection",
+   "type": "object",
+   "description": "Settings controlling eviction of unhealthy hosts from the load balancing pool.",
+   "properties": {
+    "baseEjectionTime": {
+     "$ref": "Duration",
+     "description": "The base time that a host is ejected for. The real time is equal to the base time multiplied by the number of times the host has been ejected. Defaults to 30000ms or 30s."
+    },
+    "consecutiveErrors": {
+     "type": "integer",
+     "description": "Number of errors before a host is ejected from the connection pool. When the backend host is accessed over HTTP, a 5xx return code qualifies as an error. Defaults to 5.",
+     "format": "int32"
+    },
+    "consecutiveGatewayFailure": {
+     "type": "integer",
+     "description": "The number of consecutive gateway failures (502, 503, 504 status or connection errors that are mapped to one of those status codes) before a consecutive gateway failure ejection occurs. Defaults to 5.",
+     "format": "int32"
+    },
+    "enforcingConsecutiveErrors": {
+     "type": "integer",
+     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive 5xx. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.",
+     "format": "int32"
+    },
+    "enforcingConsecutiveGatewayFailure": {
+     "type": "integer",
+     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive gateway failures. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 0.",
+     "format": "int32"
+    },
+    "enforcingSuccessRate": {
+     "type": "integer",
+     "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through success rate statistics. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.",
+     "format": "int32"
+    },
+    "interval": {
+     "$ref": "Duration",
+     "description": "Time interval between ejection sweep analysis. This can result in both new ejections as well as hosts being returned to service. Defaults to 10 seconds."
+    },
+    "maxEjectionPercent": {
+     "type": "integer",
+     "description": "Maximum percentage of hosts in the load balancing pool for the backend service that can be ejected. Defaults to 10%.",
+     "format": "int32"
+    },
+    "successRateMinimumHosts": {
+     "type": "integer",
+     "description": "The number of hosts in a cluster that must have enough request volume to detect success rate outliers. If the number of hosts is less than this setting, outlier detection via success rate statistics is not performed for any host in the cluster. Defaults to 5.",
+     "format": "int32"
+    },
+    "successRateRequestVolume": {
+     "type": "integer",
+     "description": "The minimum number of total requests that must be collected in one interval (as defined by the interval duration above) to include this host in success rate based outlier detection. If the volume is lower than this setting, outlier detection via success rate statistics is not performed for that host. Defaults to 100.",
+     "format": "int32"
+    },
+    "successRateStdevFactor": {
+     "type": "integer",
+     "description": "This factor is used to determine the ejection threshold for success rate outlier ejection. The ejection threshold is the difference between the mean success rate, and the product of this factor and the standard deviation of the mean success rate: mean - (stdev * success_rate_stdev_factor). This factor is divided by a thousand to get a double. That is, if the desired factor is 1.9, the runtime value should be 1900. Defaults to 1900.",
+     "format": "int32"
+    }
+   }
+  },
   "PathMatcher": {
    "id": "PathMatcher",
    "type": "object",
@@ -16642,6 +17086,17 @@
     }
    }
   },
+  "PeerAuthenticationMethod": {
+   "id": "PeerAuthenticationMethod",
+   "type": "object",
+   "description": "Configuration for the peer authentication method.",
+   "properties": {
+    "mtls": {
+     "$ref": "MutualTls",
+     "description": "Set if mTLS is used for peer authentication."
+    }
+   }
+  },
   "PerInstanceConfig": {
    "id": "PerInstanceConfig",
    "type": "object",
@@ -16665,6 +17120,94 @@
     "preservedState": {
      "$ref": "PreservedState",
      "description": "Intended preserved state for the given instance. Does not contain state generated based on Stateful Policy."
+    }
+   }
+  },
+  "Permission": {
+   "id": "Permission",
+   "type": "object",
+   "description": "All fields defined in a permission are ANDed.",
+   "properties": {
+    "constraints": {
+     "type": "array",
+     "description": "Extra custom constraints. The constraints are ANDed together.",
+     "items": {
+      "$ref": "PermissionConstraint"
+     }
+    },
+    "hosts": {
+     "type": "array",
+     "description": "Used in Ingress or Egress Gateway cases to specify hosts that the policy applies to. Exact match, prefix match, and suffix match are supported.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "methods": {
+     "type": "array",
+     "description": "HTTP method.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notHosts": {
+     "type": "array",
+     "description": "Negate of hosts. Specifies exclusions.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notMethods": {
+     "type": "array",
+     "description": "Negate of methods. Specifies exclusions.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notPaths": {
+     "type": "array",
+     "description": "Negate of paths. Specifies exclusions.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notPorts": {
+     "type": "array",
+     "description": "Negate of ports. Specifies exclusions.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "paths": {
+     "type": "array",
+     "description": "HTTP request paths or gRPC methods. Exact match, prefix match, and suffix match are supported.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "ports": {
+     "type": "array",
+     "description": "Port names or numbers.",
+     "items": {
+      "type": "string"
+     }
+    }
+   }
+  },
+  "PermissionConstraint": {
+   "id": "PermissionConstraint",
+   "type": "object",
+   "description": "Custom constraint that specifies a key and a list of allowed values for Istio attributes.",
+   "properties": {
+    "key": {
+     "type": "string",
+     "description": "Key of the constraint."
+    },
+    "values": {
+     "type": "array",
+     "description": "A list of allowed values.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -16775,6 +17318,80 @@
     "source": {
      "type": "string",
      "description": "The URL of the disk resource that is stateful and should be attached to the VM instance."
+    }
+   }
+  },
+  "Principal": {
+   "id": "Principal",
+   "type": "object",
+   "description": "All fields defined in a principal are ANDed.",
+   "properties": {
+    "condition": {
+     "type": "string",
+     "description": "An expression to specify custom condition."
+    },
+    "groups": {
+     "type": "array",
+     "description": "The groups the principal belongs to. Exact match, prefix match, and suffix match are supported.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "ips": {
+     "type": "array",
+     "description": "IPv4 or IPv6 address or range (In CIDR format)",
+     "items": {
+      "type": "string"
+     }
+    },
+    "namespaces": {
+     "type": "array",
+     "description": "The namespaces. Exact match, prefix match, and suffix match are supported.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notGroups": {
+     "type": "array",
+     "description": "Negate of groups. Specifies exclusions.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notIps": {
+     "type": "array",
+     "description": "Negate of IPs. Specifies exclusions.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notNamespaces": {
+     "type": "array",
+     "description": "Negate of namespaces. Specifies exclusions.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "notUsers": {
+     "type": "array",
+     "description": "Negate of users. Specifies exclusions.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "properties": {
+     "type": "object",
+     "description": "A map of Istio attribute to expected values. Exact match, prefix match, and suffix match are supported for values. For example, `request.headers[version]: ?v1?`. The properties are ANDed together.",
+     "additionalProperties": {
+      "type": "string"
+     }
+    },
+    "users": {
+     "type": "array",
+     "description": "The user names/IDs or service accounts. Exact match, prefix match, and suffix match are supported.",
+     "items": {
+      "type": "string"
+     }
     }
    }
   },
@@ -17127,6 +17744,30 @@
      "type": "number",
      "description": "[Output Only] Current usage of this metric.",
      "format": "double"
+    }
+   }
+  },
+  "RbacPolicy": {
+   "id": "RbacPolicy",
+   "type": "object",
+   "properties": {
+    "name": {
+     "type": "string",
+     "description": "Name of the RbacPolicy."
+    },
+    "permissions": {
+     "type": "array",
+     "description": "The list of permissions.",
+     "items": {
+      "$ref": "Permission"
+     }
+    },
+    "principals": {
+     "type": "array",
+     "description": "The list of principals.",
+     "items": {
+      "$ref": "Principal"
+     }
     }
    }
   },
@@ -20498,6 +21139,17 @@
     }
    }
   },
+  "SdsConfig": {
+   "id": "SdsConfig",
+   "type": "object",
+   "description": "The configuration to access the SDS server.",
+   "properties": {
+    "grpcServiceConfig": {
+     "$ref": "GrpcServiceConfig",
+     "description": "The configuration to access the SDS server over GRPC."
+    }
+   }
+  },
   "SecurityPoliciesListPreconfiguredExpressionSetsResponse": {
    "id": "SecurityPoliciesListPreconfiguredExpressionSetsResponse",
    "type": "object",
@@ -20854,6 +21506,29 @@
     }
    }
   },
+  "SecuritySettings": {
+   "id": "SecuritySettings",
+   "type": "object",
+   "description": "The authentication and authorization settings for a BackendService.",
+   "properties": {
+    "authenticationPolicy": {
+     "$ref": "AuthenticationPolicy",
+     "description": "Authentication policy defines what authentication methods can be accepted on backends, and if authenticated, which method/certificate will set the request principal."
+    },
+    "authorizationConfig": {
+     "$ref": "AuthorizationConfig",
+     "description": "Authorization config defines the Role Based Access Control (RBAC) config."
+    },
+    "clientTlsSettings": {
+     "$ref": "ClientTlsSettings",
+     "description": "TLS Settings for the backend service."
+    },
+    "serverSettingsSelector": {
+     "$ref": "ServerSecuritySettingsSelector",
+     "description": "The listener config of the XDS client is generated if the selector matches the client."
+    }
+   }
+  },
   "SerialPortOutput": {
    "id": "SerialPortOutput",
    "type": "object",
@@ -20903,6 +21578,57 @@
     }
    }
   },
+  "ServerSecuritySettingsSelector": {
+   "id": "ServerSecuritySettingsSelector",
+   "type": "object",
+   "description": "A selector associated with the SecuritySettings. If the labels and port in this selector match the Envoy's label and port, the server side authentication and authorization settings are applied to the Envoy.",
+   "properties": {
+    "labelMatches": {
+     "type": "array",
+     "description": "The labels associated with the XDS client.",
+     "items": {
+      "$ref": "MetadataFilterLabelMatch"
+     }
+    },
+    "port": {
+     "type": "integer",
+     "description": "The listener port of the XDS client.",
+     "format": "int32"
+    }
+   }
+  },
+  "ServerTlsSettings": {
+   "id": "ServerTlsSettings",
+   "type": "object",
+   "description": "The TLS settings for the server.",
+   "properties": {
+    "proxyTlsContext": {
+     "$ref": "TlsContext",
+     "description": "Configures the mechanism to obtain security certificates and identity information."
+    },
+    "subjectAltNames": {
+     "type": "array",
+     "description": "A list of alternate names to verify the subject identity in the certificate presented by the client.",
+     "items": {
+      "type": "string"
+     }
+    },
+    "tlsMode": {
+     "type": "string",
+     "description": "Indicates whether connections should be secured using TLS. The value of this field determines how TLS is enforced. This field can be set to one of the following:  \n- SIMPLE Secure connections with standard TLS semantics.  \n- MUTUAL Secure connections to the backends using mutual TLS by presenting client certificates for authentication.",
+     "enum": [
+      "INVALID",
+      "MUTUAL",
+      "SIMPLE"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "ServiceAccount": {
    "id": "ServiceAccount",
    "type": "object",
@@ -20918,6 +21644,22 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "ServiceAccountJwtAccessCredentials": {
+   "id": "ServiceAccountJwtAccessCredentials",
+   "type": "object",
+   "description": "JWT credentials for a service account.",
+   "properties": {
+    "jsonKey": {
+     "type": "string",
+     "description": "Service account key."
+    },
+    "tokenLifetimeSeconds": {
+     "type": "string",
+     "description": "The token lifetime seconds.",
+     "format": "int64"
     }
    }
   },
@@ -22094,6 +22836,10 @@
      "type": "string",
      "description": "[Output Only] Server-defined URL for this resource with the resource id."
     },
+    "tlsSettings": {
+     "$ref": "ServerTlsSettings",
+     "description": "Security settings for the proxy. This field is only applicable to a global backend service with the loadBalancingScheme set to INTERNAL_SELF_MANAGED."
+    },
     "warnings": {
      "type": "array",
      "description": "[Output Only] If potential misconfigurations are detected for this SSL policy, this field will be populated with warning messages.",
@@ -23027,6 +23773,10 @@
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
     },
+    "proxyBind": {
+     "type": "boolean",
+     "description": "This field only applies when the loadBalancingScheme is INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP address specified by the forwarding rule. Default is false."
+    },
     "region": {
      "type": "string",
      "description": "[Output Only] URL of the region where the regional Target HTTP Proxy resides. This field is not applicable to global Target HTTP Proxies."
@@ -23423,6 +24173,10 @@
      "type": "string",
      "description": "Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
      "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?"
+    },
+    "proxyBind": {
+     "type": "boolean",
+     "description": "This field only applies when the loadBalancingScheme is INTERNAL_SELF_MANAGED. When set to true the Envoy binds on the IP address specified by the forwarding rule. Default is false."
     },
     "quicOverride": {
      "type": "string",
@@ -24136,9 +24890,13 @@
       "CLIENT_IP_PORT_PROTO",
       "CLIENT_IP_PROTO",
       "GENERATED_COOKIE",
+      "HEADER_FIELD",
+      "HTTP_COOKIE",
       "NONE"
      ],
      "enumDescriptions": [
+      "",
+      "",
       "",
       "",
       "",
@@ -25401,6 +26159,94 @@
      "items": {
       "type": "string"
      }
+    }
+   }
+  },
+  "TlsCertificateContext": {
+   "id": "TlsCertificateContext",
+   "type": "object",
+   "description": "Defines the mechanism to obtain the client or server certificate.",
+   "properties": {
+    "certificatePaths": {
+     "$ref": "TlsCertificatePaths",
+     "description": "Specifies the certificate and private key paths. This field is applicable only if tlsCertificateSource is set to USE_PATH."
+    },
+    "certificateSource": {
+     "type": "string",
+     "description": "Defines how TLS certificates are obtained.",
+     "enum": [
+      "INVALID",
+      "USE_PATH",
+      "USE_SDS"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    },
+    "sdsConfig": {
+     "$ref": "SdsConfig",
+     "description": "Specifies the config to retrieve certificates through SDS. This field is applicable only if tlsCertificateSource is set to USE_SDS."
+    }
+   }
+  },
+  "TlsCertificatePaths": {
+   "id": "TlsCertificatePaths",
+   "type": "object",
+   "description": "The paths to the mounted TLS Certificates and private key.",
+   "properties": {
+    "certificatePath": {
+     "type": "string",
+     "description": "The path to the file holding the client or server TLS certificate to use."
+    },
+    "privateKeyPath": {
+     "type": "string",
+     "description": "The path to the file holding the client or server private key."
+    }
+   }
+  },
+  "TlsContext": {
+   "id": "TlsContext",
+   "type": "object",
+   "description": "The TLS settings for the client or server.",
+   "properties": {
+    "certificateContext": {
+     "$ref": "TlsCertificateContext",
+     "description": "Defines the mechanism to obtain the client or server certificate."
+    },
+    "validationContext": {
+     "$ref": "TlsValidationContext",
+     "description": "Defines the mechanism to obtain the Certificate Authority certificate to validate the client/server certificate. If omitted, the proxy will not validate the server or client certificate."
+    }
+   }
+  },
+  "TlsValidationContext": {
+   "id": "TlsValidationContext",
+   "type": "object",
+   "description": "Defines the mechanism to obtain the Certificate Authority certificate to validate the client/server certificate.",
+   "properties": {
+    "certificatePath": {
+     "type": "string",
+     "description": "The path to the file holding the CA certificate to validate the client or server certificate."
+    },
+    "sdsConfig": {
+     "$ref": "SdsConfig",
+     "description": "Specifies the config to retrieve certificates through SDS. This field is applicable only if tlsCertificateSource is set to USE_SDS."
+    },
+    "validationSource": {
+     "type": "string",
+     "description": "Defines how TLS certificates are obtained.",
+     "enum": [
+      "INVALID",
+      "USE_PATH",
+      "USE_SDS"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
     }
    }
   },
@@ -26715,6 +27561,19 @@
        "compute.vpnTunnels.insert"
       ]
      }
+    },
+    "peerExternalGateway": {
+     "type": "string",
+     "description": "URL of the peer side external VPN gateway to which this VPN tunnel is connected. Provided by the client when the VPN tunnel is created. This field is exclusive with the field peerGcpGateway."
+    },
+    "peerExternalGatewayInterface": {
+     "type": "integer",
+     "description": "The interface ID of the external VPN gateway to which this VPN tunnel is connected. Provided by the client when the VPN tunnel is created.",
+     "format": "int32"
+    },
+    "peerGcpGateway": {
+     "type": "string",
+     "description": "URL of the peer side HA GCP VPN gateway to which this VPN tunnel is connected. Provided by the client when the VPN tunnel is created. This field can be used when creating highly available VPN from VPC network to VPC network, the field is exclusive with the field peerExternalGateway. If provided, the VPN tunnel will automatically use the same vpnGatewayInterface ID in the peer GCP VPN gateway."
     },
     "peerIp": {
      "type": "string",

@@ -1319,9 +1319,18 @@
           "description": "Optional. The admin server (IP or hostname) for the remote trusted realm in a cross realm trust relationship.",
           "type": "string"
         },
-        "crossRealmSharedKeyUri": {
+        "crossRealmTrustSharedPasswordUri": {
           "description": "Optional. The GCS uri of a KMS encrypted file containing the shared password between the on-cluster Kerberos realm and the remote trusted realm, in a cross realm trust relationship.",
           "type": "string"
+        },
+        "kdcDbKeyUri": {
+          "description": "Optional. The GCS uri of a KMS encrypted file containing the master key of the KDC database.",
+          "type": "string"
+        },
+        "tgtLifetimeHours": {
+          "description": "Optional. The lifetime of the ticket granting ticket, in hours. If not specified, or user specifies 0, then default value 10 will be used.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1421,6 +1430,116 @@
       "description": "A request to collect cluster diagnostic information.",
       "type": "object",
       "properties": {
+      }
+    },
+    "AutoscalingPolicy": {
+      "id": "AutoscalingPolicy",
+      "description": "Describes an autoscaling policy for Dataproc cluster autoscaler.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The \"resource name\" of the policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id}.",
+          "type": "string"
+        },
+        "basicAlgorithm": {
+          "$ref": "BasicAutoscalingAlgorithm"
+        },
+        "workerConfig": {
+          "description": "Required. Describes how the autoscaler will operate for primary workers.",
+          "$ref": "InstanceGroupAutoscalingPolicyConfig"
+        },
+        "secondaryWorkerConfig": {
+          "description": "Required. Describes how the autoscaler will operate for secondary workers.",
+          "$ref": "InstanceGroupAutoscalingPolicyConfig"
+        }
+      }
+    },
+    "BasicAutoscalingAlgorithm": {
+      "id": "BasicAutoscalingAlgorithm",
+      "description": "Basic algorithm for autoscaling.",
+      "type": "object",
+      "properties": {
+        "yarnConfig": {
+          "description": "Required. YARN autoscaling configuration.",
+          "$ref": "BasicYarnAutoscalingConfig"
+        },
+        "cooldownPeriod": {
+          "description": "Required. Cooldown time in between scaling.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "BasicYarnAutoscalingConfig": {
+      "id": "BasicYarnAutoscalingConfig",
+      "description": "Basic autoscaling configurations for YARN.",
+      "type": "object",
+      "properties": {
+        "scaleUpFactor": {
+          "description": "Required. Fraction of suggested increase in workers to scale up by between 0 and 1. Suggested increase when scaling up is determined by the amount of average pending memory since the last cooldown period.",
+          "type": "number",
+          "format": "double"
+        },
+        "scaleDownFactor": {
+          "description": "Optional. Fraction of suggested decrease in workers to scale down by between 0 and 1. Suggested decrease when scaling down is determined by the amount of average available memory since the last cooldown period.Default: 1.0.",
+          "type": "number",
+          "format": "double"
+        },
+        "scaleUpMinWorkerFraction": {
+          "description": "Optional. Minimum workers as a fraction of the current cluster size to to scale up by between 0 and 1.Default: 0.0.",
+          "type": "number",
+          "format": "double"
+        },
+        "scaleDownMinWorkerFraction": {
+          "description": "Optional. Minimum workers as a fraction of the current cluster size to to scale down by between 0 and 1.Default: 0.0.",
+          "type": "number",
+          "format": "double"
+        },
+        "gracefulDecommissionTimeout": {
+          "description": "Optional. Timeout used during an autoscaling event (cluster update) between 0 seconds (no graceful decommission) and 1 day.Default: 0s.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "InstanceGroupAutoscalingPolicyConfig": {
+      "id": "InstanceGroupAutoscalingPolicyConfig",
+      "description": "Configuration for the size bounds of an instance group, including its proportional size to other groups.",
+      "type": "object",
+      "properties": {
+        "minInstances": {
+          "description": "Optional. Minimum number of instances for this group.Default for primary workers is 2, default for secondary workers is 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxInstances": {
+          "description": "Required. Maximum number of instances for this group. Must be >= min_instances.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "weight": {
+          "description": "Optional. Weight for instance group. Determines fraction of total workers in cluster that will be composed of instances from this instance group (e.g. if primary workers have weight 2 and secondary workers have weight 1, then the cluster should have approximately 2 primary workers to each secondary worker. Cluster may not reach these exact weights if constrained by min\/max bounds or other autoscaling configurations.Default 1. Note that all groups have equal an equal weight by default, so the cluster will attempt to maintain an equal number of workers in each group within configured size bounds per group.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ListAutoscalingPoliciesResponse": {
+      "id": "ListAutoscalingPoliciesResponse",
+      "description": "A response to a request to list autoscaling policies in a project.",
+      "type": "object",
+      "properties": {
+        "policies": {
+          "description": "Output only. Autoscaling policies list.",
+          "type": "array",
+          "items": {
+            "$ref": "AutoscalingPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "Output only. This token is included in the response if there are more results to fetch.",
+          "type": "string"
+        }
       }
     },
     "WorkflowTemplate": {
@@ -3054,6 +3173,152 @@
                 }
               }
             },
+            "autoscalingPolicies": {
+              "methods": {
+                "create": {
+                  "id": "dataproc.projects.regions.autoscalingPolicies.create",
+                  "path": "v1beta2/{+parent}/autoscalingPolicies",
+                  "flatPath": "v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "response": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates new autoscaling policy."
+                },
+                "update": {
+                  "id": "dataproc.projects.regions.autoscalingPolicies.update",
+                  "path": "v1beta2/{+name}",
+                  "flatPath": "v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}",
+                  "httpMethod": "PUT",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The \"resource name\" of the policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "response": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates (replaces) autoscaling policy.Disabled check for update_mask, because all updates will be full replacements."
+                },
+                "get": {
+                  "id": "dataproc.projects.regions.autoscalingPolicies.get",
+                  "path": "v1beta2/{+name}",
+                  "flatPath": "v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieves autoscaling policy."
+                },
+                "list": {
+                  "id": "dataproc.projects.regions.autoscalingPolicies.list",
+                  "path": "v1beta2/{+parent}/autoscalingPolicies",
+                  "flatPath": "v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return in each response.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. The page token, returned by a previous call, to request the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAutoscalingPoliciesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists autoscaling policies in the project."
+                },
+                "delete": {
+                  "id": "dataproc.projects.regions.autoscalingPolicies.delete",
+                  "path": "v1beta2/{+name}",
+                  "flatPath": "v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/regions\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes an autoscaling policy. It is an error to delete an autoscaling policy that is in use by one or more clusters."
+                }
+              }
+            },
             "workflowTemplates": {
               "methods": {
                 "create": {
@@ -3391,6 +3656,152 @@
         },
         "locations": {
           "resources": {
+            "autoscalingPolicies": {
+              "methods": {
+                "create": {
+                  "id": "dataproc.projects.locations.autoscalingPolicies.create",
+                  "path": "v1beta2/{+parent}/autoscalingPolicies",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "response": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates new autoscaling policy."
+                },
+                "update": {
+                  "id": "dataproc.projects.locations.autoscalingPolicies.update",
+                  "path": "v1beta2/{+name}",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}",
+                  "httpMethod": "PUT",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The \"resource name\" of the policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "response": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates (replaces) autoscaling policy.Disabled check for update_mask, because all updates will be full replacements."
+                },
+                "get": {
+                  "id": "dataproc.projects.locations.autoscalingPolicies.get",
+                  "path": "v1beta2/{+name}",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "AutoscalingPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieves autoscaling policy."
+                },
+                "list": {
+                  "id": "dataproc.projects.locations.autoscalingPolicies.list",
+                  "path": "v1beta2/{+parent}/autoscalingPolicies",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The \"resource name\" of the region, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of results to return in each response.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. The page token, returned by a previous call, to request the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAutoscalingPoliciesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists autoscaling policies in the project."
+                },
+                "delete": {
+                  "id": "dataproc.projects.locations.autoscalingPolicies.delete",
+                  "path": "v1beta2/{+name}",
+                  "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The \"resource name\" of the autoscaling policy, as described in https:\/\/cloud.google.com\/apis\/design\/resource_names of the form projects\/{project_id}\/regions\/{region}\/autoscalingPolicies\/{policy_id}.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/autoscalingPolicies\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes an autoscaling policy. It is an error to delete an autoscaling policy that is in use by one or more clusters."
+                }
+              }
+            },
             "workflowTemplates": {
               "methods": {
                 "create": {

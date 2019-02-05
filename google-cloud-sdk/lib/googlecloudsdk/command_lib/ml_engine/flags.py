@@ -23,6 +23,7 @@ import functools
 import itertools
 import sys
 
+from googlecloudsdk.api_lib.ml_engine import jobs
 from googlecloudsdk.api_lib.ml_engine import versions_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import actions
@@ -581,3 +582,178 @@ The count of the accelerator must be greater than 0.
   return accelerator_msg(
       count=accelerator_count,
       type=accelerator_type)
+
+
+def AddCustomContainerFlags(parser):
+  """Add Custom container flags to parser."""
+  GetMasterMachineType().AddToParser(parser)
+  GetMasterAccelerator().AddToParser(parser)
+  GetMasterImageUri().AddToParser(parser)
+  GetParameterServerMachineTypeConfig().AddToParser(parser)
+  GetParameterServerAccelerator().AddToParser(parser)
+  GetParameterServerImageUri().AddToParser(parser)
+  GetWorkerMachineConfig().AddToParser(parser)
+  GetWorkerAccelerator().AddToParser(parser)
+  GetWorkerImageUri().AddToParser(parser)
+
+# Custom Container Flags
+_ACCELERATOR_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
+    'generic-accelerator',
+    jobs.GetMessagesModule(
+    ).GoogleCloudMlV1AcceleratorConfig.TypeValueValuesEnum,
+    help_str='The available types of accelerators.',
+    include_filter=lambda x: x != 'ACCELERATOR_TYPE_UNSPECIFIED',
+    required=False)
+
+_ACCELERATOR_TYPE_HELP = """\
+   Hardware accelerator config for the {worker_type}. Must specify
+   both the accelerator type (TYPE) for each server and the number of
+   accelerators to attach to each server (COUNT).
+  """
+
+
+def _ConvertAcceleratorTypeToEnumValue(choice_str):
+  return arg_utils.ChoiceToEnum(choice_str, _ACCELERATOR_TYPE_MAPPER.enum,
+                                item_type='accelerator',
+                                valid_choices=_ACCELERATOR_TYPE_MAPPER.choices)
+
+
+def _ValidateAcceleratorCount(accelerator_count):
+  count = int(accelerator_count)
+  if count <= 0:
+    raise arg_parsers.ArgumentTypeError(
+        'The count of the accelerator must be greater than 0.')
+  return count
+
+
+def _MakeAcceleratorArgConfigArg(arg_name, arg_help, required=False):
+  """Creates an ArgDict representing an AcceleratorConfig message."""
+  type_help = '*type*::: The type of the accelerator. Choices are {}'.format(
+      ','.join(_ACCELERATOR_TYPE_MAPPER.choices))
+  count_help = ('*count*::: The number of accelerators to attach to each '
+                'machine running the job. Must be greater than 0.')
+  arg = base.Argument(
+      arg_name,
+      required=required,
+      type=arg_parsers.ArgDict(spec={
+          'type': _ConvertAcceleratorTypeToEnumValue,
+          'count': _ValidateAcceleratorCount,
+      }, required_keys=['type', 'count']),
+      help="""\
+{arg_help}
+
+{type_help}
+
+{count_help}
+
+""".format(arg_help=arg_help, type_help=type_help, count_help=count_help))
+  return arg
+
+
+def GetMasterMachineType():
+  """Build master-machine-type flag."""
+  help_text = """\
+  Specifies the type of virtual machine to use for training job's master worker.
+
+  You must set this value when `scaleTier` is set to `CUSTOM`.
+  """
+  return base.Argument(
+      '--master-machine-type', required=False, help=help_text)
+
+
+def GetMasterAccelerator():
+  """Build master-accelerator flag."""
+  help_text = _ACCELERATOR_TYPE_HELP.format(worker_type='master worker')
+  return _MakeAcceleratorArgConfigArg(
+      '--master-accelerator', arg_help=help_text)
+
+
+def GetMasterImageUri():
+  """Build master-image-uri flag."""
+  return base.Argument(
+      '--master-image-uri',
+      required=False,
+      help=('Docker image to run on each master worker. '
+            'This image must be in Google Container Registry. Only one of '
+            '`master-image-uri` and `runtimeVersion` must be specified.'))
+
+
+def GetParameterServerMachineTypeConfig():
+  """Build parameter-server machine type config group."""
+  machine_type = base.Argument(
+      '--parameter-server-machine-type',
+      required=True,
+      help=('Type of virtual machine to use for training job\'s'
+            'parameter servers. This flag must be specified if any of the '
+            'other arguments in this group are specified machine to use for '
+            'training job\'s parameter servers.'))
+
+  machine_count = base.Argument(
+      '--parameter-server-count',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      required=True,
+      help=('The number of parameter servers to use for the training job.'))
+
+  machine_type_group = base.ArgumentGroup(
+      required=False,
+      help='Configure parameter server machine type settings.')
+  machine_type_group.AddArgument(machine_type)
+  machine_type_group.AddArgument(machine_count)
+  return machine_type_group
+
+
+def GetParameterServerAccelerator():
+  """Build parameter-server-accelerator flag."""
+  help_text = _ACCELERATOR_TYPE_HELP.format(worker_type='parameter servers')
+  return _MakeAcceleratorArgConfigArg(
+      '--parameter-server-accelerator', arg_help=help_text)
+
+
+def GetParameterServerImageUri():
+  """Build parameter-server-image-uri flag."""
+  return base.Argument(
+      '--parameter-server-image-uri',
+      required=False,
+      help=('Docker image to run on each parameter server. '
+            'This image must be in Google Container Registry. If not '
+            'specified, the value of `master-image-uri` is used.'))
+
+
+def GetWorkerMachineConfig():
+  """Build worker machine type config group."""
+  machine_type = base.Argument(
+      '--worker-machine-type',
+      required=True,
+      help=('Type of virtual '
+            'machine to use for training '
+            'job\'s worker nodes.'))
+
+  machine_count = base.Argument(
+      '--worker-server-count',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      required=True,
+      help=('The number of worker nodes to use for the training job.'))
+
+  machine_type_group = base.ArgumentGroup(
+      required=False,
+      help='Configure worker node machine type settings.')
+  machine_type_group.AddArgument(machine_type)
+  machine_type_group.AddArgument(machine_count)
+  return machine_type_group
+
+
+def GetWorkerAccelerator():
+  """Build worker-accelerator flag."""
+  help_text = _ACCELERATOR_TYPE_HELP.format(worker_type='worker nodes')
+  return _MakeAcceleratorArgConfigArg(
+      '--worker-accelerator', arg_help=help_text)
+
+
+def GetWorkerImageUri():
+  """Build worker-image-uri flag."""
+  return base.Argument(
+      '--worker-image-uri',
+      required=False,
+      help=('Docker image to run on each worker node. '
+            'This image must be in Google Container Registry. If not '
+            'specified, the value of `master-image-uri` is used.'))

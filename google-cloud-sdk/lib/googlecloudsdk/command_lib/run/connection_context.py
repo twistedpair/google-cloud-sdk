@@ -35,9 +35,7 @@ import six
 from six.moves.urllib import parse as urlparse
 
 
-# TODO(b/117986529): rename to 'run' once control plane finishes renaming, which
-# will be reflected in third_party/apis/apis_map.py
-_SERVERLESS_API_NAME = 'serverless'
+_SERVERLESS_API_NAME = 'run'
 _SERVERLESS_API_VERSION = 'v1alpha1'
 
 

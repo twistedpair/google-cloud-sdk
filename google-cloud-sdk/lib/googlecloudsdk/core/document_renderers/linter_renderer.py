@@ -27,7 +27,7 @@ class LinterRenderer(text_renderer.TextRenderer):
   """Renders markdown to a list of lines where there is a linter error."""
 
   _HEADINGS_TO_LINT = ['NAME', 'EXAMPLES', 'DESCRIPTION']
-  _NAME_WORD_LIMIT = 15
+  _NAME_WORD_LIMIT = 20
   _PERSONAL_PRONOUNS = [' me ', ' we ', ' I ', ' us ', ' he ', ' she ', ' him ',
                         ' her ', ' them ', ' they ']
 
@@ -147,13 +147,14 @@ class LinterRenderer(text_renderer.TextRenderer):
       warnings.append('# NAME_DESCRIPTION_CHECK FAILED')
       warnings.append('Please add an explanation for the command.')
     else:
+      self.name_section = section.strip().split(' -')[1]
       successful_linters.append('# NAME_DESCRIPTION_CHECK SUCCESS')
     self.command_name_length = len(self.command_name)
     # check that name section is not too long
-    if len(section.split()) > self._NAME_WORD_LIMIT:
+    if len(self.name_section.split()) > self._NAME_WORD_LIMIT:
       warnings.append('# NAME_LENGTH_CHECK FAILED')
-      warnings.append('Please shorten the name section to less than ' +
-                      str(self._NAME_WORD_LIMIT) + ' words.')
+      warnings.append('Please shorten the name section description to less '
+                      'than ' + str(self._NAME_WORD_LIMIT) + ' words.')
     else:
       successful_linters.append('# NAME_LENGTH_CHECK SUCCESS')
     if successful_linters:

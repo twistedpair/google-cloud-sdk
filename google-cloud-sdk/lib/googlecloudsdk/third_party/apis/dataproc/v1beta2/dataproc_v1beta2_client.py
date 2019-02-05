@@ -35,14 +35,161 @@ class DataprocV1beta2(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_autoscalingPolicies = self.ProjectsLocationsAutoscalingPoliciesService(self)
     self.projects_locations_workflowTemplates = self.ProjectsLocationsWorkflowTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
+    self.projects_regions_autoscalingPolicies = self.ProjectsRegionsAutoscalingPoliciesService(self)
     self.projects_regions_clusters = self.ProjectsRegionsClustersService(self)
     self.projects_regions_jobs = self.ProjectsRegionsJobsService(self)
     self.projects_regions_operations = self.ProjectsRegionsOperationsService(self)
     self.projects_regions_workflowTemplates = self.ProjectsRegionsWorkflowTemplatesService(self)
     self.projects_regions = self.ProjectsRegionsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAutoscalingPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_locations_autoscalingPolicies resource."""
+
+    _NAME = u'projects_locations_autoscalingPolicies'
+
+    def __init__(self, client):
+      super(DataprocV1beta2.ProjectsLocationsAutoscalingPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates new autoscaling policy.
+
+      Args:
+        request: (DataprocProjectsLocationsAutoscalingPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutoscalingPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.locations.autoscalingPolicies.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta2/{+parent}/autoscalingPolicies',
+        request_field=u'autoscalingPolicy',
+        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesCreateRequest',
+        response_type_name=u'AutoscalingPolicy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an autoscaling policy. It is an error to delete an autoscaling policy that is in use by one or more clusters.
+
+      Args:
+        request: (DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method=u'DELETE',
+        method_id=u'dataproc.projects.locations.autoscalingPolicies.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves autoscaling policy.
+
+      Args:
+        request: (DataprocProjectsLocationsAutoscalingPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutoscalingPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.locations.autoscalingPolicies.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesGetRequest',
+        response_type_name=u'AutoscalingPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists autoscaling policies in the project.
+
+      Args:
+        request: (DataprocProjectsLocationsAutoscalingPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAutoscalingPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.locations.autoscalingPolicies.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta2/{+parent}/autoscalingPolicies',
+        request_field='',
+        request_type_name=u'DataprocProjectsLocationsAutoscalingPoliciesListRequest',
+        response_type_name=u'ListAutoscalingPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates (replaces) autoscaling policy.Disabled check for update_mask, because all updates will be full replacements.
+
+      Args:
+        request: (AutoscalingPolicy) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutoscalingPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/locations/{locationsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method=u'PUT',
+        method_id=u'dataproc.projects.locations.autoscalingPolicies.update',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}',
+        request_field='<request>',
+        request_type_name=u'AutoscalingPolicy',
+        response_type_name=u'AutoscalingPolicy',
+        supports_download=False,
+    )
 
   class ProjectsLocationsWorkflowTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_workflowTemplates resource."""
@@ -333,6 +480,151 @@ class DataprocV1beta2(base_api.BaseApiClient):
       super(DataprocV1beta2.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsRegionsAutoscalingPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_regions_autoscalingPolicies resource."""
+
+    _NAME = u'projects_regions_autoscalingPolicies'
+
+    def __init__(self, client):
+      super(DataprocV1beta2.ProjectsRegionsAutoscalingPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates new autoscaling policy.
+
+      Args:
+        request: (DataprocProjectsRegionsAutoscalingPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutoscalingPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies',
+        http_method=u'POST',
+        method_id=u'dataproc.projects.regions.autoscalingPolicies.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[],
+        relative_path=u'v1beta2/{+parent}/autoscalingPolicies',
+        request_field=u'autoscalingPolicy',
+        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesCreateRequest',
+        response_type_name=u'AutoscalingPolicy',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an autoscaling policy. It is an error to delete an autoscaling policy that is in use by one or more clusters.
+
+      Args:
+        request: (DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method=u'DELETE',
+        method_id=u'dataproc.projects.regions.autoscalingPolicies.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest',
+        response_type_name=u'Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves autoscaling policy.
+
+      Args:
+        request: (DataprocProjectsRegionsAutoscalingPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutoscalingPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.autoscalingPolicies.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesGetRequest',
+        response_type_name=u'AutoscalingPolicy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists autoscaling policies in the project.
+
+      Args:
+        request: (DataprocProjectsRegionsAutoscalingPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAutoscalingPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies',
+        http_method=u'GET',
+        method_id=u'dataproc.projects.regions.autoscalingPolicies.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'pageSize', u'pageToken'],
+        relative_path=u'v1beta2/{+parent}/autoscalingPolicies',
+        request_field='',
+        request_type_name=u'DataprocProjectsRegionsAutoscalingPoliciesListRequest',
+        response_type_name=u'ListAutoscalingPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates (replaces) autoscaling policy.Disabled check for update_mask, because all updates will be full replacements.
+
+      Args:
+        request: (AutoscalingPolicy) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutoscalingPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1beta2/projects/{projectsId}/regions/{regionsId}/autoscalingPolicies/{autoscalingPoliciesId}',
+        http_method=u'PUT',
+        method_id=u'dataproc.projects.regions.autoscalingPolicies.update',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1beta2/{+name}',
+        request_field='<request>',
+        request_type_name=u'AutoscalingPolicy',
+        response_type_name=u'AutoscalingPolicy',
+        supports_download=False,
+    )
 
   class ProjectsRegionsClustersService(base_api.BaseApiService):
     """Service class for the projects_regions_clusters resource."""

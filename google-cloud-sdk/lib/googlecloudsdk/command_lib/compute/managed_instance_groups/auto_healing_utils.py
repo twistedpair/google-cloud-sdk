@@ -33,23 +33,23 @@ def AddAutohealingArgs(autohealing_params_group):
       '--initial-delay',
       type=arg_parsers.Duration(),
       help="""\
-      Specifies the length of the period during which the instance is known to
-      be initializing and should not be autohealed even if unhealthy.
+      Specifies the length of time during which the instance is known to be
+      initializing and should not be autohealed even if unhealthy.
       This value cannot be greater than 1 hour.
       See $ gcloud topic datetimes for information on duration formats.
       """)
   health_check_group = autohealing_params_group.add_mutually_exclusive_group()
   health_check_group.add_argument(
       '--http-health-check',
-      help=('Specifies the HTTP health check object used for autohealing '
-            'instances in this group.'),
+      help=('HTTP health check object used for autohealing instances in this '
+            'group.'),
       action=actions.DeprecationAction(
           'http-health-check',
           warn='HttpHealthCheck is deprecated. Use --health-check instead.'))
   health_check_group.add_argument(
       '--https-health-check',
-      help=('Specifies the HTTPS health check object used for autohealing '
-            'instances in this group.'),
+      help=('HTTPS health check object used for autohealing instances in this '
+            'group.'),
       action=actions.DeprecationAction(
           'https-health-check',
           warn='HttpsHealthCheck is deprecated. Use --health-check instead.'))

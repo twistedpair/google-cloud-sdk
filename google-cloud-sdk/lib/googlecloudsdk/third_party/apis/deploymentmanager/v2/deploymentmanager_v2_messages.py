@@ -145,11 +145,11 @@ class Deployment(_messages.Message):
       latest fingerprint value, perform a get() request to a deployment.
     id: A string attribute.
     insertTime: Output only. Creation timestamp in RFC3339 text format.
-    labels: Map of labels; provided by the client when the resource is created
-      or updated. Specifically: Label keys must be between 1 and 63 characters
-      long and must conform to the following regular expression:
-      [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63
-      characters long and must conform to the regular expression
+    labels: Map of One Platform labels; provided by the client when the
+      resource is created or updated. Specifically: Label keys must be between
+      1 and 63 characters long and must conform to the following regular
+      expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0
+      and 63 characters long and must conform to the regular expression
       ([a-z]([-a-z0-9]*[a-z0-9])?)?
     manifest: Output only. URL of the manifest representing the last manifest
       that was successfully deployed.
@@ -186,11 +186,11 @@ class Deployment(_messages.Message):
 
 
 class DeploymentLabelEntry(_messages.Message):
-  r"""A DeploymentLabelEntry object.
+  r"""Label object for Deployments
 
   Fields:
-    key: A string attribute.
-    value: A string attribute.
+    key: Key of the label
+    value: Value of the label
   """
 
   key = _messages.StringField(1)
@@ -203,7 +203,7 @@ class DeploymentUpdate(_messages.Message):
   Fields:
     description: Output only. An optional user-provided description of the
       deployment after the current update has been applied.
-    labels: Output only. Map of labels; provided by the client when the
+    labels: Map of One Platform labels; provided by the client when the
       resource is created or updated. Specifically: Label keys must be between
       1 and 63 characters long and must conform to the following regular
       expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0
@@ -219,11 +219,11 @@ class DeploymentUpdate(_messages.Message):
 
 
 class DeploymentUpdateLabelEntry(_messages.Message):
-  r"""A DeploymentUpdateLabelEntry object.
+  r"""Label object for DeploymentUpdate
 
   Fields:
-    key: A string attribute.
-    value: A string attribute.
+    key: Key of the label
+    value: Value of the label
   """
 
   key = _messages.StringField(1)

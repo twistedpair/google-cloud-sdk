@@ -1495,6 +1495,9 @@ class ServiceAccount(_messages.Message):
   value can be the `email` address or the `unique_id` of the service account.
 
   Fields:
+    description: Optional. A user-specified opaque description of the service
+      account. Must be less than or equal to 256 UTF-8 bytes.
+    disabled: @OutputOnly A bool indicate if the service account is disabled.
     displayName: Optional. A user-specified name for the service account. Must
       be less than or equal to 100 UTF-8 bytes.
     email: @OutputOnly The email address of the service account.
@@ -1515,13 +1518,15 @@ class ServiceAccount(_messages.Message):
     uniqueId: @OutputOnly The unique and stable id of the service account.
   """
 
-  displayName = _messages.StringField(1)
-  email = _messages.StringField(2)
-  etag = _messages.BytesField(3)
-  name = _messages.StringField(4)
-  oauth2ClientId = _messages.StringField(5)
-  projectId = _messages.StringField(6)
-  uniqueId = _messages.StringField(7)
+  description = _messages.StringField(1)
+  disabled = _messages.BooleanField(2)
+  displayName = _messages.StringField(3)
+  email = _messages.StringField(4)
+  etag = _messages.BytesField(5)
+  name = _messages.StringField(6)
+  oauth2ClientId = _messages.StringField(7)
+  projectId = _messages.StringField(8)
+  uniqueId = _messages.StringField(9)
 
 
 class ServiceAccountIdentityBinding(_messages.Message):

@@ -858,7 +858,7 @@ class DeploymentmanagerAlpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a type provider. This method supports patch semantics.
+      r"""Patches a type provider.
 
       Args:
         request: (DeploymentmanagerTypeProvidersPatchRequest) input message

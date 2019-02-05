@@ -81,6 +81,66 @@ class AutoscalingConfig(_messages.Message):
   policyUri = _messages.StringField(1)
 
 
+class AutoscalingPolicy(_messages.Message):
+  r"""Describes an autoscaling policy for Dataproc cluster autoscaler.
+
+  Fields:
+    basicAlgorithm: A BasicAutoscalingAlgorithm attribute.
+    name: Output only. The "resource name" of the policy, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}.
+    secondaryWorkerConfig: Required. Describes how the autoscaler will operate
+      for secondary workers.
+    workerConfig: Required. Describes how the autoscaler will operate for
+      primary workers.
+  """
+
+  basicAlgorithm = _messages.MessageField('BasicAutoscalingAlgorithm', 1)
+  name = _messages.StringField(2)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 3)
+  workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 4)
+
+
+class BasicAutoscalingAlgorithm(_messages.Message):
+  r"""Basic algorithm for autoscaling.
+
+  Fields:
+    cooldownPeriod: Required. Cooldown time in between scaling.
+    yarnConfig: Required. YARN autoscaling configuration.
+  """
+
+  cooldownPeriod = _messages.StringField(1)
+  yarnConfig = _messages.MessageField('BasicYarnAutoscalingConfig', 2)
+
+
+class BasicYarnAutoscalingConfig(_messages.Message):
+  r"""Basic autoscaling configurations for YARN.
+
+  Fields:
+    gracefulDecommissionTimeout: Optional. Timeout used during an autoscaling
+      event (cluster update) between 0 seconds (no graceful decommission) and
+      1 day.Default: 0s.
+    scaleDownFactor: Optional. Fraction of suggested decrease in workers to
+      scale down by between 0 and 1. Suggested decrease when scaling down is
+      determined by the amount of average available memory since the last
+      cooldown period.Default: 1.0.
+    scaleDownMinWorkerFraction: Optional. Minimum workers as a fraction of the
+      current cluster size to to scale down by between 0 and 1.Default: 0.0.
+    scaleUpFactor: Required. Fraction of suggested increase in workers to
+      scale up by between 0 and 1. Suggested increase when scaling up is
+      determined by the amount of average pending memory since the last
+      cooldown period.
+    scaleUpMinWorkerFraction: Optional. Minimum workers as a fraction of the
+      current cluster size to to scale up by between 0 and 1.Default: 0.0.
+  """
+
+  gracefulDecommissionTimeout = _messages.StringField(1)
+  scaleDownFactor = _messages.FloatField(2)
+  scaleDownMinWorkerFraction = _messages.FloatField(3)
+  scaleUpFactor = _messages.FloatField(4)
+  scaleUpMinWorkerFraction = _messages.FloatField(5)
+
+
 class Binding(_messages.Message):
   r"""Associates members with a role.
 
@@ -511,6 +571,65 @@ class ClusterStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class DataprocProjectsLocationsAutoscalingPoliciesCreateRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesCreateRequest object.
+
+  Fields:
+    autoscalingPolicy: A AutoscalingPolicy resource to be passed as the
+      request body.
+    parent: Required. The "resource name" of the region, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}.
+  """
+
+  autoscalingPolicy = _messages.MessageField('AutoscalingPolicy', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names of the
+      form
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesGetRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names of the
+      form
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsAutoscalingPoliciesListRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsAutoscalingPoliciesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return in each
+      response.
+    pageToken: Optional. The page token, returned by a previous call, to
+      request the next page of results.
+    parent: Required. The "resource name" of the region, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesCreateRequest object.
 
@@ -658,6 +777,65 @@ class DataprocProjectsLocationsWorkflowTemplatesTestIamPermissionsRequest(_messa
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesCreateRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesCreateRequest object.
+
+  Fields:
+    autoscalingPolicy: A AutoscalingPolicy resource to be passed as the
+      request body.
+    parent: Required. The "resource name" of the region, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}.
+  """
+
+  autoscalingPolicy = _messages.MessageField('AutoscalingPolicy', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names of the
+      form
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesGetRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The "resource name" of the autoscaling policy, as
+      described in https://cloud.google.com/apis/design/resource_names of the
+      form
+      projects/{project_id}/regions/{region}/autoscalingPolicies/{policy_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsRegionsAutoscalingPoliciesListRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsAutoscalingPoliciesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return in each
+      response.
+    pageToken: Optional. The page token, returned by a previous call, to
+      request the next page of results.
+    parent: Required. The "resource name" of the region, as described in
+      https://cloud.google.com/apis/design/resource_names of the form
+      projects/{project_id}/regions/{region}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
@@ -1709,6 +1887,31 @@ class HiveJob(_messages.Message):
   scriptVariables = _messages.MessageField('ScriptVariablesValue', 6)
 
 
+class InstanceGroupAutoscalingPolicyConfig(_messages.Message):
+  r"""Configuration for the size bounds of an instance group, including its
+  proportional size to other groups.
+
+  Fields:
+    maxInstances: Required. Maximum number of instances for this group. Must
+      be >= min_instances.
+    minInstances: Optional. Minimum number of instances for this group.Default
+      for primary workers is 2, default for secondary workers is 0.
+    weight: Optional. Weight for instance group. Determines fraction of total
+      workers in cluster that will be composed of instances from this instance
+      group (e.g. if primary workers have weight 2 and secondary workers have
+      weight 1, then the cluster should have approximately 2 primary workers
+      to each secondary worker. Cluster may not reach these exact weights if
+      constrained by min/max bounds or other autoscaling
+      configurations.Default 1. Note that all groups have equal an equal
+      weight by default, so the cluster will attempt to maintain an equal
+      number of workers in each group within configured size bounds per group.
+  """
+
+  maxInstances = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  weight = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class InstanceGroupConfig(_messages.Message):
   r"""Optional. The config settings for Compute Engine resources in an
   instance group, such as a master or worker group.
@@ -2034,17 +2237,19 @@ class KerberosConfig(_messages.Message):
   r"""Specifies Kerberos related configuration.
 
   Fields:
-    crossRealmSharedKeyUri: Optional. The GCS uri of a KMS encrypted file
-      containing the shared password between the on-cluster Kerberos realm and
-      the remote trusted realm, in a cross realm trust relationship.
     crossRealmTrustAdminServer: Optional. The admin server (IP or hostname)
       for the remote trusted realm in a cross realm trust relationship.
     crossRealmTrustKdc: Optional. The KDC (IP or hostname) for the remote
       trusted realm in a cross realm trust relationship.
     crossRealmTrustRealm: Optional. The remote realm the Dataproc on-cluster
       KDC will trust, should the user enable cross realm trust.
+    crossRealmTrustSharedPasswordUri: Optional. The GCS uri of a KMS encrypted
+      file containing the shared password between the on-cluster Kerberos
+      realm and the remote trusted realm, in a cross realm trust relationship.
     enableKerberos: Optional. Flag to indicate whether to Kerberize the
       cluster.
+    kdcDbKeyUri: Optional. The GCS uri of a KMS encrypted file containing the
+      master key of the KDC database.
     keyPasswordUri: Optional. The GCS uri of a KMS encrypted file containing
       the password to the user provided key. For the self-signed certificate,
       this password is generated by Dataproc.
@@ -2058,6 +2263,9 @@ class KerberosConfig(_messages.Message):
       sensitive files.
     rootPrincipalPasswordUri: Required. The GCS uri of a KMS encrypted file
       containing the root principal password.
+    tgtLifetimeHours: Optional. The lifetime of the ticket granting ticket, in
+      hours. If not specified, or user specifies 0, then default value 10 will
+      be used.
     truststorePasswordUri: Optional. The GCS uri of a KMS encrypted file
       containing the password to the user provided truststore. For the self-
       signed certificate, this password is generated by Dataproc.
@@ -2066,18 +2274,20 @@ class KerberosConfig(_messages.Message):
       certificate.
   """
 
-  crossRealmSharedKeyUri = _messages.StringField(1)
-  crossRealmTrustAdminServer = _messages.StringField(2)
-  crossRealmTrustKdc = _messages.StringField(3)
-  crossRealmTrustRealm = _messages.StringField(4)
+  crossRealmTrustAdminServer = _messages.StringField(1)
+  crossRealmTrustKdc = _messages.StringField(2)
+  crossRealmTrustRealm = _messages.StringField(3)
+  crossRealmTrustSharedPasswordUri = _messages.StringField(4)
   enableKerberos = _messages.BooleanField(5)
-  keyPasswordUri = _messages.StringField(6)
-  keystorePasswordUri = _messages.StringField(7)
-  keystoreUri = _messages.StringField(8)
-  kmsKeyUri = _messages.StringField(9)
-  rootPrincipalPasswordUri = _messages.StringField(10)
-  truststorePasswordUri = _messages.StringField(11)
-  truststoreUri = _messages.StringField(12)
+  kdcDbKeyUri = _messages.StringField(6)
+  keyPasswordUri = _messages.StringField(7)
+  keystorePasswordUri = _messages.StringField(8)
+  keystoreUri = _messages.StringField(9)
+  kmsKeyUri = _messages.StringField(10)
+  rootPrincipalPasswordUri = _messages.StringField(11)
+  tgtLifetimeHours = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  truststorePasswordUri = _messages.StringField(13)
+  truststoreUri = _messages.StringField(14)
 
 
 class LifecycleConfig(_messages.Message):
@@ -2100,6 +2310,19 @@ class LifecycleConfig(_messages.Message):
   autoDeleteTtl = _messages.StringField(2)
   idleDeleteTtl = _messages.StringField(3)
   idleStartTime = _messages.StringField(4)
+
+
+class ListAutoscalingPoliciesResponse(_messages.Message):
+  r"""A response to a request to list autoscaling policies in a project.
+
+  Fields:
+    nextPageToken: Output only. This token is included in the response if
+      there are more results to fetch.
+    policies: Output only. Autoscaling policies list.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policies = _messages.MessageField('AutoscalingPolicy', 2, repeated=True)
 
 
 class ListClustersResponse(_messages.Message):

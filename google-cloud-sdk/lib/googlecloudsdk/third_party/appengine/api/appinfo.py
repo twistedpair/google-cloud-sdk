@@ -157,7 +157,10 @@ _PENDING_LATENCY_REGEX = r'^(\d+((\.\d{1,3})?s|ms)|automatic)$'
 
 _IDLE_TIMEOUT_REGEX = r'^[\d]+(s|m)$'
 
+GCE_RESOURCE_PATH_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
+
 GCE_RESOURCE_NAME_REGEX = r'^[a-z]([a-z\d-]{0,61}[a-z\d])?$'
+
 VPC_ACCESS_CONNECTOR_NAME_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
 
 ALTERNATE_HOSTNAME_SEPARATOR = '-dot-'
@@ -172,6 +175,9 @@ RUNTIME_RE_STRING = r'((gs://[a-z0-9\-\._/]+)|([a-z][a-z0-9\-\.]{0,29}))'
 
 API_VERSION_RE_STRING = r'[\w.]{1,32}'
 ENV_RE_STRING = r'(1|2|standard|flex|flexible)'
+
+# MAIN should match any file path or class path (eg with dots).
+MAIN_RE_STRING = r'[\w.\\\/:]+'
 
 SOURCE_LANGUAGE_RE_STRING = r'[\w.\-]{1,32}'
 
@@ -254,6 +260,7 @@ MINOR_VERSION = 'minor_version'
 RUNTIME = 'runtime'
 RUNTIME_CHANNEL = 'runtime_channel'
 API_VERSION = 'api_version'
+MAIN = 'main'
 ENDPOINTS_API_SERVICE = 'endpoints_api_service'
 ENV = 'env'
 ENTRYPOINT = 'entrypoint'
@@ -777,7 +784,8 @@ _MAX_HEADER_SIZE_FOR_EXEMPTED_HEADERS = 10240
 
 _CANNED_RUNTIMES = ('contrib-dart', 'dart', 'go', 'php', 'php55', 'php72',
                     'python', 'python27', 'python-compat', 'java', 'java7',
-                    'java8', 'vm', 'custom', 'nodejs', 'ruby')
+                    'java8', 'vm', 'custom', 'nodejs', 'ruby', 'go111',
+                    'go112')
 _all_runtimes = _CANNED_RUNTIMES
 
 
@@ -1998,7 +2006,7 @@ class Network(validation.Validated):
           GCE_RESOURCE_NAME_REGEX)),
 
       NETWORK_NAME: validation.Optional(validation.Regex(
-          GCE_RESOURCE_NAME_REGEX)),
+          GCE_RESOURCE_PATH_REGEX)),
 
       SUBNETWORK_NAME: validation.Optional(validation.Regex(
           GCE_RESOURCE_NAME_REGEX)),
@@ -2267,6 +2275,7 @@ class AppInfoExternal(validation.Validated):
       # A new `api_version` requires a release of the `dev_appserver`, so it
       # is ok to hardcode the version names here.
       API_VERSION: validation.Optional(API_VERSION_RE_STRING),
+      MAIN: validation.Optional(MAIN_RE_STRING),
       # The App Engine environment to run this version in. (VM vs. non-VM, etc.)
       ENV: validation.Optional(ENV_RE_STRING),
       ENDPOINTS_API_SERVICE: validation.Optional(EndpointsApiService),

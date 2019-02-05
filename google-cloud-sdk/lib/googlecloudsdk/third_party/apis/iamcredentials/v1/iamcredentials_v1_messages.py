@@ -110,8 +110,8 @@ class GenerateIdentityBindingAccessTokenRequest(_messages.Message):
       than 4kB serialized as JSON without whitespace.  Example header: {
       "alg": "RS256",   "kid": "92a4265e14ab04d4d228a48d10d4ca31610936f8" }
       Example payload: {   "iss": "https://accounts.google.com",   "iat":
-      1517963104,   "exp": 1517966704,   "aud": "https://iamcredentials.google
-      apis.com/google.iam.credentials.v1.CloudGaia",   "sub":
+      1517963104,   "exp": 1517966704,   "aud":   "https://iamcredentials.goog
+      leapis.com/google.iam.credentials.v1.CloudGaia",   "sub":
       "113475438248934895348",   "my_claims": {     "additional_claim":
       "value"   } }
     scope: Code to identify the scopes to be included in the OAuth 2.0 access

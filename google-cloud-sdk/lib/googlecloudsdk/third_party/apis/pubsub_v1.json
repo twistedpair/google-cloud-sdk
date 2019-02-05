@@ -237,6 +237,10 @@
         "messageStoragePolicy": {
           "description": "Policy constraining how messages published to the topic may be stored. It\nis determined when the topic is created based on the policy configured at\nthe project level. It must not be set by the caller in the request to\nCreateTopic or to UpdateTopic. This field will be populated in the\nresponses for GetTopic, CreateTopic, and UpdateTopic: if not present in the\nresponse, then no constraints are in effect.",
           "$ref": "MessageStoragePolicy"
+        },
+        "kmsKeyName": {
+          "description": "The resource name of the Cloud KMS CryptoKey to be used to protect access\nto messages published on this topic.\n\nThe expected format is `projects\/*\/locations\/*\/keyRings\/*\/cryptoKeys\/*`.",
+          "type": "string"
         }
       }
     },
@@ -445,6 +449,25 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "oidcToken": {
+          "description": "If specified, Pub\/Sub will generate and attach an OIDC JWT token as an\n`Authorization` header in the HTTP request for every pushed message.",
+          "$ref": "OidcToken"
+        }
+      }
+    },
+    "OidcToken": {
+      "id": "OidcToken",
+      "description": "Contains information needed for generating an\n[OpenID Connect\ntoken](https:\/\/developers.google.com\/identity\/protocols\/OpenIDConnect).",
+      "type": "object",
+      "properties": {
+        "serviceAccountEmail": {
+          "description": "[Service account\nemail](https:\/\/cloud.google.com\/iam\/docs\/service-accounts)\nto be used for generating the OIDC token. The caller (for\nCreateSubscription, UpdateSubscription, and ModifyPushConfig RPCs) must\nhave the iam.serviceAccounts.actAs permission for the service account.",
+          "type": "string"
+        },
+        "audience": {
+          "description": "Audience to be used when generating OIDC token. The audience claim\nidentifies the recipients that the JWT is intended for. The audience\nvalue is a single case-sensitive string. Having multiple values (array)\nfor the audience field is not supported. More info about the OIDC JWT\ntoken audience here: https:\/\/tools.ietf.org\/html\/rfc7519#section-4.1.3\nNote: if not specified, the Push endpoint URL will be used.",
+          "type": "string"
         }
       }
     },

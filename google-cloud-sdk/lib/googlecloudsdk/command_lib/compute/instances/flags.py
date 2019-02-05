@@ -921,7 +921,8 @@ def AddAddressArgs(parser,
     network_interface_help = """\
         Adds a network interface to the instance. Mutually exclusive with any
         of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
-        *--private-network-ip*.
+        *--private-network-ip*. This flag can be repeated to specify multiple
+        network interfaces.
 
         The following keys are allowed:
         *address*::: Assigns the given external address to the instance that is

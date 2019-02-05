@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -123,7 +124,8 @@ class JobsClient(object):
                        user_args=None,
                        runtime_version=None,
                        python_version=None,
-                       labels=None):
+                       labels=None,
+                       custom_train_server_config=None):
     """Builds a Cloud ML Engine Job from a config file and/or flag values.
 
     Args:
@@ -144,11 +146,14 @@ class JobsClient(object):
         python_version: the Python version in which to run the job (overrides
           yaml file)
         labels: Job.LabelsValue, the Cloud labels for the job
+        custom_train_server_config: jobs_util.CustomTrainingInputServerConfig,
+          configuration object for custom server parameters.
     Returns:
         A constructed Job object.
     """
     job = self.job_class()
 
+    # TODO(b/123467089): Remove yaml file loading here, only parse data objects
     if path:
       data = yaml.load_path(path)
       if data:
@@ -175,6 +180,28 @@ class JobsClient(object):
     for field_name, value in additional_fields.items():
       if value is not None:
         setattr(job.trainingInput, field_name, value)
+
+    if custom_train_server_config:
+      for field_name, value in custom_train_server_config.GetFieldMap().items():
+        if value is not None:
+          if field_name.endswith('Config'):
+            if value['imageUri']:
+              arg_utils.SetFieldInMessage(job,
+                                          'trainingInput.{}.imageUri'.format(
+                                              field_name),
+                                          value['imageUri'])
+            if value['acceleratorConfig']['type']:
+              arg_utils.SetFieldInMessage(
+                  job,
+                  'trainingInput.{}.acceleratorConfig.type'.format(field_name),
+                  value['acceleratorConfig']['type'])
+            if value['acceleratorConfig']['count']:
+              arg_utils.SetFieldInMessage(
+                  job,
+                  'trainingInput.{}.acceleratorConfig.count'.format(field_name),
+                  value['acceleratorConfig']['count'])
+          else:
+            setattr(job.trainingInput, field_name, value)
 
     return job
 

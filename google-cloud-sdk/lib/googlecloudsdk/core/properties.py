@@ -1547,12 +1547,10 @@ class _SectionApiEndpointOverrides(_Section):
     self.replicapoolupdater = self._Add('replicapoolupdater')
     self.runtimeconfig = self._Add('runtimeconfig')
     self.redis = self._Add('redis')
-    # TODO(b/119917957): rename to 'run' once control plane finishes renaming,
-    # which will be reflected in third_party/apis/apis_map.py See b/117986529
-    # for additional context.
-    self.run = self._Add('serverless')
+    self.run = self._Add('run')
     self.servicemanagement = self._Add('servicemanagement')
     self.serviceregistry = self._Add('serviceregistry')
+    self.serviceusage = self._Add('serviceusage')
     self.serviceuser = self._Add('serviceuser')
     self.source = self._Add('source')
     self.sourcerepo = self._Add('sourcerepo')

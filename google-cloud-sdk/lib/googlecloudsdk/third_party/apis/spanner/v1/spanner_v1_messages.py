@@ -189,6 +189,33 @@ class BackupInfo(_messages.Message):
   sourceDatabase = _messages.StringField(3)
 
 
+class BatchCreateSessionsRequest(_messages.Message):
+  r"""The request for BatchCreateSessions.
+
+  Fields:
+    sessionCount: Required. The number of sessions to be created in this batch
+      call. The API may return fewer than the requested number of sessions. If
+      a specific number of sessions are desired, the client can make
+      additional calls to BatchCreateSessions (adjusting session_count as
+      necessary). The maximum allowed sessions are documented at
+      https://goo.gl/hBUQED.
+    sessionTemplate: Parameters to be applied to each created session.
+  """
+
+  sessionCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  sessionTemplate = _messages.MessageField('Session', 2)
+
+
+class BatchCreateSessionsResponse(_messages.Message):
+  r"""The response for BatchCreateSessions.
+
+  Fields:
+    session: The freshly created sessions.
+  """
+
+  session = _messages.MessageField('Session', 1, repeated=True)
+
+
 class BeginTransactionRequest(_messages.Message):
   r"""The request for BeginTransaction.
 
@@ -2847,6 +2874,19 @@ class SpannerProjectsInstancesDatabasesRestoreRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   restoreDatabaseRequest = _messages.MessageField('RestoreDatabaseRequest', 2)
+
+
+class SpannerProjectsInstancesDatabasesSessionsBatchCreateRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesSessionsBatchCreateRequest object.
+
+  Fields:
+    batchCreateSessionsRequest: A BatchCreateSessionsRequest resource to be
+      passed as the request body.
+    database: Required. The database in which the new sessions are created.
+  """
+
+  batchCreateSessionsRequest = _messages.MessageField('BatchCreateSessionsRequest', 1)
+  database = _messages.StringField(2, required=True)
 
 
 class SpannerProjectsInstancesDatabasesSessionsBeginTransactionRequest(_messages.Message):

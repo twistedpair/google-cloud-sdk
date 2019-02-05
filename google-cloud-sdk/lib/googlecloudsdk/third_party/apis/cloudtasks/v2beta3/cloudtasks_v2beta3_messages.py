@@ -990,7 +990,7 @@ class Queue(_messages.Message):
       . UpdateQueue cannot be used to change `state`.
 
   Fields:
-    appEngineHttpQueue: AppEngineHttpQueue settings apply only to AppEngine
+    appEngineHttpQueue: AppEngineHttpQueue settings apply only to App Engine
       tasks in this queue.
     name: Caller-specified and required in CreateQueue, after which it becomes
       output only.  The queue name.  The queue name must have the following

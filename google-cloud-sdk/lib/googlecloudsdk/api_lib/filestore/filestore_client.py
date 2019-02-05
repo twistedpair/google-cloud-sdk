@@ -28,13 +28,17 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 
-FILESTORE_API_NAME = 'file'
-FILESTORE_ALPHA_API_VERSION = 'v1alpha1'
-FILESTORE_API_VERSION = 'v1beta1'
+API_NAME = 'file'
+V1_API_VERSION = 'v1'
+ALPHA_API_VERSION = 'v1alpha1'
+BETA_API_VERSION = 'v1beta1'
+
+INSTANCES_COLLECTION = 'file.projects.locations.instances'
+LOCATIONS_COLLECTION = 'file.projects.locations'
 OPERATIONS_COLLECTION = 'file.projects.locations.operations'
 
 
-def GetClient(version=FILESTORE_API_VERSION):
+def GetClient(version=V1_API_VERSION):
   """Import and return the appropriate Cloud Filestore client.
 
   Args:
@@ -43,12 +47,12 @@ def GetClient(version=FILESTORE_API_VERSION):
   Returns:
     Cloud Filestore client for the appropriate release track.
   """
-  return apis.GetClientInstance(FILESTORE_API_NAME, version)
+  return apis.GetClientInstance(API_NAME, version)
 
 
-def GetMessages(version=FILESTORE_API_VERSION):
+def GetMessages(version=V1_API_VERSION):
   """Import and return the appropriate Filestore messages module."""
-  return apis.GetMessagesModule(FILESTORE_API_NAME, version)
+  return apis.GetMessagesModule(API_NAME, version)
 
 
 class Error(exceptions.Error):
@@ -66,11 +70,13 @@ class InvalidNameError(Error):
 class FilestoreClient(object):
   """Wrapper for working with the file API."""
 
-  def __init__(self, version=FILESTORE_API_VERSION):
-    if version == FILESTORE_ALPHA_API_VERSION:
+  def __init__(self, version=V1_API_VERSION):
+    if version == ALPHA_API_VERSION:
       self._adapter = AlphaFilestoreAdapter()
-    elif version == FILESTORE_API_VERSION:
+    elif version == BETA_API_VERSION:
       self._adapter = BetaFilestoreAdapter()
+    elif version == V1_API_VERSION:
+      self._adapter = FilestoreAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(version))
 
@@ -300,8 +306,8 @@ class AlphaFilestoreAdapter(object):
   """Adapter for the alpha filestore API."""
 
   def __init__(self):
-    self.client = GetClient(version=FILESTORE_ALPHA_API_VERSION)
-    self.messages = GetMessages(version=FILESTORE_ALPHA_API_VERSION)
+    self.client = GetClient(version=ALPHA_API_VERSION)
+    self.messages = GetMessages(version=ALPHA_API_VERSION)
 
   def ParseFileShareIntoInstance(self, instance, file_share):
     """Parse specified file share configs into an instance message."""
@@ -331,8 +337,8 @@ class BetaFilestoreAdapter(object):
   """Adapter for the beta filestore API."""
 
   def __init__(self):
-    self.client = GetClient(version=FILESTORE_API_VERSION)
-    self.messages = GetMessages(version=FILESTORE_API_VERSION)
+    self.client = GetClient(version=BETA_API_VERSION)
+    self.messages = GetMessages(version=BETA_API_VERSION)
 
   def ParseFileShareIntoInstance(self, instance, file_share):
     """Parse specified file share configs into an instance message."""
@@ -400,3 +406,19 @@ class BetaFilestoreAdapter(object):
           'Must resize the file share to a larger capacity. Existing capacity: '
           '[{}]. New capacity requested: [{}].'.format(
               existing_file_share.capacityGb, new_capacity))
+
+
+class FilestoreAdapter(BetaFilestoreAdapter):
+  """Adapter for the filestore v1 API."""
+
+  def __init__(self):
+    super(FilestoreAdapter, self).__init__()
+    self.client = GetClient(version=V1_API_VERSION)
+    self.messages = GetMessages(version=V1_API_VERSION)
+
+
+def GetFilestoreRegistry(api_version=V1_API_VERSION):
+  registry = resources.REGISTRY.Clone()
+  registry.RegisterApiByName(API_NAME, api_version=api_version)
+
+  return registry

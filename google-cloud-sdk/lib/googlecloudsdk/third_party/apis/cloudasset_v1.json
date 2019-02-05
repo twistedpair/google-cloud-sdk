@@ -185,7 +185,7 @@
               "description": "The name of the operation resource.",
               "location": "path",
               "required": true,
-              "pattern": "^[^\/]+\/[^\/]+\/operations\/[^\/]+\/[^\/]+$",
+              "pattern": "^[^\/]+\/[^\/]+\/operations\/[^\/]+\/.+$",
               "type": "string"
             }
           },

@@ -215,6 +215,11 @@ class KubernetesObject(object):
   @property
   def labels(self):
     self.AssertFullObject()
+
+    if not self._m.metadata.labels:
+      self._m.metadata.labels = self._messages.ObjectMeta.LabelsValue(
+          additionalProperties=[])
+
     return ListAsDictionaryWrapper(
         self._m.metadata.labels.additionalProperties,
         self._messages.ObjectMeta.LabelsValue.AdditionalProperty,

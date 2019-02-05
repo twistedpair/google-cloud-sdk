@@ -77,12 +77,21 @@ def CreateRequest(args,
   for i, version in enumerate(versions):
     version.name = '%d/%s' % (i, current_time_str)
 
-  update_policy = client.messages.InstanceGroupManagerUpdatePolicy(
-      maxSurge=max_surge,
-      maxUnavailable=max_unavailable,
-      minReadySec=args.min_ready,
-      minimalAction=minimal_action,
-      type=update_policy_type)
+  # min_ready is available in alpha and beta APIs only
+  if hasattr(args, 'min_ready'):
+    update_policy = client.messages.InstanceGroupManagerUpdatePolicy(
+        maxSurge=max_surge,
+        maxUnavailable=max_unavailable,
+        minReadySec=args.min_ready,
+        minimalAction=minimal_action,
+        type=update_policy_type)
+  else:
+    update_policy = client.messages.InstanceGroupManagerUpdatePolicy(
+        maxSurge=max_surge,
+        maxUnavailable=max_unavailable,
+        minimalAction=minimal_action,
+        type=update_policy_type)
+
   igm_resource = client.messages.InstanceGroupManager(
       instanceTemplate=None, updatePolicy=update_policy, versions=versions)
   if igm_ref.Collection() == 'compute.instanceGroupManagers':

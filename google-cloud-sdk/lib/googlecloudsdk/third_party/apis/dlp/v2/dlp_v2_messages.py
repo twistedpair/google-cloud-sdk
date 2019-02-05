@@ -636,6 +636,22 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
   r"""A DlpProjectsJobTriggersListRequest object.
 
   Fields:
+    filter: Optional. Allows filtering.  Supported syntax:  * Filter
+      expressions are made up of one or more restrictions. * Restrictions can
+      be combined by `AND` or `OR` logical operators. A sequence of
+      restrictions implicitly uses `AND`. * A restriction has the form of
+      `<field> <operator> <value>`. * Supported fields/values for inspect
+      jobs:     - `status` - HEALTHY|PAUSED|CANCELLED     -
+      `inspected_storage` - DATASTORE|CLOUD_STORAGE|BIGQUERY     -
+      'last_run_time` - RFC 3339 formatted timestamp, surrounded by
+      quotation marks. Nanoseconds are ignored.     - 'error_count' - Number
+      of errors that have occurred while running. * The operator must be `=`
+      or `!=` for status and inspected_storage.  Examples:  *
+      inspected_storage = cloud_storage AND status = HEALTHY *
+      inspected_storage = cloud_storage OR inspected_storage = bigquery *
+      inspected_storage = cloud_storage AND (state = PAUSED OR state =
+      HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\"  The length of
+      this field should be no more than 500 characters.
     orderBy: Optional comma separated list of triggeredJob fields to order by,
       followed by `asc` or `desc` postfix. This list is case-insensitive,
       default sorting order is ascending, redundant space characters are
@@ -652,10 +668,11 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
     parent: The parent resource name, for example `projects/my-project-id`.
   """
 
-  orderBy = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class DlpProjectsJobTriggersPatchRequest(_messages.Message):
@@ -3564,12 +3581,15 @@ class GooglePrivacyDlpV2Regex(_messages.Message):
   r"""Message defining a custom regular expression.
 
   Fields:
+    groupIndexes: The index of the submatch to extract as findings. When not
+      specified, the entire match is returned. No more than 3 may be included.
     pattern: Pattern defining the regular expression. Its syntax
       (https://github.com/google/re2/wiki/Syntax) can be found under the
       google/re2 repository on GitHub.
   """
 
-  pattern = _messages.StringField(1)
+  groupIndexes = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
+  pattern = _messages.StringField(2)
 
 
 class GooglePrivacyDlpV2ReidentifyContentRequest(_messages.Message):

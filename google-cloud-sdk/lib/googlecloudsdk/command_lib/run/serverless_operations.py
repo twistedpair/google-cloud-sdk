@@ -459,7 +459,7 @@ class ServerlessOperations(object):
     """
     messages = self._messages_module
     revision_name = revision_ref.RelativeName()
-    request = messages.ServerlessNamespacesRevisionsGetRequest(
+    request = messages.RunNamespacesRevisionsGetRequest(
         name=revision_name)
     try:
       with metrics.record_duration(metrics.GET_REVISION):
@@ -481,8 +481,8 @@ class ServerlessOperations(object):
         params={
             'namespacesId': service_ref.namespacesId,
         },
-        collection='serverless.namespaces.routes').RelativeName()
-    route_get_request = messages.ServerlessNamespacesRoutesGetRequest(
+        collection='run.namespaces.routes').RelativeName()
+    route_get_request = messages.RunNamespacesRoutesGetRequest(
         name=route_name,
     )
 
@@ -587,7 +587,7 @@ class ServerlessOperations(object):
 
   def ListServices(self, namespace_ref):
     messages = self._messages_module
-    request = messages.ServerlessNamespacesServicesListRequest(
+    request = messages.RunNamespacesServicesListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.record_duration(metrics.LIST_SERVICES):
       response = self._client.namespaces_services.List(request)
@@ -595,7 +595,7 @@ class ServerlessOperations(object):
 
   def ListConfigurations(self, namespace_ref):
     messages = self._messages_module
-    request = messages.ServerlessNamespacesConfigurationsListRequest(
+    request = messages.RunNamespacesConfigurationsListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.record_duration(metrics.LIST_CONFIGURATIONS):
       response = self._client.namespaces_configurations.List(request)
@@ -604,7 +604,7 @@ class ServerlessOperations(object):
 
   def ListRoutes(self, namespace_ref):
     messages = self._messages_module
-    request = messages.ServerlessNamespacesRoutesListRequest(
+    request = messages.RunNamespacesRoutesListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.record_duration(metrics.LIST_ROUTES):
       response = self._client.namespaces_routes.List(request)
@@ -613,7 +613,7 @@ class ServerlessOperations(object):
   def GetService(self, service_ref):
     """Return the relevant Service from the server, or None if 404."""
     messages = self._messages_module
-    service_get_request = messages.ServerlessNamespacesServicesGetRequest(
+    service_get_request = messages.RunNamespacesServicesGetRequest(
         name=service_ref.RelativeName())
 
     try:
@@ -633,11 +633,11 @@ class ServerlessOperations(object):
           params={
               'namespacesId': service_or_configuration_ref.namespacesId,
           },
-          collection='serverless.namespaces.configurations').RelativeName()
+          collection='run.namespaces.configurations').RelativeName()
     else:
       name = service_or_configuration_ref.RelativeName()
     configuration_get_request = (
-        messages.ServerlessNamespacesConfigurationsGetRequest(
+        messages.RunNamespacesConfigurationsGetRequest(
             name=name))
 
     try:
@@ -657,11 +657,11 @@ class ServerlessOperations(object):
           params={
               'namespacesId': service_or_route_ref.namespacesId,
           },
-          collection='serverless.namespaces.routes').RelativeName()
+          collection='run.namespaces.routes').RelativeName()
     else:
       name = service_or_route_ref.RelativeName()
     route_get_request = (
-        messages.ServerlessNamespacesRoutesGetRequest(
+        messages.RunNamespacesRoutesGetRequest(
             name=name))
 
     try:
@@ -683,7 +683,7 @@ class ServerlessOperations(object):
     """
     messages = self._messages_module
     service_name = service_ref.RelativeName()
-    service_delete_request = messages.ServerlessNamespacesServicesDeleteRequest(
+    service_delete_request = messages.RunNamespacesServicesDeleteRequest(
         name=service_name,
     )
 
@@ -705,7 +705,7 @@ class ServerlessOperations(object):
     """
     messages = self._messages_module
     revision_name = revision_ref.RelativeName()
-    request = messages.ServerlessNamespacesRevisionsDeleteRequest(
+    request = messages.RunNamespacesRevisionsDeleteRequest(
         name=revision_name)
     try:
       with metrics.record_duration(metrics.DELETE_REVISION):
@@ -717,7 +717,7 @@ class ServerlessOperations(object):
   def GetRevisionsByNonce(self, namespace_ref, nonce):
     """Return all revisions with the given nonce."""
     messages = self._messages_module
-    request = messages.ServerlessNamespacesRevisionsListRequest(
+    request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
         labelSelector='{} = {}'.format(NONCE_LABEL, nonce))
     response = self._client.namespaces_revisions.List(request)
@@ -753,7 +753,7 @@ class ServerlessOperations(object):
       try:
         namespace_ref = self._registry.Parse(
             metadata.namespace,
-            collection='serverless.namespaces')
+            collection='run.namespaces')
         poller = NonceBasedRevisionPoller(self, namespace_ref)
         base_revision = poller.GetResult(waiter.PollUntilDone(
             poller, base_revision_nonce,
@@ -769,7 +769,7 @@ class ServerlessOperations(object):
         revision_ref = self._registry.Parse(
             status.latestCreatedRevisionName,
             params={'namespacesId': metadata.namespace},
-            collection='serverless.namespaces.revisions')
+            collection='run.namespaces.revisions')
         base_revision = self.GetRevision(revision_ref)
     return base_revision
 
@@ -781,14 +781,19 @@ class ServerlessOperations(object):
       if base_revision:
         config_changes.append(_SwitchToDigestChange(base_revision))
 
-  def _UpdateOrCreateService(self, service_ref, config_changes, with_code):
+  def _UpdateOrCreateService(self, service_ref, config_changes, with_code,
+                             private_endpoint=None):
     """Apply config_changes to the service. Create it if necessary.
 
     Arguments:
       service_ref: Reference to the service to create or update
       config_changes: list of ConfigChanger to modify the service with
-      with_code: boolean, True if the config_changes contains code to deploy.
+      with_code: bool, True if the config_changes contains code to deploy.
         We can't create the service if we're not deploying code.
+      private_endpoint: bool, True if creating a new Service for
+        Cloud Run on GKE that should only be addressable from within the
+        cluster. False if it should be publicly addressable. None if
+        its existing visibility should remain unchanged.
 
     Returns:
       The Service object we created or modified.
@@ -803,12 +808,21 @@ class ServerlessOperations(object):
         if not with_code:
           # Avoid changing the running code by making the new revision by digest
           self._EnsureImageDigest(serv, config_changes)
+
+        if private_endpoint is None:
+          # Don't change the existing service visibility
+          pass
+        elif private_endpoint:
+          serv.labels[service.ENDPOINT_VISIBILITY] = service.CLUSTER_LOCAL
+        else:
+          del serv.labels[service.ENDPOINT_VISIBILITY]
+
         # PUT the changed Service
         for config_change in config_changes:
           config_change.AdjustConfiguration(serv.configuration, serv.metadata)
         serv_name = service_ref.RelativeName()
         serv_update_req = (
-            messages.ServerlessNamespacesServicesReplaceServiceRequest(
+            messages.RunNamespacesServicesReplaceServiceRequest(
                 service=serv.Message(),
                 name=serv_name))
         with metrics.record_duration(metrics.UPDATE_SERVICE):
@@ -821,7 +835,8 @@ class ServerlessOperations(object):
           raise serverless_exceptions.ServiceNotFoundError(
               'Service [{}] could not be found.'.format(service_ref.servicesId))
         # POST a new Service
-        new_serv = service.Service.New(self._client, service_ref.namespacesId)
+        new_serv = service.Service.New(self._client, service_ref.namespacesId,
+                                       private_endpoint)
         new_serv.name = service_ref.servicesId
         pretty_print.Info('Creating new service [{bold}{service}{reset}]',
                           service=new_serv.name)
@@ -830,7 +845,7 @@ class ServerlessOperations(object):
           config_change.AdjustConfiguration(new_serv.configuration,
                                             new_serv.metadata)
         serv_create_req = (
-            messages.ServerlessNamespacesServicesCreateRequest(
+            messages.RunNamespacesServicesCreateRequest(
                 service=new_serv.Message(),
                 parent=parent))
         with metrics.record_duration(metrics.CREATE_SERVICE):
@@ -852,7 +867,8 @@ class ServerlessOperations(object):
           'region was invalid. Set the `run/region` property to a valid '
           'region and retry. Ex: `gcloud config set run/region us-central1`')
 
-  def ReleaseService(self, service_ref, config_changes, asyn=False):
+  def ReleaseService(self, service_ref, config_changes, asyn=False,
+                     private_endpoint=None):
     """Change the given service in prod using the given config_changes.
 
     Ensures a new revision is always created, even if the spec of the revision
@@ -862,10 +878,12 @@ class ServerlessOperations(object):
       service_ref: Resource, the service to release
       config_changes: list, objects that implement AdjustConfiguration().
       asyn: bool, if True release asyncronously
+      private_endpoint:
     """
     with_code = any(
         isinstance(c, deployable_pkg.Deployable) for c in config_changes)
-    self._UpdateOrCreateService(service_ref, config_changes, with_code)
+    self._UpdateOrCreateService(
+        service_ref, config_changes, with_code, private_endpoint)
     if not asyn:
       getter = functools.partial(self.GetService, service_ref)
       self.WaitForCondition(getter)
@@ -881,7 +899,7 @@ class ServerlessOperations(object):
       A list of revisions for the given service.
     """
     messages = self._messages_module
-    request = messages.ServerlessNamespacesRevisionsListRequest(
+    request = messages.RunNamespacesRevisionsListRequest(
         parent=namespace_ref.RelativeName(),
     )
     if service_name is not None:
@@ -903,9 +921,45 @@ class ServerlessOperations(object):
       A list of domain mappings.
     """
     messages = self._messages_module
-    request = messages.ServerlessNamespacesDomainmappingsListRequest(
+    request = messages.RunNamespacesDomainmappingsListRequest(
         parent=namespace_ref.RelativeName())
     with metrics.record_duration(metrics.LIST_DOMAIN_MAPPINGS):
       response = self._client.namespaces_domainmappings.List(request)
     return [domain_mapping.DomainMapping(item, messages)
             for item in response.items]
+
+  def CreateDomainMapping(self, domain_mapping_ref, service_name):
+    """Create a domain mapping.
+
+    Args:
+      domain_mapping_ref: Resource, domainmapping resource.
+      service_name: str, the service to which to map domain.
+
+    Returns:
+      A domain_mapping.DomainMapping object.
+    """
+    messages = self._messages_module
+    new_mapping = domain_mapping.DomainMapping.New(
+        self._client, domain_mapping_ref.namespacesId)
+    new_mapping.name = domain_mapping_ref.domainmappingsId
+    new_mapping.route_name = service_name
+
+    request = messages.RunNamespacesDomainmappingsCreateRequest(
+        domainMapping=new_mapping.Message(),
+        parent=domain_mapping_ref.RelativeName())
+    with metrics.record_duration(metrics.CREATE_DOMAIN_MAPPING):
+      response = self._client.namespaces_domainmappings.Create(request)
+    return domain_mapping.DomainMapping(response)
+
+  def DeleteDomainMapping(self, domain):
+    """Delete a domain mapping.
+
+    Args:
+      domain: str, domain name of the domainmapping to be deleted.
+    """
+    messages = self._messages_module
+
+    request = messages.RunNamespacesDomainmappingsDeleteRequest(
+        name=domain)
+    with metrics.record_duration(metrics.DELETE_DOMAIN_MAPPING):
+      self._client.namespaces_domainmappings.Delete(request)

@@ -423,7 +423,7 @@ def ParseExistingMessageIntoMessage(message, existing_message, method):
   return message
 
 
-def ChoiceToEnum(choice, enum_type, valid_choices=None):
+def ChoiceToEnum(choice, enum_type, item_type='choice', valid_choices=None):
   # type: (str, enum.Enum, list) -> enum.Enum
   """Converts the typed choice into an apitools Enum value."""
   if choice is None:
@@ -435,9 +435,10 @@ def ChoiceToEnum(choice, enum_type, valid_choices=None):
     return enum_type.lookup_by_name(name)
   except KeyError:
     raise arg_parsers.ArgumentTypeError(
-        'Invalid choice: {}. Valid choices are: [{}].'.format(
-            EnumNameToChoice(name),
-            ', '.join(c for c in sorted(valid_choices))))
+        'Invalid {item}: {selection}. Valid choices are: [{values}].'.format(
+            item=item_type,
+            selection=EnumNameToChoice(name),
+            values=', '.join(c for c in sorted(valid_choices))))
 
 
 def EnumNameToChoice(name):
@@ -604,7 +605,7 @@ class ChoiceEnumMapper(object):
           see base.ChoiceArgument().
       hidden: boolean, pass through for base.Argument,
           see base.ChoiceArgument().
-      include_filter: callable, function or type string->bool used to filter
+      include_filter: callable, function of type string->bool used to filter
           enum values from message_enum that should be included in choices.
           If include_filter returns True for a particular enum value, it will be
           included otherwise it will be excluded. This is ignored if

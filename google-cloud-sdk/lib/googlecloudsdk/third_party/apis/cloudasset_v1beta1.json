@@ -545,7 +545,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Batch gets the update history of assets that overlap a time window.\nFor RESOURCE content, this API outputs history with asset in both\nnon-delete or deleted status.\nFor IAM_POLICY content, this API outputs history when the asset and its\nattached IAM POLICY both exist. This can create gaps in the output history."
+          "description": "Batch gets the update history of assets that overlap a time window.\nFor RESOURCE content, this API outputs history with asset in both\nnon-delete or deleted status.\nFor IAM_POLICY content, this API outputs history when the asset and its\nattached IAM POLICY both exist. This can create gaps in the output history.\nIf a specified asset does not exist, this API returns an INVALID_ARGUMENT\nerror."
         }
       }
       ,
@@ -562,7 +562,7 @@
                   "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+\/[^\/]+$",
+                  "pattern": "^projects\/[^\/]+\/operations\/[^\/]+\/.+$",
                   "type": "string"
                 }
               },
@@ -626,7 +626,7 @@
                   "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^folders\/[^\/]+\/operations\/[^\/]+\/[^\/]+$",
+                  "pattern": "^folders\/[^\/]+\/operations\/[^\/]+\/.+$",
                   "type": "string"
                 }
               },
@@ -726,7 +726,7 @@
           "scopes": [
             "https://www.googleapis.com/auth/cloud-platform"
           ],
-          "description": "Batch gets the update history of assets that overlap a time window.\nFor RESOURCE content, this API outputs history with asset in both\nnon-delete or deleted status.\nFor IAM_POLICY content, this API outputs history when the asset and its\nattached IAM POLICY both exist. This can create gaps in the output history."
+          "description": "Batch gets the update history of assets that overlap a time window.\nFor RESOURCE content, this API outputs history with asset in both\nnon-delete or deleted status.\nFor IAM_POLICY content, this API outputs history when the asset and its\nattached IAM POLICY both exist. This can create gaps in the output history.\nIf a specified asset does not exist, this API returns an INVALID_ARGUMENT\nerror."
         }
       }
       ,
@@ -743,7 +743,7 @@
                   "description": "The name of the operation resource.",
                   "location": "path",
                   "required": true,
-                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+\/[^\/]+$",
+                  "pattern": "^organizations\/[^\/]+\/operations\/[^\/]+\/.+$",
                   "type": "string"
                 }
               },

@@ -35,9 +35,156 @@ class FileV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances resource."""
+
+    _NAME = u'projects_locations_instances'
+
+    def __init__(self, client):
+      super(FileV1.ProjectsLocationsInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an instance.
+
+      Args:
+        request: (FileProjectsLocationsInstancesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method=u'POST',
+        method_id=u'file.projects.locations.instances.create',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'instanceId'],
+        relative_path=u'v1/{+parent}/instances',
+        request_field=u'instance',
+        request_type_name=u'FileProjectsLocationsInstancesCreateRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an instance.
+
+      Args:
+        request: (FileProjectsLocationsInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method=u'DELETE',
+        method_id=u'file.projects.locations.instances.delete',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'FileProjectsLocationsInstancesDeleteRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a specific instance.
+
+      Args:
+        request: (FileProjectsLocationsInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Instance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method=u'GET',
+        method_id=u'file.projects.locations.instances.get',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[],
+        relative_path=u'v1/{+name}',
+        request_field='',
+        request_type_name=u'FileProjectsLocationsInstancesGetRequest',
+        response_type_name=u'Instance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all instances in a project for either a specified location.
+or for all locations.
+
+      Args:
+        request: (FileProjectsLocationsInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances',
+        http_method=u'GET',
+        method_id=u'file.projects.locations.instances.list',
+        ordered_params=[u'parent'],
+        path_params=[u'parent'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
+        relative_path=u'v1/{+parent}/instances',
+        request_field='',
+        request_type_name=u'FileProjectsLocationsInstancesListRequest',
+        response_type_name=u'ListInstancesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the settings of a specific instance.
+
+      Args:
+        request: (FileProjectsLocationsInstancesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path=u'v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+        http_method=u'PATCH',
+        method_id=u'file.projects.locations.instances.patch',
+        ordered_params=[u'name'],
+        path_params=[u'name'],
+        query_params=[u'updateMask'],
+        relative_path=u'v1/{+name}',
+        request_field=u'instance',
+        request_type_name=u'FileProjectsLocationsInstancesPatchRequest',
+        response_type_name=u'Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""

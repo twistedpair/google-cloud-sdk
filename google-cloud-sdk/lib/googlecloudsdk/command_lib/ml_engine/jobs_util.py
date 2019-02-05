@@ -31,6 +31,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import resource_printer
 
 
@@ -113,6 +114,117 @@ _TRAINING_SCALE_TIER_MAPPER = arg_utils.ChoiceEnumMapper(
     help_str=('Specify the machine types, the number of replicas for workers, '
               'and parameter servers.'),
     default=None)
+
+
+class TrainingCustomInputServerConfig(object):
+  """Data class for passing custom server config for training job input."""
+
+  def __init__(self,
+               runtime_version,
+               scale_tier,
+               master_machine_type=None,
+               master_image_uri=None,
+               master_accelerator_type=None,
+               master_accelerator_count=None,
+               parameter_machine_type=None,
+               parameter_machine_count=None,
+               parameter_image_uri=None,
+               parameter_accelerator_type=None,
+               parameter_accelerator_count=None,
+               worker_machine_type=None,
+               worker_machine_count=None,
+               worker_image_uri=None,
+               work_accelerator_type=None,
+               work_accelerator_count=None):
+    self.master_image_uri = master_image_uri
+    self.master_machine_type = master_machine_type
+    self.master_accelerator_type = master_accelerator_type
+    self.master_accelerator_count = master_accelerator_count
+    self.parameter_machine_type = parameter_machine_type
+    self.parameter_machine_count = parameter_machine_count
+    self.parameter_image_uri = parameter_image_uri
+    self.parameter_accelerator_type = parameter_accelerator_type
+    self.parameter_accelerator_count = parameter_accelerator_count
+    self.worker_machine_type = worker_machine_type
+    self.worker_machine_count = worker_machine_count
+    self.worker_image_uri = worker_image_uri
+    self.work_accelerator_type = work_accelerator_type
+    self.work_accelerator_count = work_accelerator_count
+    self.runtime_version = runtime_version
+    self.scale_tier = scale_tier
+
+  def ValidateConfig(self):
+    """Validate that custom config parameters are set correctly."""
+    if self.master_image_uri and self.runtime_version:
+      raise flags.ArgumentError('Only one of --master-image-uri,'
+                                ' --runtime-version can be set.')
+    if self.scale_tier and self.scale_tier.name == 'CUSTOM':
+      if not self.master_machine_type:
+        raise flags.ArgumentError('--master-machine-type is required if '
+                                  'scale-tier is set to `CUSTOM`.')
+    return True
+
+  def GetFieldMap(self):
+    """Return a mapping of object fields to apitools message fields."""
+    return {
+        'masterConfig': {'imageUri': self.master_image_uri,
+                         'acceleratorConfig':
+                             {'count': self.master_accelerator_count,
+                              'type': self.master_accelerator_type}
+                        },
+        'masterType': self.master_machine_type,
+        'parameterServerConfig': {
+            'imageUri': self.parameter_image_uri,
+            'acceleratorConfig':
+                {'count': self.parameter_accelerator_count,
+                 'type': self.parameter_accelerator_type}
+        },
+        'parameterServerCount': self.parameter_machine_count,
+        'parameterServerType': self.parameter_machine_type,
+        'workerConfig': {'imageUri': self.worker_image_uri,
+                         'acceleratorConfig':
+                             {'count': self.work_accelerator_count,
+                              'type': self.work_accelerator_type}
+                        },
+        'workerCount': self.worker_machine_count,
+        'workerType': self.worker_machine_type,
+    }
+
+  @classmethod
+  def FromArgs(cls, args):
+    """Build TrainingCustomInputServerConfig from argparse.Namespace."""
+    tier = args.scale_tier
+
+    if not tier:
+      if args.config:
+        data = yaml.load_path(args.config)
+        tier = data.get('trainingInput', {}).get('scaleTier', None)
+
+    parsed_tier = ScaleTierFlagMap().GetEnumForChoice(tier)
+    return cls(
+        scale_tier=parsed_tier,
+        runtime_version=args.runtime_version,
+        master_machine_type=args.master_machine_type,
+
+        master_image_uri=args.master_image_uri,
+        master_accelerator_type=(args.master_accelerator.get('type')
+                                 if args.master_accelerator else None),
+        master_accelerator_count=(args.master_accelerator.get('count')
+                                  if args.master_accelerator else None),
+        parameter_machine_type=args.parameter_server_machine_type,
+        parameter_machine_count=args.parameter_server_count,
+        parameter_image_uri=args.parameter_server_image_uri,
+        parameter_accelerator_type=args.parameter_server_accelerator.get(
+            'type') if args.parameter_server_accelerator else None,
+        parameter_accelerator_count=args.parameter_server_accelerator.get(
+            'count') if args.parameter_server_accelerator else None,
+        worker_machine_type=args.worker_machine_type,
+        worker_machine_count=args.worker_server_count,
+        worker_image_uri=args.worker_image_uri,
+        work_accelerator_type=(args.worker_accelerator.get('type')
+                               if args.worker_accelerator else None),
+        work_accelerator_count=(args.worker_accelerator.get('count')
+                                if args.worker_accelerator else None))
 
 
 def DataFormatFlagMap():
@@ -229,7 +341,8 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
                    packages=None, package_path=None, scale_tier=None,
                    config=None, module_name=None, runtime_version=None,
                    python_version=None, stream_logs=None, user_args=None,
-                   labels=None, supports_container_training=False):
+                   labels=None, supports_container_training=False,
+                   custom_train_server_config=None):
   """Submit a training job."""
   region = properties.VALUES.compute.region.Get(required=True)
   staging_location = jobs_prep.GetStagingLocation(
@@ -261,7 +374,8 @@ def SubmitTraining(jobs_client, job, job_dir=None, staging_bucket=None,
       user_args=user_args,
       runtime_version=runtime_version,
       python_version=python_version,
-      labels=labels
+      labels=labels,
+      custom_train_server_config=custom_train_server_config
   )
 
   project_ref = resources.REGISTRY.Parse(

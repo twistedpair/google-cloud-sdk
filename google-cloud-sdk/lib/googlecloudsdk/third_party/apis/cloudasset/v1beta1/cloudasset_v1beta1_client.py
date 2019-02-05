@@ -176,6 +176,8 @@ For RESOURCE content, this API outputs history with asset in both
 non-delete or deleted status.
 For IAM_POLICY content, this API outputs history when the asset and its
 attached IAM POLICY both exist. This can create gaps in the output history.
+If a specified asset does not exist, this API returns an INVALID_ARGUMENT
+error.
 
       Args:
         request: (CloudassetOrganizationsBatchGetAssetsHistoryRequest) input message
@@ -286,6 +288,8 @@ For RESOURCE content, this API outputs history with asset in both
 non-delete or deleted status.
 For IAM_POLICY content, this API outputs history when the asset and its
 attached IAM POLICY both exist. This can create gaps in the output history.
+If a specified asset does not exist, this API returns an INVALID_ARGUMENT
+error.
 
       Args:
         request: (CloudassetProjectsBatchGetAssetsHistoryRequest) input message

@@ -96,11 +96,13 @@ import sys
 import unicodedata
 
 from googlecloudsdk.core.console import console_attr_os
+from googlecloudsdk.core.console.style import text
 from googlecloudsdk.core.util import encoding as encoding_util
 
 import six
 
 
+# TODO(b/123522546): Unify this logic with console.style.mappings
 class BoxLineCharacters(object):
   """Box/line drawing characters.
 
@@ -172,8 +174,8 @@ class ProgressTrackerSymbolsUnicode(ProgressTrackerSymbols):
   def spin_marks(self):
     return ['⠏', '⠛', '⠹', '⠼', '⠶', '⠧']
 
-  success = '✓'
-  failed = 'X'
+  success = text.TypedText(['✓'], text_type=text.TextTypes.PT_SUCCESS)
+  failed = text.TypedText(['X'], text_type=text.TextTypes.PT_FAILURE)
   interrupted = '-'
   not_started = '.'
   prefix_length = 2

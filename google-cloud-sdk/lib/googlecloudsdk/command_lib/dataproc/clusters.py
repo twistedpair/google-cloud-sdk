@@ -351,6 +351,16 @@ def BetaArgsForClusterRef(parser):
   flags.AddMinCpuPlatformArgs(parser, base.ReleaseTrack.BETA)
 
   parser.add_argument(
+      '--enable-http-port-access',
+      hidden=True,
+      action='store_true',
+      help="""\
+        Enable access to selected http ports on the cluster. This allows
+        interactive access to the UIs of certain components on the cluster
+        without an ssh tunnel or SOCKS proxy.
+        """)
+
+  parser.add_argument(
       '--max-idle',
       type=arg_parsers.Duration(),
       help="""\
@@ -568,6 +578,11 @@ def GetClusterConfig(args,
       initializationActions=init_actions,
       softwareConfig=software_config,
   )
+
+  if beta:
+    if args.enable_http_port_access:
+      cluster_config.endpointConfig = dataproc.messages.EndpointConfig(
+          enableHttpPortAccess=args.enable_http_port_access)
 
   if beta:
     cluster_config.masterConfig.minCpuPlatform = args.master_min_cpu_platform

@@ -34,3 +34,7 @@ class DomainMapping(k8s_object.KubernetesObject):
   @property
   def route_name(self):
     return self.spec.routeName
+
+  @route_name.setter
+  def route_name(self, value):
+    self._m.spec.routeName = value

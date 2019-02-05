@@ -157,9 +157,17 @@
           "type": "string",
           "format": "byte"
         },
+        "description": {
+          "description": "Optional. A user-specified opaque description of the service account.\nMust be less than or equal to 256 UTF-8 bytes.",
+          "type": "string"
+        },
         "oauth2ClientId": {
           "description": "@OutputOnly The OAuth2 client id for the service account.\nThis is used in conjunction with the OAuth2 clientconfig API to make\nthree legged OAuth2 (3LO) flows to access the data of Google users.",
           "type": "string"
+        },
+        "disabled": {
+          "description": "@OutputOnly A bool indicate if the service account is disabled.",
+          "type": "boolean"
         }
       }
     },
@@ -173,7 +181,7 @@
           "type": "string"
         },
         "serviceAccount": {
-          "description": "The ServiceAccount resource to create.\nCurrently, only the following values are user assignable:\n`display_name` .",
+          "description": "The ServiceAccount resource to\ncreate. Currently, only the following values are user assignable:\n`display_name` .",
           "$ref": "ServiceAccount"
         }
       }
@@ -307,20 +315,6 @@
         }
       }
     },
-    "ListServiceAccountIdentityBindingsResponse": {
-      "id": "ListServiceAccountIdentityBindingsResponse",
-      "description": "The service account identity bindings list response.",
-      "type": "object",
-      "properties": {
-        "identityBinding": {
-          "description": "The identity bindings trusted to assert the service account.",
-          "type": "array",
-          "items": {
-            "$ref": "ServiceAccountIdentityBinding"
-          }
-        }
-      }
-    },
     "ServiceAccountIdentityBinding": {
       "id": "ServiceAccountIdentityBinding",
       "description": "Represents a service account identity provider reference.\n\nA service account has at most one identity binding for the EAP.\n\nThis is an alternative to service account keys and enables the service\naccount to be configured to trust an external IDP through the provided\nidentity binding.",
@@ -394,6 +388,20 @@
         "cel": {
           "description": "A set of output attributes and corresponding input attribute names.",
           "$ref": "AttributeTranslatorCEL"
+        }
+      }
+    },
+    "ListServiceAccountIdentityBindingsResponse": {
+      "id": "ListServiceAccountIdentityBindingsResponse",
+      "description": "The service account identity bindings list response.",
+      "type": "object",
+      "properties": {
+        "identityBinding": {
+          "description": "The identity bindings trusted to assert the service account.",
+          "type": "array",
+          "items": {
+            "$ref": "ServiceAccountIdentityBinding"
+          }
         }
       }
     },
@@ -1269,7 +1277,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Signs a blob using a service account's system-managed private key."
+              "description": "**Note**: This method is in the process of being deprecated. Call the\n[`signBlob()`](\/iam\/credentials\/reference\/rest\/v1\/projects.serviceAccounts\/signBlob)\nmethod of the Cloud IAM Service Account Credentials API instead.\n\nSigns a blob using a service account's system-managed private key."
             },
             "signJwt": {
               "id": "iam.projects.serviceAccounts.signJwt",
@@ -1297,7 +1305,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Signs a JWT using a service account's system-managed private key.\n\nIf no expiry time (`exp`) is provided in the `SignJwtRequest`, IAM sets an\nan expiry time of one hour by default. If you request an expiry time of\nmore than one hour, the request will fail."
+              "description": "**Note**: This method is in the process of being deprecated. Call the\n[`signJwt()`](\/iam\/credentials\/reference\/rest\/v1\/projects.serviceAccounts\/signJwt)\nmethod of the Cloud IAM Service Account Credentials API instead.\n\nSigns a JWT using a service account's system-managed private key.\n\nIf no expiry time (`exp`) is provided in the `SignJwtRequest`, IAM sets an\nan expiry time of one hour by default. If you request an expiry time of\nmore than one hour, the request will fail."
             },
             "getIamPolicy": {
               "id": "iam.projects.serviceAccounts.getIamPolicy",
@@ -1513,31 +1521,6 @@
             },
             "identityBindings": {
               "methods": {
-                "list": {
-                  "id": "iam.projects.serviceAccounts.identityBindings.list",
-                  "path": "v1/{+name}/identityBindings",
-                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nUsing `-` as a wildcard for the `PROJECT_ID`, will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "ListServiceAccountIdentityBindingsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists the ServiceAccountIdentityBindings\nfor a service account."
-                },
                 "get": {
                   "id": "iam.projects.serviceAccounts.identityBindings.get",
                   "path": "v1/{+name}",
@@ -1615,6 +1598,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a ServiceAccountIdentityBinding."
+                },
+                "list": {
+                  "id": "iam.projects.serviceAccounts.identityBindings.list",
+                  "path": "v1/{+name}/identityBindings",
+                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/identityBindings",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the service account in the following format:\n`projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`.\n\nUsing `-` as a wildcard for the `PROJECT_ID`, will infer the project from\nthe account. The `ACCOUNT` value can be the `email` address or the\n`unique_id` of the service account.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "ListServiceAccountIdentityBindingsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists the ServiceAccountIdentityBindings\nfor a service account."
                 }
               }
             }

@@ -5,7 +5,7 @@
  "name": "toolresults",
  "canonicalName": "Tool Results",
  "version": "v1beta3",
- "revision": "20190118",
+ "revision": "20190125",
  "title": "Cloud Tool Results API",
  "description": "Reads and publishes results from Firebase Test Lab.",
  "ownerDomain": "google.com",
@@ -754,12 +754,14 @@
      "description": "The simplest way to interpret a result.\n\nRequired",
      "enum": [
       "failure",
+      "flaky",
       "inconclusive",
       "skipped",
       "success",
       "unset"
      ],
      "enumDescriptions": [
+      "",
       "",
       "",
       "",

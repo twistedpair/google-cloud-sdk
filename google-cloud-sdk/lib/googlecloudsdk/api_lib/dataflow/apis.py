@@ -181,7 +181,11 @@ class Templates(object):
              job_name=None,
              service_account_email=None,
              zone=None,
-             max_workers=None):
+             max_workers=None,
+             num_workers=None,
+             worker_machine_type=None,
+             network=None,
+             subnetwork=None):
     """Calls the Dataflow Templates.CreateFromJob method.
 
     Args:
@@ -194,6 +198,11 @@ class Templates(object):
       service_account_email: The service account to run the workers as.
       zone: The zone to run the workers in.
       max_workers: The maximum number of workers to run.
+      num_workers: The initial number of workers to use.
+      worker_machine_type: The type of machine to use for workers.
+      network: The network for launching instances to run your pipeline.
+      subnetwork: The subnetwork for launching instances to run your pipeline.
+
     Returns:
       (Job)
     """
@@ -212,6 +221,10 @@ class Templates(object):
             serviceAccountEmail=service_account_email,
             zone=zone,
             maxWorkers=max_workers,
+            numWorkers=num_workers,
+            network=network,
+            subnetwork=subnetwork,
+            machineType=worker_machine_type,
             tempLocation=staging_location),
         parameters=Templates.PARAMETERS_VALUE(additionalProperties=params_list)
         if parameters else None)

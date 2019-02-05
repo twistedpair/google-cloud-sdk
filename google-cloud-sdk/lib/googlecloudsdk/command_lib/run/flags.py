@@ -37,6 +37,12 @@ from googlecloudsdk.core.console import console_io
 REGIONS = ['us-central1']
 
 
+_VISIBILITY_MODES = {
+    'internal': 'Visible only within the cluster.',
+    'external': 'Visible from outside the cluster.',
+}
+
+
 class ArgumentError(exceptions.Error):
   pass
 
@@ -65,6 +71,14 @@ def AddAsyncFlag(parser):
   parser.add_argument(
       '--async', default=False, action='store_true',
       help='True to deploy asynchronously.')
+
+
+def AddEndpointVisibilityEnum(parser):
+  """Add the --endpoint=[external|internal] flag."""
+  parser.add_argument(
+      '--endpoint',
+      choices=_VISIBILITY_MODES,
+      help='Set endpoint visibility to public or private.')
 
 
 def AddServiceFlag(parser):
@@ -211,7 +225,9 @@ def GetService(args):
   if service_re.match(service_ref.servicesId):
     return service_ref
   raise ArgumentError(
-      'Invalid service name [{}].'.format(service_ref.servicesId))
+      'Invalid service name [{}]. Service name must use only lowercase '
+      'alphanumeric characters and dashes. Cannot begin or end with a dash, '
+      'and cannot be longer than 63 characters.'.format(service_ref.servicesId))
 
 
 def GetSourceRef(source_arg, image_arg):

@@ -11,7 +11,7 @@ project:
 
 region:
   name: region
-  collection: serverless.projects.locations
+  collection: run.projects.locations
   attributes:
   - *project
   - &region
@@ -21,7 +21,7 @@ region:
 
 service:
   name: service
-  collection: serverless.projects.locations.services
+  collection: run.projects.locations.services
   attributes:
   - *project
   - *region

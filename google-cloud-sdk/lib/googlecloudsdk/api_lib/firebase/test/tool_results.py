@@ -176,6 +176,9 @@ def _ErrorFromInvalidMatrix(matrix):
           'incompatible with the selected devices.',
       enum_values.PLIST_CANNOT_BE_PARSED:
           'One or more of the Info.plist files in the zip could not be parsed',
+      enum_values.INVALID_PACKAGE_NAME:
+          'The APK application ID (aka package name) is invalid. See also '
+          'https://developer.android.com/studio/build/application-id',
   }
   details_enum = matrix.invalidMatrixDetails
   if details_enum in error_dict:

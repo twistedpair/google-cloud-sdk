@@ -30,11 +30,17 @@ _SERVERLESS_PREFIX = 'serverless_'
 # Time to create a configuration
 CREATE_CONFIGURATION = _SERVERLESS_PREFIX + 'create_configuration'
 
+# Time to create a domain mapping
+CREATE_DOMAIN_MAPPING = _SERVERLESS_PREFIX + 'create_domain_mapping'
+
 # Time to create a route
 CREATE_ROUTE = _SERVERLESS_PREFIX + 'create_route'
 
 # Time to create a service
 CREATE_SERVICE = _SERVERLESS_PREFIX + 'create_service'
+
+# Time to delete a domain mapping
+DELETE_DOMAIN_MAPPING = _SERVERLESS_PREFIX + 'delete_domain_mapping'
 
 # Time to delete a revision
 DELETE_REVISION = _SERVERLESS_PREFIX + 'delete_revision'

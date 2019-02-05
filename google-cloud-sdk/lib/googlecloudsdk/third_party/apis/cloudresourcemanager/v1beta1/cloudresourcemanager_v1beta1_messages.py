@@ -142,7 +142,8 @@ class CloudresourcemanagerOrganizationsGetRequest(_messages.Message):
     organizationId: The id of the Organization resource to fetch. This field
       is deprecated and will be removed in v1. Use name instead.
     organizationsId: Part of `name`. The resource name of the Organization to
-      fetch, e.g. "organizations/1234".
+      fetch. This is the organization's relative path in the API, formatted as
+      "organizations/[organizationId]". For example, "organizations/1234".
   """
 
   organizationId = _messages.StringField(1)

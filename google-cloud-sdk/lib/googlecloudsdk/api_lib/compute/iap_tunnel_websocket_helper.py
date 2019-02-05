@@ -46,10 +46,6 @@ class WebSocketSendError(exceptions.Error):
   pass
 
 
-class WebSocketSendCloseError(exceptions.Error):
-  pass
-
-
 class IapTunnelWebSocketHelper(object):
   """Helper class for common operations on websocket and related metadata."""
 
@@ -63,7 +59,7 @@ class IapTunnelWebSocketHelper(object):
     self._sslopt = {'cert_reqs': ssl.CERT_REQUIRED,
                     'ca_certs': ca_certs}
     if ignore_certs:
-      self._sslopt['cert_reqs'] = ssl.CERT_OPTIONAL
+      self._sslopt['cert_reqs'] = ssl.CERT_NONE
       self._sslopt['check_hostname'] = False
 
     # Disable most of random logging in websocket library itself
@@ -113,17 +109,18 @@ class IapTunnelWebSocketHelper(object):
                              tb=tb))
 
   def SendClose(self):
-    """Send WebSocket Close message."""
-    try:
+    """Send WebSocket Close message if possible."""
+    if self._websocket.sock:
       log.debug('CLOSE')
-      self._websocket.sock.send_close()
-    except (EnvironmentError,
-            websocket.WebSocketConnectionClosedException) as e:
-      log.info('Unable to send WebSocket Close message [%s].', str(e))
-      self.Close()
-    except:  # pylint: disable=bare-except
-      log.info('Error during WebSocket send of Close message.', exc_info=True)
-      self.Close()
+      try:
+        self._websocket.sock.send_close()
+      except (EnvironmentError,
+              websocket.WebSocketConnectionClosedException) as e:
+        log.info('Unable to send WebSocket Close message [%s].', str(e))
+        self.Close()
+      except:  # pylint: disable=bare-except
+        log.info('Error during WebSocket send of Close message.', exc_info=True)
+        self.Close()
 
   def StartReceivingThread(self):
     if not self._is_closed:

@@ -844,7 +844,7 @@ class Registry(object):
     if None in cur_level:
       raise AmbiguousResourcePath(cur_level[None], parser.collection_info.name)
 
-    cur_level[None] = subcollection, parser  # pytype: disable=attribute-error
+    cur_level[None] = subcollection, parser  # pytype: disable=unsupported-operands
 
   def GetParserForCollection(self, collection, api_version=None):
     """Returns a parser object for collection.

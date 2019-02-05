@@ -52,8 +52,7 @@ class Credential(object):
     expiry = getattr(cred, 'token_expiry', None)
     self.token_expiry = (expiry.strftime(Credential._EXPIRY_FORMAT) if expiry
                          else None)
-    res = cred.token_response if hasattr(cred, 'token_response') else None
-    self.id_token = res.get('id_token', None) if res else None
+    self.id_token = getattr(cred, 'id_tokenb64', None)
 
 
 class Configuration(object):

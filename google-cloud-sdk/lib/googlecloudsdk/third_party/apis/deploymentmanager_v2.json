@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20190118",
+ "revision": "20190125",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -230,7 +230,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
      "items": {
       "$ref": "DeploymentLabelEntry"
      }
@@ -268,12 +268,15 @@
   "DeploymentLabelEntry": {
    "id": "DeploymentLabelEntry",
    "type": "object",
+   "description": "Label object for Deployments",
    "properties": {
     "key": {
-     "type": "string"
+     "type": "string",
+     "description": "Key of the label"
     },
     "value": {
-     "type": "string"
+     "type": "string",
+     "description": "Value of the label"
     }
    }
   },
@@ -288,7 +291,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Output only. Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
      "items": {
       "$ref": "DeploymentUpdateLabelEntry"
      }
@@ -302,12 +305,15 @@
   "DeploymentUpdateLabelEntry": {
    "id": "DeploymentUpdateLabelEntry",
    "type": "object",
+   "description": "Label object for DeploymentUpdate",
    "properties": {
     "key": {
-     "type": "string"
+     "type": "string",
+     "description": "Key of the label"
     },
     "value": {
-     "type": "string"
+     "type": "string",
+     "description": "Value of the label"
     }
    }
   },

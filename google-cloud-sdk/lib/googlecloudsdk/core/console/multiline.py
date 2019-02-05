@@ -168,6 +168,7 @@ class SimpleSuffixConsoleOutput(ConsoleOutput):
       self._messages[self._last_print_index].Print()
 
 
+# TODO(b/123531304): Support text with escape codes.
 class SuffixConsoleMessage(object):
   """A suffix-only implementation of ConsoleMessage."""
 
@@ -337,6 +338,9 @@ class MultilineConsoleOutput(ConsoleOutput):
   be updated on the terminal. The main difference between this class and
   the simple suffix version is that updates here are updates to the entire
   message as this provides more flexibility.
+
+  This class accepts messages containing ANSI escape codes. The width
+  calculations will be handled correctly currently only in this class.
   """
 
   def __init__(self, stream):
@@ -440,7 +444,8 @@ class MultilineConsoleMessage(object):
     # characters have been written. So for now we need to use 1 less than the
     # actual console width to prevent automatic wrapping leading to improper
     # text formatting.
-    self._console_width = console_attr.ConsoleAttr().GetTermSize()[0] - 1
+    self._console_attr = console_attr.GetConsoleAttr()
+    self._console_width = self._console_attr.GetTermSize()[0] - 1
     if self._console_width < 0:
       self._console_width = 0
     self._level = indentation_level
@@ -490,13 +495,9 @@ class MultilineConsoleMessage(object):
 
   def _SplitMessageIntoLines(self, message):
     """Converts message into a list of strs, each representing a line."""
-    lines = []
-    pos = 0
-    # Add check for width being less than indentation
-    while pos < len(message):
-      lines.append(message[pos:pos+self.effective_width])
-      pos += self.effective_width
-      lines[-1] += '\n'
+    lines = self._console_attr.SplitLine(message, self.effective_width)
+    for i in range(len(lines)):
+      lines[i] += '\n'
     return lines
 
   def Print(self):

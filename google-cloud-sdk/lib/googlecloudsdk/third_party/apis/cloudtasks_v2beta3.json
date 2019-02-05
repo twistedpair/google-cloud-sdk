@@ -189,7 +189,7 @@
           "type": "string"
         },
         "appEngineHttpQueue": {
-          "description": "AppEngineHttpQueue settings apply only to\nAppEngine tasks in this queue.",
+          "description": "AppEngineHttpQueue settings apply only to\nApp Engine tasks in this queue.",
           "$ref": "AppEngineHttpQueue"
         },
         "rateLimits": {

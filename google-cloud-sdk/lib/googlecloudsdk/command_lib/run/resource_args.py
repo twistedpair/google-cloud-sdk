@@ -167,6 +167,12 @@ def RevisionAttributeConfig():
       help_text='The Revision for the {resource}.')
 
 
+def DomainAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='domain',
+      help_text='The name of the domain to be mapped to.')
+
+
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
@@ -197,7 +203,7 @@ def GetClusterResourceSpec():
 
 def GetServiceResourceSpec(prompt=False):
   return concepts.ResourceSpec(
-      'serverless.namespaces.services',
+      'run.namespaces.services',
       namespacesId=NamespaceAttributeConfig(),
       servicesId=ServiceAttributeConfig(prompt),
       resource_name='service')
@@ -205,7 +211,7 @@ def GetServiceResourceSpec(prompt=False):
 
 def GetConfigurationResourceSpec():
   return concepts.ResourceSpec(
-      'serverless.namespaces.configurations',
+      'run.namespaces.configurations',
       namespacesId=NamespaceAttributeConfig(),
       configurationsId=ConfigurationAttributeConfig(),
       resource_name='configuration')
@@ -213,7 +219,7 @@ def GetConfigurationResourceSpec():
 
 def GetRouteResourceSpec():
   return concepts.ResourceSpec(
-      'serverless.namespaces.routes',
+      'run.namespaces.routes',
       namespacesId=NamespaceAttributeConfig(),
       routesId=RouteAttributeConfig(),
       resource_name='route')
@@ -221,15 +227,23 @@ def GetRouteResourceSpec():
 
 def GetRevisionResourceSpec():
   return concepts.ResourceSpec(
-      'serverless.namespaces.revisions',
+      'run.namespaces.revisions',
       namespacesId=NamespaceAttributeConfig(),
       revisionsId=RevisionAttributeConfig(),
       resource_name='revision')
 
 
+def GetDomainMappingResourceSpec():
+  return concepts.ResourceSpec(
+      'run.namespaces.domainmappings',
+      namespacesId=NamespaceAttributeConfig(),
+      domainmappingsId=DomainAttributeConfig(),
+      resource_name='DomainMapping')
+
+
 def GetNamespaceResourceSpec():
   return concepts.ResourceSpec(
-      'serverless.namespaces',
+      'run.namespaces',
       namespacesId=NamespaceAttributeConfig(),
       resource_name='namespace')
 

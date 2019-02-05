@@ -373,7 +373,8 @@ class CloudresourcemanagerOrganizationsGetRequest(_messages.Message):
 
   Fields:
     organizationsId: Part of `name`. The resource name of the Organization to
-      fetch, e.g. "organizations/1234".
+      fetch. This is the organization's relative path in the API, formatted as
+      "organizations/[organizationId]". For example, "organizations/1234".
   """
 
   organizationsId = _messages.StringField(1, required=True)

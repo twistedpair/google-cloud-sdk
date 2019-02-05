@@ -336,8 +336,11 @@ apis:
     v2alpha1:
       discovery_doc: genomics_v2alpha1.json
   gkehub:
+    v1alpha1:
+      discovery_doc: gkehub_v1alpha1.json
     v1beta1:
       discovery_doc: gkehub_v1beta1.json
+      default: true
   oslogin:
     v1alpha:
       discovery_doc: oslogin_v1alpha.json
@@ -370,6 +373,15 @@ apis:
   iap:
     v1beta1:
       discovery_doc: iap_v1beta1.json
+      resources:
+        projects:
+          path: projects/{project}/iap_web
+        projects.iap_web:
+          path: projects/{project}/iap_web/{iapWebId}
+        projects.iap_web.services:
+          path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}
+        projects.iap_web.services.versions:
+          path: projects/{project}/iap_web/{iapWebId}/services/{serviceId}/versions/{versionId}
   kubernetespolicy:
     v1alpha1:
       discovery_doc: kubernetespolicy_v1alpha1.json
@@ -415,6 +427,9 @@ apis:
     v1:
       discovery_doc: redis_v1.json
       default: true
+  run:
+    v1alpha1:
+      discovery_doc: run_v1alpha1.json
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json
@@ -427,6 +442,9 @@ apis:
   servicenetworking:
     v1beta:
       discovery_doc: servicenetworking_v1beta.json
+      default: false
+    v1:
+      discovery_doc: servicenetworking_v1.json
       default: true
   serviceusage:
     v1beta1:
@@ -532,3 +550,10 @@ apis:
   bigquerydatatransfer:
     v1:
       discovery_doc: bigquerydatatransfer_v1.json
+  websecurityscanner:
+    v1beta:
+      discovery_doc: websecurityscanner_v1beta.json
+      resources:
+        projects.scanConfigs.scanRuns.crawledUrls:
+          path: projects/{projectsId}/scanConfigs/{scanConfigsId}/scanRuns/{scanRunsId}
+          enable_uri_parsing: false

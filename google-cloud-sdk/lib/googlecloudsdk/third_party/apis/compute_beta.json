@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20190118",
+ "revision": "20190125",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -12668,6 +12668,10 @@
      "type": "string",
      "description": "The type of this node."
     },
+    "serverBinding": {
+     "$ref": "ServerBinding",
+     "description": "Binding properties for the physical server."
+    },
     "status": {
      "type": "string",
      "enum": [
@@ -12974,6 +12978,10 @@
     "selfLink": {
      "type": "string",
      "description": "[Output Only] Server-defined URL for the resource."
+    },
+    "serverBinding": {
+     "$ref": "ServerBinding",
+     "description": "Binding properties for the physical server."
     },
     "status": {
      "type": "string",
@@ -17879,6 +17887,25 @@
     }
    }
   },
+  "ServerBinding": {
+   "id": "ServerBinding",
+   "type": "object",
+   "properties": {
+    "type": {
+     "type": "string",
+     "enum": [
+      "RESTART_NODE_ON_ANY_SERVER",
+      "RESTART_NODE_ON_MINIMAL_SERVERS",
+      "SERVER_BINDING_TYPE_UNSPECIFIED"
+     ],
+     "enumDescriptions": [
+      "",
+      "",
+      ""
+     ]
+    }
+   }
+  },
   "ServiceAccount": {
    "id": "ServiceAccount",
    "type": "object",
@@ -22052,6 +22079,19 @@
        "compute.vpnTunnels.insert"
       ]
      }
+    },
+    "peerExternalGateway": {
+     "type": "string",
+     "description": "URL of the peer side external VPN gateway to which this VPN tunnel is connected. Provided by the client when the VPN tunnel is created. This field is exclusive with the field peerGcpGateway."
+    },
+    "peerExternalGatewayInterface": {
+     "type": "integer",
+     "description": "The interface ID of the external VPN gateway to which this VPN tunnel is connected. Provided by the client when the VPN tunnel is created.",
+     "format": "int32"
+    },
+    "peerGcpGateway": {
+     "type": "string",
+     "description": "URL of the peer side HA GCP VPN gateway to which this VPN tunnel is connected. Provided by the client when the VPN tunnel is created. This field can be used when creating highly available VPN from VPC network to VPC network, the field is exclusive with the field peerExternalGateway. If provided, the VPN tunnel will automatically use the same vpnGatewayInterface ID in the peer GCP VPN gateway."
     },
     "peerIp": {
      "type": "string",

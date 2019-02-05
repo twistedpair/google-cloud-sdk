@@ -27789,6 +27789,7 @@ class NodeGroupNode(_messages.Message):
     instances: Instances scheduled on this node.
     name: The name of the node.
     nodeType: The type of this node.
+    serverBinding: Binding properties for the physical server.
     status: A StatusValueValuesEnum attribute.
   """
 
@@ -27811,7 +27812,8 @@ class NodeGroupNode(_messages.Message):
   instances = _messages.StringField(1, repeated=True)
   name = _messages.StringField(2)
   nodeType = _messages.StringField(3)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
+  serverBinding = _messages.MessageField('ServerBinding', 4)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -28124,6 +28126,7 @@ class NodeTemplate(_messages.Message):
     region: [Output Only] The name of the region where the node template
       resides, such as us-central1.
     selfLink: [Output Only] Server-defined URL for the resource.
+    serverBinding: Binding properties for the physical server.
     status: [Output Only] The status of the node template. One of the
       following values: CREATING, READY, and DELETING.
     statusMessage: [Output Only] An optional, human-readable explanation of
@@ -28182,8 +28185,9 @@ class NodeTemplate(_messages.Message):
   nodeTypeFlexibility = _messages.MessageField('NodeTemplateNodeTypeFlexibility', 8)
   region = _messages.StringField(9)
   selfLink = _messages.StringField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  statusMessage = _messages.StringField(12)
+  serverBinding = _messages.MessageField('ServerBinding', 11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
 
 
 class NodeTemplateAggregatedList(_messages.Message):
@@ -33592,6 +33596,31 @@ class SerialPortOutput(_messages.Message):
   start = _messages.IntegerField(5)
 
 
+class ServerBinding(_messages.Message):
+  r"""A ServerBinding object.
+
+  Enums:
+    TypeValueValuesEnum:
+
+  Fields:
+    type: A TypeValueValuesEnum attribute.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""TypeValueValuesEnum enum type.
+
+    Values:
+      RESTART_NODE_ON_ANY_SERVER: <no description>
+      RESTART_NODE_ON_MINIMAL_SERVERS: <no description>
+      SERVER_BINDING_TYPE_UNSPECIFIED: <no description>
+    """
+    RESTART_NODE_ON_ANY_SERVER = 0
+    RESTART_NODE_ON_MINIMAL_SERVERS = 1
+    SERVER_BINDING_TYPE_UNSPECIFIED = 2
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class ServiceAccount(_messages.Message):
   r"""A service account.
 
@@ -38374,6 +38403,18 @@ class VpnTunnel(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    peerExternalGateway: URL of the peer side external VPN gateway to which
+      this VPN tunnel is connected. Provided by the client when the VPN tunnel
+      is created. This field is exclusive with the field peerGcpGateway.
+    peerExternalGatewayInterface: The interface ID of the external VPN gateway
+      to which this VPN tunnel is connected. Provided by the client when the
+      VPN tunnel is created.
+    peerGcpGateway: URL of the peer side HA GCP VPN gateway to which this VPN
+      tunnel is connected. Provided by the client when the VPN tunnel is
+      created. This field can be used when creating highly available VPN from
+      VPC network to VPC network, the field is exclusive with the field
+      peerExternalGateway. If provided, the VPN tunnel will automatically use
+      the same vpnGatewayInterface ID in the peer GCP VPN gateway.
     peerIp: IP address of the peer VPN gateway. Only IPv4 is supported.
     region: [Output Only] URL of the region where the VPN tunnel resides. You
       must specify this field as part of the HTTP request URL. It is not
@@ -38458,15 +38499,18 @@ class VpnTunnel(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   localTrafficSelector = _messages.StringField(9, repeated=True)
   name = _messages.StringField(10)
-  peerIp = _messages.StringField(11)
-  region = _messages.StringField(12)
-  remoteTrafficSelector = _messages.StringField(13, repeated=True)
-  router = _messages.StringField(14)
-  selfLink = _messages.StringField(15)
-  sharedSecret = _messages.StringField(16)
-  sharedSecretHash = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  targetVpnGateway = _messages.StringField(19)
+  peerExternalGateway = _messages.StringField(11)
+  peerExternalGatewayInterface = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  peerGcpGateway = _messages.StringField(13)
+  peerIp = _messages.StringField(14)
+  region = _messages.StringField(15)
+  remoteTrafficSelector = _messages.StringField(16, repeated=True)
+  router = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  sharedSecret = _messages.StringField(19)
+  sharedSecretHash = _messages.StringField(20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  targetVpnGateway = _messages.StringField(22)
 
 
 class VpnTunnelAggregatedList(_messages.Message):

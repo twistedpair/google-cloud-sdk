@@ -36,6 +36,86 @@ class FileProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesCreateRequest object.
+
+  Fields:
+    instance: A Instance resource to be passed as the request body.
+    instanceId: The name of the instance to create. The name must be unique
+      for the specified project and location.
+    parent: The instance's project and location, in the format
+      projects/{project_id}/locations/{location}. In Cloud Filestore,
+      locations map to GCP zones, for example **us-west1-b**.
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  instanceId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class FileProjectsLocationsInstancesDeleteRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesDeleteRequest object.
+
+  Fields:
+    name: The instance resource name, in the format
+      projects/{project_id}/locations/{location}/instances/{instance_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsInstancesGetRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesGetRequest object.
+
+  Fields:
+    name: The instance resource name, in the format
+      projects/{project_id}/locations/{location}/instances/{instance_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsInstancesListRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results. Supported values are "name", "name desc" or ""
+      (unsorted).
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: The project and location for which to retrieve instance
+      information, in the format projects/{project_id}/locations/{location}.
+      In Cloud Filestore, locations map to GCP zones, for example **us-
+      west1-b**. To retrieve instance information for all locations, use "-"
+      for the {location} value.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesPatchRequest object.
+
+  Fields:
+    instance: A Instance resource to be passed as the request body.
+    name: Output only. The resource name of the instance, in the format
+      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+    updateMask: Mask of fields to update.  At least one path must be supplied
+      in this field.  The elements of the repeated paths field may only
+      include these fields: "description"
+  """
+
+  instance = _messages.MessageField('Instance', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class FileProjectsLocationsListRequest(_messages.Message):
   r"""A FileProjectsLocationsListRequest object.
 
@@ -99,6 +179,137 @@ class FileProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class FileShareConfig(_messages.Message):
+  r"""File share configuration for the instance.
+
+  Fields:
+    capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
+      1 GB as 1024^3 bytes.
+    name: The name of the file share (must be 16 characters or less).
+  """
+
+  capacityGb = _messages.IntegerField(1)
+  name = _messages.StringField(2)
+
+
+class Instance(_messages.Message):
+  r"""A Cloud Filestore instance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The instance state.
+    TierValueValuesEnum: The service tier of the instance.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    createTime: Output only. The time when the instance was created.
+    description: Optional. A description of the instance (2048 characters or
+      less).
+    etag: Server-specified ETag for the instance resource to prevent
+      simultaneous updates from overwriting each other.
+    fileShares: File system shares on the instance. For this version, only a
+      single file share is supported.
+    labels: Resource labels to represent user provided metadata.
+    name: Output only. The resource name of the instance, in the format
+      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+    networks: VPC networks to which the instance is connected. For this
+      version, only a single network is supported.
+    state: Output only. The instance state.
+    statusMessage: Output only. Additional information about the instance
+      state, if available.
+    tier: The service tier of the instance.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The instance state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: The instance is being created.
+      READY: The instance is available for use.
+      REPAIRING: Work is being done on the instance. You can get further
+        details from the `statusMessage` field of the `Instance` resource.
+      DELETING: The instance is shutting down.
+      ERROR: The instance is experiencing an issue and might be unusable. You
+        can get further details from the `statusMessage` field of the
+        `Instance` resource.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    REPAIRING = 3
+    DELETING = 4
+    ERROR = 5
+
+  class TierValueValuesEnum(_messages.Enum):
+    r"""The service tier of the instance.
+
+    Values:
+      TIER_UNSPECIFIED: Not set.
+      STANDARD: STANDARD tier.
+      PREMIUM: PREMIUM tier.
+    """
+    TIER_UNSPECIFIED = 0
+    STANDARD = 1
+    PREMIUM = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  fileShares = _messages.MessageField('FileShareConfig', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  statusMessage = _messages.StringField(9)
+  tier = _messages.EnumField('TierValueValuesEnum', 10)
+
+
+class ListInstancesResponse(_messages.Message):
+  r"""ListInstancesResponse is the result of ListInstancesRequest.
+
+  Fields:
+    instances: A list of instances in the project for the specified location.
+      If the {location} value in the request is "-", the response contains a
+      list of instances from all locations. If any location is unreachable,
+      the response will only return instances in reachable locations and the
+      "unreachable" field will be populated with a list of unreachable
+      locations.
+    nextPageToken: The token you can use to retrieve the next page of results.
+      Not returned if there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  instances = _messages.MessageField('Instance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -205,6 +416,44 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Network configuration for the instance.
+
+  Enums:
+    ModesValueListEntryValuesEnum:
+
+  Fields:
+    ipAddresses: Output only. IPv4 addresses in the format {octet 1}.{octet
+      2}.{octet 3}.{octet 4} or IPv6 addresses in the format {block 1}:{block
+      2}:{block 3}:{block 4}:{block 5}:{block 6}:{block 7}:{block 8}.
+    modes: Internet protocol versions for which the instance has IP addresses
+      assigned. For this version, only MODE_IPV4 is supported.
+    network: The name of the Google Compute Engine [VPC network](/compute/docs
+      /networks-and-firewalls#networks) to which the instance is connected.
+    reservedIpRange: A /29 CIDR block in one of the [internal IP address
+      ranges](https://www.arin.net/knowledge/address_filters.html) that
+      identifies the range of IP addresses reserved for this instance. For
+      example, 10.0.0.0/29 or 192.168.0.0/29. The range you specify can't
+      overlap with either existing subnets or assigned IP address ranges for
+      other Cloud Filestore instances in the selected VPC network.
+  """
+
+  class ModesValueListEntryValuesEnum(_messages.Enum):
+    r"""ModesValueListEntryValuesEnum enum type.
+
+    Values:
+      ADDRESS_MODE_UNSPECIFIED: <no description>
+      MODE_IPV4: <no description>
+    """
+    ADDRESS_MODE_UNSPECIFIED = 0
+    MODE_IPV4 = 1
+
+  ipAddresses = _messages.StringField(1, repeated=True)
+  modes = _messages.EnumField('ModesValueListEntryValuesEnum', 2, repeated=True)
+  network = _messages.StringField(3)
+  reservedIpRange = _messages.StringField(4)
 
 
 class Operation(_messages.Message):

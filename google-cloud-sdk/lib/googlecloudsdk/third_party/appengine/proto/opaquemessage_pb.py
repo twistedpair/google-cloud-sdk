@@ -133,7 +133,7 @@ class OpaqueMessage(ProtocolBuffer.ProtocolMessage):
    """"""
   _PROTO_DESCRIPTOR_NAME = 'OpaqueMessage'
   _SERIALIZED_DESCRIPTOR = array.array('B')
-  _SERIALIZED_DESCRIPTOR.fromstring(base64.decodestring("Wh1uZXQvcHJvdG8vb3BhcXVlbWVzc2FnZS5wcm90bwoNT3BhcXVlTWVzc2FnZboBVgodbmV0L3Byb3RvL29wYXF1ZW1lc3NhZ2UucHJvdG8iDwoNT3BhcXVlTWVzc2FnZUIkChxjb20uZ29vZ2xlLmlvLnByb3RvY29sLnByb3RvEAEgASgB"))
+  _SERIALIZED_DESCRIPTOR.fromstring(base64.decodestring("Wh1uZXQvcHJvdG8vb3BhcXVlbWVzc2FnZS5wcm90bwoNT3BhcXVlTWVzc2FnZboBVgodbmV0L3Byb3RvL29wYXF1ZW1lc3NhZ2UucHJvdG8iDwoNT3BhcXVlTWVzc2FnZUIkChxjb20uZ29vZ2xlLmlvLnByb3RvY29sLnByb3RvEAIgASgB"))
   if _net_proto___parse__python is not None:
     _net_proto___parse__python.RegisterType(
         _SERIALIZED_DESCRIPTOR.tostring())

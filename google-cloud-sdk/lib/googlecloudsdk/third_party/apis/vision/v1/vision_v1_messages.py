@@ -41,7 +41,7 @@ class AnnotateFileResponse(_messages.Message):
 
 class AnnotateImageRequest(_messages.Message):
   r"""Request for performing Google Cloud Vision API tasks over a user-
-  provided image, with user-requested features.
+  provided image, with user-requested features, and with context information.
 
   Fields:
     features: Requested features.

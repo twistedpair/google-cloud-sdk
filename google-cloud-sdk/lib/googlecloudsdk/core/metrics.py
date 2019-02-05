@@ -334,7 +334,7 @@ class _MetricsCollector(object):
     }
     self._clearcut_concord_event_metadata = [
         {'key': param[1], 'value': str(param[2])} for param in common_params]
-    self._clearcut_concord_events = []
+    self._clearcut_concord_timed_events = []
 
     self._metrics = []
 
@@ -473,7 +473,8 @@ class _MetricsCollector(object):
     concord_event[_CLEARCUT_EVENT_METADATA_KEY] = list(
         self._clearcut_concord_event_metadata)
     concord_event[_CLEARCUT_EVENT_METADATA_KEY].extend(event_metadata)  # pytype: disable=attribute-error
-    self._clearcut_concord_events.append(concord_event)
+    self._clearcut_concord_timed_events.append((concord_event,
+                                                _GetTimeMillis()))
 
   def CollectClearcutMetric(self):
     """Collect the required clearcut HTTP beacon."""
@@ -482,7 +483,7 @@ class _MetricsCollector(object):
 
     event_latency, sub_event_latencies = self._timer.GetClearcutParams()
     command_latency_set = False
-    for concord_event in self._clearcut_concord_events:
+    for concord_event, _ in self._clearcut_concord_timed_events:
       if (concord_event['event_type'] is _GA_COMMANDS_CATEGORY and
           command_latency_set):
         continue
@@ -490,10 +491,12 @@ class _MetricsCollector(object):
       concord_event['sub_event_latency_ms'] = sub_event_latencies
       command_latency_set = concord_event['event_type'] is _GA_COMMANDS_CATEGORY
 
-    clearcut_request['log_event'] = [
-        {'source_extension_json': json.dumps(concord_event, sort_keys=True)}
-        for concord_event in self._clearcut_concord_events
-    ]
+    clearcut_request['log_event'] = []
+    for concord_event, event_time_ms in self._clearcut_concord_timed_events:
+      clearcut_request['log_event'].append({
+          'source_extension_json': json.dumps(concord_event, sort_keys=True),
+          'event_time_ms': event_time_ms
+      })
 
     data = json.dumps(clearcut_request, sort_keys=True)
     headers = {'user-agent': self._user_agent}

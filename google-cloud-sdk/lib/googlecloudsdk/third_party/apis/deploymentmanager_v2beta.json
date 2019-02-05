@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager V2Beta",
  "version": "v2beta",
- "revision": "20190118",
+ "revision": "20190125",
  "title": "Google Cloud Deployment Manager API V2Beta Methods",
  "description": "The Deployment Manager API allows users to declaratively configure, deploy and run complex solutions on the Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -278,12 +278,15 @@
   "CompositeTypeLabelEntry": {
    "id": "CompositeTypeLabelEntry",
    "type": "object",
+   "description": "Label object for CompositeTypes",
    "properties": {
     "key": {
-     "type": "string"
+     "type": "string",
+     "description": "Key of the label"
     },
     "value": {
-     "type": "string"
+     "type": "string",
+     "description": "Value of the label"
     }
    }
   },
@@ -393,7 +396,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
      "items": {
       "$ref": "DeploymentLabelEntry"
      }
@@ -431,12 +434,15 @@
   "DeploymentLabelEntry": {
    "id": "DeploymentLabelEntry",
    "type": "object",
+   "description": "Label object for Deployments",
    "properties": {
     "key": {
-     "type": "string"
+     "type": "string",
+     "description": "Key of the label"
     },
     "value": {
-     "type": "string"
+     "type": "string",
+     "description": "Value of the label"
     }
    }
   },
@@ -451,7 +457,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Output only. Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
      "items": {
       "$ref": "DeploymentUpdateLabelEntry"
      }
@@ -465,12 +471,15 @@
   "DeploymentUpdateLabelEntry": {
    "id": "DeploymentUpdateLabelEntry",
    "type": "object",
+   "description": "Label object for DeploymentUpdate",
    "properties": {
     "key": {
-     "type": "string"
+     "type": "string",
+     "description": "Key of the label"
     },
     "value": {
-     "type": "string"
+     "type": "string",
+     "description": "Value of the label"
     }
    }
   },
@@ -1374,7 +1383,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
      "items": {
       "$ref": "TypeLabelEntry"
      }
@@ -1446,12 +1455,15 @@
   "TypeLabelEntry": {
    "id": "TypeLabelEntry",
    "type": "object",
+   "description": "Label object for Types",
    "properties": {
     "key": {
-     "type": "string"
+     "type": "string",
+     "description": "Key of the label"
     },
     "value": {
-     "type": "string"
+     "type": "string",
+     "description": "Value of the label"
     }
    }
   },
@@ -1490,7 +1502,7 @@
     },
     "labels": {
      "type": "array",
-     "description": "Map of labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
+     "description": "Map of One Platform labels; provided by the client when the resource is created or updated. Specifically: Label keys must be between 1 and 63 characters long and must conform to the following regular expression: [a-z]([-a-z0-9]*[a-z0-9])? Label values must be between 0 and 63 characters long and must conform to the regular expression ([a-z]([-a-z0-9]*[a-z0-9])?)?",
      "items": {
       "$ref": "TypeProviderLabelEntry"
      }
@@ -1516,12 +1528,15 @@
   "TypeProviderLabelEntry": {
    "id": "TypeProviderLabelEntry",
    "type": "object",
+   "description": "Label object for TypeProviders",
    "properties": {
     "key": {
-     "type": "string"
+     "type": "string",
+     "description": "Key of the label"
     },
     "value": {
-     "type": "string"
+     "type": "string",
+     "description": "Value of the label"
     }
    }
   },
@@ -2872,7 +2887,7 @@
      "id": "deploymentmanager.typeProviders.patch",
      "path": "{project}/global/typeProviders/{typeProvider}",
      "httpMethod": "PATCH",
-     "description": "Updates a type provider. This method supports patch semantics.",
+     "description": "Patches a type provider.",
      "parameters": {
       "project": {
        "type": "string",

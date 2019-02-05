@@ -19,9 +19,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import ctypes
+import errno
 import functools
+import io
+import os
 import select
 import socket
+import sys
 import threading
 
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket
@@ -31,7 +36,10 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import store
+from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 import portpicker
+import six
 
 
 class LocalPortUnavailableError(exceptions.Error):
@@ -101,22 +109,213 @@ def _SendLocalDataCallback(local_conn, data):
     local_conn.send(data)
 
 
+def _OpenLocalTcpSocket(local_host, local_port):
+  """Attempt to open a local socket listening on specified host and port."""
+  for res in socket.getaddrinfo(
+      local_host, local_port, socket.AF_UNSPEC, socket.SOCK_STREAM, 0,
+      socket.AI_PASSIVE):
+    af, socktype, proto, unused_canonname, sock_addr = res
+    try:
+      s = socket.socket(af, socktype, proto)
+    except socket.error:
+      continue
+    try:
+      s.bind(sock_addr)
+      s.listen(1)
+      return s
+    except EnvironmentError:
+      try:
+        s.close()
+      except socket.error:
+        pass
+
+  raise UnableToOpenPortError('Unable to open socket on port [%d].' %
+                              local_port)
+
+
+class _StdinSocket(object):
+  """A wrapper around stdin/out that allows it to be treated like a socket.
+
+  Does not implement all socket functions. And of the ones implemented, not all
+  arguments/flags are supported. Once created, stdin should never be accessed by
+  anything else.
+  """
+
+  def __init__(self):
+    # This is only used in Unix.
+    self._stdin_eof = False
+
+  def send(self, data):  # pylint: disable=invalid-name
+    files.WriteStreamBytes(sys.stdout, data)
+    if not six.PY2:
+      # WriteStreamBytes flushes python2 but not python3. Perhaps it should
+      # be modified to also flush python3.
+      sys.stdout.buffer.flush()
+    return len(data)
+
+  def recv(self, bufsize):  # pylint: disable=invalid-name
+    """Receives data from stdin.
+
+    Blocks until at least 1 byte is available.
+    This will not be unblocked by close(). To unblock this have a signal handler
+    trigger an exception.
+    This cannot be called by multiple threads at the same time.
+    This function performs cleanups before returning, so killing gcloud while
+    this is running should be avoided. Specifically RaisesKeyboardInterrupt
+    should be in effect so that ctrl+c causes a clean exit with an exception
+    instead of triggering gcloud's default os.kill().
+
+    Args:
+      bufsize: The maximum number of bytes to receive. Must be positive.
+    Returns:
+      The bytes received. EOF is indicated by b''.
+    """
+    if platforms.OperatingSystem.IsWindows():
+      return self._RecvWindows(bufsize)
+    else:
+      return self._RecvUnix(bufsize)
+
+  def close(self):  # pylint: disable=invalid-name
+    # Closing stdin doesn't help, because it doesn't unblock read() calls.
+    # Also it causes problems, such as segfaulting in python2 and blocking in
+    # python3.
+    pass
+
+  # pytype: disable=module-attr
+  def _RecvWindows(self, bufsize):
+    """Reads data from std in Windows.
+
+    Args:
+      bufsize: The maximum number of bytes to receive. Must be positive.
+    Returns:
+      The bytes received. EOF is indicated by b''.
+    """
+    # On Windows the way to quickly read without unnecessary blocking is
+    # to directly call ReadFile().
+    from ctypes import wintypes  # pylint: disable=g-import-not-at-top
+    # STD_INPUT_HANDLE is -10
+    h = ctypes.windll.kernel32.GetStdHandle(-10)
+    buf = ctypes.create_string_buffer(bufsize)
+    number_of_bytes_read = wintypes.DWORD()  # pytype: disable=not-callable
+    ok = ctypes.windll.kernel32.ReadFile(
+        h, buf, bufsize, ctypes.byref(number_of_bytes_read), None)
+    if not ok:
+      raise socket.error(errno.EIO, 'stdin ReadFile failed')
+    return buf.raw[:number_of_bytes_read.value]
+  # pytype: enable=module-attr
+
+  class _EOFError(Exception):
+    pass
+
+  def _RecvUnix(self, bufsize):
+    """Reads data from stdin on Unix.
+
+    Args:
+      bufsize: The maximum number of bytes to receive. Must be positive.
+    Returns:
+      The bytes received. EOF is indicated by b''. Once EOF has been indicated,
+      will always indicate EOF.
+    """
+    # On Unix, the way to quickly read bytes without unnecessary blocking
+    # is to make stdin non-blocking. To ensure at least 1 byte is received, we
+    # read the first byte blocking.
+    b = b''
+    if self._stdin_eof:
+      return b
+    try:
+      b += self._ReadUnixBlocking(1)
+      if bufsize > 1:
+        b += self._ReadUnixNonBlocking(bufsize-1)
+    except _StdinSocket._EOFError:
+      # We need to remember if an EOF is received because additional data can
+      # be received after EOF, and our 2 reads and concatenation could otherwise
+      # hide from the caller that an EOF was received.
+      self._stdin_eof = True
+    return b
+
+  def _ReadUnixBlocking(self, bufsize):
+    """Reads from stdin on Unix in a blocking manner.
+
+    Args:
+      bufsize: The maximum number of bytes to receive. Must be positive.
+    Returns:
+      The bytes read.
+    Raises:
+      _StdinSocket._EOFError: to indicate EOF.
+    """
+    # In python 3, we need to read stdin in a binary way, not a text way to
+    # read bytes instead of str. In python 2, binary mode vs text mode only
+    # matters on Windows.
+    if six.PY2:
+      b = sys.stdin.read(bufsize)
+    else:
+      b = sys.stdin.buffer.read(bufsize)
+    if not b:
+      # In python 2 and 3, EOF is indicated by returning b''.
+      raise _StdinSocket._EOFError
+    return b
+
+  def _ReadUnixNonBlocking(self, bufsize):
+    """Reads from stdin on Unix in a nonblocking manner.
+
+    Args:
+      bufsize: The maximum number of bytes to receive. Must be positive.
+    Returns:
+      The bytes read. b'' means no data is available.
+    Raises:
+      _StdinSocket._EOFError: to indicate EOF.
+    """
+    import fcntl  # pylint: disable=g-import-not-at-top
+    old_flags = fcntl.fcntl(sys.stdin, fcntl.F_GETFL)
+    try:
+      fcntl.fcntl(sys.stdin, fcntl.F_SETFL, old_flags | os.O_NONBLOCK)
+      if six.PY2:
+        b = sys.stdin.read(bufsize)
+      else:
+        b = sys.stdin.buffer.read(bufsize)
+    except IOError as e:
+      if e.errno == errno.EAGAIN or isinstance(e, io.BlockingIOError):
+        # In python2, no nonblocking data available is indicated by raising
+        # IOError with EAGAIN.
+        # The online python3 documentation says BlockingIOError is raised when
+        # no nonblocking data available. We handle that case in case it is ever
+        # correct. BlockingIOError is a subclass of OSError which is identical
+        # to IOError.
+        return b''
+      raise
+    finally:
+      # We need to restore the flags no matter what when exiting this function.
+      # Other code assumes it's blocking. Also even when gcloud exits,
+      # nonblocking stdin causes weird problems in that terminal, such as cat
+      # stops working.
+      # There's actually still a small chance of that happening if gcloud is
+      # running like this directly, then killed in the small time between the
+      # set nonblocking and the restore. The user could fix that by running bash
+      # and exiting it, or just closing the terminal.
+      # If gcloud is running as an ssh ProxyCommand this problem doesn't happen.
+      fcntl.fcntl(sys.stdin, fcntl.F_SETFL, old_flags)
+    if b == b'':  # pylint: disable=g-explicit-bool-comparison
+      # In python 2 and 3, EOF is indicated by returning b''.
+      raise _StdinSocket._EOFError
+    if b is None:
+      # Regardless of what the online python3 documentation says, it actually
+      # returns None to indicate no nonblocking data available.
+      b = b''
+    return b
+
+
 class _BaseIapTunnelHelper(object):
   """Base helper class for starting IAP tunnel."""
 
-  def __init__(self, args, project, zone, instance, interface, port, local_host,
-               local_port):
+  def __init__(self, args, project, zone, instance, interface, port):
     self._project = project
     self._zone = zone
     self._instance = instance
     self._interface = interface
     self._port = port
-    self._local_host = local_host
-    self._local_port = local_port
     self._iap_tunnel_url_override = args.iap_tunnel_url_override
     self._ignore_certs = args.iap_tunnel_insecure_disable_websocket_cert_check
     self._shutdown = False
-    self._socket_address = None
 
   def _InitiateWebSocketConnection(self, local_conn, get_access_token_callback):
     tunnel_target = self._GetTunnelTargetInfo()
@@ -140,37 +339,15 @@ class _BaseIapTunnelHelper(object):
                                      url_override=self._iap_tunnel_url_override,
                                      proxy_info=proxy_info)
 
-  def _OpenLocalTcpSocket(self):
-    """Attempt to open a local socket listening on specified host and port."""
-    s = None
-    for res in socket.getaddrinfo(
-        self._local_host, self._local_port, socket.AF_UNSPEC,
-        socket.SOCK_STREAM, 0, socket.AI_PASSIVE):
-      af, socktype, proto, unused_canonname, self._socket_address = res
-      try:
-        s = socket.socket(af, socktype, proto)
-      except socket.error:
-        s = None
-        continue
-      try:
-        s.bind(self._socket_address)
-        s.listen(1)
-        break
-      except EnvironmentError:
-        try:
-          s.close()
-        except socket.error:
-          pass
-        s = None
-        continue
-
-    if s is None:
-      raise UnableToOpenPortError('Unable to open socket on port [%d].' %
-                                  self._local_port)
-    return s
-
   def _RunReceiveLocalData(self, conn, socket_address):
-    """Receive data from provided local connection and send over WebSocket."""
+    """Receive data from provided local connection and send over WebSocket.
+
+    Args:
+      conn: A socket or _StdinSocket representing the local connection.
+      socket_address: A verbose loggable string describing where conn is
+        connected to.
+    """
+
     websocket_conn = None
     try:
       websocket_conn = self._InitiateWebSocketConnection(
@@ -183,9 +360,9 @@ class _BaseIapTunnelHelper(object):
         websocket_conn.Send(data)
     finally:
       if self._shutdown:
-        log.info('Terminating connection to [%r].', socket_address)
+        log.info('Terminating connection to [%s].', socket_address)
       else:
-        log.info('Client closed connection from [%r].', socket_address)
+        log.info('Client closed connection from [%s].', socket_address)
       try:
         conn.close()
       except EnvironmentError:
@@ -203,7 +380,9 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   def __init__(self, args, project, zone, instance, interface, port, local_host,
                local_port):
     super(IapTunnelProxyServerHelper, self).__init__(
-        args, project, zone, instance, interface, port, local_host, local_port)
+        args, project, zone, instance, interface, port)
+    self._local_host = local_host
+    self._local_port = local_port
     self._server_socket = None
     self._connections = []
 
@@ -213,7 +392,8 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   def StartProxyServer(self):
     """Start accepting connections."""
     self._TestConnection()
-    self._server_socket = self._OpenLocalTcpSocket()
+    self._server_socket = _OpenLocalTcpSocket(self._local_host,
+                                              self._local_port)
     log.out.Print('Listening on port [%d].' % self._local_port)
 
     try:
@@ -227,10 +407,10 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
 
     self._shutdown = True
     self._CloseClientConnections()
-    log.Print('Server shutdown complete.')
+    log.status.Print('Server shutdown complete.')
 
   def _TestConnection(self):
-    log.Print('Testing if can connect.')
+    log.status.Print('Testing if tunnel connection works.')
     websocket_conn = self._InitiateWebSocketConnection(
         None, functools.partial(_GetAccessTokenCallback, store.LoadIfEnabled()))
     websocket_conn.Close()
@@ -274,11 +454,11 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
           except EnvironmentError:
             pass
       if close_count:
-        log.Print('Closed [%d] local connection(s).' % close_count)
+        log.status.Print('Closed [%d] local connection(s).' % close_count)
 
   def _HandleNewConnection(self, conn, socket_address):
     try:
-      self._RunReceiveLocalData(conn, socket_address)
+      self._RunReceiveLocalData(conn, repr(socket_address))
     except EnvironmentError as e:
       log.info('Socket error [%s] while receiving from client.', str(e))
     except:  # pylint: disable=bare-except
@@ -292,9 +472,9 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
   """Facilitates connections by opening a port and connecting through IAP."""
 
   def __init__(self, args, project, zone, instance, interface, port):
-    local_port = DetermineLocalPort()
     super(IapTunnelConnectionHelper, self).__init__(
-        args, project, zone, instance, interface, port, 'localhost', local_port)
+        args, project, zone, instance, interface, port)
+    self._local_port = DetermineLocalPort()
     self._server_socket = None
     self._listen_thread = None
 
@@ -303,7 +483,7 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
 
   def StartListener(self, accept_multiple_connections=False):
     """Start a server socket and listener thread."""
-    self._server_socket = self._OpenLocalTcpSocket()
+    self._server_socket = _OpenLocalTcpSocket('localhost', self._local_port)
     self._listen_thread = threading.Thread(
         target=functools.partial(self._ListenAndConnect,
                                  accept_multiple_connections))
@@ -315,7 +495,7 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
     self._shutdown = True
 
   def GetLocalPort(self):
-    return self._socket_address[1] if self._socket_address else None
+    return self._local_port
 
   def _AcceptAndHandleNewConnection(self):
     """Accept and handle one connection."""
@@ -323,7 +503,7 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
     try:
       conn, client_socket_address = self._server_socket.accept()
       try:
-        self._RunReceiveLocalData(conn, client_socket_address)
+        self._RunReceiveLocalData(conn, repr(client_socket_address))
       except Exception as e:  # pylint: disable=broad-except
         if isinstance(e, EnvironmentError):
           log.debug('Socket error [%s] while receiving from client.',
@@ -359,3 +539,15 @@ class IapTunnelConnectionHelper(_BaseIapTunnelHelper):
         self._AcceptAndHandleNewConnection()
     finally:
       self._CloseServerSocket()
+
+
+class IapTunnelStdinHelper(_BaseIapTunnelHelper):
+  """Facilitates a connection that gets local data from stdin."""
+
+  def Run(self):
+    """Executes the tunneling of data."""
+    try:
+      with execution_utils.RaisesKeyboardInterrupt():
+        self._RunReceiveLocalData(_StdinSocket(), 'stdin')
+    except KeyboardInterrupt:
+      log.info('Keyboard interrupt received.')

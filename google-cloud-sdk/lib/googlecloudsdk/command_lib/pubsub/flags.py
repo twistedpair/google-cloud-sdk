@@ -151,6 +151,40 @@ def AddAckDeadlineFlag(parser, required=False):
            'acknowledge receiving a message before re-attempting delivery.')
 
 
+def AddMessageRetentionFlags(parser, is_update):
+  """Adds flags subscription's messsage retention properties to the parser."""
+  if is_update:
+    retention_parser = ParseRetentionDurationWithDefault
+    retention_default_help = 'Specify "default" to use the default value.'
+  else:
+    retention_parser = arg_parsers.Duration()
+    retention_default_help = ('The default value is 7 days, the minimum is '
+                              '10 minutes, and the maximum is 7 days.')
+
+  retention_parser = retention_parser or arg_parsers.Duration()
+  parser.add_argument(
+      '--retain-acked-messages',
+      action='store_true',
+      default=None,
+      help="""\
+          Whether or not to retain acknowledged messages.  If true,
+          messages are not expunged from the subscription's backlog
+          until they fall out of the --message-retention-duration
+          window.""")
+  parser.add_argument(
+      '--message-retention-duration',
+      type=retention_parser,
+      help="""\
+          How long to retain unacknowledged messages in the
+          subscription's backlog, from the moment a message is
+          published.  If --retain-acked-messages is true, this also
+          configures the retention of acknowledged messages.  {}
+          Valid values are strings of the form INTEGER[UNIT],
+          where UNIT is one of "s", "m", "h", and "d" for seconds,
+          minutes, hours, and days, respectively.  If the unit
+          is omitted, seconds is assumed.""".format(retention_default_help))
+
+
 def AddSubscriptionTopicResourceFlags(parser):
   """Adds --topic and --topic-project flags to a parser."""
   parser.add_argument(
@@ -178,37 +212,8 @@ def ParseExpirationPeriodWithNeverSentinel(value):
 def AddSubscriptionSettingsFlags(parser, track, is_update=False):
   AddAckDeadlineFlag(parser)
   AddPushEndpointFlag(parser)
+  AddMessageRetentionFlags(parser, is_update)
   if track in [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]:
-    if is_update:
-      retention_parser = ParseRetentionDurationWithDefault
-      retention_default_help = 'Specify "default" to use the default value.'
-    else:
-      retention_parser = arg_parsers.Duration()
-      retention_default_help = ('The default value is 7 days, the minimum is '
-                                '10 minutes, and the maximum is 7 days.')
-
-    retention_parser = retention_parser or arg_parsers.Duration()
-    parser.add_argument(
-        '--retain-acked-messages',
-        action='store_true',
-        default=None,
-        help="""\
-            Whether or not to retain acknowledged messages.  If true,
-            messages are not expunged from the subscription's backlog
-            until they fall out of the --message-retention-duration
-            window.""")
-    parser.add_argument(
-        '--message-retention-duration',
-        type=retention_parser,
-        help="""\
-            How long to retain unacknowledged messages in the
-            subscription's backlog, from the moment a message is
-            published.  If --retain-acked-messages is true, this also
-            configures the retention of acknowledged messages.  {}
-            Valid values are strings of the form INTEGER[UNIT],
-            where UNIT is one of "s", "m", "h", and "d" for seconds,
-            seconds, minutes, hours, and days, respectively.  If the unit
-            is omitted, seconds is assumed.""".format(retention_default_help))
     parser.add_argument(
         '--expiration-period',
         type=ParseExpirationPeriodWithNeverSentinel,

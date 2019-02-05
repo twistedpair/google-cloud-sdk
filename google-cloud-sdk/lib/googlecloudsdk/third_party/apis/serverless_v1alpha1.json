@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://docs.google.com/document/d/1uVywBe9aLYQvG31QkrQDtFMmWL5p1ONOr0DBzK6K384/",
+  "documentationLink": "https://cloud.google.com/run/",
   "protocol": "rest",
   "rootUrl": "https://serverless.googleapis.com/",
   "servicePath": "",
@@ -109,9 +109,42 @@
     }
   },
   "schemas": {
-    "ListServicesResponse": {
-      "id": "ListServicesResponse",
-      "description": "A list of Service resources.",
+    "ListAuthorizedDomainsResponse": {
+      "id": "ListAuthorizedDomainsResponse",
+      "description": "A list of Authorized Domains.",
+      "type": "object",
+      "properties": {
+        "domains": {
+          "description": "The authorized domains belonging to the user.",
+          "type": "array",
+          "items": {
+            "$ref": "AuthorizedDomain"
+          }
+        },
+        "nextPageToken": {
+          "description": "Continuation token for fetching the next page of results.",
+          "type": "string"
+        }
+      }
+    },
+    "AuthorizedDomain": {
+      "id": "AuthorizedDomain",
+      "description": "A domain that a user has been authorized to administer. To authorize use\nof a domain, verify ownership via\n[Webmaster Central](https:\/\/www.google.com\/webmasters\/verification\/home).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Read only. Full path to the `AuthorizedDomain` resource in the API.\nExample: `apps\/myapp\/authorizedDomains\/example.com`.",
+          "type": "string"
+        },
+        "id": {
+          "description": "Relative name of the domain authorized for use. Example: `example.com`.",
+          "type": "string"
+        }
+      }
+    },
+    "ListRevisionsResponse": {
+      "id": "ListRevisionsResponse",
+      "description": "ListRevisionsResponse is a list of Revision resources.",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -119,18 +152,18 @@
           "type": "string"
         },
         "kind": {
-          "description": "The kind of this resource, in this case \"ServiceList\".",
+          "description": "The kind of this resource, in this case \"RevisionList\".",
           "type": "string"
         },
         "metadata": {
-          "description": "Metadata associated with this Service list.",
+          "description": "Metadata associated with this revision list.",
           "$ref": "ListMeta"
         },
         "items": {
-          "description": "List of Services.",
+          "description": "List of Revisions.",
           "type": "array",
           "items": {
-            "$ref": "Service"
+            "$ref": "Revision"
           }
         },
         "unreachable": {
@@ -161,9 +194,9 @@
         }
       }
     },
-    "Service": {
-      "id": "Service",
-      "description": "Service is a convenience resource to create, group and manipulate a Route,\nConfiguration(s), and Revision(s) that represent a single function,\napplication, or microservice. The Service spec has several modes\/types that\nrepresent different patterns for interacting the underlying Knative\nresources, from always deploying the latest Revision, pinning specific\nrevisions, to canarying gradual rollouts.",
+    "Revision": {
+      "id": "Revision",
+      "description": "Revision is an immutable snapshot of code and configuration.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#revision",
       "type": "object",
       "properties": {
         "apiVersion": {
@@ -171,20 +204,20 @@
           "type": "string"
         },
         "kind": {
-          "description": "The kind of resource, in this case \"Service\".",
+          "description": "The kind of this resource, in this case \"Revision\".",
           "type": "string"
         },
         "metadata": {
-          "description": "Metadata associated with this Service, including name, namespace, labels,\nand annotations.",
+          "description": "Metadata associated with this Revision, including name, namespace, labels,\nand annotations.",
           "$ref": "ObjectMeta"
         },
         "spec": {
-          "description": "Spec holds the desired state of the Service (from the client).",
-          "$ref": "ServiceSpec"
+          "description": "Spec holds the desired state of the Revision (from the client).",
+          "$ref": "RevisionSpec"
         },
         "status": {
-          "description": "Status communicates the observed state of the Service (from the\ncontroller).",
-          "$ref": "ServiceStatus"
+          "description": "Status communicates the observed state of the Revision (from the\ncontroller).",
+          "$ref": "RevisionStatus"
         }
       }
     },
@@ -328,68 +361,6 @@
         "name": {
           "description": "name of the process that is responsible for initializing this object.",
           "type": "string"
-        }
-      }
-    },
-    "ServiceSpec": {
-      "id": "ServiceSpec",
-      "description": "ServiceSpec holds the desired state of the Route (from the client), which\nis used to manipulate the underlying Route and Configuration(s).",
-      "type": "object",
-      "properties": {
-        "runLatest": {
-          "description": "RunLatest defines a simple Service. It will automatically\nconfigure a route that keeps the latest ready revision\nfrom the supplied configuration running.\n+optional",
-          "$ref": "ServiceSpecRunLatest"
-        },
-        "pinned": {
-          "description": "Pins this service to a specific revision name. The revision must\nbe owned by the configuration provided.\n+optional",
-          "$ref": "ServiceSpecPinnedType"
-        },
-        "generation": {
-          "description": "For open-source Knative metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIgnored by Cloud Run.\n+optional",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "ServiceSpecRunLatest": {
-      "id": "ServiceSpecRunLatest",
-      "description": "RunLatest defines a simple Service. It will automatically\nconfigure a route that keeps the latest ready revision\nfrom the supplied configuration running.",
-      "type": "object",
-      "properties": {
-        "configuration": {
-          "description": "The configuration for this service.",
-          "$ref": "ConfigurationSpec"
-        }
-      }
-    },
-    "ConfigurationSpec": {
-      "id": "ConfigurationSpec",
-      "description": "ConfigurationSpec holds the desired state of the Configuration (from the\nclient).",
-      "type": "object",
-      "properties": {
-        "revisionTemplate": {
-          "description": "RevisionTemplate holds the latest specification for the Revision to\nbe stamped out. If a Build specification is provided, then the\nRevisionTemplate's BuildName field will be populated with the name of\nthe Build object created to produce the container for the Revision.",
-          "$ref": "RevisionTemplate"
-        },
-        "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "RevisionTemplate": {
-      "id": "RevisionTemplate",
-      "description": "RevisionTemplateSpec describes the data a revision should have when created\nfrom a template. Based on:\nhttps:\/\/github.com\/kubernetes\/api\/blob\/e771f807\/core\/v1\/types.go#L3179-L3190",
-      "type": "object",
-      "properties": {
-        "metadata": {
-          "description": "Optional metadata for this Revision, including labels and annotations. Name\nwill be generated by the Configuration.",
-          "$ref": "ObjectMeta"
-        },
-        "spec": {
-          "description": "RevisionSpec holds the desired state of the Revision (from the client).",
-          "$ref": "RevisionSpec"
         }
       }
     },
@@ -994,6 +965,754 @@
         }
       }
     },
+    "RevisionStatus": {
+      "id": "RevisionStatus",
+      "description": "RevisionStatus communicates the observed state of the Revision (from the\ncontroller).",
+      "type": "object",
+      "properties": {
+        "logUrl": {
+          "description": "Specifies the generated logging url for this particular revision\nbased on the revision url template specified in the controller's config.\n+optional",
+          "type": "string"
+        },
+        "conditions": {
+          "description": "List of observed RevisionConditions, indicating the current state\nof the Revision. As a Revision is being prepared, it will incrementally\nupdate conditions \"ResourcesAvailable\", \"ContainerHealthy\", and \"Active\",\nwhich contribute to the overall \"Ready\" condition.",
+          "type": "array",
+          "items": {
+            "$ref": "RevisionCondition"
+          }
+        },
+        "serviceName": {
+          "description": "ServiceName holds the name of a core Kubernetes Service resource that\nload balances over the pods backing this Revision. When the Revision\nis Active, this service would be an appropriate ingress target for\ntargeting the revision.",
+          "type": "string"
+        },
+        "observedGeneration": {
+          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "imageDigest": {
+          "description": "ImageDigest holds the resolved digest for the image specified\nwithin .Spec.Container.Image. The digest is resolved during the creation\nof Revision. This field holds the digest value regardless of whether\na tag or digest was originally specified in the Container object. It\nmay be empty if the image comes from a registry listed to skip resolution.",
+          "type": "string"
+        }
+      }
+    },
+    "RevisionCondition": {
+      "id": "RevisionCondition",
+      "description": "RevisionCondition defines a readiness condition for a Revision.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "RevisionConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\n\n* \"Ready\": True when the Revision is ready.\n* \"ResourcesAvailable\": True when underlying resources have been\nprovisioned.\n* \"ContainerHealthy\": True when the Revision readiness check completes.\n* \"Active\": True when the Revision may receive traffic.",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status of the condition, one of True, False, Unknown.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "One-word CamelCase reason for the condition's last transition.\n+optional",
+          "type": "string"
+        },
+        "message": {
+          "description": "Human readable message indicating details about the current status.\n+optional",
+          "type": "string"
+        },
+        "lastTransitionTime": {
+          "description": "Last time the condition transitioned from one status to another.\n+optional",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListConfigurationsResponse": {
+      "id": "ListConfigurationsResponse",
+      "description": "ListConfigurationsResponse is a list of Configuration resources.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of this resource, in this case \"ConfigurationList\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this Configuration list.",
+          "$ref": "ListMeta"
+        },
+        "items": {
+          "description": "List of Configurations.",
+          "type": "array",
+          "items": {
+            "$ref": "Configuration"
+          }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Configuration": {
+      "id": "Configuration",
+      "description": "Configuration represents the \"floating HEAD\" of a linear history of\nRevisions, and optionally how the containers those revisions reference are\nbuilt. Users create new Revisions by updating the Configuration's spec. The\n\"latest created\" revision's name is available under status, as is the \"latest\nready\" revision's name. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#configuration",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of resource, in this case always \"Configuration\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this Configuration, including name, namespace,\nlabels, and annotations.",
+          "$ref": "ObjectMeta"
+        },
+        "spec": {
+          "description": "Spec holds the desired state of the Configuration (from the client).",
+          "$ref": "ConfigurationSpec"
+        },
+        "status": {
+          "description": "Status communicates the observed state of the Configuration (from the\ncontroller).",
+          "$ref": "ConfigurationStatus"
+        }
+      }
+    },
+    "ConfigurationSpec": {
+      "id": "ConfigurationSpec",
+      "description": "ConfigurationSpec holds the desired state of the Configuration (from the\nclient).",
+      "type": "object",
+      "properties": {
+        "revisionTemplate": {
+          "description": "RevisionTemplate holds the latest specification for the Revision to\nbe stamped out. If a Build specification is provided, then the\nRevisionTemplate's BuildName field will be populated with the name of\nthe Build object created to produce the container for the Revision.",
+          "$ref": "RevisionTemplate"
+        },
+        "generation": {
+          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RevisionTemplate": {
+      "id": "RevisionTemplate",
+      "description": "RevisionTemplateSpec describes the data a revision should have when created\nfrom a template. Based on:\nhttps:\/\/github.com\/kubernetes\/api\/blob\/e771f807\/core\/v1\/types.go#L3179-L3190",
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "description": "Optional metadata for this Revision, including labels and annotations. Name\nwill be generated by the Configuration.",
+          "$ref": "ObjectMeta"
+        },
+        "spec": {
+          "description": "RevisionSpec holds the desired state of the Revision (from the client).",
+          "$ref": "RevisionSpec"
+        }
+      }
+    },
+    "ConfigurationStatus": {
+      "id": "ConfigurationStatus",
+      "description": "ConfigurationStatus communicates the observed state of the Configuration\n(from the controller).",
+      "type": "object",
+      "properties": {
+        "latestCreatedRevisionName": {
+          "description": "LatestCreatedRevisionName is the last revision that was created from this\nConfiguration. It might not be ready yet, for that use\nLatestReadyRevisionName.",
+          "type": "string"
+        },
+        "latestReadyRevisionName": {
+          "description": "LatestReadyRevisionName holds the name of the latest Revision stamped out\nfrom this Configuration that has had its \"Ready\" condition become \"True\".",
+          "type": "string"
+        },
+        "observedGeneration": {
+          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.\nThe API version for this revision.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "conditions": {
+          "description": "Conditions communicates information about ongoing\/complete\nreconciliation processes that bring the \"spec\" inline with the observed\nstate of the world.",
+          "type": "array",
+          "items": {
+            "$ref": "ConfigurationCondition"
+          }
+        }
+      }
+    },
+    "ConfigurationCondition": {
+      "id": "ConfigurationCondition",
+      "description": "ConfigurationCondition defines a readiness condition for a Configuration.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "ConfigurationConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\"LatestRevisionReady\"",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status of the condition, one of True, False, Unknown.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "One-word CamelCase reason for the condition's last transition.\n+optional",
+          "type": "string"
+        },
+        "message": {
+          "description": "Human-readable message indicating details about last transition.\n+optional",
+          "type": "string"
+        },
+        "lastTransitionTime": {
+          "description": "Last time the condition transitioned from one status to another.\n+optional",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "DomainMapping": {
+      "id": "DomainMapping",
+      "description": "Resource to hold the state and status of a user's domain mapping.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of resource, in this case \"DomainMapping\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this BuildTemplate.",
+          "$ref": "ObjectMeta"
+        },
+        "spec": {
+          "description": "The spec for this DomainMapping.",
+          "$ref": "DomainMappingSpec"
+        },
+        "status": {
+          "description": "The current status of the DomainMapping.",
+          "$ref": "DomainMappingStatus"
+        }
+      }
+    },
+    "DomainMappingSpec": {
+      "id": "DomainMappingSpec",
+      "description": "The desired state of the Domain Mapping.",
+      "type": "object",
+      "properties": {
+        "routeName": {
+          "description": "The name of the Knative Route that this DomainMapping applies to.\nThe route must exist.",
+          "type": "string"
+        },
+        "certificateMode": {
+          "description": "The mode of the certificate.",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "type": "string",
+          "enum": [
+            "CERTIFICATE_MODE_UNSPECIFIED",
+            "AUTOMATIC"
+          ]
+        },
+        "overrideBefore": {
+          "description": "If set, the mapping will override any mapping set before this time. It is\nrecommended that the user leaves this empty to receive an error warning\nabout a potential conflict and only set it once the respective UI has given\nsuch a warning.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "DomainMappingStatus": {
+      "id": "DomainMappingStatus",
+      "description": "The current state of the Domain Mapping.",
+      "type": "object",
+      "properties": {
+        "conditions": {
+          "description": "Array of observed DomainMappingConditions, indicating the current state\nof the DomainMapping.",
+          "type": "array",
+          "items": {
+            "$ref": "DomainMappingCondition"
+          }
+        },
+        "observedGeneration": {
+          "description": "ObservedGeneration is the 'Generation' of the DomainMapping that\nwas last processed by the controller.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DomainMappingCondition": {
+      "id": "DomainMappingCondition",
+      "description": "DomainMappingCondition contains state information for a DomainMapping.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of domain mapping condition.",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status of the condition, one of True, False, Unknown.",
+          "type": "string"
+        },
+        "reason": {
+          "description": "One-word CamelCase reason for the condition's current status.\n+optional",
+          "type": "string"
+        },
+        "message": {
+          "description": "Human readable message indicating details about the current status.\n+optional",
+          "type": "string"
+        },
+        "internalMessage": {
+          "description": "Human readable message that contains additional details not shared with\nexternal users.",
+          "type": "string"
+        }
+      }
+    },
+    "ListDomainMappingsResponse": {
+      "id": "ListDomainMappingsResponse",
+      "description": "ListDomainMappingsResponse is a list of DomainMapping resources.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of this resource, in this case \"DomainMappingList\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this DomainMapping list.",
+          "$ref": "ListMeta"
+        },
+        "items": {
+          "description": "List of DomainMappings.",
+          "type": "array",
+          "items": {
+            "$ref": "DomainMapping"
+          }
+        }
+      }
+    },
+    "ApiVersions": {
+      "id": "ApiVersions",
+      "description": "Message to list the versions of the API which are available.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "The kind of this message, in this case \"APIVersions\".",
+          "type": "string"
+        },
+        "versions": {
+          "description": "The version of the API, like \"v1\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ApiGroupList": {
+      "id": "ApiGroupList",
+      "description": "List of API groups.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "Kind of API.",
+          "type": "string"
+        },
+        "groups": {
+          "description": "API groups.",
+          "type": "array",
+          "items": {
+            "$ref": "ApiGroup"
+          }
+        }
+      }
+    },
+    "ApiGroup": {
+      "id": "ApiGroup",
+      "description": "An API group.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The API group name.",
+          "type": "string"
+        },
+        "versions": {
+          "description": "The group versions.",
+          "type": "array",
+          "items": {
+            "$ref": "GroupVersionForDiscovery"
+          }
+        },
+        "preferredVersion": {
+          "description": "The preferred version for this group.",
+          "$ref": "GroupVersionForDiscovery"
+        }
+      }
+    },
+    "GroupVersionForDiscovery": {
+      "id": "GroupVersionForDiscovery",
+      "description": "Group information for the discovery API.",
+      "type": "object",
+      "properties": {
+        "groupVersion": {
+          "description": "The group version.",
+          "type": "string"
+        },
+        "version": {
+          "description": "The version.",
+          "type": "string"
+        }
+      }
+    },
+    "ApiResourceList": {
+      "id": "ApiResourceList",
+      "description": "A list of API resources.",
+      "type": "object",
+      "properties": {
+        "kind": {
+          "description": "The kind of resources.",
+          "type": "string"
+        },
+        "groupVersion": {
+          "description": "The group version of the resources.",
+          "type": "string"
+        },
+        "resources": {
+          "description": "The list of API resources.",
+          "type": "array",
+          "items": {
+            "$ref": "ApiResource"
+          }
+        }
+      }
+    },
+    "ApiResource": {
+      "id": "ApiResource",
+      "description": "Holds information about a resource type in a given API.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the resource. Should be plural, like \"routes\" or\n\"configurations\".",
+          "type": "string"
+        },
+        "namespaced": {
+          "description": "Whether or not the resource is namespaced.",
+          "type": "boolean"
+        },
+        "kind": {
+          "description": "The kind of resource.",
+          "type": "string"
+        },
+        "verbs": {
+          "description": "The verbs (create, get, update, etc) supported for this resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "shortNames": {
+          "description": "The short names for this resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "singularName": {
+          "description": "The singular name for this resource.",
+          "type": "string"
+        },
+        "categories": {
+          "description": "The categories to which this resource belongs.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListRoutesResponse": {
+      "id": "ListRoutesResponse",
+      "description": "ListRoutesResponse is a list of Route resources.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of this resource, in this case always \"RouteList\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this Route list.",
+          "$ref": "ListMeta"
+        },
+        "items": {
+          "description": "List of Routes.",
+          "type": "array",
+          "items": {
+            "$ref": "Route"
+          }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Route": {
+      "id": "Route",
+      "description": "Route is responsible for configuring ingress over a collection of Revisions.\nSome of the Revisions a Route distributes traffic over may be specified by\nreferencing the Configuration responsible for creating them; in these cases\nthe Route is additionally responsible for monitoring the Configuration for\n\"latest ready\" revision changes, and smoothly rolling out latest revisions.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#route",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of this resource, in this case always \"Route\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this Route, including name, namespace, labels,\nand annotations.",
+          "$ref": "ObjectMeta"
+        },
+        "spec": {
+          "description": "Spec holds the desired state of the Route (from the client).",
+          "$ref": "RouteSpec"
+        },
+        "status": {
+          "description": "Status communicates the observed state of the Route (from the controller).",
+          "$ref": "RouteStatus"
+        }
+      }
+    },
+    "RouteSpec": {
+      "id": "RouteSpec",
+      "description": "RouteSpec holds the desired state of the Route (from the client).",
+      "type": "object",
+      "properties": {
+        "traffic": {
+          "description": "Traffic specifies how to distribute traffic over a collection of Knative\nRevisions and Configurations.",
+          "type": "array",
+          "items": {
+            "$ref": "TrafficTarget"
+          }
+        },
+        "generation": {
+          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TrafficTarget": {
+      "id": "TrafficTarget",
+      "description": "TrafficTarget holds a single entry of the routing table for a Route.",
+      "type": "object",
+      "properties": {
+        "configurationName": {
+          "description": "ConfigurationName of a configuration to whose latest revision we will\nsend this portion of traffic. When the \"status.latestReadyRevisionName\"\nof the referenced configuration changes, we will automatically migrate\ntraffic from the prior \"latest ready\" revision to the new one. This field\nis never set in Route's status, only its spec. This is mutually exclusive\nwith RevisionName.",
+          "type": "string"
+        },
+        "revisionName": {
+          "description": "RevisionName of a specific revision to which to send this portion of\ntraffic. This is mutually exclusive with ConfigurationName.",
+          "type": "string"
+        },
+        "name": {
+          "description": "Name is optionally used to expose a dedicated hostname for referencing this\ntarget exclusively. It has the form: {name}.${route.status.domain}\n+optional",
+          "type": "string"
+        },
+        "percent": {
+          "description": "Percent specifies percent of the traffic to this Revision or Configuration.\nThis defaults to zero if unspecified.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RouteStatus": {
+      "id": "RouteStatus",
+      "description": "RouteStatus communicates the observed state of the Route (from the\ncontroller).",
+      "type": "object",
+      "properties": {
+        "domain": {
+          "description": "Domain holds the top-level domain that will distribute traffic over the\nprovided targets. It generally has the form\nhttps:\/\/{route-hash}-{project-hash}-{cluster-level-suffix}.a.run.app",
+          "type": "string"
+        },
+        "traffic": {
+          "description": "Traffic holds the configured traffic distribution.\nThese entries will always contain RevisionName references.\nWhen ConfigurationName appears in the spec, this will hold the\nLatestReadyRevisionName that we last observed.",
+          "type": "array",
+          "items": {
+            "$ref": "TrafficTarget"
+          }
+        },
+        "observedGeneration": {
+          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "conditions": {
+          "description": "Conditions communicates information about ongoing\/complete\nreconciliation processes that bring the \"spec\" inline with the observed\nstate of the world.",
+          "type": "array",
+          "items": {
+            "$ref": "RouteCondition"
+          }
+        },
+        "domainInternal": {
+          "description": "DomainInternal holds the top-level domain that will distribute traffic over\nthe provided targets from inside the cluster. It generally has the form\n{route-name}.{route-namespace}.svc.cluster.local",
+          "type": "string"
+        },
+        "address": {
+          "description": "Similar to domain, information on where the service is available on HTTP.",
+          "$ref": "Addressable"
+        }
+      }
+    },
+    "RouteCondition": {
+      "id": "RouteCondition",
+      "description": "RouteCondition defines a readiness condition.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "RouteConditionType is used to communicate the status of the reconciliation\nprocess. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"RolloutInProgress\", \"TrafficDropped\".",
+          "type": "string"
+        },
+        "status": {
+          "description": "Status of the condition, one of \"True\", \"False\", \"Unknown\".",
+          "type": "string"
+        },
+        "reason": {
+          "description": "One-word CamelCase reason for the condition's last transition.\n+optional",
+          "type": "string"
+        },
+        "message": {
+          "description": "Human-readable message indicating details about last transition.\n+optional",
+          "type": "string"
+        },
+        "lastTransitionTime": {
+          "description": "Last time the condition transitioned from one status to another.\n+optional",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "Addressable": {
+      "id": "Addressable",
+      "description": "Information for connecting over HTTP(s).",
+      "type": "object",
+      "properties": {
+        "hostname": {
+          "type": "string"
+        }
+      }
+    },
+    "ListServicesResponse": {
+      "id": "ListServicesResponse",
+      "description": "A list of Service resources.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of this resource, in this case \"ServiceList\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this Service list.",
+          "$ref": "ListMeta"
+        },
+        "items": {
+          "description": "List of Services.",
+          "type": "array",
+          "items": {
+            "$ref": "Service"
+          }
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Service": {
+      "id": "Service",
+      "description": "Service is a convenience resource to create, group and manipulate a Route,\nConfiguration(s), and Revision(s) that represent a single function,\napplication, or microservice. The Service spec has several modes\/types that\nrepresent different patterns for interacting the underlying Knative\nresources, from always deploying the latest Revision, pinning specific\nrevisions, to canarying gradual rollouts.",
+      "type": "object",
+      "properties": {
+        "apiVersion": {
+          "description": "The API version for this call such as \"v1alpha1\".",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The kind of resource, in this case \"Service\".",
+          "type": "string"
+        },
+        "metadata": {
+          "description": "Metadata associated with this Service, including name, namespace, labels,\nand annotations.",
+          "$ref": "ObjectMeta"
+        },
+        "spec": {
+          "description": "Spec holds the desired state of the Service (from the client).",
+          "$ref": "ServiceSpec"
+        },
+        "status": {
+          "description": "Status communicates the observed state of the Service (from the\ncontroller).",
+          "$ref": "ServiceStatus"
+        }
+      }
+    },
+    "ServiceSpec": {
+      "id": "ServiceSpec",
+      "description": "ServiceSpec holds the desired state of the Route (from the client), which\nis used to manipulate the underlying Route and Configuration(s).",
+      "type": "object",
+      "properties": {
+        "runLatest": {
+          "description": "RunLatest defines a simple Service. It will automatically\nconfigure a route that keeps the latest ready revision\nfrom the supplied configuration running.\n+optional",
+          "$ref": "ServiceSpecRunLatest"
+        },
+        "pinned": {
+          "description": "Pins this service to a specific revision name. The revision must\nbe owned by the configuration provided.\n+optional",
+          "$ref": "ServiceSpecPinnedType"
+        },
+        "generation": {
+          "description": "For open-source Knative metadata.generation does not work yet, this\nis a stopgap way of specifying generation\nIgnored by Cloud Run.\n+optional",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "ServiceSpecRunLatest": {
+      "id": "ServiceSpecRunLatest",
+      "description": "RunLatest defines a simple Service. It will automatically\nconfigure a route that keeps the latest ready revision\nfrom the supplied configuration running.",
+      "type": "object",
+      "properties": {
+        "configuration": {
+          "description": "The configuration for this service.",
+          "$ref": "ConfigurationSpec"
+        }
+      }
+    },
     "ServiceSpecPinnedType": {
       "id": "ServiceSpecPinnedType",
       "description": "Pins this service to a specific revision name. The revision must\nbe owned by the configuration provided.",
@@ -1077,47 +1796,6 @@
           "type": "string",
           "format": "google-datetime"
         }
-      }
-    },
-    "Addressable": {
-      "id": "Addressable",
-      "description": "Information for connecting over HTTP(s).",
-      "type": "object",
-      "properties": {
-        "hostname": {
-          "type": "string"
-        }
-      }
-    },
-    "TrafficTarget": {
-      "id": "TrafficTarget",
-      "description": "TrafficTarget holds a single entry of the routing table for a Route.",
-      "type": "object",
-      "properties": {
-        "configurationName": {
-          "description": "ConfigurationName of a configuration to whose latest revision we will\nsend this portion of traffic. When the \"status.latestReadyRevisionName\"\nof the referenced configuration changes, we will automatically migrate\ntraffic from the prior \"latest ready\" revision to the new one. This field\nis never set in Route's status, only its spec. This is mutually exclusive\nwith RevisionName.",
-          "type": "string"
-        },
-        "revisionName": {
-          "description": "RevisionName of a specific revision to which to send this portion of\ntraffic. This is mutually exclusive with ConfigurationName.",
-          "type": "string"
-        },
-        "name": {
-          "description": "Name is optionally used to expose a dedicated hostname for referencing this\ntarget exclusively. It has the form: {name}.${route.status.domain}\n+optional",
-          "type": "string"
-        },
-        "percent": {
-          "description": "Percent specifies percent of the traffic to this Revision or Configuration.\nThis defaults to zero if unspecified.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated\nempty messages in your APIs. A typical example is to use it as the request\nor the response type of an API method. For instance:\n\n    service Foo {\n      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n    }\n\nThe JSON representation for `Empty` is empty JSON object `{}`.",
-      "type": "object",
-      "properties": {
       }
     },
     "HttpBody": {
@@ -1314,684 +1992,6 @@
           }
         }
       }
-    },
-    "ListRoutesResponse": {
-      "id": "ListRoutesResponse",
-      "description": "ListRoutesResponse is a list of Route resources.",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of this resource, in this case always \"RouteList\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this Route list.",
-          "$ref": "ListMeta"
-        },
-        "items": {
-          "description": "List of Routes.",
-          "type": "array",
-          "items": {
-            "$ref": "Route"
-          }
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Route": {
-      "id": "Route",
-      "description": "Route is responsible for configuring ingress over a collection of Revisions.\nSome of the Revisions a Route distributes traffic over may be specified by\nreferencing the Configuration responsible for creating them; in these cases\nthe Route is additionally responsible for monitoring the Configuration for\n\"latest ready\" revision changes, and smoothly rolling out latest revisions.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#route",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of this resource, in this case always \"Route\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this Route, including name, namespace, labels,\nand annotations.",
-          "$ref": "ObjectMeta"
-        },
-        "spec": {
-          "description": "Spec holds the desired state of the Route (from the client).",
-          "$ref": "RouteSpec"
-        },
-        "status": {
-          "description": "Status communicates the observed state of the Route (from the controller).",
-          "$ref": "RouteStatus"
-        }
-      }
-    },
-    "RouteSpec": {
-      "id": "RouteSpec",
-      "description": "RouteSpec holds the desired state of the Route (from the client).",
-      "type": "object",
-      "properties": {
-        "traffic": {
-          "description": "Traffic specifies how to distribute traffic over a collection of Knative\nRevisions and Configurations.",
-          "type": "array",
-          "items": {
-            "$ref": "TrafficTarget"
-          }
-        },
-        "generation": {
-          "description": "For open Knative: metadata.generation does not work yet, this\nis a stopgap way of specifying generation\n+optional",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "RouteStatus": {
-      "id": "RouteStatus",
-      "description": "RouteStatus communicates the observed state of the Route (from the\ncontroller).",
-      "type": "object",
-      "properties": {
-        "domain": {
-          "description": "Domain holds the top-level domain that will distribute traffic over the\nprovided targets. It generally has the form\nhttps:\/\/{route-hash}-{project-hash}-{cluster-level-suffix}.a.run.app",
-          "type": "string"
-        },
-        "traffic": {
-          "description": "Traffic holds the configured traffic distribution.\nThese entries will always contain RevisionName references.\nWhen ConfigurationName appears in the spec, this will hold the\nLatestReadyRevisionName that we last observed.",
-          "type": "array",
-          "items": {
-            "$ref": "TrafficTarget"
-          }
-        },
-        "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "conditions": {
-          "description": "Conditions communicates information about ongoing\/complete\nreconciliation processes that bring the \"spec\" inline with the observed\nstate of the world.",
-          "type": "array",
-          "items": {
-            "$ref": "RouteCondition"
-          }
-        },
-        "domainInternal": {
-          "description": "DomainInternal holds the top-level domain that will distribute traffic over\nthe provided targets from inside the cluster. It generally has the form\n{route-name}.{route-namespace}.svc.cluster.local",
-          "type": "string"
-        },
-        "address": {
-          "description": "Similar to domain, information on where the service is available on HTTP.",
-          "$ref": "Addressable"
-        }
-      }
-    },
-    "RouteCondition": {
-      "id": "RouteCondition",
-      "description": "RouteCondition defines a readiness condition.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "RouteConditionType is used to communicate the status of the reconciliation\nprocess. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include: \"RolloutInProgress\", \"TrafficDropped\".",
-          "type": "string"
-        },
-        "status": {
-          "description": "Status of the condition, one of \"True\", \"False\", \"Unknown\".",
-          "type": "string"
-        },
-        "reason": {
-          "description": "One-word CamelCase reason for the condition's last transition.\n+optional",
-          "type": "string"
-        },
-        "message": {
-          "description": "Human-readable message indicating details about last transition.\n+optional",
-          "type": "string"
-        },
-        "lastTransitionTime": {
-          "description": "Last time the condition transitioned from one status to another.\n+optional",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "ListConfigurationsResponse": {
-      "id": "ListConfigurationsResponse",
-      "description": "ListConfigurationsResponse is a list of Configuration resources.",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of this resource, in this case \"ConfigurationList\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this Configuration list.",
-          "$ref": "ListMeta"
-        },
-        "items": {
-          "description": "List of Configurations.",
-          "type": "array",
-          "items": {
-            "$ref": "Configuration"
-          }
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Configuration": {
-      "id": "Configuration",
-      "description": "Configuration represents the \"floating HEAD\" of a linear history of\nRevisions, and optionally how the containers those revisions reference are\nbuilt. Users create new Revisions by updating the Configuration's spec. The\n\"latest created\" revision's name is available under status, as is the \"latest\nready\" revision's name. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#configuration",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of resource, in this case always \"Configuration\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this Configuration, including name, namespace,\nlabels, and annotations.",
-          "$ref": "ObjectMeta"
-        },
-        "spec": {
-          "description": "Spec holds the desired state of the Configuration (from the client).",
-          "$ref": "ConfigurationSpec"
-        },
-        "status": {
-          "description": "Status communicates the observed state of the Configuration (from the\ncontroller).",
-          "$ref": "ConfigurationStatus"
-        }
-      }
-    },
-    "ConfigurationStatus": {
-      "id": "ConfigurationStatus",
-      "description": "ConfigurationStatus communicates the observed state of the Configuration\n(from the controller).",
-      "type": "object",
-      "properties": {
-        "latestCreatedRevisionName": {
-          "description": "LatestCreatedRevisionName is the last revision that was created from this\nConfiguration. It might not be ready yet, for that use\nLatestReadyRevisionName.",
-          "type": "string"
-        },
-        "latestReadyRevisionName": {
-          "description": "LatestReadyRevisionName holds the name of the latest Revision stamped out\nfrom this Configuration that has had its \"Ready\" condition become \"True\".",
-          "type": "string"
-        },
-        "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.\nThe API version for this revision.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "conditions": {
-          "description": "Conditions communicates information about ongoing\/complete\nreconciliation processes that bring the \"spec\" inline with the observed\nstate of the world.",
-          "type": "array",
-          "items": {
-            "$ref": "ConfigurationCondition"
-          }
-        }
-      }
-    },
-    "ConfigurationCondition": {
-      "id": "ConfigurationCondition",
-      "description": "ConfigurationCondition defines a readiness condition for a Configuration.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "ConfigurationConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\"LatestRevisionReady\"",
-          "type": "string"
-        },
-        "status": {
-          "description": "Status of the condition, one of True, False, Unknown.",
-          "type": "string"
-        },
-        "reason": {
-          "description": "One-word CamelCase reason for the condition's last transition.\n+optional",
-          "type": "string"
-        },
-        "message": {
-          "description": "Human-readable message indicating details about last transition.\n+optional",
-          "type": "string"
-        },
-        "lastTransitionTime": {
-          "description": "Last time the condition transitioned from one status to another.\n+optional",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "ListRevisionsResponse": {
-      "id": "ListRevisionsResponse",
-      "description": "ListRevisionsResponse is a list of Revision resources.",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of this resource, in this case \"RevisionList\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this revision list.",
-          "$ref": "ListMeta"
-        },
-        "items": {
-          "description": "List of Revisions.",
-          "type": "array",
-          "items": {
-            "$ref": "Revision"
-          }
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Revision": {
-      "id": "Revision",
-      "description": "Revision is an immutable snapshot of code and configuration.\nSee also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/overview.md#revision",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of this resource, in this case \"Revision\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this Revision, including name, namespace, labels,\nand annotations.",
-          "$ref": "ObjectMeta"
-        },
-        "spec": {
-          "description": "Spec holds the desired state of the Revision (from the client).",
-          "$ref": "RevisionSpec"
-        },
-        "status": {
-          "description": "Status communicates the observed state of the Revision (from the\ncontroller).",
-          "$ref": "RevisionStatus"
-        }
-      }
-    },
-    "RevisionStatus": {
-      "id": "RevisionStatus",
-      "description": "RevisionStatus communicates the observed state of the Revision (from the\ncontroller).",
-      "type": "object",
-      "properties": {
-        "logUrl": {
-          "description": "Specifies the generated logging url for this particular revision\nbased on the revision url template specified in the controller's config.\n+optional",
-          "type": "string"
-        },
-        "conditions": {
-          "description": "List of observed RevisionConditions, indicating the current state\nof the Revision. As a Revision is being prepared, it will incrementally\nupdate conditions \"ResourcesAvailable\", \"ContainerHealthy\", and \"Active\",\nwhich contribute to the overall \"Ready\" condition.",
-          "type": "array",
-          "items": {
-            "$ref": "RevisionCondition"
-          }
-        },
-        "serviceName": {
-          "description": "ServiceName holds the name of a core Kubernetes Service resource that\nload balances over the pods backing this Revision. When the Revision\nis Active, this service would be an appropriate ingress target for\ntargeting the revision.",
-          "type": "string"
-        },
-        "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the Configuration that\nwas last processed by the controller. The observed generation is updated\neven if the controller failed to process the spec and create the Revision.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "imageDigest": {
-          "description": "ImageDigest holds the resolved digest for the image specified\nwithin .Spec.Container.Image. The digest is resolved during the creation\nof Revision. This field holds the digest value regardless of whether\na tag or digest was originally specified in the Container object. It\nmay be empty if the image comes from a registry listed to skip resolution.",
-          "type": "string"
-        }
-      }
-    },
-    "RevisionCondition": {
-      "id": "RevisionCondition",
-      "description": "RevisionCondition defines a readiness condition for a Revision.\nSee:\nhttps:\/\/github.com\/kubernetes\/community\/blob\/master\/contributors\/devel\/api-conventions.md#typical-status-properties",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "RevisionConditionType is used to communicate the status of the\nreconciliation process. See also:\nhttps:\/\/github.com\/knative\/serving\/blob\/master\/docs\/spec\/errors.md#error-conditions-and-reporting\nTypes include:\n\n* \"Ready\": True when the Revision is ready.\n* \"ResourcesAvailable\": True when underlying resources have been\nprovisioned.\n* \"ContainerHealthy\": True when the Revision readiness check completes.\n* \"Active\": True when the Revision may receive traffic.",
-          "type": "string"
-        },
-        "status": {
-          "description": "Status of the condition, one of True, False, Unknown.",
-          "type": "string"
-        },
-        "reason": {
-          "description": "One-word CamelCase reason for the condition's last transition.\n+optional",
-          "type": "string"
-        },
-        "message": {
-          "description": "Human readable message indicating details about the current status.\n+optional",
-          "type": "string"
-        },
-        "lastTransitionTime": {
-          "description": "Last time the condition transitioned from one status to another.\n+optional",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "ApiVersions": {
-      "id": "ApiVersions",
-      "description": "Message to list the versions of the API which are available.",
-      "type": "object",
-      "properties": {
-        "kind": {
-          "description": "The kind of this message, in this case \"APIVersions\".",
-          "type": "string"
-        },
-        "versions": {
-          "description": "The version of the API, like \"v1\".",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ApiGroupList": {
-      "id": "ApiGroupList",
-      "description": "List of API groups.",
-      "type": "object",
-      "properties": {
-        "kind": {
-          "description": "Kind of API.",
-          "type": "string"
-        },
-        "groups": {
-          "description": "API groups.",
-          "type": "array",
-          "items": {
-            "$ref": "ApiGroup"
-          }
-        }
-      }
-    },
-    "ApiGroup": {
-      "id": "ApiGroup",
-      "description": "An API group.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The API group name.",
-          "type": "string"
-        },
-        "versions": {
-          "description": "The group versions.",
-          "type": "array",
-          "items": {
-            "$ref": "GroupVersionForDiscovery"
-          }
-        },
-        "preferredVersion": {
-          "description": "The preferred version for this group.",
-          "$ref": "GroupVersionForDiscovery"
-        }
-      }
-    },
-    "GroupVersionForDiscovery": {
-      "id": "GroupVersionForDiscovery",
-      "description": "Group information for the discovery API.",
-      "type": "object",
-      "properties": {
-        "groupVersion": {
-          "description": "The group version.",
-          "type": "string"
-        },
-        "version": {
-          "description": "The version.",
-          "type": "string"
-        }
-      }
-    },
-    "ApiResourceList": {
-      "id": "ApiResourceList",
-      "description": "A list of API resources.",
-      "type": "object",
-      "properties": {
-        "kind": {
-          "description": "The kind of resources.",
-          "type": "string"
-        },
-        "groupVersion": {
-          "description": "The group version of the resources.",
-          "type": "string"
-        },
-        "resources": {
-          "description": "The list of API resources.",
-          "type": "array",
-          "items": {
-            "$ref": "ApiResource"
-          }
-        }
-      }
-    },
-    "ApiResource": {
-      "id": "ApiResource",
-      "description": "Holds information about a resource type in a given API.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the resource. Should be plural, like \"routes\" or\n\"configurations\".",
-          "type": "string"
-        },
-        "namespaced": {
-          "description": "Whether or not the resource is namespaced.",
-          "type": "boolean"
-        },
-        "kind": {
-          "description": "The kind of resource.",
-          "type": "string"
-        },
-        "verbs": {
-          "description": "The verbs (create, get, update, etc) supported for this resource.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "shortNames": {
-          "description": "The short names for this resource.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "singularName": {
-          "description": "The singular name for this resource.",
-          "type": "string"
-        },
-        "categories": {
-          "description": "The categories to which this resource belongs.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ListAuthorizedDomainsResponse": {
-      "id": "ListAuthorizedDomainsResponse",
-      "description": "A list of Authorized Domains.",
-      "type": "object",
-      "properties": {
-        "domains": {
-          "description": "The authorized domains belonging to the user.",
-          "type": "array",
-          "items": {
-            "$ref": "AuthorizedDomain"
-          }
-        },
-        "nextPageToken": {
-          "description": "Continuation token for fetching the next page of results.",
-          "type": "string"
-        }
-      }
-    },
-    "AuthorizedDomain": {
-      "id": "AuthorizedDomain",
-      "description": "A domain that a user has been authorized to administer. To authorize use\nof a domain, verify ownership via\n[Webmaster Central](https:\/\/www.google.com\/webmasters\/verification\/home).",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Read only. Full path to the `AuthorizedDomain` resource in the API.\nExample: `apps\/myapp\/authorizedDomains\/example.com`.",
-          "type": "string"
-        },
-        "id": {
-          "description": "Relative name of the domain authorized for use. Example: `example.com`.",
-          "type": "string"
-        }
-      }
-    },
-    "DomainMapping": {
-      "id": "DomainMapping",
-      "description": "Resource to hold the state and status of a user's domain mapping.",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of resource, in this case \"DomainMapping\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this BuildTemplate.",
-          "$ref": "ObjectMeta"
-        },
-        "spec": {
-          "description": "The spec for this DomainMapping.",
-          "$ref": "DomainMappingSpec"
-        },
-        "status": {
-          "description": "The current status of the DomainMapping.",
-          "$ref": "DomainMappingStatus"
-        }
-      }
-    },
-    "DomainMappingSpec": {
-      "id": "DomainMappingSpec",
-      "description": "The desired state of the Domain Mapping.",
-      "type": "object",
-      "properties": {
-        "routeName": {
-          "description": "The name of the Knative Route that this DomainMapping applies to.\nThe route must exist.",
-          "type": "string"
-        },
-        "certificateMode": {
-          "description": "The mode of the certificate.",
-          "enumDescriptions": [
-            "",
-            ""
-          ],
-          "type": "string",
-          "enum": [
-            "CERTIFICATE_MODE_UNSPECIFIED",
-            "AUTOMATIC"
-          ]
-        },
-        "overrideBefore": {
-          "description": "If set, the mapping will override any mapping set before this time. It is\nrecommended that the user leaves this emptyg to receive an error warning\nabout a potential conflict and only set it once the respective UI has given\nsuch a warning.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "DomainMappingStatus": {
-      "id": "DomainMappingStatus",
-      "description": "The current state of the Domain Mapping.",
-      "type": "object",
-      "properties": {
-        "conditions": {
-          "description": "Array of observed DomainMappingConditions, indicating the current state\nof the DomainMapping.",
-          "type": "array",
-          "items": {
-            "$ref": "DomainMappingCondition"
-          }
-        },
-        "observedGeneration": {
-          "description": "ObservedGeneration is the 'Generation' of the DomainMapping that\nwas last processed by the controller.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "DomainMappingCondition": {
-      "id": "DomainMappingCondition",
-      "description": "DomainMappingCondition contains state information for a DomainMapping.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Type of domain mapping condition.",
-          "type": "string"
-        },
-        "status": {
-          "description": "Status of the condition, one of True, False, Unknown.",
-          "type": "string"
-        },
-        "reason": {
-          "description": "One-word CamelCase reason for the condition's current status.\n+optional",
-          "type": "string"
-        },
-        "message": {
-          "description": "Human readable message indicating details about the current status.\n+optional",
-          "type": "string"
-        },
-        "internalMessage": {
-          "description": "Human readable message that contains additional details not shared with\nexternal users.",
-          "type": "string"
-        }
-      }
-    },
-    "ListDomainMappingsResponse": {
-      "id": "ListDomainMappingsResponse",
-      "description": "ListDomainMappingsResponse is a list of DomainMapping resources.",
-      "type": "object",
-      "properties": {
-        "apiVersion": {
-          "description": "The API version for this call such as \"v1alpha1\".",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The kind of this resource, in this case \"DomainMappingList\".",
-          "type": "string"
-        },
-        "metadata": {
-          "description": "Metadata associated with this DomainMapping list.",
-          "$ref": "ListMeta"
-        },
-        "items": {
-          "description": "List of DomainMappings.",
-          "type": "array",
-          "items": {
-            "$ref": "DomainMapping"
-          }
-        }
-      }
     }
   },
   "resources": {
@@ -1999,6 +1999,522 @@
       "resources": {
         "locations": {
           "resources": {
+            "authorizeddomains": {
+              "methods": {
+                "list": {
+                  "id": "serverless.projects.locations.authorizeddomains.list",
+                  "path": "v1alpha1/{+parent}/authorizeddomains",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/authorizeddomains",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Maximum results to return per page.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Continuation token for fetching the next page of results.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListAuthorizedDomainsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "RPC to list authorized domains."
+                }
+              }
+            },
+            "revisions": {
+              "methods": {
+                "list": {
+                  "id": "serverless.projects.locations.revisions.list",
+                  "path": "v1alpha1/{+parent}/revisions",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/revisions",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project ID or project number from which the revisions should be listed.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "The maximum number of records that should be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "includeUninitialized": {
+                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "fieldSelector": {
+                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "labelSelector": {
+                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "watch": {
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "continue": {
+                      "description": "Optional encoded string to continue paging.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListRevisionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to list revisions."
+                },
+                "get": {
+                  "id": "serverless.projects.locations.revisions.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/revisions/{revisionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the revision being retrieved.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Revision"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to get informationabout a revision."
+                },
+                "delete": {
+                  "id": "serverless.projects.locations.revisions.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/revisions/{revisionsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the revision being deleted.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "orphanDependents": {
+                      "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to delete a revision."
+                }
+              }
+            },
+            "configurations": {
+              "methods": {
+                "list": {
+                  "id": "serverless.projects.locations.configurations.list",
+                  "path": "v1alpha1/{+parent}/configurations",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configurations",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project ID or project number from which the configurations should be\nlisted.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "The maximum number of records that should be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "includeUninitialized": {
+                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "fieldSelector": {
+                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "labelSelector": {
+                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "watch": {
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "continue": {
+                      "description": "Optional encoded string to continue paging.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListConfigurationsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to list configurations."
+                },
+                "get": {
+                  "id": "serverless.projects.locations.configurations.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configurations/{configurationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the configuration being retrieved.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/configurations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Configuration"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to get information about a configuration."
+                }
+              }
+            },
+            "domainmappings": {
+              "methods": {
+                "create": {
+                  "id": "serverless.projects.locations.domainmappings.create",
+                  "path": "v1alpha1/{+parent}/domainmappings",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project ID or project number in which this domain mapping should be\ncreated.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "DomainMapping"
+                  },
+                  "response": {
+                    "$ref": "DomainMapping"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new domain mapping."
+                },
+                "list": {
+                  "id": "serverless.projects.locations.domainmappings.list",
+                  "path": "v1alpha1/{+parent}/domainmappings",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project ID or project number from which the domain mappings should be\nlisted.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "The maximum number of records that should be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "includeUninitialized": {
+                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "fieldSelector": {
+                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "labelSelector": {
+                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "watch": {
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "continue": {
+                      "description": "Optional encoded string to continue paging.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListDomainMappingsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to list domain mappings.."
+                },
+                "get": {
+                  "id": "serverless.projects.locations.domainmappings.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the domain mapping being retrieved.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "DomainMapping"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to get information about a domain mapping."
+                },
+                "replaceDomainMapping": {
+                  "id": "serverless.projects.locations.domainmappings.replaceDomainMapping",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}",
+                  "httpMethod": "PUT",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the domain mapping being retrieved.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DomainMapping"
+                  },
+                  "response": {
+                    "$ref": "DomainMapping"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to replace a domain mapping.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the DomainMappingStatus match the\nrequested DomainMappingSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+                },
+                "delete": {
+                  "id": "serverless.projects.locations.domainmappings.delete",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the domain mapping being deleted.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "orphanDependents": {
+                      "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                      "location": "query",
+                      "type": "boolean"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to delete a domain mapping."
+                }
+              }
+            },
+            "routes": {
+              "methods": {
+                "list": {
+                  "id": "serverless.projects.locations.routes.list",
+                  "path": "v1alpha1/{+parent}/routes",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "The project ID or project number from which the routes should be listed.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "type": "string"
+                    },
+                    "limit": {
+                      "description": "The maximum number of records that should be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "includeUninitialized": {
+                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "fieldSelector": {
+                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "labelSelector": {
+                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "resourceVersion": {
+                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "watch": {
+                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                      "location": "query",
+                      "type": "boolean"
+                    },
+                    "continue": {
+                      "description": "Optional encoded string to continue paging.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListRoutesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to list routes."
+                },
+                "get": {
+                  "id": "serverless.projects.locations.routes.get",
+                  "path": "v1alpha1/{+name}",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routes/{routesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the route being retrieved.",
+                      "location": "path",
+                      "required": true,
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routes\/[^\/]+$",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Route"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Rpc to get information about a route."
+                }
+              }
+            },
             "services": {
               "methods": {
                 "list": {
@@ -2283,522 +2799,6 @@
                   "description": "Returns permissions that a caller has on the specified Project.\n\nThere are no permissions required for making this API call."
                 }
               }
-            },
-            "routes": {
-              "methods": {
-                "list": {
-                  "id": "serverless.projects.locations.routes.list",
-                  "path": "v1alpha1/{+parent}/routes",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routes",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "The project ID or project number from which the routes should be listed.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "limit": {
-                      "description": "The maximum number of records that should be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "labelSelector": {
-                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "continue": {
-                      "description": "Optional encoded string to continue paging.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListRoutesResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to list routes."
-                },
-                "get": {
-                  "id": "serverless.projects.locations.routes.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/routes/{routesId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the route being retrieved.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/routes\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Route"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to get information about a route."
-                }
-              }
-            },
-            "configurations": {
-              "methods": {
-                "list": {
-                  "id": "serverless.projects.locations.configurations.list",
-                  "path": "v1alpha1/{+parent}/configurations",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configurations",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "The project ID or project number from which the configurations should be\nlisted.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "limit": {
-                      "description": "The maximum number of records that should be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "labelSelector": {
-                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "continue": {
-                      "description": "Optional encoded string to continue paging.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListConfigurationsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to list configurations."
-                },
-                "get": {
-                  "id": "serverless.projects.locations.configurations.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/configurations/{configurationsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the configuration being retrieved.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/configurations\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Configuration"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to get information about a configuration."
-                }
-              }
-            },
-            "revisions": {
-              "methods": {
-                "list": {
-                  "id": "serverless.projects.locations.revisions.list",
-                  "path": "v1alpha1/{+parent}/revisions",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/revisions",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "The project ID or project number from which the revisions should be listed.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "limit": {
-                      "description": "The maximum number of records that should be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "labelSelector": {
-                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "continue": {
-                      "description": "Optional encoded string to continue paging.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListRevisionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to list revisions."
-                },
-                "get": {
-                  "id": "serverless.projects.locations.revisions.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/revisions/{revisionsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the revision being retrieved.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Revision"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to get informationabout a revision."
-                },
-                "delete": {
-                  "id": "serverless.projects.locations.revisions.delete",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/revisions/{revisionsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the revision being deleted.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/revisions\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "orphanDependents": {
-                      "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
-                      "location": "query",
-                      "type": "boolean"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Empty"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to delete a revision."
-                }
-              }
-            },
-            "authorizeddomains": {
-              "methods": {
-                "list": {
-                  "id": "serverless.projects.locations.authorizeddomains.list",
-                  "path": "v1alpha1/{+parent}/authorizeddomains",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/authorizeddomains",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Maximum results to return per page.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "Continuation token for fetching the next page of results.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListAuthorizedDomainsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "RPC to list authorized domains."
-                }
-              }
-            },
-            "domainmappings": {
-              "methods": {
-                "create": {
-                  "id": "serverless.projects.locations.domainmappings.create",
-                  "path": "v1alpha1/{+parent}/domainmappings",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "The project ID or project number in which this domain mapping should be\ncreated.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "DomainMapping"
-                  },
-                  "response": {
-                    "$ref": "DomainMapping"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new domain mapping."
-                },
-                "list": {
-                  "id": "serverless.projects.locations.domainmappings.list",
-                  "path": "v1alpha1/{+parent}/domainmappings",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "The project ID or project number from which the domain mappings should be\nlisted.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "limit": {
-                      "description": "The maximum number of records that should be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "includeUninitialized": {
-                      "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "fieldSelector": {
-                      "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "labelSelector": {
-                      "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "resourceVersion": {
-                      "description": "The baseline resource version from which the list or watch operation should\nstart.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "watch": {
-                      "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "continue": {
-                      "description": "Optional encoded string to continue paging.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListDomainMappingsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to list domain mappings.."
-                },
-                "get": {
-                  "id": "serverless.projects.locations.domainmappings.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the domain mapping being retrieved.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "DomainMapping"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to get information about a domain mapping."
-                },
-                "replaceDomainMapping": {
-                  "id": "serverless.projects.locations.domainmappings.replaceDomainMapping",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}",
-                  "httpMethod": "PUT",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the domain mapping being retrieved.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "DomainMapping"
-                  },
-                  "response": {
-                    "$ref": "DomainMapping"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to replace a domain mapping.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the DomainMappingStatus match the\nrequested DomainMappingSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
-                },
-                "delete": {
-                  "id": "serverless.projects.locations.domainmappings.delete",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/domainmappings/{domainmappingsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the domain mapping being deleted.",
-                      "location": "path",
-                      "required": true,
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/domainmappings\/[^\/]+$",
-                      "type": "string"
-                    },
-                    "orphanDependents": {
-                      "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
-                      "location": "query",
-                      "type": "boolean"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Empty"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Rpc to delete a domain mapping."
-                }
-              }
             }
           }
         }
@@ -2806,6 +2806,555 @@
     },
     "namespaces": {
       "resources": {
+        "authorizeddomains": {
+          "methods": {
+            "list": {
+              "id": "serverless.namespaces.authorizeddomains.list",
+              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/authorizeddomains",
+              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/authorizeddomains",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+$",
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Maximum results to return per page.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Continuation token for fetching the next page of results.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListAuthorizedDomainsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "RPC to list authorized domains."
+            }
+          }
+        },
+        "revisions": {
+          "methods": {
+            "list": {
+              "id": "serverless.namespaces.revisions.list",
+              "path": "apis/serving.knative.dev/v1alpha1/{+parent}/revisions",
+              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/revisions",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The project ID or project number from which the revisions should be listed.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+$",
+                  "type": "string"
+                },
+                "limit": {
+                  "description": "The maximum number of records that should be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "includeUninitialized": {
+                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "fieldSelector": {
+                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "location": "query",
+                  "type": "string"
+                },
+                "labelSelector": {
+                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resourceVersion": {
+                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "watch": {
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "continue": {
+                  "description": "Optional encoded string to continue paging.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListRevisionsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to list revisions."
+            },
+            "get": {
+              "id": "serverless.namespaces.revisions.get",
+              "path": "apis/serving.knative.dev/v1alpha1/{+name}",
+              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/revisions/{revisionsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the revision being retrieved.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Revision"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to get informationabout a revision."
+            },
+            "delete": {
+              "id": "serverless.namespaces.revisions.delete",
+              "path": "apis/serving.knative.dev/v1alpha1/{+name}",
+              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/revisions/{revisionsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "The name of the revision being deleted.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
+                  "type": "string"
+                },
+                "orphanDependents": {
+                  "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to delete a revision."
+            }
+          }
+        },
+        "configurations": {
+          "methods": {
+            "list": {
+              "id": "serverless.namespaces.configurations.list",
+              "path": "apis/serving.knative.dev/v1alpha1/{+parent}/configurations",
+              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/configurations",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The project ID or project number from which the configurations should be\nlisted.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+$",
+                  "type": "string"
+                },
+                "limit": {
+                  "description": "The maximum number of records that should be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "includeUninitialized": {
+                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "fieldSelector": {
+                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "location": "query",
+                  "type": "string"
+                },
+                "labelSelector": {
+                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resourceVersion": {
+                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "watch": {
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "continue": {
+                  "description": "Optional encoded string to continue paging.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListConfigurationsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to list configurations."
+            },
+            "get": {
+              "id": "serverless.namespaces.configurations.get",
+              "path": "apis/serving.knative.dev/v1alpha1/{+name}",
+              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/configurations/{configurationsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the configuration being retrieved.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/configurations\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Configuration"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to get information about a configuration."
+            }
+          }
+        },
+        "domainmappings": {
+          "methods": {
+            "create": {
+              "id": "serverless.namespaces.domainmappings.create",
+              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings",
+              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "The project ID or project number in which this domain mapping should be\ncreated.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "DomainMapping"
+              },
+              "response": {
+                "$ref": "DomainMapping"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Creates a new domain mapping."
+            },
+            "list": {
+              "id": "serverless.namespaces.domainmappings.list",
+              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings",
+              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The project ID or project number from which the domain mappings should be\nlisted.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+$",
+                  "type": "string"
+                },
+                "limit": {
+                  "description": "The maximum number of records that should be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "includeUninitialized": {
+                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "fieldSelector": {
+                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "location": "query",
+                  "type": "string"
+                },
+                "labelSelector": {
+                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resourceVersion": {
+                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "watch": {
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "continue": {
+                  "description": "Optional encoded string to continue paging.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListDomainMappingsResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to list domain mappings.."
+            },
+            "get": {
+              "id": "serverless.namespaces.domainmappings.get",
+              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
+              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the domain mapping being retrieved.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "DomainMapping"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to get information about a domain mapping."
+            },
+            "replaceDomainMapping": {
+              "id": "serverless.namespaces.domainmappings.replaceDomainMapping",
+              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
+              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
+              "httpMethod": "PUT",
+              "parameters": {
+                "name": {
+                  "description": "The name of the domain mapping being retrieved.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "DomainMapping"
+              },
+              "response": {
+                "$ref": "DomainMapping"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to replace a domain mapping.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the DomainMappingStatus match the\nrequested DomainMappingSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
+            },
+            "delete": {
+              "id": "serverless.namespaces.domainmappings.delete",
+              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
+              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "The name of the domain mapping being deleted.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
+                  "type": "string"
+                },
+                "orphanDependents": {
+                  "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to delete a domain mapping."
+            }
+          }
+        },
+        "kube-system": {
+          "resources": {
+            "services": {
+              "methods": {
+                "list": {
+                  "id": "serverless.namespaces.kube-system.services.list",
+                  "path": "apis/serving.knative.dev/v1alpha1/namespaces/kube-system/services",
+                  "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/kube-system/services",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "timeout": {
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "labelSelector": {
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                  ],
+                  "response": {
+                    "$ref": "ApiResourceList"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists serverless v1alpha1 resources."
+                }
+              }
+            }
+          }
+        },
+        "routes": {
+          "methods": {
+            "list": {
+              "id": "serverless.namespaces.routes.list",
+              "path": "apis/serving.knative.dev/v1alpha1/{+parent}/routes",
+              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/routes",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The project ID or project number from which the routes should be listed.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+$",
+                  "type": "string"
+                },
+                "limit": {
+                  "description": "The maximum number of records that should be returned.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "includeUninitialized": {
+                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "fieldSelector": {
+                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
+                  "location": "query",
+                  "type": "string"
+                },
+                "labelSelector": {
+                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "resourceVersion": {
+                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "watch": {
+                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
+                  "location": "query",
+                  "type": "boolean"
+                },
+                "continue": {
+                  "description": "Optional encoded string to continue paging.",
+                  "location": "query",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListRoutesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to list routes."
+            },
+            "get": {
+              "id": "serverless.namespaces.routes.get",
+              "path": "apis/serving.knative.dev/v1alpha1/{+name}",
+              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/routes/{routesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The name of the route being retrieved.",
+                  "location": "path",
+                  "required": true,
+                  "pattern": "^namespaces\/[^\/]+\/routes\/[^\/]+$",
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Route"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Rpc to get information about a route."
+            }
+          }
+        },
         "services": {
           "methods": {
             "list": {
@@ -3007,555 +3556,6 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Rpc to update a service.\nOnly the metadata and spec are modifiable but after the Update request,\nCloud Run will work to make the ServiceStatus match the\nrequested ServiceSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
-            }
-          }
-        },
-        "routes": {
-          "methods": {
-            "list": {
-              "id": "serverless.namespaces.routes.list",
-              "path": "apis/serving.knative.dev/v1alpha1/{+parent}/routes",
-              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/routes",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The project ID or project number from which the routes should be listed.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
-                  "type": "string"
-                },
-                "limit": {
-                  "description": "The maximum number of records that should be returned.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
-                  "location": "query",
-                  "type": "string"
-                },
-                "labelSelector": {
-                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "continue": {
-                  "description": "Optional encoded string to continue paging.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListRoutesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to list routes."
-            },
-            "get": {
-              "id": "serverless.namespaces.routes.get",
-              "path": "apis/serving.knative.dev/v1alpha1/{+name}",
-              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/routes/{routesId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The name of the route being retrieved.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/routes\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Route"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to get information about a route."
-            }
-          }
-        },
-        "configurations": {
-          "methods": {
-            "list": {
-              "id": "serverless.namespaces.configurations.list",
-              "path": "apis/serving.knative.dev/v1alpha1/{+parent}/configurations",
-              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/configurations",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The project ID or project number from which the configurations should be\nlisted.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
-                  "type": "string"
-                },
-                "limit": {
-                  "description": "The maximum number of records that should be returned.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
-                  "location": "query",
-                  "type": "string"
-                },
-                "labelSelector": {
-                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "continue": {
-                  "description": "Optional encoded string to continue paging.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListConfigurationsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to list configurations."
-            },
-            "get": {
-              "id": "serverless.namespaces.configurations.get",
-              "path": "apis/serving.knative.dev/v1alpha1/{+name}",
-              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/configurations/{configurationsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The name of the configuration being retrieved.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/configurations\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Configuration"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to get information about a configuration."
-            }
-          }
-        },
-        "revisions": {
-          "methods": {
-            "list": {
-              "id": "serverless.namespaces.revisions.list",
-              "path": "apis/serving.knative.dev/v1alpha1/{+parent}/revisions",
-              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/revisions",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The project ID or project number from which the revisions should be listed.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
-                  "type": "string"
-                },
-                "limit": {
-                  "description": "The maximum number of records that should be returned.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
-                  "location": "query",
-                  "type": "string"
-                },
-                "labelSelector": {
-                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "continue": {
-                  "description": "Optional encoded string to continue paging.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListRevisionsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to list revisions."
-            },
-            "get": {
-              "id": "serverless.namespaces.revisions.get",
-              "path": "apis/serving.knative.dev/v1alpha1/{+name}",
-              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/revisions/{revisionsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The name of the revision being retrieved.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Revision"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to get informationabout a revision."
-            },
-            "delete": {
-              "id": "serverless.namespaces.revisions.delete",
-              "path": "apis/serving.knative.dev/v1alpha1/{+name}",
-              "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/{namespacesId}/revisions/{revisionsId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "The name of the revision being deleted.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/revisions\/[^\/]+$",
-                  "type": "string"
-                },
-                "orphanDependents": {
-                  "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
-                  "location": "query",
-                  "type": "boolean"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to delete a revision."
-            }
-          }
-        },
-        "kube-system": {
-          "resources": {
-            "services": {
-              "methods": {
-                "list": {
-                  "id": "serverless.namespaces.kube-system.services.list",
-                  "path": "apis/serving.knative.dev/v1alpha1/namespaces/kube-system/services",
-                  "flatPath": "apis/serving.knative.dev/v1alpha1/namespaces/kube-system/services",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "timeout": {
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "labelSelector": {
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                  ],
-                  "response": {
-                    "$ref": "ApiResourceList"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists serverless v1alpha1 resources."
-                }
-              }
-            }
-          }
-        },
-        "authorizeddomains": {
-          "methods": {
-            "list": {
-              "id": "serverless.namespaces.authorizeddomains.list",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/authorizeddomains",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/authorizeddomains",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "Name of the parent Application resource. Example: `apps\/myapp`.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Maximum results to return per page.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "Continuation token for fetching the next page of results.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListAuthorizedDomainsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "RPC to list authorized domains."
-            }
-          }
-        },
-        "domainmappings": {
-          "methods": {
-            "create": {
-              "id": "serverless.namespaces.domainmappings.create",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "The project ID or project number in which this domain mapping should be\ncreated.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "DomainMapping"
-              },
-              "response": {
-                "$ref": "DomainMapping"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Creates a new domain mapping."
-            },
-            "list": {
-              "id": "serverless.namespaces.domainmappings.list",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+parent}/domainmappings",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The project ID or project number from which the domain mappings should be\nlisted.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+$",
-                  "type": "string"
-                },
-                "limit": {
-                  "description": "The maximum number of records that should be returned.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "includeUninitialized": {
-                  "description": "Kubernetes-compatible parameter. Not used by Cloud Run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "fieldSelector": {
-                  "description": "Allows to filter resources based on a specific value for a field name.\nk8s will send this in a query string format. i.e. 'metadata.name%3Dlorem'",
-                  "location": "query",
-                  "type": "string"
-                },
-                "labelSelector": {
-                  "description": "Allows to filter resources based on a label. Supported operations are\n=, !=, exists, in, and notIn.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "resourceVersion": {
-                  "description": "The baseline resource version from which the list or watch operation should\nstart.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "watch": {
-                  "description": "Flag that indicates that kubectl expects to watch this resource as well.\nNot supported by Cloud Run.",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "continue": {
-                  "description": "Optional encoded string to continue paging.",
-                  "location": "query",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListDomainMappingsResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to list domain mappings.."
-            },
-            "get": {
-              "id": "serverless.namespaces.domainmappings.get",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The name of the domain mapping being retrieved.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "DomainMapping"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to get information about a domain mapping."
-            },
-            "replaceDomainMapping": {
-              "id": "serverless.namespaces.domainmappings.replaceDomainMapping",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
-              "httpMethod": "PUT",
-              "parameters": {
-                "name": {
-                  "description": "The name of the domain mapping being retrieved.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "DomainMapping"
-              },
-              "response": {
-                "$ref": "DomainMapping"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to replace a domain mapping.\nOnly the metadata and spec are modifiable but after the Replace request,\nCloud Run will work to make the DomainMappingStatus match the\nrequested DomainMappingSpec.\nMay use metadata.resourceVersion to enforce update from last read for\nconcurrency control."
-            },
-            "delete": {
-              "id": "serverless.namespaces.domainmappings.delete",
-              "path": "apis/domains.cloudrun.dev/v1alpha1/{+name}",
-              "flatPath": "apis/domains.cloudrun.dev/v1alpha1/namespaces/{namespacesId}/domainmappings/{domainmappingsId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "The name of the domain mapping being deleted.",
-                  "location": "path",
-                  "required": true,
-                  "pattern": "^namespaces\/[^\/]+\/domainmappings\/[^\/]+$",
-                  "type": "string"
-                },
-                "orphanDependents": {
-                  "description": "Kubernetes-compatible attribute that specifies the cascade behavior on\ndelete. Cloud Run only supports cascading behavior, so this must be false.\nThis attribute is deprecated, and might be replaced with PropagationPolicy\nSee https:\/\/github.com\/kubernetes\/kubernetes\/issues\/46659 for more info.",
-                  "location": "query",
-                  "type": "boolean"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Empty"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Rpc to delete a domain mapping."
             }
           }
         }

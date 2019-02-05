@@ -987,7 +987,11 @@ ServiceAccount.
     )
 
     def SignBlob(self, request, global_params=None):
-      r"""Signs a blob using a service account's system-managed private key.
+      r"""**Note**: This method is in the process of being deprecated. Call the.
+[`signBlob()`](/iam/credentials/reference/rest/v1/projects.serviceAccounts/signBlob)
+method of the Cloud IAM Service Account Credentials API instead.
+
+Signs a blob using a service account's system-managed private key.
 
       Args:
         request: (IamProjectsServiceAccountsSignBlobRequest) input message
@@ -1014,7 +1018,11 @@ ServiceAccount.
     )
 
     def SignJwt(self, request, global_params=None):
-      r"""Signs a JWT using a service account's system-managed private key.
+      r"""**Note**: This method is in the process of being deprecated. Call the.
+[`signJwt()`](/iam/credentials/reference/rest/v1/projects.serviceAccounts/signJwt)
+method of the Cloud IAM Service Account Credentials API instead.
+
+Signs a JWT using a service account's system-managed private key.
 
 If no expiry time (`exp`) is provided in the `SignJwtRequest`, IAM sets an
 an expiry time of one hour by default. If you request an expiry time of

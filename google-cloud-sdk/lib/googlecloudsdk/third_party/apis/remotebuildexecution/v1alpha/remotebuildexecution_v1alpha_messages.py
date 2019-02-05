@@ -912,9 +912,10 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
     diskType: Required. Disk Type to use for the worker. See [Storage
       options](https://cloud.google.com/compute/docs/disks/#introduction).
       Currently only `pd-standard` is supported.
-    machineType: Required. Machine type of the worker, such as n1-standard-2.
-      See https://cloud.google.com/compute/docs/machine-types for a list of
-      supported machine types.
+    machineType: Required. Machine type of the worker, such as
+      `n1-standard-2`. See https://cloud.google.com/compute/docs/machine-types
+      for a list of supported machine types. Note that `f1-micro` and
+      `g1-small` are not yet supported.
     minCpuPlatform: Minimum CPU platform to use when creating the worker. See
       [CPU Platforms](https://cloud.google.com/compute/docs/cpu-platforms).
     reserved: Determines whether the worker is reserved (and therefore won't

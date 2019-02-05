@@ -153,4 +153,4 @@ def WaitOperation(name):
 
 
 def _GetClientInstance():
-  return apis.GetClientInstance('servicenetworking', 'v1beta', no_http=False)
+  return apis.GetClientInstance('servicenetworking', 'v1', no_http=False)

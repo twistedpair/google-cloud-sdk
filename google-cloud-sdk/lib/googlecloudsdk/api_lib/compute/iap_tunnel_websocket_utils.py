@@ -100,7 +100,7 @@ def CheckCACertsFile(ignore_certs):
     ca_certs = custom_ca_certs
   if not os.path.exists(ca_certs):
     error_msg = 'Unable to locate CA certificates file.'
-    log.Print(error_msg)
+    log.warning(error_msg)
     error_msg += ' [%s]' % ca_certs
     if ignore_certs:
       log.info(error_msg)

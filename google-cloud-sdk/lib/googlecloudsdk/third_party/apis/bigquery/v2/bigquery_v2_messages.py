@@ -2601,7 +2601,13 @@ class TableDataList(_messages.Message):
 class TableFieldSchema(_messages.Message):
   r"""A TableFieldSchema object.
 
+  Messages:
+    CategoriesValue: [Optional] The categories attached to this field, used
+      for field-level access control.
+
   Fields:
+    categories: [Optional] The categories attached to this field, used for
+      field-level access control.
     description: [Optional] The field description. The maximum length is 1,024
       characters.
     fields: [Optional] Describes the nested schema fields if the type property
@@ -2618,11 +2624,24 @@ class TableFieldSchema(_messages.Message):
       STRUCT (same as RECORD).
   """
 
-  description = _messages.StringField(1)
-  fields = _messages.MessageField('TableFieldSchema', 2, repeated=True)
-  mode = _messages.StringField(3)
-  name = _messages.StringField(4)
-  type = _messages.StringField(5)
+  class CategoriesValue(_messages.Message):
+    r"""[Optional] The categories attached to this field, used for field-level
+    access control.
+
+    Fields:
+      names: A list of category resource names. For example,
+        "projects/1/taxonomies/2/categories/3". At most 5 categories are
+        allowed.
+    """
+
+    names = _messages.StringField(1, repeated=True)
+
+  categories = _messages.MessageField('CategoriesValue', 1)
+  description = _messages.StringField(2)
+  fields = _messages.MessageField('TableFieldSchema', 3, repeated=True)
+  mode = _messages.StringField(4)
+  name = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class TableList(_messages.Message):

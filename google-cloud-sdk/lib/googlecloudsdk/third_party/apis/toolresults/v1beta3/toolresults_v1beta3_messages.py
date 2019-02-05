@@ -693,16 +693,18 @@ class Outcome(_messages.Message):
 
     Values:
       failure: <no description>
+      flaky: <no description>
       inconclusive: <no description>
       skipped: <no description>
       success: <no description>
       unset: <no description>
     """
     failure = 0
-    inconclusive = 1
-    skipped = 2
-    success = 3
-    unset = 4
+    flaky = 1
+    inconclusive = 2
+    skipped = 3
+    success = 4
+    unset = 5
 
   failureDetail = _messages.MessageField('FailureDetail', 1)
   inconclusiveDetail = _messages.MessageField('InconclusiveDetail', 2)

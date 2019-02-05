@@ -5,6 +5,82 @@ Copyright 2014-2019 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 233.0.0 (2019-02-05)
+
+### Cloud Dataflow
+
+* Added numWorkers, network, subnetwork and workerMachineType flags to
+'gcloud beta dataflow jobs run' command
+
+### Cloud Datalab
+
+* Updated the `datalab` component to the 20190116 release.
+  Released changes are documented in its tracking issue at
+        [https://github.com/googledatalab/datalab/issues/2114](https://github.com/googledatalab/datalab/issues/2114).
+
+### Cloud Filestore
+
+* Promoted `gcloud filestore` command group to GA.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore Emulator version 1.3.0
+  *  Added a clearDatabase RPC to delete all data in a database
+  *  Added logging to assist with FIRESTORE_EMULATOR_HOST environment variable
+  *  The getDocument RPC now supports a read_time consistency selector
+  *  Fixed bug related to rule evaluation callbacks
+
+### Cloud Machine Learning Engine
+
+* Added support for custom server configuration to
+  `ml-engine jobs submit training` in beta. Added the following flags:
+  * `--master-machine-type`
+  * `--master-accelerator`
+  * `--master-image-uri`
+  * `--worker-machine-type`
+  * `--worker-count`
+  * `--worker-accelerator`
+  * `--worker-image-uri`
+  * `--parameter-server-machine-type`
+  * `--parameter-server-count`
+  * `--parameter-server-accelerator`
+  * `--parameter-server-image-uri`
+
+### Cloud PubSub
+
+*   Promoted Snapshot & Seek features to GA. These features allow users to
+    create snapshots of subscription backlog state, and later restore that
+    state.
+
+### Cloud SQL
+
+* Fixed `gcloud sql connect` whitelisting issues that resulted from invalid
+  datetime formatting.
+
+### Cloud Storage
+
+
+* Updated gsutil component to 4.36.
+
+### Compute Engine
+
+* Promoted the `--force-attach` flag of `compute instances attach-disk` to GA
+* Added <get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to `gcloud beta compute networks subnets`
+* Promoted `gcloud compute instances get-shielded-identity` to beta.
+* Promoted `gcloud compute instance-groups managed update` to GA together with
+  `--health-check`, `--initial-delay` and `--clear-autohealing` flags.
+* Promoted `--initial-delay` and `--health-check` flags of `gcloud compute
+  instance-groups managed create` to GA.
+* Enabled the use of multiple `--network-interface` flags with `gcloud compute
+  <instances|instance-templates> create-with-container` to support using
+  multiple network interfaces.
+* Promoted `gcloud compute instance-groups managed rolling-action` command group
+  to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 232.0.0 (2019-01-29)
 
 ### Breaking Changes

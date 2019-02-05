@@ -552,6 +552,12 @@ MAP = {
         ),
     },
     'gkehub': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.gkehub.v1alpha1',
+            client_classpath='gkehub_v1alpha1_client.GkehubV1alpha1',
+            messages_modulepath='gkehub_v1alpha1_messages',
+            default_version=False
+        ),
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.gkehub.v1beta1',
             client_classpath='gkehub_v1beta1_client.GkehubV1beta1',
@@ -685,6 +691,14 @@ MAP = {
             default_version=True
         ),
     },
+    'run': {
+        'v1alpha1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.run.v1alpha1',
+            client_classpath='run_v1alpha1_client.RunV1alpha1',
+            messages_modulepath='run_v1alpha1_messages',
+            default_version=True
+        ),
+    },
     'runtimeconfig': {
         'v1beta1': APIDef(
             class_path='googlecloudsdk.third_party.apis.runtimeconfig.v1beta1',
@@ -710,11 +724,17 @@ MAP = {
         ),
     },
     'servicenetworking': {
+        'v1': APIDef(
+            class_path='googlecloudsdk.third_party.apis.servicenetworking.v1',
+            client_classpath='servicenetworking_v1_client.ServicenetworkingV1',
+            messages_modulepath='servicenetworking_v1_messages',
+            default_version=True
+        ),
         'v1beta': APIDef(
             class_path='googlecloudsdk.third_party.apis.servicenetworking.v1beta',
             client_classpath='servicenetworking_v1beta_client.ServicenetworkingV1beta',
             messages_modulepath='servicenetworking_v1beta_messages',
-            default_version=True
+            default_version=False
         ),
     },
     'serviceusage': {
@@ -850,6 +870,14 @@ MAP = {
             class_path='googlecloudsdk.third_party.apis.vpcaccess.v1alpha1',
             client_classpath='vpcaccess_v1alpha1_client.VpcaccessV1alpha1',
             messages_modulepath='vpcaccess_v1alpha1_messages',
+            default_version=True
+        ),
+    },
+    'websecurityscanner': {
+        'v1beta': APIDef(
+            class_path='googlecloudsdk.third_party.apis.websecurityscanner.v1beta',
+            client_classpath='websecurityscanner_v1beta_client.WebsecurityscannerV1beta',
+            messages_modulepath='websecurityscanner_v1beta_messages',
             default_version=True
         ),
     },

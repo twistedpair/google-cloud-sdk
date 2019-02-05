@@ -50,6 +50,8 @@ STYLE_MAPPINGS_BASIC = StyleMapping({
     text.TextTypes.URL: text.TextAttributes('{}'),
     text.TextTypes.COMMAND: text.TextAttributes('{}'),
     text.TextTypes.INFO: text.TextAttributes('{}'),
+    text.TextTypes.PT_SUCCESS: text.TextAttributes('{}'),
+    text.TextTypes.PT_FAILURE: text.TextAttributes('{}'),
 })
 
 
@@ -82,6 +84,10 @@ STYLE_MAPPINGS_ANSI = StyleMapping({
         '{}',
         color=ansi.Colors.YELLOW,
         attrs=[]),
+    text.TextTypes.PT_SUCCESS: text.TextAttributes(
+        '{}', color=ansi.Colors.GREEN),
+    text.TextTypes.PT_FAILURE: text.TextAttributes(
+        '{}', color=ansi.Colors.RED),
 })
 
 
@@ -114,6 +120,10 @@ STYLE_MAPPINGS_ANSI_256 = StyleMapping({
         '{}',
         color=ansi.Colors.COLOR_167,
         attrs=[]),
+    text.TextTypes.PT_SUCCESS: text.TextAttributes(
+        '{}', color=ansi.Colors.GREEN),
+    text.TextTypes.PT_FAILURE: text.TextAttributes(
+        '{}', color=ansi.Colors.RED),
 })
 
 
@@ -126,7 +136,9 @@ STYLE_MAPPINGS_TESTING = StyleMapping(dict([
         text.TextTypes.URI,
         text.TextTypes.URL,
         text.TextTypes.COMMAND,
-        text.TextTypes.INFO]]))
+        text.TextTypes.INFO,
+        text.TextTypes.PT_SUCCESS,
+        text.TextTypes.PT_FAILURE]]))
 
 
 def GetStyleMappings(console_attributes=None):

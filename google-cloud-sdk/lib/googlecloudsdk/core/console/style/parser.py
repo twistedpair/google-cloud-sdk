@@ -23,6 +23,8 @@ from googlecloudsdk.core.console.style import mappings
 from googlecloudsdk.core.console.style import text
 from googlecloudsdk.core.util import platforms
 
+import six
+
 
 class _StyleContext(object):
   """Contains style information used in recursive parsingin TypedTextParser."""
@@ -104,6 +106,9 @@ class TypedTextParser(object):
     Returns:
       str, the parsed text.
     """
+    if isinstance(typed_text, six.string_types):
+      return typed_text
+
     # TODO(b/113600762): Reset more selectively.
     stylize = stylize and self.style_enabled
 

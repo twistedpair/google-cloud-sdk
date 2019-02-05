@@ -282,6 +282,29 @@ class ModifyPushConfigRequest(_messages.Message):
   pushConfig = _messages.MessageField('PushConfig', 1)
 
 
+class OidcToken(_messages.Message):
+  r"""Contains information needed for generating an [OpenID Connect
+  token](https://developers.google.com/identity/protocols/OpenIDConnect).
+
+  Fields:
+    audience: Audience to be used when generating OIDC token. The audience
+      claim identifies the recipients that the JWT is intended for. The
+      audience value is a single case-sensitive string. Having multiple values
+      (array) for the audience field is not supported. More info about the
+      OIDC JWT token audience here:
+      https://tools.ietf.org/html/rfc7519#section-4.1.3 Note: if not
+      specified, the Push endpoint URL will be used.
+    serviceAccountEmail: [Service account
+      email](https://cloud.google.com/iam/docs/service-accounts) to be used
+      for generating the OIDC token. The caller (for CreateSubscription,
+      UpdateSubscription, and ModifyPushConfig RPCs) must have the
+      iam.serviceAccounts.actAs permission for the service account.
+  """
+
+  audience = _messages.StringField(1)
+  serviceAccountEmail = _messages.StringField(2)
+
+
 class Policy(_messages.Message):
   r"""Defines an Identity and Access Management (IAM) policy. It is used to
   specify access control policies for Cloud Platform resources.   A `Policy`
@@ -895,6 +918,9 @@ class PushConfig(_messages.Message):
       for this attribute are:  * `v1beta1`: uses the push format defined in
       the v1beta1 Pub/Sub API. * `v1` or `v1beta2`: uses the push format
       defined in the v1 Pub/Sub API.
+    oidcToken: If specified, Pub/Sub will generate and attach an OIDC JWT
+      token as an `Authorization` header in the HTTP request for every pushed
+      message.
     pushEndpoint: A URL locating the endpoint to which messages should be
       pushed. For example, a Webhook endpoint might use
       "https://example.com/push".
@@ -939,7 +965,8 @@ class PushConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   attributes = _messages.MessageField('AttributesValue', 1)
-  pushEndpoint = _messages.StringField(2)
+  oidcToken = _messages.MessageField('OidcToken', 2)
+  pushEndpoint = _messages.StringField(3)
 
 
 class ReceivedMessage(_messages.Message):
@@ -1258,6 +1285,9 @@ class Topic(_messages.Message):
       Creating and managing labels</a>.
 
   Fields:
+    kmsKeyName: The resource name of the Cloud KMS CryptoKey to be used to
+      protect access to messages published on this topic.  The expected format
+      is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     labels: See <a href="https://cloud.google.com/pubsub/docs/labels">
       Creating and managing labels</a>.
     messageStoragePolicy: Policy constraining how messages published to the
@@ -1300,9 +1330,10 @@ class Topic(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 2)
-  name = _messages.StringField(3)
+  kmsKeyName = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  messageStoragePolicy = _messages.MessageField('MessageStoragePolicy', 3)
+  name = _messages.StringField(4)
 
 
 class UpdateSnapshotRequest(_messages.Message):

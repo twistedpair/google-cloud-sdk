@@ -159,12 +159,22 @@ class AccessTokenCache(object):
 
   def __init__(self, store_file):
     self._cursor = _SqlCursor(store_file)
+
+    # Older versions of the access_tokens database may not have the id_token
+    # column, so we add it and catch the exception if it's already present.
+    try:
+      self._Execute('ALTER TABLE "{}" ADD COLUMN id_token TEXT'.format(
+          _ACCESS_TOKEN_TABLE))
+    except sqlite3.OperationalError:
+      pass
+
     self._Execute(
         'CREATE TABLE IF NOT EXISTS "{}" '
         '(account_id TEXT PRIMARY KEY, '
         'access_token TEXT, '
         'token_expiry TIMESTAMP, '
-        'rapt_token TEXT)'.format(_ACCESS_TOKEN_TABLE))
+        'rapt_token TEXT, '
+        'id_token TEXT)'.format(_ACCESS_TOKEN_TABLE))
 
   def _Execute(self, *args):
     with self._cursor as cur:
@@ -173,16 +183,17 @@ class AccessTokenCache(object):
   def Load(self, account_id):
     with self._cursor as cur:
       return cur.Execute(
-          'SELECT access_token, token_expiry, rapt_token '
+          'SELECT access_token, token_expiry, rapt_token, id_token '
           'FROM "{}" WHERE account_id = ?'
           .format(_ACCESS_TOKEN_TABLE), (account_id,)).fetchone()
 
-  def Store(self, account_id, access_token, token_expiry, rapt_token):
+  def Store(self, account_id, access_token, token_expiry, rapt_token, id_token):
     self._Execute(
         'REPLACE INTO "{}" '
-        '(account_id, access_token, token_expiry, rapt_token) VALUES (?,?,?,?)'
+        '(account_id, access_token, token_expiry, rapt_token, id_token) '
+        'VALUES (?,?,?,?,?)'
         .format(_ACCESS_TOKEN_TABLE),
-        (account_id, access_token, token_expiry, rapt_token))
+        (account_id, access_token, token_expiry, rapt_token, id_token))
 
   def Remove(self, account_id):
     self._Execute(
@@ -216,19 +227,26 @@ class AccessTokenStore(client.Storage):
   def locked_get(self):
     token_data = self._access_token_cache.Load(self._account_id)
     if token_data:
-      access_token, token_expiry, rapt_token = token_data
+      access_token, token_expiry, rapt_token, id_token = token_data
       self._credentials.access_token = access_token
       self._credentials.token_expiry = token_expiry
       if rapt_token is not None:
         self._credentials.rapt_token = rapt_token
+      self._credentials.id_tokenb64 = id_token
     return self._credentials
 
   def locked_put(self, credentials):
+    if getattr(self._credentials, 'token_response'):
+      id_token = self._credentials.token_response.get('id_token', None)
+    else:
+      id_token = None
+
     self._access_token_cache.Store(
         self._account_id,
         self._credentials.access_token,
         self._credentials.token_expiry,
-        getattr(self._credentials, 'rapt_token', None))
+        getattr(self._credentials, 'rapt_token', None),
+        id_token)
 
   def locked_delete(self):
     self._access_token_cache.Remove(self._account_id)
@@ -305,7 +323,6 @@ def GetCredentialStore(store_file=None, access_token_file=None):
   Returns:
     CredentialStore object.
   """
-
   # TODO(b/69059614): remove migration logic and all of oauth2client multistore.
   _MigrateMultistore2Sqlite()
   return _GetSqliteStore(store_file, access_token_file)

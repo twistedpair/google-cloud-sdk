@@ -1298,7 +1298,7 @@ See https://cloud.google.com/dlp/docs/creating-job-triggers to learn more.
         method_id=u'dlp.projects.jobTriggers.list',
         ordered_params=[u'parent'],
         path_params=[u'parent'],
-        query_params=[u'orderBy', u'pageSize', u'pageToken'],
+        query_params=[u'filter', u'orderBy', u'pageSize', u'pageToken'],
         relative_path=u'v2/{+parent}/jobTriggers',
         request_field='',
         request_type_name=u'DlpProjectsJobTriggersListRequest',
